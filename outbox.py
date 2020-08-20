@@ -152,7 +152,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
     permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
                             'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Delegate', 'Skill', 'Bookmark')
+                            'Delegate', 'Skill', 'Bookmark', 'Event')
     if messageJson['type'] not in permittedOutboxTypes:
         if debug:
             print('DEBUG: POST to outbox - ' + messageJson['type'] +
@@ -191,6 +191,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
            messageJson['type'] == 'Note' or \
            messageJson['type'] == 'EncryptedMessage' or \
            messageJson['type'] == 'Article' or \
+           messageJson['type'] == 'Event' or \
            messageJson['type'] == 'Patch' or \
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]

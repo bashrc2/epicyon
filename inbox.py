@@ -64,7 +64,7 @@ from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
-from happening import saveEvent
+from happening import saveEventPost
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -768,6 +768,56 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
                                  port, messageJson,
                                  federationList, debug)
     return False
+
+
+def isEventPost(messageJson: {}) -> bool:
+    """Is the given post a mobilizon-type event activity?
+    """
+    if not messageJson.get('id'):
+        return False
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('type'):
+        return False
+    if messageJson['object']['type'] != 'Event':
+        return False
+    if not messageJson['object'].get('startTime'):
+        return False
+    if not messageJson['object'].get('actor'):
+        return False
+    if not messageJson['object'].get('content'):
+        return False
+    if not messageJson['object'].get('name'):
+        return False
+    if not messageJson['object'].get('uuid'):
+        return False
+    return True
+
+
+def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     sendThreads: [], postLog: [], cachedWebfingers: {},
+                     personCache: {}, messageJson: {}, federationList: [],
+                     nickname: str, debug: bool) -> bool:
+    """Receive a mobilizon-type event activity
+    """
+    if not isEventPost(messageJson):
+        return
+    print('Receiving event: ' + str(messageJson['object']))
+    handle = nickname + '@' + domain
+    if port:
+        if port != 80 and port != 443:
+            handle += ':' + str(port)
+
+    postId = \
+        messageJson['id'].replace('/activity', '').replace('/', '#')
+    postId = postId.replace('/event', '')
+
+    saveEventPost(baseDir, handle, postId, messageJson['object'])
 
 
 def personReceiveUpdate(baseDir: str,
@@ -1991,7 +2041,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
             continue
         if not tagDict.get('startTime'):
             continue
-        saveEvent(baseDir, handle, postId, tagDict)
+        saveEventPost(baseDir, handle, postId, tagDict)
 
 
 def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
@@ -2709,6 +2759,23 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                queueJson['post'],
                                federationList, debug):
             print('Queue: Accept/Reject received from ' + keyId)
+            if os.path.isfile(queueFilename):
+                os.remove(queueFilename)
+            if len(queue) > 0:
+                queue.pop(0)
+            continue
+
+        if receiveEventPost(recentPostsCache, session,
+                            baseDir, httpPrefix,
+                            domain, port,
+                            sendThreads, postLog,
+                            cachedWebfingers,
+                            personCache,
+                            queueJson['post'],
+                            federationList,
+                            queueJson['postNickname'],
+                            debug):
+            print('Queue: Event activity accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:

@@ -43,8 +43,8 @@ def removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
             pass
 
 
-def saveEvent(baseDir: str, handle: str, postId: str,
-              eventJson: {}) -> bool:
+def saveEventPost(baseDir: str, handle: str, postId: str,
+                  eventJson: {}) -> bool:
     """Saves an event to the calendar and/or the events timeline
     If an event has extra fields, as per Mobilizon,
     Then it is saved as a separate entity and added to the
@@ -71,6 +71,7 @@ def saveEvent(baseDir: str, handle: str, postId: str,
        eventJson.get('uuid') and eventJson.get('content'):
         if not validUuid(eventJson['uuid']):
             return False
+        print('Mobilizon type event')
         # if this is a full description of an event then save it
         # as a separate json file
         eventsPath = baseDir + '/accounts/' + handle + '/events'
