@@ -706,10 +706,9 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
                           nicknameFollowing, domainFollowingFull,
                           nicknameFollower, domainFollowerFull,
                           debug):
-        if debug:
-            print('DEBUG: Follower ' +
-                  nicknameFollower + '@' + domainFollowerFull +
-                  ' was removed')
+        print(nicknameFollowing + '@' + domainFollowingFull + ': '
+              'Follower ' + nicknameFollower + '@' + domainFollowerFull +
+              ' was removed')
         return True
 
     if debug:
