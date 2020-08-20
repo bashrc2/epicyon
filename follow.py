@@ -520,7 +520,7 @@ def storeFollowRequest(baseDir: str,
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
-            with open(approveFollowsFilename, "a") as fp:
+            with open(approveFollowsFilename, 'a+') as fp:
                 fp.write(approveHandle + '\n')
         else:
             if debug:

@@ -1581,7 +1581,7 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if numLines > maxReplies:
             return False
         if messageId not in open(postRepliesFilename).read():
-            repliesFile = open(postRepliesFilename, "a")
+            repliesFile = open(postRepliesFilename, 'a+')
             repliesFile.write(messageId + '\n')
             repliesFile.close()
     else:
