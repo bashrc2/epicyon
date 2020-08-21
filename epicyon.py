@@ -1765,7 +1765,8 @@ if args.testdata:
                      False, True, False, True, None, None, useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
-                     False, True, False, True, None, None, useBlurhash, 'someone')
+                     False, True, False, True, None, None,
+                     useBlurhash, 'someone')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",

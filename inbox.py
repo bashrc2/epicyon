@@ -1585,6 +1585,28 @@ def receiveUndoAnnounce(recentPostsCache: {},
     return True
 
 
+def jsonPostAllowsComments(postJsonObject: {}) -> bool:
+    """Returns true if the given post allows comments/replies
+    """
+    if 'commentsEnabled' in postJsonObject:
+        return postJsonObject['commentsEnabled']
+    if postJsonObject.get('object'):
+        if not isinstance(postJsonObject['object'], dict):
+            return False
+        if 'commentsEnabled' in postJsonObject['object']:
+            return postJsonObject['object']['commentsEnabled']
+    return True
+
+
+def postAllowsComments(postFilename: str) -> bool:
+    """Returns true if the given post allows comments/replies
+    """
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return False
+    return jsonPostAllowsComments(postJsonObject)
+
+
 def populateReplies(baseDir: str, httpPrefix: str, domain: str,
                     messageJson: {}, maxReplies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
@@ -1624,6 +1646,10 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
     if not postFilename:
         if debug:
             print('DEBUG: post may have expired - ' + replyTo)
+        return False
+    if not postAllowsComments(postFilename):
+        if debug:
+            print('DEBUG: post does not allow comments - ' + replyTo)
         return False
     # populate a text file containing the ids of replies
     postRepliesFilename = postFilename.replace('.json', '.replies')
@@ -1720,6 +1746,16 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         print('REJECT: content filtered')
         return False
+    if messageJson['object'].get('inReplyTo'):
+        if isinstance(messageJson['object']['inReplyTo'], str):
+            originalPostId = messageJson['object']['inReplyTo']
+            postPostFilename = locatePost(baseDir, nickname, domain,
+                                          originalPostId)
+            if postPostFilename:
+                if not postAllowsComments(postPostFilename):
+                    print('REJECT: reply to post which does not ' +
+                          'allow comments: ' + originalPostId)
+                    return False
     print('ACCEPT: post content is valid')
     return True
 

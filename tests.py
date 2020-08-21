@@ -62,6 +62,7 @@ from announce import sendAnnounceViaServer
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
+from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from content import htmlReplaceQuoteMarks
@@ -1981,8 +1982,41 @@ def runHtmlReplaceQuoteMarks():
     assert result == '“hello” <a href="somesite.html">“test” html</a>'
 
 
+def testJsonPostAllowsComments():
+    print('testJsonPostAllowsComments')
+    postJsonObject = {
+        "id": "123"
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "commentsEnabled": False
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "commentsEnabled": True
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "object": {
+            "commentsEnabled": True
+        }
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "object": {
+            "commentsEnabled": False
+        }
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+
+
 def runAllTests():
     print('Running tests...')
+    testJsonPostAllowsComments()
     runHtmlReplaceQuoteMarks()
     testDangerousMarkup()
     testRemoveHtml()
