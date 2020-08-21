@@ -2029,6 +2029,11 @@ def htmlNewPost(mediaInstance: bool, translate: {},
        endpoint != 'newquestion':
         dateAndLocation = '<div class="container">'
 
+        dateAndLocation += \
+            '<p><input type="checkbox" class="profilecheckbox" ' + \
+            'name="commentsEnabled" checked><label class="labels"> ' + \
+            translate['Allow replies.'] + '</label></p>\n'
+
         if not inReplyTo:
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \

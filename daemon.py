@@ -5490,11 +5490,13 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['subject'] = None
             if not fields.get('replyTo'):
                 fields['replyTo'] = None
+
             if not fields.get('schedulePost'):
                 fields['schedulePost'] = False
             else:
                 fields['schedulePost'] = True
             print('DEBUG: shedulePost ' + str(fields['schedulePost']))
+
             if not fields.get('eventDate'):
                 fields['eventDate'] = None
             if not fields.get('eventTime'):
@@ -5520,7 +5522,7 @@ class PubServer(BaseHTTPRequestHandler):
             if fields.get('mentions'):
                 mentionsStr = fields['mentions'].strip() + ' '
             commentsEnabled = True
-            if fields.get('commentsEnabled'):
+            if 'commentsEnabled' in fields:
                 commentsEnabled = fields['commentsEnabled']
             if postType == 'newpost':
                 messageJson = \
