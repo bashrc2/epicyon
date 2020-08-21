@@ -3828,7 +3828,13 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             iconsDir + '/dm.png" class="DMicon"/>\n'
 
     replyStr = ''
-    if showIcons:
+    # check if replying is permitted
+    commentsEnabled = True
+    if 'commentsEnabled' in postJsonObject['object']:
+        if postJsonObject['object']['commentsEnabled'] is False:
+            commentsEnabled = False
+    if showIcons and commentsEnabled:
+        # reply is permitted - create reply icon
         replyToLink = postJsonObject['object']['id']
         if postJsonObject['object'].get('attributedTo'):
             if isinstance(postJsonObject['object']['attributedTo'], str):
