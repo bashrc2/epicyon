@@ -5748,7 +5748,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     fields['schedulePost'],
                                     fields['eventDate'],
                                     fields['eventTime'],
-                                    fields['location'])
+                                    fields['location'],
+                                    fields['category'],
+                                    fields['joinMode'],
+                                    fields['endDate'],
+                                    fields['endTime'],
+                                    fields['maximumAttendeeCapacity'],
+                                    fields['repliesModerationOption'],
+                                    fields['anonymousParticipationEnabled'],
+                                    fields['eventStatus'])
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
