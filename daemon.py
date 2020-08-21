@@ -5732,6 +5732,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('followersOnlyEvent'):
                     fields['followersOnlyEvent'] = False
 
+                if not fields.get('anonymousParticipationEnabled'):
+                    anonymousParticipationEnabled = False
+                else:
+                    anonymousParticipationEnabled = True
+
                 messageJson = \
                     createEventPost(self.server.baseDir,
                                     nickname,
@@ -5755,7 +5760,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     fields['endTime'],
                                     fields['maximumAttendeeCapacity'],
                                     fields['repliesModerationOption'],
-                                    fields['anonymousParticipationEnabled'],
+                                    anonymousParticipationEnabled,
                                     fields['eventStatus'])
                 if messageJson:
                     if fields['schedulePost']:

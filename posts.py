@@ -854,6 +854,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                             mediaType, imageDescription, useBlurhash)
         if eventUUID:
             # add attributes for Mobilizon-type events
+            newPost['object']['uuid'] = eventUUID
             if eventStatus:
                 newPost['object']['ical:status'] = eventStatus
             if anonymousParticipationEnabled:
@@ -916,6 +917,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                             mediaType, imageDescription, useBlurhash)
         if eventUUID:
             # add attributes for Mobilizon-type events
+            newPost['uuid'] = eventUUID
             if eventStatus:
                 newPost['ical:status'] = eventStatus
             if anonymousParticipationEnabled:
