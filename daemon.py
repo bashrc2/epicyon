@@ -5521,9 +5521,10 @@ class PubServer(BaseHTTPRequestHandler):
             mentionsStr = ''
             if fields.get('mentions'):
                 mentionsStr = fields['mentions'].strip() + ' '
-            commentsEnabled = True
-            if 'commentsEnabled' in fields:
-                commentsEnabled = fields['commentsEnabled']
+            if not fields.get('commentsEnabled'):
+                commentsEnabled = False
+            else:
+                commentsEnabled = True
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
