@@ -270,14 +270,16 @@ def createServerAlice(path: str, domain: str, port: int,
         clientToServer = False
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!", False, True,
-                         clientToServer, None, None, useBlurhash)
+                         clientToServer, True, None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -335,14 +337,17 @@ def createServerBob(path: str, domain: str, port: int,
     if hasPosts:
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -503,7 +508,8 @@ def testPostMessageBetweenServers():
                  'Why is a mouse when it spins? ' +
                  'यह एक परीक्षण है #sillyquestion',
                  followersOnly,
-                 saveToFile, clientToServer, attachedImageFilename, mediaType,
+                 saveToFile, clientToServer, True,
+                 attachedImageFilename, mediaType,
                  attachedImageDescription, useBlurhash, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
@@ -788,7 +794,8 @@ def testFollowBetweenServers():
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
-                 clientToServer, None, None, None, useBlurhash, federationList,
+                 clientToServer, True,
+                 None, None, None, useBlurhash, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -1092,7 +1099,7 @@ def testCreatePerson():
     archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "G'day world!", False, True, clientToServer,
-                     None, None, useBlurhash, None, None,
+                     True, None, None, useBlurhash, None, None,
                      'Not suitable for Vogons')
 
     os.chdir(currDir)
@@ -1315,7 +1322,7 @@ def testClientToServer():
                           aliceDomain, alicePort,
                           'bob', bobDomain, bobPort, None,
                           httpPrefix, 'Sent from my ActivityPub client',
-                          followersOnly,
+                          followersOnly, True,
                           attachedImageFilename, mediaType,
                           attachedImageDescription, useBlurhash,
                           cachedWebfingers, personCache, isArticle,

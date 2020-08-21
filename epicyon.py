@@ -166,6 +166,11 @@ parser.add_argument('--json', dest='json', type=str, default=None,
                     help='Show the json for a given activitypub url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
+parser.add_argument("--repliesEnabled", "--commentsEnabled",
+                    dest='commentsEnabled',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Enable replies to a post")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -829,7 +834,7 @@ if args.message:
                       domain, port,
                       toNickname, toDomain, toPort, ccUrl,
                       httpPrefix, sendMessage, followersOnly,
-                      attach, mediaType,
+                      args.commentsEnabled, attach, mediaType,
                       attachedImageDescription, useBlurhash,
                       cachedWebfingers, personCache, isArticle,
                       args.debug, replyTo, replyTo, subject)
@@ -1751,30 +1756,30 @@ if args.testdata:
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "like, this is totally just a #test, man",
-                     False, True, False, None, None, useBlurhash)
+                     False, True, False, True, None, None, useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
-                     False, True, False, None, None, useBlurhash)
+                     False, True, False, True, None, None, useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
-                     False, True, False, None, None, useBlurhash)
+                     False, True, False, True, None, None, useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
-                     False, True, False, None, None, useBlurhash, 'someone')
+                     False, True, False, True, None, None, useBlurhash, 'someone')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
-                     False, True, False, 'img/logo.png',
+                     False, True, False, True, 'img/logo.png',
                      'Description of image', useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man, these centralized sites are, like, the worst!",
-                     False, True, False, None, None, useBlurhash)
+                     False, True, False, True, None, None, useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
-                     False, True, False, None, None, useBlurhash)
+                     False, True, False, True, None, None, useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
-                     False, True, False, None, None, useBlurhash)
+                     False, True, False, True, None, None, useBlurhash)
 
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
