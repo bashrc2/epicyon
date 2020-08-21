@@ -316,12 +316,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Voting on message ' + messageId)
         print('Vote for: ' + answer)
+        commentsEnabled = True
         messageJson = \
             createPublicPost(self.server.baseDir,
                              nickname,
                              self.server.domain, self.server.port,
                              self.server.httpPrefix,
                              answer, False, False, False,
+                             commentsEnabled,
                              None, None, None, True,
                              messageId, messageId, None,
                              False, None, None, None)
@@ -5517,6 +5519,9 @@ class PubServer(BaseHTTPRequestHandler):
             mentionsStr = ''
             if fields.get('mentions'):
                 mentionsStr = fields['mentions'].strip() + ' '
+            commentsEnabled = True
+            if fields.get('commentsEnabled'):
+                commentsEnabled = fields['commentsEnabled']
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -5525,7 +5530,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port,
                                      self.server.httpPrefix,
                                      mentionsStr + fields['message'],
-                                     False, False, False,
+                                     False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
                                      self.server.useBlurHash,
@@ -5552,7 +5557,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain, self.server.port,
                                    self.server.httpPrefix,
                                    fields['message'],
-                                   False, False, False,
+                                   False, False, False, commentsEnabled,
                                    filename, attachmentMediaType,
                                    fields['imageDescription'],
                                    self.server.useBlurHash,
@@ -5655,7 +5660,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domain, self.server.port,
                                        self.server.httpPrefix,
                                        mentionsStr + fields['message'],
-                                       False, False, False,
+                                       False, False, False, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        self.server.useBlurHash,
@@ -5688,6 +5693,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.httpPrefix,
                                             mentionsStr + fields['message'],
                                             True, False, False,
+                                            commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
                                             self.server.useBlurHash,
@@ -5731,7 +5737,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.httpPrefix,
                                     mentionsStr + fields['message'],
                                     fields['followersOnlyEvent'],
-                                    False, False,
+                                    False, False, commentsEnabled,
                                     filename, attachmentMediaType,
                                     fields['imageDescription'],
                                     self.server.useBlurHash,
@@ -5760,6 +5766,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 mentionsStr +
                                                 fields['message'],
                                                 True, False, False,
+                                                commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
                                                 self.server.useBlurHash,
@@ -5799,7 +5806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port,
                                             self.server.httpPrefix,
                                             mentionsStr + fields['message'],
-                                            True, False, False,
+                                            True, False, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
                                             self.server.useBlurHash,
@@ -5832,7 +5839,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain, self.server.port,
                                      self.server.httpPrefix,
                                      mentionsStr + fields['message'],
-                                     True, False, False,
+                                     True, False, False, True,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
                                      self.server.useBlurHash,
@@ -5863,6 +5870,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix,
                                        fields['message'], qOptions,
                                        False, False, False,
+                                       commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        self.server.useBlurHash,

@@ -610,13 +610,20 @@ def addSchedulePost(baseDir: str, nickname: str, domain: str,
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                    followersOnly: bool, saveToFile: bool, clientToServer: bool,
+                   commentsEnabled: bool,
                    attachImageFilename: str,
                    mediaType: str, imageDescription: str,
                    useBlurhash: bool, isModerationReport: bool,
-                   isArticle: bool, inReplyTo=None,
+                   isArticle: bool,
+                   inReplyTo=None,
                    inReplyToAtomUri=None, subject=None, schedulePost=False,
                    eventDate=None, eventTime=None, location=None,
-                   eventUUID=None) -> {}:
+                   eventUUID=None, category=None, joinMode=None,
+                   endDate=None, endTime=None,
+                   maximumAttendeeCapacity=None,
+                   repliesModerationOption=None,
+                   anonymousParticipationEnabled=None,
+                   eventStatus=None) -> {}:
     """Creates a message
     """
     mentionedRecipients = \
@@ -705,6 +712,24 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                             sensitive = True
                             if replyToJson['object'].get('summary'):
                                 summary = replyToJson['object']['summary']
+
+    # get the ending date and time
+    endDateStr = None
+    if endDate:
+        eventName = summary
+        if not eventName:
+            eventName = content
+        endDateStr = endDate
+        if endTime:
+            if endTime.endswith('Z'):
+                endDateStr = endDate + 'T' + endTime
+            else:
+                endDateStr = endDate + 'T' + endTime + \
+                    ':00' + strftime("%z", gmtime())
+        else:
+            endDateStr = endDate + 'T12:00:00Z'
+
+    # get the starting date and time
     eventDateStr = None
     if eventDate:
         eventName = summary
@@ -719,15 +744,17 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     ':00' + strftime("%z", gmtime())
         else:
             eventDateStr = eventDate + 'T12:00:00Z'
-        if not schedulePost:
+        if not endDateStr:
+            endDateStr = eventDateStr
+        if not schedulePost and not eventUUID:
             tags.append({
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "type": "Event",
                 "name": eventName,
                 "startTime": eventDateStr,
-                "endTime": eventDateStr
+                "endTime": endDateStr
             })
-    if location:
+    if location and not eventUUID:
         tags.append({
             "@context": "https://www.w3.org/ns/activitystreams",
             "type": "Place",
@@ -801,6 +828,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 'sensitive': sensitive,
                 'atomUri': newPostId,
                 'inReplyToAtomUri': inReplyToAtomUri,
+                'commentsEnabled': commentsEnabled,
                 'mediaType': 'text/html',
                 'content': content,
                 'contentMap': {
@@ -824,6 +852,27 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 attachMedia(baseDir, httpPrefix, domain, port,
                             newPost['object'], attachImageFilename,
                             mediaType, imageDescription, useBlurhash)
+        if eventUUID:
+            # add attributes for Mobilizon-type events
+            if eventStatus:
+                newPost['object']['ical:status'] = eventStatus
+            if anonymousParticipationEnabled:
+                newPost['object']['anonymousParticipationEnabled'] = \
+                    anonymousParticipationEnabled
+            if repliesModerationOption:
+                newPost['object']['repliesModerationOption'] = \
+                    repliesModerationOption
+            if category:
+                newPost['object']['category'] = category
+            if joinMode:
+                newPost['object']['joinMode'] = joinMode
+            newPost['object']['startTime'] = eventDateStr
+            newPost['object']['endTime'] = endDateStr
+            if location:
+                newPost['object']['location'] = location
+            if maximumAttendeeCapacity:
+                newPost['object']['maximumAttendeeCapacity'] = \
+                    maximumAttendeeCapacity
     else:
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
@@ -842,6 +891,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             'sensitive': sensitive,
             'atomUri': newPostId,
             'inReplyToAtomUri': inReplyToAtomUri,
+            'commentsEnabled': commentsEnabled,
             'mediaType': 'text/html',
             'content': content,
             'contentMap': {
@@ -864,6 +914,27 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 attachMedia(baseDir, httpPrefix, domain, port,
                             newPost, attachImageFilename,
                             mediaType, imageDescription, useBlurhash)
+        if eventUUID:
+            # add attributes for Mobilizon-type events
+            if eventStatus:
+                newPost['ical:status'] = eventStatus
+            if anonymousParticipationEnabled:
+                newPost['anonymousParticipationEnabled'] = \
+                    anonymousParticipationEnabled
+            if repliesModerationOption:
+                newPost['repliesModerationOption'] = \
+                    repliesModerationOption
+            if category:
+                newPost['category'] = category
+            if joinMode:
+                newPost['joinMode'] = joinMode
+            newPost['startTime'] = eventDateStr
+            newPost['endTime'] = endDateStr
+            if location:
+                newPost['location'] = location
+            if maximumAttendeeCapacity:
+                newPost['maximumAttendeeCapacity'] = \
+                    maximumAttendeeCapacity
     if ccUrl:
         if len(ccUrl) > 0:
             newPost['cc'] = [ccUrl]
@@ -1013,7 +1084,7 @@ def postIsAddressedToPublic(baseDir: str, postJsonObject: {}) -> bool:
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
-                     clientToServer: bool,
+                     clientToServer: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, useBlurhash: bool,
                      inReplyTo=None, inReplyToAtomUri=None, subject=None,
@@ -1031,11 +1102,13 @@ def createPublicPost(baseDir: str,
                           httpPrefix + '://' + domainFull + '/users/' +
                           nickname + '/followers',
                           httpPrefix, content, followersOnly, saveToFile,
-                          clientToServer,
+                          clientToServer, commentsEnabled,
                           attachImageFilename, mediaType,
                           imageDescription, useBlurhash,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location, None)
+                          schedulePost, eventDate, eventTime, location,
+                          None, None, None, None, None,
+                          None, None, None, None)
 
 
 def createBlogPost(baseDir: str,
@@ -1065,7 +1138,7 @@ def createQuestionPost(baseDir: str,
                        nickname: str, domain: str, port: int, httpPrefix: str,
                        content: str, qOptions: [],
                        followersOnly: bool, saveToFile: bool,
-                       clientToServer: bool,
+                       clientToServer: bool, commentsEnabled: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, useBlurhash: bool,
                        subject: str, durationDays: int) -> {}:
@@ -1082,11 +1155,13 @@ def createQuestionPost(baseDir: str,
                        httpPrefix + '://' + domainFull + '/users/' +
                        nickname + '/followers',
                        httpPrefix, content, followersOnly, saveToFile,
-                       clientToServer,
+                       clientToServer, commentsEnabled,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
                        False, False, None, None, subject,
-                       False, None, None, None, None)
+                       False, None, None, None, None, None,
+                       None, None, None,
+                       None, None, None, None)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1111,7 +1186,7 @@ def createQuestionPost(baseDir: str,
 def createUnlistedPost(baseDir: str,
                        nickname: str, domain: str, port: int, httpPrefix: str,
                        content: str, followersOnly: bool, saveToFile: bool,
-                       clientToServer: bool,
+                       clientToServer: bool, commentsEnabled: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, useBlurhash: bool,
                        inReplyTo=None, inReplyToAtomUri=None, subject=None,
@@ -1129,11 +1204,13 @@ def createUnlistedPost(baseDir: str,
                           nickname + '/followers',
                           'https://www.w3.org/ns/activitystreams#Public',
                           httpPrefix, content, followersOnly, saveToFile,
-                          clientToServer,
+                          clientToServer, commentsEnabled,
                           attachImageFilename, mediaType,
                           imageDescription, useBlurhash,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location, None)
+                          schedulePost, eventDate, eventTime, location,
+                          None, None, None, None, None,
+                          None, None, None, None)
 
 
 def createFollowersOnlyPost(baseDir: str,
@@ -1141,7 +1218,7 @@ def createFollowersOnlyPost(baseDir: str,
                             httpPrefix: str,
                             content: str, followersOnly: bool,
                             saveToFile: bool,
-                            clientToServer: bool,
+                            clientToServer: bool, commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, useBlurhash: bool,
                             inReplyTo=None, inReplyToAtomUri=None,
@@ -1160,11 +1237,13 @@ def createFollowersOnlyPost(baseDir: str,
                           nickname + '/followers',
                           None,
                           httpPrefix, content, followersOnly, saveToFile,
-                          clientToServer,
+                          clientToServer, commentsEnabled,
                           attachImageFilename, mediaType,
                           imageDescription, useBlurhash,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location, None)
+                          schedulePost, eventDate, eventTime, location,
+                          None, None, None, None, None,
+                          None, None, None, None)
 
 
 def createEventPost(baseDir: str,
@@ -1172,15 +1251,22 @@ def createEventPost(baseDir: str,
                     httpPrefix: str,
                     content: str, followersOnly: bool,
                     saveToFile: bool,
-                    clientToServer: bool,
+                    clientToServer: bool, commentsEnabled: bool,
                     attachImageFilename: str, mediaType: str,
                     imageDescription: str, useBlurhash: bool,
                     subject=None, schedulePost=False,
                     eventDate=None, eventTime=None,
-                    location=None) -> {}:
+                    location=None, category=None, joinMode=None,
+                    endDate=None, endTime=None,
+                    maximumAttendeeCapacity=None,
+                    repliesModerationOption=None,
+                    anonymousParticipationEnabled=None,
+                    eventStatus=None) -> {}:
     """Mobilizon-type Event post
     """
     if not attachImageFilename:
+        return None
+    if not category:
         return None
     domainFull = domain
     if port:
@@ -1197,15 +1283,19 @@ def createEventPost(baseDir: str,
     if followersOnly:
         toStr1 = toStr2
         toStr2 = None
-    return createPostBase(baseDir, nickname, domain, port,
-                          toStr1, toStr2,
-                          httpPrefix, content, followersOnly, saveToFile,
-                          clientToServer,
-                          attachImageFilename, mediaType,
-                          imageDescription, useBlurhash,
-                          False, False, None, None, subject,
-                          schedulePost, eventDate, eventTime, location,
-                          eventUUID)
+    createPostBase(baseDir, nickname, domain, port,
+                   toStr1, toStr2,
+                   httpPrefix, content, followersOnly, saveToFile,
+                   clientToServer, commentsEnabled,
+                   attachImageFilename, mediaType,
+                   imageDescription, useBlurhash,
+                   False, False, None, None, subject,
+                   schedulePost, eventDate, eventTime, location,
+                   eventUUID, category, joinMode,
+                   endDate, endTime, maximumAttendeeCapacity,
+                   repliesModerationOption,
+                   anonymousParticipationEnabled,
+                   eventStatus)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
@@ -1248,6 +1338,7 @@ def createDirectMessagePost(baseDir: str,
                             httpPrefix: str,
                             content: str, followersOnly: bool,
                             saveToFile: bool, clientToServer: bool,
+                            commentsEnabled: bool,
                             attachImageFilename: str, mediaType: str,
                             imageDescription: str, useBlurhash: bool,
                             inReplyTo=None, inReplyToAtomUri=None,
@@ -1270,11 +1361,13 @@ def createDirectMessagePost(baseDir: str,
         createPostBase(baseDir, nickname, domain, port,
                        postTo, postCc,
                        httpPrefix, content, followersOnly, saveToFile,
-                       clientToServer,
+                       clientToServer, commentsEnabled,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
                        False, False, inReplyTo, inReplyToAtomUri, subject,
-                       schedulePost, eventDate, eventTime, location, None)
+                       schedulePost, eventDate, eventTime, location,
+                       None, None, None, None, None,
+                       None, None, None, None)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
     messageJson['object']['to'] = messageJson['to']
@@ -1289,7 +1382,7 @@ def createDirectMessagePost(baseDir: str,
 def createReportPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
-                     clientToServer: bool,
+                     clientToServer: bool, commentsEnabled: bool,
                      attachImageFilename: str, mediaType: str,
                      imageDescription: str, useBlurhash: bool,
                      debug: bool, subject=None) -> {}:
@@ -1362,11 +1455,13 @@ def createReportPost(baseDir: str,
             createPostBase(baseDir, nickname, domain, port,
                            toUrl, postCc,
                            httpPrefix, content, followersOnly, saveToFile,
-                           clientToServer,
+                           clientToServer, commentsEnabled,
                            attachImageFilename, mediaType,
                            imageDescription, useBlurhash,
                            True, False, None, None, subject,
-                           False, None, None, None, None)
+                           False, None, None, None, None, None,
+                           None, None, None,
+                           None, None, None, None)
         if not postJsonObject:
             continue
 
@@ -1450,6 +1545,7 @@ def sendPost(projectVersion: str,
              toNickname: str, toDomain: str, toPort: int, cc: str,
              httpPrefix: str, content: str, followersOnly: bool,
              saveToFile: bool, clientToServer: bool,
+             commentsEnabled: bool,
              attachImageFilename: str, mediaType: str,
              imageDescription: str, useBlurhash: bool,
              federationList: [], sendThreads: [], postLog: [],
@@ -1518,11 +1614,14 @@ def sendPost(projectVersion: str,
         createPostBase(baseDir, nickname, domain, port,
                        toPersonId, cc, httpPrefix, content,
                        followersOnly, saveToFile, clientToServer,
+                       commentsEnabled,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
                        False, isArticle, inReplyTo,
                        inReplyToAtomUri, subject,
-                       False, None, None, None, None)
+                       False, None, None, None, None, None,
+                       None, None, None,
+                       None, None, None, None)
 
     # get the senders private key
     privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private')
@@ -1576,6 +1675,7 @@ def sendPostViaServer(projectVersion: str,
                       fromDomain: str, fromPort: int,
                       toNickname: str, toDomain: str, toPort: int, cc: str,
                       httpPrefix: str, content: str, followersOnly: bool,
+                      commentsEnabled: bool,
                       attachImageFilename: str, mediaType: str,
                       imageDescription: str, useBlurhash: bool,
                       cachedWebfingers: {}, personCache: {},
@@ -1662,11 +1762,14 @@ def sendPostViaServer(projectVersion: str,
                        fromNickname, fromDomain, fromPort,
                        toPersonId, cc, httpPrefix, content,
                        followersOnly, saveToFile, clientToServer,
+                       commentsEnabled,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
                        False, isArticle, inReplyTo,
                        inReplyToAtomUri, subject,
-                       False, None, None, None, None)
+                       False, None, None, None, None, None,
+                       None, None, None,
+                       None, None, None, None)
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 

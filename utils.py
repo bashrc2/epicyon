@@ -402,7 +402,7 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(postFilename):
         return postFilename
 
-    print('WARN: unable to locate ' + nickname + ' ' + postUrl)
+    # print('WARN: unable to locate ' + nickname + ' ' + postUrl)
     return None
 
 
