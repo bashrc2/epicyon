@@ -69,6 +69,7 @@ from posts import createBlogPost
 from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
+from posts import createEventPost
 from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
@@ -3619,6 +3620,7 @@ class PubServer(BaseHTTPRequestHandler):
                  self.path.endswith('/newfollowers') or
                  self.path.endswith('/newdm') or
                  self.path.endswith('/newreminder') or
+                 self.path.endswith('/newevent') or
                  self.path.endswith('/newreport') or
                  self.path.endswith('/newquestion') or
                  self.path.endswith('/newshare'))):
@@ -5706,6 +5708,42 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
+                        return 1
+                    else:
+                        return -1
+            elif postType == 'newevent':
+                # A Mobilizon-type event is posted
+
+                # if there is no image dscription then make it the same
+                # as the event title
+                if not fields.get('imageDescription'):
+                    fields['imageDescription'] = fields['subject']
+                # Events are public by default, with opt-in
+                # followers only status
+                if not fields.get('followersOnlyEvent'):
+                    fields['followersOnlyEvent'] = False
+
+                messageJson = \
+                    createEventPost(self.server.baseDir,
+                                    nickname,
+                                    self.server.domain,
+                                    self.server.port,
+                                    self.server.httpPrefix,
+                                    mentionsStr + fields['message'],
+                                    fields['followersOnlyEvent'],
+                                    False, False,
+                                    filename, attachmentMediaType,
+                                    fields['imageDescription'],
+                                    self.server.useBlurHash,
+                                    fields['subject'],
+                                    fields['schedulePost'],
+                                    fields['eventDate'],
+                                    fields['eventTime'],
+                                    fields['location'])
+                if messageJson:
+                    if fields['schedulePost']:
+                        return 1
+                    if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
                     else:
                         return -1

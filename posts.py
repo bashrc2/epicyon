@@ -13,6 +13,7 @@ import os
 import shutil
 import sys
 import time
+import uuid
 from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
@@ -614,7 +615,8 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    useBlurhash: bool, isModerationReport: bool,
                    isArticle: bool, inReplyTo=None,
                    inReplyToAtomUri=None, subject=None, schedulePost=False,
-                   eventDate=None, eventTime=None, location=None) -> {}:
+                   eventDate=None, eventTime=None, location=None,
+                   eventUUID=None) -> {}:
     """Creates a message
     """
     mentionedRecipients = \
@@ -755,6 +757,11 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     for ccRemoval in removeFromCC:
         toCC.remove(ccRemoval)
 
+    # the type of post to be made
+    postObjectType = 'Note'
+    if eventUUID:
+        postObjectType = 'Event'
+
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
 
@@ -783,7 +790,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             'cc': toCC,
             'object': {
                 'id': newPostId,
-                'type': 'Note',
+                'type': postObjectType,
                 'summary': summary,
                 'inReplyTo': inReplyTo,
                 'published': published,
@@ -824,7 +831,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         newPost = {
             "@context": postContext,
             'id': newPostId,
-            'type': 'Note',
+            'type': postObjectType,
             'summary': summary,
             'inReplyTo': inReplyTo,
             'published': published,
@@ -1028,7 +1035,7 @@ def createPublicPost(baseDir: str,
                           attachImageFilename, mediaType,
                           imageDescription, useBlurhash,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location)
+                          schedulePost, eventDate, eventTime, location, None)
 
 
 def createBlogPost(baseDir: str,
@@ -1079,7 +1086,7 @@ def createQuestionPost(baseDir: str,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
                        False, False, None, None, subject,
-                       False, None, None, None)
+                       False, None, None, None, None)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1126,7 +1133,7 @@ def createUnlistedPost(baseDir: str,
                           attachImageFilename, mediaType,
                           imageDescription, useBlurhash,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location)
+                          schedulePost, eventDate, eventTime, location, None)
 
 
 def createFollowersOnlyPost(baseDir: str,
@@ -1157,7 +1164,48 @@ def createFollowersOnlyPost(baseDir: str,
                           attachImageFilename, mediaType,
                           imageDescription, useBlurhash,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
-                          schedulePost, eventDate, eventTime, location)
+                          schedulePost, eventDate, eventTime, location, None)
+
+
+def createEventPost(baseDir: str,
+                    nickname: str, domain: str, port: int,
+                    httpPrefix: str,
+                    content: str, followersOnly: bool,
+                    saveToFile: bool,
+                    clientToServer: bool,
+                    attachImageFilename: str, mediaType: str,
+                    imageDescription: str, useBlurhash: bool,
+                    subject=None, schedulePost=False,
+                    eventDate=None, eventTime=None,
+                    location=None) -> {}:
+    """Mobilizon-type Event post
+    """
+    if not attachImageFilename:
+        return None
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            if ':' not in domain:
+                domainFull = domain + ':' + str(port)
+
+    # create event uuid
+    eventUUID = str(uuid.uuid1())
+
+    toStr1 = 'https://www.w3.org/ns/activitystreams#Public'
+    toStr2 = httpPrefix + '://' + domainFull + '/users/' + \
+        nickname + '/followers',
+    if followersOnly:
+        toStr1 = toStr2
+        toStr2 = None
+    return createPostBase(baseDir, nickname, domain, port,
+                          toStr1, toStr2,
+                          httpPrefix, content, followersOnly, saveToFile,
+                          clientToServer,
+                          attachImageFilename, mediaType,
+                          imageDescription, useBlurhash,
+                          False, False, None, None, subject,
+                          schedulePost, eventDate, eventTime, location,
+                          eventUUID)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
@@ -1226,7 +1274,7 @@ def createDirectMessagePost(baseDir: str,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
                        False, False, inReplyTo, inReplyToAtomUri, subject,
-                       schedulePost, eventDate, eventTime, location)
+                       schedulePost, eventDate, eventTime, location, None)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
     messageJson['object']['to'] = messageJson['to']
@@ -1318,7 +1366,7 @@ def createReportPost(baseDir: str,
                            attachImageFilename, mediaType,
                            imageDescription, useBlurhash,
                            True, False, None, None, subject,
-                           False, None, None, None)
+                           False, None, None, None, None)
         if not postJsonObject:
             continue
 
@@ -1474,7 +1522,7 @@ def sendPost(projectVersion: str,
                        imageDescription, useBlurhash,
                        False, isArticle, inReplyTo,
                        inReplyToAtomUri, subject,
-                       False, None, None, None)
+                       False, None, None, None, None)
 
     # get the senders private key
     privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private')
@@ -1618,7 +1666,7 @@ def sendPostViaServer(projectVersion: str,
                        imageDescription, useBlurhash,
                        False, isArticle, inReplyTo,
                        inReplyToAtomUri, subject,
-                       False, None, None, None)
+                       False, None, None, None, None)
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 
@@ -2441,6 +2489,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
     if postJsonObject['object'].get('moderationStatus'):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'Event' and \
        postJsonObject['object']['type'] != 'Article':
         return False
     if not postJsonObject['object'].get('attachment'):
