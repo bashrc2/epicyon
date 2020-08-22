@@ -2092,7 +2092,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 translate['End Date'] + ': </label>\n'
             dateAndLocation += '<input type="date" name="endDate">\n'
             dateAndLocation += '<label class="labelsright">' + \
-                translate['ime'] + ':'
+                translate['Time'] + ':'
             dateAndLocation += \
                 '<input type="time" name="endTime"></label></p>\n'
 
