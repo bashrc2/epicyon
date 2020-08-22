@@ -1287,7 +1287,7 @@ aside .toggle-inside li {
         -o-transform: scale(2);
         transform: scale(2);
         padding: 10px;
-        margin: 20px 30px;
+        margin: 20px 60px;
     }
 }
 
@@ -1727,6 +1727,6 @@ aside .toggle-inside li {
         -o-transform: scale(4);
         transform: scale(4);
         padding: 20px;
-        margin: 30px 40px;
+        margin: 30px 80px;
     }
 }

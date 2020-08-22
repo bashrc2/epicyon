@@ -2070,7 +2070,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += '</div>\n'
             dateAndLocation += '<div class="container">\n'
             # maximum attendees
-            dateAndLocation += '<label for="maximumAttendeeCapacity">' + \
+            dateAndLocation += '<label class="labels" ' + \
+                'for="maximumAttendeeCapacity">' + \
                 translate['Maximum attendees'] + ':</label>\n'
             dateAndLocation += '<input type="number" ' + \
                 'id="maximumAttendeeCapacity" ' + \
