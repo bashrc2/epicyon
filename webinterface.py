@@ -2060,12 +2060,11 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 'name="schedulePost"><label class="labels"> ' + \
                 translate['This is a scheduled post.'] + '</label></p>\n'
 
-        dateAndLocation += \
-            '<p><img loading="lazy" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            iconsDir + '/calendar.png"/>\n'
-
         if endpoint != 'newevent':
+            dateAndLocation += \
+                '<p><img loading="lazy" alt="" title="" ' + \
+                'class="emojicalendar" src="/' + \
+                iconsDir + '/calendar.png"/>\n'
             # select a date and time for this post
             dateAndLocation += '<label class="labels">' + \
                 translate['Date'] + ': </label>\n'
@@ -2093,6 +2092,10 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 translate['Invitation only'] + '</label>\n'
             dateAndLocation += '</div>\n'
             dateAndLocation += '<div>\n'
+            dateAndLocation += \
+                '<p><img loading="lazy" alt="" title="" ' + \
+                'class="emojicalendar" src="/' + \
+                iconsDir + '/calendar.png"/>\n'
             # select start time for the event
             dateAndLocation += '<label class="labels">' + \
                 translate['Start Date'] + ': </label>\n'
