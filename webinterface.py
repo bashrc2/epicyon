@@ -2098,6 +2098,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     dropdownUnlistedSuffix = '/newunlisted'
     dropdownFollowersSuffix = '/newfollowers'
     dropdownDMSuffix = '/newdm'
+    dropdownEventSuffix = '/newevent'
     dropdownReminderSuffix = '/newreminder'
     dropdownReportSuffix = '/newreport'
     if inReplyTo or mentions:
@@ -2106,6 +2107,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropdownUnlistedSuffix = ''
         dropdownFollowersSuffix = ''
         dropdownDMSuffix = ''
+        dropdownEventSuffix = ''
         dropdownReminderSuffix = ''
         dropdownReportSuffix = ''
     if inReplyTo:
@@ -2180,6 +2182,12 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_reminder.png"/><b>' + translate['Reminder'] + \
             '</b><br>' + translate['Scheduled note to yourself'] + \
+            '</li></a>\n'
+        dropDownContent += "        " \
+            '<a href="' + pathBase + dropdownEventSuffix + \
+            '"><li><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_event.png"/><b>' + translate['Event'] + \
+            '</b><br>' + translate['Create an event'] + \
             '</li></a>\n'
         dropDownContent += "        " \
             '<a href="' + pathBase + dropdownReportSuffix + \
