@@ -5743,7 +5743,7 @@ class PubServer(BaseHTTPRequestHandler):
                 maximumAttendeeCapacity = 999999
                 if fields.get('maximumAttendeeCapacity'):
                     maximumAttendeeCapacity = \
-                        fields['maximumAttendeeCapacity']
+                        int(fields['maximumAttendeeCapacity'])
 
                 messageJson = \
                     createEventPost(self.server.baseDir,

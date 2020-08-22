@@ -274,5 +274,6 @@
     "Confirmed": "Confirmada",
     "Cancelled": "Cancelada",
     "Event banner image description": "Descripción de la imagen del banner del evento",
-    "Banner image": "Imagen de banner"
+    "Banner image": "Imagen de banner",
+    "Maximum attendees": "Asistentes máximos"
 }

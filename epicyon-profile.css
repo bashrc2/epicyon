@@ -1279,6 +1279,16 @@ aside .toggle-inside li {
         padding: 10px;
         margin: 20px 30px;
     }
+    input[type=number]
+    {
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 10px;
+        margin: 20px 30px;
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -1700,6 +1710,16 @@ aside .toggle-inside li {
         margin: 30px 40px;
     }
     input[type=radio]
+    {
+        -ms-transform: scale(4);
+        -moz-transform: scale(4);
+        -webkit-transform: scale(4);
+        -o-transform: scale(4);
+        transform: scale(4);
+        padding: 20px;
+        margin: 30px 40px;
+    }
+    input[type=number]
     {
         -ms-transform: scale(4);
         -moz-transform: scale(4);

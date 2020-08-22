@@ -274,5 +274,6 @@
     "Confirmed": "Подтверждено",
     "Cancelled": "Отменено",
     "Event banner image description": "Описание изображения баннера мероприятия",
-    "Banner image": "Изображение баннера"
+    "Banner image": "Изображение баннера",
+    "Maximum attendees": "Максимальное количество участников"
 }
