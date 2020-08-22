@@ -2074,7 +2074,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 translate['Maximum attendees'] + ':</label>\n'
             dateAndLocation += '<input type="number" ' + \
                 'id="maximumAttendeeCapacity" ' + \
-                'name="maximumAttendeeCapacity" min="1" max="999999">\n'
+                'name="maximumAttendeeCapacity" min="1" max="999999" ' + \
+                'value="100">\n'
             dateAndLocation += '</div>\n'
             dateAndLocation += '<div class="container">\n'
             # event joining options
