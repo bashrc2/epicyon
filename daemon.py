@@ -8439,7 +8439,7 @@ class PubServer(BaseHTTPRequestHandler):
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
                      "newdm", "newreport", "newshare", "newquestion",
-                     "editblogpost", "newreminder")
+                     "editblogpost", "newreminder", "newevent")
         for currPostType in postTypes:
             if not authorized:
                 break
