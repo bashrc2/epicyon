@@ -607,6 +607,43 @@ def addSchedulePost(baseDir: str, nickname: str, domain: str,
             scheduleFile.close()
 
 
+def appendEventFields(newPost: {},
+                      eventUUID: str, eventStatus: str,
+                      anonymousParticipationEnabled: bool,
+                      repliesModerationOption: str,
+                      category: str,
+                      joinMode: str,
+                      eventDateStr: str,
+                      endDateStr: str,
+                      location: str,
+                      maximumAttendeeCapacity: int) -> {}:
+    """Appends Mobilizon-type event fields to a post
+    """
+    if not eventUUID:
+        return newPost
+
+    # add attributes for Mobilizon-type events
+    newPost['uuid'] = eventUUID
+    if eventStatus:
+        newPost['ical:status'] = eventStatus
+    if anonymousParticipationEnabled:
+        newPost['anonymousParticipationEnabled'] = \
+            anonymousParticipationEnabled
+    if repliesModerationOption:
+        newPost['repliesModerationOption'] = repliesModerationOption
+    if category:
+        newPost['category'] = category
+    if joinMode:
+        newPost['joinMode'] = joinMode
+    newPost['startTime'] = eventDateStr
+    newPost['endTime'] = endDateStr
+    if location:
+        newPost['location'] = location
+    if maximumAttendeeCapacity:
+        newPost['maximumAttendeeCapacity'] = maximumAttendeeCapacity
+    return newPost
+
+
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                    followersOnly: bool, saveToFile: bool, clientToServer: bool,
@@ -852,28 +889,12 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 attachMedia(baseDir, httpPrefix, domain, port,
                             newPost['object'], attachImageFilename,
                             mediaType, imageDescription, useBlurhash)
-        if eventUUID:
-            # add attributes for Mobilizon-type events
-            newPost['object']['uuid'] = eventUUID
-            if eventStatus:
-                newPost['object']['ical:status'] = eventStatus
-            if anonymousParticipationEnabled:
-                newPost['object']['anonymousParticipationEnabled'] = \
-                    anonymousParticipationEnabled
-            if repliesModerationOption:
-                newPost['object']['repliesModerationOption'] = \
-                    repliesModerationOption
-            if category:
-                newPost['object']['category'] = category
-            if joinMode:
-                newPost['object']['joinMode'] = joinMode
-            newPost['object']['startTime'] = eventDateStr
-            newPost['object']['endTime'] = endDateStr
-            if location:
-                newPost['object']['location'] = location
-            if maximumAttendeeCapacity:
-                newPost['object']['maximumAttendeeCapacity'] = \
-                    maximumAttendeeCapacity
+        newPost = appendEventFields(newPost['object'], eventUUID, eventStatus,
+                                    anonymousParticipationEnabled,
+                                    repliesModerationOption,
+                                    category, joinMode,
+                                    eventDateStr, endDateStr,
+                                    location, maximumAttendeeCapacity)
     else:
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
@@ -915,28 +936,12 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 attachMedia(baseDir, httpPrefix, domain, port,
                             newPost, attachImageFilename,
                             mediaType, imageDescription, useBlurhash)
-        if eventUUID:
-            # add attributes for Mobilizon-type events
-            newPost['uuid'] = eventUUID
-            if eventStatus:
-                newPost['ical:status'] = eventStatus
-            if anonymousParticipationEnabled:
-                newPost['anonymousParticipationEnabled'] = \
-                    anonymousParticipationEnabled
-            if repliesModerationOption:
-                newPost['repliesModerationOption'] = \
-                    repliesModerationOption
-            if category:
-                newPost['category'] = category
-            if joinMode:
-                newPost['joinMode'] = joinMode
-            newPost['startTime'] = eventDateStr
-            newPost['endTime'] = endDateStr
-            if location:
-                newPost['location'] = location
-            if maximumAttendeeCapacity:
-                newPost['maximumAttendeeCapacity'] = \
-                    maximumAttendeeCapacity
+        newPost = appendEventFields(newPost, eventUUID, eventStatus,
+                                    anonymousParticipationEnabled,
+                                    repliesModerationOption,
+                                    category, joinMode,
+                                    eventDateStr, endDateStr,
+                                    location, maximumAttendeeCapacity)
     if ccUrl:
         if len(ccUrl) > 0:
             newPost['cc'] = [ccUrl]
