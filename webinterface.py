@@ -2134,7 +2134,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 translate['Time'] + ':'
             dateAndLocation += \
                 '<input type="time" name="endTime"></label>\n'
-            dateAndLocation += '</div>\n'
 
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
