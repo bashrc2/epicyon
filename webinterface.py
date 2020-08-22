@@ -2034,9 +2034,26 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     if endpoint != 'newshare' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = '<div class="container">'
+        dateAndLocation = '<div class="container">\n'
 
         if endpoint == 'newevent':
+            # event joining options
+            dateAndLocation += '<label class="labels">' + \
+                translate['Joining'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="free" ' + \
+                'name="joinMode" value="free" checked>\n'
+            dateAndLocation += '<label class="labels" for="free">' + \
+                translate['Anyone can join'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="restricted" ' + \
+                'name="joinMode" value="restricted">\n'
+            dateAndLocation += '<label class="labels" for="female">' + \
+                translate['Apply to join'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="invite" ' + \
+                'name="joinMode" value="invite">\n'
+            dateAndLocation += '<label class="labels" for="other">' + \
+                translate['Invitation only'] + '</label>\n'
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
             # Event posts don't allow replies - they're just an announcement.
             # They also have a few more checkboxes
             dateAndLocation += \
@@ -2074,23 +2091,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<input type="time" name="eventTime"></label></p>\n'
         else:
-            # event joining options
-            dateAndLocation += '<div>\n'
-            dateAndLocation += '<label class="labels">' + \
-                translate['Joining'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="free" ' + \
-                'name="joinMode" value="free" checked>\n'
-            dateAndLocation += '<label class="labels" for="free">' + \
-                translate['Anyone can join'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="restricted" ' + \
-                'name="joinMode" value="restricted">\n'
-            dateAndLocation += '<label class="labels" for="female">' + \
-                translate['Apply to join'] + '</label><br>\n'
-            dateAndLocation += '<input type="radio" id="invite" ' + \
-                'name="joinMode" value="invite">\n'
-            dateAndLocation += '<label class="labels" for="other">' + \
-                translate['Invitation only'] + '</label>\n'
-            dateAndLocation += '</div>\n'
             dateAndLocation += '<div>\n'
             dateAndLocation += \
                 '<p><img loading="lazy" alt="" title="" ' + \
