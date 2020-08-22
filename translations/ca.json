@@ -272,5 +272,6 @@
     "Status of the event": "Estat de l’esdeveniment",
     "Tentative": "Temptatiu",
     "Confirmed": "Confirmat",
-    "Cancelled": "Cancel·lat"
+    "Cancelled": "Cancel·lat",
+    "Event banner image description": "Descripció de la imatge del banner de l’esdeveniment"
 }

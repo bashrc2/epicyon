@@ -272,5 +272,6 @@
     "Status of the event": "イベントのステータス",
     "Tentative": "暫定の",
     "Confirmed": "確認済み",
-    "Cancelled": "キャンセル"
+    "Cancelled": "キャンセル",
+    "Event banner image description": "イベントバナー画像の説明"
 }

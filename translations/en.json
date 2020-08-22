@@ -272,5 +272,6 @@
     "Status of the event": "Status of the event",
     "Tentative": "Tentative",
     "Confirmed": "Confirmed",
-    "Cancelled": "Cancelled"
+    "Cancelled": "Cancelled",
+    "Event banner image description": "Event banner image description"
 }

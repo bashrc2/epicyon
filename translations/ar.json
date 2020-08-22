@@ -272,5 +272,6 @@
     "Status of the event": "حالة الحدث",
     "Tentative": "مؤقت",
     "Confirmed": "تم تأكيد",
-    "Cancelled": "ألغيت"
+    "Cancelled": "ألغيت",
+    "Event banner image description": "وصف صورة شعار الحدث"
 }

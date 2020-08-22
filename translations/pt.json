@@ -272,5 +272,6 @@
     "Status of the event": "Status do evento",
     "Tentative": "Provisório",
     "Confirmed": "Confirmada",
-    "Cancelled": "Cancelada"
+    "Cancelled": "Cancelada",
+    "Event banner image description": "Descrição da imagem do banner do evento"
 }

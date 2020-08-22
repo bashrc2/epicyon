@@ -272,5 +272,6 @@
     "Status of the event": "घटना की स्थिति",
     "Tentative": "जांच का",
     "Confirmed": "की पुष्टि",
-    "Cancelled": "रद्द"
+    "Cancelled": "रद्द",
+    "Event banner image description": "घटना बैनर छवि विवरण"
 }

@@ -272,5 +272,6 @@
     "Status of the event": "Статус мероприятия",
     "Tentative": "Предварительно",
     "Confirmed": "Подтверждено",
-    "Cancelled": "Отменено"
+    "Cancelled": "Отменено",
+    "Event banner image description": "Описание изображения баннера мероприятия"
 }
