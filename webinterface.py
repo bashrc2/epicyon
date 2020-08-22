@@ -1925,7 +1925,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
     newPostImageSection = '    <div class="container">'
-    if endpoint != 'newevent':
+    if not path.endswith('/newevent'):
         newPostImageSection += \
             '      <label class="labels">' + \
             translate['Image description'] + '</label>\n'
