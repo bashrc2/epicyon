@@ -2041,11 +2041,11 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += '<label class="labels">' + \
                 translate['Status of the event'] + ':</label><br>\n'
             dateAndLocation += '<input type="radio" id="tentative" ' + \
-                'name="eventStatus" value="tentative" checked>\n'
+                'name="eventStatus" value="tentative">\n'
             dateAndLocation += '<label class="labels" for="tentative">' + \
                 translate['Tentative'] + '</label><br>\n'
             dateAndLocation += '<input type="radio" id="confirmed" ' + \
-                'name="eventStatus" value="confirmed">\n'
+                'name="eventStatus" value="confirmed" checked>\n'
             dateAndLocation += '<label class="labels" for="confirmed">' + \
                 translate['Confirmed'] + '</label><br>\n'
             dateAndLocation += '<input type="radio" id="cancelled" ' + \
