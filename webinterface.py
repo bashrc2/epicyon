@@ -1935,11 +1935,21 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             translate['Event banner image description'] + '</label>\n'
     newPostImageSection += \
         '      <input type="text" name="imageDescription">\n'
-    newPostImageSection += \
-        '      <input type="file" id="attachpic" name="attachpic"'
-    newPostImageSection += \
-        '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, ' + \
-        '.webm, .ogv, .mp3, .ogg">\n'
+
+    if path.endswith('/newevent'):
+        newPostImageSection += \
+            '      <label class="labels">' + \
+            translate['Banner image'] + '</label>\n'
+        newPostImageSection += \
+            '      <input type="file" id="attachpic" name="attachpic"'
+        newPostImageSection += \
+            '            accept=".png, .jpg, .jpeg, .gif, .webp">\n'
+    else:
+        newPostImageSection += \
+            '      <input type="file" id="attachpic" name="attachpic"'
+        newPostImageSection += \
+            '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, ' + \
+            '.webm, .ogv, .mp3, .ogg">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'

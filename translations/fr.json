@@ -273,5 +273,6 @@
     "Tentative": "Provisoire",
     "Confirmed": "Confirmé",
     "Cancelled": "Annulé",
-    "Event banner image description": "Description de l'image de la bannière de l'événement"
+    "Event banner image description": "Description de l'image de la bannière de l'événement",
+    "Banner image": "Image de bannière"
 }
