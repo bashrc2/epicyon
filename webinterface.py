@@ -2077,7 +2077,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             # event joining options
             dateAndLocation += '<div>\n'
             dateAndLocation += '<label class="labels">' + \
-                translate['Joining'] + '</label>\n'
+                translate['Joining'] + '</label><br>\n'
             dateAndLocation += '<input type="radio" id="free" ' + \
                 'name="joinMode" value="free" checked>\n'
             dateAndLocation += '<label class="labels" for="free">' + \
