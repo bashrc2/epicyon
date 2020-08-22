@@ -2108,7 +2108,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<input type="time" name="eventTime"></label></p>\n'
         else:
-            dateAndLocation += '<div>\n'
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
             dateAndLocation += \
                 '<p><img loading="lazy" alt="" title="" ' + \
                 'class="emojicalendar" src="/' + \
