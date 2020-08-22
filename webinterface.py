@@ -2085,7 +2085,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 '<input type="time" name="eventTime"></label></p>\n'
             # select end time for the event
             dateAndLocation += \
-                '<br><p><img loading="lazy" alt="" title="" ' + \
+                '<br><img loading="lazy" alt="" title="" ' + \
                 'class="emojicalendar" src="/' + \
                 iconsDir + '/calendar.png"/>\n'
             dateAndLocation += '<label class="labels">' + \
@@ -2094,7 +2094,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += '<label class="labelsright">' + \
                 translate['Time'] + ':'
             dateAndLocation += \
-                '<input type="time" name="endTime"></label></p>\n'
+                '<input type="time" name="endTime"></label>\n'
 
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
