@@ -861,22 +861,22 @@ aside .toggle-inside li {
 
 @media screen and (min-width: 400px) {
     .container p.administeredby {
-	font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .toxaddr {
-	font-size: var(--font-size-tox);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size-tox);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .ssbaddr {
-	font-size: var(--font-size-pgp-key);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size-pgp-key);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .pgp {
-	font-size: var(--font-size-pgp-key);
-	color: var(--main-link-color);
-	background: var(--link-bg-color);
-	font-family: 'monospace';
+        font-size: var(--font-size-pgp-key);
+        color: var(--main-link-color);
+        background: var(--link-bg-color);
+        font-family: 'monospace';
     }
     body, html {
         font-size: var(--font-size4);
@@ -1236,38 +1236,48 @@ aside .toggle-inside li {
         padding: 0px 0px;
     }
     .dropdown-menutoggle {
-	-webkit-margin-start: 0px;
-	-webkit-margin-end: 0px;
-	-webkit-padding-start: 40px;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	position: absolute;
-	top: 100%;
-	left: 21px;
-	width: 300%;
-	min-width: 100%;
-	z-index: 1000;
-	display: block;
-	float: left;
-	padding: 0 17px !important;
-	margin: 2px 0 0 !important;
-	font-size: var(--font-size2);
-	text-align: left;
-	list-style: none;
-	color: var(--dropdown-fg-color);
-	background-color: var(--dropdown-bg-color);
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+        -webkit-padding-start: 40px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        position: absolute;
+        top: 100%;
+        left: 21px;
+        width: 300%;
+        min-width: 100%;
+        z-index: 1000;
+        display: block;
+        float: left;
+        padding: 0 17px !important;
+        margin: 2px 0 0 !important;
+        font-size: var(--font-size2);
+        text-align: left;
+        list-style: none;
+        color: var(--dropdown-fg-color);
+        background-color: var(--dropdown-bg-color);
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
     }
     input[type=checkbox]
     {
-	-ms-transform: scale(2);
-	-moz-transform: scale(2);
-	-webkit-transform: scale(2);
-	-o-transform: scale(2);
-	transform: scale(2);
-	padding: 10px;
-	margin: 20px 30px;
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 10px;
+        margin: 20px 30px;
+    }
+    input[type=radio]
+    {
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+        -o-transform: scale(2);
+        transform: scale(2);
+        padding: 10px;
+        margin: 20px 30px;
     }
 }
 
@@ -1282,22 +1292,22 @@ aside .toggle-inside li {
 
 @media screen and (max-width: 1000px) {
     .container p.administeredby {
-	font-size: var(--font-size-tox2);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size-tox2);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .toxaddr {
-	font-size: var(--font-size-tox2);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size-tox2);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .ssbaddr {
-	font-size: var(--font-size-pgp-key2);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size-pgp-key2);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .pgp {
-	font-size: var(--font-size-pgp-key2);
-	color: var(--main-link-color);
-	background: var(--link-bg-color);
-	font-family: 'monospace';
+        font-size: var(--font-size-pgp-key2);
+        color: var(--main-link-color);
+        background: var(--link-bg-color);
+        font-family: 'monospace';
     }
     body, html {
         font-size: var(--font-size3);
@@ -1687,6 +1697,16 @@ aside .toggle-inside li {
         -o-transform: scale(4);
         transform: scale(4);
         padding: 20px;
-	margin: 30px 40px;
+        margin: 30px 40px;
+    }
+    input[type=radio]
+    {
+        -ms-transform: scale(4);
+        -moz-transform: scale(4);
+        -webkit-transform: scale(4);
+        -o-transform: scale(4);
+        transform: scale(4);
+        padding: 20px;
+        margin: 30px 40px;
     }
 }
