@@ -268,5 +268,9 @@
     "Anyone can join": "Cualquiera puede unirse",
     "Apply to join": "Aplica para unirte",
     "Invitation only": "Sólo con Invitación",
-    "Joining": "Unión"
+    "Joining": "Unión",
+    "Status of the event": "Estado del evento",
+    "Tentative": "Tentativa",
+    "Confirmed": "Confirmada",
+    "Cancelled": "Cancelada"
 }

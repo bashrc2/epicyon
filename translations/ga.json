@@ -268,5 +268,9 @@
     "Anyone can join": "Is féidir le duine ar bith a bheith páirteach",
     "Apply to join": "Déan iarratas ar bhallraíocht",
     "Invitation only": "Cuireadh amháin",
-    "Joining": "Ag teacht le chéile"
+    "Joining": "Ag teacht le chéile",
+    "Status of the event": "Stádas na hócáide",
+    "Tentative": "Sealadach",
+    "Confirmed": "Deimhnithe",
+    "Cancelled": "Cealaithe"
 }

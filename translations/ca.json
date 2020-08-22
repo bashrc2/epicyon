@@ -268,5 +268,9 @@
     "Anyone can join": "Qualsevol persona s’hi pot apuntar",
     "Apply to join": "Sol·liciteu participar",
     "Invitation only": "Només invitació",
-    "Joining": "Unir-se"
+    "Joining": "Unir-se",
+    "Status of the event": "Estat de l’esdeveniment",
+    "Tentative": "Temptatiu",
+    "Confirmed": "Confirmat",
+    "Cancelled": "Cancel·lat"
 }

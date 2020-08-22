@@ -5740,6 +5740,10 @@ class PubServer(BaseHTTPRequestHandler):
                     anonymousParticipationEnabled = False
                 else:
                     anonymousParticipationEnabled = True
+                maximumAttendeeCapacity = 999999
+                if fields.get('maximumAttendeeCapacity'):
+                    maximumAttendeeCapacity = \
+                        fields['maximumAttendeeCapacity']
 
                 messageJson = \
                     createEventPost(self.server.baseDir,
@@ -5762,7 +5766,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     fields['joinMode'],
                                     fields['endDate'],
                                     fields['endTime'],
-                                    fields['maximumAttendeeCapacity'],
+                                    maximumAttendeeCapacity,
                                     fields['repliesModerationOption'],
                                     anonymousParticipationEnabled,
                                     fields['eventStatus'])

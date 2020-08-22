@@ -2037,9 +2037,26 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dateAndLocation = '<div class="container">\n'
 
         if endpoint == 'newevent':
+            # event status
+            dateAndLocation += '<label class="labels">' + \
+                translate['Status of the event'] + ':</label><br>\n'
+            dateAndLocation += '<input type="radio" id="tentative" ' + \
+                'name="eventStatus" value="tentative" checked>\n'
+            dateAndLocation += '<label class="labels" for="tentative">' + \
+                translate['Tentative'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="confirmed" ' + \
+                'name="eventStatus" value="confirmed">\n'
+            dateAndLocation += '<label class="labels" for="confirmed">' + \
+                translate['Confirmed'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="cancelled" ' + \
+                'name="eventStatus" value="cancelled">\n'
+            dateAndLocation += '<label class="labels" for="cancelled">' + \
+                translate['Cancelled'] + '</label><br>\n'
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
             # event joining options
             dateAndLocation += '<label class="labels">' + \
-                translate['Joining'] + '</label><br>\n'
+                translate['Joining'] + ':</label><br>\n'
             dateAndLocation += '<input type="radio" id="free" ' + \
                 'name="joinMode" value="free" checked>\n'
             dateAndLocation += '<label class="labels" for="free">' + \

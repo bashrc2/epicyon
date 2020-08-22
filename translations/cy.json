@@ -268,5 +268,9 @@
     "Anyone can join": "Gall unrhyw un ymuno",
     "Apply to join": "Gwnewch gais i ymuno",
     "Invitation only": "Gwahoddiad yn unig",
-    "Joining": "Yn ymuno"
+    "Joining": "Yn ymuno",
+    "Status of the event": "Statws y digwyddiad",
+    "Tentative": "Cynhyrfus",
+    "Confirmed": "Cadarnhawyd",
+    "Cancelled": "Wedi'i ganslo"
 }

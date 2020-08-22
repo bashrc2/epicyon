@@ -268,5 +268,9 @@
     "Anyone can join": "يمكن لأي شخص الانضمام",
     "Apply to join": "تقديم طلب للانضمام",
     "Invitation only": "المدعوون فقط",
-    "Joining": "انضمام"
+    "Joining": "انضمام",
+    "Status of the event": "حالة الحدث",
+    "Tentative": "مؤقت",
+    "Confirmed": "تم تأكيد",
+    "Cancelled": "ألغيت"
 }

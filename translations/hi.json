@@ -268,5 +268,9 @@
     "Anyone can join": "कोई भी शामिल हो सकता है",
     "Apply to join": "जुड़ने के लिए आवेदन करें",
     "Invitation only": "केवल आमंत्रण",
-    "Joining": "में शामिल होने से"
+    "Joining": "में शामिल होने से",
+    "Status of the event": "घटना की स्थिति",
+    "Tentative": "जांच का",
+    "Confirmed": "की पुष्टि",
+    "Cancelled": "रद्द"
 }

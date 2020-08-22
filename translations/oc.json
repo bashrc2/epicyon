@@ -264,5 +264,9 @@
     "Anyone can join": "Anyone can join",
     "Apply to join": "Apply to join",
     "Invitation only": "Invitation only",
-    "Joining": "Joining"
+    "Joining": "Joining",
+    "Status of the event": "Status of the event",
+    "Tentative": "Tentative",
+    "Confirmed": "Confirmed",
+    "Cancelled": "Cancelled"
 }

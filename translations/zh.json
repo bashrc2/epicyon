@@ -268,5 +268,9 @@
     "Anyone can join": "任何人都可以加入",
     "Apply to join": "申请加入",
     "Invitation only": "仅邀请",
-    "Joining": "加盟"
+    "Joining": "加盟",
+    "Status of the event": "活动状态",
+    "Tentative": "暂定",
+    "Confirmed": "已确认",
+    "Cancelled": "取消"
 }
