@@ -258,5 +258,15 @@
     "Notes": "Notes",
     "Allow replies.": "Permetre respostes.",
     "Event": "Esdeveniment",
-    "Create an event": "Crea un esdeveniment"
+    "Create an event": "Crea un esdeveniment",
+    "Describe the event": "Descriviu l’esdeveniment",
+    "Start Date": "Data d'inici",
+    "End Date": "Data de finalització",
+    "Categories": "Categories",
+    "This is a private event.": "Aquest és un esdeveniment privat.",
+    "Allow anonymous participation.": "Permet una participació anònima.",
+    "Anyone can join": "Qualsevol persona s’hi pot apuntar",
+    "Apply to join": "Sol·liciteu participar",
+    "Invitation only": "Només invitació",
+    "Joining": "Unir-se"
 }

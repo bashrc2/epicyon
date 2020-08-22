@@ -258,5 +258,15 @@
     "Notes": "Notas",
     "Allow replies.": "Permitir respostas.",
     "Event": "Evento",
-    "Create an event": "Crie um evento"
+    "Create an event": "Crie um evento",
+    "Describe the event": "Descreva o evento",
+    "Start Date": "Data de início",
+    "End Date": "Data final",
+    "Categories": "Categorias",
+    "This is a private event.": "Este é um evento privado.",
+    "Allow anonymous participation.": "Permita a participação anônima.",
+    "Anyone can join": "Qualquer um pode participar",
+    "Apply to join": "Aplicar para participar",
+    "Invitation only": "Somente para convidados",
+    "Joining": "Juntando"
 }

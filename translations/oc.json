@@ -254,5 +254,15 @@
     "Notes": "Notes",
     "Allow replies.": "Allow replies.",
     "Event": "Event",
-    "Create an event": "Create an event"
+    "Create an event": "Create an event",
+    "Describe the event": "Describe the event",
+    "Start Date": "Start Date",
+    "End Date": "End Date",
+    "Categories": "Categories",
+    "This is a private event.": "This is a private event.",
+    "Allow anonymous participation.": "Allow anonymous participation.",
+    "Anyone can join": "Anyone can join",
+    "Apply to join": "Apply to join",
+    "Invitation only": "Invitation only",
+    "Joining": "Joining"
 }

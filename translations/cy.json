@@ -258,5 +258,15 @@
     "Notes": "Nodiadau",
     "Allow replies.": "Caniatáu atebion.",
     "Event": "Digwyddiad",
-    "Create an event": "Creu digwyddiad"
+    "Create an event": "Creu digwyddiad",
+    "Describe the event": "Disgrifiwch y digwyddiad",
+    "Start Date": "Dyddiad cychwyn",
+    "End Date": "Dyddiad Gorffen",
+    "Categories": "Categorïau",
+    "This is a private event.": "Digwyddiad preifat yw hwn.",
+    "Allow anonymous participation.": "Caniatáu cyfranogiad dienw.",
+    "Anyone can join": "Gall unrhyw un ymuno",
+    "Apply to join": "Gwnewch gais i ymuno",
+    "Invitation only": "Gwahoddiad yn unig",
+    "Joining": "Yn ymuno"
 }

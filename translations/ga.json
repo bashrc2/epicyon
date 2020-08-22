@@ -258,5 +258,15 @@
     "Notes": "Nótaí",
     "Allow replies.": "Ceadaigh freagraí.",
     "Event": "Imeacht",
-    "Create an event": "Cruthaigh imeacht"
+    "Create an event": "Cruthaigh imeacht",
+    "Describe the event": "Déan cur síos ar an ócáid",
+    "Start Date": "Dáta tosaigh",
+    "End Date": "Dáta deiridh",
+    "Categories": "Catagóirí",
+    "This is a private event.": "Is ócáid phríobháideach é seo.",
+    "Allow anonymous participation.": "Lig rannpháirtíocht gan ainm.",
+    "Anyone can join": "Is féidir le duine ar bith a bheith páirteach",
+    "Apply to join": "Déan iarratas ar bhallraíocht",
+    "Invitation only": "Cuireadh amháin",
+    "Joining": "Ag teacht le chéile"
 }

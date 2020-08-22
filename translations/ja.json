@@ -258,5 +258,15 @@
     "Notes": "ノート",
     "Allow replies.": "返信を許可します。",
     "Event": "イベント",
-    "Create an event": "イベントを作成する"
+    "Create an event": "イベントを作成する",
+    "Describe the event": "イベントについて説明する",
+    "Start Date": "開始日",
+    "End Date": "終了日",
+    "Categories": "カテゴリー",
+    "This is a private event.": "これはプライベートイベントです。",
+    "Allow anonymous participation.": "匿名参加を許可します。",
+    "Anyone can join": "誰でも参加できます",
+    "Apply to join": "参加を申し込む",
+    "Invitation only": "招待のみ",
+    "Joining": "接合"
 }

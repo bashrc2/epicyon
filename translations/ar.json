@@ -258,5 +258,15 @@
     "Notes": "ملاحظات",
     "Allow replies.": "السماح بالردود.",
     "Event": "حدث",
-    "Create an event": "أنشئ حدثًا"
+    "Create an event": "أنشئ حدثًا",
+    "Describe the event": "صف الحدث",
+    "Start Date": "تاريخ البدء",
+    "End Date": "تاريخ الانتهاء",
+    "Categories": "التصنيفات",
+    "This is a private event.": "هذا هو الحدث الخاص.",
+    "Allow anonymous participation.": "السماح بالمشاركة المجهولة.",
+    "Anyone can join": "يمكن لأي شخص الانضمام",
+    "Apply to join": "تقديم طلب للانضمام",
+    "Invitation only": "المدعوون فقط",
+    "Joining": "انضمام"
 }

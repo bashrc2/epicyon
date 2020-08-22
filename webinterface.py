@@ -1920,6 +1920,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     pathBase = path.replace('/newreport', '').replace('/newpost', '')
     pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
     pathBase = pathBase.replace('/newunlisted', '')
+    pathBase = pathBase.replace('/newevent', '')
     pathBase = pathBase.replace('/newreminder', '')
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
@@ -1969,6 +1970,12 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         scopeIcon = 'scope_reminder.png'
         scopeDescription = translate['Reminder']
         endpoint = 'newreminder'
+    elif path.endswith('/newevent'):
+        scopeIcon = 'scope_event.png'
+        scopeDescription = translate['Event']
+        endpoint = 'newevent'
+        placeholderSubject = translate['Title'] + '...'
+        placeholderMessage = translate['Describe the event'] + '...'
     elif path.endswith('/newreport'):
         scopeIcon = 'scope_report.png'
         scopeDescription = translate['Report']
@@ -2029,12 +2036,25 @@ def htmlNewPost(mediaInstance: bool, translate: {},
        endpoint != 'newquestion':
         dateAndLocation = '<div class="container">'
 
-        dateAndLocation += \
-            '<p><input type="checkbox" class="profilecheckbox" ' + \
-            'name="commentsEnabled" checked><label class="labels"> ' + \
-            translate['Allow replies.'] + '</label></p>\n'
+        if endpoint == 'newevent':
+            # Event posts don't allow replies - they're just an announcement.
+            # They also have a few more checkboxes
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="privateEvent"><label class="labels"> ' + \
+                translate['This is a private event.'] + '</label></p>\n'
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="anonymousParticipationEnabled">' + \
+                '<label class="labels"> ' + \
+                translate['Allow anonymous participation.'] + '</label></p>\n'
+        else:
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="commentsEnabled" checked><label class="labels"> ' + \
+                translate['Allow replies.'] + '</label></p>\n'
 
-        if not inReplyTo:
+        if not inReplyTo and endpoint != 'newevent':
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
                 'name="schedulePost"><label class="labels"> ' + \
@@ -2044,17 +2064,47 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             '<p><img loading="lazy" alt="" title="" ' + \
             'class="emojicalendar" src="/' + \
             iconsDir + '/calendar.png"/>\n'
-        dateAndLocation += '<label class="labels">' + \
-            translate['Date'] + ': </label>\n'
-        dateAndLocation += '<input type="date" name="eventDate">\n'
-        dateAndLocation += '<label class="labelsright">' + \
-            translate['Time'] + ':'
-        dateAndLocation += '<input type="time" name="eventTime"></label></p>\n'
+
+        if endpoint != 'newevent':
+            # select a date and time for this post
+            dateAndLocation += '<label class="labels">' + \
+                translate['Date'] + ': </label>\n'
+            dateAndLocation += '<input type="date" name="eventDate">\n'
+            dateAndLocation += '<label class="labelsright">' + \
+                translate['Time'] + ':'
+            dateAndLocation += \
+                '<input type="time" name="eventTime"></label></p>\n'
+        else:
+            # select start time for the event
+            dateAndLocation += '<label class="labels">' + \
+                translate['Start Date'] + ': </label>\n'
+            dateAndLocation += '<input type="date" name="eventDate">\n'
+            dateAndLocation += '<label class="labelsright">' + \
+                translate['Time'] + ':'
+            dateAndLocation += \
+                '<input type="time" name="eventTime"></label></p>\n'
+            # select end time for the event
+            dateAndLocation += \
+                '<p><img loading="lazy" alt="" title="" ' + \
+                'class="emojicalendar" src="/' + \
+                iconsDir + '/calendar.png"/>\n'
+            dateAndLocation += '<label class="labels">' + \
+                translate['End Date'] + ': </label>\n'
+            dateAndLocation += '<input type="date" name="endDate">\n'
+            dateAndLocation += '<label class="labelsright">' + \
+                translate['End Time'] + ':'
+            dateAndLocation += \
+                '<input type="time" name="endTime"></label></p>\n'
+
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<br><label class="labels">' + \
             translate['Location'] + ': </label>\n'
         dateAndLocation += '<input type="text" name="location">\n'
+        if endpoint == 'newevent':
+            dateAndLocation += '<br><label class="labels">' + \
+                translate['Categories'] + ': </label>\n'
+            dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
     newPostForm = htmlHeader(cssFilename, newPostCSS)

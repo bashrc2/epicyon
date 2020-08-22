@@ -5525,6 +5525,10 @@ class PubServer(BaseHTTPRequestHandler):
                 commentsEnabled = False
             else:
                 commentsEnabled = True
+            if not fields.get('privateEvent'):
+                privateEvent = False
+            else:
+                privateEvent = True
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -5744,7 +5748,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.port,
                                     self.server.httpPrefix,
                                     mentionsStr + fields['message'],
-                                    fields['followersOnlyEvent'],
+                                    privateEvent,
                                     False, False, commentsEnabled,
                                     filename, attachmentMediaType,
                                     fields['imageDescription'],

@@ -258,5 +258,15 @@
     "Notes": "टिप्पणियाँ",
     "Allow replies.": "जवाब दें।",
     "Event": "प्रतिस्पर्धा",
-    "Create an event": "एक घटना बनाएँ"
+    "Create an event": "एक घटना बनाएँ",
+    "Describe the event": "घटना का वर्णन करें",
+    "Start Date": "आरंभ करने की तिथि",
+    "End Date": "अंतिम तिथि",
+    "Categories": "श्रेणियाँ",
+    "This is a private event.": "यह एक निजी कार्यक्रम है।",
+    "Allow anonymous participation.": "अनाम भागीदारी की अनुमति दें।",
+    "Anyone can join": "कोई भी शामिल हो सकता है",
+    "Apply to join": "जुड़ने के लिए आवेदन करें",
+    "Invitation only": "केवल आमंत्रण",
+    "Joining": "में शामिल होने से"
 }

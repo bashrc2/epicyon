@@ -258,5 +258,15 @@
     "Notes": "Ноты",
     "Allow replies.": "Разрешить ответы.",
     "Event": "Мероприятие",
-    "Create an event": "Создать мероприятие"
+    "Create an event": "Создать мероприятие",
+    "Describe the event": "Опишите событие",
+    "Start Date": "Дата начала",
+    "End Date": "Дата окончания",
+    "Categories": "Категории",
+    "This is a private event.": "Это частное мероприятие.",
+    "Allow anonymous participation.": "Разрешить анонимное участие.",
+    "Anyone can join": "Каждый может присоединиться",
+    "Apply to join": "Подать заявку на присоединение",
+    "Invitation only": "Только приглашение",
+    "Joining": "Присоединение"
 }
