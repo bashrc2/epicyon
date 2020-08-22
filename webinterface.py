@@ -2075,6 +2075,21 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<input type="time" name="eventTime"></label></p>\n'
         else:
+            # event joining options
+            dateAndLocation += '<label class="labels">' + \
+                translate['Joining'] + '</label>\n'
+            dateAndLocation += '<input type="radio" id="free" ' + \
+                'name="joinMode" value="free" checked>\n'
+            dateAndLocation += '<label class="labels" for="free">' + \
+                translate['Anyone can join'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="restricted" ' + \
+                'name="joinMode" value="restricted">\n'
+            dateAndLocation += '<label class="labels" for="female">' + \
+                translate['Apply to join'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="invite" ' + \
+                'name="joinMode" value="invite">\n'
+            dateAndLocation += '<label class="labels" for="other">' + \
+                translate['Invitation only'] + '</label>\n'
             # select start time for the event
             dateAndLocation += '<label class="labels">' + \
                 translate['Start Date'] + ': </label>\n'
