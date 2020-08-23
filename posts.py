@@ -650,6 +650,8 @@ def appendEventFields(newPost: {},
         newPost['ticketUrl'] = ticketUrl
     if subject:
         newPost['name'] = subject
+        newPost['summary'] = None
+        newPost['sensitive'] = False
 
 
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
