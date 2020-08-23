@@ -620,7 +620,8 @@ def appendEventFields(newPost: {},
                       endDateStr: str,
                       location: str,
                       maximumAttendeeCapacity: int,
-                      ticketUrl: str) -> None:
+                      ticketUrl: str,
+                      subject: str) -> None:
     """Appends Mobilizon-type event fields to a post
     """
     if not eventUUID:
@@ -647,6 +648,8 @@ def appendEventFields(newPost: {},
         newPost['maximumAttendeeCapacity'] = maximumAttendeeCapacity
     if ticketUrl:
         newPost['ticketUrl'] = ticketUrl
+    if subject:
+        newPost['name'] = subject
 
 
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
@@ -900,7 +903,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                           category, joinMode,
                           eventDateStr, endDateStr,
                           location, maximumAttendeeCapacity,
-                          ticketUrl)
+                          ticketUrl, subject)
     else:
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
@@ -948,7 +951,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                           category, joinMode,
                           eventDateStr, endDateStr,
                           location, maximumAttendeeCapacity,
-                          ticketUrl)
+                          ticketUrl, subject)
     if ccUrl:
         if len(ccUrl) > 0:
             newPost['cc'] = [ccUrl]
