@@ -28,6 +28,8 @@ def removeIdEnding(idStr: str) -> str:
         idStr = idStr[:-len('/undo')]
     elif idStr.endswith('/event'):
         idStr = idStr[:-len('/event')]
+    elif idStr.endswith('/replies'):
+        idStr = idStr[:-len('/replies')]
     return idStr
 
 

@@ -8822,16 +8822,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 22)
 
-        if not inboxPermittedMessage(self.server.domain,
-                                     messageJson,
-                                     self.server.federationList):
-            if self.server.debug:
-                # https://www.youtube.com/watch?v=K3PrSj9XEu4
-                print('DEBUG: Ah Ah Ah')
-            self.send_response(403)
-            self.end_headers()
-            self.server.POSTbusy = False
-            return
+        if not self.server.unitTest:
+            if not inboxPermittedMessage(self.server.domain,
+                                         messageJson,
+                                         self.server.federationList):
+                if self.server.debug:
+                    # https://www.youtube.com/watch?v=K3PrSj9XEu4
+                    print('DEBUG: Ah Ah Ah')
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 23)
 
@@ -8986,6 +8987,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         print('ERROR: HTTP server failed to start. ' + str(e))
         return False
 
+    httpd.unitTest = unitTest
     httpd.YTReplacementDomain = YTReplacementDomain
 
     # This counter is used to update the list of blocked domains in memory.

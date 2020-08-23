@@ -622,6 +622,8 @@ def appendEventFields(newPost: {},
                       maximumAttendeeCapacity: int) -> {}:
     """Appends Mobilizon-type event fields to a post
     """
+    return newPost
+
     if not eventUUID:
         return newPost
 
@@ -892,12 +894,12 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 attachMedia(baseDir, httpPrefix, domain, port,
                             newPost['object'], attachImageFilename,
                             mediaType, imageDescription, useBlurhash)
-        newPost = appendEventFields(newPost['object'], eventUUID, eventStatus,
-                                    anonymousParticipationEnabled,
-                                    repliesModerationOption,
-                                    category, joinMode,
-                                    eventDateStr, endDateStr,
-                                    location, maximumAttendeeCapacity)
+        #newPost = appendEventFields(newPost['object'], eventUUID, eventStatus,
+        #                            anonymousParticipationEnabled,
+        #                            repliesModerationOption,
+        #                            category, joinMode,
+        #                            eventDateStr, endDateStr,
+        #                            location, maximumAttendeeCapacity)
     else:
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
@@ -939,12 +941,12 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 attachMedia(baseDir, httpPrefix, domain, port,
                             newPost, attachImageFilename,
                             mediaType, imageDescription, useBlurhash)
-        newPost = appendEventFields(newPost, eventUUID, eventStatus,
-                                    anonymousParticipationEnabled,
-                                    repliesModerationOption,
-                                    category, joinMode,
-                                    eventDateStr, endDateStr,
-                                    location, maximumAttendeeCapacity)
+        #newPost = appendEventFields(newPost, eventUUID, eventStatus,
+        #                            anonymousParticipationEnabled,
+        #                            repliesModerationOption,
+        #                            category, joinMode,
+        #                            eventDateStr, endDateStr,
+        #                            location, maximumAttendeeCapacity)
     if ccUrl:
         if len(ccUrl) > 0:
             newPost['cc'] = [ccUrl]

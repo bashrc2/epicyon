@@ -231,9 +231,11 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
 def inboxMessageHasParams(messageJson: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
-    expectedParams = ['type', 'actor', 'object']
+    expectedParams = ['actor', 'type', 'object']
     for param in expectedParams:
         if not messageJson.get(param):
+            # print('inboxMessageHasParams: ' +
+            #       param + ' ' + str(messageJson))
             return False
     if not messageJson.get('to'):
         allowedWithoutToParam = ['Like', 'Follow', 'Request',
@@ -249,6 +251,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     """
     if not messageJson.get('actor'):
         return False
+
     actor = messageJson['actor']
     # always allow the local domain
     if domain in actor:
@@ -2254,12 +2257,18 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     if validPostContent(baseDir, nickname, domain,
                         postJsonObject, maxMentions, maxEmoji):
 
+        if postJsonObject.get('object'):
+            jsonObj = postJsonObject['object']
+            if not isinstance(jsonObj, dict):
+                jsonObj = None
+        else:
+            jsonObj = postJsonObject
         # check for incoming git patches
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('content') and \
-               postJsonObject['object'].get('summary') and \
-               postJsonObject['object'].get('attributedTo'):
-                attributedTo = postJsonObject['object']['attributedTo']
+        if jsonObj:
+            if jsonObj.get('content') and \
+               jsonObj.get('summary') and \
+               jsonObj.get('attributedTo'):
+                attributedTo = jsonObj['attributedTo']
                 if isinstance(attributedTo, str):
                     fromNickname = getNicknameFromActor(attributedTo)
                     fromDomain, fromPort = getDomainFromActor(attributedTo)
@@ -2267,17 +2276,17 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                         if fromPort != 80 and fromPort != 443:
                             fromDomain += ':' + str(fromPort)
                     if receiveGitPatch(baseDir, nickname, domain,
-                                       postJsonObject['object']['type'],
-                                       postJsonObject['object']['summary'],
-                                       postJsonObject['object']['content'],
+                                       jsonObj['type'],
+                                       jsonObj['summary'],
+                                       jsonObj['content'],
                                        fromNickname, fromDomain):
                         gitPatchNotify(baseDir, handle,
-                                       postJsonObject['object']['summary'],
-                                       postJsonObject['object']['content'],
+                                       jsonObj['summary'],
+                                       jsonObj['content'],
                                        fromNickname, fromDomain)
-                    elif '[PATCH]' in postJsonObject['object']['content']:
+                    elif '[PATCH]' in jsonObj['content']:
                         print('WARN: git patch not accepted - ' +
-                              postJsonObject['object']['summary'])
+                              jsonObj['summary'])
                         return False
 
         # replace YouTube links, so they get less tracking data
@@ -2680,7 +2689,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
                     pprint(quotasDaily)
 
-        print('Obtaining public key for actor ' + queueJson['actor'])
+        if queueJson.get('actor'):
+            print('Obtaining public key for actor ' + queueJson['actor'])
 
         # Try a few times to obtain the public key
         pubKey = None
