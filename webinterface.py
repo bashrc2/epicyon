@@ -2168,6 +2168,9 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dateAndLocation += '<input type="text" name="location">\n'
         if endpoint == 'newevent':
             dateAndLocation += '<br><label class="labels">' + \
+                translate['Ticket URL'] + ': </label>\n'
+            dateAndLocation += '<input type="text" name="ticketUrl">\n'
+            dateAndLocation += '<br><label class="labels">' + \
                 translate['Categories'] + ': </label>\n'
             dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'

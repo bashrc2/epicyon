@@ -5864,7 +5864,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     maximumAttendeeCapacity,
                                     fields['repliesModerationOption'],
                                     anonymousParticipationEnabled,
-                                    fields['eventStatus'])
+                                    fields['eventStatus'],
+                                    fields['ticketUrl'])
                 if messageJson:
                     if fields['schedulePost']:
                         return 1

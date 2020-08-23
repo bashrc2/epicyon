@@ -619,7 +619,8 @@ def appendEventFields(newPost: {},
                       eventDateStr: str,
                       endDateStr: str,
                       location: str,
-                      maximumAttendeeCapacity: int) -> None:
+                      maximumAttendeeCapacity: int,
+                      ticketUrl: str) -> None:
     """Appends Mobilizon-type event fields to a post
     """
     if not eventUUID:
@@ -644,6 +645,8 @@ def appendEventFields(newPost: {},
         newPost['location'] = location
     if maximumAttendeeCapacity:
         newPost['maximumAttendeeCapacity'] = maximumAttendeeCapacity
+    if ticketUrl:
+        newPost['ticketUrl'] = ticketUrl
 
 
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
@@ -662,7 +665,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    maximumAttendeeCapacity=None,
                    repliesModerationOption=None,
                    anonymousParticipationEnabled=None,
-                   eventStatus=None) -> {}:
+                   eventStatus=None, ticketUrl=None) -> {}:
     """Creates a message
     """
     mentionedRecipients = \
@@ -896,7 +899,8 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                           repliesModerationOption,
                           category, joinMode,
                           eventDateStr, endDateStr,
-                          location, maximumAttendeeCapacity)
+                          location, maximumAttendeeCapacity,
+                          ticketUrl)
     else:
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
@@ -943,7 +947,8 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                           repliesModerationOption,
                           category, joinMode,
                           eventDateStr, endDateStr,
-                          location, maximumAttendeeCapacity)
+                          location, maximumAttendeeCapacity,
+                          ticketUrl)
     if ccUrl:
         if len(ccUrl) > 0:
             newPost['cc'] = [ccUrl]
@@ -1120,7 +1125,7 @@ def createPublicPost(baseDir: str,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
                           schedulePost, eventDate, eventTime, location,
                           None, None, None, None, None,
-                          None, None, None, None)
+                          None, None, None, None, None)
 
 
 def createBlogPost(baseDir: str,
@@ -1173,7 +1178,7 @@ def createQuestionPost(baseDir: str,
                        False, False, None, None, subject,
                        False, None, None, None, None, None,
                        None, None, None,
-                       None, None, None, None)
+                       None, None, None, None, None)
     messageJson['object']['type'] = 'Question'
     messageJson['object']['oneOf'] = []
     messageJson['object']['votersCount'] = 0
@@ -1222,7 +1227,7 @@ def createUnlistedPost(baseDir: str,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
                           schedulePost, eventDate, eventTime, location,
                           None, None, None, None, None,
-                          None, None, None, None)
+                          None, None, None, None, None)
 
 
 def createFollowersOnlyPost(baseDir: str,
@@ -1255,7 +1260,7 @@ def createFollowersOnlyPost(baseDir: str,
                           False, False, inReplyTo, inReplyToAtomUri, subject,
                           schedulePost, eventDate, eventTime, location,
                           None, None, None, None, None,
-                          None, None, None, None)
+                          None, None, None, None, None)
 
 
 def createEventPost(baseDir: str,
@@ -1273,7 +1278,7 @@ def createEventPost(baseDir: str,
                     maximumAttendeeCapacity=None,
                     repliesModerationOption=None,
                     anonymousParticipationEnabled=None,
-                    eventStatus=None) -> {}:
+                    eventStatus=None, ticketUrl=None) -> {}:
     """Mobilizon-type Event post
     """
     if not attachImageFilename:
@@ -1307,7 +1312,7 @@ def createEventPost(baseDir: str,
                    endDate, endTime, maximumAttendeeCapacity,
                    repliesModerationOption,
                    anonymousParticipationEnabled,
-                   eventStatus)
+                   eventStatus, ticketUrl)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
@@ -1379,7 +1384,7 @@ def createDirectMessagePost(baseDir: str,
                        False, False, inReplyTo, inReplyToAtomUri, subject,
                        schedulePost, eventDate, eventTime, location,
                        None, None, None, None, None,
-                       None, None, None, None)
+                       None, None, None, None, None)
     # mentioned recipients go into To rather than Cc
     messageJson['to'] = messageJson['object']['cc']
     messageJson['object']['to'] = messageJson['to']
@@ -1473,7 +1478,7 @@ def createReportPost(baseDir: str,
                            True, False, None, None, subject,
                            False, None, None, None, None, None,
                            None, None, None,
-                           None, None, None, None)
+                           None, None, None, None, None)
         if not postJsonObject:
             continue
 
@@ -1634,7 +1639,7 @@ def sendPost(projectVersion: str,
                        inReplyToAtomUri, subject,
                        False, None, None, None, None, None,
                        None, None, None,
-                       None, None, None, None)
+                       None, None, None, None, None)
 
     # get the senders private key
     privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private')
@@ -1782,7 +1787,7 @@ def sendPostViaServer(projectVersion: str,
                        inReplyToAtomUri, subject,
                        False, None, None, None, None, None,
                        None, None, None,
-                       None, None, None, None)
+                       None, None, None, None, None)
 
     authHeader = createBasicAuthHeader(fromNickname, password)
 

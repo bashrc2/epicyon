@@ -277,5 +277,6 @@
     "Cancelled": "Annullata",
     "Event banner image description": "Descrizione dell'immagine del banner dell'evento",
     "Banner image": "Immagine banner",
-    "Maximum attendees": "Numero massimo di partecipanti"
+    "Maximum attendees": "Numero massimo di partecipanti",
+    "Ticket URL": "URL del biglietto"
 }
