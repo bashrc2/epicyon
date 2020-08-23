@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import isBlogPost
 from utils import removeAvatarFromCache
@@ -93,7 +94,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
             continue
         tagName = tag['name'].replace('#', '').strip()
         tagsFilename = tagsDir + '/' + tagName + '.txt'
-        postUrl = postJsonObject['id'].replace('/activity', '')
+        postUrl = removeIdEnding(postJsonObject['id'])
         postUrl = postUrl.replace('/', '#')
         daysDiff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         daysSinceEpoch = daysDiff.days
@@ -354,15 +355,13 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         return None
     originalPostId = None
     if postJsonObject.get('id'):
-        originalPostId = \
-            postJsonObject['id'].replace('/activity', '').replace('/undo', '')
+        originalPostId = removeIdEnding(postJsonObject['id'])
 
     currTime = datetime.datetime.utcnow()
 
     postId = None
     if postJsonObject.get('id'):
-        postId = postJsonObject['id'].replace('/activity', '')
-        postId = postId.replace('/undo', '')
+        postId = removeIdEnding(postJsonObject['id'])
         published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not postId:
         statusNumber, published = getStatusNumber()
@@ -817,9 +816,7 @@ def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
         if port != 80 and port != 443:
             handle += ':' + str(port)
 
-    postId = \
-        messageJson['id'].replace('/activity', '').replace('/', '#')
-    postId = postId.replace('/event', '')
+    postId = removeIdEnding(messageJson['id']).replace('/', '#')
 
     saveEventPost(baseDir, handle, postId, messageJson['object'])
 
@@ -910,7 +907,7 @@ def receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
         return
     if not messageJson.get('actor'):
         return
-    messageId = messageJson['id'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     # find the question post
@@ -1367,8 +1364,7 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    messageId = messageJson['object'].replace('/activity', '')
-    messageId = messageId.replace('/undo', '')
+    messageId = removeIdEnding(messageJson['object'])
     removeModerationPostFromIndex(baseDir, messageId, debug)
     postFilename = locatePost(baseDir, handle.split('@')[0],
                               handle.split('@')[1], messageId)
@@ -1653,8 +1649,7 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         return False
     # populate a text file containing the ids of replies
     postRepliesFilename = postFilename.replace('.json', '.replies')
-    messageId = messageJson['id'].replace('/activity', '')
-    messageId = messageId.replace('/undo', '')
+    messageId = removeIdEnding(messageJson['id'])
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
         if numLines > maxReplies:
@@ -2070,8 +2065,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
                                    actorNickname, actorDomain):
         return
 
-    postId = \
-        postJsonObject['id'].replace('/activity', '').replace('/', '#')
+    postId = removeIdEnding(postJsonObject['id']).replace('/', '#')
 
     # look for events within the tags list
     for tagDict in postJsonObject['object']['tag']:
@@ -2375,6 +2369,9 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
             if isBlogPost(postJsonObject):
                 # blogs index will be updated
                 updateIndexList.append('tlblogs')
+            elif isEventPost(postJsonObject):
+                # events index will be updated
+                updateIndexList.append('tlevents')
 
         # get the avatar for a reply/announce
         obtainAvatarForReplyPost(session, baseDir,

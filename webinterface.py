@@ -25,6 +25,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import getFileCaseInsensitive
 from utils import searchBoxPosts
@@ -3313,7 +3314,7 @@ def insertQuestion(baseDir: str, translate: {},
         return content
     if len(postJsonObject['object']['oneOf']) == 0:
         return content
-    messageId = postJsonObject['id'].replace('/activity', '')
+    messageId = removeIdEnding(postJsonObject['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     pageNumberStr = ''
@@ -3781,7 +3782,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
-        messageId = postJsonObject['id'].replace('/activity', '')
+        messageId = removeIdEnding(postJsonObject['id'])
 
     messageIdStr = ''
     if messageId:
@@ -3870,7 +3871,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if boxName == 'tlbookmarks' or boxName == 'bookmarks':
         return ''
 
-    timelinePostBookmark = postJsonObject['id'].replace('/activity', '')
+    timelinePostBookmark = removeIdEnding(postJsonObject['id'])
     timelinePostBookmark = timelinePostBookmark.replace('://', '-')
     timelinePostBookmark = timelinePostBookmark.replace('/', '-')
 
@@ -4007,8 +4008,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     editStr = ''
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
-        if isBlogPost(postJsonObject):
-            if '/statuses/' in postJsonObject['object']['id']:
+        if '/statuses/' in postJsonObject['object']['id']:
+            if isBlogPost(postJsonObject):
                 editStr += \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
@@ -4629,6 +4630,7 @@ def htmlTimeline(defaultTimeline: str,
         repliesButton = 'buttonhighlighted'
     mediaButton = 'button'
     bookmarksButton = 'button'
+    eventsButton = 'button'
     sentButton = 'button'
     sharesButton = 'button'
     if newShare:
@@ -4662,6 +4664,8 @@ def htmlTimeline(defaultTimeline: str,
             sharesButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
+    elif boxName == 'tlevents' or boxName == 'events':
+        eventsButton = 'buttonselected'
 
     fullDomain = domain
     if port != 80 and port != 443:
@@ -4702,6 +4706,7 @@ def htmlTimeline(defaultTimeline: str,
 
     sharesButtonStr = ''
     bookmarksButtonStr = ''
+    eventsButtonStr = ''
     if not minimal:
         sharesButtonStr = \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
@@ -4712,6 +4717,11 @@ def htmlTimeline(defaultTimeline: str,
         bookmarksButtonStr = \
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
+            ' </span></button></a>\n'
+
+        eventsButtonStr = \
+            '<a href="' + usersPath + '/tlevents"><button class="' + \
+            eventsButton + '"><span>' + translate['Events'] + \
             ' </span></button></a>\n'
 
     tlStr = htmlHeader(cssFilename, profileStyle)
@@ -4835,7 +4845,7 @@ def htmlTimeline(defaultTimeline: str,
         sentButton+'"><span>' + translate['Outbox'] + \
         '</span></button></a>\n'
     tlStr += \
-        sharesButtonStr + bookmarksButtonStr + \
+        sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
         moderationButtonStr + newPostButtonStr
     tlStr += \
         '    <a class="imageAnchor" href="' + usersPath + \
@@ -4963,7 +4973,7 @@ def htmlTimeline(defaultTimeline: str,
                 if boxName != 'tlmedia' and \
                    recentPostsCache.get('index'):
                     postId = \
-                        item['id'].replace('/activity', '').replace('/', '#')
+                        removeIdEnding(item['id']).replace('/', '#')
                     if postId in recentPostsCache['index']:
                         if not item.get('muted'):
                             if recentPostsCache['html'].get(postId):
@@ -5071,6 +5081,28 @@ def htmlBookmarks(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
+                        httpPrefix, projectVersion, manuallyApproveFollowers,
+                        minimal, YTReplacementDomain)
+
+
+def htmlEvents(defaultTimeline: str,
+               recentPostsCache: {}, maxRecentPosts: int,
+               translate: {}, pageNumber: int, itemsPerPage: int,
+               session, baseDir: str, wfRequest: {}, personCache: {},
+               nickname: str, domain: str, port: int, bookmarksJson: {},
+               allowDeletion: bool,
+               httpPrefix: str, projectVersion: str,
+               minimal: bool, YTReplacementDomain: str) -> str:
+    """Show the events as html
+    """
+    manuallyApproveFollowers = \
+        followerApprovalActive(baseDir, nickname, domain)
+
+    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        nickname, domain, port, bookmarksJson,
+                        'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         minimal, YTReplacementDomain)
 
@@ -5238,7 +5270,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                              httpPrefix, projectVersion, 'inbox',
                              YTReplacementDomain,
                              False, authorized, False, False, False)
-    messageId = postJsonObject['id'].replace('/activity', '')
+    messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
     if isinstance(postJsonObject['object'], dict):

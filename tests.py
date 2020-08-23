@@ -31,6 +31,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import removeIdEnding
 from utils import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
@@ -1364,7 +1365,7 @@ def testClientToServer():
             outboxPostFilename = outboxPath + '/' + name
             postJsonObject = loadJson(outboxPostFilename, 0)
             if postJsonObject:
-                outboxPostId = postJsonObject['id'].replace('/activity', '')
+                outboxPostId = removeIdEnding(postJsonObject['id'])
     assert outboxPostId
     print('message id obtained: ' + outboxPostId)
     assert validInbox(bobDir, 'bob', bobDomain)
@@ -2014,8 +2015,35 @@ def testJsonPostAllowsComments():
     assert not jsonPostAllowsComments(postJsonObject)
 
 
+def testRemoveIdEnding():
+    print('testRemoveIdEnding')
+    testStr = 'https://activitypub.somedomain.net'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == 'https://activitypub.somedomain.net'
+
+    testStr = \
+        'https://activitypub.somedomain.net/users/foo/' + \
+        'statuses/34544814814/activity'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == \
+        'https://activitypub.somedomain.net/users/foo/statuses/34544814814'
+
+    testStr = \
+        'https://undo.somedomain.net/users/foo/statuses/34544814814/undo'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == \
+        'https://undo.somedomain.net/users/foo/statuses/34544814814'
+
+    testStr = \
+        'https://event.somedomain.net/users/foo/statuses/34544814814/event'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == \
+        'https://event.somedomain.net/users/foo/statuses/34544814814'
+
+
 def runAllTests():
     print('Running tests...')
+    testRemoveIdEnding()
     testJsonPostAllowsComments()
     runHtmlReplaceQuoteMarks()
     testDangerousMarkup()

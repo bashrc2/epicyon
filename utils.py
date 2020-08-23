@@ -19,6 +19,18 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def removeIdEnding(idStr: str) -> str:
+    """Removes endings such as /activity and /undo
+    """
+    if idStr.endswith('/activity'):
+        idStr = idStr[:-len('/activity')]
+    elif idStr.endswith('/undo'):
+        idStr = idStr[:-len('/undo')]
+    elif idStr.endswith('/event'):
+        idStr = idStr[:-len('/event')]
+    return idStr
+
+
 def getProtocolPrefixes() -> []:
     """Returns a list of valid prefixes
     """
@@ -384,13 +396,13 @@ def locatePost(baseDir: str, nickname: str, domain: str,
         extension = 'replies'
 
     # if this post in the shared inbox?
-    postUrl = postUrl.replace('/', '#').replace('/activity', '').strip()
+    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
 
     # add the extension
     postUrl = postUrl + '.' + extension
 
     # search boxes
-    boxes = ('inbox', 'outbox', 'tlblogs')
+    boxes = ('inbox', 'outbox', 'tlblogs', 'tlevents')
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain + '/'
     for boxName in boxes:
         postFilename = accountDir + boxName + '/' + postUrl
@@ -435,7 +447,7 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
     moderationIndexFile = baseDir + '/accounts/moderation.txt'
     if not os.path.isfile(moderationIndexFile):
         return
-    postId = postUrl.replace('/activity', '')
+    postId = removeIdEnding(postUrl)
     if postId in open(moderationIndexFile).read():
         with open(moderationIndexFile, "r") as f:
             lines = f.readlines()
@@ -463,7 +475,7 @@ def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
         nickname + '@' + domain + '/tlblogs.index'
     if not os.path.isfile(blogsIndexFilename):
         return False
-    postId = postJsonObject['object']['inReplyTo'].replace('/activity', '')
+    postId = removeIdEnding(postJsonObject['object']['inReplyTo'])
     postId = postId.replace('/', '#')
     if postId in open(blogsIndexFilename).read():
         return True
@@ -494,7 +506,7 @@ def deletePost(baseDir: str, httpPrefix: str,
         # remove from recent posts cache in memory
         if recentPostsCache:
             postId = \
-                postJsonObject['id'].replace('/activity', '').replace('/', '#')
+                removeIdEnding(postJsonObject['id']).replace('/', '#')
             if recentPostsCache.get('index'):
                 if postId in recentPostsCache['index']:
                     recentPostsCache['index'].remove(postId)
@@ -526,7 +538,7 @@ def deletePost(baseDir: str, httpPrefix: str,
             if isinstance(postJsonObject['object'], dict):
                 if postJsonObject['object'].get('moderationStatus'):
                     if postJsonObject.get('id'):
-                        postId = postJsonObject['id'].replace('/activity', '')
+                        postId = removeIdEnding(postJsonObject['id'])
                         removeModerationPostFromIndex(baseDir, postId, debug)
 
         # remove any hashtags index entries
@@ -540,8 +552,7 @@ def deletePost(baseDir: str, httpPrefix: str,
             if postJsonObject['object'].get('id') and \
                postJsonObject['object'].get('tag'):
                 # get the id of the post
-                postId = \
-                    postJsonObject['object']['id'].replace('/activity', '')
+                postId = removeIdEnding(postJsonObject['object']['id'])
                 for tag in postJsonObject['object']['tag']:
                     if tag['type'] != 'Hashtag':
                         continue
@@ -710,7 +721,7 @@ def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
         return None
     cachedPostFilename = \
         cachedPostDir + \
-        '/' + postJsonObject['id'].replace('/activity', '').replace('/', '#')
+        '/' + removeIdEnding(postJsonObject['id']).replace('/', '#')
     cachedPostFilename = cachedPostFilename + '.html'
     return cachedPostFilename
 
@@ -727,7 +738,7 @@ def removePostFromCache(postJsonObject: {}, recentPostsCache: {}):
     postId = postJsonObject['id']
     if '#' in postId:
         postId = postId.split('#', 1)[0]
-    postId = postId.replace('/activity', '').replace('/', '#')
+    postId = removeIdEnding(postId).replace('/', '#')
     if postId not in recentPostsCache['index']:
         return
 
@@ -747,7 +758,7 @@ def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
     postId = postJsonObject['id']
     if '#' in postId:
         postId = postId.split('#', 1)[0]
-    postId = postId.replace('/activity', '').replace('/', '#')
+    postId = removeIdEnding(postId).replace('/', '#')
     if recentPostsCache.get('index'):
         if postId in recentPostsCache['index']:
             return
@@ -1071,7 +1082,7 @@ def updateAnnounceCollection(recentPostsCache: {},
             return
         if not isinstance(postJsonObject['object'], dict):
             return
-        postUrl = postJsonObject['id'].replace('/activity', '') + '/shares'
+        postUrl = removeIdEnding(postJsonObject['id']) + '/shares'
         if not postJsonObject['object'].get('shares'):
             if debug:
                 print('DEBUG: Adding initial shares (announcements) to ' +

@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import removeIdEnding
 from utils import isEvil
 from utils import locatePost
 from utils import evilIncarnate
@@ -214,7 +215,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
     if debug:
         print('DEBUG: c2s block request arrived in outbox')
 
-    messageId = messageJson['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s block object is not a status')
@@ -293,7 +294,7 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
     if debug:
         print('DEBUG: c2s undo block request arrived in outbox')
 
-    messageId = messageJson['object']['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object']['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s undo block object is not a status')

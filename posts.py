@@ -29,6 +29,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import removeIdEnding
 from utils import siteIsActive
 from utils import removePostFromCache
 from utils import getCachedPostFilename
@@ -502,7 +503,8 @@ def deleteAllPosts(baseDir: str,
                    nickname: str, domain: str, boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
-    if boxname != 'inbox' and boxname != 'outbox' and boxname != 'tlblogs':
+    if boxname != 'inbox' and boxname != 'outbox' and \
+       boxname != 'tlblogs' and boxname != 'tlevents':
         return
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     for deleteFilename in os.scandir(boxDir):
@@ -524,7 +526,8 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
     Returns the filename
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
-       boxname != 'tlblogs' and boxname != 'scheduled':
+       boxname != 'tlblogs' and boxname != 'tlevents' and \
+       boxname != 'scheduled':
         return None
     originalDomain = domain
     if ':' in domain:
@@ -845,7 +848,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             '/statuses/' + statusNumber + '/replies'
         newPost = {
             '@context': postContext,
-            'id': newPostId+'/activity',
+            'id': newPostId + '/activity',
             'capability': capabilityIdList,
             'type': 'Create',
             'actor': actorUrl,
@@ -977,12 +980,15 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                   'date and time values')
             return newPost
     elif saveToFile:
-        if not isArticle:
-            savePostToBox(baseDir, httpPrefix, newPostId,
-                          nickname, domain, newPost, 'outbox')
-        else:
+        if isArticle:
             savePostToBox(baseDir, httpPrefix, newPostId,
                           nickname, domain, newPost, 'tlblogs')
+        elif eventUUID:
+            savePostToBox(baseDir, httpPrefix, newPostId,
+                          nickname, domain, newPost, 'tlevents')
+        else:
+            savePostToBox(baseDir, httpPrefix, newPostId,
+                          nickname, domain, newPost, 'outbox')
     return newPost
 
 
@@ -1009,10 +1015,10 @@ def outboxMessageCreateWrap(httpPrefix: str,
     capabilityUrl = []
     newPost = {
         "@context": "https://www.w3.org/ns/activitystreams",
-        'id': newPostId+'/activity',
+        'id': newPostId + '/activity',
         'capability': capabilityUrl,
         'type': 'Create',
-        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + domain + '/users/' + nickname,
         'published': published,
         'to': messageJson['to'],
         'cc': cc,
@@ -1473,8 +1479,9 @@ def createReportPost(baseDir: str,
             continue
 
         # update the inbox index with the report filename
-        # indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
-        # indexEntry=postJsonObject['id'].replace('/activity','').replace('/','#')+'.json'
+        # indexFilename = baseDir+'/accounts/'+handle+'/inbox.index'
+        # indexEntry = \
+        #     removeIdEnding(postJsonObject['id']).replace('/','#') + '.json'
         # if indexEntry not in open(indexFilename).read():
         #     try:
         #         with open(indexFilename, 'a+') as fp:
@@ -2419,6 +2426,16 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             True, ocapAlways, pageNumber)
 
 
+def createEventsTimeline(session, baseDir: str, nickname: str, domain: str,
+                         port: int, httpPrefix: str, itemsPerPage: int,
+                         headerOnly: bool, ocapAlways: bool,
+                         pageNumber=None) -> {}:
+    return createBoxIndexed({}, session, baseDir, 'tlevents',
+                            nickname, domain,
+                            port, httpPrefix, itemsPerPage, headerOnly,
+                            True, ocapAlways, pageNumber)
+
+
 def createDMTimeline(session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
                      headerOnly: bool, ocapAlways: bool,
@@ -2791,13 +2808,18 @@ def createBoxIndexed(recentPostsCache: {},
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
-       boxname != 'bookmarks':
+       boxname != 'bookmarks' and \
+       boxname != 'tlevents' and boxname != 'events':
         return None
 
-    # bookmarks timeline is like the inbox but has its own separate index
+    # bookmarks and events timelines are like the inbox
+    # but have their own separate index
     indexBoxName = boxname
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
+        indexBoxName = boxname
+    elif boxname == "tlevents":
+        boxname = "events"
         indexBoxName = boxname
 
     if port:
@@ -3489,7 +3511,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
         postId = \
-            postJsonObject['id'].replace('/activity', '').replace('/', '#')
+            removeIdEnding(postJsonObject['id']).replace('/', '#')
         if postId in recentPostsCache['index']:
             print('MUTE: ' + postId + ' is in recent posts cache')
             if recentPostsCache['json'].get(postId):

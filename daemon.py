@@ -127,6 +127,7 @@ from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
 from webinterface import htmlInbox
 from webinterface import htmlBookmarks
+from webinterface import htmlEvents
 from webinterface import htmlShares
 from webinterface import htmlOutbox
 from webinterface import htmlModeration
@@ -154,6 +155,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import removeIdEnding
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import deletePost
@@ -2734,10 +2736,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 32)
 
-#        unrepeatPrivate = False
         if htmlGET and '?unrepeatprivate=' in self.path:
             self.path = self.path.replace('?unrepeatprivate=', '?unrepeat=')
-#            unrepeatPrivate = True
+
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
             pageNumber = 1
@@ -4818,6 +4819,100 @@ class PubServer(BaseHTTPRequestHandler):
                               ' was not authorized to access ' + self.path)
             if self.server.debug:
                 print('DEBUG: GET access to bookmarks is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return
+
+        # get the events for a given person
+        if self.path.endswith('/tlevents') or \
+           '/tlevents?page=' in self.path or \
+           self.path.endswith('/events') or \
+           '/events?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    eventsFeed = \
+                        personBoxJson(self.server.recentPostsCache,
+                                      self.server.session,
+                                      self.server.baseDir,
+                                      self.server.domain,
+                                      self.server.port,
+                                      self.path,
+                                      self.server.httpPrefix,
+                                      maxPostsInFeed, 'tlevents',
+                                      authorized, self.server.ocapAlways)
+                    if eventsFeed:
+                        if self._requestHTTP():
+                            nickname = self.path.replace('/users/', '')
+                            nickname = nickname.replace('/tlevents', '')
+                            nickname = nickname.replace('/events', '')
+                            pageNumber = 1
+                            if '?page=' in nickname:
+                                pageNumber = nickname.split('?page=')[1]
+                                nickname = nickname.split('?page=')[0]
+                                if pageNumber.isdigit():
+                                    pageNumber = int(pageNumber)
+                                else:
+                                    pageNumber = 1
+                            if 'page=' not in self.path:
+                                # if no page was specified then show the first
+                                eventsFeed = \
+                                    personBoxJson(self.server.recentPostsCache,
+                                                  self.server.session,
+                                                  self.server.baseDir,
+                                                  self.server.domain,
+                                                  self.server.port,
+                                                  self.path + '?page=1',
+                                                  self.server.httpPrefix,
+                                                  maxPostsInFeed,
+                                                  'tlevents',
+                                                  authorized,
+                                                  self.server.ocapAlways)
+                            msg = \
+                                htmlEvents(self.server.defaultTimeline,
+                                           self.server.recentPostsCache,
+                                           self.server.maxRecentPosts,
+                                           self.server.translate,
+                                           pageNumber, maxPostsInFeed,
+                                           self.server.session,
+                                           self.server.baseDir,
+                                           self.server.cachedWebfingers,
+                                           self.server.personCache,
+                                           nickname,
+                                           self.server.domain,
+                                           self.server.port,
+                                           eventsFeed,
+                                           self.server.allowDeletion,
+                                           self.server.httpPrefix,
+                                           self.server.projectVersion,
+                                           self._isMinimal(nickname),
+                                           self.server.YTReplacementDomain)
+                            msg = msg.encode('utf-8')
+                            self._set_headers('text/html',
+                                              len(msg),
+                                              cookie, callingDomain)
+                            self._write(msg)
+                        else:
+                            # don't need authenticated fetch here because
+                            # there is already the authorization check
+                            msg = json.dumps(inboxFeed,
+                                             ensure_ascii=False)
+                            msg = msg.encode('utf-8')
+                            self._set_headers('application/json',
+                                              len(msg),
+                                              None, callingDomain)
+                            self._write(msg)
+                        self.server.GETbusy = False
+                        return
+                else:
+                    if self.server.debug:
+                        nickname = self.path.replace('/users/', '')
+                        nickname = nickname.replace('/tlevents', '')
+                        nickname = nickname.replace('/events', '')
+                        print('DEBUG: ' + nickname +
+                              ' was not authorized to access ' + self.path)
+            if self.server.debug:
+                print('DEBUG: GET access to events is unauthorized')
             self.send_response(405)
             self.end_headers()
             self.server.GETbusy = False
@@ -7892,7 +7987,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followId = followActor + '/statuses/' + str(statusNumber)
                     unfollowJson = {
                         '@context': 'https://www.w3.org/ns/activitystreams',
-                        'id': followId+'/undo',
+                        'id': followId + '/undo',
                         'type': 'Undo',
                         'actor': followActor,
                         'object': {
@@ -8682,8 +8777,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.outboxAuthenticated:
             if self._postToOutbox(messageJson, __version__):
                 if messageJson.get('id'):
-                    locnStr = messageJson['id'].replace('/activity', '')
-                    locnStr = locnStr.replace('/undo', '')
+                    locnStr = removeIdEnding(messageJson['id'])
                     self.headers['Location'] = locnStr
                 self.send_response(201)
                 self.end_headers()

@@ -25,6 +25,7 @@ from posts import createRepliesTimeline
 from posts import createMediaTimeline
 from posts import createBlogsTimeline
 from posts import createBookmarksTimeline
+from posts import createEventsTimeline
 from posts import createInbox
 from posts import createOutbox
 from posts import createModeration
@@ -598,7 +599,8 @@ def personBoxJson(recentPostsCache: {},
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and \
        boxname != 'outbox' and boxname != 'moderation' and \
-       boxname != 'tlbookmarks' and boxname != 'bookmarks':
+       boxname != 'tlbookmarks' and boxname != 'bookmarks' and \
+       boxname != 'tlevents' and boxname != 'events':
         return None
 
     if not '/' + boxname in path:
@@ -646,6 +648,11 @@ def personBoxJson(recentPostsCache: {},
                                        port, httpPrefix,
                                        noOfItems, headerOnly, ocapAlways,
                                        pageNumber)
+    elif boxname == 'tlevents' or boxname == 'events':
+        return createEventsTimeline(session, baseDir, nickname, domain,
+                                    port, httpPrefix,
+                                    noOfItems, headerOnly, ocapAlways,
+                                    pageNumber)
     elif boxname == 'tlreplies':
         return createRepliesTimeline(session, baseDir, nickname, domain,
                                      port, httpPrefix,

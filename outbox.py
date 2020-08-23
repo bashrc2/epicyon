@@ -13,6 +13,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import removeIdEnding
 from utils import getDomainFromActor
 from blocking import isBlockedDomain
 from blocking import outboxBlock
@@ -159,8 +160,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                   ' is not a permitted activity type')
         return False
     if messageJson.get('id'):
-        postId = \
-            messageJson['id'].replace('/activity', '').replace('/undo', '')
+        postId = removeIdEnding(messageJson['id'])
         if debug:
             print('DEBUG: id attribute exists within POST to outbox')
     else:
@@ -172,13 +172,15 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     if messageJson['type'] != 'Upgrade':
         outboxName = 'outbox'
 
-        # if this is a blog post then save to its own box
+        # if this is a blog post or an event then save to its own box
         if messageJson['type'] == 'Create':
             if messageJson.get('object'):
                 if isinstance(messageJson['object'], dict):
                     if messageJson['object'].get('type'):
                         if messageJson['object']['type'] == 'Article':
                             outboxName = 'tlblogs'
+                        elif messageJson['object']['type'] == 'Event':
+                            outboxName = 'tlevents'
 
         savedFilename = \
             savePostToBox(baseDir,
@@ -196,7 +198,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]
             for boxNameIndex in indexes:
-                if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
+                if ((boxNameIndex == 'inbox') and
+                   (outboxName == 'tlblogs' or outboxName == 'tlevents')):
                     continue
                 selfActor = \
                     httpPrefix + '://' + domainFull + \
