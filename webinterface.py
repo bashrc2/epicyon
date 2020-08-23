@@ -1990,7 +1990,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         scopeIcon = 'scope_event.png'
         scopeDescription = translate['Event']
         endpoint = 'newevent'
-        placeholderSubject = translate['Title'] + '...'
+        placeholderSubject = translate['Event name']
         placeholderMessage = translate['Describe the event'] + '...'
     elif path.endswith('/newreport'):
         scopeIcon = 'scope_report.png'
