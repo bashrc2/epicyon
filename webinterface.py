@@ -4585,7 +4585,7 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'tlshares':
             os.remove(newShareFile)
 
-    # should the Moderation button be highlighted?
+    # should the Moderation/reports button be highlighted?
     newReport = False
     newReportFile = accountDir + '/.newReport'
     if os.path.isfile(newReportFile):
@@ -4593,11 +4593,16 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'moderation':
             os.remove(newReportFile)
 
+    # directory where icons are found
+    # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
+
+    # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
+    # filename of the banner shown at the top
     bannerFile = 'banner.png'
     bannerFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/' + bannerFile
@@ -4613,16 +4618,20 @@ def htmlTimeline(defaultTimeline: str,
         bannerFile = 'banner.webp'
 
     with open(cssFilename, 'r') as cssFile:
+        # load css
         profileStyle = \
             cssFile.read().replace('banner.png',
                                    '/users/' + nickname + '/' + bannerFile)
+        # replace any https within the css with whatever prefix is needed
         if httpPrefix != 'https':
             profileStyle = \
                 profileStyle.replace('https://',
                                      httpPrefix + '://')
 
+    # is the user a moderator?
     moderator = isModerator(baseDir, nickname)
 
+    # the appearance of buttons - highlighted or not
     inboxButton = 'button'
     blogsButton = 'button'
     dmButton = 'button'
@@ -4670,15 +4679,18 @@ def htmlTimeline(defaultTimeline: str,
     elif boxName == 'tlevents' or boxName == 'events':
         eventsButton = 'buttonselected'
 
+    # get the full domain, including any port number
     fullDomain = domain
     if port != 80 and port != 443:
         if ':' not in domain:
             fullDomain = domain + ':' + str(port)
+
     usersPath = '/users/' + nickname
     actor = httpPrefix + '://' + fullDomain + usersPath
 
     showIndividualPostIcons = True
 
+    # show an icon for new follow approvals
     followApprovals = ''
     followRequestsFilename = \
         baseDir + '/accounts/' + \
@@ -4698,6 +4710,7 @@ def htmlTimeline(defaultTimeline: str,
                         '" src="/' + iconsDir + '/person.png"/></a>\n'
                     break
 
+    # moderation / reports button
     moderationButtonStr = ''
     if moderator and not minimal:
         moderationButtonStr = \
@@ -4707,6 +4720,7 @@ def htmlTimeline(defaultTimeline: str,
             htmlHighlightLabel(translate['Mod'], newReport) + \
             ' </span></button></a>\n'
 
+    # shares, bookmarks and events buttons
     sharesButtonStr = ''
     bookmarksButtonStr = ''
     eventsButtonStr = ''
@@ -4835,6 +4849,7 @@ def htmlTimeline(defaultTimeline: str,
                 '</span></button></a>\n'
 
     # typically the blogs button
+    # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
         if not minimal:
             tlStr += \
@@ -4850,14 +4865,19 @@ def htmlTimeline(defaultTimeline: str,
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
 
+    # button for the outbox
     tlStr += \
         '    <a href="' + usersPath + \
         '/outbox"><button class="' + \
         sentButton+'"><span>' + translate['Outbox'] + \
         '</span></button></a>\n'
+
+    # add other buttons
     tlStr += \
         sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
         moderationButtonStr + newPostButtonStr
+
+    # the search button
     tlStr += \
         '    <a class="imageAnchor" href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
@@ -4865,6 +4885,7 @@ def htmlTimeline(defaultTimeline: str,
         translate['Search and follow'] + '" alt="| ' + \
         translate['Search and follow'] + '" class="timelineicon"/></a>\n'
 
+    # the calendar button
     calendarAltText = translate['Calendar']
     if newCalendarEvent:
         # indicate that the calendar icon is highlighted
@@ -4875,6 +4896,7 @@ def htmlTimeline(defaultTimeline: str,
         calendarImage + '" title="' + translate['Calendar'] + \
         '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
 
+    # the show/hide button, for a simpler header appearance
     tlStr += \
         '    <a class="imageAnchor" href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
