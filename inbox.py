@@ -789,16 +789,23 @@ def isEventPost(messageJson: {}) -> bool:
         return False
     if messageJson['object']['type'] != 'Event':
         return False
+    print('Event arriving')
     if not messageJson['object'].get('startTime'):
+        print('No event start time')
         return False
     if not messageJson['object'].get('actor'):
+        print('No event actor')
         return False
     if not messageJson['object'].get('content'):
+        print('No event content')
         return False
     if not messageJson['object'].get('name'):
+        print('No event name')
         return False
     if not messageJson['object'].get('uuid'):
+        print('No event UUID')
         return False
+    print('Event detected')
     return True
 
 

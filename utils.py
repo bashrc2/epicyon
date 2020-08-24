@@ -613,6 +613,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'public', 'followers',
                      'channel', 'capabilities', 'calendar',
                      'tlreplies', 'tlmedia', 'tlblogs',
+                     'tlevents',
                      'moderation', 'activity', 'undo',
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses',
