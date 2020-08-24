@@ -8881,11 +8881,11 @@ class EpicyonServer(ThreadingHTTPServer):
     def handle_error(self, request, client_address):
         # surpress connection reset errors
         cls, e = sys.exc_info()[:2]
-        print('handle_error: ' + str(cls) + ", " + str(e))
-        # if cls is socket.error or cls is ConnectionResetError:
-        #     pass
-        # else:
-        return HTTPServer.handle_error(self, request, client_address)
+        if cls is socket.error or cls is ConnectionResetError:
+            print('ERROR: ' + str(cls) + ", " + str(e))
+            pass
+        else:
+            return HTTPServer.handle_error(self, request, client_address)
 
 
 def runPostsQueue(baseDir: str, sendThreads: [], debug: bool) -> None:
