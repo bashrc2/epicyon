@@ -1838,6 +1838,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     replyStr = ''
 
     showPublicOnDropdown = True
+    messageBoxHeight = 400
 
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
@@ -2161,6 +2162,16 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<input type="time" name="endTime"></label>\n'
 
+        if endpoint == 'newevent':
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
+            dateAndLocation += '<br><label class="labels">' + \
+                translate['Moderation policy or code of conduct'] + \
+                ': </label>\n'
+            dateAndLocation += \
+                '    <textarea id="message" ' + \
+                'name="repliesModerationOption" style="height:' + \
+                str(messageBoxHeight) + 'px"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<br><label class="labels">' + \
@@ -2382,7 +2393,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <br><label class="labels">' + placeholderMessage + '</label>'
-    messageBoxHeight = 400
     if mediaInstance:
         messageBoxHeight = 200
 
