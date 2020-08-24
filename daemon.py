@@ -8877,6 +8877,17 @@ class PubServerUnitTest(PubServer):
     protocol_version = 'HTTP/1.0'
 
 
+class EpicyonServer(ThreadingHTTPServer):
+    def handle_error(self, request, client_address):
+        # surpress connection reset errors
+        cls, e = sys.exc_info()[:2]
+        print('handle_error: ' + str(cls) + ", " + str(e))
+        # if cls is socket.error or cls is ConnectionResetError:
+        #     pass
+        # else:
+        return HTTPServer.handle_error(self, request, client_address)
+
+
 def runPostsQueue(baseDir: str, sendThreads: [], debug: bool) -> None:
     """Manages the threads used to send posts
     """
@@ -8978,7 +8989,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         pubHandler = partial(PubServer)
 
     try:
-        httpd = ThreadingHTTPServer(serverAddress, pubHandler)
+        httpd = EpicyonServer(serverAddress, pubHandler)
     except Exception as e:
         if e.errno == 98:
             print('ERROR: HTTP server address is already in use. ' +
