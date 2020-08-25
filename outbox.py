@@ -180,7 +180,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                         if messageJson['object']['type'] == 'Article':
                             outboxName = 'tlblogs'
                         elif messageJson['object']['type'] == 'Event':
-                            outboxName = 'tlevent'
+                            outboxName = 'tlevents'
 
         savedFilename = \
             savePostToBox(baseDir,
