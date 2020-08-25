@@ -179,8 +179,6 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                     if messageJson['object'].get('type'):
                         if messageJson['object']['type'] == 'Article':
                             outboxName = 'tlblogs'
-                        elif messageJson['object']['type'] == 'Event':
-                            outboxName = 'tlevents'
 
         savedFilename = \
             savePostToBox(baseDir,
@@ -198,8 +196,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]
             for boxNameIndex in indexes:
-                if ((boxNameIndex == 'inbox') and
-                   (outboxName == 'tlblogs' or outboxName == 'tlevents')):
+                if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
                 selfActor = \
                     httpPrefix + '://' + domainFull + \
