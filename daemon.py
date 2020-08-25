@@ -4895,7 +4895,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
-                            msg = json.dumps(inboxFeed,
+                            msg = json.dumps(eventsFeed,
                                              ensure_ascii=False)
                             msg = msg.encode('utf-8')
                             self._set_headers('application/json',
@@ -6347,6 +6347,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.path.endswith('confirm'):
             self.path = self.path.replace('/outbox/', '/outbox')
             self.path = self.path.replace('/tlblogs/', '/tlblogs')
+            self.path = self.path.replace('/tlevents/', '/tlevents')
             self.path = self.path.replace('/inbox/', '/inbox')
             self.path = self.path.replace('/shares/', '/shares')
             self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
