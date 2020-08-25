@@ -179,6 +179,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                     if messageJson['object'].get('type'):
                         if messageJson['object']['type'] == 'Article':
                             outboxName = 'tlblogs'
+                        elif messageJson['object']['type'] == 'Event':
+                            outboxName = 'tlevent'
 
         savedFilename = \
             savePostToBox(baseDir,
@@ -195,12 +197,12 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
            messageJson['type'] == 'Patch' or \
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]
+            selfActor = \
+                httpPrefix + '://' + domainFull + \
+                '/users/' + postToNickname
             for boxNameIndex in indexes:
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
-                selfActor = \
-                    httpPrefix + '://' + domainFull + \
-                    '/users/' + postToNickname
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
                 if selfActor not in messageJson['to']:
