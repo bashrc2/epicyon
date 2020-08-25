@@ -20,6 +20,7 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from posts import validContentWarning
 from posts import deleteAllPosts
 from posts import createPublicPost
 from posts import sendPost
@@ -2041,8 +2042,22 @@ def testRemoveIdEnding():
         'https://event.somedomain.net/users/foo/statuses/34544814814'
 
 
+def testValidContentWarning():
+    print('testValidContentWarning')
+    resultStr = validContentWarning('Valid content warning')
+    assert resultStr == 'Valid content warning'
+
+    resultStr = validContentWarning('Invalid #content warning')
+    assert resultStr == 'Invalid content warning'
+
+    resultStr = \
+        validContentWarning('Invalid <a href="somesite">content warning</a>')
+    assert resultStr == 'Invalid content warning'
+
+
 def runAllTests():
     print('Running tests...')
+    testValidContentWarning()
     testRemoveIdEnding()
     testJsonPostAllowsComments()
     runHtmlReplaceQuoteMarks()

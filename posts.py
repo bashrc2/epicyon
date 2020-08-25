@@ -47,6 +47,7 @@ from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
 from media import replaceYouTube
+from content import removeHtml
 from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -654,6 +655,17 @@ def appendEventFields(newPost: {},
         newPost['sensitive'] = False
 
 
+def validContentWarning(cw: str) -> str:
+    """Returns a validated content warning
+    """
+    cw = removeHtml(cw)
+    # hashtags within content warnings apparently cause a lot of trouble
+    # so remove them
+    if '#' in cw:
+        cw = cw.replace('#', '').replace('  ', ' ')
+    return cw
+
+
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                    followersOnly: bool, saveToFile: bool, clientToServer: bool,
@@ -713,7 +725,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     sensitive = False
     summary = None
     if subject:
-        summary = subject
+        summary = validContentWarning(subject)
         sensitive = True
 
     toRecipients = []
