@@ -8540,10 +8540,11 @@ class PubServer(BaseHTTPRequestHandler):
             if not authorized:
                 break
 
-            if currPostType != 'newshare':
-                postRedirect = self.server.defaultTimeline
-            else:
+            postRedirect = self.server.defaultTimeline
+            if currPostType == 'newshare':
                 postRedirect = 'shares'
+            elif currPostType == 'newevent':
+                postRedirect = 'tlevents'
 
             pageNumber = self._receiveNewPost(currPostType, self.path)
             if pageNumber:
