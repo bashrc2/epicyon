@@ -50,6 +50,7 @@ from filters import isFiltered
 from announce import updateAnnounceCollection
 from announce import undoAnnounceCollectionEntry
 from httpsig import messageContentDigest
+from posts import validContentWarning
 from posts import downloadAnnounce
 from posts import isDM
 from posts import isReply
@@ -1707,6 +1708,15 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
+
+    if messageJson['object'].get('summary'):
+        summary = messageJson['object']['summary']
+        if not isinstance(summary, str):
+            print('WARN: content warning is not a string')
+            return False
+        if summary != validContentWarning(summary):
+            print('WARN: invalid content warning ' + summary)
+            return False
 
     if isGitPatch(baseDir, nickname, domain,
                   messageJson['object']['type'],
