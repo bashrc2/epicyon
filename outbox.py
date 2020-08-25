@@ -198,8 +198,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]
             selfActor = \
-                httpPrefix + '://' + domainFull + \
-                '/users/' + postToNickname
+                httpPrefix + '://' + domainFull + '/users/' + postToNickname
             for boxNameIndex in indexes:
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
