@@ -1287,8 +1287,10 @@ def createEventPost(baseDir: str,
     """Mobilizon-type Event post
     """
     if not attachImageFilename:
+        print('Event has no attached image')
         return None
     if not category:
+        print('Event has no category')
         return None
     domainFull = domain
     if port:
@@ -1305,19 +1307,19 @@ def createEventPost(baseDir: str,
     if followersOnly:
         toStr1 = toStr2
         toStr2 = None
-    createPostBase(baseDir, nickname, domain, port,
-                   toStr1, toStr2,
-                   httpPrefix, content, followersOnly, saveToFile,
-                   clientToServer, commentsEnabled,
-                   attachImageFilename, mediaType,
-                   imageDescription, useBlurhash,
-                   False, False, None, None, subject,
-                   schedulePost, eventDate, eventTime, location,
-                   eventUUID, category, joinMode,
-                   endDate, endTime, maximumAttendeeCapacity,
-                   repliesModerationOption,
-                   anonymousParticipationEnabled,
-                   eventStatus, ticketUrl)
+    return createPostBase(baseDir, nickname, domain, port,
+                          toStr1, toStr2,
+                          httpPrefix, content, followersOnly, saveToFile,
+                          clientToServer, commentsEnabled,
+                          attachImageFilename, mediaType,
+                          imageDescription, useBlurhash,
+                          False, False, None, None, subject,
+                          schedulePost, eventDate, eventTime, location,
+                          eventUUID, category, joinMode,
+                          endDate, endTime, maximumAttendeeCapacity,
+                          repliesModerationOption,
+                          anonymousParticipationEnabled,
+                          eventStatus, ticketUrl)
 
 
 def getMentionedPeople(baseDir: str, httpPrefix: str,
