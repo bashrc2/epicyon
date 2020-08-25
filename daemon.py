@@ -4801,7 +4801,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
-                            msg = json.dumps(inboxFeed,
+                            msg = json.dumps(bookmarksFeed,
                                              ensure_ascii=False)
                             msg = msg.encode('utf-8')
                             self._set_headers('application/json',
