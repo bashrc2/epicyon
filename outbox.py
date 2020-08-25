@@ -188,6 +188,9 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                           postId,
                           postToNickname,
                           domainFull, messageJson, outboxName)
+        if not savedFilename:
+            print('WARN: post not saved to outbox ' + outboxName)
+            return False
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
            messageJson['type'] == 'Note' or \
@@ -200,6 +203,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
             selfActor = \
                 httpPrefix + '://' + domainFull + '/users/' + postToNickname
             for boxNameIndex in indexes:
+                if not boxNameIndex:
+                    continue
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
                 # avoid duplicates of the message if already going
