@@ -2784,6 +2784,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
     # must be a recognized ActivityPub type
     if ('"Note"' in postStr or
         '"EncryptedMessage"' in postStr or
+        '"Event"' in postStr or
         '"Article"' in postStr or
         '"Patch"' in postStr or
         '"Announce"' in postStr or
