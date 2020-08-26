@@ -2414,7 +2414,9 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if not unitTest:
-                        print('Saving inbox post as html to cache')
+                        if debug:
+                            print('Saving inbox post as html to cache')
+
                         htmlCacheStartTime = time.time()
                         inboxStorePostToHtmlCache(recentPostsCache,
                                                   maxRecentPosts,
@@ -2427,10 +2429,13 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                                                   postJsonObject,
                                                   allowDeletion,
                                                   boxname)
-                        timeDiff = \
-                            str(int((time.time() - htmlCacheStartTime) * 1000))
-                        print('Saved inbox post as html to cache in ' +
-                              timeDiff + ' mS')
+                        if debug:
+                            timeDiff = \
+                                str(int((time.time() - htmlCacheStartTime) *
+                                        1000))
+                            print('Saved ' + boxname +
+                                  ' post as html to cache in ' +
+                                  timeDiff + ' mS')
 
             inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
