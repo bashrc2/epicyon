@@ -3599,6 +3599,40 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return
 
+            # Edit an event
+            if authorized and \
+               '/tlevents' in self.path and \
+               '?editeventpost=' in self.path and \
+               '?actor=' in self.path:
+                messageId = self.path.split('?editeventpost=')[1]
+                if '?' in messageId:
+                    messageId = messageId.split('?')[0]
+                actor = self.path.split('?actor=')[1]
+                if '?' in actor:
+                    actor = actor.split('?')[0]
+                nickname = getNicknameFromActor(self.path)
+                if nickname == actor:
+                    postUrl = \
+                        self.server.httpPrefix + '://' + \
+                        self.server.domainFull + '/users/' + nickname + \
+                        '/statuses/' + messageId
+                    msg = None
+                    # TODO
+                    # htmlEditEvent(self.server.mediaInstance,
+                    #                    self.server.translate,
+                    #                    self.server.baseDir,
+                    #                    self.server.httpPrefix,
+                    #                    self.path,
+                    #                    nickname, self.server.domain,
+                    #                    postUrl)
+                    if msg:
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self.server.GETbusy = False
+                        return
+
             # edit profile in web interface
             if '/users/' in self.path and self.path.endswith('/editprofile'):
                 msg = htmlEditProfile(self.server.translate,
