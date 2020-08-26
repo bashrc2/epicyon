@@ -2055,8 +2055,32 @@ def testValidContentWarning():
     assert resultStr == 'Invalid content warning'
 
 
+def testTranslations():
+    print('testTranslations')
+    languagesStr = ('ar', 'ca', 'cy', 'de', 'es', 'fr', 'ga',
+                    'hi', 'it', 'ja', 'oc', 'pt', 'ru', 'zh')
+
+    # load all translations into a dict
+    langDict = {}
+    for lang in languagesStr:
+        langJson = loadJson('translations/' + lang + '.json')
+        assert langJson
+        langDict[lang] = langJson
+
+    # load english translations
+    translationsJson = loadJson('translations/en.json')
+    # test each english string exists in the other language files
+    for englishStr, translatedStr in translationsJson.items():
+        for lang in languagesStr:
+            langJson = langDict[lang]
+            if not langJson.get(englishStr):
+                print(englishStr + ' is missing from ' + lang + '.json')
+            assert langJson.get(englishStr)
+
+
 def runAllTests():
     print('Running tests...')
+    testTranslations()
     testValidContentWarning()
     testRemoveIdEnding()
     testJsonPostAllowsComments()
