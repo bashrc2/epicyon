@@ -4967,11 +4967,15 @@ def htmlTimeline(defaultTimeline: str,
     if boxName == 'inbox' and pageNumber == 1:
         if todaysEventsCheck(baseDir, nickname, domain):
             now = datetime.now()
+
+            # happening today button
             tlStr += \
                 '<center>\n<a href="' + usersPath + '/calendar?year=' + \
                 str(now.year) + '?month=' + str(now.month) + \
                 '?day=' + str(now.day) + '"><button class="buttonevent">' + \
                 translate['Happening Today'] + '</button></a>\n'
+
+            # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 tlStr += \
                     '<a href="' + usersPath + \
@@ -4979,6 +4983,7 @@ def htmlTimeline(defaultTimeline: str,
                     translate['Happening This Week'] + '</button></a>\n'
             tlStr += '</center>\n'
         else:
+            # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 tlStr += \
                     '<center>\n<a href="' + usersPath + \
@@ -4999,10 +5004,13 @@ def htmlTimeline(defaultTimeline: str,
     # show the posts
     itemCtr = 0
     if timelineJson:
+        # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
             if pageNumber > 1:
                 tlStr += '<br>'
             tlStr += '<div class="galleryContainer">\n'
+
+        # show each post in the timeline
         for item in timelineJson['orderedItems']:
             if item['type'] == 'Create' or \
                item['type'] == 'Announce' or \
