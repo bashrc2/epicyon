@@ -2449,30 +2449,34 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             True, ocapAlways, pageNumber)
 
 
-def createEventsTimeline(session, baseDir: str, nickname: str, domain: str,
+def createEventsTimeline(recentPostsCache: {},
+                         session, baseDir: str, nickname: str, domain: str,
                          port: int, httpPrefix: str, itemsPerPage: int,
                          headerOnly: bool, ocapAlways: bool,
                          pageNumber=None) -> {}:
-    return createBoxIndexed({}, session, baseDir, 'tlevents',
+    return createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
                             True, ocapAlways, pageNumber)
 
 
-def createDMTimeline(session, baseDir: str, nickname: str, domain: str,
+def createDMTimeline(recentPostsCache: {},
+                     session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
                      headerOnly: bool, ocapAlways: bool,
                      pageNumber=None) -> {}:
-    return createBoxIndexed({}, session, baseDir, 'dm', nickname,
+    return createBoxIndexed(recentPostsCache,
+                            session, baseDir, 'dm', nickname,
                             domain, port, httpPrefix, itemsPerPage,
                             headerOnly, True, ocapAlways, pageNumber)
 
 
-def createRepliesTimeline(session, baseDir: str, nickname: str, domain: str,
+def createRepliesTimeline(recentPostsCache: {},
+                          session, baseDir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
                           headerOnly: bool, ocapAlways: bool,
                           pageNumber=None) -> {}:
-    return createBoxIndexed({}, session, baseDir, 'tlreplies',
+    return createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
                             ocapAlways, pageNumber)

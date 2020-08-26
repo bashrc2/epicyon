@@ -640,7 +640,8 @@ def personBoxJson(recentPostsCache: {},
                            httpPrefix,
                            noOfItems, headerOnly, ocapAlways, pageNumber)
     elif boxname == 'dm':
-        return createDMTimeline(session, baseDir, nickname, domain, port,
+        return createDMTimeline(recentPostsCache,
+                                session, baseDir, nickname, domain, port,
                                 httpPrefix,
                                 noOfItems, headerOnly, ocapAlways, pageNumber)
     elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
@@ -649,12 +650,14 @@ def personBoxJson(recentPostsCache: {},
                                        noOfItems, headerOnly, ocapAlways,
                                        pageNumber)
     elif boxname == 'tlevents':
-        return createEventsTimeline(session, baseDir, nickname, domain,
+        return createEventsTimeline(recentPostsCache,
+                                    session, baseDir, nickname, domain,
                                     port, httpPrefix,
                                     noOfItems, headerOnly, ocapAlways,
                                     pageNumber)
     elif boxname == 'tlreplies':
-        return createRepliesTimeline(session, baseDir, nickname, domain,
+        return createRepliesTimeline(recentPostsCache,
+                                     session, baseDir, nickname, domain,
                                      port, httpPrefix,
                                      noOfItems, headerOnly, ocapAlways,
                                      pageNumber)
