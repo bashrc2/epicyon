@@ -29,6 +29,7 @@ from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import getFileCaseInsensitive
 from utils import searchBoxPosts
+from utils import isEventPost
 from utils import isBlogPost
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
@@ -4019,19 +4020,34 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             translate['Reply to this post'] + \
             ' |" src="/' + iconsDir + '/reply.png"/></a>\n'
 
+    isEvent = isEventPost(postJsonObject)
+
     editStr = ''
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
         if '/statuses/' in postJsonObject['object']['id']:
             if isBlogPost(postJsonObject):
+                blogPostId = postJsonObject['object']['id']
                 editStr += \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
-                    postJsonObject['object']['id'].split('/statuses/')[1] + \
+                    blogPostId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
                     '" title="' + translate['Edit blog post'] + '">' + \
                     '<img loading="lazy" title="' + \
                     translate['Edit blog post'] + '" alt="' + \
                     translate['Edit blog post'] + \
+                    ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+            elif isEvent:
+                eventPostId = postJsonObject['object']['id']
+                editStr += \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
+                    '/tlblogs?editeventpost=' + \
+                    eventPostId.split('/statuses/')[1] + \
+                    '?actor=' + actorNickname + \
+                    '" title="' + translate['Edit event'] + '">' + \
+                    '<img loading="lazy" title="' + \
+                    translate['Edit event'] + '" alt="' + \
+                    translate['Edit event'] + \
                     ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
 
     announceStr = ''

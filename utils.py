@@ -807,6 +807,43 @@ def mergeDicts(dict1: {}, dict2: {}) -> {}:
     return res
 
 
+def isEventPost(messageJson: {}) -> bool:
+    """Is the given post a mobilizon-type event activity?
+    See https://framagit.org/framasoft/mobilizon/-/blob/
+    master/lib/federation/activity_stream/converter/event.ex
+    """
+    if not messageJson.get('id'):
+        return False
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('type'):
+        return False
+    if messageJson['object']['type'] != 'Event':
+        return False
+    print('Event arriving')
+    if not messageJson['object'].get('startTime'):
+        print('No event start time')
+        return False
+    if not messageJson['object'].get('actor'):
+        print('No event actor')
+        return False
+    if not messageJson['object'].get('content'):
+        print('No event content')
+        return False
+    if not messageJson['object'].get('name'):
+        print('No event name')
+        return False
+    if not messageJson['object'].get('uuid'):
+        print('No event UUID')
+        return False
+    print('Event detected')
+    return True
+
+
 def isBlogPost(postJsonObject: {}) -> bool:
     """Is the given post a blog post?
     """
