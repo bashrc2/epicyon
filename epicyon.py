@@ -108,7 +108,7 @@ parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
-                    default=100,
+                    default=512,
                     help='The maximum number of recent posts to store in RAM')
 parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
                     help='Proxy port number to run on')
