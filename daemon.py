@@ -4831,6 +4831,7 @@ class PubServer(BaseHTTPRequestHandler):
            '/events?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
+                    # convert /events to /tlevents
                     if self.path.endswith('/events') or \
                        '/events?page=' in self.path:
                         self.path = self.path.replace('/events', '/tlevents')
@@ -4844,6 +4845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.httpPrefix,
                                       maxPostsInFeed, 'tlevents',
                                       authorized, self.server.ocapAlways)
+                    print('eventsFeed: ' + str(eventsFeed))
                     if eventsFeed:
                         if self._requestHTTP():
                             nickname = self.path.replace('/users/', '')
