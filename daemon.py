@@ -4831,6 +4831,9 @@ class PubServer(BaseHTTPRequestHandler):
            '/events?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
+                    if self.path.endswith('/events') or \
+                       '/events?page=' in self.path:
+                        self.path = self.path.replace('/events', '/tlevents')
                     eventsFeed = \
                         personBoxJson(self.server.recentPostsCache,
                                       self.server.session,
@@ -4845,7 +4848,6 @@ class PubServer(BaseHTTPRequestHandler):
                         if self._requestHTTP():
                             nickname = self.path.replace('/users/', '')
                             nickname = nickname.replace('/tlevents', '')
-                            nickname = nickname.replace('/events', '')
                             pageNumber = 1
                             if '?page=' in nickname:
                                 pageNumber = nickname.split('?page=')[1]
@@ -4908,7 +4910,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         nickname = self.path.replace('/users/', '')
                         nickname = nickname.replace('/tlevents', '')
-                        nickname = nickname.replace('/events', '')
                         print('DEBUG: ' + nickname +
                               ' was not authorized to access ' + self.path)
             if self.server.debug:

@@ -2832,7 +2832,7 @@ def createBoxIndexed(recentPostsCache: {},
        boxname != 'tlblogs' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks' and \
-       boxname != 'tlevents' and boxname != 'events':
+       boxname != 'tlevents':
         return None
 
     # bookmarks and events timelines are like the inbox
@@ -2840,9 +2840,6 @@ def createBoxIndexed(recentPostsCache: {},
     indexBoxName = boxname
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
-        indexBoxName = boxname
-    elif boxname == "tlevents":
-        boxname = "events"
         indexBoxName = boxname
 
     if port:

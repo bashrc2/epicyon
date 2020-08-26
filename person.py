@@ -600,7 +600,7 @@ def personBoxJson(recentPostsCache: {},
        boxname != 'tlblogs' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks' and \
-       boxname != 'tlevents' and boxname != 'events':
+       boxname != 'tlevents':
         return None
 
     if not '/' + boxname in path:
@@ -648,7 +648,7 @@ def personBoxJson(recentPostsCache: {},
                                        port, httpPrefix,
                                        noOfItems, headerOnly, ocapAlways,
                                        pageNumber)
-    elif boxname == 'tlevents' or boxname == 'events':
+    elif boxname == 'tlevents':
         return createEventsTimeline(session, baseDir, nickname, domain,
                                     port, httpPrefix,
                                     noOfItems, headerOnly, ocapAlways,
