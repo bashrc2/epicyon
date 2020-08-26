@@ -124,13 +124,14 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                               session, cachedWebfingers: {}, personCache: {},
                               nickname: str, domain: str, port: int,
                               postJsonObject: {},
-                              allowDeletion: bool) -> None:
+                              allowDeletion: bool, boxname: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
     pageNumber = -999
     avatarUrl = None
-    boxName = 'inbox'
+    if boxname != 'tlevents' and boxname != 'outbox':
+        boxName = 'inbox'
     individualPostAsHtml(recentPostsCache, maxRecentPosts,
                          getIconsDir(baseDir), translate, pageNumber,
                          baseDir, session, cachedWebfingers, personCache,
@@ -2411,26 +2412,29 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                 if not inboxUpdateIndex(boxname, baseDir, handle,
                                         destinationFilename, debug):
                     print('ERROR: unable to update ' + boxname + ' index')
+                else:
+                    if not unitTest:
+                        print('Saving inbox post as html to cache')
+                        htmlCacheStartTime = time.time()
+                        inboxStorePostToHtmlCache(recentPostsCache,
+                                                  maxRecentPosts,
+                                                  translate, baseDir,
+                                                  httpPrefix,
+                                                  session, cachedWebfingers,
+                                                  personCache,
+                                                  handle.split('@')[0],
+                                                  domain, port,
+                                                  postJsonObject,
+                                                  allowDeletion,
+                                                  boxname)
+                        timeDiff = \
+                            str(int((time.time() - htmlCacheStartTime) * 1000))
+                        print('Saved inbox post as html to cache in ' +
+                              timeDiff + ' mS')
 
             inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
             storeHashTags(baseDir, handle.split('@')[0], postJsonObject)
-
-            if not unitTest:
-                if debug:
-                    print('DEBUG: saving inbox post as html to cache')
-                htmlCacheStartTime = time.time()
-                inboxStorePostToHtmlCache(recentPostsCache, maxRecentPosts,
-                                          translate, baseDir, httpPrefix,
-                                          session, cachedWebfingers,
-                                          personCache,
-                                          handle.split('@')[0], domain, port,
-                                          postJsonObject, allowDeletion)
-                if debug:
-                    timeDiff = \
-                        str(int((time.time() - htmlCacheStartTime) * 1000))
-                    print('DEBUG: saved inbox post as html to cache in ' +
-                          timeDiff + ' mS')
 
             # send the post out to group members
             if isGroup:
