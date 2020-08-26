@@ -4686,7 +4686,7 @@ def htmlTimeline(defaultTimeline: str,
             sharesButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
-    elif boxName == 'tlevents' or boxName == 'events':
+    elif boxName == 'tlevents':
         eventsButton = 'buttonselected'
 
     # get the full domain, including any port number
