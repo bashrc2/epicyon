@@ -771,6 +771,7 @@ def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
         recentPostsCache['html'][postId] = htmlStr
 
         while len(recentPostsCache['html'].items()) > maxRecentPosts:
+            postId = recentPostsCache['index'][0]
             recentPostsCache['index'].pop(0)
             del recentPostsCache['json'][postId]
             del recentPostsCache['html'][postId]
