@@ -281,5 +281,6 @@
     "Ticket URL": "URL de l'entrada",
     "Create a new event": "Creeu un esdeveniment nou",
     "Moderation policy or code of conduct": "Política de moderació o codi de conducta",
-    "Edit event": "Edita l’esdeveniment"
+    "Edit event": "Edita l’esdeveniment",
+    "Notify when posts are liked": "Notifiqueu-ho quan us agradin les publicacions"
 }

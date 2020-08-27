@@ -7116,6 +7116,20 @@ class PubServer(BaseHTTPRequestHandler):
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
                                 os.remove(removeTwitterFilename)
+                        # notify about new Likes
+                        notifyLikesFilename = \
+                            self.server.baseDir + '/accounts/' + \
+                            nickname + '@' + self.server.domain + \
+                            '/.notifyLikes'
+                        notifyLikesActive = False
+                        if fields.get('notifyLikes'):
+                            if fields['notifyLikes'] == 'on':
+                                notifyLikesActive = True
+                                with open(notifyLikesFilename, "w") as rFile:
+                                    rFile.write('\n')
+                        if not notifyLikesActive:
+                            if os.path.isfile(notifyLikesFilename):
+                                os.remove(notifyLikesFilename)
                         # this account is a bot
                         if fields.get('isBot'):
                             if fields['isBot'] == 'on':

@@ -281,5 +281,6 @@
     "Ticket URL": "عنوان URL للتذكرة",
     "Create a new event": "أنشئ حدثًا جديدًا",
     "Moderation policy or code of conduct": "سياسة الوسطية أو قواعد السلوك",
-    "Edit event": "تحرير الحدث"
+    "Edit event": "تحرير الحدث",
+    "Notify when posts are liked": "يخطر عندما يتم اعجاب المشاركات"
 }

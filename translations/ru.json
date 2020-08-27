@@ -281,5 +281,6 @@
     "Ticket URL": "URL билета",
     "Create a new event": "Создать новое мероприятие",
     "Moderation policy or code of conduct": "Политика модерации или кодекс поведения",
-    "Edit event": "Изменить мероприятие"
+    "Edit event": "Изменить мероприятие",
+    "Notify when posts are liked": "Уведомлять, когда публикации нравятся"
 }

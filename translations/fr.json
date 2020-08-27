@@ -281,5 +281,6 @@
     "Ticket URL": "URL du ticket",
     "Create a new event": "Créer un nouvel événement",
     "Moderation policy or code of conduct": "Politique de modération ou code de conduite",
-    "Edit event": "Modifier l'événement"
+    "Edit event": "Modifier l'événement",
+    "Notify when posts are liked": "Notifier lorsque les messages sont aimés"
 }

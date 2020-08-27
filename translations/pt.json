@@ -281,5 +281,6 @@
     "Ticket URL": "URL do bilhete",
     "Create a new event": "Crie um novo evento",
     "Moderation policy or code of conduct": "Política de moderação ou código de conduta",
-    "Edit event": "Editar evento"
+    "Edit event": "Editar evento",
+    "Notify when posts are liked": "Notificar quando as postagens forem curtidas"
 }

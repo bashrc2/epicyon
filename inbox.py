@@ -1847,8 +1847,10 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
             return
 
     accountDir = baseDir + '/accounts/' + handle
-    if not os.path.isdir(accountDir):
+    notifyLikesEnabledFilename = accountDir + '/.notifyLikes'
+    if not os.path.isfile(notifyLikesEnabledFilename):
         return
+
     likeFile = accountDir + '/.newLike'
     if os.path.isfile(likeFile):
         if '##sent##' not in open(likeFile).read():

@@ -1083,6 +1083,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     isGroup = ''
     followDMs = ''
     removeTwitter = ''
+    notifyLikes = ''
     mediaInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
@@ -1130,6 +1131,9 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/accounts/' +
                       nickname + '@' + domain + '/.removeTwitter'):
         removeTwitter = 'checked'
+    if os.path.isfile(baseDir + '/accounts/' +
+                      nickname + '@' + domain + '/.notifyLikes'):
+        notifyLikes = 'checked'
 
     mediaInstance = getConfigParam(baseDir, "mediaInstance")
     if mediaInstance:
@@ -1465,6 +1469,10 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
             translate['This is a media instance'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="notifyLikes" ' + notifyLikes + '> ' + \
+        translate['Notify when posts are liked'] + '<br>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \

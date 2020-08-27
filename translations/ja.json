@@ -281,5 +281,6 @@
     "Ticket URL": "チケットURL",
     "Create a new event": "新しいイベントを作成する",
     "Moderation policy or code of conduct": "モデレートポリシーまたは行動規範",
-    "Edit event": "イベントを編集"
+    "Edit event": "イベントを編集",
+    "Notify when posts are liked": "投稿が高く評価されたときに通知する"
 }
