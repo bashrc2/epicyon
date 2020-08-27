@@ -460,6 +460,12 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         with open(followDMsFilename, "w") as fFile:
             fFile.write('\n')
 
+    # notify when posts are liked
+    notifyLikesFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.notifyLikes'
+    with open(notifyLikesFilename, "w") as fFile:
+        fFile.write('\n')
+
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
