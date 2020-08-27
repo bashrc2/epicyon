@@ -10,6 +10,8 @@ import json
 import os
 import datetime
 import time
+from utils import isEventPost
+from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import isBlogPost
 from utils import removeAvatarFromCache
@@ -49,9 +51,11 @@ from filters import isFiltered
 from announce import updateAnnounceCollection
 from announce import undoAnnounceCollectionEntry
 from httpsig import messageContentDigest
+from posts import validContentWarning
 from posts import downloadAnnounce
 from posts import isDM
 from posts import isReply
+from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
 from posts import sendToFollowersThread
@@ -64,7 +68,7 @@ from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
-from happening import saveEvent
+from happening import saveEventPost
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -93,7 +97,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
             continue
         tagName = tag['name'].replace('#', '').strip()
         tagsFilename = tagsDir + '/' + tagName + '.txt'
-        postUrl = postJsonObject['id'].replace('/activity', '')
+        postUrl = removeIdEnding(postJsonObject['id'])
         postUrl = postUrl.replace('/', '#')
         daysDiff = datetime.datetime.utcnow() - datetime.datetime(1970, 1, 1)
         daysSinceEpoch = daysDiff.days
@@ -122,13 +126,14 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                               session, cachedWebfingers: {}, personCache: {},
                               nickname: str, domain: str, port: int,
                               postJsonObject: {},
-                              allowDeletion: bool) -> None:
+                              allowDeletion: bool, boxname: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
     pageNumber = -999
     avatarUrl = None
-    boxName = 'inbox'
+    if boxname != 'tlevents' and boxname != 'outbox':
+        boxName = 'inbox'
     individualPostAsHtml(recentPostsCache, maxRecentPosts,
                          getIconsDir(baseDir), translate, pageNumber,
                          baseDir, session, cachedWebfingers, personCache,
@@ -230,9 +235,11 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
 def inboxMessageHasParams(messageJson: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
-    expectedParams = ['type', 'actor', 'object']
+    expectedParams = ['actor', 'type', 'object']
     for param in expectedParams:
         if not messageJson.get(param):
+            # print('inboxMessageHasParams: ' +
+            #       param + ' ' + str(messageJson))
             return False
     if not messageJson.get('to'):
         allowedWithoutToParam = ['Like', 'Follow', 'Request',
@@ -248,6 +255,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     """
     if not messageJson.get('actor'):
         return False
+
     actor = messageJson['actor']
     # always allow the local domain
     if domain in actor:
@@ -354,15 +362,13 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         return None
     originalPostId = None
     if postJsonObject.get('id'):
-        originalPostId = \
-            postJsonObject['id'].replace('/activity', '').replace('/undo', '')
+        originalPostId = removeIdEnding(postJsonObject['id'])
 
     currTime = datetime.datetime.utcnow()
 
     postId = None
     if postJsonObject.get('id'):
-        postId = postJsonObject['id'].replace('/activity', '')
-        postId = postId.replace('/undo', '')
+        postId = removeIdEnding(postJsonObject['id'])
         published = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not postId:
         statusNumber, published = getStatusNumber()
@@ -706,10 +712,9 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
                           nicknameFollowing, domainFollowingFull,
                           nicknameFollower, domainFollowerFull,
                           debug):
-        if debug:
-            print('DEBUG: Follower ' +
-                  nicknameFollower + '@' + domainFollowerFull +
-                  ' was removed')
+        print(nicknameFollowing + '@' + domainFollowingFull + ': '
+              'Follower ' + nicknameFollower + '@' + domainFollowerFull +
+              ' was removed')
         return True
 
     if debug:
@@ -769,6 +774,28 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
                                  port, messageJson,
                                  federationList, debug)
     return False
+
+
+def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     sendThreads: [], postLog: [], cachedWebfingers: {},
+                     personCache: {}, messageJson: {}, federationList: [],
+                     nickname: str, debug: bool) -> bool:
+    """Receive a mobilizon-type event activity
+    See https://framagit.org/framasoft/mobilizon/-/blob/
+    master/lib/federation/activity_stream/converter/event.ex
+    """
+    if not isEventPost(messageJson):
+        return
+    print('Receiving event: ' + str(messageJson['object']))
+    handle = nickname + '@' + domain
+    if port:
+        if port != 80 and port != 443:
+            handle += ':' + str(port)
+
+    postId = removeIdEnding(messageJson['id']).replace('/', '#')
+
+    saveEventPost(baseDir, handle, postId, messageJson['object'])
 
 
 def personReceiveUpdate(baseDir: str,
@@ -857,7 +884,7 @@ def receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
         return
     if not messageJson.get('actor'):
         return
-    messageId = messageJson['id'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     # find the question post
@@ -1314,8 +1341,7 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    messageId = messageJson['object'].replace('/activity', '')
-    messageId = messageId.replace('/undo', '')
+    messageId = removeIdEnding(messageJson['object'])
     removeModerationPostFromIndex(baseDir, messageId, debug)
     postFilename = locatePost(baseDir, handle.split('@')[0],
                               handle.split('@')[1], messageId)
@@ -1532,6 +1558,28 @@ def receiveUndoAnnounce(recentPostsCache: {},
     return True
 
 
+def jsonPostAllowsComments(postJsonObject: {}) -> bool:
+    """Returns true if the given post allows comments/replies
+    """
+    if 'commentsEnabled' in postJsonObject:
+        return postJsonObject['commentsEnabled']
+    if postJsonObject.get('object'):
+        if not isinstance(postJsonObject['object'], dict):
+            return False
+        if 'commentsEnabled' in postJsonObject['object']:
+            return postJsonObject['object']['commentsEnabled']
+    return True
+
+
+def postAllowsComments(postFilename: str) -> bool:
+    """Returns true if the given post allows comments/replies
+    """
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return False
+    return jsonPostAllowsComments(postJsonObject)
+
+
 def populateReplies(baseDir: str, httpPrefix: str, domain: str,
                     messageJson: {}, maxReplies: int, debug: bool) -> bool:
     """Updates the list of replies for a post on this domain if
@@ -1572,16 +1620,19 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if debug:
             print('DEBUG: post may have expired - ' + replyTo)
         return False
+    if not postAllowsComments(postFilename):
+        if debug:
+            print('DEBUG: post does not allow comments - ' + replyTo)
+        return False
     # populate a text file containing the ids of replies
     postRepliesFilename = postFilename.replace('.json', '.replies')
-    messageId = messageJson['id'].replace('/activity', '')
-    messageId = messageId.replace('/undo', '')
+    messageId = removeIdEnding(messageJson['id'])
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
         if numLines > maxReplies:
             return False
         if messageId not in open(postRepliesFilename).read():
-            repliesFile = open(postRepliesFilename, "a")
+            repliesFile = open(postRepliesFilename, 'a+')
             repliesFile.write(messageId + '\n')
             repliesFile.close()
     else:
@@ -1623,6 +1674,15 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
+
+    if messageJson['object'].get('summary'):
+        summary = messageJson['object']['summary']
+        if not isinstance(summary, str):
+            print('WARN: content warning is not a string')
+            return False
+        if summary != validContentWarning(summary):
+            print('WARN: invalid content warning ' + summary)
+            return False
 
     if isGitPatch(baseDir, nickname, domain,
                   messageJson['object']['type'],
@@ -1667,6 +1727,16 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         print('REJECT: content filtered')
         return False
+    if messageJson['object'].get('inReplyTo'):
+        if isinstance(messageJson['object']['inReplyTo'], str):
+            originalPostId = messageJson['object']['inReplyTo']
+            postPostFilename = locatePost(baseDir, nickname, domain,
+                                          originalPostId)
+            if postPostFilename:
+                if not postAllowsComments(postPostFilename):
+                    print('REJECT: reply to post which does not ' +
+                          'allow comments: ' + originalPostId)
+                    return False
     print('ACCEPT: post content is valid')
     return True
 
@@ -1778,8 +1848,12 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
             return
 
     accountDir = baseDir + '/accounts/' + handle
-    if not os.path.isdir(accountDir):
+
+    # are like notifications enabled?
+    notifyLikesEnabledFilename = accountDir + '/.notifyLikes'
+    if not os.path.isfile(notifyLikesEnabledFilename):
         return
+
     likeFile = accountDir + '/.newLike'
     if os.path.isfile(likeFile):
         if '##sent##' not in open(likeFile).read():
@@ -1981,8 +2055,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
                                    actorNickname, actorDomain):
         return
 
-    postId = \
-        postJsonObject['id'].replace('/activity', '').replace('/', '#')
+    postId = removeIdEnding(postJsonObject['id']).replace('/', '#')
 
     # look for events within the tags list
     for tagDict in postJsonObject['object']['tag']:
@@ -1992,7 +2065,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
             continue
         if not tagDict.get('startTime'):
             continue
-        saveEvent(baseDir, handle, postId, tagDict)
+        saveEventPost(baseDir, handle, postId, tagDict)
 
 
 def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
@@ -2171,12 +2244,18 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     if validPostContent(baseDir, nickname, domain,
                         postJsonObject, maxMentions, maxEmoji):
 
+        if postJsonObject.get('object'):
+            jsonObj = postJsonObject['object']
+            if not isinstance(jsonObj, dict):
+                jsonObj = None
+        else:
+            jsonObj = postJsonObject
         # check for incoming git patches
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('content') and \
-               postJsonObject['object'].get('summary') and \
-               postJsonObject['object'].get('attributedTo'):
-                attributedTo = postJsonObject['object']['attributedTo']
+        if jsonObj:
+            if jsonObj.get('content') and \
+               jsonObj.get('summary') and \
+               jsonObj.get('attributedTo'):
+                attributedTo = jsonObj['attributedTo']
                 if isinstance(attributedTo, str):
                     fromNickname = getNicknameFromActor(attributedTo)
                     fromDomain, fromPort = getDomainFromActor(attributedTo)
@@ -2184,17 +2263,17 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                         if fromPort != 80 and fromPort != 443:
                             fromDomain += ':' + str(fromPort)
                     if receiveGitPatch(baseDir, nickname, domain,
-                                       postJsonObject['object']['type'],
-                                       postJsonObject['object']['summary'],
-                                       postJsonObject['object']['content'],
+                                       jsonObj['type'],
+                                       jsonObj['summary'],
+                                       jsonObj['content'],
                                        fromNickname, fromDomain):
                         gitPatchNotify(baseDir, handle,
-                                       postJsonObject['object']['summary'],
-                                       postJsonObject['object']['content'],
+                                       jsonObj['summary'],
+                                       jsonObj['content'],
                                        fromNickname, fromDomain)
-                    elif '[PATCH]' in postJsonObject['object']['content']:
+                    elif '[PATCH]' in jsonObj['content']:
                         print('WARN: git patch not accepted - ' +
-                              postJsonObject['object']['summary'])
+                              jsonObj['summary'])
                         return False
 
         # replace YouTube links, so they get less tracking data
@@ -2223,6 +2302,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                                       cachedWebfingers, personCache,
                                       postJsonObject, debug,
                                       __version__)
+
+        isReplyToMutedPost = False
 
         if not isGroup:
             # create a DM notification file if needed
@@ -2274,9 +2355,13 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
-                    replyNotify(baseDir, handle,
-                                httpPrefix + '://' + domain +
-                                '/users/' + nickname + '/tlreplies')
+                    if not isMuted(baseDir, nickname, domain,
+                                   postJsonObject['object']['inReplyTo']):
+                        replyNotify(baseDir, handle,
+                                    httpPrefix + '://' + domain +
+                                    '/users/' + nickname + '/tlreplies')
+                    else:
+                        isReplyToMutedPost = True
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
@@ -2286,6 +2371,9 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
             if isBlogPost(postJsonObject):
                 # blogs index will be updated
                 updateIndexList.append('tlblogs')
+            elif isEventPost(postJsonObject):
+                # events index will be updated
+                updateIndexList.append('tlevents')
 
         # get the avatar for a reply/announce
         obtainAvatarForReplyPost(session, baseDir,
@@ -2294,31 +2382,48 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
+            # If this is a reply to a muted post then also mute it.
+            # This enables you to ignore a threat that's getting boring
+            if isReplyToMutedPost:
+                print('MUTE REPLY: ' + destinationFilename)
+                muteFile = open(destinationFilename + '.muted', "w")
+                if muteFile:
+                    muteFile.write('\n')
+                    muteFile.close()
+
             # update the indexes for different timelines
             for boxname in updateIndexList:
                 if not inboxUpdateIndex(boxname, baseDir, handle,
                                         destinationFilename, debug):
                     print('ERROR: unable to update ' + boxname + ' index')
+                else:
+                    if not unitTest:
+                        if debug:
+                            print('Saving inbox post as html to cache')
+
+                        htmlCacheStartTime = time.time()
+                        inboxStorePostToHtmlCache(recentPostsCache,
+                                                  maxRecentPosts,
+                                                  translate, baseDir,
+                                                  httpPrefix,
+                                                  session, cachedWebfingers,
+                                                  personCache,
+                                                  handle.split('@')[0],
+                                                  domain, port,
+                                                  postJsonObject,
+                                                  allowDeletion,
+                                                  boxname)
+                        if debug:
+                            timeDiff = \
+                                str(int((time.time() - htmlCacheStartTime) *
+                                        1000))
+                            print('Saved ' + boxname +
+                                  ' post as html to cache in ' +
+                                  timeDiff + ' mS')
 
             inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
             storeHashTags(baseDir, handle.split('@')[0], postJsonObject)
-
-            if not unitTest:
-                if debug:
-                    print('DEBUG: saving inbox post as html to cache')
-                htmlCacheStartTime = time.time()
-                inboxStorePostToHtmlCache(recentPostsCache, maxRecentPosts,
-                                          translate, baseDir, httpPrefix,
-                                          session, cachedWebfingers,
-                                          personCache,
-                                          handle.split('@')[0], domain, port,
-                                          postJsonObject, allowDeletion)
-                if debug:
-                    timeDiff = \
-                        str(int((time.time() - htmlCacheStartTime) * 1000))
-                    print('DEBUG: saved inbox post as html to cache in ' +
-                          timeDiff + ' mS')
 
             # send the post out to group members
             if isGroup:
@@ -2594,7 +2699,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
                     pprint(quotasDaily)
 
-        print('Obtaining public key for actor ' + queueJson['actor'])
+        if queueJson.get('actor'):
+            print('Obtaining public key for actor ' + queueJson['actor'])
 
         # Try a few times to obtain the public key
         pubKey = None
@@ -2710,6 +2816,23 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                queueJson['post'],
                                federationList, debug):
             print('Queue: Accept/Reject received from ' + keyId)
+            if os.path.isfile(queueFilename):
+                os.remove(queueFilename)
+            if len(queue) > 0:
+                queue.pop(0)
+            continue
+
+        if receiveEventPost(recentPostsCache, session,
+                            baseDir, httpPrefix,
+                            domain, port,
+                            sendThreads, postLog,
+                            cachedWebfingers,
+                            personCache,
+                            queueJson['post'],
+                            federationList,
+                            queueJson['postNickname'],
+                            debug):
+            print('Queue: Event activity accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:

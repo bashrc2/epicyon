@@ -19,6 +19,20 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def removeIdEnding(idStr: str) -> str:
+    """Removes endings such as /activity and /undo
+    """
+    if idStr.endswith('/activity'):
+        idStr = idStr[:-len('/activity')]
+    elif idStr.endswith('/undo'):
+        idStr = idStr[:-len('/undo')]
+    elif idStr.endswith('/event'):
+        idStr = idStr[:-len('/event')]
+    elif idStr.endswith('/replies'):
+        idStr = idStr[:-len('/replies')]
+    return idStr
+
+
 def getProtocolPrefixes() -> []:
     """Returns a list of valid prefixes
     """
@@ -384,13 +398,13 @@ def locatePost(baseDir: str, nickname: str, domain: str,
         extension = 'replies'
 
     # if this post in the shared inbox?
-    postUrl = postUrl.replace('/', '#').replace('/activity', '').strip()
+    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
 
     # add the extension
     postUrl = postUrl + '.' + extension
 
     # search boxes
-    boxes = ('inbox', 'outbox', 'tlblogs')
+    boxes = ('inbox', 'outbox', 'tlblogs', 'tlevents')
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain + '/'
     for boxName in boxes:
         postFilename = accountDir + boxName + '/' + postUrl
@@ -402,7 +416,7 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(postFilename):
         return postFilename
 
-    print('WARN: unable to locate ' + nickname + ' ' + postUrl)
+    # print('WARN: unable to locate ' + nickname + ' ' + postUrl)
     return None
 
 
@@ -435,7 +449,7 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
     moderationIndexFile = baseDir + '/accounts/moderation.txt'
     if not os.path.isfile(moderationIndexFile):
         return
-    postId = postUrl.replace('/activity', '')
+    postId = removeIdEnding(postUrl)
     if postId in open(moderationIndexFile).read():
         with open(moderationIndexFile, "r") as f:
             lines = f.readlines()
@@ -463,7 +477,7 @@ def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
         nickname + '@' + domain + '/tlblogs.index'
     if not os.path.isfile(blogsIndexFilename):
         return False
-    postId = postJsonObject['object']['inReplyTo'].replace('/activity', '')
+    postId = removeIdEnding(postJsonObject['object']['inReplyTo'])
     postId = postId.replace('/', '#')
     if postId in open(blogsIndexFilename).read():
         return True
@@ -494,7 +508,7 @@ def deletePost(baseDir: str, httpPrefix: str,
         # remove from recent posts cache in memory
         if recentPostsCache:
             postId = \
-                postJsonObject['id'].replace('/activity', '').replace('/', '#')
+                removeIdEnding(postJsonObject['id']).replace('/', '#')
             if recentPostsCache.get('index'):
                 if postId in recentPostsCache['index']:
                     recentPostsCache['index'].remove(postId)
@@ -526,7 +540,7 @@ def deletePost(baseDir: str, httpPrefix: str,
             if isinstance(postJsonObject['object'], dict):
                 if postJsonObject['object'].get('moderationStatus'):
                     if postJsonObject.get('id'):
-                        postId = postJsonObject['id'].replace('/activity', '')
+                        postId = removeIdEnding(postJsonObject['id'])
                         removeModerationPostFromIndex(baseDir, postId, debug)
 
         # remove any hashtags index entries
@@ -540,8 +554,7 @@ def deletePost(baseDir: str, httpPrefix: str,
             if postJsonObject['object'].get('id') and \
                postJsonObject['object'].get('tag'):
                 # get the id of the post
-                postId = \
-                    postJsonObject['object']['id'].replace('/activity', '')
+                postId = removeIdEnding(postJsonObject['object']['id'])
                 for tag in postJsonObject['object']['tag']:
                     if tag['type'] != 'Hashtag':
                         continue
@@ -600,6 +613,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'public', 'followers',
                      'channel', 'capabilities', 'calendar',
                      'tlreplies', 'tlmedia', 'tlblogs',
+                     'tlevents',
                      'moderation', 'activity', 'undo',
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses',
@@ -710,7 +724,7 @@ def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
         return None
     cachedPostFilename = \
         cachedPostDir + \
-        '/' + postJsonObject['id'].replace('/activity', '').replace('/', '#')
+        '/' + removeIdEnding(postJsonObject['id']).replace('/', '#')
     cachedPostFilename = cachedPostFilename + '.html'
     return cachedPostFilename
 
@@ -727,7 +741,7 @@ def removePostFromCache(postJsonObject: {}, recentPostsCache: {}):
     postId = postJsonObject['id']
     if '#' in postId:
         postId = postId.split('#', 1)[0]
-    postId = postId.replace('/activity', '').replace('/', '#')
+    postId = removeIdEnding(postId).replace('/', '#')
     if postId not in recentPostsCache['index']:
         return
 
@@ -747,7 +761,7 @@ def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
     postId = postJsonObject['id']
     if '#' in postId:
         postId = postId.split('#', 1)[0]
-    postId = postId.replace('/activity', '').replace('/', '#')
+    postId = removeIdEnding(postId).replace('/', '#')
     if recentPostsCache.get('index'):
         if postId in recentPostsCache['index']:
             return
@@ -757,6 +771,7 @@ def updateRecentPostsCache(recentPostsCache: {}, maxRecentPosts: int,
         recentPostsCache['html'][postId] = htmlStr
 
         while len(recentPostsCache['html'].items()) > maxRecentPosts:
+            postId = recentPostsCache['index'][0]
             recentPostsCache['index'].pop(0)
             del recentPostsCache['json'][postId]
             del recentPostsCache['html'][postId]
@@ -790,6 +805,43 @@ def mergeDicts(dict1: {}, dict2: {}) -> {}:
     """
     res = {**dict1, **dict2}
     return res
+
+
+def isEventPost(messageJson: {}) -> bool:
+    """Is the given post a mobilizon-type event activity?
+    See https://framagit.org/framasoft/mobilizon/-/blob/
+    master/lib/federation/activity_stream/converter/event.ex
+    """
+    if not messageJson.get('id'):
+        return False
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('type'):
+        return False
+    if messageJson['object']['type'] != 'Event':
+        return False
+    print('Event arriving')
+    if not messageJson['object'].get('startTime'):
+        print('No event start time')
+        return False
+    if not messageJson['object'].get('actor'):
+        print('No event actor')
+        return False
+    if not messageJson['object'].get('content'):
+        print('No event content')
+        return False
+    if not messageJson['object'].get('name'):
+        print('No event name')
+        return False
+    if not messageJson['object'].get('uuid'):
+        print('No event UUID')
+        return False
+    print('Event detected')
+    return True
 
 
 def isBlogPost(postJsonObject: {}) -> bool:
@@ -1071,7 +1123,7 @@ def updateAnnounceCollection(recentPostsCache: {},
             return
         if not isinstance(postJsonObject['object'], dict):
             return
-        postUrl = postJsonObject['id'].replace('/activity', '') + '/shares'
+        postUrl = removeIdEnding(postJsonObject['id']) + '/shares'
         if not postJsonObject['object'].get('shares'):
             if debug:
                 print('DEBUG: Adding initial shares (announcements) to ' +

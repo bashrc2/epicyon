@@ -20,6 +20,7 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from posts import validContentWarning
 from posts import deleteAllPosts
 from posts import createPublicPost
 from posts import sendPost
@@ -31,6 +32,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import removeIdEnding
 from utils import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
@@ -62,6 +64,7 @@ from announce import sendAnnounceViaServer
 from media import getMediaPath
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
+from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from content import htmlReplaceQuoteMarks
@@ -270,14 +273,16 @@ def createServerAlice(path: str, domain: str, port: int,
         clientToServer = False
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!", False, True,
-                         clientToServer, None, None, useBlurhash)
+                         clientToServer, True, None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -335,14 +340,17 @@ def createServerBob(path: str, domain: str, port: int,
     if hasPosts:
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
-                         False, True, clientToServer, None, None, useBlurhash)
+                         False, True, clientToServer, True,
+                         None, None, useBlurhash)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -503,7 +511,8 @@ def testPostMessageBetweenServers():
                  'Why is a mouse when it spins? ' +
                  'यह एक परीक्षण है #sillyquestion',
                  followersOnly,
-                 saveToFile, clientToServer, attachedImageFilename, mediaType,
+                 saveToFile, clientToServer, True,
+                 attachedImageFilename, mediaType,
                  attachedImageDescription, useBlurhash, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
@@ -788,7 +797,8 @@ def testFollowBetweenServers():
                  sessionAlice, aliceDir, 'alice', aliceDomain, alicePort,
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
-                 clientToServer, None, None, None, useBlurhash, federationList,
+                 clientToServer, True,
+                 None, None, None, useBlurhash, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -1092,7 +1102,7 @@ def testCreatePerson():
     archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "G'day world!", False, True, clientToServer,
-                     None, None, useBlurhash, None, None,
+                     True, None, None, useBlurhash, None, None,
                      'Not suitable for Vogons')
 
     os.chdir(currDir)
@@ -1315,7 +1325,7 @@ def testClientToServer():
                           aliceDomain, alicePort,
                           'bob', bobDomain, bobPort, None,
                           httpPrefix, 'Sent from my ActivityPub client',
-                          followersOnly,
+                          followersOnly, True,
                           attachedImageFilename, mediaType,
                           attachedImageDescription, useBlurhash,
                           cachedWebfingers, personCache, isArticle,
@@ -1356,7 +1366,7 @@ def testClientToServer():
             outboxPostFilename = outboxPath + '/' + name
             postJsonObject = loadJson(outboxPostFilename, 0)
             if postJsonObject:
-                outboxPostId = postJsonObject['id'].replace('/activity', '')
+                outboxPostId = removeIdEnding(postJsonObject['id'])
     assert outboxPostId
     print('message id obtained: ' + outboxPostId)
     assert validInbox(bobDir, 'bob', bobDomain)
@@ -1974,8 +1984,106 @@ def runHtmlReplaceQuoteMarks():
     assert result == '“hello” <a href="somesite.html">“test” html</a>'
 
 
+def testJsonPostAllowsComments():
+    print('testJsonPostAllowsComments')
+    postJsonObject = {
+        "id": "123"
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "commentsEnabled": False
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "commentsEnabled": True
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "object": {
+            "commentsEnabled": True
+        }
+    }
+    assert jsonPostAllowsComments(postJsonObject)
+    postJsonObject = {
+        "id": "123",
+        "object": {
+            "commentsEnabled": False
+        }
+    }
+    assert not jsonPostAllowsComments(postJsonObject)
+
+
+def testRemoveIdEnding():
+    print('testRemoveIdEnding')
+    testStr = 'https://activitypub.somedomain.net'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == 'https://activitypub.somedomain.net'
+
+    testStr = \
+        'https://activitypub.somedomain.net/users/foo/' + \
+        'statuses/34544814814/activity'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == \
+        'https://activitypub.somedomain.net/users/foo/statuses/34544814814'
+
+    testStr = \
+        'https://undo.somedomain.net/users/foo/statuses/34544814814/undo'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == \
+        'https://undo.somedomain.net/users/foo/statuses/34544814814'
+
+    testStr = \
+        'https://event.somedomain.net/users/foo/statuses/34544814814/event'
+    resultStr = removeIdEnding(testStr)
+    assert resultStr == \
+        'https://event.somedomain.net/users/foo/statuses/34544814814'
+
+
+def testValidContentWarning():
+    print('testValidContentWarning')
+    resultStr = validContentWarning('Valid content warning')
+    assert resultStr == 'Valid content warning'
+
+    resultStr = validContentWarning('Invalid #content warning')
+    assert resultStr == 'Invalid content warning'
+
+    resultStr = \
+        validContentWarning('Invalid <a href="somesite">content warning</a>')
+    assert resultStr == 'Invalid content warning'
+
+
+def testTranslations():
+    print('testTranslations')
+    languagesStr = ('ar', 'ca', 'cy', 'de', 'es', 'fr', 'ga',
+                    'hi', 'it', 'ja', 'oc', 'pt', 'ru', 'zh')
+
+    # load all translations into a dict
+    langDict = {}
+    for lang in languagesStr:
+        langJson = loadJson('translations/' + lang + '.json')
+        assert langJson
+        langDict[lang] = langJson
+
+    # load english translations
+    translationsJson = loadJson('translations/en.json')
+    # test each english string exists in the other language files
+    for englishStr, translatedStr in translationsJson.items():
+        for lang in languagesStr:
+            langJson = langDict[lang]
+            if not langJson.get(englishStr):
+                print(englishStr + ' is missing from ' + lang + '.json')
+            assert langJson.get(englishStr)
+
+
 def runAllTests():
     print('Running tests...')
+    testTranslations()
+    testValidContentWarning()
+    testRemoveIdEnding()
+    testJsonPostAllowsComments()
     runHtmlReplaceQuoteMarks()
     testDangerousMarkup()
     testRemoveHtml()

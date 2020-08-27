@@ -25,9 +25,11 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import getFileCaseInsensitive
 from utils import searchBoxPosts
+from utils import isEventPost
 from utils import isBlogPost
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
@@ -1081,6 +1083,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     isGroup = ''
     followDMs = ''
     removeTwitter = ''
+    notifyLikes = ''
     mediaInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
@@ -1128,6 +1131,9 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/accounts/' +
                       nickname + '@' + domain + '/.removeTwitter'):
         removeTwitter = 'checked'
+    if os.path.isfile(baseDir + '/accounts/' +
+                      nickname + '@' + domain + '/.notifyLikes'):
+        notifyLikes = 'checked'
 
     mediaInstance = getConfigParam(baseDir, "mediaInstance")
     if mediaInstance:
@@ -1463,6 +1469,10 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
             translate['This is a media instance'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="notifyLikes" ' + notifyLikes + '> ' + \
+        translate['Notify when posts are liked'] + '<br>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1837,6 +1847,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     replyStr = ''
 
     showPublicOnDropdown = True
+    messageBoxHeight = 400
 
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
@@ -1920,20 +1931,36 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     pathBase = path.replace('/newreport', '').replace('/newpost', '')
     pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
     pathBase = pathBase.replace('/newunlisted', '')
+    pathBase = pathBase.replace('/newevent', '')
     pathBase = pathBase.replace('/newreminder', '')
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
     newPostImageSection = '    <div class="container">'
-    newPostImageSection += \
-        '      <label class="labels">' + translate['Image description'] + \
-        '</label>\n'
+    if not path.endswith('/newevent'):
+        newPostImageSection += \
+            '      <label class="labels">' + \
+            translate['Image description'] + '</label>\n'
+    else:
+        newPostImageSection += \
+            '      <label class="labels">' + \
+            translate['Event banner image description'] + '</label>\n'
     newPostImageSection += \
         '      <input type="text" name="imageDescription">\n'
-    newPostImageSection += \
-        '      <input type="file" id="attachpic" name="attachpic"'
-    newPostImageSection += \
-        '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, ' + \
-        '.webm, .ogv, .mp3, .ogg">\n'
+
+    if path.endswith('/newevent'):
+        newPostImageSection += \
+            '      <label class="labels">' + \
+            translate['Banner image'] + '</label>\n'
+        newPostImageSection += \
+            '      <input type="file" id="attachpic" name="attachpic"'
+        newPostImageSection += \
+            '            accept=".png, .jpg, .jpeg, .gif, .webp">\n'
+    else:
+        newPostImageSection += \
+            '      <input type="file" id="attachpic" name="attachpic"'
+        newPostImageSection += \
+            '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, ' + \
+            '.webm, .ogv, .mp3, .ogg">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
@@ -1969,6 +1996,12 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         scopeIcon = 'scope_reminder.png'
         scopeDescription = translate['Reminder']
         endpoint = 'newreminder'
+    elif path.endswith('/newevent'):
+        scopeIcon = 'scope_event.png'
+        scopeDescription = translate['Event']
+        endpoint = 'newevent'
+        placeholderSubject = translate['Event name']
+        placeholderMessage = translate['Describe the event'] + '...'
     elif path.endswith('/newreport'):
         scopeIcon = 'scope_report.png'
         scopeDescription = translate['Report']
@@ -2027,29 +2060,139 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     if endpoint != 'newshare' and \
        endpoint != 'newreport' and \
        endpoint != 'newquestion':
-        dateAndLocation = '<div class="container">'
+        dateAndLocation = '<div class="container">\n'
 
-        if not inReplyTo:
+        if endpoint == 'newevent':
+            # event status
+            dateAndLocation += '<label class="labels">' + \
+                translate['Status of the event'] + ':</label><br>\n'
+            dateAndLocation += '<input type="radio" id="tentative" ' + \
+                'name="eventStatus" value="tentative">\n'
+            dateAndLocation += '<label class="labels" for="tentative">' + \
+                translate['Tentative'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="confirmed" ' + \
+                'name="eventStatus" value="confirmed" checked>\n'
+            dateAndLocation += '<label class="labels" for="confirmed">' + \
+                translate['Confirmed'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="cancelled" ' + \
+                'name="eventStatus" value="cancelled">\n'
+            dateAndLocation += '<label class="labels" for="cancelled">' + \
+                translate['Cancelled'] + '</label><br>\n'
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
+            # maximum attendees
+            dateAndLocation += '<label class="labels" ' + \
+                'for="maximumAttendeeCapacity">' + \
+                translate['Maximum attendees'] + ':</label>\n'
+            dateAndLocation += '<input type="number" ' + \
+                'id="maximumAttendeeCapacity" ' + \
+                'name="maximumAttendeeCapacity" min="1" max="999999" ' + \
+                'value="100">\n'
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
+            # event joining options
+            dateAndLocation += '<label class="labels">' + \
+                translate['Joining'] + ':</label><br>\n'
+            dateAndLocation += '<input type="radio" id="free" ' + \
+                'name="joinMode" value="free" checked>\n'
+            dateAndLocation += '<label class="labels" for="free">' + \
+                translate['Anyone can join'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="restricted" ' + \
+                'name="joinMode" value="restricted">\n'
+            dateAndLocation += '<label class="labels" for="female">' + \
+                translate['Apply to join'] + '</label><br>\n'
+            dateAndLocation += '<input type="radio" id="invite" ' + \
+                'name="joinMode" value="invite">\n'
+            dateAndLocation += '<label class="labels" for="other">' + \
+                translate['Invitation only'] + '</label>\n'
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
+            # Event posts don't allow replies - they're just an announcement.
+            # They also have a few more checkboxes
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="privateEvent"><label class="labels"> ' + \
+                translate['This is a private event.'] + '</label></p>\n'
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="anonymousParticipationEnabled">' + \
+                '<label class="labels"> ' + \
+                translate['Allow anonymous participation.'] + '</label></p>\n'
+        else:
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="commentsEnabled" checked><label class="labels"> ' + \
+                translate['Allow replies.'] + '</label></p>\n'
+
+        if not inReplyTo and endpoint != 'newevent':
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
                 'name="schedulePost"><label class="labels"> ' + \
                 translate['This is a scheduled post.'] + '</label></p>\n'
 
-        dateAndLocation += \
-            '<p><img loading="lazy" alt="" title="" ' + \
-            'class="emojicalendar" src="/' + \
-            iconsDir + '/calendar.png"/>\n'
-        dateAndLocation += '<label class="labels">' + \
-            translate['Date'] + ': </label>\n'
-        dateAndLocation += '<input type="date" name="eventDate">\n'
-        dateAndLocation += '<label class="labelsright">' + \
-            translate['Time'] + ':'
-        dateAndLocation += '<input type="time" name="eventTime"></label></p>\n'
+        if endpoint != 'newevent':
+            dateAndLocation += \
+                '<p><img loading="lazy" alt="" title="" ' + \
+                'class="emojicalendar" src="/' + \
+                iconsDir + '/calendar.png"/>\n'
+            # select a date and time for this post
+            dateAndLocation += '<label class="labels">' + \
+                translate['Date'] + ': </label>\n'
+            dateAndLocation += '<input type="date" name="eventDate">\n'
+            dateAndLocation += '<label class="labelsright">' + \
+                translate['Time'] + ':'
+            dateAndLocation += \
+                '<input type="time" name="eventTime"></label></p>\n'
+        else:
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
+            dateAndLocation += \
+                '<p><img loading="lazy" alt="" title="" ' + \
+                'class="emojicalendar" src="/' + \
+                iconsDir + '/calendar.png"/>\n'
+            # select start time for the event
+            dateAndLocation += '<label class="labels">' + \
+                translate['Start Date'] + ': </label>\n'
+            dateAndLocation += '<input type="date" name="eventDate">\n'
+            dateAndLocation += '<label class="labelsright">' + \
+                translate['Time'] + ':'
+            dateAndLocation += \
+                '<input type="time" name="eventTime"></label></p>\n'
+            # select end time for the event
+            dateAndLocation += \
+                '<br><img loading="lazy" alt="" title="" ' + \
+                'class="emojicalendar" src="/' + \
+                iconsDir + '/calendar.png"/>\n'
+            dateAndLocation += '<label class="labels">' + \
+                translate['End Date'] + ': </label>\n'
+            dateAndLocation += '<input type="date" name="endDate">\n'
+            dateAndLocation += '<label class="labelsright">' + \
+                translate['Time'] + ':'
+            dateAndLocation += \
+                '<input type="time" name="endTime"></label>\n'
+
+        if endpoint == 'newevent':
+            dateAndLocation += '</div>\n'
+            dateAndLocation += '<div class="container">\n'
+            dateAndLocation += '<br><label class="labels">' + \
+                translate['Moderation policy or code of conduct'] + \
+                ': </label>\n'
+            dateAndLocation += \
+                '    <textarea id="message" ' + \
+                'name="repliesModerationOption" style="height:' + \
+                str(messageBoxHeight) + 'px"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<br><label class="labels">' + \
             translate['Location'] + ': </label>\n'
         dateAndLocation += '<input type="text" name="location">\n'
+        if endpoint == 'newevent':
+            dateAndLocation += '<br><label class="labels">' + \
+                translate['Ticket URL'] + ': </label>\n'
+            dateAndLocation += '<input type="text" name="ticketUrl">\n'
+            dateAndLocation += '<br><label class="labels">' + \
+                translate['Categories'] + ': </label>\n'
+            dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
     newPostForm = htmlHeader(cssFilename, newPostCSS)
@@ -2093,6 +2236,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     dropdownUnlistedSuffix = '/newunlisted'
     dropdownFollowersSuffix = '/newfollowers'
     dropdownDMSuffix = '/newdm'
+    dropdownEventSuffix = '/newevent'
     dropdownReminderSuffix = '/newreminder'
     dropdownReportSuffix = '/newreport'
     if inReplyTo or mentions:
@@ -2101,6 +2245,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropdownUnlistedSuffix = ''
         dropdownFollowersSuffix = ''
         dropdownDMSuffix = ''
+        dropdownEventSuffix = ''
         dropdownReminderSuffix = ''
         dropdownReportSuffix = ''
     if inReplyTo:
@@ -2177,6 +2322,12 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             '</b><br>' + translate['Scheduled note to yourself'] + \
             '</li></a>\n'
         dropDownContent += "        " \
+            '<a href="' + pathBase + dropdownEventSuffix + \
+            '"><li><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_event.png"/><b>' + translate['Event'] + \
+            '</b><br>' + translate['Create an event'] + \
+            '</li></a>\n'
+        dropDownContent += "        " \
             '<a href="' + pathBase + dropdownReportSuffix + \
             '"><li><img loading="lazy" alt="" title="" src="/' + iconsDir + \
             '/scope_report.png"/><b>' + translate['Report'] + \
@@ -2251,7 +2402,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <br><label class="labels">' + placeholderMessage + '</label>'
-    messageBoxHeight = 400
     if mediaInstance:
         messageBoxHeight = 200
 
@@ -3186,7 +3336,7 @@ def insertQuestion(baseDir: str, translate: {},
         return content
     if len(postJsonObject['object']['oneOf']) == 0:
         return content
-    messageId = postJsonObject['id'].replace('/activity', '')
+    messageId = removeIdEnding(postJsonObject['id'])
     if '#' in messageId:
         messageId = messageId.split('#', 1)[0]
     pageNumberStr = ''
@@ -3654,7 +3804,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
-        messageId = postJsonObject['id'].replace('/activity', '')
+        messageId = removeIdEnding(postJsonObject['id'])
 
     messageIdStr = ''
     if messageId:
@@ -3743,7 +3893,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if boxName == 'tlbookmarks' or boxName == 'bookmarks':
         return ''
 
-    timelinePostBookmark = postJsonObject['id'].replace('/activity', '')
+    timelinePostBookmark = removeIdEnding(postJsonObject['id'])
     timelinePostBookmark = timelinePostBookmark.replace('://', '-')
     timelinePostBookmark = timelinePostBookmark.replace('/', '-')
 
@@ -3828,7 +3978,13 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             iconsDir + '/dm.png" class="DMicon"/>\n'
 
     replyStr = ''
-    if showIcons:
+    # check if replying is permitted
+    commentsEnabled = True
+    if 'commentsEnabled' in postJsonObject['object']:
+        if postJsonObject['object']['commentsEnabled'] is False:
+            commentsEnabled = False
+    if showIcons and commentsEnabled:
+        # reply is permitted - create reply icon
         replyToLink = postJsonObject['object']['id']
         if postJsonObject['object'].get('attributedTo'):
             if isinstance(postJsonObject['object']['attributedTo'], str):
@@ -3872,19 +4028,34 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             translate['Reply to this post'] + \
             ' |" src="/' + iconsDir + '/reply.png"/></a>\n'
 
+    isEvent = isEventPost(postJsonObject)
+
     editStr = ''
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
-        if isBlogPost(postJsonObject):
-            if '/statuses/' in postJsonObject['object']['id']:
+        if '/statuses/' in postJsonObject['object']['id']:
+            if isBlogPost(postJsonObject):
+                blogPostId = postJsonObject['object']['id']
                 editStr += \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
-                    postJsonObject['object']['id'].split('/statuses/')[1] + \
+                    blogPostId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
                     '" title="' + translate['Edit blog post'] + '">' + \
                     '<img loading="lazy" title="' + \
                     translate['Edit blog post'] + '" alt="' + \
                     translate['Edit blog post'] + \
+                    ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+            elif isEvent:
+                eventPostId = postJsonObject['object']['id']
+                editStr += \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
+                    '/tlblogs?editeventpost=' + \
+                    eventPostId.split('/statuses/')[1] + \
+                    '?actor=' + actorNickname + \
+                    '" title="' + translate['Edit event'] + '">' + \
+                    '<img loading="lazy" title="' + \
+                    translate['Edit event'] + '" alt="' + \
+                    translate['Edit event'] + \
                     ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
 
     announceStr = ''
@@ -4448,7 +4619,7 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'tlshares':
             os.remove(newShareFile)
 
-    # should the Moderation button be highlighted?
+    # should the Moderation/reports button be highlighted?
     newReport = False
     newReportFile = accountDir + '/.newReport'
     if os.path.isfile(newReportFile):
@@ -4456,11 +4627,16 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'moderation':
             os.remove(newReportFile)
 
+    # directory where icons are found
+    # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
+
+    # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
+    # filename of the banner shown at the top
     bannerFile = 'banner.png'
     bannerFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/' + bannerFile
@@ -4476,16 +4652,20 @@ def htmlTimeline(defaultTimeline: str,
         bannerFile = 'banner.webp'
 
     with open(cssFilename, 'r') as cssFile:
+        # load css
         profileStyle = \
             cssFile.read().replace('banner.png',
                                    '/users/' + nickname + '/' + bannerFile)
+        # replace any https within the css with whatever prefix is needed
         if httpPrefix != 'https':
             profileStyle = \
                 profileStyle.replace('https://',
                                      httpPrefix + '://')
 
+    # is the user a moderator?
     moderator = isModerator(baseDir, nickname)
 
+    # the appearance of buttons - highlighted or not
     inboxButton = 'button'
     blogsButton = 'button'
     dmButton = 'button'
@@ -4496,6 +4676,7 @@ def htmlTimeline(defaultTimeline: str,
         repliesButton = 'buttonhighlighted'
     mediaButton = 'button'
     bookmarksButton = 'button'
+    eventsButton = 'button'
     sentButton = 'button'
     sharesButton = 'button'
     if newShare:
@@ -4529,16 +4710,21 @@ def htmlTimeline(defaultTimeline: str,
             sharesButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
+    elif boxName == 'tlevents':
+        eventsButton = 'buttonselected'
 
+    # get the full domain, including any port number
     fullDomain = domain
     if port != 80 and port != 443:
         if ':' not in domain:
             fullDomain = domain + ':' + str(port)
+
     usersPath = '/users/' + nickname
     actor = httpPrefix + '://' + fullDomain + usersPath
 
     showIndividualPostIcons = True
 
+    # show an icon for new follow approvals
     followApprovals = ''
     followRequestsFilename = \
         baseDir + '/accounts/' + \
@@ -4558,6 +4744,7 @@ def htmlTimeline(defaultTimeline: str,
                         '" src="/' + iconsDir + '/person.png"/></a>\n'
                     break
 
+    # moderation / reports button
     moderationButtonStr = ''
     if moderator and not minimal:
         moderationButtonStr = \
@@ -4567,8 +4754,10 @@ def htmlTimeline(defaultTimeline: str,
             htmlHighlightLabel(translate['Mod'], newReport) + \
             ' </span></button></a>\n'
 
+    # shares, bookmarks and events buttons
     sharesButtonStr = ''
     bookmarksButtonStr = ''
+    eventsButtonStr = ''
     if not minimal:
         sharesButtonStr = \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
@@ -4581,35 +4770,15 @@ def htmlTimeline(defaultTimeline: str,
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
             ' </span></button></a>\n'
 
+        eventsButtonStr = \
+            '<a href="' + usersPath + '/tlevents"><button class="' + \
+            eventsButton + '"><span>' + translate['Events'] + \
+            ' </span></button></a>\n'
+
     tlStr = htmlHeader(cssFilename, profileStyle)
 
-    if boxName != 'dm':
-        if boxName != 'tlblogs':
-            if not manuallyApproveFollowers:
-                newPostButtonStr = \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newpost"><img loading="lazy" src="/' + \
-                    iconsDir + '/newpost.png" title="' + \
-                    translate['Create a new post'] + '" alt="| ' + \
-                    translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-            else:
-                newPostButtonStr = \
-                    '<a class="imageAnchor" href="' + usersPath + \
-                    '/newfollowers"><img loading="lazy" src="/' + \
-                    iconsDir + '/newpost.png" title="' + \
-                    translate['Create a new post'] + \
-                    '" alt="| ' + translate['Create a new post'] + \
-                    '" class="timelineicon"/></a>\n'
-        else:
-            newPostButtonStr = \
-                '<a class="imageAnchor" href="' + usersPath + \
-                '/newblog"><img loading="lazy" src="/' + \
-                iconsDir + '/newpost.png" title="' + \
-                translate['Create a new post'] + '" alt="| ' + \
-                translate['Create a new post'] + \
-                '" class="timelineicon"/></a>\n'
-    else:
+    # what screen to go to when a new post is created
+    if boxName == 'dm':
         newPostButtonStr = \
             '<a class="imageAnchor" href="' + usersPath + \
             '/newdm"><img loading="lazy" src="/' + \
@@ -4617,6 +4786,39 @@ def htmlTimeline(defaultTimeline: str,
             translate['Create a new DM'] + \
             '" alt="| ' + translate['Create a new DM'] + \
             '" class="timelineicon"/></a>\n'
+    elif boxName == 'tlblogs':
+        newPostButtonStr = \
+            '<a class="imageAnchor" href="' + usersPath + \
+            '/newblog"><img loading="lazy" src="/' + \
+            iconsDir + '/newpost.png" title="' + \
+            translate['Create a new post'] + '" alt="| ' + \
+            translate['Create a new post'] + \
+            '" class="timelineicon"/></a>\n'
+    elif boxName == 'tlevents':
+        newPostButtonStr = \
+            '<a class="imageAnchor" href="' + usersPath + \
+            '/newevent"><img loading="lazy" src="/' + \
+            iconsDir + '/newpost.png" title="' + \
+            translate['Create a new event'] + '" alt="| ' + \
+            translate['Create a new event'] + \
+            '" class="timelineicon"/></a>\n'
+    else:
+        if not manuallyApproveFollowers:
+            newPostButtonStr = \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newpost"><img loading="lazy" src="/' + \
+                iconsDir + '/newpost.png" title="' + \
+                translate['Create a new post'] + '" alt="| ' + \
+                translate['Create a new post'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr = \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newfollowers"><img loading="lazy" src="/' + \
+                iconsDir + '/newpost.png" title="' + \
+                translate['Create a new post'] + \
+                '" alt="| ' + translate['Create a new post'] + \
+                '" class="timelineicon"/></a>\n'
 
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
@@ -4681,6 +4883,7 @@ def htmlTimeline(defaultTimeline: str,
                 '</span></button></a>\n'
 
     # typically the blogs button
+    # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
         if not minimal:
             tlStr += \
@@ -4696,14 +4899,19 @@ def htmlTimeline(defaultTimeline: str,
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
 
+    # button for the outbox
     tlStr += \
         '    <a href="' + usersPath + \
         '/outbox"><button class="' + \
         sentButton+'"><span>' + translate['Outbox'] + \
         '</span></button></a>\n'
+
+    # add other buttons
     tlStr += \
-        sharesButtonStr + bookmarksButtonStr + \
+        sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
         moderationButtonStr + newPostButtonStr
+
+    # the search button
     tlStr += \
         '    <a class="imageAnchor" href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
@@ -4711,6 +4919,7 @@ def htmlTimeline(defaultTimeline: str,
         translate['Search and follow'] + '" alt="| ' + \
         translate['Search and follow'] + '" class="timelineicon"/></a>\n'
 
+    # the calendar button
     calendarAltText = translate['Calendar']
     if newCalendarEvent:
         # indicate that the calendar icon is highlighted
@@ -4721,6 +4930,7 @@ def htmlTimeline(defaultTimeline: str,
         calendarImage + '" title="' + translate['Calendar'] + \
         '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
 
+    # the show/hide button, for a simpler header appearance
     tlStr += \
         '    <a class="imageAnchor" href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
@@ -4781,11 +4991,15 @@ def htmlTimeline(defaultTimeline: str,
     if boxName == 'inbox' and pageNumber == 1:
         if todaysEventsCheck(baseDir, nickname, domain):
             now = datetime.now()
+
+            # happening today button
             tlStr += \
                 '<center>\n<a href="' + usersPath + '/calendar?year=' + \
                 str(now.year) + '?month=' + str(now.month) + \
                 '?day=' + str(now.day) + '"><button class="buttonevent">' + \
                 translate['Happening Today'] + '</button></a>\n'
+
+            # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 tlStr += \
                     '<a href="' + usersPath + \
@@ -4793,6 +5007,7 @@ def htmlTimeline(defaultTimeline: str,
                     translate['Happening This Week'] + '</button></a>\n'
             tlStr += '</center>\n'
         else:
+            # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 tlStr += \
                     '<center>\n<a href="' + usersPath + \
@@ -4813,10 +5028,13 @@ def htmlTimeline(defaultTimeline: str,
     # show the posts
     itemCtr = 0
     if timelineJson:
+        # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
             if pageNumber > 1:
                 tlStr += '<br>'
             tlStr += '<div class="galleryContainer">\n'
+
+        # show each post in the timeline
         for item in timelineJson['orderedItems']:
             if item['type'] == 'Create' or \
                item['type'] == 'Announce' or \
@@ -4830,7 +5048,7 @@ def htmlTimeline(defaultTimeline: str,
                 if boxName != 'tlmedia' and \
                    recentPostsCache.get('index'):
                     postId = \
-                        item['id'].replace('/activity', '').replace('/', '#')
+                        removeIdEnding(item['id']).replace('/', '#')
                     if postId in recentPostsCache['index']:
                         if not item.get('muted'):
                             if recentPostsCache['html'].get(postId):
@@ -4938,6 +5156,28 @@ def htmlBookmarks(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
+                        httpPrefix, projectVersion, manuallyApproveFollowers,
+                        minimal, YTReplacementDomain)
+
+
+def htmlEvents(defaultTimeline: str,
+               recentPostsCache: {}, maxRecentPosts: int,
+               translate: {}, pageNumber: int, itemsPerPage: int,
+               session, baseDir: str, wfRequest: {}, personCache: {},
+               nickname: str, domain: str, port: int, bookmarksJson: {},
+               allowDeletion: bool,
+               httpPrefix: str, projectVersion: str,
+               minimal: bool, YTReplacementDomain: str) -> str:
+    """Show the events as html
+    """
+    manuallyApproveFollowers = \
+        followerApprovalActive(baseDir, nickname, domain)
+
+    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        nickname, domain, port, bookmarksJson,
+                        'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         minimal, YTReplacementDomain)
 
@@ -5105,7 +5345,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                              httpPrefix, projectVersion, 'inbox',
                              YTReplacementDomain,
                              False, authorized, False, False, False)
-    messageId = postJsonObject['id'].replace('/activity', '')
+    messageId = removeIdEnding(postJsonObject['id'])
 
     # show the previous posts
     if isinstance(postJsonObject['object'], dict):

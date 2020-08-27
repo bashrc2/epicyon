@@ -6,7 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
 import sys
 import json
 import time
@@ -69,6 +69,7 @@ from posts import createBlogPost
 from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
+from posts import createEventPost
 from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
@@ -126,6 +127,7 @@ from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
 from webinterface import htmlInbox
 from webinterface import htmlBookmarks
+from webinterface import htmlEvents
 from webinterface import htmlShares
 from webinterface import htmlOutbox
 from webinterface import htmlModeration
@@ -153,6 +155,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import removeIdEnding
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import deletePost
@@ -315,12 +318,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         print('Voting on message ' + messageId)
         print('Vote for: ' + answer)
+        commentsEnabled = True
         messageJson = \
             createPublicPost(self.server.baseDir,
                              nickname,
                              self.server.domain, self.server.port,
                              self.server.httpPrefix,
                              answer, False, False, False,
+                             commentsEnabled,
                              None, None, None, True,
                              messageId, messageId, None,
                              False, None, None, None)
@@ -2731,10 +2736,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 32)
 
-#        unrepeatPrivate = False
         if htmlGET and '?unrepeatprivate=' in self.path:
             self.path = self.path.replace('?unrepeatprivate=', '?unrepeat=')
-#            unrepeatPrivate = True
+
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
             pageNumber = 1
@@ -3595,6 +3599,40 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return
 
+            # Edit an event
+            if authorized and \
+               '/tlevents' in self.path and \
+               '?editeventpost=' in self.path and \
+               '?actor=' in self.path:
+                messageId = self.path.split('?editeventpost=')[1]
+                if '?' in messageId:
+                    messageId = messageId.split('?')[0]
+                actor = self.path.split('?actor=')[1]
+                if '?' in actor:
+                    actor = actor.split('?')[0]
+                nickname = getNicknameFromActor(self.path)
+                if nickname == actor:
+                    postUrl = \
+                        self.server.httpPrefix + '://' + \
+                        self.server.domainFull + '/users/' + nickname + \
+                        '/statuses/' + messageId
+                    msg = None
+                    # TODO
+                    # htmlEditEvent(self.server.mediaInstance,
+                    #                    self.server.translate,
+                    #                    self.server.baseDir,
+                    #                    self.server.httpPrefix,
+                    #                    self.path,
+                    #                    nickname, self.server.domain,
+                    #                    postUrl)
+                    if msg:
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self.server.GETbusy = False
+                        return
+
             # edit profile in web interface
             if '/users/' in self.path and self.path.endswith('/editprofile'):
                 msg = htmlEditProfile(self.server.translate,
@@ -3619,6 +3657,7 @@ class PubServer(BaseHTTPRequestHandler):
                  self.path.endswith('/newfollowers') or
                  self.path.endswith('/newdm') or
                  self.path.endswith('/newreminder') or
+                 self.path.endswith('/newevent') or
                  self.path.endswith('/newreport') or
                  self.path.endswith('/newquestion') or
                  self.path.endswith('/newshare'))):
@@ -4796,7 +4835,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
-                            msg = json.dumps(inboxFeed,
+                            msg = json.dumps(bookmarksFeed,
                                              ensure_ascii=False)
                             msg = msg.encode('utf-8')
                             self._set_headers('application/json',
@@ -4814,6 +4853,103 @@ class PubServer(BaseHTTPRequestHandler):
                               ' was not authorized to access ' + self.path)
             if self.server.debug:
                 print('DEBUG: GET access to bookmarks is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return
+
+        # get the events for a given person
+        if self.path.endswith('/tlevents') or \
+           '/tlevents?page=' in self.path or \
+           self.path.endswith('/events') or \
+           '/events?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    # convert /events to /tlevents
+                    if self.path.endswith('/events') or \
+                       '/events?page=' in self.path:
+                        self.path = self.path.replace('/events', '/tlevents')
+                    eventsFeed = \
+                        personBoxJson(self.server.recentPostsCache,
+                                      self.server.session,
+                                      self.server.baseDir,
+                                      self.server.domain,
+                                      self.server.port,
+                                      self.path,
+                                      self.server.httpPrefix,
+                                      maxPostsInFeed, 'tlevents',
+                                      authorized, self.server.ocapAlways)
+                    print('eventsFeed: ' + str(eventsFeed))
+                    if eventsFeed:
+                        if self._requestHTTP():
+                            nickname = self.path.replace('/users/', '')
+                            nickname = nickname.replace('/tlevents', '')
+                            pageNumber = 1
+                            if '?page=' in nickname:
+                                pageNumber = nickname.split('?page=')[1]
+                                nickname = nickname.split('?page=')[0]
+                                if pageNumber.isdigit():
+                                    pageNumber = int(pageNumber)
+                                else:
+                                    pageNumber = 1
+                            if 'page=' not in self.path:
+                                # if no page was specified then show the first
+                                eventsFeed = \
+                                    personBoxJson(self.server.recentPostsCache,
+                                                  self.server.session,
+                                                  self.server.baseDir,
+                                                  self.server.domain,
+                                                  self.server.port,
+                                                  self.path + '?page=1',
+                                                  self.server.httpPrefix,
+                                                  maxPostsInFeed,
+                                                  'tlevents',
+                                                  authorized,
+                                                  self.server.ocapAlways)
+                            msg = \
+                                htmlEvents(self.server.defaultTimeline,
+                                           self.server.recentPostsCache,
+                                           self.server.maxRecentPosts,
+                                           self.server.translate,
+                                           pageNumber, maxPostsInFeed,
+                                           self.server.session,
+                                           self.server.baseDir,
+                                           self.server.cachedWebfingers,
+                                           self.server.personCache,
+                                           nickname,
+                                           self.server.domain,
+                                           self.server.port,
+                                           eventsFeed,
+                                           self.server.allowDeletion,
+                                           self.server.httpPrefix,
+                                           self.server.projectVersion,
+                                           self._isMinimal(nickname),
+                                           self.server.YTReplacementDomain)
+                            msg = msg.encode('utf-8')
+                            self._set_headers('text/html',
+                                              len(msg),
+                                              cookie, callingDomain)
+                            self._write(msg)
+                        else:
+                            # don't need authenticated fetch here because
+                            # there is already the authorization check
+                            msg = json.dumps(eventsFeed,
+                                             ensure_ascii=False)
+                            msg = msg.encode('utf-8')
+                            self._set_headers('application/json',
+                                              len(msg),
+                                              None, callingDomain)
+                            self._write(msg)
+                        self.server.GETbusy = False
+                        return
+                else:
+                    if self.server.debug:
+                        nickname = self.path.replace('/users/', '')
+                        nickname = nickname.replace('/tlevents', '')
+                        print('DEBUG: ' + nickname +
+                              ' was not authorized to access ' + self.path)
+            if self.server.debug:
+                print('DEBUG: GET access to events is unauthorized')
             self.send_response(405)
             self.end_headers()
             self.server.GETbusy = False
@@ -5486,11 +5622,13 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['subject'] = None
             if not fields.get('replyTo'):
                 fields['replyTo'] = None
+
             if not fields.get('schedulePost'):
                 fields['schedulePost'] = False
             else:
                 fields['schedulePost'] = True
             print('DEBUG: shedulePost ' + str(fields['schedulePost']))
+
             if not fields.get('eventDate'):
                 fields['eventDate'] = None
             if not fields.get('eventTime'):
@@ -5515,6 +5653,14 @@ class PubServer(BaseHTTPRequestHandler):
             mentionsStr = ''
             if fields.get('mentions'):
                 mentionsStr = fields['mentions'].strip() + ' '
+            if not fields.get('commentsEnabled'):
+                commentsEnabled = False
+            else:
+                commentsEnabled = True
+            if not fields.get('privateEvent'):
+                privateEvent = False
+            else:
+                privateEvent = True
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -5523,7 +5669,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.port,
                                      self.server.httpPrefix,
                                      mentionsStr + fields['message'],
-                                     False, False, False,
+                                     False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
                                      self.server.useBlurHash,
@@ -5550,7 +5696,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain, self.server.port,
                                    self.server.httpPrefix,
                                    fields['message'],
-                                   False, False, False,
+                                   False, False, False, commentsEnabled,
                                    filename, attachmentMediaType,
                                    fields['imageDescription'],
                                    self.server.useBlurHash,
@@ -5653,7 +5799,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domain, self.server.port,
                                        self.server.httpPrefix,
                                        mentionsStr + fields['message'],
-                                       False, False, False,
+                                       False, False, False, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        self.server.useBlurHash,
@@ -5686,6 +5832,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.httpPrefix,
                                             mentionsStr + fields['message'],
                                             True, False, False,
+                                            commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
                                             self.server.useBlurHash,
@@ -5709,6 +5856,60 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
+            elif postType == 'newevent':
+                # A Mobilizon-type event is posted
+
+                # if there is no image dscription then make it the same
+                # as the event title
+                if not fields.get('imageDescription'):
+                    fields['imageDescription'] = fields['subject']
+                # Events are public by default, with opt-in
+                # followers only status
+                if not fields.get('followersOnlyEvent'):
+                    fields['followersOnlyEvent'] = False
+
+                if not fields.get('anonymousParticipationEnabled'):
+                    anonymousParticipationEnabled = False
+                else:
+                    anonymousParticipationEnabled = True
+                maximumAttendeeCapacity = 999999
+                if fields.get('maximumAttendeeCapacity'):
+                    maximumAttendeeCapacity = \
+                        int(fields['maximumAttendeeCapacity'])
+
+                messageJson = \
+                    createEventPost(self.server.baseDir,
+                                    nickname,
+                                    self.server.domain,
+                                    self.server.port,
+                                    self.server.httpPrefix,
+                                    mentionsStr + fields['message'],
+                                    privateEvent,
+                                    False, False, commentsEnabled,
+                                    filename, attachmentMediaType,
+                                    fields['imageDescription'],
+                                    self.server.useBlurHash,
+                                    fields['subject'],
+                                    fields['schedulePost'],
+                                    fields['eventDate'],
+                                    fields['eventTime'],
+                                    fields['location'],
+                                    fields['category'],
+                                    fields['joinMode'],
+                                    fields['endDate'],
+                                    fields['endTime'],
+                                    maximumAttendeeCapacity,
+                                    fields['repliesModerationOption'],
+                                    anonymousParticipationEnabled,
+                                    fields['eventStatus'],
+                                    fields['ticketUrl'])
+                if messageJson:
+                    if fields['schedulePost']:
+                        return 1
+                    if self._postToOutbox(messageJson, __version__, nickname):
+                        return 1
+                    else:
+                        return -1
             elif postType == 'newdm':
                 messageJson = None
                 print('A DM was posted')
@@ -5722,6 +5923,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 mentionsStr +
                                                 fields['message'],
                                                 True, False, False,
+                                                commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
                                                 self.server.useBlurHash,
@@ -5761,7 +5963,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port,
                                             self.server.httpPrefix,
                                             mentionsStr + fields['message'],
-                                            True, False, False,
+                                            True, False, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
                                             self.server.useBlurHash,
@@ -5794,7 +5996,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain, self.server.port,
                                      self.server.httpPrefix,
                                      mentionsStr + fields['message'],
-                                     True, False, False,
+                                     True, False, False, True,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
                                      self.server.useBlurHash,
@@ -5825,6 +6027,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix,
                                        fields['message'], qOptions,
                                        False, False, False,
+                                       commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        self.server.useBlurHash,
@@ -6181,6 +6384,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.path.endswith('confirm'):
             self.path = self.path.replace('/outbox/', '/outbox')
             self.path = self.path.replace('/tlblogs/', '/tlblogs')
+            self.path = self.path.replace('/tlevents/', '/tlevents')
             self.path = self.path.replace('/inbox/', '/inbox')
             self.path = self.path.replace('/shares/', '/shares')
             self.path = self.path.replace('/sharedInbox/', '/sharedInbox')
@@ -6912,6 +7116,20 @@ class PubServer(BaseHTTPRequestHandler):
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
                                 os.remove(removeTwitterFilename)
+                        # notify about new Likes
+                        notifyLikesFilename = \
+                            self.server.baseDir + '/accounts/' + \
+                            nickname + '@' + self.server.domain + \
+                            '/.notifyLikes'
+                        notifyLikesActive = False
+                        if fields.get('notifyLikes'):
+                            if fields['notifyLikes'] == 'on':
+                                notifyLikesActive = True
+                                with open(notifyLikesFilename, "w") as rFile:
+                                    rFile.write('\n')
+                        if not notifyLikesActive:
+                            if os.path.isfile(notifyLikesFilename):
+                                os.remove(notifyLikesFilename)
                         # this account is a bot
                         if fields.get('isBot'):
                             if fields['isBot'] == 'on':
@@ -7822,7 +8040,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followId = followActor + '/statuses/' + str(statusNumber)
                     unfollowJson = {
                         '@context': 'https://www.w3.org/ns/activitystreams',
-                        'id': followId+'/undo',
+                        'id': followId + '/undo',
                         'type': 'Undo',
                         'actor': followActor,
                         'object': {
@@ -8369,15 +8587,16 @@ class PubServer(BaseHTTPRequestHandler):
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
                      "newdm", "newreport", "newshare", "newquestion",
-                     "editblogpost", "newreminder")
+                     "editblogpost", "newreminder", "newevent")
         for currPostType in postTypes:
             if not authorized:
                 break
 
-            if currPostType != 'newshare':
-                postRedirect = self.server.defaultTimeline
-            else:
+            postRedirect = self.server.defaultTimeline
+            if currPostType == 'newshare':
                 postRedirect = 'shares'
+            elif currPostType == 'newevent':
+                postRedirect = 'tlevents'
 
             pageNumber = self._receiveNewPost(currPostType, self.path)
             if pageNumber:
@@ -8612,8 +8831,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.outboxAuthenticated:
             if self._postToOutbox(messageJson, __version__):
                 if messageJson.get('id'):
-                    locnStr = messageJson['id'].replace('/activity', '')
-                    locnStr = locnStr.replace('/undo', '')
+                    locnStr = removeIdEnding(messageJson['id'])
                     self.headers['Location'] = locnStr
                 self.send_response(201)
                 self.end_headers()
@@ -8658,16 +8876,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 22)
 
-        if not inboxPermittedMessage(self.server.domain,
-                                     messageJson,
-                                     self.server.federationList):
-            if self.server.debug:
-                # https://www.youtube.com/watch?v=K3PrSj9XEu4
-                print('DEBUG: Ah Ah Ah')
-            self.send_response(403)
-            self.end_headers()
-            self.server.POSTbusy = False
-            return
+        if not self.server.unitTest:
+            if not inboxPermittedMessage(self.server.domain,
+                                         messageJson,
+                                         self.server.federationList):
+                if self.server.debug:
+                    # https://www.youtube.com/watch?v=K3PrSj9XEu4
+                    print('DEBUG: Ah Ah Ah')
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 23)
 
@@ -8709,6 +8928,17 @@ class PubServer(BaseHTTPRequestHandler):
 
 class PubServerUnitTest(PubServer):
     protocol_version = 'HTTP/1.0'
+
+
+class EpicyonServer(ThreadingHTTPServer):
+    def handle_error(self, request, client_address):
+        # surpress connection reset errors
+        cls, e = sys.exc_info()[:2]
+        if cls is ConnectionResetError:
+            print('ERROR: ' + str(cls) + ", " + str(e))
+            pass
+        else:
+            return HTTPServer.handle_error(self, request, client_address)
 
 
 def runPostsQueue(baseDir: str, sendThreads: [], debug: bool) -> None:
@@ -8812,7 +9042,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         pubHandler = partial(PubServer)
 
     try:
-        httpd = ThreadingHTTPServer(serverAddress, pubHandler)
+        httpd = EpicyonServer(serverAddress, pubHandler)
     except Exception as e:
         if e.errno == 98:
             print('ERROR: HTTP server address is already in use. ' +
@@ -8822,6 +9052,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         print('ERROR: HTTP server failed to start. ' + str(e))
         return False
 
+    httpd.unitTest = unitTest
     httpd.YTReplacementDomain = YTReplacementDomain
 
     # This counter is used to update the list of blocked domains in memory.

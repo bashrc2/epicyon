@@ -202,14 +202,14 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
         if debug:
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
-    if handleToUnfollow.lower() not in open(filename).read().lower():
+    handleToUnfollowLower = handleToUnfollow.lower()
+    if handleToUnfollowLower not in open(filename).read().lower():
         if debug:
             print('DEBUG: handle to unfollow ' + handleToUnfollow +
                   ' is not in ' + filename)
         return
     with open(filename, "r") as f:
         lines = f.readlines()
-    handleToUnfollowLower = handleToUnfollow.lower()
     with open(filename, "w") as f:
         for line in lines:
             if line.strip("\n").strip("\r").lower() != handleToUnfollowLower:
@@ -520,7 +520,7 @@ def storeFollowRequest(baseDir: str,
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
-            with open(approveFollowsFilename, "a") as fp:
+            with open(approveFollowsFilename, 'a+') as fp:
                 fp.write(approveHandle + '\n')
         else:
             if debug:

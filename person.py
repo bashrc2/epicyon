@@ -25,6 +25,7 @@ from posts import createRepliesTimeline
 from posts import createMediaTimeline
 from posts import createBlogsTimeline
 from posts import createBookmarksTimeline
+from posts import createEventsTimeline
 from posts import createInbox
 from posts import createOutbox
 from posts import createModeration
@@ -459,6 +460,12 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         with open(followDMsFilename, "w") as fFile:
             fFile.write('\n')
 
+    # notify when posts are liked
+    notifyLikesFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.notifyLikes'
+    with open(notifyLikesFilename, "w") as fFile:
+        fFile.write('\n')
+
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
@@ -598,7 +605,8 @@ def personBoxJson(recentPostsCache: {},
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and \
        boxname != 'outbox' and boxname != 'moderation' and \
-       boxname != 'tlbookmarks' and boxname != 'bookmarks':
+       boxname != 'tlbookmarks' and boxname != 'bookmarks' and \
+       boxname != 'tlevents':
         return None
 
     if not '/' + boxname in path:
@@ -638,7 +646,8 @@ def personBoxJson(recentPostsCache: {},
                            httpPrefix,
                            noOfItems, headerOnly, ocapAlways, pageNumber)
     elif boxname == 'dm':
-        return createDMTimeline(session, baseDir, nickname, domain, port,
+        return createDMTimeline(recentPostsCache,
+                                session, baseDir, nickname, domain, port,
                                 httpPrefix,
                                 noOfItems, headerOnly, ocapAlways, pageNumber)
     elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
@@ -646,8 +655,15 @@ def personBoxJson(recentPostsCache: {},
                                        port, httpPrefix,
                                        noOfItems, headerOnly, ocapAlways,
                                        pageNumber)
+    elif boxname == 'tlevents':
+        return createEventsTimeline(recentPostsCache,
+                                    session, baseDir, nickname, domain,
+                                    port, httpPrefix,
+                                    noOfItems, headerOnly, ocapAlways,
+                                    pageNumber)
     elif boxname == 'tlreplies':
-        return createRepliesTimeline(session, baseDir, nickname, domain,
+        return createRepliesTimeline(recentPostsCache,
+                                     session, baseDir, nickname, domain,
                                      port, httpPrefix,
                                      noOfItems, headerOnly, ocapAlways,
                                      pageNumber)

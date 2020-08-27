@@ -13,6 +13,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import removeIdEnding
 from utils import getDomainFromActor
 from blocking import isBlockedDomain
 from blocking import outboxBlock
@@ -152,15 +153,14 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
     permittedOutboxTypes = ('Create', 'Announce', 'Like', 'Follow', 'Undo',
                             'Update', 'Add', 'Remove', 'Block', 'Delete',
-                            'Delegate', 'Skill', 'Bookmark')
+                            'Delegate', 'Skill', 'Bookmark', 'Event')
     if messageJson['type'] not in permittedOutboxTypes:
         if debug:
             print('DEBUG: POST to outbox - ' + messageJson['type'] +
                   ' is not a permitted activity type')
         return False
     if messageJson.get('id'):
-        postId = \
-            messageJson['id'].replace('/activity', '').replace('/undo', '')
+        postId = removeIdEnding(messageJson['id'])
         if debug:
             print('DEBUG: id attribute exists within POST to outbox')
     else:
@@ -172,13 +172,15 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     if messageJson['type'] != 'Upgrade':
         outboxName = 'outbox'
 
-        # if this is a blog post then save to its own box
+        # if this is a blog post or an event then save to its own box
         if messageJson['type'] == 'Create':
             if messageJson.get('object'):
                 if isinstance(messageJson['object'], dict):
                     if messageJson['object'].get('type'):
                         if messageJson['object']['type'] == 'Article':
                             outboxName = 'tlblogs'
+                        elif messageJson['object']['type'] == 'Event':
+                            outboxName = 'tlevents'
 
         savedFilename = \
             savePostToBox(baseDir,
@@ -186,20 +188,25 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                           postId,
                           postToNickname,
                           domainFull, messageJson, outboxName)
+        if not savedFilename:
+            print('WARN: post not saved to outbox ' + outboxName)
+            return False
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
            messageJson['type'] == 'Note' or \
            messageJson['type'] == 'EncryptedMessage' or \
            messageJson['type'] == 'Article' or \
+           messageJson['type'] == 'Event' or \
            messageJson['type'] == 'Patch' or \
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]
+            selfActor = \
+                httpPrefix + '://' + domainFull + '/users/' + postToNickname
             for boxNameIndex in indexes:
+                if not boxNameIndex:
+                    continue
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
-                selfActor = \
-                    httpPrefix + '://' + domainFull + \
-                    '/users/' + postToNickname
                 # avoid duplicates of the message if already going
                 # back to the inbox of the same account
                 if selfActor not in messageJson['to']:

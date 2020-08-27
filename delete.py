@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import removeIdEnding
 from utils import getStatusNumber
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -257,7 +258,7 @@ def outboxDelete(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: delete not permitted from other instances')
         return
-    messageId = messageJson['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object'])
     if '/statuses/' not in messageId:
         if debug:
             print('DEBUG: c2s delete object is not a status')

@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import removeIdEnding
 from utils import removePostFromCache
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -607,7 +608,7 @@ def outboxBookmark(recentPostsCache: {},
     if debug:
         print('DEBUG: c2s bookmark request arrived in outbox')
 
-    messageId = messageJson['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object'])
     if ':' in domain:
         domain = domain.split(':')[0]
     postFilename = locatePost(baseDir, nickname, domain, messageId)
@@ -667,7 +668,7 @@ def outboxUndoBookmark(recentPostsCache: {},
     if debug:
         print('DEBUG: c2s undo bookmark request arrived in outbox')
 
-    messageId = messageJson['object']['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object']['object'])
     if ':' in domain:
         domain = domain.split(':')[0]
     postFilename = locatePost(baseDir, nickname, domain, messageId)

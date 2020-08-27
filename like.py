@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import removeIdEnding
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -411,7 +412,7 @@ def outboxLike(recentPostsCache: {},
     if debug:
         print('DEBUG: c2s like request arrived in outbox')
 
-    messageId = messageJson['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object'])
     if ':' in domain:
         domain = domain.split(':')[0]
     postFilename = locatePost(baseDir, nickname, domain, messageId)
@@ -462,7 +463,7 @@ def outboxUndoLike(recentPostsCache: {},
     if debug:
         print('DEBUG: c2s undo like request arrived in outbox')
 
-    messageId = messageJson['object']['object'].replace('/activity', '')
+    messageId = removeIdEnding(messageJson['object']['object'])
     if ':' in domain:
         domain = domain.split(':')[0]
     postFilename = locatePost(baseDir, nickname, domain, messageId)
