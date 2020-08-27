@@ -3509,6 +3509,17 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
     return None
 
 
+def isMuted(baseDir: str, nickname: str, domain: str, postId: str) -> bool:
+    """Returns true if the given post is muted
+    """
+    postFilename = locatePost(baseDir, nickname, domain, postId)
+    if not postFilename:
+        return False
+    if os.path.isfile(postFilename + '.muted'):
+        return True
+    return False
+
+
 def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
              recentPostsCache: {}) -> None:
     """ Mutes the given post

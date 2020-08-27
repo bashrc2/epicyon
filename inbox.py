@@ -55,6 +55,7 @@ from posts import validContentWarning
 from posts import downloadAnnounce
 from posts import isDM
 from posts import isReply
+from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
 from posts import sendToFollowersThread
@@ -2302,6 +2303,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                                       postJsonObject, debug,
                                       __version__)
 
+        isReplyToMutedPost = False
+
         if not isGroup:
             # create a DM notification file if needed
             postIsDM = isDM(postJsonObject)
@@ -2352,9 +2355,13 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
-                    replyNotify(baseDir, handle,
-                                httpPrefix + '://' + domain +
-                                '/users/' + nickname + '/tlreplies')
+                    if not isMuted(baseDir, nickname, domain,
+                                   postJsonObject['object']['inReplyTo']):
+                        replyNotify(baseDir, handle,
+                                    httpPrefix + '://' + domain +
+                                    '/users/' + nickname + '/tlreplies')
+                    else:
+                        isReplyToMutedPost = True
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
@@ -2375,6 +2382,15 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
+            # If this is a reply to a muted post then also mute it.
+            # This enables you to ignore a threat that's getting boring
+            if isReplyToMutedPost:
+                print('MUTE REPLY: ' + destinationFilename)
+                muteFile = open(destinationFilename + '.muted', "w")
+                if muteFile:
+                    muteFile.write('\n')
+                    muteFile.close()
+
             # update the indexes for different timelines
             for boxname in updateIndexList:
                 if not inboxUpdateIndex(boxname, baseDir, handle,
