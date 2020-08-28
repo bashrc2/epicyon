@@ -1131,8 +1131,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timeDiff = int(timeDiff - int(GETtimings[prevGetId]))
         GETtimings[currGetId] = str(timeDiff)
         if logEvent:
-            for Id, timeDiff in GETtimings.items():
-                print('GET TIMING|' + Id + '|' + timeDiff)
+            print('GET TIMING ' + currGetId + ' = ' + str(timeDiff))
 
     def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
                               postID: int):
