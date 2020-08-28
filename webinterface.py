@@ -3855,7 +3855,6 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 2.1 = ' + str(timeDiff))
 
-            return postHtml
         updateAvatarImageCache(session, baseDir, httpPrefix,
                                postActor, avatarUrl, personCache)
 
