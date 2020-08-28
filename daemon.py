@@ -7116,14 +7116,32 @@ class PubServer(BaseHTTPRequestHandler):
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
                                 os.remove(removeTwitterFilename)
-                        # notify about new Likes
+                        # hide Like button
+                        hideLikeButtonFile = \
+                            self.server.baseDir + '/accounts/' + \
+                            nickname + '@' + self.server.domain + \
+                            '/.hideLikeButton'
                         notifyLikesFilename = \
                             self.server.baseDir + '/accounts/' + \
                             nickname + '@' + self.server.domain + \
                             '/.notifyLikes'
+                        hideLikeButtonActive = False
+                        if fields.get('hideLikeButton'):
+                            if fields['hideLikeButton'] == 'on':
+                                hideLikeButtonActive = True
+                                with open(hideLikeButtonFile, "w") as rFile:
+                                    rFile.write('\n')
+                                # remove notify likes selection
+                                if os.path.isfile(notifyLikesFilename):
+                                    os.remove(notifyLikesFilename)
+                        if not hideLikeButtonActive:
+                            if os.path.isfile(hideLikeButtonFile):
+                                os.remove(hideLikeButtonFile)
+                        # notify about new Likes
                         notifyLikesActive = False
                         if fields.get('notifyLikes'):
-                            if fields['notifyLikes'] == 'on':
+                            if fields['notifyLikes'] == 'on' and \
+                               not hideLikeButtonActive:
                                 notifyLikesActive = True
                                 with open(notifyLikesFilename, "w") as rFile:
                                     rFile.write('\n')

@@ -1084,6 +1084,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     followDMs = ''
     removeTwitter = ''
     notifyLikes = ''
+    hideLikeButton = ''
     mediaInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
@@ -1134,6 +1135,9 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/accounts/' +
                       nickname + '@' + domain + '/.notifyLikes'):
         notifyLikes = 'checked'
+    if os.path.isfile(baseDir + '/accounts/' +
+                      nickname + '@' + domain + '/.hideLikeButton'):
+        hideLikeButton = 'checked'
 
     mediaInstance = getConfigParam(baseDir, "mediaInstance")
     if mediaInstance:
@@ -1473,6 +1477,10 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="notifyLikes" ' + notifyLikes + '> ' + \
         translate['Notify when posts are liked'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
+        translate["Don't show the Like button"] + '<br>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -4083,8 +4091,15 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '" alt="' + translate['Repeat this post'] + \
             ' |" src="/' + iconsDir + '/' + announceIcon + '"/></a>\n'
 
+    # whether to show a like button
+    hideLikeButtonFile = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/.hideLikeButton'
+    showLikeButton = True
+    if os.path.isfile(hideLikeButtonFile):
+        showLikeButton = False
+
     likeStr = ''
-    if not isModerationPost:
+    if not isModerationPost and showLikeButton:
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
         likeTitle = translate['Like this post']
