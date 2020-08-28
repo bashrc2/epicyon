@@ -4588,6 +4588,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized,
                                       self.server.ocapAlways)
                     if inboxFeed:
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox json')
                         if self._requestHTTP():
                             nickname = self.path.replace('/users/', '')
                             nickname = nickname.replace('/inbox', '')
@@ -4612,6 +4615,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                   maxPostsInFeed, 'inbox',
                                                   authorized,
                                                   self.server.ocapAlways)
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'show status done',
+                                                          'show inbox page')
                             msg = htmlInbox(self.server.defaultTimeline,
                                             self.server.recentPostsCache,
                                             self.server.maxRecentPosts,
@@ -4630,6 +4637,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.projectVersion,
                                             self._isMinimal(nickname),
                                             self.server.YTReplacementDomain)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox html')
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
