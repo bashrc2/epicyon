@@ -5222,6 +5222,14 @@ def htmlTimeline(defaultTimeline: str,
                                           boxName + ' = ' + str(timeDiff))
 
                 if not currTlStr:
+                    # benchmark cache post
+                    timeDiff = \
+                        int((time.time() -
+                             timelinePostStartTime) * 1000)
+                    if timeDiff > 100:
+                        print('TIMELINE POST DISK TIMING START ' +
+                              boxName + ' = ' + str(timeDiff))
+
                     # read the post from disk
                     currTlStr = \
                         individualPostAsHtml(recentPostsCache, maxRecentPosts,
