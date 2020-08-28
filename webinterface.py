@@ -4243,6 +4243,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             bookmarkTitle + ' |" src="/' + iconsDir + \
             '/' + bookmarkIcon + '"/></a>\n'
 
+    # benchmark 12.9
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + boxName + ' 12.9 = ' + str(timeDiff))
+
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
 
     # benchmark 13
