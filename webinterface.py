@@ -4596,6 +4596,8 @@ def htmlTimeline(defaultTimeline: str,
                  YTReplacementDomain: str) -> str:
     """Show the timeline as html
     """
+    timelineStartTime = time.time()
+
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
 
     # should the calendar icon be highlighted?
@@ -4666,6 +4668,11 @@ def htmlTimeline(defaultTimeline: str,
     if not os.path.isfile(bannerFilename):
         bannerFile = 'banner.webp'
 
+    # benchmark 1
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 1 = ' + str(timeDiff))
+
     with open(cssFilename, 'r') as cssFile:
         # load css
         profileStyle = \
@@ -4679,6 +4686,11 @@ def htmlTimeline(defaultTimeline: str,
 
     # is the user a moderator?
     moderator = isModerator(baseDir, nickname)
+
+    # benchmark 2
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 2 = ' + str(timeDiff))
 
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
@@ -4759,6 +4771,11 @@ def htmlTimeline(defaultTimeline: str,
                         '" src="/' + iconsDir + '/person.png"/></a>\n'
                     break
 
+    # benchmark 3
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 3 = ' + str(timeDiff))
+
     # moderation / reports button
     moderationButtonStr = ''
     if moderator and not minimal:
@@ -4791,6 +4808,11 @@ def htmlTimeline(defaultTimeline: str,
             ' </span></button></a>\n'
 
     tlStr = htmlHeader(cssFilename, profileStyle)
+
+    # benchmark 4
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 4 = ' + str(timeDiff))
 
     # what screen to go to when a new post is created
     if boxName == 'dm':
@@ -4934,6 +4956,11 @@ def htmlTimeline(defaultTimeline: str,
         translate['Search and follow'] + '" alt="| ' + \
         translate['Search and follow'] + '" class="timelineicon"/></a>\n'
 
+    # benchmark 5
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
+
     # the calendar button
     calendarAltText = translate['Calendar']
     if newCalendarEvent:
@@ -4994,6 +5021,11 @@ def htmlTimeline(defaultTimeline: str,
             '" name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += '</div>\n</form>\n'
 
+    # benchmark 6
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 6 = ' + str(timeDiff))
+
     if boxName == 'tlshares':
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
@@ -5001,6 +5033,11 @@ def htmlTimeline(defaultTimeline: str,
                                    baseDir, actor, nickname, domain, port,
                                    maxSharesPerAccount, httpPrefix) +
                 htmlFooter())
+
+    # benchmark 7
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 7 = ' + str(timeDiff))
 
     # show todays events buttons on the first inbox page
     if boxName == 'inbox' and pageNumber == 1:
@@ -5029,6 +5066,11 @@ def htmlTimeline(defaultTimeline: str,
                     '/calendar"><button class="buttonevent">' + \
                     translate['Happening This Week'] + '</button></a>\n' + \
                     '</center>\n'
+
+    # benchmark 8
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 8 = ' + str(timeDiff))
 
     # page up arrow
     if pageNumber > 1:
@@ -5095,6 +5137,11 @@ def htmlTimeline(defaultTimeline: str,
                     tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
+
+    # benchmark 9
+    timeDiff = int(time.time() - timelineStartTime)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 9 = ' + str(timeDiff))
 
     # page down arrow
     if itemCtr > 2:
