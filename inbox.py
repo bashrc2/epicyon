@@ -2355,13 +2355,17 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
-                    if not isMuted(baseDir, nickname, domain,
-                                   postJsonObject['object']['inReplyTo']):
-                        replyNotify(baseDir, handle,
-                                    httpPrefix + '://' + domain +
-                                    '/users/' + nickname + '/tlreplies')
-                    else:
-                        isReplyToMutedPost = True
+                    inReplyTo = postJsonObject['object']['inReplyTo']
+                    if inReplyTo:
+                        if isinstance(inReplyTo, str):
+                            if not isMuted(baseDir, nickname, domain,
+                                           inReplyTo):
+                                replyNotify(baseDir, handle,
+                                            httpPrefix + '://' + domain +
+                                            '/users/' + nickname +
+                                            '/tlreplies')
+                            else:
+                                isReplyToMutedPost = True
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
