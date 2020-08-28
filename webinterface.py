@@ -3815,7 +3815,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 1
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 1 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 1 = ' + str(timeDiff))
 
     avatarPosition = ''
     messageId = ''
@@ -3825,7 +3825,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 2
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 2 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 2 = ' + str(timeDiff))
 
     messageIdStr = ''
     if messageId:
@@ -3862,13 +3862,13 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             # benchmark 3
             timeDiff = int((time.time() - postStartTime) * 1000)
             if timeDiff > 100:
-                print('TIMELINE INDIV ' + boxName + ' 3 = ' + str(timeDiff))
+                print('TIMING INDIV ' + boxName + ' 3 = ' + str(timeDiff))
             return postHtml
 
     # benchmark 4
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 4 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 4 = ' + str(timeDiff))
 
     if not avatarUrl:
         avatarUrl = \
@@ -3883,7 +3883,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 5
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 5 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 5 = ' + str(timeDiff))
 
     if not avatarUrl:
         avatarUrl = postActor + '/avatar.png'
@@ -3899,7 +3899,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         # benchmark 6
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
-            print('TIMELINE INDIV ' + boxName + ' 6 = ' + str(timeDiff))
+            print('TIMING INDIV ' + boxName + ' 6 = ' + str(timeDiff))
 
         if avatarUrl2:
             avatarUrl = avatarUrl2
@@ -3913,7 +3913,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 7
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 7 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
     avatarLink = '    <a class="imageAnchor" href="' + postActor + '">'
     avatarLink += \
@@ -3971,7 +3971,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 8
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 8 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 8 = ' + str(timeDiff))
 
     if not isinstance(postJsonObject['object'], dict):
         return ''
@@ -4024,7 +4024,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 9
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 9 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 9 = ' + str(timeDiff))
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
@@ -4086,14 +4086,14 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 10
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 10 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 10 = ' + str(timeDiff))
 
     isEvent = isEventPost(postJsonObject)
 
     # benchmark 11
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 11 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
 
     editStr = ''
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
@@ -4151,7 +4151,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 12
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 12 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 12 = ' + str(timeDiff))
 
     # whether to show a like button
     hideLikeButtonFile = \
@@ -4216,7 +4216,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 13
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 13 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 13 = ' + str(timeDiff))
 
     deleteStr = ''
     muteStr = ''
@@ -4464,7 +4464,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 14
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 14 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 14 = ' + str(timeDiff))
 
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
@@ -4492,7 +4492,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 15
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 15 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 15 = ' + str(timeDiff))
 
     publishedLink = messageId
     # blog posts should have no /statuses/ in their link
@@ -4554,7 +4554,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 16
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 16 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 16 = ' + str(timeDiff))
 
     if not isPatch:
         objectContent = \
@@ -4599,7 +4599,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 17
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 17 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 17 = ' + str(timeDiff))
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
@@ -4632,7 +4632,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 18
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 18 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 18 = ' + str(timeDiff))
 
     if not showPublicOnly and storeToCache and \
        boxName != 'tlmedia' and boxName != 'tlbookmarks' and \
@@ -4645,7 +4645,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     # benchmark 19
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
-        print('TIMELINE INDIV ' + boxName + ' 19 = ' + str(timeDiff))
+        print('TIMING INDIV ' + boxName + ' 19 = ' + str(timeDiff))
 
     return postHtml
 
