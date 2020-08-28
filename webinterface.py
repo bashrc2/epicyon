@@ -5216,7 +5216,7 @@ def htmlTimeline(defaultTimeline: str,
                                 # benchmark cache post
                                 timeDiff = \
                                     int((time.time() -
-                                         timelinePostStartTime) * 1000)
+                                         timelineStartTime) * 1000)
                                 if timeDiff > 100:
                                     print('TIMELINE POST CACHE TIMING ' +
                                           boxName + ' = ' + str(timeDiff))
@@ -5225,7 +5225,7 @@ def htmlTimeline(defaultTimeline: str,
                     # benchmark cache post
                     timeDiff = \
                         int((time.time() -
-                             timelinePostStartTime) * 1000)
+                             timelineStartTime) * 1000)
                     if timeDiff > 100:
                         print('TIMELINE POST DISK TIMING START ' +
                               boxName + ' = ' + str(timeDiff))
@@ -5249,7 +5249,7 @@ def htmlTimeline(defaultTimeline: str,
                     # benchmark cache post
                     timeDiff = \
                         int((time.time() -
-                             timelinePostStartTime) * 1000)
+                             timelineStartTime) * 1000)
                     if timeDiff > 100:
                         print('TIMELINE POST DISK TIMING ' +
                               boxName + ' = ' + str(timeDiff))
