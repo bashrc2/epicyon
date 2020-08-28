@@ -282,5 +282,6 @@
     "Create a new event": "एक नई घटना बनाएँ",
     "Moderation policy or code of conduct": "मॉडरेशन पॉलिसी या आचार संहिता",
     "Edit event": "घटना संपादित करें",
-    "Notify when posts are liked": "पोस्ट पसंद आने पर सूचित करें"
+    "Notify when posts are liked": "पोस्ट पसंद आने पर सूचित करें",
+    "Don't show the Like button": "लाइक बटन न दिखाएं"
 }

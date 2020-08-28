@@ -282,5 +282,6 @@
     "Create a new event": "Crea un nuovo evento",
     "Moderation policy or code of conduct": "Politica di moderazione o codice di condotta",
     "Edit event": "Modifica evento",
-    "Notify when posts are liked": "Avvisa quando i post sono piaciuti"
+    "Notify when posts are liked": "Avvisa quando i post sono piaciuti",
+    "Don't show the Like button": "Non mostrare il pulsante Mi piace"
 }

@@ -282,5 +282,6 @@
     "Create a new event": "أنشئ حدثًا جديدًا",
     "Moderation policy or code of conduct": "سياسة الوسطية أو قواعد السلوك",
     "Edit event": "تحرير الحدث",
-    "Notify when posts are liked": "يخطر عندما يتم اعجاب المشاركات"
+    "Notify when posts are liked": "يخطر عندما يتم اعجاب المشاركات",
+    "Don't show the Like button": "لا تظهر زر أعجبني"
 }
