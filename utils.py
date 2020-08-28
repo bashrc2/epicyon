@@ -473,6 +473,8 @@ def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
         return False
     if not postJsonObject['object'].get('inReplyTo'):
         return False
+    if not isinstance(postJsonObject['object']['inReplyTo'], str):
+        return False
     blogsIndexFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
     if not os.path.isfile(blogsIndexFilename):

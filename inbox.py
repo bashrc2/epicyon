@@ -272,6 +272,8 @@ def inboxPermittedMessage(domain: str, messageJson: {},
             return False
         if messageJson['object'].get('inReplyTo'):
             inReplyTo = messageJson['object']['inReplyTo']
+            if not isinstance(inReplyTo, str):
+                return False
             if not urlPermitted(inReplyTo, federationList, "inbox:write"):
                 return False
 
@@ -1596,6 +1598,8 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
     if not messageJson['object'].get('to'):
         return False
     replyTo = messageJson['object']['inReplyTo']
+    if not isinstance(replyTo, str):
+        return False
     if debug:
         print('DEBUG: post contains a reply')
     # is this a reply to a post on this domain?
@@ -1758,6 +1762,9 @@ def obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
 
     lookupActor = postJsonObject['object']['inReplyTo']
     if not lookupActor:
+        return
+
+    if not isinstance(lookupActor, str):
         return
 
     if not ('/users/' in lookupActor or

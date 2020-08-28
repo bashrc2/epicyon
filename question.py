@@ -25,6 +25,8 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
         return None
     if not replyJson['object']['inReplyTo']:
         return None
+    if not isinstance(replyJson['object']['inReplyTo'], str):
+        return None
     if not replyJson['object'].get('name'):
         return None
     inReplyTo = replyJson['object']['inReplyTo']

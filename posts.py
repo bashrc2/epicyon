@@ -388,15 +388,16 @@ def getPosts(session, outboxUrl: str, maxPosts: int,
             inReplyTo = ''
             if item['object'].get('inReplyTo'):
                 if item['object']['inReplyTo']:
-                    # No replies to non-permitted domains
-                    if not urlPermitted(item['object']['inReplyTo'],
-                                        federationList,
-                                        "objects:read"):
-                        if debug:
-                            print('url not permitted ' +
-                                  item['object']['inReplyTo'])
-                        continue
-                    inReplyTo = item['object']['inReplyTo']
+                    if isinstance(item['object']['inReplyTo'], str):
+                        # No replies to non-permitted domains
+                        if not urlPermitted(item['object']['inReplyTo'],
+                                            federationList,
+                                            "objects:read"):
+                            if debug:
+                                print('url not permitted ' +
+                                      item['object']['inReplyTo'])
+                            continue
+                        inReplyTo = item['object']['inReplyTo']
 
             conversation = ''
             if item['object'].get('conversation'):
@@ -483,10 +484,11 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
         if not isinstance(item['object'], dict):
             continue
         if item['object'].get('inReplyTo'):
-            postDomain, postPort = \
-                getDomainFromActor(item['object']['inReplyTo'])
-            if postDomain not in postDomains:
-                postDomains.append(postDomain)
+            if isinstance(item['object']['inReplyTo'], str):
+                postDomain, postPort = \
+                    getDomainFromActor(item['object']['inReplyTo'])
+                if postDomain not in postDomains:
+                    postDomains.append(postDomain)
 
         if item['object'].get('tag'):
             for tagItem in item['object']['tag']:
@@ -2675,8 +2677,9 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
        postJsonObject['object']['type'] != 'Article':
         return False
     if postJsonObject['object'].get('inReplyTo'):
-        if postJsonObject['object']['inReplyTo'].startswith(actor):
-            return True
+        if isinstance(postJsonObject['object']['inReplyTo'], str):
+            if postJsonObject['object']['inReplyTo'].startswith(actor):
+                return True
     if not postJsonObject['object'].get('tag'):
         return False
     if not isinstance(postJsonObject['object']['tag'], list):
