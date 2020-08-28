@@ -3849,8 +3849,20 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         if not avatarUrl:
             avatarUrl = \
                 getPersonAvatarUrl(baseDir, postActor, personCache)
+
+            # benchmark 2.1
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 2.1 = ' + str(timeDiff))
+
+            return postHtml
         updateAvatarImageCache(session, baseDir, httpPrefix,
                                postActor, avatarUrl, personCache)
+
+        # benchmark 2.2
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 2.2 = ' + str(timeDiff))
 
         postHtml = \
             loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
@@ -4166,6 +4178,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         likeLink = 'like'
         likeTitle = translate['Like this post']
         likeCount = noOfLikes(postJsonObject)
+
+        # benchmark 12.1
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12.1 = ' + str(timeDiff))
+
         likeCountStr = ''
         if likeCount > 0:
             if likeCount > 1:
@@ -4177,6 +4195,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             if likedByPerson(postJsonObject, nickname, fullDomain):
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
+
+        # benchmark 12.2
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
+
         likeStr = \
             '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
@@ -4190,6 +4214,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
 
+    # benchmark 12.5
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + boxName + ' 12.5 = ' + str(timeDiff))
+
     bookmarkStr = ''
     if not isModerationPost:
         bookmarkIcon = 'bookmark_inactive.png'
@@ -4199,6 +4228,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             bookmarkIcon = 'bookmark.png'
             bookmarkLink = 'unbookmark'
             bookmarkTitle = translate['Undo the bookmark']
+        # benchmark 12.6
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
         bookmarkStr = \
             '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + \
