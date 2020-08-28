@@ -4293,6 +4293,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 ' |" title="' + translate['Undo mute'] + \
                 '" src="/' + iconsDir+'/unmute.png"/></a>\n'
 
+    # benchmark 13.1
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + boxName + ' 13.1 = ' + str(timeDiff))
+
     replyAvatarImageInPost = ''
     if showRepeatIcon:
         if isAnnounced:
@@ -4308,6 +4313,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                         '" src="/' + iconsDir + \
                         '/repeat_inactive.png" class="announceOrReply"/>\n'
                 else:
+                    # benchmark 13.2
+                    timeDiff = int((time.time() - postStartTime) * 1000)
+                    if timeDiff > 100:
+                        print('TIMING INDIV ' + boxName + ' 13.2 = ' + str(timeDiff))
                     announceNickname = None
                     if attributedTo:
                         announceNickname = getNicknameFromActor(attributedTo)
@@ -4318,6 +4327,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                         announceDisplayName = \
                             getDisplayName(baseDir, attributedTo, personCache)
                         if announceDisplayName:
+                            # benchmark 13.3
+                            timeDiff = int((time.time() - postStartTime) * 1000)
+                            if timeDiff > 100:
+                                print('TIMING INDIV ' + boxName + ' 13.3 = ' + str(timeDiff))
                             if ':' in announceDisplayName:
                                 announceDisplayName = \
                                     addEmojiToDisplayName(baseDir, httpPrefix,
@@ -4338,6 +4351,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                             announceAvatarUrl = \
                                 getPersonAvatarUrl(baseDir, announceActor,
                                                    personCache)
+
+                            # benchmark 13.4
+                            timeDiff = int((time.time() - postStartTime) * 1000)
+                            if timeDiff > 100:
+                                print('TIMING INDIV ' + boxName + ' 13.4 = ' + str(timeDiff))
+
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
@@ -4408,6 +4427,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                                    personCache)
                                 if replyDisplayName:
                                     if ':' in replyDisplayName:
+                                        # benchmark 13.5
+                                        timeDiff = int((time.time() -
+                                                        postStartTime) * 1000)
+                                        if timeDiff > 100:
+                                            print('TIMING INDIV ' + boxName +
+                                                  ' 13.5 = ' + str(timeDiff))
                                         repDisp = replyDisplayName
                                         replyDisplayName = \
                                             addEmojiToDisplayName(baseDir,
@@ -4416,6 +4441,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                                                   domain,
                                                                   repDisp,
                                                                   False)
+                                        # benchmark 13.6
+                                        timeDiff = int((time.time() -
+                                                        postStartTime) * 1000)
+                                        if timeDiff > 100:
+                                            print('TIMING INDIV ' + boxName +
+                                                  ' 13.6 = ' + str(timeDiff))
                                     titleStr += \
                                         ' <img loading="lazy" title="' + \
                                         translate['replying to'] + \
