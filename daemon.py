@@ -1122,18 +1122,17 @@ class PubServer(BaseHTTPRequestHandler):
                              prevGetId: str, currGetId: str):
         """Updates a dictionary containing how long each segment of GET takes
         """
-        if self.server.debug:
-            timeDiff = int((time.time() - GETstartTime) * 1000)
-            logEvent = False
-            if timeDiff > 100:
-                logEvent = True
-            if prevGetId:
-                if GETtimings.get(prevGetId):
-                    timeDiff = int(timeDiff - int(GETtimings[prevGetId]))
-            GETtimings[currGetId].append(str(timeDiff))
-            if logEvent:
-                for Id, timeDiff in GETtimings.items():
-                    print('GET TIMING|' + Id + '|' + timeDiff)
+        timeDiff = int((time.time() - GETstartTime) * 1000)
+        logEvent = False
+        if timeDiff > 100:
+            logEvent = True
+        if prevGetId:
+            if GETtimings.get(prevGetId):
+                timeDiff = int(timeDiff - int(GETtimings[prevGetId]))
+        GETtimings[currGetId] = str(timeDiff)
+        if logEvent:
+            for Id, timeDiff in GETtimings.items():
+                print('GET TIMING|' + Id + '|' + timeDiff)
 
     def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
                               postID: int):
@@ -1968,7 +1967,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  'show about screen done'
+                                  'show about screen done',
                                   'robots txt')
 
         # if not authorized then show the login screen
@@ -2598,7 +2597,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = True
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  'avatar background shown done'
+                                  'avatar background shown done',
                                   'GET busy time')
 
         if not self._permittedDir(self.path):
