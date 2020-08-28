@@ -5093,6 +5093,8 @@ def htmlTimeline(defaultTimeline: str,
 
         # show each post in the timeline
         for item in timelineJson['orderedItems']:
+            timelinePostStartTime = time.time()
+
             if item['type'] == 'Create' or \
                item['type'] == 'Announce' or \
                item['type'] == 'Update':
@@ -5114,6 +5116,14 @@ def htmlTimeline(defaultTimeline: str,
                                     preparePostFromHtmlCache(currTlStr,
                                                              boxName,
                                                              pageNumber)
+                                # benchmark cache post
+                                timeDiff = \
+                                    int((time.time() -
+                                         timelinePostStartTime) * 1000)
+                                if timeDiff > 100:
+                                    print('TIMELINE POST CACHE TIMING ' +
+                                          boxName + ' = ' + str(timeDiff))
+
                 if not currTlStr:
                     # read the post from disk
                     currTlStr = \
@@ -5131,6 +5141,13 @@ def htmlTimeline(defaultTimeline: str,
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
                                              False, True)
+                    # benchmark cache post
+                    timeDiff = \
+                        int((time.time() -
+                             timelinePostStartTime) * 1000)
+                    if timeDiff > 100:
+                        print('TIMELINE POST DISK TIMING ' +
+                              boxName + ' = ' + str(timeDiff))
 
                 if currTlStr:
                     itemCtr += 1
