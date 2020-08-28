@@ -4669,7 +4669,7 @@ def htmlTimeline(defaultTimeline: str,
         bannerFile = 'banner.webp'
 
     # benchmark 1
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 1 = ' + str(timeDiff))
 
@@ -4688,7 +4688,7 @@ def htmlTimeline(defaultTimeline: str,
     moderator = isModerator(baseDir, nickname)
 
     # benchmark 2
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 2 = ' + str(timeDiff))
 
@@ -4772,7 +4772,7 @@ def htmlTimeline(defaultTimeline: str,
                     break
 
     # benchmark 3
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 3 = ' + str(timeDiff))
 
@@ -4810,7 +4810,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr = htmlHeader(cssFilename, profileStyle)
 
     # benchmark 4
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 4 = ' + str(timeDiff))
 
@@ -4957,7 +4957,7 @@ def htmlTimeline(defaultTimeline: str,
         translate['Search and follow'] + '" class="timelineicon"/></a>\n'
 
     # benchmark 5
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
 
@@ -5022,7 +5022,7 @@ def htmlTimeline(defaultTimeline: str,
         tlStr += '</div>\n</form>\n'
 
     # benchmark 6
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 6 = ' + str(timeDiff))
 
@@ -5035,7 +5035,7 @@ def htmlTimeline(defaultTimeline: str,
                 htmlFooter())
 
     # benchmark 7
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 7 = ' + str(timeDiff))
 
@@ -5068,7 +5068,7 @@ def htmlTimeline(defaultTimeline: str,
                     '</center>\n'
 
     # benchmark 8
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 8 = ' + str(timeDiff))
 
@@ -5139,7 +5139,7 @@ def htmlTimeline(defaultTimeline: str,
             tlStr += '</div>\n'
 
     # benchmark 9
-    timeDiff = int(time.time() - timelineStartTime)
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 9 = ' + str(timeDiff))
 
