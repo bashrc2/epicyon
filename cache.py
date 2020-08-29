@@ -45,8 +45,9 @@ def getPersonFromCache(baseDir: str, personUrl: str, personCache: {},
         # does the person exist as a cached file?
         cacheFilename = baseDir + '/cache/actors/' + \
             personUrl.replace('/', '#')+'.json'
-        if os.path.isfile(getFileCaseInsensitive(cacheFilename)):
-            personJson = loadJson(getFileCaseInsensitive(cacheFilename))
+        actorFilename = getFileCaseInsensitive(cacheFilename)
+        if actorFilename:
+            personJson = loadJson(actorFilename)
             if personJson:
                 storePersonInCache(baseDir, personUrl, personJson,
                                    personCache, False)

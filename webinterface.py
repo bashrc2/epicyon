@@ -27,7 +27,6 @@ from matrix import getMatrixAddress
 from donate import getDonationUrl
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
-from utils import getFileCaseInsensitive
 from utils import searchBoxPosts
 from utils import isEventPost
 from utils import isBlogPost
@@ -304,16 +303,13 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
     # get from locally stored image
     actorStr = personJson['id'].replace('/', '-')
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
-    if os.path.isfile(getFileCaseInsensitive(avatarImagePath + '.png')):
-        return '/avatars/' + actorStr + '.png'
-    elif os.path.isfile(getFileCaseInsensitive(avatarImagePath + '.jpg')):
-        return '/avatars/' + actorStr + '.jpg'
-    elif os.path.isfile(getFileCaseInsensitive(avatarImagePath + '.gif')):
-        return '/avatars/' + actorStr + '.gif'
-    elif os.path.isfile(getFileCaseInsensitive(avatarImagePath + '.webp')):
-        return '/avatars/' + actorStr + '.webp'
-    elif os.path.isfile(getFileCaseInsensitive(avatarImagePath)):
-        return '/avatars/' + actorStr
+
+    imageExtension = ('png', 'jpg', 'jpeg', 'gif', 'webp')
+    for ext in imageExtension:
+        if os.path.isfile(avatarImagePath + '.' + ext):
+            return '/avatars/' + actorStr + '.' + ext
+        elif os.path.isfile(avatarImagePath.lower() + '.' + ext):
+            return '/avatars/' + actorStr.lower() + '.' + ext
 
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
@@ -6649,7 +6645,7 @@ def htmlCalendar(translate: {},
     for weekOfMonth in range(1, 7):
         if dayOfMonth == daysInMonth:
             continue
-        calendarStr += '  <tr>\n'        
+        calendarStr += '  <tr>\n'
         for dayNumber in range(1, 8):
             if (weekOfMonth > 1 and dayOfMonth < daysInMonth) or \
                (weekOfMonth == 1 and dayNumber >= dow):

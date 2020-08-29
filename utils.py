@@ -907,21 +907,19 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
 def getFileCaseInsensitive(path: str) -> str:
     """Returns a case specific filename given a case insensitive version of it
     """
-    # does the given file exist? If so then we don't need
-    # to do a directory search
     if os.path.isfile(path):
         return path
     if path != path.lower():
         if os.path.isfile(path.lower()):
             return path.lower()
-    directory, filename = os.path.split(path)
-    directory, filename = (directory or '.'), filename.lower()
-    for f in os.listdir(directory):
-        if f.lower() == filename:
-            newpath = os.path.join(directory, f)
-            if os.path.isfile(newpath):
-                return newpath
-    return path
+    # directory, filename = os.path.split(path)
+    # directory, filename = (directory or '.'), filename.lower()
+    # for f in os.listdir(directory):
+    #     if f.lower() == filename:
+    #         newpath = os.path.join(directory, f)
+    #         if os.path.isfile(newpath):
+    #             return newpath
+    return None
 
 
 def undoLikesCollectionEntry(recentPostsCache: {},

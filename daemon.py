@@ -7516,7 +7516,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('removeTwitter'):
                             if fields['removeTwitter'] == 'on':
                                 removeTwitterActive = True
-                                with open(removeTwitterFilename, 'w+') as rFile:
+                                with open(removeTwitterFilename,
+                                          'w+') as rFile:
                                     rFile.write('\n')
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
