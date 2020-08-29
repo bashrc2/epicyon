@@ -244,7 +244,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        calendarFile = open(calendarFilename, "w")
+        calendarFile = open(calendarFilename, 'w+')
         for postId in calendarPostIds:
             calendarFile.write(postId + '\n')
         calendarFile.close()
@@ -412,7 +412,7 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        calendarFile = open(calendarFilename, "w")
+        calendarFile = open(calendarFilename, 'w+')
         for postId in calendarPostIds:
             calendarFile.write(postId + '\n')
         calendarFile.close()
@@ -494,7 +494,7 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
-        calendarFile = open(calendarFilename, "w")
+        calendarFile = open(calendarFilename, 'w+')
         for postId in calendarPostIds:
             calendarFile.write(postId + '\n')
         calendarFile.close()

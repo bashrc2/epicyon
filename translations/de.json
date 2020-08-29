@@ -282,5 +282,6 @@
     "Create a new event": "Erstellen Sie ein neues Ereignis",
     "Moderation policy or code of conduct": "Moderationsrichtlinie oder Verhaltenskodex",
     "Edit event": "Ereignis bearbeiten",
-    "Notify when posts are liked": "Benachrichtigen, wenn Beiträge gefallen"
+    "Notify when posts are liked": "Benachrichtigen, wenn Beiträge gefallen",
+    "Don't show the Like button": "Zeigen Sie nicht die Schaltfläche \"Gefällt mir\" an"
 }

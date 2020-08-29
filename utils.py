@@ -75,12 +75,12 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
     return False
 
 
-def loadJson(filename: str, delaySec=2) -> {}:
+def loadJson(filename: str, delaySec=2, maxTries=5) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject = None
     tries = 0
-    while tries < 5:
+    while tries < maxTries:
         try:
             with open(filename, 'r') as fp:
                 data = fp.read()
@@ -351,7 +351,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                 for line in lines:
                     if handleToFollow not in line:
                         newLines += line
-            with open(unfollowedFilename, "w") as f:
+            with open(unfollowedFilename, 'w+') as f:
                 f.write(newLines)
 
     if not os.path.isdir(baseDir + '/accounts'):
@@ -383,7 +383,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                                 followNickname, followDomain)
     if debug:
         print('DEBUG: creating new following file to follow ' + handleToFollow)
-    with open(filename, "w") as followfile:
+    with open(filename, 'w+') as followfile:
         followfile.write(handleToFollow + '\n')
     return True
 
@@ -472,6 +472,8 @@ def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
     if not isinstance(postJsonObject['object'], dict):
         return False
     if not postJsonObject['object'].get('inReplyTo'):
+        return False
+    if not isinstance(postJsonObject['object']['inReplyTo'], str):
         return False
     blogsIndexFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
@@ -905,12 +907,20 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
 def getFileCaseInsensitive(path: str) -> str:
     """Returns a case specific filename given a case insensitive version of it
     """
+    # does the given file exist? If so then we don't need
+    # to do a directory search
+    if os.path.isfile(path):
+        return path
+    if path != path.lower():
+        if os.path.isfile(path.lower()):
+            return path.lower()
     directory, filename = os.path.split(path)
     directory, filename = (directory or '.'), filename.lower()
     for f in os.listdir(directory):
-        newpath = os.path.join(directory, f)
-        if os.path.isfile(newpath) and f.lower() == filename:
-            return newpath
+        if f.lower() == filename:
+            newpath = os.path.join(directory, f)
+            if os.path.isfile(newpath):
+                return newpath
     return path
 
 

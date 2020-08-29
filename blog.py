@@ -73,7 +73,7 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     if lines and removals:
         print('Rewriting ' + postFilename + ' to remove ' +
               str(len(removals)) + ' entries')
-        with open(postFilename, "w") as f:
+        with open(postFilename, 'w+') as f:
             for replyPostId in lines:
                 replyPostId = replyPostId.replace('\n', '').replace('\r', '')
                 if replyPostId not in removals:

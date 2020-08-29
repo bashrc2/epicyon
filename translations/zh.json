@@ -282,5 +282,6 @@
     "Create a new event": "建立新活动",
     "Moderation policy or code of conduct": "审核政策或行为准则",
     "Edit event": "编辑活动",
-    "Notify when posts are liked": "通知喜欢的帖子"
+    "Notify when posts are liked": "通知喜欢的帖子",
+    "Don't show the Like button": "不显示“赞”按钮"
 }

@@ -210,7 +210,7 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
         return
     with open(filename, "r") as f:
         lines = f.readlines()
-    with open(filename, "w") as f:
+    with open(filename, 'w+') as f:
         for line in lines:
             if line.strip("\n").strip("\r").lower() != handleToUnfollowLower:
                 f.write(line)

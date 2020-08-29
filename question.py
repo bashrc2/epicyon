@@ -25,6 +25,8 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
         return None
     if not replyJson['object']['inReplyTo']:
         return None
+    if not isinstance(replyJson['object']['inReplyTo'], str):
+        return None
     if not replyJson['object'].get('name'):
         return None
     inReplyTo = replyJson['object']['inReplyTo']
@@ -64,7 +66,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     votersFilename = questionPostFilename.replace('.json', '.voters')
     if not os.path.isfile(votersFilename):
         # create a new voters file
-        votersFile = open(votersFilename, "w")
+        votersFile = open(votersFilename, 'w+')
         if votersFile:
             votersFile.write(replyJson['actor'] +
                              votersFileSeparator +
@@ -97,7 +99,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
                     else:
                         newlines.append(voteLine)
                 if saveVotersFile:
-                    with open(votersFilename, "w") as votersFile:
+                    with open(votersFilename, 'w+') as votersFile:
                         for voteLine in newlines:
                             votersFile.write(voteLine)
                 else:

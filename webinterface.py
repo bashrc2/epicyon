@@ -199,7 +199,8 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
-                           personCache: {}, force=False) -> str:
+                           personCache: {}, allowDownloads: bool,
+                           force=False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -232,7 +233,8 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
         avatarImageFilename = avatarImagePath + '.webp'
     else:
         return None
-    if not os.path.isfile(avatarImageFilename) or force:
+
+    if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:
         try:
             print('avatar image url: ' + avatarUrl)
             result = session.get(avatarUrl,
@@ -282,18 +284,23 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                       "public keys don't match when downloading actor for " +
                       actor)
                 return None
-            storePersonInCache(baseDir, actor, personJson, personCache)
-            return getPersonAvatarUrl(baseDir, actor, personCache)
+            storePersonInCache(baseDir, actor, personJson, personCache,
+                               allowDownloads)
+            return getPersonAvatarUrl(baseDir, actor, personCache,
+                                      allowDownloads)
         return None
     return avatarImageFilename.replace(baseDir + '/cache', '')
 
 
-def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {}) -> str:
+def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
+                       allowDownloads: bool) -> str:
     """Returns the avatar url for the person
     """
-    personJson = getPersonFromCache(baseDir, personUrl, personCache)
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
     if not personJson:
         return None
+
     # get from locally stored image
     actorStr = personJson['id'].replace('/', '-')
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
@@ -796,7 +803,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                 showIndividualPostIcons = True
             allowDeletion = False
             hashtagSearchForm += \
-                individualPostAsHtml(recentPostsCache,
+                individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      iconsDir, translate, None,
                                      baseDir, session, wfRequest,
@@ -1025,7 +1032,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
         showIndividualPostIcons = True
         allowDeletion = False
         historySearchForm += \
-            individualPostAsHtml(recentPostsCache,
+            individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  iconsDir, translate, None,
                                  baseDir, session, wfRequest,
@@ -1084,6 +1091,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     followDMs = ''
     removeTwitter = ''
     notifyLikes = ''
+    hideLikeButton = ''
     mediaInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
@@ -1134,6 +1142,9 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/accounts/' +
                       nickname + '@' + domain + '/.notifyLikes'):
         notifyLikes = 'checked'
+    if os.path.isfile(baseDir + '/accounts/' +
+                      nickname + '@' + domain + '/.hideLikeButton'):
+        hideLikeButton = 'checked'
 
     mediaInstance = getConfigParam(baseDir, "mediaInstance")
     if mediaInstance:
@@ -1473,6 +1484,10 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="notifyLikes" ' + notifyLikes + '> ' + \
         translate['Notify when posts are liked'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
+        translate["Don't show the Like button"] + '<br>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -2493,7 +2508,8 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
                                          iconsDir, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
@@ -3053,7 +3069,7 @@ def individualFollowAsHtml(translate: {},
     nickname = getNicknameFromActor(followUrl)
     domain, port = getDomainFromActor(followUrl)
     titleStr = '@' + nickname + '@' + domain
-    avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache)
+    avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
     if domain not in followUrl:
@@ -3778,7 +3794,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
     return attachmentStr, galleryStr
 
 
-def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
+def individualPostAsHtml(allowDownloads: bool,
+                         recentPostsCache: {}, maxRecentPosts: int,
                          iconsDir: str, translate: {},
                          pageNumber: int, baseDir: str,
                          session, wfRequest: {}, personCache: {},
@@ -3795,16 +3812,29 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                          storeToCache=True) -> str:
     """ Shows a single post as html
     """
+    # benchmark
+    postStartTime = time.time()
+
     postActor = postJsonObject['actor']
 
     # ZZZzzz
     if isPersonSnoozed(baseDir, nickname, domain, postActor):
         return ''
 
+    # benchmark 1
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + boxName + ' 1 = ' + str(timeDiff))
+
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
         messageId = removeIdEnding(postJsonObject['id'])
+
+    # benchmark 2
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + boxName + ' 2 = ' + str(timeDiff))
 
     messageIdStr = ''
     if messageId:
@@ -3827,9 +3857,26 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         # update avatar if needed
         if not avatarUrl:
             avatarUrl = \
-                getPersonAvatarUrl(baseDir, postActor, personCache)
+                getPersonAvatarUrl(baseDir, postActor, personCache,
+                                   allowDownloads)
+
+            # benchmark 2.1
+            if not allowDownloads:
+                timeDiff = int((time.time() - postStartTime) * 1000)
+                if timeDiff > 100:
+                    print('TIMING INDIV ' + boxName +
+                          ' 2.1 = ' + str(timeDiff))
+
         updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache)
+                               postActor, avatarUrl, personCache,
+                               allowDownloads)
+
+        # benchmark 2.2
+        if not allowDownloads:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName +
+                      ' 2.2 = ' + str(timeDiff))
 
         postHtml = \
             loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
@@ -3838,17 +3885,38 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
             updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                    postJsonObject, postHtml)
+            # benchmark 3
+            if not allowDownloads:
+                timeDiff = int((time.time() - postStartTime) * 1000)
+                if timeDiff > 100:
+                    print('TIMING INDIV ' + boxName +
+                          ' 3 = ' + str(timeDiff))
             return postHtml
+
+    # benchmark 4
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 4 = ' + str(timeDiff))
 
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(baseDir, postActor, personCache)
+            getPersonAvatarUrl(baseDir, postActor, personCache,
+                               allowDownloads)
         avatarUrl = \
             updateAvatarImageCache(session, baseDir, httpPrefix,
-                                   postActor, avatarUrl, personCache)
+                                   postActor, avatarUrl, personCache,
+                                   allowDownloads)
     else:
         updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache)
+                               postActor, avatarUrl, personCache,
+                               allowDownloads)
+
+    # benchmark 5
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 5 = ' + str(timeDiff))
 
     if not avatarUrl:
         avatarUrl = postActor + '/avatar.png'
@@ -3861,6 +3929,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                                  personCache,
                                                  projectVersion, httpPrefix,
                                                  nickname, domain, 'outbox')
+        # benchmark 6
+        if not allowDownloads:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 6 = ' + str(timeDiff))
+
         if avatarUrl2:
             avatarUrl = avatarUrl2
         if displayName:
@@ -3869,6 +3943,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                     addEmojiToDisplayName(baseDir, httpPrefix,
                                           nickname, domain,
                                           displayName, False)
+
+    # benchmark 7
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
     avatarLink = '    <a class="imageAnchor" href="' + postActor + '">'
     avatarLink += \
@@ -3923,6 +4003,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         postJsonObject = postJsonAnnounce
         isAnnounced = True
 
+    # benchmark 8
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 8 = ' + str(timeDiff))
+
     if not isinstance(postJsonObject['object'], dict):
         return ''
 
@@ -3970,6 +4056,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
+
+    # benchmark 9
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 9 = ' + str(timeDiff))
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
@@ -4028,7 +4120,19 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             translate['Reply to this post'] + \
             ' |" src="/' + iconsDir + '/reply.png"/></a>\n'
 
+    # benchmark 10
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 10 = ' + str(timeDiff))
+
     isEvent = isEventPost(postJsonObject)
+
+    # benchmark 11
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
 
     editStr = ''
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
@@ -4083,12 +4187,32 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '" alt="' + translate['Repeat this post'] + \
             ' |" src="/' + iconsDir + '/' + announceIcon + '"/></a>\n'
 
+    # benchmark 12
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12 = ' + str(timeDiff))
+
+    # whether to show a like button
+    hideLikeButtonFile = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/.hideLikeButton'
+    showLikeButton = True
+    if os.path.isfile(hideLikeButtonFile):
+        showLikeButton = False
+
     likeStr = ''
-    if not isModerationPost:
+    if not isModerationPost and showLikeButton:
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
         likeTitle = translate['Like this post']
         likeCount = noOfLikes(postJsonObject)
+
+        # benchmark 12.1
+        if not allowDownloads:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 12.1 = ' + str(timeDiff))
+
         likeCountStr = ''
         if likeCount > 0:
             if likeCount > 1:
@@ -4100,6 +4224,13 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             if likedByPerson(postJsonObject, nickname, fullDomain):
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
+
+        # benchmark 12.2
+        if not allowDownloads:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
+
         likeStr = \
             '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
@@ -4113,6 +4244,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
 
+    # benchmark 12.5
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12.5 = ' + str(timeDiff))
+
     bookmarkStr = ''
     if not isModerationPost:
         bookmarkIcon = 'bookmark_inactive.png'
@@ -4122,6 +4259,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             bookmarkIcon = 'bookmark.png'
             bookmarkLink = 'unbookmark'
             bookmarkTitle = translate['Undo the bookmark']
+        # benchmark 12.6
+        if not allowDownloads:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
         bookmarkStr = \
             '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + \
@@ -4134,7 +4276,19 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             bookmarkTitle + ' |" src="/' + iconsDir + \
             '/' + bookmarkIcon + '"/></a>\n'
 
+    # benchmark 12.9
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12.9 = ' + str(timeDiff))
+
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
+
+    # benchmark 13
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 13 = ' + str(timeDiff))
 
     deleteStr = ''
     muteStr = ''
@@ -4174,6 +4328,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 ' |" title="' + translate['Undo mute'] + \
                 '" src="/' + iconsDir+'/unmute.png"/></a>\n'
 
+    # benchmark 13.1
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 13.1 = ' + str(timeDiff))
+
     replyAvatarImageInPost = ''
     if showRepeatIcon:
         if isAnnounced:
@@ -4189,22 +4349,45 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                         '" src="/' + iconsDir + \
                         '/repeat_inactive.png" class="announceOrReply"/>\n'
                 else:
+                    # benchmark 13.2
+                    if not allowDownloads:
+                        timeDiff = int((time.time() - postStartTime) * 1000)
+                        if timeDiff > 100:
+                            print('TIMING INDIV ' + boxName +
+                                  ' 13.2 = ' + str(timeDiff))
                     announceNickname = None
                     if attributedTo:
                         announceNickname = getNicknameFromActor(attributedTo)
                     if announceNickname:
                         announceDomain, announcePort = \
                             getDomainFromActor(attributedTo)
-                        getPersonFromCache(baseDir, attributedTo, personCache)
+                        getPersonFromCache(baseDir, attributedTo,
+                                           personCache, allowDownloads)
                         announceDisplayName = \
                             getDisplayName(baseDir, attributedTo, personCache)
                         if announceDisplayName:
+                            # benchmark 13.3
+                            if not allowDownloads:
+                                timeDiff = \
+                                    int((time.time() - postStartTime) * 1000)
+                                if timeDiff > 100:
+                                    print('TIMING INDIV ' + boxName +
+                                          ' 13.3 = ' + str(timeDiff))
+
                             if ':' in announceDisplayName:
                                 announceDisplayName = \
                                     addEmojiToDisplayName(baseDir, httpPrefix,
                                                           nickname, domain,
                                                           announceDisplayName,
                                                           False)
+                            # benchmark 13.3.1
+                            if not allowDownloads:
+                                timeDiff = \
+                                    int((time.time() - postStartTime) * 1000)
+                                if timeDiff > 100:
+                                    print('TIMING INDIV ' + boxName +
+                                          ' 13.3.1 = ' + str(timeDiff))
+
                             titleStr += \
                                 ' <img loading="lazy" title="' + \
                                 translate['announces'] + '" alt="' + \
@@ -4218,7 +4401,16 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                 postJsonObject['object']['attributedTo']
                             announceAvatarUrl = \
                                 getPersonAvatarUrl(baseDir, announceActor,
-                                                   personCache)
+                                                   personCache, allowDownloads)
+
+                            # benchmark 13.4
+                            if not allowDownloads:
+                                timeDiff = \
+                                    int((time.time() - postStartTime) * 1000)
+                                if timeDiff > 100:
+                                    print('TIMING INDIV ' + boxName +
+                                          ' 13.4 = ' + str(timeDiff))
+
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
@@ -4283,12 +4475,22 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                 getDomainFromActor(replyActor)
                             if replyNickname and replyDomain:
                                 getPersonFromCache(baseDir, replyActor,
-                                                   personCache)
+                                                   personCache,
+                                                   allowDownloads)
                                 replyDisplayName = \
                                     getDisplayName(baseDir, replyActor,
                                                    personCache)
                                 if replyDisplayName:
                                     if ':' in replyDisplayName:
+                                        # benchmark 13.5
+                                        if not allowDownloads:
+                                            timeDiff = \
+                                                int((time.time() -
+                                                     postStartTime) * 1000)
+                                            if timeDiff > 100:
+                                                print('TIMING INDIV ' +
+                                                      boxName + ' 13.5 = ' +
+                                                      str(timeDiff))
                                         repDisp = replyDisplayName
                                         replyDisplayName = \
                                             addEmojiToDisplayName(baseDir,
@@ -4297,6 +4499,15 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                                                   domain,
                                                                   repDisp,
                                                                   False)
+                                        # benchmark 13.6
+                                        if not allowDownloads:
+                                            timeDiff = \
+                                                int((time.time() -
+                                                     postStartTime) * 1000)
+                                            if timeDiff > 100:
+                                                print('TIMING INDIV ' +
+                                                      boxName + ' 13.6 = ' +
+                                                      str(timeDiff))
                                     titleStr += \
                                         ' <img loading="lazy" title="' + \
                                         translate['replying to'] + \
@@ -4308,11 +4519,29 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                         '<a href="' + inReplyTo + \
                                         '">' + replyDisplayName + '</a>\n'
 
+                                    # benchmark 13.7
+                                    if not allowDownloads:
+                                        timeDiff = int((time.time() -
+                                                        postStartTime) * 1000)
+                                        if timeDiff > 100:
+                                            print('TIMING INDIV ' + boxName +
+                                                  ' 13.7 = ' + str(timeDiff))
+
                                     # show avatar of person replied to
                                     replyAvatarUrl = \
                                         getPersonAvatarUrl(baseDir,
                                                            replyActor,
-                                                           personCache)
+                                                           personCache,
+                                                           allowDownloads)
+
+                                    # benchmark 13.8
+                                    if not allowDownloads:
+                                        timeDiff = int((time.time() -
+                                                        postStartTime) * 1000)
+                                        if timeDiff > 100:
+                                            print('TIMING INDIV ' + boxName +
+                                                  ' 13.8 = ' + str(timeDiff))
+
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost = \
                                             '<div class=' + \
@@ -4379,6 +4608,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">' + postDomain + '</a>\n'
 
+    # benchmark 14
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 14 = ' + str(timeDiff))
+
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
                                  isMuted, avatarLink.strip(),
@@ -4401,6 +4636,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 publishedStr.replace('T', ' ').split('.')[0]
             datetimeObject = parse(publishedStr)
         publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+
+    # benchmark 15
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 15 = ' + str(timeDiff))
 
     publishedLink = messageId
     # blog posts should have no /statuses/ in their link
@@ -4459,6 +4700,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                          postJsonObject['object']['summary'],
                          postJsonObject['object']['content'])
 
+    # benchmark 16
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 16 = ' + str(timeDiff))
+
     if not isPatch:
         objectContent = \
             removeLongWords(postJsonObject['object']['content'], 40, [])
@@ -4499,6 +4746,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         else:
             contentStr += cwContentStr
 
+    # benchmark 17
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 17 = ' + str(timeDiff))
+
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
             replaceEmojiFromTags(contentStr,
@@ -4527,6 +4780,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     else:
         postHtml = galleryStr
 
+    # benchmark 18
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 18 = ' + str(timeDiff))
+
     if not showPublicOnly and storeToCache and \
        boxName != 'tlmedia' and boxName != 'tlbookmarks' and \
        boxName != 'bookmarks':
@@ -4534,6 +4793,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                         postJsonObject, postHtml)
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                postJsonObject, postHtml)
+
+    # benchmark 19
+    if not allowDownloads:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 19 = ' + str(timeDiff))
 
     return postHtml
 
@@ -4581,6 +4846,8 @@ def htmlTimeline(defaultTimeline: str,
                  YTReplacementDomain: str) -> str:
     """Show the timeline as html
     """
+    timelineStartTime = time.time()
+
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
 
     # should the calendar icon be highlighted?
@@ -4651,6 +4918,11 @@ def htmlTimeline(defaultTimeline: str,
     if not os.path.isfile(bannerFilename):
         bannerFile = 'banner.webp'
 
+    # benchmark 1
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 1 = ' + str(timeDiff))
+
     with open(cssFilename, 'r') as cssFile:
         # load css
         profileStyle = \
@@ -4664,6 +4936,11 @@ def htmlTimeline(defaultTimeline: str,
 
     # is the user a moderator?
     moderator = isModerator(baseDir, nickname)
+
+    # benchmark 2
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 2 = ' + str(timeDiff))
 
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
@@ -4744,6 +5021,11 @@ def htmlTimeline(defaultTimeline: str,
                         '" src="/' + iconsDir + '/person.png"/></a>\n'
                     break
 
+    # benchmark 3
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 3 = ' + str(timeDiff))
+
     # moderation / reports button
     moderationButtonStr = ''
     if moderator and not minimal:
@@ -4776,6 +5058,11 @@ def htmlTimeline(defaultTimeline: str,
             ' </span></button></a>\n'
 
     tlStr = htmlHeader(cssFilename, profileStyle)
+
+    # benchmark 4
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 4 = ' + str(timeDiff))
 
     # what screen to go to when a new post is created
     if boxName == 'dm':
@@ -4919,6 +5206,11 @@ def htmlTimeline(defaultTimeline: str,
         translate['Search and follow'] + '" alt="| ' + \
         translate['Search and follow'] + '" class="timelineicon"/></a>\n'
 
+    # benchmark 5
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
+
     # the calendar button
     calendarAltText = translate['Calendar']
     if newCalendarEvent:
@@ -4979,6 +5271,11 @@ def htmlTimeline(defaultTimeline: str,
             '" name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += '</div>\n</form>\n'
 
+    # benchmark 6
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 6 = ' + str(timeDiff))
+
     if boxName == 'tlshares':
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
@@ -4986,6 +5283,11 @@ def htmlTimeline(defaultTimeline: str,
                                    baseDir, actor, nickname, domain, port,
                                    maxSharesPerAccount, httpPrefix) +
                 htmlFooter())
+
+    # benchmark 7
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 7 = ' + str(timeDiff))
 
     # show todays events buttons on the first inbox page
     if boxName == 'inbox' and pageNumber == 1:
@@ -5015,6 +5317,11 @@ def htmlTimeline(defaultTimeline: str,
                     translate['Happening This Week'] + '</button></a>\n' + \
                     '</center>\n'
 
+    # benchmark 8
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 8 = ' + str(timeDiff))
+
     # page up arrow
     if pageNumber > 1:
         tlStr += \
@@ -5036,6 +5343,8 @@ def htmlTimeline(defaultTimeline: str,
 
         # show each post in the timeline
         for item in timelineJson['orderedItems']:
+            timelinePostStartTime = time.time()
+
             if item['type'] == 'Create' or \
                item['type'] == 'Announce' or \
                item['type'] == 'Update':
@@ -5057,10 +5366,27 @@ def htmlTimeline(defaultTimeline: str,
                                     preparePostFromHtmlCache(currTlStr,
                                                              boxName,
                                                              pageNumber)
+                                # benchmark cache post
+                                timeDiff = \
+                                    int((time.time() -
+                                         timelinePostStartTime) * 1000)
+                                if timeDiff > 100:
+                                    print('TIMELINE POST CACHE TIMING ' +
+                                          boxName + ' = ' + str(timeDiff))
+
                 if not currTlStr:
+                    # benchmark cache post
+                    timeDiff = \
+                        int((time.time() -
+                             timelinePostStartTime) * 1000)
+                    if timeDiff > 100:
+                        print('TIMELINE POST DISK TIMING START ' +
+                              boxName + ' = ' + str(timeDiff))
+
                     # read the post from disk
                     currTlStr = \
-                        individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                        individualPostAsHtml(False, recentPostsCache,
+                                             maxRecentPosts,
                                              iconsDir, translate, pageNumber,
                                              baseDir, session, wfRequest,
                                              personCache,
@@ -5074,12 +5400,24 @@ def htmlTimeline(defaultTimeline: str,
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
                                              False, True)
+                    # benchmark cache post
+                    timeDiff = \
+                        int((time.time() -
+                             timelinePostStartTime) * 1000)
+                    if timeDiff > 100:
+                        print('TIMELINE POST DISK TIMING ' +
+                              boxName + ' = ' + str(timeDiff))
 
                 if currTlStr:
                     itemCtr += 1
                     tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
+
+    # benchmark 9
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 9 = ' + str(timeDiff))
 
     # page down arrow
     if itemCtr > 2:
@@ -5337,7 +5675,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
         postStr += followStr + '</p>\n'
 
     postStr += \
-        individualPostAsHtml(recentPostsCache, maxRecentPosts,
+        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                              iconsDir, translate, None,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
@@ -5358,7 +5696,8 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
             postJsonObject = loadJson(postFilename)
             if postJsonObject:
                 postStr = \
-                    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
                                          iconsDir, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
@@ -5385,7 +5724,8 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr += \
-                    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
                                          iconsDir, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
@@ -5419,7 +5759,8 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr += \
-                individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                individualPostAsHtml(True, recentPostsCache,
+                                     maxRecentPosts,
                                      iconsDir, translate, None,
                                      baseDir, session, wfRequest, personCache,
                                      nickname, domain, port, item,
@@ -5552,7 +5893,7 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                                                 httpPrefix + '://')
         deletePostStr = htmlHeader(cssFilename, profileStyle)
         deletePostStr += \
-            individualPostAsHtml(recentPostsCache, maxRecentPosts,
+            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                  iconsDir, translate, pageNumber,
                                  baseDir, session, wfRequest, personCache,
                                  nickname, domain, port, postJsonObject,
@@ -6251,6 +6592,7 @@ def htmlCalendar(translate: {},
     else:
         daysInMonth = \
             (date(year + 1, 1, 1) - date(year, monthNumber, 1)).days
+    # print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
 
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):
@@ -6304,8 +6646,10 @@ def htmlCalendar(translate: {},
 
     dayOfMonth = 0
     dow = weekDayOfMonthStart(monthNumber, year)
-    for weekOfMonth in range(1, 6):
-        calendarStr += '  <tr>\n'
+    for weekOfMonth in range(1, 7):
+        if dayOfMonth == daysInMonth:
+            continue
+        calendarStr += '  <tr>\n'        
         for dayNumber in range(1, 8):
             if (weekOfMonth > 1 and dayOfMonth < daysInMonth) or \
                (weekOfMonth == 1 and dayNumber >= dow):
@@ -6636,7 +6980,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if profileJson['icon'].get('url'):
                 avatarUrl = profileJson['icon']['url']
         if not avatarUrl:
-            avatarUrl = getPersonAvatarUrl(baseDir, personUrl, personCache)
+            avatarUrl = getPersonAvatarUrl(baseDir, personUrl,
+                                           personCache, True)
         displayName = searchNickname
         if profileJson.get('name'):
             displayName = profileJson['name']
@@ -6730,7 +7075,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if not item.get('object'):
                 continue
             profileStr += \
-                individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                      iconsDir, translate, None, baseDir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,

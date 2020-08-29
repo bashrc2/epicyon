@@ -1118,22 +1118,20 @@ class PubServer(BaseHTTPRequestHandler):
                                'epicyon=; SameSite=Strict',
                                callingDomain)
 
-    def _benchmarkGETtimings(self, GETstartTime, GETtimings: [], getID: int):
-        """Updates a list containing how long each segment of GET takes
+    def _benchmarkGETtimings(self, GETstartTime, GETtimings: {},
+                             prevGetId: str, currGetId: str):
+        """Updates a dictionary containing how long each segment of GET takes
         """
-        if self.server.debug:
-            timeDiff = int((time.time() - GETstartTime) * 1000)
-            logEvent = False
-            if timeDiff > 100:
-                logEvent = True
-            if GETtimings:
-                timeDiff = int(timeDiff - int(GETtimings[-1]))
-            GETtimings.append(str(timeDiff))
-            if logEvent:
-                ctr = 1
-                for timeDiff in GETtimings:
-                    print('GET TIMING|' + str(ctr) + '|' + timeDiff)
-                    ctr += 1
+        timeDiff = int((time.time() - GETstartTime) * 1000)
+        logEvent = False
+        if timeDiff > 100:
+            logEvent = True
+        if prevGetId:
+            if GETtimings.get(prevGetId):
+                timeDiff = int(timeDiff - int(GETtimings[prevGetId]))
+        GETtimings[currGetId] = str(timeDiff)
+        if logEvent:
+            print('GET TIMING ' + currGetId + ' = ' + str(timeDiff))
 
     def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
                               postID: int):
@@ -1202,7 +1200,9 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
         GETstartTime = time.time()
-        GETtimings = []
+        GETtimings = {}
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings, None, 'start')
 
         # Since fediverse crawlers are quite active,
         # make returning info to them high priority
@@ -1210,13 +1210,16 @@ class PubServer(BaseHTTPRequestHandler):
         if self._nodeinfo(callingDomain):
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 1)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'start', '_nodeinfo(callingDomain)')
 
         # minimal mastodon api
         if self._mastoApi(callingDomain):
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 2)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  '_nodeinfo(callingDomain)',
+                                  '_mastoApi(callingDomain)')
 
         if self.path == '/logout':
             msg = \
@@ -1224,9 +1227,14 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.baseDir, False).encode('utf-8')
             self._logout_headers('text/html', len(msg), callingDomain)
             self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      '_nodeinfo(callingDomain)',
+                                      'logout')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 3)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  '_nodeinfo(callingDomain)',
+                                  'show logout')
 
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
@@ -1248,7 +1256,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Cookie'):
             cookie = self.headers['Cookie']
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show logout', 'get cookie')
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
@@ -1341,6 +1350,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             if self.server.debug:
                 print('Sent manifest: ' + callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show logout', 'send manifest')
             return
 
         # favicon image
@@ -1400,7 +1411,8 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('GET Not authorized')
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 5)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show logout', 'isAuthorized')
 
         if not self.server.session:
             print('Starting new session during GET')
@@ -1408,9 +1420,12 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 print('ERROR: GET failed to create session duing GET')
                 self._404()
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'isAuthorized', 'session fail')
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 6)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'isAuthorized', 'create session')
 
         # is this a html request?
         htmlGET = False
@@ -1432,6 +1447,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: No Accept header ' + str(self.headers))
                 self._400()
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'create session', 'hasAccept')
 
         # get fonts
         if '/fonts/' in self.path:
@@ -1464,6 +1482,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('font sent from cache: ' +
                               self.path + ' ' + callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'hasAccept',
+                                              'send font from cache')
                     return
                 else:
                     if os.path.isfile(fontFilename):
@@ -1478,13 +1499,17 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('font sent from file: ' +
                                   self.path + ' ' + callingDomain)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'hasAccept',
+                                                  'send font from file')
                         return
             if self.server.debug:
                 print('font not found: ' + self.path + ' ' + callingDomain)
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 7)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'hasAccept', 'fonts')
 
         # treat shared inbox paths consistently
         if self.path == '/sharedInbox' or \
@@ -1498,7 +1523,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             self.path = '/inbox'
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 8)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'fonts', 'sharedInbox enabled')
 
         # RSS 2.0
         if self.path.startswith('/blog/') and \
@@ -1538,12 +1564,18 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('Sent rss2 feed: ' +
                                   self.path + ' ' + callingDomain)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'sharedInbox enabled',
+                                                  'blog rss2')
                         return
             if self.server.debug:
                 print('Failed to get rss2 feed: ' +
                       self.path + ' ' + callingDomain)
             self._404()
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'sharedInbox enabled', 'rss2 done')
 
         # RSS 3.0
         if self.path.startswith('/blog/') and \
@@ -1582,12 +1614,18 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('Sent rss3 feed: ' +
                                   self.path + ' ' + callingDomain)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'sharedInbox enabled',
+                                                  'blog rss3')
                         return
             if self.server.debug:
                 print('Failed to get rss3 feed: ' +
                       self.path + ' ' + callingDomain)
             self._404()
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'sharedInbox enabled', 'rss3 done')
 
         # show the main blog page
         if htmlGET and (self.path == '/blog' or
@@ -1617,9 +1655,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'rss3 done', 'blog view')
                     return
                 self._404()
                 return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'rss3 done', 'blog view done')
 
         # show a particular page of blog entries
         # for a particular account
@@ -1665,6 +1708,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'blog view done', 'blog page')
                     return
                 self._404()
                 return
@@ -1687,6 +1732,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   len(msg),
                                   None, callingDomain)
                 self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'blog page',
+                                          'registered devices')
+                return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'blog view done',
+                                  'registered devices done')
 
         if htmlGET and '/users/' in self.path:
             # show the person options screen with view/follow/block/report
@@ -1715,7 +1768,8 @@ class PubServer(BaseHTTPRequestHandler):
                     emailAddress = None
                     actorJson = getPersonFromCache(self.server.baseDir,
                                                    optionsActor,
-                                                   self.server.personCache)
+                                                   self.server.personCache,
+                                                   True)
                     if actorJson:
                         donateUrl = getDonationUrl(actorJson)
                         xmppAddress = getXmppAddress(actorJson)
@@ -1742,6 +1796,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'registered devices done',
+                                              'person options')
                     return
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -1759,6 +1816,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
 
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'registered devices done',
+                                      'person options done')
             # show blog post
             blogFilename, nickname = \
                 self._pathContainsBlogLink(self.server.baseDir,
@@ -1781,11 +1841,16 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'person options done',
+                                                  'blog post 2')
                         return
                     self._404()
                     return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 9)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'person options done',
+                                  'blog post 2 done')
 
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
@@ -1812,9 +1877,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'remove shared item')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 10)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'blog post 2 done',
+                                  'remove shared item done')
 
         if self.path.startswith('/terms'):
             if callingDomain.endswith('.onion') and \
@@ -1832,9 +1902,14 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog post 2 done',
+                                      'terms of service shown')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 11)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'blog post 2 done',
+                                  'terms of service done')
 
         # show a list of who you are following
         if htmlGET and authorized and '/users/' in self.path and \
@@ -1849,7 +1924,14 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlFollowingList(self.server.baseDir, followingFilename)
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg.encode('utf-8'))
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'terms of service done',
+                                      'following accounts shown')
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'terms of service done',
+                                  'following accounts done')
 
         if self.path.endswith('/about'):
             if callingDomain.endswith('.onion'):
@@ -1871,15 +1953,22 @@ class PubServer(BaseHTTPRequestHandler):
             msg = msg.encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'following accounts done',
+                                      'show about screen')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 12)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'following accounts done',
+                                  'show about screen done')
 
         # send robots.txt if asked
         if self._robotsTxt():
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 13)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show about screen done',
+                                  'robots txt')
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
@@ -1928,9 +2017,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self._redirect_headers(self.server.httpPrefix + '://' +
                                                self.server.domainFull +
                                                '/login', None, callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'robots txt',
+                                              'show login screen')
                     return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 14)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'robots txt',
+                                  'show login screen done')
 
         # get css
         # Note that this comes before the busy flag to avoid conflicts
@@ -1950,11 +2044,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/css', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show login screen done',
+                                          'show profile.css')
                 return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 15)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show login screen done',
+                                  'profile.css done')
 
         # manifest images used to create a home screen icon
         # when selecting "add to home screen" in browsers
@@ -1992,9 +2091,16 @@ class PubServer(BaseHTTPRequestHandler):
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'profile.css done',
+                                              'manifest logo shown')
                     return
             self._404()
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'profile.css done',
+                                  'manifest logo done')
 
         # manifest images used to show example screenshots
         # for use by app stores
@@ -2025,9 +2131,16 @@ class PubServer(BaseHTTPRequestHandler):
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'manifest logo done',
+                                              'show screenshot')
                     return
             self._404()
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'manifest logo done',
+                                  'show screenshot done')
 
         # image on login screen or qrcode
         if self.path == '/login.png' or \
@@ -2061,11 +2174,16 @@ class PubServer(BaseHTTPRequestHandler):
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show screenshot done',
+                                              'login screen logo')
                     return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 16)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show screenshot done',
+                                  'login screen logo done')
 
         # QR code for account handle
         if '/users/' in self.path and \
@@ -2099,9 +2217,16 @@ class PubServer(BaseHTTPRequestHandler):
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'login screen logo done',
+                                              'account qrcode')
                     return
             self._404()
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'login screen logo done',
+                                  'account qrcode done')
 
         # search screen banner image
         if '/users/' in self.path and \
@@ -2132,11 +2257,16 @@ class PubServer(BaseHTTPRequestHandler):
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'account qrcode done',
+                                              'search screen banner')
                     return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 17)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'account qrcode done',
+                                  'search screen banner done')
 
         if '-background.' in self.path:
             for ext in ('webp', 'gif', 'jpg', 'png'):
@@ -2171,11 +2301,18 @@ class PubServer(BaseHTTPRequestHandler):
                                                        bgBinary, cookie,
                                                        callingDomain)
                                 self._write(bgBinary)
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'search screen ' +
+                                                          'banner done',
+                                                          'background shown')
                                 return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 18)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'search screen banner done',
+                                  'background shown done')
 
         # emoji images
         if '/emoji/' in self.path:
@@ -2205,11 +2342,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                mediaBinary, cookie,
                                                callingDomain)
                         self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'background shown done',
+                                              'show emoji')
                     return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 19)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'background shown done',
+                                  'show emoji done')
 
         # show media
         # Note that this comes before the busy flag to avoid conflicts
@@ -2250,11 +2392,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                mediaBinary, cookie,
                                                callingDomain)
                         self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show emoji done',
+                                              'show media')
                     return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 20)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show emoji done',
+                                  'show media done')
 
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
@@ -2285,11 +2432,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                mediaBinary, cookie,
                                                callingDomain)
                         self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show media done',
+                                              'share files shown')
                     return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 21)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show media done',
+                                  'share files done')
 
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
@@ -2320,11 +2472,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                    callingDomain)
                             self._write(mediaBinary)
                             self.server.iconsCache[mediaStr] = mediaBinary
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show files done',
+                                                  'icon shown')
                         return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 22)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show files done',
+                                  'icon shown done')
 
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
@@ -2367,11 +2524,16 @@ class PubServer(BaseHTTPRequestHandler):
                         # self._404()
                         return
                     self._write(mediaBinary)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'icon shown done',
+                                              'avatar shown')
                     return
             self._404()
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 23)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'icon shown done',
+                                  'avatar shown done')
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
@@ -2411,9 +2573,14 @@ class PubServer(BaseHTTPRequestHandler):
                                                    mediaBinary, cookie,
                                                    callingDomain)
                             self._write(mediaBinary)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'icon shown done',
+                                                  'avatar background shown')
                         return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 24)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'icon shown done',
+                                  'avatar background shown done')
 
         # This busy state helps to avoid flooding
         # Resources which are expected to be called from a web page
@@ -2429,7 +2596,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.lastGET = currTimeGET
         self.server.GETbusy = True
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 25)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'avatar background shown done',
+                                  'GET busy time')
 
         if not self._permittedDir(self.path):
             if self.server.debug:
@@ -2437,12 +2606,18 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             self.server.GETbusy = False
             return
+
         # get webfinger endpoint for a person
         if self._webfinger(callingDomain):
             self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'GET busy time',
+                                      'webfinger called')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 26)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'GET busy time',
+                                  'permitted directory')
 
         if self.path.startswith('/login') or \
            (self.path == '/' and not authorized):
@@ -2452,9 +2627,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'permitted directory',
+                                      'login shown')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 27)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'permitted directory',
+                                  'login shown done')
 
         # hashtag search
         if self.path.startswith('/tags/') or \
@@ -2516,9 +2696,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStrAbsolute + '/search',
                                        cookie, callingDomain)
             self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'login shown done',
+                                      'hashtag search')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 28)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'login shown done',
+                                  'hashtag search done')
 
         # show or hide buttons in the web interface
         if htmlGET and '/users/' in self.path and \
@@ -2551,9 +2736,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'hashtag search done',
+                                          'search screen shown')
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 29)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'hashtag search done',
+                                  'search screen shown done')
 
         # Show the calendar for a user
         if htmlGET and '/users/' in self.path:
@@ -2566,7 +2756,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'search screen shown done',
+                                          'calendar shown')
                 return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'search screen shown done',
+                                  'calendar shown done')
 
         # Show confirmation for deleting a calendar event
         if htmlGET and '/users/' in self.path:
@@ -2614,6 +2811,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.path.split('/eventdelete')[0]
                     self._redirect_headers(actor + '/calendar',
                                            cookie, callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'calendar shown done',
+                                              'calendar delete shown')
                     return
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -2622,7 +2822,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 30)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'calendar shown done',
+                                  'calendar delete shown done')
 
         # search for emoji by name
         if htmlGET and '/users/' in self.path:
@@ -2635,9 +2837,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'calendar delete shown done',
+                                          'emoji search shown')
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 31)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'calendar delete shown done',
+                                  'emoji search shown done')
 
         repeatPrivate = False
         if htmlGET and '?repeatprivate=' in self.path:
@@ -2732,9 +2939,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    timelineStr + '?page=' +
                                    str(pageNumber) +
                                    timelineBookmark, cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'emoji search shown done',
+                                      'show announce')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 32)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'emoji search shown done',
+                                  'show announce done')
 
         if htmlGET and '?unrepeatprivate=' in self.path:
             self.path = self.path.replace('?unrepeatprivate=', '?unrepeat=')
@@ -2823,9 +3035,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    timelineStr + '?page=' +
                                    str(pageNumber) +
                                    timelineBookmark, cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show announce done',
+                                      'unannounce')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 33)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show announce done',
+                                  'unannounce done')
 
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and \
@@ -2871,10 +3088,15 @@ class PubServer(BaseHTTPRequestHandler):
                     'http://' + self.server.i2pDomain + originPathStr
             self._redirect_headers(originPathStrAbsolute,
                                    cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'unannounce done',
+                                      'follow approve shown')
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 34)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'follow approve done')
 
         # deny a follow request from the web interface
         if authorized and '/followdeny=' in self.path and \
@@ -2911,9 +3133,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(originPathStrAbsolute,
                                    cookie, callingDomain)
             self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'follow approve done',
+                                      'follow deny shown')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 35)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'follow approve done',
+                                  'follow deny done')
 
         # like from the web interface icon
         if htmlGET and '?like=' in self.path:
@@ -3013,9 +3240,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
                                    callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'follow deny done',
+                                      'like shown')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 36)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'follow deny done',
+                                  'like shown done')
 
         # undo a like from the web interface icon
         if htmlGET and '?unlike=' in self.path:
@@ -3115,9 +3347,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
                                    callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'like shown done',
+                                      'unlike shown')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 36)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'like shown done',
+                                  'unlike shown done')
 
         # bookmark from the web interface icon
         if htmlGET and '?bookmark=' in self.path:
@@ -3205,7 +3442,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
                                    callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'unlike shown done',
+                                      'bookmark shown')
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unlike shown done',
+                                  'bookmark shown done')
 
         # undo a bookmark from the web interface icon
         if htmlGET and '?unbookmark=' in self.path:
@@ -3293,9 +3537,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
                                    callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'bookmark shown done',
+                                      'unbookmark shown')
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 37)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'bookmark shown done',
+                                  'unbookmark shown done')
 
         # delete a post from the web interface icon
         if htmlGET and '?delete=' in self.path:
@@ -3389,7 +3638,14 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = 'http://' + self.server.i2pDomain + usersPath
             self._redirect_headers(actor + '/' + timelineStr,
                                    cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'unbookmark shown done',
+                                      'delete shown')
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unbookmark shown done',
+                                  'delete shown done')
 
         # mute a post from the web interface icon
         if htmlGET and '?mute=' in self.path:
@@ -3436,7 +3692,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor + '/' +
                                    timelineStr + timelineBookmark,
                                    cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'delete shown done',
+                                      'post muted')
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'delete shown done',
+                                  'post muted done')
 
         # unmute a post from the web interface icon
         if htmlGET and '?unmute=' in self.path:
@@ -3486,7 +3749,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor + '/' + timelineStr +
                                    timelineBookmark,
                                    cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'post muted done',
+                                      'unmute activated')
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'post muted done',
+                                  'unmute activated done')
 
         # reply from the web interface icon
         inReplyToUrl = None
@@ -3681,9 +3951,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'unmute activated done',
+                                          'new post made')
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 38)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unmute activated done',
+                                  'new post done')
 
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
@@ -3775,13 +4050,18 @@ class PubServer(BaseHTTPRequestHandler):
                                     else:
                                         self._404()
                             self.server.GETbusy = False
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'new post done',
+                                                      'individual post shown')
                             return
                         else:
                             self._404()
                             self.server.GETbusy = False
                             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 39)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'new post done',
+                                  'individual post done')
 
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
@@ -3999,6 +4279,14 @@ class PubServer(BaseHTTPRequestHandler):
                                                           cookie,
                                                           callingDomain)
                                         self._write(msg)
+                                        self._benchmarkGETtimings(GETstartTime,
+                                                                  GETtimings,
+                                                                  'indiv' +
+                                                                  'idual' +
+                                                                  ' post done',
+                                                                  'post ' +
+                                                                  'replies ' +
+                                                                  'done')
                                     else:
                                         if self._fetchAuthenticated():
                                             msg = \
@@ -4016,7 +4304,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.GETbusy = False
                                     return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 40)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'individual post done',
+                                  'post replies done')
 
         if self.path.endswith('/roles') and '/users/' in self.path:
             namedStatus = self.path.split('/users/')[1]
@@ -4066,6 +4356,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._set_headers('text/html', len(msg),
                                                       cookie, callingDomain)
                                     self._write(msg)
+                                    self._benchmarkGETtimings(GETstartTime,
+                                                              GETtimings,
+                                                              'post replies ' +
+                                                              'done',
+                                                              'show roles')
                             else:
                                 if self._fetchAuthenticated():
                                     msg = json.dumps(actorJson['roles'],
@@ -4079,6 +4374,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._404()
                             self.server.GETbusy = False
                             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'post replies done',
+                                  'show roles done')
 
         # show skills on the profile page
         if self.path.endswith('/skills') and '/users/' in self.path:
@@ -4131,6 +4430,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                       cookie,
                                                       callingDomain)
                                     self._write(msg)
+                                    self._benchmarkGETtimings(GETstartTime,
+                                                              GETtimings,
+                                                              'post roles ' +
+                                                              'done',
+                                                              'show skills')
                             else:
                                 if self._fetchAuthenticated():
                                     msg = json.dumps(actorJson['skills'],
@@ -4158,7 +4462,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 41)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'post roles done',
+                                  'show skills done')
 
         # get an individual post from the path
         # /users/nickname/statuses/number
@@ -4240,6 +4546,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                       cookie,
                                                       callingDomain)
                                     self._write(msg)
+                                    self._benchmarkGETtimings(GETstartTime,
+                                                              GETtimings,
+                                                              'show skills ' +
+                                                              'done',
+                                                              'show status')
                                 else:
                                     if self._fetchAuthenticated():
                                         msg = json.dumps(postJsonObject,
@@ -4258,7 +4569,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 42)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show skills done',
+                                  'show status done')
 
         # get the inbox for a given person
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
@@ -4276,6 +4589,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized,
                                       self.server.ocapAlways)
                     if inboxFeed:
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox json')
                         if self._requestHTTP():
                             nickname = self.path.replace('/users/', '')
                             nickname = nickname.replace('/inbox', '')
@@ -4300,6 +4616,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                   maxPostsInFeed, 'inbox',
                                                   authorized,
                                                   self.server.ocapAlways)
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'show status done',
+                                                          'show inbox page')
                             msg = htmlInbox(self.server.defaultTimeline,
                                             self.server.recentPostsCache,
                                             self.server.maxRecentPosts,
@@ -4318,11 +4638,17 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.projectVersion,
                                             self._isMinimal(nickname),
                                             self.server.YTReplacementDomain)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox html')
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
                                               cookie, callingDomain)
                             self._write(msg)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox')
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
@@ -4349,7 +4675,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 43)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show status done',
+                                  'show inbox done')
 
         # get the direct messages for a given person
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
@@ -4415,6 +4743,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               len(msg),
                                               cookie, callingDomain)
                             self._write(msg)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show inbox done',
+                                                      'show dms')
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
@@ -4441,7 +4772,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 44)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show inbox done',
+                                  'show dms done')
 
         # get the replies for a given person
         if self.path.endswith('/tlreplies') or '/tlreplies?page=' in self.path:
@@ -4506,6 +4839,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show dms done',
+                                                  'show replies 2')
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
@@ -4533,7 +4869,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 45)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show dms done',
+                                  'show replies 2 done')
 
         # get the media for a given person
         if self.path.endswith('/tlmedia') or '/tlmedia?page=' in self.path:
@@ -4598,6 +4936,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show replies 2 done',
+                                                  'show media 2')
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
@@ -4624,6 +4965,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.GETbusy = False
                 return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show replies 2 done',
+                                  'show media 2 done')
 
         # get the blogs for a given person
         if self.path.endswith('/tlblogs') or '/tlblogs?page=' in self.path:
@@ -4688,6 +5033,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show media 2 done',
+                                                  'show blogs 2')
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
@@ -4715,7 +5063,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 46)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show media 2 done',
+                                  'show blogs 2 done')
 
         # get the shared items timeline for a given person
         if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
@@ -4754,6 +5104,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show blogs 2 done',
+                                                  'show shares 2')
                         self.server.GETbusy = False
                         return
             # not the shares timeline
@@ -4763,6 +5116,10 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.GETbusy = False
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show blogs 2 done',
+                                  'show shares 2 done')
 
         # get the bookmarks for a given person
         if self.path.endswith('/tlbookmarks') or \
@@ -4832,6 +5189,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               len(msg),
                                               cookie, callingDomain)
                             self._write(msg)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show shares 2 done',
+                                                      'show bookmarks 2')
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
@@ -4857,6 +5217,10 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.GETbusy = False
             return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show shares 2 done',
+                                  'show bookmarks 2 done')
 
         # get the events for a given person
         if self.path.endswith('/tlevents') or \
@@ -4930,6 +5294,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               len(msg),
                                               cookie, callingDomain)
                             self._write(msg)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show bookmarks 2 done',
+                                                      'show events')
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
@@ -4955,7 +5322,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 47)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show bookmarks 2 done',
+                                  'show events done')
 
         # get outbox feed for a person
         outboxFeed = \
@@ -5016,6 +5385,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show events done',
+                                          'show outbox')
             else:
                 if self._fetchAuthenticated():
                     msg = json.dumps(outboxFeed,
@@ -5030,7 +5402,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 48)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show events done',
+                                  'show outbox done')
 
         # get the moderation feed for a moderator
         if self.path.endswith('/moderation') or \
@@ -5094,6 +5468,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               len(msg),
                                               cookie, callingDomain)
                             self._write(msg)
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show outbox done',
+                                                      'show moderation')
                         else:
                             # don't need authenticated fetch here because
                             # there is already the authorization check
@@ -5119,7 +5496,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 49)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show outbox done',
+                                  'show moderation done')
 
         shares = \
             getSharesFeedForPerson(self.server.baseDir,
@@ -5184,6 +5563,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show moderation done',
+                                              'show profile 2')
                     self.server.GETbusy = False
                     return
             else:
@@ -5200,7 +5582,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 50)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show moderation done',
+                                  'show profile 2 done')
 
         following = \
             getFollowingFeed(self.server.baseDir, self.server.domain,
@@ -5265,6 +5649,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       len(msg), cookie, callingDomain)
                     self._write(msg)
                     self.server.GETbusy = False
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show profile 2 done',
+                                              'show profile 3')
                     return
             else:
                 if self._fetchAuthenticated():
@@ -5279,7 +5666,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 51)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show profile 2 done',
+                                  'show profile 3 done')
 
         followers = \
             getFollowingFeed(self.server.baseDir, self.server.domain,
@@ -5345,6 +5734,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       cookie, callingDomain)
                     self._write(msg)
                     self.server.GETbusy = False
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show profile 3 done',
+                                              'show profile 4')
                     return
             else:
                 if self._fetchAuthenticated():
@@ -5359,7 +5751,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 52)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show profile 3 done',
+                                  'show profile 4 done')
 
         # look up a person
         getPerson = \
@@ -5397,6 +5791,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show profile 4 done',
+                                          'show profile posts')
             else:
                 if self._fetchAuthenticated():
                     msg = json.dumps(getPerson,
@@ -5410,7 +5807,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 53)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show profile 4 done',
+                                  'show profile posts done')
 
         # check that a json file was requested
         if not self.path.endswith('.json'):
@@ -5428,7 +5827,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 54)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show profile posts done',
+                                  'authenticated fetch')
 
         # check that the file exists
         filename = self.server.baseDir + self.path
@@ -5442,13 +5843,17 @@ class PubServer(BaseHTTPRequestHandler):
                                   len(msg),
                                   None, callingDomain)
                 self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'authenticated fetch',
+                                          'arbitrary json')
         else:
             if self.server.debug:
                 print('DEBUG: GET Unknown file')
             self._404()
         self.server.GETbusy = False
 
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 55)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'arbitrary json', 'end benchmarks')
 
     def do_HEAD(self):
         callingDomain = self.server.domainFull
@@ -7097,7 +7502,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('followDMs'):
                             if fields['followDMs'] == 'on':
                                 followDMsActive = True
-                                with open(followDMsFilename, "w") as fFile:
+                                with open(followDMsFilename, 'w+') as fFile:
                                     fFile.write('\n')
                         if not followDMsActive:
                             if os.path.isfile(followDMsFilename):
@@ -7111,21 +7516,39 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('removeTwitter'):
                             if fields['removeTwitter'] == 'on':
                                 removeTwitterActive = True
-                                with open(removeTwitterFilename, "w") as rFile:
+                                with open(removeTwitterFilename, 'w+') as rFile:
                                     rFile.write('\n')
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
                                 os.remove(removeTwitterFilename)
-                        # notify about new Likes
+                        # hide Like button
+                        hideLikeButtonFile = \
+                            self.server.baseDir + '/accounts/' + \
+                            nickname + '@' + self.server.domain + \
+                            '/.hideLikeButton'
                         notifyLikesFilename = \
                             self.server.baseDir + '/accounts/' + \
                             nickname + '@' + self.server.domain + \
                             '/.notifyLikes'
+                        hideLikeButtonActive = False
+                        if fields.get('hideLikeButton'):
+                            if fields['hideLikeButton'] == 'on':
+                                hideLikeButtonActive = True
+                                with open(hideLikeButtonFile, 'w+') as rFile:
+                                    rFile.write('\n')
+                                # remove notify likes selection
+                                if os.path.isfile(notifyLikesFilename):
+                                    os.remove(notifyLikesFilename)
+                        if not hideLikeButtonActive:
+                            if os.path.isfile(hideLikeButtonFile):
+                                os.remove(hideLikeButtonFile)
+                        # notify about new Likes
                         notifyLikesActive = False
                         if fields.get('notifyLikes'):
-                            if fields['notifyLikes'] == 'on':
+                            if fields['notifyLikes'] == 'on' and \
+                               not hideLikeButtonActive:
                                 notifyLikesActive = True
-                                with open(notifyLikesFilename, "w") as rFile:
+                                with open(notifyLikesFilename, 'w+') as rFile:
                                     rFile.write('\n')
                         if not notifyLikesActive:
                             if os.path.isfile(notifyLikesFilename):
@@ -7162,7 +7585,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/filters.txt'
                         if fields.get('filteredWords'):
-                            with open(filterFilename, "w") as filterfile:
+                            with open(filterFilename, 'w+') as filterfile:
                                 filterfile.write(fields['filteredWords'])
                         else:
                             if os.path.isfile(filterFilename):
@@ -7173,7 +7596,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/replacewords.txt'
                         if fields.get('switchWords'):
-                            with open(switchFilename, "w") as switchfile:
+                            with open(switchFilename, 'w+') as switchfile:
                                 switchfile.write(fields['switchWords'])
                         else:
                             if os.path.isfile(switchFilename):
@@ -7184,7 +7607,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/blocking.txt'
                         if fields.get('blocked'):
-                            with open(blockedFilename, "w") as blockedfile:
+                            with open(blockedFilename, 'w+') as blockedfile:
                                 blockedfile.write(fields['blocked'])
                         else:
                             if os.path.isfile(blockedFilename):
@@ -7195,7 +7618,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/allowedinstances.txt'
                         if fields.get('allowedInstances'):
-                            with open(allowedInstancesFilename, "w") as aFile:
+                            with open(allowedInstancesFilename, 'w+') as aFile:
                                 aFile.write(fields['allowedInstances'])
                         else:
                             if os.path.isfile(allowedInstancesFilename):
@@ -7206,7 +7629,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/gitprojects.txt'
                         if fields.get('gitProjects'):
-                            with open(gitProjectsFilename, "w") as aFile:
+                            with open(gitProjectsFilename, 'w+') as aFile:
                                 aFile.write(fields['gitProjects'].lower())
                         else:
                             if os.path.isfile(gitProjectsFilename):
@@ -7230,7 +7653,8 @@ class PubServer(BaseHTTPRequestHandler):
                             # personCache in memory
                             storePersonInCache(self.server.baseDir,
                                                actorJson['id'], actorJson,
-                                               self.server.personCache)
+                                               self.server.personCache,
+                                               True)
                             # clear any cached images for this actor
                             idStr = actorJson['id'].replace('/', '-')
                             removeAvatarFromCache(self.server.baseDir, idStr)

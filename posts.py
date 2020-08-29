@@ -209,7 +209,8 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             personUrl = httpPrefix + '://' + domain + '/users/' + nickname
     if not personUrl:
         return None, None, None, None, None, None, None, None
-    personJson = getPersonFromCache(baseDir, personUrl, personCache)
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, True)
     if not personJson:
         if '/channel/' in personUrl or '/accounts/' in personUrl:
             asHeader = {
@@ -265,7 +266,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     if personJson.get('name'):
         displayName = personJson['name']
 
-    storePersonInCache(baseDir, personUrl, personJson, personCache)
+    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
         capabilityAcquisition, avatarUrl, displayName
@@ -388,15 +389,16 @@ def getPosts(session, outboxUrl: str, maxPosts: int,
             inReplyTo = ''
             if item['object'].get('inReplyTo'):
                 if item['object']['inReplyTo']:
-                    # No replies to non-permitted domains
-                    if not urlPermitted(item['object']['inReplyTo'],
-                                        federationList,
-                                        "objects:read"):
-                        if debug:
-                            print('url not permitted ' +
-                                  item['object']['inReplyTo'])
-                        continue
-                    inReplyTo = item['object']['inReplyTo']
+                    if isinstance(item['object']['inReplyTo'], str):
+                        # No replies to non-permitted domains
+                        if not urlPermitted(item['object']['inReplyTo'],
+                                            federationList,
+                                            "objects:read"):
+                            if debug:
+                                print('url not permitted ' +
+                                      item['object']['inReplyTo'])
+                            continue
+                        inReplyTo = item['object']['inReplyTo']
 
             conversation = ''
             if item['object'].get('conversation'):
@@ -483,10 +485,11 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
         if not isinstance(item['object'], dict):
             continue
         if item['object'].get('inReplyTo'):
-            postDomain, postPort = \
-                getDomainFromActor(item['object']['inReplyTo'])
-            if postDomain not in postDomains:
-                postDomains.append(postDomain)
+            if isinstance(item['object']['inReplyTo'], str):
+                postDomain, postPort = \
+                    getDomainFromActor(item['object']['inReplyTo'])
+                if postDomain not in postDomains:
+                    postDomains.append(postDomain)
 
         if item['object'].get('tag'):
             for tagItem in item['object']['tag']:
@@ -2675,8 +2678,9 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
        postJsonObject['object']['type'] != 'Article':
         return False
     if postJsonObject['object'].get('inReplyTo'):
-        if postJsonObject['object']['inReplyTo'].startswith(actor):
-            return True
+        if isinstance(postJsonObject['object']['inReplyTo'], str):
+            if postJsonObject['object']['inReplyTo'].startswith(actor):
+                return True
     if not postJsonObject['object'].get('tag'):
         return False
     if not isinstance(postJsonObject['object']['tag'], list):
@@ -3532,7 +3536,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
         return
 
     print('MUTE: ' + postFilename)
-    muteFile = open(postFilename + '.muted', "w")
+    muteFile = open(postFilename + '.muted', 'w+')
     if muteFile:
         muteFile.write('\n')
         muteFile.close()

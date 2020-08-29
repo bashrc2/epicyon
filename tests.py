@@ -209,8 +209,8 @@ def testCache():
         "test": "This is a test"
     }
     personCache = {}
-    storePersonInCache(None, personUrl, personJson, personCache)
-    result = getPersonFromCache(None, personUrl, personCache)
+    storePersonInCache(None, personUrl, personJson, personCache, True)
+    result = getPersonFromCache(None, personUrl, personCache, True)
     assert result['id'] == 123456
     assert result['test'] == 'This is a test'
 
@@ -2064,6 +2064,9 @@ def testTranslations():
     langDict = {}
     for lang in languagesStr:
         langJson = loadJson('translations/' + lang + '.json')
+        if not langJson:
+            print('Missing language file ' +
+                  'translations/' + lang + '.json')
         assert langJson
         langDict[lang] = langJson
 
