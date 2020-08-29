@@ -283,12 +283,13 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                       actor)
                 return None
             storePersonInCache(baseDir, actor, personJson, personCache)
-            return getPersonAvatarUrl(baseDir, actor, personCache)
+            return getPersonAvatarUrl(baseDir, actor, personCache, True)
         return None
     return avatarImageFilename.replace(baseDir + '/cache', '')
 
 
-def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {}) -> str:
+def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
+                       allowDownloads: bool) -> str:
     """Returns the avatar url for the person
     """
     personJson = getPersonFromCache(baseDir, personUrl, personCache)
@@ -797,7 +798,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                 showIndividualPostIcons = True
             allowDeletion = False
             hashtagSearchForm += \
-                individualPostAsHtml(recentPostsCache,
+                individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      iconsDir, translate, None,
                                      baseDir, session, wfRequest,
@@ -1026,7 +1027,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
         showIndividualPostIcons = True
         allowDeletion = False
         historySearchForm += \
-            individualPostAsHtml(recentPostsCache,
+            individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  iconsDir, translate, None,
                                  baseDir, session, wfRequest,
@@ -2502,7 +2503,8 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
         for item in outboxFeed['orderedItems']:
             if item['type'] == 'Create':
                 postStr = \
-                    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
                                          iconsDir, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
@@ -3062,7 +3064,7 @@ def individualFollowAsHtml(translate: {},
     nickname = getNicknameFromActor(followUrl)
     domain, port = getDomainFromActor(followUrl)
     titleStr = '@' + nickname + '@' + domain
-    avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache)
+    avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
     if domain not in followUrl:
@@ -3787,7 +3789,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
     return attachmentStr, galleryStr
 
 
-def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
+def individualPostAsHtml(allowDownloads: bool,
+                         recentPostsCache: {}, maxRecentPosts: int,
                          iconsDir: str, translate: {},
                          pageNumber: int, baseDir: str,
                          session, wfRequest: {}, personCache: {},
@@ -3849,7 +3852,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         # update avatar if needed
         if not avatarUrl:
             avatarUrl = \
-                getPersonAvatarUrl(baseDir, postActor, personCache)
+                getPersonAvatarUrl(baseDir, postActor, personCache,
+                                   allowDownloads)
 
             # benchmark 2.1
             timeDiff = int((time.time() - postStartTime) * 1000)
@@ -3884,7 +3888,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     if not avatarUrl:
         avatarUrl = \
-            getPersonAvatarUrl(baseDir, postActor, personCache)
+            getPersonAvatarUrl(baseDir, postActor, personCache,
+                               allowDownloads)
         avatarUrl = \
             updateAvatarImageCache(session, baseDir, httpPrefix,
                                    postActor, avatarUrl, personCache)
@@ -4317,7 +4322,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                     # benchmark 13.2
                     timeDiff = int((time.time() - postStartTime) * 1000)
                     if timeDiff > 100:
-                        print('TIMING INDIV ' + boxName + ' 13.2 = ' + str(timeDiff))
+                        print('TIMING INDIV ' + boxName +
+                              ' 13.2 = ' + str(timeDiff))
                     announceNickname = None
                     if attributedTo:
                         announceNickname = getNicknameFromActor(attributedTo)
@@ -4329,9 +4335,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                             getDisplayName(baseDir, attributedTo, personCache)
                         if announceDisplayName:
                             # benchmark 13.3
-                            timeDiff = int((time.time() - postStartTime) * 1000)
+                            timeDiff = \
+                                int((time.time() - postStartTime) * 1000)
                             if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName + ' 13.3 = ' + str(timeDiff))
+                                print('TIMING INDIV ' + boxName +
+                                      ' 13.3 = ' + str(timeDiff))
 
                             if ':' in announceDisplayName:
                                 announceDisplayName = \
@@ -4340,9 +4348,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                                           announceDisplayName,
                                                           False)
                             # benchmark 13.3.1
-                            timeDiff = int((time.time() - postStartTime) * 1000)
+                            timeDiff = \
+                                int((time.time() - postStartTime) * 1000)
                             if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName + ' 13.3.1 = ' + str(timeDiff))
+                                print('TIMING INDIV ' + boxName +
+                                      ' 13.3.1 = ' + str(timeDiff))
 
                             titleStr += \
                                 ' <img loading="lazy" title="' + \
@@ -4357,12 +4367,14 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                 postJsonObject['object']['attributedTo']
                             announceAvatarUrl = \
                                 getPersonAvatarUrl(baseDir, announceActor,
-                                                   personCache)
+                                                   personCache, allowDownloads)
 
                             # benchmark 13.4
-                            timeDiff = int((time.time() - postStartTime) * 1000)
+                            timeDiff = \
+                                int((time.time() - postStartTime) * 1000)
                             if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName + ' 13.4 = ' + str(timeDiff))
+                                print('TIMING INDIV ' + boxName +
+                                      ' 13.4 = ' + str(timeDiff))
 
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
@@ -4476,7 +4488,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                     replyAvatarUrl = \
                                         getPersonAvatarUrl(baseDir,
                                                            replyActor,
-                                                           personCache)
+                                                           personCache,
+                                                           allowDownloads)
 
                                     # benchmark 13.8
                                     timeDiff = int((time.time() -
@@ -5306,7 +5319,7 @@ def htmlTimeline(defaultTimeline: str,
                                 # benchmark cache post
                                 timeDiff = \
                                     int((time.time() -
-                                         timelineStartTime) * 1000)
+                                         timelinePostStartTime) * 1000)
                                 if timeDiff > 100:
                                     print('TIMELINE POST CACHE TIMING ' +
                                           boxName + ' = ' + str(timeDiff))
@@ -5315,14 +5328,15 @@ def htmlTimeline(defaultTimeline: str,
                     # benchmark cache post
                     timeDiff = \
                         int((time.time() -
-                             timelineStartTime) * 1000)
+                             timelinePostStartTime) * 1000)
                     if timeDiff > 100:
                         print('TIMELINE POST DISK TIMING START ' +
                               boxName + ' = ' + str(timeDiff))
 
                     # read the post from disk
                     currTlStr = \
-                        individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                        individualPostAsHtml(False, recentPostsCache,
+                                             maxRecentPosts,
                                              iconsDir, translate, pageNumber,
                                              baseDir, session, wfRequest,
                                              personCache,
@@ -5339,7 +5353,7 @@ def htmlTimeline(defaultTimeline: str,
                     # benchmark cache post
                     timeDiff = \
                         int((time.time() -
-                             timelineStartTime) * 1000)
+                             timelinePostStartTime) * 1000)
                     if timeDiff > 100:
                         print('TIMELINE POST DISK TIMING ' +
                               boxName + ' = ' + str(timeDiff))
@@ -5611,7 +5625,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
         postStr += followStr + '</p>\n'
 
     postStr += \
-        individualPostAsHtml(recentPostsCache, maxRecentPosts,
+        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                              iconsDir, translate, None,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
@@ -5632,7 +5646,8 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
             postJsonObject = loadJson(postFilename)
             if postJsonObject:
                 postStr = \
-                    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
                                          iconsDir, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
@@ -5659,7 +5674,8 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr += \
-                    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
                                          iconsDir, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
@@ -5693,7 +5709,8 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr += \
-                individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                individualPostAsHtml(True, recentPostsCache,
+                                     maxRecentPosts,
                                      iconsDir, translate, None,
                                      baseDir, session, wfRequest, personCache,
                                      nickname, domain, port, item,
@@ -5826,7 +5843,7 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                                                 httpPrefix + '://')
         deletePostStr = htmlHeader(cssFilename, profileStyle)
         deletePostStr += \
-            individualPostAsHtml(recentPostsCache, maxRecentPosts,
+            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                  iconsDir, translate, pageNumber,
                                  baseDir, session, wfRequest, personCache,
                                  nickname, domain, port, postJsonObject,
@@ -6910,7 +6927,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if profileJson['icon'].get('url'):
                 avatarUrl = profileJson['icon']['url']
         if not avatarUrl:
-            avatarUrl = getPersonAvatarUrl(baseDir, personUrl, personCache)
+            avatarUrl = getPersonAvatarUrl(baseDir, personUrl,
+                                           personCache, True)
         displayName = searchNickname
         if profileJson.get('name'):
             displayName = profileJson['name']
@@ -7004,7 +7022,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if not item.get('object'):
                 continue
             profileStr += \
-                individualPostAsHtml(recentPostsCache, maxRecentPosts,
+                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                      iconsDir, translate, None, baseDir,
                                      session, cachedWebfingers, personCache,
                                      nickname, domain, port,
