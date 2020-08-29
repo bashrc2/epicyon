@@ -199,7 +199,8 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
-                           personCache: {}, force=False) -> str:
+                           personCache: {}, allowDownloads: bool,
+                           force=False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -232,7 +233,7 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
         avatarImageFilename = avatarImagePath + '.webp'
     else:
         return None
-    if not os.path.isfile(avatarImageFilename) or force:
+    if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:
         try:
             print('avatar image url: ' + avatarUrl)
             result = session.get(avatarUrl,
@@ -283,7 +284,8 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                       actor)
                 return None
             storePersonInCache(baseDir, actor, personJson, personCache)
-            return getPersonAvatarUrl(baseDir, actor, personCache, True)
+            return getPersonAvatarUrl(baseDir, actor, personCache,
+                                      allowDownloads)
         return None
     return avatarImageFilename.replace(baseDir + '/cache', '')
 
@@ -3861,7 +3863,8 @@ def individualPostAsHtml(allowDownloads: bool,
                 print('TIMING INDIV ' + boxName + ' 2.1 = ' + str(timeDiff))
 
         updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache)
+                               postActor, avatarUrl, personCache,
+                               allowDownloads)
 
         # benchmark 2.2
         timeDiff = int((time.time() - postStartTime) * 1000)
@@ -3892,10 +3895,12 @@ def individualPostAsHtml(allowDownloads: bool,
                                allowDownloads)
         avatarUrl = \
             updateAvatarImageCache(session, baseDir, httpPrefix,
-                                   postActor, avatarUrl, personCache)
+                                   postActor, avatarUrl, personCache,
+                                   allowDownloads)
     else:
         updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache)
+                               postActor, avatarUrl, personCache,
+                               allowDownloads)
 
     # benchmark 5
     timeDiff = int((time.time() - postStartTime) * 1000)
