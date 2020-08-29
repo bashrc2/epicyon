@@ -6592,7 +6592,7 @@ def htmlCalendar(translate: {},
     else:
         daysInMonth = \
             (date(year + 1, 1, 1) - date(year, monthNumber, 1)).days
-    print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
+    # print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
 
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):
@@ -6646,7 +6646,7 @@ def htmlCalendar(translate: {},
 
     dayOfMonth = 0
     dow = weekDayOfMonthStart(monthNumber, year)
-    for weekOfMonth in range(1, 6):
+    for weekOfMonth in range(1, 7):
         calendarStr += '  <tr>\n'
         for dayNumber in range(1, 8):
             if (weekOfMonth > 1 and dayOfMonth < daysInMonth) or \
