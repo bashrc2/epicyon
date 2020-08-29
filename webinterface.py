@@ -3808,6 +3808,9 @@ def individualPostAsHtml(allowDownloads: bool,
                          storeToCache=True) -> str:
     """ Shows a single post as html
     """
+    if not postJsonObject:
+        return ''
+
     # benchmark
     postStartTime = time.time()
 
