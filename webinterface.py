@@ -4331,12 +4331,18 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                             timeDiff = int((time.time() - postStartTime) * 1000)
                             if timeDiff > 100:
                                 print('TIMING INDIV ' + boxName + ' 13.3 = ' + str(timeDiff))
+
                             if ':' in announceDisplayName:
                                 announceDisplayName = \
                                     addEmojiToDisplayName(baseDir, httpPrefix,
                                                           nickname, domain,
                                                           announceDisplayName,
                                                           False)
+                            # benchmark 13.3.1
+                            timeDiff = int((time.time() - postStartTime) * 1000)
+                            if timeDiff > 100:
+                                print('TIMING INDIV ' + boxName + ' 13.3.1 = ' + str(timeDiff))
+
                             titleStr += \
                                 ' <img loading="lazy" title="' + \
                                 translate['announces'] + '" alt="' + \
