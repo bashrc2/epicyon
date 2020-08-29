@@ -134,7 +134,7 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     avatarUrl = None
     if boxname != 'tlevents' and boxname != 'outbox':
         boxName = 'inbox'
-    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+    individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                          getIconsDir(baseDir), translate, pageNumber,
                          baseDir, session, cachedWebfingers, personCache,
                          nickname, domain, port, postJsonObject,
