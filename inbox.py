@@ -1642,7 +1642,7 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
             repliesFile.write(messageId + '\n')
             repliesFile.close()
     else:
-        repliesFile = open(postRepliesFilename, "w")
+        repliesFile = open(postRepliesFilename, 'w+')
         repliesFile.write(messageId + '\n')
         repliesFile.close()
     return True
@@ -2399,7 +2399,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
             # This enables you to ignore a threat that's getting boring
             if isReplyToMutedPost:
                 print('MUTE REPLY: ' + destinationFilename)
-                muteFile = open(destinationFilename + '.muted', "w")
+                muteFile = open(destinationFilename + '.muted', 'w+')
                 if muteFile:
                     muteFile.write('\n')
                     muteFile.close()

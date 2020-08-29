@@ -3536,7 +3536,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
         return
 
     print('MUTE: ' + postFilename)
-    muteFile = open(postFilename + '.muted', "w")
+    muteFile = open(postFilename + '.muted', 'w+')
     if muteFile:
         muteFile.write('\n')
         muteFile.close()

@@ -350,7 +350,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         if not os.path.isdir(baseDir + privateKeysSubdir):
             os.mkdir(baseDir + privateKeysSubdir)
         filename = baseDir + privateKeysSubdir + '/' + handle + '.key'
-        with open(filename, "w") as text_file:
+        with open(filename, 'w+') as text_file:
             print(privateKeyPem, file=text_file)
 
         # save the public key
@@ -358,7 +358,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         if not os.path.isdir(baseDir + publicKeysSubdir):
             os.mkdir(baseDir + publicKeysSubdir)
         filename = baseDir + publicKeysSubdir + '/' + handle + '.pem'
-        with open(filename, "w") as text_file:
+        with open(filename, 'w+') as text_file:
             print(publicKeyPem, file=text_file)
 
         if password:
@@ -454,22 +454,22 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         setRole(baseDir, nickname, domain, 'instance', 'delegator')
         setConfigParam(baseDir, 'admin', nickname)
 
+    if not os.path.isdir(baseDir + '/accounts'):
+        os.mkdir(baseDir + '/accounts')
+    if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
+        os.mkdir(baseDir + '/accounts/' + nickname + '@' + domain)
+
     if manualFollowerApproval:
         followDMsFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.followDMs'
-        with open(followDMsFilename, "w") as fFile:
+        with open(followDMsFilename, 'w+') as fFile:
             fFile.write('\n')
 
     # notify when posts are liked
     notifyLikesFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/.notifyLikes'
-    with open(notifyLikesFilename, "w") as fFile:
-        fFile.write('\n')
-
-    if not os.path.isdir(baseDir + '/accounts'):
-        os.mkdir(baseDir + '/accounts')
-    if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
-        os.mkdir(baseDir + '/accounts/' + nickname + '@' + domain)
+    with open(notifyLikesFilename, 'w+') as nFile:
+        nFile.write('\n')
 
     if os.path.isfile(baseDir + '/img/default-avatar.png'):
         copyfile(baseDir + '/img/default-avatar.png',

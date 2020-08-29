@@ -2064,6 +2064,9 @@ def testTranslations():
     langDict = {}
     for lang in languagesStr:
         langJson = loadJson('translations/' + lang + '.json')
+        if not langJson:
+            print('Missing language file ' +
+                  'translations/' + lang + '.json')
         assert langJson
         langDict[lang] = langJson
 

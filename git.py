@@ -210,12 +210,12 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
         return False
     patchStr = \
         gitAddFromHandle(patchStr, '@' + fromNickname + '@' + fromDomain)
-    with open(patchFilename, "w") as patchFile:
+    with open(patchFilename, 'w+') as patchFile:
         patchFile.write(patchStr)
         patchNotifyFilename = \
             baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.newPatchContent'
-        with open(patchNotifyFilename, "w") as patchFile:
+        with open(patchNotifyFilename, 'w+') as patchFile:
             patchFile.write(patchStr)
             return True
     return False

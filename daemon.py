@@ -7502,7 +7502,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('followDMs'):
                             if fields['followDMs'] == 'on':
                                 followDMsActive = True
-                                with open(followDMsFilename, "w") as fFile:
+                                with open(followDMsFilename, 'w+') as fFile:
                                     fFile.write('\n')
                         if not followDMsActive:
                             if os.path.isfile(followDMsFilename):
@@ -7516,7 +7516,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('removeTwitter'):
                             if fields['removeTwitter'] == 'on':
                                 removeTwitterActive = True
-                                with open(removeTwitterFilename, "w") as rFile:
+                                with open(removeTwitterFilename, 'w+') as rFile:
                                     rFile.write('\n')
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
@@ -7534,7 +7534,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('hideLikeButton'):
                             if fields['hideLikeButton'] == 'on':
                                 hideLikeButtonActive = True
-                                with open(hideLikeButtonFile, "w") as rFile:
+                                with open(hideLikeButtonFile, 'w+') as rFile:
                                     rFile.write('\n')
                                 # remove notify likes selection
                                 if os.path.isfile(notifyLikesFilename):
@@ -7548,7 +7548,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['notifyLikes'] == 'on' and \
                                not hideLikeButtonActive:
                                 notifyLikesActive = True
-                                with open(notifyLikesFilename, "w") as rFile:
+                                with open(notifyLikesFilename, 'w+') as rFile:
                                     rFile.write('\n')
                         if not notifyLikesActive:
                             if os.path.isfile(notifyLikesFilename):
@@ -7585,7 +7585,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/filters.txt'
                         if fields.get('filteredWords'):
-                            with open(filterFilename, "w") as filterfile:
+                            with open(filterFilename, 'w+') as filterfile:
                                 filterfile.write(fields['filteredWords'])
                         else:
                             if os.path.isfile(filterFilename):
@@ -7596,7 +7596,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/replacewords.txt'
                         if fields.get('switchWords'):
-                            with open(switchFilename, "w") as switchfile:
+                            with open(switchFilename, 'w+') as switchfile:
                                 switchfile.write(fields['switchWords'])
                         else:
                             if os.path.isfile(switchFilename):
@@ -7607,7 +7607,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/blocking.txt'
                         if fields.get('blocked'):
-                            with open(blockedFilename, "w") as blockedfile:
+                            with open(blockedFilename, 'w+') as blockedfile:
                                 blockedfile.write(fields['blocked'])
                         else:
                             if os.path.isfile(blockedFilename):
@@ -7618,7 +7618,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/allowedinstances.txt'
                         if fields.get('allowedInstances'):
-                            with open(allowedInstancesFilename, "w") as aFile:
+                            with open(allowedInstancesFilename, 'w+') as aFile:
                                 aFile.write(fields['allowedInstances'])
                         else:
                             if os.path.isfile(allowedInstancesFilename):
@@ -7629,7 +7629,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/gitprojects.txt'
                         if fields.get('gitProjects'):
-                            with open(gitProjectsFilename, "w") as aFile:
+                            with open(gitProjectsFilename, 'w+') as aFile:
                                 aFile.write(fields['gitProjects'].lower())
                         else:
                             if os.path.isfile(gitProjectsFilename):

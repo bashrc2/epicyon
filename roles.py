@@ -52,7 +52,7 @@ def addModerator(baseDir: str, nickname: str, domain: str) -> None:
             if moderator == nickname:
                 return
         lines.append(nickname)
-        with open(moderatorsFile, "w") as f:
+        with open(moderatorsFile, 'w+') as f:
             for moderator in lines:
                 moderator = moderator.strip('\n').strip('\r')
                 if len(moderator) > 1:
@@ -74,7 +74,7 @@ def removeModerator(baseDir: str, nickname: str):
         return
     with open(moderatorsFile, "r") as f:
         lines = f.readlines()
-    with open(moderatorsFile, "w") as f:
+    with open(moderatorsFile, 'w+') as f:
         for moderator in lines:
             moderator = moderator.strip('\n').strip('\r')
             if len(moderator) > 1 and moderator != nickname:

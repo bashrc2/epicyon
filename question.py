@@ -66,7 +66,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     votersFilename = questionPostFilename.replace('.json', '.voters')
     if not os.path.isfile(votersFilename):
         # create a new voters file
-        votersFile = open(votersFilename, "w")
+        votersFile = open(votersFilename, 'w+')
         if votersFile:
             votersFile.write(replyJson['actor'] +
                              votersFileSeparator +
@@ -99,7 +99,7 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
                     else:
                         newlines.append(voteLine)
                 if saveVotersFile:
-                    with open(votersFilename, "w") as votersFile:
+                    with open(votersFilename, 'w+') as votersFile:
                         for voteLine in newlines:
                             votersFile.write(voteLine)
                 else:
