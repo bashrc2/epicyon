@@ -6592,6 +6592,7 @@ def htmlCalendar(translate: {},
     else:
         daysInMonth = \
             (date(year + 1, 1, 1) - date(year, monthNumber, 1)).days
+    print('daysInMonth ' + str(monthNumber) + ': ' + str(daysInMonth))
 
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):
