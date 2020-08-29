@@ -6647,7 +6647,9 @@ def htmlCalendar(translate: {},
     dayOfMonth = 0
     dow = weekDayOfMonthStart(monthNumber, year)
     for weekOfMonth in range(1, 7):
-        calendarStr += '  <tr>\n'
+        if dayOfMonth == daysInMonth:
+            continue
+        calendarStr += '  <tr>\n'        
         for dayNumber in range(1, 8):
             if (weekOfMonth > 1 and dayOfMonth < daysInMonth) or \
                (weekOfMonth == 1 and dayNumber >= dow):
