@@ -199,7 +199,8 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
         if debug:
             print('DEBUG: Obtaining public key for shared inbox')
         personUrl = personUrl.replace('/users/inbox', '/inbox')
-    personJson = getPersonFromCache(baseDir, personUrl, personCache)
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, True)
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for ' + personUrl)
@@ -228,7 +229,7 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
         if debug:
             print('DEBUG: Public key not found for ' + personUrl)
 
-    storePersonInCache(baseDir, personUrl, personJson, personCache)
+    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
     return pubKey
 
 
@@ -865,7 +866,8 @@ def personReceiveUpdate(baseDir: str,
                               'cached actor when updating')
                     return False
     # save to cache in memory
-    storePersonInCache(baseDir, personJson['id'], personJson, personCache)
+    storePersonInCache(baseDir, personJson['id'], personJson,
+                       personCache, True)
     # save to cache on file
     if saveJson(personJson, actorFilename):
         print('actor updated for ' + personJson['id'])

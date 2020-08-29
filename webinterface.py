@@ -284,7 +284,8 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                       "public keys don't match when downloading actor for " +
                       actor)
                 return None
-            storePersonInCache(baseDir, actor, personJson, personCache)
+            storePersonInCache(baseDir, actor, personJson, personCache,
+                               allowDownloads)
             return getPersonAvatarUrl(baseDir, actor, personCache,
                                       allowDownloads)
         return None
@@ -295,7 +296,8 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
                        allowDownloads: bool) -> str:
     """Returns the avatar url for the person
     """
-    personJson = getPersonFromCache(baseDir, personUrl, personCache)
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, allowDownloads)
     if not personJson:
         return None
 
@@ -4359,7 +4361,8 @@ def individualPostAsHtml(allowDownloads: bool,
                     if announceNickname:
                         announceDomain, announcePort = \
                             getDomainFromActor(attributedTo)
-                        getPersonFromCache(baseDir, attributedTo, personCache)
+                        getPersonFromCache(baseDir, attributedTo,
+                                           personCache, allowDownloads)
                         announceDisplayName = \
                             getDisplayName(baseDir, attributedTo, personCache)
                         if announceDisplayName:
@@ -4472,7 +4475,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 getDomainFromActor(replyActor)
                             if replyNickname and replyDomain:
                                 getPersonFromCache(baseDir, replyActor,
-                                                   personCache)
+                                                   personCache,
+                                                   allowDownloads)
                                 replyDisplayName = \
                                     getDisplayName(baseDir, replyActor,
                                                    personCache)

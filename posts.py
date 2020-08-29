@@ -209,7 +209,8 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             personUrl = httpPrefix + '://' + domain + '/users/' + nickname
     if not personUrl:
         return None, None, None, None, None, None, None, None
-    personJson = getPersonFromCache(baseDir, personUrl, personCache)
+    personJson = \
+        getPersonFromCache(baseDir, personUrl, personCache, True)
     if not personJson:
         if '/channel/' in personUrl or '/accounts/' in personUrl:
             asHeader = {
@@ -265,7 +266,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     if personJson.get('name'):
         displayName = personJson['name']
 
-    storePersonInCache(baseDir, personUrl, personJson, personCache)
+    storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
         capabilityAcquisition, avatarUrl, displayName

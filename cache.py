@@ -14,7 +14,8 @@ from utils import getFileCaseInsensitive
 
 
 def storePersonInCache(baseDir: str, personUrl: str,
-                       personJson: {}, personCache: {}) -> None:
+                       personJson: {}, personCache: {},
+                       allowWriteToFile: bool) -> None:
     """Store an actor in the cache
     """
     currTime = datetime.datetime.utcnow()
@@ -26,25 +27,29 @@ def storePersonInCache(baseDir: str, personUrl: str,
         return
 
     # store to file
-    if os.path.isdir(baseDir+'/cache/actors'):
-        cacheFilename = baseDir + '/cache/actors/' + \
-            personUrl.replace('/', '#')+'.json'
-        if not os.path.isfile(cacheFilename):
-            saveJson(personJson, cacheFilename)
+    if allowWriteToFile:
+        if os.path.isdir(baseDir+'/cache/actors'):
+            cacheFilename = baseDir + '/cache/actors/' + \
+                personUrl.replace('/', '#')+'.json'
+            if not os.path.isfile(cacheFilename):
+                saveJson(personJson, cacheFilename)
 
 
-def getPersonFromCache(baseDir: str, personUrl: str, personCache: {}) -> {}:
+def getPersonFromCache(baseDir: str, personUrl: str, personCache: {},
+                       allowWriteToFile: bool) -> {}:
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
     loadedFromFile = False
     if not personCache.get(personUrl):
+        # does the person exist as a cached file?
         cacheFilename = baseDir + '/cache/actors/' + \
             personUrl.replace('/', '#')+'.json'
         if os.path.isfile(getFileCaseInsensitive(cacheFilename)):
             personJson = loadJson(getFileCaseInsensitive(cacheFilename))
             if personJson:
-                storePersonInCache(baseDir, personUrl, personJson, personCache)
+                storePersonInCache(baseDir, personUrl, personJson,
+                                   personCache, False)
                 loadedFromFile = True
 
     if personCache.get(personUrl):

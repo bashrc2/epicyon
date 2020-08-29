@@ -1768,7 +1768,8 @@ class PubServer(BaseHTTPRequestHandler):
                     emailAddress = None
                     actorJson = getPersonFromCache(self.server.baseDir,
                                                    optionsActor,
-                                                   self.server.personCache)
+                                                   self.server.personCache,
+                                                   True)
                     if actorJson:
                         donateUrl = getDonationUrl(actorJson)
                         xmppAddress = getXmppAddress(actorJson)
@@ -7652,7 +7653,8 @@ class PubServer(BaseHTTPRequestHandler):
                             # personCache in memory
                             storePersonInCache(self.server.baseDir,
                                                actorJson['id'], actorJson,
-                                               self.server.personCache)
+                                               self.server.personCache,
+                                               True)
                             # clear any cached images for this actor
                             idStr = actorJson['id'].replace('/', '-')
                             removeAvatarFromCache(self.server.baseDir, idStr)
