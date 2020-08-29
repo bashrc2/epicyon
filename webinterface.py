@@ -4464,11 +4464,26 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                         '<a href="' + inReplyTo + \
                                         '">' + replyDisplayName + '</a>\n'
 
+                                    # benchmark 13.7
+                                    timeDiff = int((time.time() -
+                                                    postStartTime) * 1000)
+                                    if timeDiff > 100:
+                                        print('TIMING INDIV ' + boxName +
+                                              ' 13.7 = ' + str(timeDiff))
+
                                     # show avatar of person replied to
                                     replyAvatarUrl = \
                                         getPersonAvatarUrl(baseDir,
                                                            replyActor,
                                                            personCache)
+
+                                    # benchmark 13.8
+                                    timeDiff = int((time.time() -
+                                                    postStartTime) * 1000)
+                                    if timeDiff > 100:
+                                        print('TIMING INDIV ' + boxName +
+                                              ' 13.8 = ' + str(timeDiff))
+
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost = \
                                             '<div class=' + \
