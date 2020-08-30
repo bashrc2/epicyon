@@ -1181,6 +1181,342 @@ class PubServer(BaseHTTPRequestHandler):
             '/users/' + nickname + '/statuses/' + userEnding2[1]
         return locatePost(baseDir, nickname, domain, messageId), nickname
 
+    def _personOptions(self, path: str, callingDomain: str, cookie: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str,
+                       debug: bool):
+        """Receive POST from person options screen
+        """
+        pageNumber = 1
+        usersPath = path.split('/personoptions')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+
+        chooserNickname = getNicknameFromActor(originPathStr)
+        if not chooserNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + originPathStr)
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            optionsConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST optionsConfirmParams ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST optionsConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST optionsConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        optionsConfirmParams = \
+            urllib.parse.unquote_plus(optionsConfirmParams)
+
+        # page number to return to
+        if 'pageNumber=' in optionsConfirmParams:
+            pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
+            if '&' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('&')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+
+        # actor for the person
+        optionsActor = optionsConfirmParams.split('actor=')[1]
+        if '&' in optionsActor:
+            optionsActor = optionsActor.split('&')[0]
+
+        # url of the avatar
+        optionsAvatarUrl = optionsConfirmParams.split('avatarUrl=')[1]
+        if '&' in optionsAvatarUrl:
+            optionsAvatarUrl = optionsAvatarUrl.split('&')[0]
+
+        # link to a post, which can then be included in reports
+        postUrl = None
+        if 'postUrl' in optionsConfirmParams:
+            postUrl = optionsConfirmParams.split('postUrl=')[1]
+            if '&' in postUrl:
+                postUrl = postUrl.split('&')[0]
+
+        # petname for this person
+        petname = None
+        if 'optionpetname' in optionsConfirmParams:
+            petname = optionsConfirmParams.split('optionpetname=')[1]
+            if '&' in petname:
+                petname = petname.split('&')[0]
+            # Limit the length of the petname
+            if len(petname) > 20 or \
+               ' ' in petname or '/' in petname or \
+               '?' in petname or '#' in petname:
+                petname = None
+
+        # notes about this person
+        personNotes = None
+        if 'optionnotes' in optionsConfirmParams:
+            personNotes = optionsConfirmParams.split('optionnotes=')[1]
+            if '&' in personNotes:
+                personNotes = personNotes.split('&')[0]
+            personNotes = urllib.parse.unquote_plus(personNotes.strip())
+            # Limit the length of the notes
+            if len(personNotes) > 64000:
+                personNotes = None
+
+        # get the nickname
+        optionsNickname = getNicknameFromActor(optionsActor)
+        if not optionsNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + optionsActor)
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        optionsDomain, optionsPort = getDomainFromActor(optionsActor)
+        optionsDomainFull = optionsDomain
+        if optionsPort:
+            if optionsPort != 80 and optionsPort != 443:
+                if ':' not in optionsDomain:
+                    optionsDomainFull = optionsDomain + ':' + \
+                        str(optionsPort)
+        if chooserNickname == optionsNickname and \
+           optionsDomain == domain and \
+           optionsPort == port:
+            if debug:
+                print('You cannot perform an option action on yourself')
+
+        # view button on person option screen
+        if '&submitView=' in optionsConfirmParams:
+            if debug:
+                print('Viewing ' + optionsActor)
+            self._redirect_headers(optionsActor,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # petname submit button on person option screen
+        if '&submitPetname=' in optionsConfirmParams and petname:
+            if debug:
+                print('Change petname to ' + petname)
+            handle = optionsNickname + '@' + optionsDomainFull
+            setPetName(baseDir,
+                       chooserNickname,
+                       domain,
+                       handle, petname)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person notes submit button on person option screen
+        if '&submitPersonNotes=' in optionsConfirmParams:
+            if debug:
+                print('Change person notes')
+            handle = optionsNickname + '@' + optionsDomainFull
+            if not personNotes:
+                personNotes = ''
+            setPersonNotes(baseDir,
+                           chooserNickname,
+                           domain,
+                           handle, personNotes)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person on calendar checkbox on person option screen
+        if '&submitOnCalendar=' in optionsConfirmParams:
+            onCalendar = None
+            if 'onCalendar=' in optionsConfirmParams:
+                onCalendar = optionsConfirmParams.split('onCalendar=')[1]
+                if '&' in onCalendar:
+                    onCalendar = onCalendar.split('&')[0]
+            if onCalendar == 'on':
+                addPersonToCalendar(baseDir,
+                                    chooserNickname,
+                                    domain,
+                                    optionsNickname,
+                                    optionsDomainFull)
+            else:
+                removePersonFromCalendar(baseDir,
+                                         chooserNickname,
+                                         domain,
+                                         optionsNickname,
+                                         optionsDomainFull)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # block person button on person option screen
+        if '&submitBlock=' in optionsConfirmParams:
+            if debug:
+                print('Adding block by ' + chooserNickname +
+                      ' of ' + optionsActor)
+            addBlock(baseDir, chooserNickname,
+                     domain,
+                     optionsNickname, optionsDomainFull)
+
+        # unblock button on person option screen
+        if '&submitUnblock=' in optionsConfirmParams:
+            if debug:
+                print('Unblocking ' + optionsActor)
+            msg = \
+                htmlUnblockConfirm(self.server.translate,
+                                   baseDir,
+                                   usersPath,
+                                   optionsActor,
+                                   optionsAvatarUrl).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # follow button on person option screen
+        if '&submitFollow=' in optionsConfirmParams:
+            if debug:
+                print('Following ' + optionsActor)
+            msg = \
+                htmlFollowConfirm(self.server.translate,
+                                  baseDir,
+                                  usersPath,
+                                  optionsActor,
+                                  optionsAvatarUrl).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # unfollow button on person option screen
+        if '&submitUnfollow=' in optionsConfirmParams:
+            if debug:
+                print('Unfollowing ' + optionsActor)
+            msg = \
+                htmlUnfollowConfirm(self.server.translate,
+                                    baseDir,
+                                    usersPath,
+                                    optionsActor,
+                                    optionsAvatarUrl).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # DM button on person option screen
+        if '&submitDM=' in optionsConfirmParams:
+            if debug:
+                print('Sending DM to ' + optionsActor)
+            reportPath = self.path.replace('/personoptions', '') + '/newdm'
+            msg = htmlNewPost(False, self.server.translate,
+                              baseDir,
+                              httpPrefix,
+                              reportPath, None,
+                              [optionsActor], None,
+                              pageNumber,
+                              chooserNickname,
+                              domain,
+                              domainFull).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # snooze button on person option screen
+        if '&submitSnooze=' in optionsConfirmParams:
+            usersPath = self.path.split('/personoptions')[0]
+            thisActor = httpPrefix + '://' + domainFull + usersPath
+            if debug:
+                print('Snoozing ' + optionsActor + ' ' + thisActor)
+            if '/users/' in thisActor:
+                nickname = thisActor.split('/users/')[1]
+                personSnooze(baseDir, nickname,
+                             domain, optionsActor)
+                if callingDomain.endswith('.onion') and onionDomain:
+                    thisActor = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    thisActor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(thisActor + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page='+str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+
+        # unsnooze button on person option screen
+        if '&submitUnSnooze=' in optionsConfirmParams:
+            usersPath = path.split('/personoptions')[0]
+            thisActor = httpPrefix + '://' + domainFull + usersPath
+            if debug:
+                print('Unsnoozing ' + optionsActor + ' ' + thisActor)
+            if '/users/' in thisActor:
+                nickname = thisActor.split('/users/')[1]
+                personUnsnooze(baseDir, nickname,
+                               domain, optionsActor)
+                if callingDomain.endswith('.onion') and onionDomain:
+                    thisActor = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    thisActor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(thisActor + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page=' + str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+
+        # report button on person option screen
+        if '&submitReport=' in optionsConfirmParams:
+            if debug:
+                print('Reporting ' + optionsActor)
+            reportPath = \
+                path.replace('/personoptions', '') + '/newreport'
+            msg = htmlNewPost(False, self.server.translate,
+                              baseDir,
+                              httpPrefix,
+                              reportPath, None, [],
+                              postUrl, pageNumber,
+                              chooserNickname,
+                              domain,
+                              domainFull).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # redirect back from person options screen
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
@@ -8746,322 +9082,13 @@ class PubServer(BaseHTTPRequestHandler):
         # an option was chosen from person options screen
         # view/follow/block/report
         if authorized and self.path.endswith('/personoptions'):
-            pageNumber = 1
-            usersPath = self.path.split('/personoptions')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-
-            chooserNickname = getNicknameFromActor(originPathStr)
-            if not chooserNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + originPathStr)
-                self._redirect_headers(originPathStr, cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            length = int(self.headers['Content-length'])
-            try:
-                optionsConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST optionsConfirmParams ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST optionsConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST optionsConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            optionsConfirmParams = \
-                urllib.parse.unquote_plus(optionsConfirmParams)
-            # page number to return to
-            if 'pageNumber=' in optionsConfirmParams:
-                pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
-                if '&' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('&')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            # actor for the person
-            optionsActor = optionsConfirmParams.split('actor=')[1]
-            if '&' in optionsActor:
-                optionsActor = optionsActor.split('&')[0]
-            # url of the avatar
-            optionsAvatarUrl = optionsConfirmParams.split('avatarUrl=')[1]
-            if '&' in optionsAvatarUrl:
-                optionsAvatarUrl = optionsAvatarUrl.split('&')[0]
-            # link to a post, which can then be included in reports
-            postUrl = None
-            if 'postUrl' in optionsConfirmParams:
-                postUrl = optionsConfirmParams.split('postUrl=')[1]
-                if '&' in postUrl:
-                    postUrl = postUrl.split('&')[0]
-            petname = None
-            if 'optionpetname' in optionsConfirmParams:
-                petname = optionsConfirmParams.split('optionpetname=')[1]
-                if '&' in petname:
-                    petname = petname.split('&')[0]
-                # Limit the length of the petname
-                if len(petname) > 20 or \
-                   ' ' in petname or '/' in petname or \
-                   '?' in petname or '#' in petname:
-                    petname = None
-
-            personNotes = None
-            if 'optionnotes' in optionsConfirmParams:
-                personNotes = optionsConfirmParams.split('optionnotes=')[1]
-                if '&' in personNotes:
-                    personNotes = personNotes.split('&')[0]
-                personNotes = urllib.parse.unquote_plus(personNotes.strip())
-                # Limit the length of the notes
-                if len(personNotes) > 64000:
-                    personNotes = None
-
-            optionsNickname = getNicknameFromActor(optionsActor)
-            if not optionsNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + optionsActor)
-                self._redirect_headers(originPathStr, cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-            optionsDomainFull = optionsDomain
-            if optionsPort:
-                if optionsPort != 80 and optionsPort != 443:
-                    if ':' not in optionsDomain:
-                        optionsDomainFull = optionsDomain + ':' + \
-                            str(optionsPort)
-            if chooserNickname == optionsNickname and \
-               optionsDomain == self.server.domain and \
-               optionsPort == self.server.port:
-                if self.server.debug:
-                    print('You cannot perform an option action on yourself')
-
-            if '&submitView=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Viewing ' + optionsActor)
-                self._redirect_headers(optionsActor,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitPetname=' in optionsConfirmParams and petname:
-                if self.server.debug:
-                    print('Change petname to ' + petname)
-                handle = optionsNickname + '@' + optionsDomainFull
-                setPetName(self.server.baseDir,
-                           chooserNickname,
-                           self.server.domain,
-                           handle, petname)
-                self._redirect_headers(usersPath + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page='+str(pageNumber), cookie,
-                                       callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitPersonNotes=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Change person notes')
-                handle = optionsNickname + '@' + optionsDomainFull
-                if not personNotes:
-                    personNotes = ''
-                setPersonNotes(self.server.baseDir,
-                               chooserNickname,
-                               self.server.domain,
-                               handle, personNotes)
-                self._redirect_headers(usersPath + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page='+str(pageNumber), cookie,
-                                       callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitOnCalendar=' in optionsConfirmParams:
-                onCalendar = None
-                if 'onCalendar=' in optionsConfirmParams:
-                    onCalendar = optionsConfirmParams.split('onCalendar=')[1]
-                    if '&' in onCalendar:
-                        onCalendar = onCalendar.split('&')[0]
-                if onCalendar == 'on':
-                    addPersonToCalendar(self.server.baseDir,
-                                        chooserNickname,
-                                        self.server.domain,
-                                        optionsNickname,
-                                        optionsDomainFull)
-                else:
-                    removePersonFromCalendar(self.server.baseDir,
-                                             chooserNickname,
-                                             self.server.domain,
-                                             optionsNickname,
-                                             optionsDomainFull)
-                self._redirect_headers(usersPath + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page='+str(pageNumber), cookie,
-                                       callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitBlock=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Adding block by ' + chooserNickname +
-                          ' of ' + optionsActor)
-                addBlock(self.server.baseDir, chooserNickname,
-                         self.server.domain,
-                         optionsNickname, optionsDomainFull)
-            if '&submitUnblock=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Unblocking ' + optionsActor)
-                msg = \
-                    htmlUnblockConfirm(self.server.translate,
-                                       self.server.baseDir,
-                                       usersPath,
-                                       optionsActor,
-                                       optionsAvatarUrl).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitFollow=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Following ' + optionsActor)
-                msg = \
-                    htmlFollowConfirm(self.server.translate,
-                                      self.server.baseDir,
-                                      usersPath,
-                                      optionsActor,
-                                      optionsAvatarUrl).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitUnfollow=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Unfollowing ' + optionsActor)
-                msg = \
-                    htmlUnfollowConfirm(self.server.translate,
-                                        self.server.baseDir,
-                                        usersPath,
-                                        optionsActor,
-                                        optionsAvatarUrl).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitDM=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Sending DM to ' + optionsActor)
-                reportPath = self.path.replace('/personoptions', '') + '/newdm'
-                msg = htmlNewPost(False, self.server.translate,
-                                  self.server.baseDir,
-                                  self.server.httpPrefix,
-                                  reportPath, None,
-                                  [optionsActor], None,
-                                  pageNumber,
-                                  chooserNickname,
-                                  self.server.domain,
-                                  self.server.domainFull).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitSnooze=' in optionsConfirmParams:
-                usersPath = self.path.split('/personoptions')[0]
-                thisActor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+usersPath
-                if self.server.debug:
-                    print('Snoozing ' + optionsActor + ' ' + thisActor)
-                if '/users/' in thisActor:
-                    nickname = thisActor.split('/users/')[1]
-                    personSnooze(self.server.baseDir, nickname,
-                                 self.server.domain, optionsActor)
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        thisActor = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        thisActor = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(thisActor + '/' +
-                                           self.server.defaultTimeline +
-                                           '?page='+str(pageNumber), cookie,
-                                           callingDomain)
-                    self.server.POSTbusy = False
-                    return
-            if '&submitUnSnooze=' in optionsConfirmParams:
-                usersPath = self.path.split('/personoptions')[0]
-                thisActor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + usersPath
-                if self.server.debug:
-                    print('Unsnoozing ' + optionsActor + ' ' + thisActor)
-                if '/users/' in thisActor:
-                    nickname = thisActor.split('/users/')[1]
-                    personUnsnooze(self.server.baseDir, nickname,
-                                   self.server.domain, optionsActor)
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        thisActor = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        thisActor = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(thisActor + '/' +
-                                           self.server.defaultTimeline +
-                                           '?page=' + str(pageNumber), cookie,
-                                           callingDomain)
-                    self.server.POSTbusy = False
-                    return
-            if '&submitReport=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Reporting ' + optionsActor)
-                reportPath = \
-                    self.path.replace('/personoptions', '') + '/newreport'
-                msg = htmlNewPost(False, self.server.translate,
-                                  self.server.baseDir,
-                                  self.server.httpPrefix,
-                                  reportPath, None, [],
-                                  postUrl, pageNumber,
-                                  chooserNickname,
-                                  self.server.domain,
-                                  self.server.domainFull).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-
-            if callingDomain.endswith('.onion') and self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif callingDomain.endswith('.i2p') and self.server.i2pDomain:
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._personOptions(self, self.path, callingDomain, cookie,
+                                self.server.baseDir, self.server.httpPrefix,
+                                self.server.domain, self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
