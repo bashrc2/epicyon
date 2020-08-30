@@ -2154,6 +2154,7 @@ class PubServer(BaseHTTPRequestHandler):
             if pageNumberStr.isdigit():
                 pageNumber = int(pageNumberStr)
             path = path.split('?page=')[0]
+
         # the actor who votes
         usersPath = path.replace('/question', '')
         actor = httpPrefix + '://' + domainFull + usersPath
@@ -2169,8 +2170,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, callingDomain)
             self.server.POSTbusy = False
             return
+
         # get the parameters
         length = int(self.headers['Content-length'])
+
         try:
             questionParams = self.rfile.read(length).decode('utf-8')
         except SocketError as e:
@@ -2189,21 +2192,25 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy = False
             return
+
         questionParams = questionParams.replace('+', ' ')
         questionParams = questionParams.replace('%3F', '')
         questionParams = \
             urllib.parse.unquote_plus(questionParams.strip())
+
         # post being voted on
         messageId = None
         if 'messageId=' in questionParams:
             messageId = questionParams.split('messageId=')[1]
             if '&' in messageId:
                 messageId = messageId.split('&')[0]
+
         answer = None
         if 'answer=' in questionParams:
             answer = questionParams.split('answer=')[1]
             if '&' in answer:
                 answer = answer.split('&')[0]
+
         self._sendReplyToQuestion(nickname, messageId, answer)
         if callingDomain.endswith('.onion') and onionDomain:
             actor = 'http://' + onionDomain + usersPath
@@ -8891,21 +8898,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 5)
 
-        # a vote/question/poll is posted
-        if (authorized and
-            (self.path.endswith('/question') or
-             '/question?page=' in self.path)):
-            self._receiveVote(callingDomain, cookie,
-                              authorized, self.path,
-                              self.server.baseDir,
-                              self.server.httpPrefix,
-                              self.server.domain,
-                              self.server.domainFull,
-                              self.server.onionDomain,
-                              self.server.i2pDomain,
-                              self.server.debug)
-            return
-
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 6)
 
         # a search was made
@@ -9143,111 +9135,134 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 7)
 
-        # removes a shared item
-        if authorized and self.path.endswith('/rmshare'):
-            self._removeShare(callingDomain, cookie,
-                              authorized, self.path,
-                              self.server.baseDir,
-                              self.server.httpPrefix,
-                              self.server.domain,
-                              self.server.domainFull,
-                              self.server.onionDomain,
-                              self.server.i2pDomain,
-                              self.server.debug)
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
-
-        # removes a post
-        if not authorized and self.path.endswith('/rmpost'):
-            print('ERROR: attempt to remove post was not authorized. ' +
-                  self.path)
-            self._400()
-            self.server.POSTbusy = False
-            return
-        if authorized and self.path.endswith('/rmpost'):
-            self._removePost(callingDomain, cookie,
-                             authorized, self.path,
-                             self.server.baseDir, self.server.httpPrefix,
-                             self.server.domain, self.server.domainFull,
-                             self.server.onionDomain,
-                             self.server.i2pDomain,
-                             self.server.debug)
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 9)
-
-        # decision to follow in the web interface is confirmed
-        if authorized and self.path.endswith('/followconfirm'):
-            self._followConfirm(callingDomain, cookie,
-                                authorized, self.path,
-                                self.server.baseDir,
-                                self.server.httpPrefix,
-                                self.server.domain,
-                                self.server.domainFull,
-                                self.server.port,
-                                self.server.onionDomain,
-                                self.server.i2pDomain,
-                                self.server.debug)
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 10)
-
-        # decision to unfollow in the web interface is confirmed
-        if authorized and self.path.endswith('/unfollowconfirm'):
-            self._unfollowConfirm(callingDomain, cookie,
+        if authorized:
+            # a vote/question/poll is posted
+            if self.path.endswith('/question') or \
+               '/question?page=' in self.path:
+                self._receiveVote(callingDomain, cookie,
                                   authorized, self.path,
                                   self.server.baseDir,
                                   self.server.httpPrefix,
                                   self.server.domain,
                                   self.server.domainFull,
-                                  self.server.port,
                                   self.server.onionDomain,
                                   self.server.i2pDomain,
                                   self.server.debug)
-            return
+                return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 11)
+            # removes a shared item
+            if self.path.endswith('/rmshare'):
+                self._removeShare(callingDomain, cookie,
+                                  authorized, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.domainFull,
+                                  self.server.onionDomain,
+                                  self.server.i2pDomain,
+                                  self.server.debug)
+                return
 
-        # decision to unblock in the web interface is confirmed
-        if authorized and self.path.endswith('/unblockconfirm'):
-            self._unblockConfirm(callingDomain, cookie,
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
+
+            # removes a post
+            if self.path.endswith('/rmpost'):
+                print('ERROR: attempt to remove post was not authorized. ' +
+                      self.path)
+                self._400()
+                self.server.POSTbusy = False
+                return
+            if self.path.endswith('/rmpost'):
+                self._removePost(callingDomain, cookie,
                                  authorized, self.path,
-                                 self.server.baseDir, self.server.httpPrefix,
-                                 self.server.domain, self.server.domainFull,
-                                 self.server.port,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
                                  self.server.onionDomain,
                                  self.server.i2pDomain,
                                  self.server.debug)
-            return
+                return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 12)
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 9)
 
-        # decision to block in the web interface is confirmed
-        if authorized and self.path.endswith('/blockconfirm'):
-            self._blockConfirm(callingDomain, cookie,
-                               authorized, self.path,
-                               self.server.baseDir, self.server.httpPrefix,
-                               self.server.domain, self.server.domainFull,
-                               self.server.port,
-                               self.server.onionDomain,
-                               self.server.i2pDomain,
-                               self.server.debug)
-            return
+            # decision to follow in the web interface is confirmed
+            if self.path.endswith('/followconfirm'):
+                self._followConfirm(callingDomain, cookie,
+                                    authorized, self.path,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    self.server.debug)
+                return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 13)
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 10)
 
-        # an option was chosen from person options screen
-        # view/follow/block/report
-        if authorized and self.path.endswith('/personoptions'):
-            self._personOptions(self, self.path, callingDomain, cookie,
-                                self.server.baseDir, self.server.httpPrefix,
-                                self.server.domain, self.server.domainFull,
-                                self.server.port,
-                                self.server.onionDomain,
-                                self.server.i2pDomain,
-                                self.server.debug)
-            return
+            # decision to unfollow in the web interface is confirmed
+            if self.path.endswith('/unfollowconfirm'):
+                self._unfollowConfirm(callingDomain, cookie,
+                                      authorized, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      self.server.debug)
+                return
+
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 11)
+
+            # decision to unblock in the web interface is confirmed
+            if self.path.endswith('/unblockconfirm'):
+                self._unblockConfirm(callingDomain, cookie,
+                                     authorized, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     self.server.debug)
+                return
+
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 12)
+
+            # decision to block in the web interface is confirmed
+            if self.path.endswith('/blockconfirm'):
+                self._blockConfirm(callingDomain, cookie,
+                                   authorized, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug)
+                return
+
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 13)
+
+            # an option was chosen from person options screen
+            # view/follow/block/report
+            if self.path.endswith('/personoptions'):
+                self._personOptions(self, self.path, callingDomain, cookie,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    self.server.debug)
+                return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
 
