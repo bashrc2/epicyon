@@ -1181,6 +1181,143 @@ class PubServer(BaseHTTPRequestHandler):
             '/users/' + nickname + '/statuses/' + userEnding2[1]
         return locatePost(baseDir, nickname, domain, messageId), nickname
 
+    def _moderatorActions(self, path: str, callingDomain: str, cookie: str,
+                          baseDir: str, httpPrefix: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          debug: bool):
+        """Actions on the moderator screeen
+        """
+        usersPath = path.replace('/moderationaction', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            moderationParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST moderationParams connection was reset')
+            else:
+                print('WARN: POST moderationParams ' +
+                      'rfile.read socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST moderationParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&' in moderationParams:
+            moderationText = None
+            moderationButton = None
+            for moderationStr in moderationParams.split('&'):
+                if moderationStr.startswith('moderationAction'):
+                    if '=' in moderationStr:
+                        moderationText = \
+                            moderationStr.split('=')[1].strip()
+                        modText = moderationText.replace('+', ' ')
+                        moderationText = \
+                            urllib.parse.unquote_plus(modText.strip())
+                elif moderationStr.startswith('submitInfo'):
+                    msg = htmlModerationInfo(self.server.translate,
+                                             baseDir, httpPrefix)
+                    msg = msg.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+                elif moderationStr.startswith('submitBlock'):
+                    moderationButton = 'block'
+                elif moderationStr.startswith('submitUnblock'):
+                    moderationButton = 'unblock'
+                elif moderationStr.startswith('submitSuspend'):
+                    moderationButton = 'suspend'
+                elif moderationStr.startswith('submitUnsuspend'):
+                    moderationButton = 'unsuspend'
+                elif moderationStr.startswith('submitRemove'):
+                    moderationButton = 'remove'
+            if moderationButton and moderationText:
+                if debug:
+                    print('moderationButton: ' + moderationButton)
+                    print('moderationText: ' + moderationText)
+                nickname = moderationText
+                if nickname.startswith('http') or \
+                   nickname.startswith('dat'):
+                    nickname = getNicknameFromActor(nickname)
+                if '@' in nickname:
+                    nickname = nickname.split('@')[0]
+                if moderationButton == 'suspend':
+                    suspendAccount(baseDir, nickname, domain)
+                if moderationButton == 'unsuspend':
+                    unsuspendAccount(baseDir, nickname)
+                if moderationButton == 'block':
+                    fullBlockDomain = None
+                    if moderationText.startswith('http') or \
+                       moderationText.startswith('dat'):
+                        blockDomain, blockPort = \
+                            getDomainFromActor(moderationText)
+                        fullBlockDomain = blockDomain
+                        if blockPort:
+                            if blockPort != 80 and blockPort != 443:
+                                if ':' not in blockDomain:
+                                    fullBlockDomain = \
+                                        blockDomain + ':' + str(blockPort)
+                    if '@' in moderationText:
+                        fullBlockDomain = moderationText.split('@')[1]
+                    if fullBlockDomain or nickname.startswith('#'):
+                        addGlobalBlock(baseDir, nickname, fullBlockDomain)
+                if moderationButton == 'unblock':
+                    fullBlockDomain = None
+                    if moderationText.startswith('http') or \
+                       moderationText.startswith('dat'):
+                        blockDomain, blockPort = \
+                            getDomainFromActor(moderationText)
+                        fullBlockDomain = blockDomain
+                        if blockPort:
+                            if blockPort != 80 and blockPort != 443:
+                                if ':' not in blockDomain:
+                                    fullBlockDomain = \
+                                        blockDomain + ':' + str(blockPort)
+                    if '@' in moderationText:
+                        fullBlockDomain = moderationText.split('@')[1]
+                    if fullBlockDomain or nickname.startswith('#'):
+                        removeGlobalBlock(baseDir, nickname, fullBlockDomain)
+                if moderationButton == 'remove':
+                    if '/statuses/' not in moderationText:
+                        removeAccount(baseDir, nickname, domain, port)
+                    else:
+                        # remove a post or thread
+                        postFilename = \
+                            locatePost(baseDir, nickname, domain,
+                                       moderationText)
+                        if postFilename:
+                            if canRemovePost(baseDir,
+                                             nickname,
+                                             domain,
+                                             port,
+                                             moderationText):
+                                deletePost(baseDir,
+                                           httpPrefix,
+                                           nickname, domain,
+                                           postFilename,
+                                           debug,
+                                           self.server.recentPostsCache)
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actorStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/moderation',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
     def _personOptions(self, path: str, callingDomain: str, cookie: str,
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str, port: int,
@@ -8095,145 +8232,15 @@ class PubServer(BaseHTTPRequestHandler):
         # moderator action buttons
         if authorized and '/users/' in self.path and \
            self.path.endswith('/moderationaction'):
-            usersPath = self.path.replace('/moderationaction', '')
-            actorStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                moderationParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST moderationParams connection was reset')
-                else:
-                    print('WARN: POST moderationParams ' +
-                          'rfile.read socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST moderationParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&' in moderationParams:
-                moderationText = None
-                moderationButton = None
-                for moderationStr in moderationParams.split('&'):
-                    if moderationStr.startswith('moderationAction'):
-                        if '=' in moderationStr:
-                            moderationText = \
-                                moderationStr.split('=')[1].strip()
-                            modText = moderationText.replace('+', ' ')
-                            moderationText = \
-                                urllib.parse.unquote_plus(modText.strip())
-                    elif moderationStr.startswith('submitInfo'):
-                        msg = htmlModerationInfo(self.server.translate,
-                                                 self.server.baseDir,
-                                                 self.server.httpPrefix)
-                        msg = msg.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                    elif moderationStr.startswith('submitBlock'):
-                        moderationButton = 'block'
-                    elif moderationStr.startswith('submitUnblock'):
-                        moderationButton = 'unblock'
-                    elif moderationStr.startswith('submitSuspend'):
-                        moderationButton = 'suspend'
-                    elif moderationStr.startswith('submitUnsuspend'):
-                        moderationButton = 'unsuspend'
-                    elif moderationStr.startswith('submitRemove'):
-                        moderationButton = 'remove'
-                if moderationButton and moderationText:
-                    if self.server.debug:
-                        print('moderationButton: ' + moderationButton)
-                        print('moderationText: ' + moderationText)
-                    nickname = moderationText
-                    if nickname.startswith('http') or \
-                       nickname.startswith('dat'):
-                        nickname = getNicknameFromActor(nickname)
-                    if '@' in nickname:
-                        nickname = nickname.split('@')[0]
-                    if moderationButton == 'suspend':
-                        suspendAccount(self.server.baseDir, nickname,
-                                       self.server.domain)
-                    if moderationButton == 'unsuspend':
-                        unsuspendAccount(self.server.baseDir, nickname)
-                    if moderationButton == 'block':
-                        fullBlockDomain = None
-                        if moderationText.startswith('http') or \
-                           moderationText.startswith('dat'):
-                            blockDomain, blockPort = \
-                                getDomainFromActor(moderationText)
-                            fullBlockDomain = blockDomain
-                            if blockPort:
-                                if blockPort != 80 and blockPort != 443:
-                                    if ':' not in blockDomain:
-                                        fullBlockDomain = \
-                                            blockDomain + ':' + str(blockPort)
-                        if '@' in moderationText:
-                            fullBlockDomain = moderationText.split('@')[1]
-                        if fullBlockDomain or nickname.startswith('#'):
-                            addGlobalBlock(self.server.baseDir,
-                                           nickname, fullBlockDomain)
-                    if moderationButton == 'unblock':
-                        fullBlockDomain = None
-                        if moderationText.startswith('http') or \
-                           moderationText.startswith('dat'):
-                            blockDomain, blockPort = \
-                                getDomainFromActor(moderationText)
-                            fullBlockDomain = blockDomain
-                            if blockPort:
-                                if blockPort != 80 and blockPort != 443:
-                                    if ':' not in blockDomain:
-                                        fullBlockDomain = \
-                                            blockDomain + ':' + str(blockPort)
-                        if '@' in moderationText:
-                            fullBlockDomain = moderationText.split('@')[1]
-                        if fullBlockDomain or nickname.startswith('#'):
-                            removeGlobalBlock(self.server.baseDir,
-                                              nickname, fullBlockDomain)
-                    if moderationButton == 'remove':
-                        if '/statuses/' not in moderationText:
-                            removeAccount(self.server.baseDir,
-                                          nickname,
-                                          self.server.domain,
-                                          self.server.port)
-                        else:
-                            # remove a post or thread
-                            postFilename = \
-                                locatePost(self.server.baseDir,
-                                           nickname, self.server.domain,
-                                           moderationText)
-                            if postFilename:
-                                if canRemovePost(self.server.baseDir,
-                                                 nickname,
-                                                 self.server.domain,
-                                                 self.server.port,
-                                                 moderationText):
-                                    deletePost(self.server.baseDir,
-                                               self.server.httpPrefix,
-                                               nickname, self.server.domain,
-                                               postFilename,
-                                               self.server.debug,
-                                               self.server.recentPostsCache)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actorStr + '/moderation',
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._moderatorActions(self.path, callingDomain, cookie,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 4)
