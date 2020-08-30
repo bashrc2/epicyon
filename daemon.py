@@ -1181,6 +1181,163 @@ class PubServer(BaseHTTPRequestHandler):
             '/users/' + nickname + '/statuses/' + userEnding2[1]
         return locatePost(baseDir, nickname, domain, messageId), nickname
 
+    def _loginScreen(self, path: str, callingDomain: str, cookie: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str, port: int,
+                     onionDomain: str, i2pDomain: str,
+                     debug: bool):
+        """Shows the login screen
+        """
+        # get the contents of POST containing login credentials
+        length = int(self.headers['Content-length'])
+        if length > 512:
+            print('Login failed - credentials too long')
+            self.send_response(401)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        try:
+            loginParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST login read ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST login read socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST login read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        loginNickname, loginPassword, register = \
+            htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
+        if loginNickname:
+            self.server.lastLoginTime = int(time.time())
+            if register:
+                if not registerAccount(baseDir,
+                                       httpPrefix,
+                                       domain,
+                                       port,
+                                       loginNickname,
+                                       loginPassword,
+                                       self.server.manualFollowerApproval):
+                    self.server.POSTbusy = False
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        self._redirect_headers('http://' +
+                                               onionDomain +
+                                               '/login',
+                                               cookie, callingDomain)
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        self._redirect_headers('http://' +
+                                               i2pDomain +
+                                               '/login',
+                                               cookie, callingDomain)
+                    else:
+                        self._redirect_headers(httpPrefix +
+                                               '://' +
+                                               domainFull +
+                                               '/login',
+                                               cookie, callingDomain)
+                    return
+            authHeader = createBasicAuthHeader(loginNickname,
+                                               loginPassword)
+            if not authorizeBasic(baseDir, '/users/' +
+                                  loginNickname + '/outbox',
+                                  authHeader, False):
+                print('Login failed: ' + loginNickname)
+                self._clearLoginDetails(loginNickname, callingDomain)
+                self.server.POSTbusy = False
+                return
+            else:
+                if isSuspended(baseDir, loginNickname):
+                    msg = \
+                        htmlSuspended(baseDir).encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+                # login success - redirect with authorization
+                print('Login success: ' + loginNickname)
+                # re-activate account if needed
+                activateAccount(baseDir, loginNickname, domain)
+                # This produces a deterministic token based
+                # on nick+password+salt
+                saltFilename = \
+                    baseDir+'/accounts/' + \
+                    loginNickname + '@' + domain + '/.salt'
+                salt = createPassword(32)
+                if os.path.isfile(saltFilename):
+                    try:
+                        with open(saltFilename, 'r') as fp:
+                            salt = fp.read()
+                    except Exception as e:
+                        print('WARN: Unable to read salt for ' +
+                              loginNickname + ' ' + str(e))
+                else:
+                    try:
+                        with open(saltFilename, 'w+') as fp:
+                            fp.write(salt)
+                    except Exception as e:
+                        print('WARN: Unable to save salt for ' +
+                              loginNickname + ' ' + str(e))
+
+                tokenText = loginNickname + loginPassword + salt
+                token = sha256(tokenText.encode('utf-8')).hexdigest()
+                self.server.tokens[loginNickname] = token
+                loginHandle = loginNickname + '@' + domain
+                tokenFilename = \
+                    baseDir+'/accounts/' + \
+                    loginHandle + '/.token'
+                try:
+                    with open(tokenFilename, 'w+') as fp:
+                        fp.write(token)
+                except Exception as e:
+                    print('WARN: Unable to save token for ' +
+                          loginNickname + ' ' + str(e))
+
+                personUpgradeActor(baseDir, None, loginHandle,
+                                   baseDir + '/accounts/' +
+                                   loginHandle + '.json')
+
+                index = self.server.tokens[loginNickname]
+                self.server.tokensLookup[index] = loginNickname
+                cookieStr = 'SET:epicyon=' + \
+                    self.server.tokens[loginNickname] + '; SameSite=Strict'
+                if callingDomain.endswith('.onion') and onionDomain:
+                    self._redirect_headers('http://' +
+                                           onionDomain +
+                                           '/users/' +
+                                           loginNickname + '/' +
+                                           self.server.defaultTimeline,
+                                           cookieStr, callingDomain)
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    self._redirect_headers('http://' +
+                                           i2pDomain +
+                                           '/users/' +
+                                           loginNickname + '/' +
+                                           self.server.defaultTimeline,
+                                           cookieStr, callingDomain)
+                else:
+                    self._redirect_headers(httpPrefix + '://' +
+                                           domainFull +
+                                           '/users/' +
+                                           loginNickname + '/' +
+                                           self.server.defaultTimeline,
+                                           cookieStr, callingDomain)
+                self.server.POSTbusy = False
+                return
+        self._200()
+        self.server.POSTbusy = False
+
     def _moderatorActions(self, path: str, callingDomain: str, cookie: str,
                           baseDir: str, httpPrefix: str,
                           domain: str, domainFull: str, port: int,
@@ -8057,161 +8214,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 1)
 
+        # login screen
         if self.path.startswith('/login'):
-            # get the contents of POST containing login credentials
-            length = int(self.headers['Content-length'])
-            if length > 512:
-                print('Login failed - credentials too long')
-                self.send_response(401)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-
-            try:
-                loginParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST login read ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST login read socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST login read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-
-            loginNickname, loginPassword, register = \
-                htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
-            if loginNickname:
-                self.server.lastLoginTime = int(time.time())
-                if register:
-                    if not registerAccount(self.server.baseDir,
-                                           self.server.httpPrefix,
-                                           self.server.domain,
-                                           self.server.port,
-                                           loginNickname,
-                                           loginPassword,
-                                           self.server.manualFollowerApproval):
-                        self.server.POSTbusy = False
-                        if callingDomain.endswith('.onion') and \
-                           self.server.onionDomain:
-                            self._redirect_headers('http://' +
-                                                   self.server.onionDomain +
-                                                   '/login',
-                                                   cookie, callingDomain)
-                        elif (callingDomain.endswith('.i2p') and
-                              self.server.i2pDomain):
-                            self._redirect_headers('http://' +
-                                                   self.server.i2pDomain +
-                                                   '/login',
-                                                   cookie, callingDomain)
-                        else:
-                            self._redirect_headers(self.server.httpPrefix +
-                                                   '://' +
-                                                   self.server.domainFull +
-                                                   '/login',
-                                                   cookie, callingDomain)
-                        return
-                authHeader = createBasicAuthHeader(loginNickname,
-                                                   loginPassword)
-                if not authorizeBasic(self.server.baseDir, '/users/' +
-                                      loginNickname + '/outbox',
-                                      authHeader, False):
-                    print('Login failed: ' + loginNickname)
-                    self._clearLoginDetails(loginNickname, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                else:
-                    if isSuspended(self.server.baseDir, loginNickname):
-                        msg = \
-                            htmlSuspended(self.server.baseDir).encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                    # login success - redirect with authorization
-                    print('Login success: ' + loginNickname)
-                    # re-activate account if needed
-                    activateAccount(self.server.baseDir, loginNickname,
-                                    self.server.domain)
-                    # This produces a deterministic token based
-                    # on nick+password+salt
-                    saltFilename = \
-                        self.server.baseDir+'/accounts/' + \
-                        loginNickname + '@' + self.server.domain + '/.salt'
-                    salt = createPassword(32)
-                    if os.path.isfile(saltFilename):
-                        try:
-                            with open(saltFilename, 'r') as fp:
-                                salt = fp.read()
-                        except Exception as e:
-                            print('WARN: Unable to read salt for ' +
-                                  loginNickname + ' ' + str(e))
-                    else:
-                        try:
-                            with open(saltFilename, 'w+') as fp:
-                                fp.write(salt)
-                        except Exception as e:
-                            print('WARN: Unable to save salt for ' +
-                                  loginNickname + ' ' + str(e))
-
-                    tokenText = loginNickname + loginPassword + salt
-                    token = sha256(tokenText.encode('utf-8')).hexdigest()
-                    self.server.tokens[loginNickname] = token
-                    loginHandle = loginNickname + '@' + self.server.domain
-                    tokenFilename = \
-                        self.server.baseDir+'/accounts/' + \
-                        loginHandle + '/.token'
-                    try:
-                        with open(tokenFilename, 'w+') as fp:
-                            fp.write(token)
-                    except Exception as e:
-                        print('WARN: Unable to save token for ' +
-                              loginNickname + ' ' + str(e))
-
-                    personUpgradeActor(self.server.baseDir, None, loginHandle,
-                                       self.server.baseDir + '/accounts/' +
-                                       loginHandle + '.json')
-
-                    index = self.server.tokens[loginNickname]
-                    self.server.tokensLookup[index] = loginNickname
-                    cookieStr = 'SET:epicyon=' + \
-                        self.server.tokens[loginNickname] + '; SameSite=Strict'
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        self._redirect_headers('http://' +
-                                               self.server.onionDomain +
-                                               '/users/' +
-                                               loginNickname + '/' +
-                                               self.server.defaultTimeline,
-                                               cookieStr, callingDomain)
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        self._redirect_headers('http://' +
-                                               self.server.i2pDomain +
-                                               '/users/' +
-                                               loginNickname + '/' +
-                                               self.server.defaultTimeline,
-                                               cookieStr, callingDomain)
-                    else:
-                        self._redirect_headers(self.server.httpPrefix+'://' +
-                                               self.server.domainFull +
-                                               '/users/' +
-                                               loginNickname + '/' +
-                                               self.server.defaultTimeline,
-                                               cookieStr, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-            self._200()
-            self.server.POSTbusy = False
+            self._loginScreen(self.path, callingDomain, cookie,
+                              self.server.baseDir, self.server.httpPrefix,
+                              self.server.domain, self.server.domainFull,
+                              self.server.port,
+                              self.server.onionDomain, self.server.i2pDomain,
+                              self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 2)
