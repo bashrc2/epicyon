@@ -1197,6 +1197,7 @@ class PubServer(BaseHTTPRequestHandler):
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
 
+            # get the nickname
             nickname = getNicknameFromActor(actorStr)
             if not nickname:
                 if callingDomain.endswith('.onion') and \
@@ -1211,7 +1212,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
+
             length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
             if length > self.server.maxPostLength:
                 if callingDomain.endswith('.onion') and \
                    onionDomain:
@@ -1249,7 +1253,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-            # extract each image type
+            # get the various avatar, banner and background images
             actorChanged = True
             profileMediaTypes = ('avatar', 'image',
                                  'banner', 'search_banner',
@@ -1320,6 +1324,7 @@ class PubServer(BaseHTTPRequestHandler):
                           ' image or font could not be saved to ' +
                           postImageFilename)
 
+            # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary,
                                         debug)
@@ -1331,6 +1336,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: profile update, no text ' +
                           'fields could be extracted from POST')
 
+            # load the json for the actor for this user
             actorFilename = \
                 baseDir + '/accounts/' + \
                 nickname + '@' + domain + '.json'
@@ -1356,6 +1362,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorJson['image']['url'].replace(srchStr,
                                                                   repStr)
 
+                    # set skill levels
                     skillCtr = 1
                     newSkills = {}
                     while skillCtr < 10:
@@ -1381,6 +1388,8 @@ class PubServer(BaseHTTPRequestHandler):
                        len(newSkills.items()):
                         actorChanged = True
                     actorJson['skills'] = newSkills
+
+                    # change password
                     if fields.get('password'):
                         if fields.get('passwordconfirm'):
                             if actorJson['password'] == \
@@ -1391,6 +1400,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     storeBasicCredentials(baseDir,
                                                           nickname,
                                                           pwd)
+
+                    # change displayed name
                     if fields.get('displayNickname'):
                         if fields['displayNickname'] != actorJson['name']:
                             actorJson['name'] = fields['displayNickname']
@@ -1399,6 +1410,7 @@ class PubServer(BaseHTTPRequestHandler):
                         setTheme(baseDir,
                                  fields['themeDropdown'])
 
+                    # change email address
                     currentEmailAddress = getEmailAddress(actorJson)
                     if fields.get('email'):
                         if fields['email'] != currentEmailAddress:
@@ -1409,6 +1421,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setEmailAddress(actorJson, '')
                             actorChanged = True
 
+                    # change xmpp address
                     currentXmppAddress = getXmppAddress(actorJson)
                     if fields.get('xmppAddress'):
                         if fields['xmppAddress'] != currentXmppAddress:
@@ -1420,6 +1433,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setXmppAddress(actorJson, '')
                             actorChanged = True
 
+                    # change matrix address
                     currentMatrixAddress = getMatrixAddress(actorJson)
                     if fields.get('matrixAddress'):
                         if fields['matrixAddress'] != currentMatrixAddress:
@@ -1431,6 +1445,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setMatrixAddress(actorJson, '')
                             actorChanged = True
 
+                    # change SSB address
                     currentSSBAddress = getSSBAddress(actorJson)
                     if fields.get('ssbAddress'):
                         if fields['ssbAddress'] != currentSSBAddress:
@@ -1442,6 +1457,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setSSBAddress(actorJson, '')
                             actorChanged = True
 
+                    # change blog address
                     currentBlogAddress = getBlogAddress(actorJson)
                     if fields.get('blogAddress'):
                         if fields['blogAddress'] != currentBlogAddress:
@@ -1453,6 +1469,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setBlogAddress(actorJson, '')
                             actorChanged = True
 
+                    # change tox address
                     currentToxAddress = getToxAddress(actorJson)
                     if fields.get('toxAddress'):
                         if fields['toxAddress'] != currentToxAddress:
@@ -1464,6 +1481,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setToxAddress(actorJson, '')
                             actorChanged = True
 
+                    # change PGP public key
                     currentPGPpubKey = getPGPpubKey(actorJson)
                     if fields.get('pgp'):
                         if fields['pgp'] != currentPGPpubKey:
@@ -1475,6 +1493,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setPGPpubKey(actorJson, '')
                             actorChanged = True
 
+                    # change PGP fingerprint
                     currentPGPfingerprint = getPGPfingerprint(actorJson)
                     if fields.get('openpgp'):
                         if fields['openpgp'] != currentPGPfingerprint:
@@ -1486,6 +1505,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setPGPfingerprint(actorJson, '')
                             actorChanged = True
 
+                    # change donation link
                     currentDonateUrl = getDonationUrl(actorJson)
                     if fields.get('donateUrl'):
                         if fields['donateUrl'] != currentDonateUrl:
@@ -1497,6 +1517,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setDonationUrl(actorJson, '')
                             actorChanged = True
 
+                    # change instance title
                     if fields.get('instanceTitle'):
                         currInstanceTitle = \
                             getConfigParam(baseDir,
@@ -1506,6 +1527,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            'instanceTitle',
                                            fields['instanceTitle'])
 
+                    # change YouTube alternate domain
                     if fields.get('ytdomain'):
                         currYTDomain = self.server.YTReplacementDomain
                         if fields['ytdomain'] != currYTDomain:
@@ -1525,6 +1547,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        'youtubedomain', '')
                         self.server.YTReplacementDomain = None
 
+                    # change instance description
                     currInstanceDescriptionShort = \
                         getConfigParam(baseDir,
                                        'instanceDescriptionShort')
@@ -1552,6 +1575,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if currInstanceDescription:
                             setConfigParam(baseDir,
                                            'instanceDescription', '')
+
+                    # change user bio
                     if fields.get('bio'):
                         if fields['bio'] != actorJson['summary']:
                             actorTags = {}
@@ -1570,6 +1595,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if actorJson['summary']:
                             actorJson['summary'] = ''
                             actorChanged = True
+
+                    # change moderators list
                     if fields.get('moderators'):
                         adminNickname = \
                             getConfigParam(baseDir, 'admin')
@@ -1628,11 +1655,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                 'instance',
                                                 'moderator')
 
+                    # remove scheduled posts
                     if fields.get('removeScheduledPosts'):
                         if fields['removeScheduledPosts'] == 'on':
                             removeScheduledPosts(baseDir,
                                                  nickname, domain)
 
+                    # approve followers
                     approveFollowers = False
                     if fields.get('approveFollowers'):
                         if fields['approveFollowers'] == 'on':
@@ -1643,6 +1672,7 @@ class PubServer(BaseHTTPRequestHandler):
                             approveFollowers
                         actorChanged = True
 
+                    # remove a custom font
                     if fields.get('removeCustomFont'):
                         if fields['removeCustomFont'] == 'on':
                             fontExt = ('woff', 'woff2', 'otf', 'ttf')
@@ -1661,6 +1691,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currTheme:
                                 setTheme(baseDir, currTheme)
 
+                    # change media instance status
                     if fields.get('mediaInstance'):
                         self.server.mediaInstance = False
                         self.server.defaultTimeline = 'inbox'
@@ -1677,6 +1708,8 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir,
                                            "mediaInstance",
                                            self.server.mediaInstance)
+
+                    # change blog instance status
                     if fields.get('blogsInstance'):
                         self.server.blogsInstance = False
                         self.server.defaultTimeline = 'inbox'
@@ -1693,6 +1726,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir,
                                            "blogsInstance",
                                            self.server.blogsInstance)
+
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
                         baseDir + '/accounts/' + \
@@ -1707,6 +1741,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not followDMsActive:
                         if os.path.isfile(followDMsFilename):
                             os.remove(followDMsFilename)
+
                     # remove Twitter retweets
                     removeTwitterFilename = \
                         baseDir + '/accounts/' + \
@@ -1722,6 +1757,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not removeTwitterActive:
                         if os.path.isfile(removeTwitterFilename):
                             os.remove(removeTwitterFilename)
+
                     # hide Like button
                     hideLikeButtonFile = \
                         baseDir + '/accounts/' + \
@@ -1743,6 +1779,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not hideLikeButtonActive:
                         if os.path.isfile(hideLikeButtonFile):
                             os.remove(hideLikeButtonFile)
+
                     # notify about new Likes
                     notifyLikesActive = False
                     if fields.get('notifyLikes'):
@@ -1754,6 +1791,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not notifyLikesActive:
                         if os.path.isfile(notifyLikesFilename):
                             os.remove(notifyLikesFilename)
+
                     # this account is a bot
                     if fields.get('isBot'):
                         if fields['isBot'] == 'on':
@@ -1772,6 +1810,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if actorJson['type'] != 'Person':
                                 actorJson['type'] = 'Person'
                                 actorChanged = True
+
+                    # grayscale theme
                     grayscale = False
                     if fields.get('grayscale'):
                         if fields['grayscale'] == 'on':
@@ -1780,6 +1820,7 @@ class PubServer(BaseHTTPRequestHandler):
                         enableGrayscale(baseDir)
                     else:
                         disableGrayscale(baseDir)
+
                     # save filtered words list
                     filterFilename = \
                         baseDir + '/accounts/' + \
@@ -1791,6 +1832,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if os.path.isfile(filterFilename):
                             os.remove(filterFilename)
+
                     # word replacements
                     switchFilename = \
                         baseDir + '/accounts/' + \
@@ -1802,6 +1844,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if os.path.isfile(switchFilename):
                             os.remove(switchFilename)
+
                     # save blocked accounts list
                     blockedFilename = \
                         baseDir + '/accounts/' + \
@@ -1813,6 +1856,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if os.path.isfile(blockedFilename):
                             os.remove(blockedFilename)
+
                     # save allowed instances list
                     allowedInstancesFilename = \
                         baseDir + '/accounts/' + \
@@ -1824,6 +1868,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if os.path.isfile(allowedInstancesFilename):
                             os.remove(allowedInstancesFilename)
+
                     # save git project names list
                     gitProjectsFilename = \
                         baseDir + '/accounts/' + \
@@ -1835,6 +1880,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if os.path.isfile(gitProjectsFilename):
                             os.remove(gitProjectsFilename)
+
                     # save actor json file within accounts
                     if actorChanged:
                         # update the context for the actor
@@ -1875,6 +1921,8 @@ class PubServer(BaseHTTPRequestHandler):
                         }
                         self._postToOutbox(updateActorJson,
                                            __version__, nickname)
+
+                    # deactivate the account
                     if fields.get('deactivateThisAccount'):
                         if fields['deactivateThisAccount'] == 'on':
                             deactivateAccount(baseDir,
@@ -1883,6 +1931,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     callingDomain)
                             self.server.POSTbusy = False
                             return
+
+        # redirect back to the profile screen
         if callingDomain.endswith('.onion') and \
            onionDomain:
             actorStr = \
