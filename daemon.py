@@ -2139,6 +2139,83 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _receiveVote(self, callingDomain: str, cookie: str,
+                     authorized: bool, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str,
+                     onionDomain: str, i2pDomain: str, debug: bool):
+        """Receive a vote via POST
+        """
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+            path = path.split('?page=')[0]
+        # the actor who votes
+        usersPath = path.replace('/question', '')
+        actor = httpPrefix + '://' + domainFull + usersPath
+        nickname = getNicknameFromActor(actor)
+        if not nickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                actor = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actor = 'http://' + i2pDomain + usersPath
+            self._redirect_headers(actor + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page=' + str(pageNumber),
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+        # get the parameters
+        length = int(self.headers['Content-length'])
+        try:
+            questionParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST questionParams connection was reset')
+            else:
+                print('WARN: POST questionParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST questionParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        questionParams = questionParams.replace('+', ' ')
+        questionParams = questionParams.replace('%3F', '')
+        questionParams = \
+            urllib.parse.unquote_plus(questionParams.strip())
+        # post being voted on
+        messageId = None
+        if 'messageId=' in questionParams:
+            messageId = questionParams.split('messageId=')[1]
+            if '&' in messageId:
+                messageId = messageId.split('&')[0]
+        answer = None
+        if 'answer=' in questionParams:
+            answer = questionParams.split('answer=')[1]
+            if '&' in answer:
+                answer = answer.split('&')[0]
+        self._sendReplyToQuestion(nickname, messageId, answer)
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actor = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actor + '/' +
+                               self.server.defaultTimeline +
+                               '?page=' + str(pageNumber), cookie,
+                               callingDomain)
+        self.server.POSTbusy = False
+        return
+
     def _receiveImage(self, length: int,
                       callingDomain: str, cookie: str,
                       authorized: bool, path: str,
@@ -8818,80 +8895,15 @@ class PubServer(BaseHTTPRequestHandler):
         if (authorized and
             (self.path.endswith('/question') or
              '/question?page=' in self.path)):
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-                self.path = self.path.split('?page=')[0]
-            # the actor who votes
-            usersPath = self.path.replace('/question', '')
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            nickname = getNicknameFromActor(actor)
-            if not nickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actor = 'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actor = 'http://' + self.server.i2pDomain + usersPath
-                self._redirect_headers(actor + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page=' + str(pageNumber),
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            # get the parameters
-            length = int(self.headers['Content-length'])
-            try:
-                questionParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST questionParams connection was reset')
-                else:
-                    print('WARN: POST questionParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST questionParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            questionParams = questionParams.replace('+', ' ')
-            questionParams = questionParams.replace('%3F', '')
-            questionParams = \
-                urllib.parse.unquote_plus(questionParams.strip())
-            # post being voted on
-            messageId = None
-            if 'messageId=' in questionParams:
-                messageId = questionParams.split('messageId=')[1]
-                if '&' in messageId:
-                    messageId = messageId.split('&')[0]
-            answer = None
-            if 'answer=' in questionParams:
-                answer = questionParams.split('answer=')[1]
-                if '&' in answer:
-                    answer = answer.split('&')[0]
-            self._sendReplyToQuestion(nickname, messageId, answer)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = 'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = 'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actor + '/' +
-                                   self.server.defaultTimeline +
-                                   '?page=' + str(pageNumber), cookie,
-                                   callingDomain)
-            self.server.POSTbusy = False
+            self._receiveVote(callingDomain, cookie,
+                              authorized, self.path,
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.domainFull,
+                              self.server.onionDomain,
+                              self.server.i2pDomain,
+                              self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 6)
