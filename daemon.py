@@ -1802,6 +1802,167 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = False
         return
 
+    def _unfollowConfirm(self, callingDomain: str, cookie: str,
+                         authorized: bool, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, domainFull: str, port: int,
+                         onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirm to unfollow
+        """
+        usersPath = path.split('/unfollowconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        followerNickname = getNicknameFromActor(originPathStr)
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            followConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST followConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST followConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST followConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in followConfirmParams:
+            followingActor = \
+                urllib.parse.unquote_plus(followConfirmParams)
+            followingActor = followingActor.split('actor=')[1]
+            if '&' in followingActor:
+                followingActor = followingActor.split('&')[0]
+            followingNickname = getNicknameFromActor(followingActor)
+            followingDomain, followingPort = \
+                getDomainFromActor(followingActor)
+            if followerNickname == followingNickname and \
+               followingDomain == domain and \
+               followingPort == port:
+                if debug:
+                    print('You cannot unfollow yourself!')
+            else:
+                if debug:
+                    print(followerNickname + ' stops following ' +
+                          followingActor)
+                followActor = \
+                    httpPrefix + '://' + domainFull + \
+                    '/users/' + followerNickname
+                statusNumber, published = getStatusNumber()
+                followId = followActor + '/statuses/' + str(statusNumber)
+                unfollowJson = {
+                    '@context': 'https://www.w3.org/ns/activitystreams',
+                    'id': followId + '/undo',
+                    'type': 'Undo',
+                    'actor': followActor,
+                    'object': {
+                        'id': followId,
+                        'type': 'Follow',
+                        'actor': followActor,
+                        'object': followingActor
+                    }
+                }
+                pathUsersSection = path.split('/users/')[1]
+                self.postToNickname = pathUsersSection.split('/')[0]
+                self._postToOutboxThread(unfollowJson)
+
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _followConfirm(self, callingDomain: str, cookie: str,
+                       authorized: bool, path: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirm to follow
+        """
+        usersPath = path.split('/followconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        followerNickname = getNicknameFromActor(originPathStr)
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            followConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST followConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST followConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST followConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitView=' in followConfirmParams:
+            followingActor = \
+                urllib.parse.unquote_plus(followConfirmParams)
+            followingActor = followingActor.split('actor=')[1]
+            if '&' in followingActor:
+                followingActor = followingActor.split('&')[0]
+            self._redirect_headers(followingActor, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in followConfirmParams:
+            followingActor = \
+                urllib.parse.unquote_plus(followConfirmParams)
+            followingActor = followingActor.split('actor=')[1]
+            if '&' in followingActor:
+                followingActor = followingActor.split('&')[0]
+            followingNickname = getNicknameFromActor(followingActor)
+            followingDomain, followingPort = \
+                getDomainFromActor(followingActor)
+            if followerNickname == followingNickname and \
+               followingDomain == domain and \
+               followingPort == port:
+                if debug:
+                    print('You cannot follow yourself!')
+            else:
+                if debug:
+                    print('Sending follow request from ' +
+                          followerNickname + ' to ' + followingActor)
+                sendFollowRequest(self.server.session,
+                                  baseDir, followerNickname,
+                                  domain, port,
+                                  httpPrefix,
+                                  followingNickname,
+                                  followingDomain,
+                                  followingPort, httpPrefix,
+                                  False, self.server.federationList,
+                                  self.server.sendThreads,
+                                  self.server.postLog,
+                                  self.server.cachedWebfingers,
+                                  self.server.personCache,
+                                  debug,
+                                  self.server.projectVersion)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
@@ -8734,161 +8895,32 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/followconfirm'):
-            usersPath = self.path.split('/followconfirm')[0]
-            originPathStr = self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            followerNickname = getNicknameFromActor(originPathStr)
-            length = int(self.headers['Content-length'])
-            try:
-                followConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST followConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST followConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST followConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitView=' in followConfirmParams:
-                followingActor = \
-                    urllib.parse.unquote_plus(followConfirmParams)
-                followingActor = followingActor.split('actor=')[1]
-                if '&' in followingActor:
-                    followingActor = followingActor.split('&')[0]
-                self._redirect_headers(followingActor, cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in followConfirmParams:
-                followingActor = \
-                    urllib.parse.unquote_plus(followConfirmParams)
-                followingActor = followingActor.split('actor=')[1]
-                if '&' in followingActor:
-                    followingActor = followingActor.split('&')[0]
-                followingNickname = getNicknameFromActor(followingActor)
-                followingDomain, followingPort = \
-                    getDomainFromActor(followingActor)
-                if followerNickname == followingNickname and \
-                   followingDomain == self.server.domain and \
-                   followingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot follow yourself!')
-                else:
-                    if self.server.debug:
-                        print('Sending follow request from ' +
-                              followerNickname + ' to ' + followingActor)
-                    sendFollowRequest(self.server.session,
-                                      self.server.baseDir,
-                                      followerNickname,
-                                      self.server.domain, self.server.port,
-                                      self.server.httpPrefix,
-                                      followingNickname,
-                                      followingDomain,
-                                      followingPort, self.server.httpPrefix,
-                                      False, self.server.federationList,
-                                      self.server.sendThreads,
-                                      self.server.postLog,
-                                      self.server.cachedWebfingers,
-                                      self.server.personCache,
-                                      self.server.debug,
-                                      self.server.projectVersion)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._followConfirm(callingDomain, cookie,
+                                authorized, self.path,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 10)
 
         # decision to unfollow in the web interface is confirmed
         if authorized and self.path.endswith('/unfollowconfirm'):
-            usersPath = self.path.split('/unfollowconfirm')[0]
-            originPathStr = self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            followerNickname = getNicknameFromActor(originPathStr)
-            length = int(self.headers['Content-length'])
-            try:
-                followConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST followConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST followConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST followConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in followConfirmParams:
-                followingActor = \
-                    urllib.parse.unquote_plus(followConfirmParams)
-                followingActor = followingActor.split('actor=')[1]
-                if '&' in followingActor:
-                    followingActor = followingActor.split('&')[0]
-                followingNickname = getNicknameFromActor(followingActor)
-                followingDomain, followingPort = \
-                    getDomainFromActor(followingActor)
-                if followerNickname == followingNickname and \
-                   followingDomain == self.server.domain and \
-                   followingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot unfollow yourself!')
-                else:
-                    if self.server.debug:
-                        print(followerNickname + ' stops following ' +
-                              followingActor)
-                    followActor = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + \
-                        '/users/' + followerNickname
-                    statusNumber, published = getStatusNumber()
-                    followId = followActor + '/statuses/' + str(statusNumber)
-                    unfollowJson = {
-                        '@context': 'https://www.w3.org/ns/activitystreams',
-                        'id': followId + '/undo',
-                        'type': 'Undo',
-                        'actor': followActor,
-                        'object': {
-                            'id': followId,
-                            'type': 'Follow',
-                            'actor': followActor,
-                            'object': followingActor
-                        }
-                    }
-                    pathUsersSection = self.path.split('/users/')[1]
-                    self.postToNickname = pathUsersSection.split('/')[0]
-                    self._postToOutboxThread(unfollowJson)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._unfollowConfirm(callingDomain, cookie,
+                                  authorized, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.domainFull,
+                                  self.server.port,
+                                  self.server.onionDomain,
+                                  self.server.i2pDomain,
+                                  self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 11)
