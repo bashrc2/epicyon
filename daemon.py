@@ -1466,7 +1466,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = False
         return
 
-    def _personOptions(self, path: str, callingDomain: str, cookie: str,
+    def _personOptions(self, path: str,
+                       callingDomain: str, cookie: str,
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
@@ -9253,7 +9254,8 @@ class PubServer(BaseHTTPRequestHandler):
             # an option was chosen from person options screen
             # view/follow/block/report
             if self.path.endswith('/personoptions'):
-                self._personOptions(self, self.path, callingDomain, cookie,
+                self._personOptions(self.path,
+                                    callingDomain, cookie,
                                     self.server.baseDir,
                                     self.server.httpPrefix,
                                     self.server.domain,
