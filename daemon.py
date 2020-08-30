@@ -2139,6 +2139,64 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _removeShare(self, callingDomain: str, cookie: str,
+                     authorized: bool, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str,
+                     onionDomain: str, i2pDomain: str, debug: bool):
+        """Removes a shared item
+        """
+        usersPath = path.split('/rmshare')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            removeShareConfirmParams = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST removeShareConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST removeShareConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST removeShareConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in removeShareConfirmParams:
+            removeShareConfirmParams = \
+                removeShareConfirmParams.replace('+', ' ').strip()
+            removeShareConfirmParams = \
+                urllib.parse.unquote_plus(removeShareConfirmParams)
+            shareActor = removeShareConfirmParams.split('actor=')[1]
+            if '&' in shareActor:
+                shareActor = shareActor.split('&')[0]
+            shareName = removeShareConfirmParams.split('shareName=')[1]
+            if '&' in shareName:
+                shareName = shareName.split('&')[0]
+            shareNickname = getNicknameFromActor(shareActor)
+            if shareNickname:
+                shareDomain, sharePort = getDomainFromActor(shareActor)
+                removeShare(baseDir,
+                            shareNickname, shareDomain, shareName)
+
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr + '/tlshares',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _removePost(self, callingDomain: str, cookie: str,
                     authorized: bool, path: str,
                     baseDir: str, httpPrefix: str,
@@ -9009,58 +9067,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         # removes a shared item
         if authorized and self.path.endswith('/rmshare'):
-            usersPath = self.path.split('/rmshare')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                removeShareConfirmParams = \
-                    self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST removeShareConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST removeShareConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST removeShareConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in removeShareConfirmParams:
-                removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('+', ' ').strip()
-                removeShareConfirmParams = \
-                    urllib.parse.unquote_plus(removeShareConfirmParams)
-                shareActor = removeShareConfirmParams.split('actor=')[1]
-                if '&' in shareActor:
-                    shareActor = shareActor.split('&')[0]
-                shareName = removeShareConfirmParams.split('shareName=')[1]
-                if '&' in shareName:
-                    shareName = shareName.split('&')[0]
-                shareNickname = getNicknameFromActor(shareActor)
-                if shareNickname:
-                    shareDomain, sharePort = getDomainFromActor(shareActor)
-                    removeShare(self.server.baseDir,
-                                shareNickname, shareDomain, shareName)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr + '/tlshares',
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._removeShare(callingDomain, cookie,
+                              authorized, self.path,
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.domainFull,
+                              self.server.onionDomain,
+                              self.server.i2pDomain,
+                              self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
