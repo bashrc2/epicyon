@@ -2139,6 +2139,72 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _receiveImage(self, length: int,
+                      callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str,
+                      onionDomain: str, i2pDomain: str, debug: bool):
+        """Receives an image via POST
+        """
+        if not self.outboxAuthenticated:
+            if debug:
+                print('DEBUG: unauthenticated attempt to ' +
+                      'post image to outbox')
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        pathUsersSection = path.split('/users/')[1]
+        if '/' not in pathUsersSection:
+            self._404()
+            self.server.POSTbusy = False
+            return
+        self.postFromNickname = pathUsersSection.split('/')[0]
+        accountsDir = \
+            baseDir + '/accounts/' + \
+            self.postFromNickname + '@' + domain
+        if not os.path.isdir(accountsDir):
+            self._404()
+            self.server.POSTbusy = False
+            return
+
+        try:
+            mediaBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST mediaBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST mediaBytes socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST mediaBytes rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        mediaFilenameBase = accountsDir + '/upload'
+        mediaFilename = mediaFilenameBase + '.png'
+        if self.headers['Content-type'].endswith('jpeg'):
+            mediaFilename = mediaFilenameBase + '.jpg'
+        if self.headers['Content-type'].endswith('gif'):
+            mediaFilename = mediaFilenameBase + '.gif'
+        if self.headers['Content-type'].endswith('webp'):
+            mediaFilename = mediaFilenameBase + '.webp'
+        with open(mediaFilename, 'wb') as avFile:
+            avFile.write(mediaBytes)
+        if debug:
+            print('DEBUG: image saved to ' + mediaFilename)
+        self.send_response(201)
+        self.end_headers()
+        self.server.POSTbusy = False
+
     def _removeShare(self, callingDomain: str, cookie: str,
                      authorized: bool, path: str,
                      baseDir: str, httpPrefix: str,
@@ -9271,61 +9337,15 @@ class PubServer(BaseHTTPRequestHandler):
         # receive images to the outbox
         if self.headers['Content-type'].startswith('image/') and \
            '/users/' in self.path:
-            if not self.outboxAuthenticated:
-                if self.server.debug:
-                    print('DEBUG: unauthenticated attempt to ' +
-                          'post image to outbox')
-                self.send_response(403)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            pathUsersSection = self.path.split('/users/')[1]
-            if '/' not in pathUsersSection:
-                self._404()
-                self.server.POSTbusy = False
-                return
-            self.postFromNickname = pathUsersSection.split('/')[0]
-            accountsDir = \
-                self.server.baseDir + '/accounts/' + \
-                self.postFromNickname + '@' + self.server.domain
-            if not os.path.isdir(accountsDir):
-                self._404()
-                self.server.POSTbusy = False
-                return
-            try:
-                mediaBytes = self.rfile.read(length)
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST mediaBytes ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST mediaBytes socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST mediaBytes rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            mediaFilenameBase = accountsDir + '/upload'
-            mediaFilename = mediaFilenameBase + '.png'
-            if self.headers['Content-type'].endswith('jpeg'):
-                mediaFilename = mediaFilenameBase + '.jpg'
-            if self.headers['Content-type'].endswith('gif'):
-                mediaFilename = mediaFilenameBase + '.gif'
-            if self.headers['Content-type'].endswith('webp'):
-                mediaFilename = mediaFilenameBase + '.webp'
-            with open(mediaFilename, 'wb') as avFile:
-                avFile.write(mediaBytes)
-            if self.server.debug:
-                print('DEBUG: image saved to ' + mediaFilename)
-            self.send_response(201)
-            self.end_headers()
-            self.server.POSTbusy = False
+            self._receiveImage(length, callingDomain, cookie,
+                               authorized, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               self.server.debug)
             return
 
         # refuse to receive non-json content
