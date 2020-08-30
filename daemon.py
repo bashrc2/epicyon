@@ -1181,6 +1181,719 @@ class PubServer(BaseHTTPRequestHandler):
             '/users/' + nickname + '/statuses/' + userEnding2[1]
         return locatePost(baseDir, nickname, domain, messageId), nickname
 
+    def _profileUpdate(self, callingDomain: str, cookie: str,
+                       authorized: bool, path: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str,
+                       onionDomain: str, i2pDomain: str, debug: bool):
+        """Updates your user profile after editing via the Edit button
+        on the profile screen
+        """
+        usersPath = path.replace('/profiledata', '')
+        usersPath = usersPath.replace('/editprofile', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            nickname = getNicknameFromActor(actorStr)
+            if not nickname:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('WARN: nickname not found in ' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+            length = int(self.headers['Content-length'])
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum profile data length exceeded ' +
+                      str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract each image type
+            actorChanged = True
+            profileMediaTypes = ('avatar', 'image',
+                                 'banner', 'search_banner',
+                                 'instanceLogo')
+            profileMediaTypesUploaded = {}
+            for mType in profileMediaTypes:
+                if debug:
+                    print('DEBUG: profile update extracting ' + mType +
+                          ' image or font from POST')
+                mediaBytes, postBytes = \
+                    extractMediaInFormPOST(postBytes, boundary, mType)
+                if mediaBytes:
+                    if debug:
+                        print('DEBUG: profile update ' + mType +
+                              ' image or font was found. ' +
+                              str(len(mediaBytes)) + ' bytes')
+                else:
+                    if debug:
+                        print('DEBUG: profile update, no ' + mType +
+                              ' image or font was found in POST')
+                    continue
+
+                # Note: a .temp extension is used here so that at no
+                # time is an image with metadata publicly exposed,
+                # even for a few mS
+                if mType == 'instanceLogo':
+                    filenameBase = \
+                        baseDir + '/accounts/login.temp'
+                else:
+                    filenameBase = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/' + mType + '.temp'
+
+                filename, attachmentMediaType = \
+                    saveMediaInFormPOST(mediaBytes, debug,
+                                        filenameBase)
+                if filename:
+                    print('Profile update POST ' + mType +
+                          ' media or font filename is ' + filename)
+                else:
+                    print('Profile update, no ' + mType +
+                          ' media or font filename in POST')
+                    continue
+
+                postImageFilename = filename.replace('.temp', '')
+                if debug:
+                    print('DEBUG: POST ' + mType +
+                          ' media removing metadata')
+                # remove existing etag
+                if os.path.isfile(postImageFilename + '.etag'):
+                    try:
+                        os.remove(postImageFilename + '.etag')
+                    except BaseException:
+                        pass
+                removeMetaData(filename, postImageFilename)
+                if os.path.isfile(postImageFilename):
+                    print('profile update POST ' + mType +
+                          ' image or font saved to ' + postImageFilename)
+                    if mType != 'instanceLogo':
+                        lastPartOfImageFilename = \
+                            postImageFilename.split('/')[-1]
+                        profileMediaTypesUploaded[mType] = \
+                            lastPartOfImageFilename
+                        actorChanged = True
+                else:
+                    print('ERROR: profile update POST ' + mType +
+                          ' image or font could not be saved to ' +
+                          postImageFilename)
+
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary,
+                                        debug)
+            if debug:
+                if fields:
+                    print('DEBUG: profile update text ' +
+                          'field extracted from POST ' + str(fields))
+                else:
+                    print('WARN: profile update, no text ' +
+                          'fields could be extracted from POST')
+
+            actorFilename = \
+                baseDir + '/accounts/' + \
+                nickname + '@' + domain + '.json'
+            if os.path.isfile(actorFilename):
+                actorJson = loadJson(actorFilename)
+                if actorJson:
+                    # update the avatar/image url file extension
+                    uploads = profileMediaTypesUploaded.items()
+                    for mType, lastPart in uploads:
+                        repStr = '/' + lastPart
+                        if mType == 'avatar':
+                            lastPartOfUrl = \
+                                actorJson['icon']['url'].split('/')[-1]
+                            srchStr = '/' + lastPartOfUrl
+                            actorJson['icon']['url'] = \
+                                actorJson['icon']['url'].replace(srchStr,
+                                                                 repStr)
+                        elif mType == 'image':
+                            lastPartOfUrl = \
+                                actorJson['image']['url'].split('/')[-1]
+                            srchStr = '/' + lastPartOfUrl
+                            actorJson['image']['url'] = \
+                                actorJson['image']['url'].replace(srchStr,
+                                                                  repStr)
+
+                    skillCtr = 1
+                    newSkills = {}
+                    while skillCtr < 10:
+                        skillName = \
+                            fields.get('skillName' + str(skillCtr))
+                        if not skillName:
+                            skillCtr += 1
+                            continue
+                        skillValue = \
+                            fields.get('skillValue' + str(skillCtr))
+                        if not skillValue:
+                            skillCtr += 1
+                            continue
+                        if not actorJson['skills'].get(skillName):
+                            actorChanged = True
+                        else:
+                            if actorJson['skills'][skillName] != \
+                               int(skillValue):
+                                actorChanged = True
+                        newSkills[skillName] = int(skillValue)
+                        skillCtr += 1
+                    if len(actorJson['skills'].items()) != \
+                       len(newSkills.items()):
+                        actorChanged = True
+                    actorJson['skills'] = newSkills
+                    if fields.get('password'):
+                        if fields.get('passwordconfirm'):
+                            if actorJson['password'] == \
+                               fields['passwordconfirm']:
+                                if len(actorJson['password']) > 2:
+                                    # set password
+                                    pwd = actorJson['password']
+                                    storeBasicCredentials(baseDir,
+                                                          nickname,
+                                                          pwd)
+                    if fields.get('displayNickname'):
+                        if fields['displayNickname'] != actorJson['name']:
+                            actorJson['name'] = fields['displayNickname']
+                            actorChanged = True
+                    if fields.get('themeDropdown'):
+                        setTheme(baseDir,
+                                 fields['themeDropdown'])
+
+                    currentEmailAddress = getEmailAddress(actorJson)
+                    if fields.get('email'):
+                        if fields['email'] != currentEmailAddress:
+                            setEmailAddress(actorJson, fields['email'])
+                            actorChanged = True
+                    else:
+                        if currentEmailAddress:
+                            setEmailAddress(actorJson, '')
+                            actorChanged = True
+
+                    currentXmppAddress = getXmppAddress(actorJson)
+                    if fields.get('xmppAddress'):
+                        if fields['xmppAddress'] != currentXmppAddress:
+                            setXmppAddress(actorJson,
+                                           fields['xmppAddress'])
+                            actorChanged = True
+                    else:
+                        if currentXmppAddress:
+                            setXmppAddress(actorJson, '')
+                            actorChanged = True
+
+                    currentMatrixAddress = getMatrixAddress(actorJson)
+                    if fields.get('matrixAddress'):
+                        if fields['matrixAddress'] != currentMatrixAddress:
+                            setMatrixAddress(actorJson,
+                                             fields['matrixAddress'])
+                            actorChanged = True
+                    else:
+                        if currentMatrixAddress:
+                            setMatrixAddress(actorJson, '')
+                            actorChanged = True
+
+                    currentSSBAddress = getSSBAddress(actorJson)
+                    if fields.get('ssbAddress'):
+                        if fields['ssbAddress'] != currentSSBAddress:
+                            setSSBAddress(actorJson,
+                                          fields['ssbAddress'])
+                            actorChanged = True
+                    else:
+                        if currentSSBAddress:
+                            setSSBAddress(actorJson, '')
+                            actorChanged = True
+
+                    currentBlogAddress = getBlogAddress(actorJson)
+                    if fields.get('blogAddress'):
+                        if fields['blogAddress'] != currentBlogAddress:
+                            setBlogAddress(actorJson,
+                                           fields['blogAddress'])
+                            actorChanged = True
+                    else:
+                        if currentBlogAddress:
+                            setBlogAddress(actorJson, '')
+                            actorChanged = True
+
+                    currentToxAddress = getToxAddress(actorJson)
+                    if fields.get('toxAddress'):
+                        if fields['toxAddress'] != currentToxAddress:
+                            setToxAddress(actorJson,
+                                          fields['toxAddress'])
+                            actorChanged = True
+                    else:
+                        if currentToxAddress:
+                            setToxAddress(actorJson, '')
+                            actorChanged = True
+
+                    currentPGPpubKey = getPGPpubKey(actorJson)
+                    if fields.get('pgp'):
+                        if fields['pgp'] != currentPGPpubKey:
+                            setPGPpubKey(actorJson,
+                                         fields['pgp'])
+                            actorChanged = True
+                    else:
+                        if currentPGPpubKey:
+                            setPGPpubKey(actorJson, '')
+                            actorChanged = True
+
+                    currentPGPfingerprint = getPGPfingerprint(actorJson)
+                    if fields.get('openpgp'):
+                        if fields['openpgp'] != currentPGPfingerprint:
+                            setPGPfingerprint(actorJson,
+                                              fields['openpgp'])
+                            actorChanged = True
+                    else:
+                        if currentPGPfingerprint:
+                            setPGPfingerprint(actorJson, '')
+                            actorChanged = True
+
+                    currentDonateUrl = getDonationUrl(actorJson)
+                    if fields.get('donateUrl'):
+                        if fields['donateUrl'] != currentDonateUrl:
+                            setDonationUrl(actorJson,
+                                           fields['donateUrl'])
+                            actorChanged = True
+                    else:
+                        if currentDonateUrl:
+                            setDonationUrl(actorJson, '')
+                            actorChanged = True
+
+                    if fields.get('instanceTitle'):
+                        currInstanceTitle = \
+                            getConfigParam(baseDir,
+                                           'instanceTitle')
+                        if fields['instanceTitle'] != currInstanceTitle:
+                            setConfigParam(baseDir,
+                                           'instanceTitle',
+                                           fields['instanceTitle'])
+
+                    if fields.get('ytdomain'):
+                        currYTDomain = self.server.YTReplacementDomain
+                        if fields['ytdomain'] != currYTDomain:
+                            newYTDomain = fields['ytdomain']
+                            if '://' in newYTDomain:
+                                newYTDomain = newYTDomain.split('://')[1]
+                            if '/' in newYTDomain:
+                                newYTDomain = newYTDomain.split('/')[0]
+                            if '.' in newYTDomain:
+                                setConfigParam(baseDir,
+                                               'youtubedomain',
+                                               newYTDomain)
+                                self.server.YTReplacementDomain = \
+                                    newYTDomain
+                    else:
+                        setConfigParam(baseDir,
+                                       'youtubedomain', '')
+                        self.server.YTReplacementDomain = None
+
+                    currInstanceDescriptionShort = \
+                        getConfigParam(baseDir,
+                                       'instanceDescriptionShort')
+                    if fields.get('instanceDescriptionShort'):
+                        if fields['instanceDescriptionShort'] != \
+                           currInstanceDescriptionShort:
+                            iDesc = fields['instanceDescriptionShort']
+                            setConfigParam(baseDir,
+                                           'instanceDescriptionShort',
+                                           iDesc)
+                    else:
+                        if currInstanceDescriptionShort:
+                            setConfigParam(baseDir,
+                                           'instanceDescriptionShort', '')
+                    currInstanceDescription = \
+                        getConfigParam(baseDir,
+                                       'instanceDescription')
+                    if fields.get('instanceDescription'):
+                        if fields['instanceDescription'] != \
+                           currInstanceDescription:
+                            setConfigParam(baseDir,
+                                           'instanceDescription',
+                                           fields['instanceDescription'])
+                    else:
+                        if currInstanceDescription:
+                            setConfigParam(baseDir,
+                                           'instanceDescription', '')
+                    if fields.get('bio'):
+                        if fields['bio'] != actorJson['summary']:
+                            actorTags = {}
+                            actorJson['summary'] = \
+                                addHtmlTags(baseDir,
+                                            httpPrefix,
+                                            nickname,
+                                            domainFull,
+                                            fields['bio'], [], actorTags)
+                            if actorTags:
+                                actorJson['tag'] = []
+                                for tagName, tag in actorTags.items():
+                                    actorJson['tag'].append(tag)
+                            actorChanged = True
+                    else:
+                        if actorJson['summary']:
+                            actorJson['summary'] = ''
+                            actorChanged = True
+                    if fields.get('moderators'):
+                        adminNickname = \
+                            getConfigParam(baseDir, 'admin')
+                        if path.startswith('/users/' +
+                                           adminNickname + '/'):
+                            moderatorsFile = \
+                                baseDir + \
+                                '/accounts/moderators.txt'
+                            clearModeratorStatus(baseDir)
+                            if ',' in fields['moderators']:
+                                # if the list was given as comma separated
+                                modFile = open(moderatorsFile, "w+")
+                                mods = fields['moderators'].split(',')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = baseDir + \
+                                        '/accounts/' + modNick + \
+                                        '@' + domain
+                                    if os.path.isdir(modDir):
+                                        modFile.write(modNick + '\n')
+                                modFile.close()
+                                mods = fields['moderators'].split(',')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = baseDir + \
+                                        '/accounts/' + modNick + \
+                                        '@' + domain
+                                    if os.path.isdir(modDir):
+                                        setRole(baseDir,
+                                                modNick, domain,
+                                                'instance', 'moderator')
+                            else:
+                                # nicknames on separate lines
+                                modFile = open(moderatorsFile, "w+")
+                                mods = fields['moderators'].split('\n')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = \
+                                        baseDir + \
+                                        '/accounts/' + modNick + \
+                                        '@' + domain
+                                    if os.path.isdir(modDir):
+                                        modFile.write(modNick + '\n')
+                                modFile.close()
+                                mods = fields['moderators'].split('\n')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = \
+                                        baseDir + \
+                                        '/accounts/' + \
+                                        modNick + '@' + \
+                                        domain
+                                    if os.path.isdir(modDir):
+                                        setRole(baseDir,
+                                                modNick, domain,
+                                                'instance',
+                                                'moderator')
+
+                    if fields.get('removeScheduledPosts'):
+                        if fields['removeScheduledPosts'] == 'on':
+                            removeScheduledPosts(baseDir,
+                                                 nickname, domain)
+
+                    approveFollowers = False
+                    if fields.get('approveFollowers'):
+                        if fields['approveFollowers'] == 'on':
+                            approveFollowers = True
+                    if approveFollowers != \
+                       actorJson['manuallyApprovesFollowers']:
+                        actorJson['manuallyApprovesFollowers'] = \
+                            approveFollowers
+                        actorChanged = True
+
+                    if fields.get('removeCustomFont'):
+                        if fields['removeCustomFont'] == 'on':
+                            fontExt = ('woff', 'woff2', 'otf', 'ttf')
+                            for ext in fontExt:
+                                if os.path.isfile(baseDir +
+                                                  '/fonts/custom.' + ext):
+                                    os.remove(baseDir +
+                                              '/fonts/custom.' + ext)
+                                if os.path.isfile(baseDir +
+                                                  '/fonts/custom.' + ext +
+                                                  '.etag'):
+                                    os.remove(baseDir +
+                                              '/fonts/custom.' + ext +
+                                              '.etag')
+                            currTheme = getTheme(baseDir)
+                            if currTheme:
+                                setTheme(baseDir, currTheme)
+
+                    if fields.get('mediaInstance'):
+                        self.server.mediaInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['mediaInstance'] == 'on':
+                            self.server.mediaInstance = True
+                            self.server.defaultTimeline = 'tlmedia'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                    else:
+                        if self.server.mediaInstance:
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "mediaInstance",
+                                           self.server.mediaInstance)
+                    if fields.get('blogsInstance'):
+                        self.server.blogsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['blogsInstance'] == 'on':
+                            self.server.blogsInstance = True
+                            self.server.defaultTimeline = 'tlblogs'
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                    else:
+                        if self.server.blogsInstance:
+                            self.server.blogsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "blogsInstance",
+                                           self.server.blogsInstance)
+                    # only receive DMs from accounts you follow
+                    followDMsFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.followDMs'
+                    followDMsActive = False
+                    if fields.get('followDMs'):
+                        if fields['followDMs'] == 'on':
+                            followDMsActive = True
+                            with open(followDMsFilename, 'w+') as fFile:
+                                fFile.write('\n')
+                    if not followDMsActive:
+                        if os.path.isfile(followDMsFilename):
+                            os.remove(followDMsFilename)
+                    # remove Twitter retweets
+                    removeTwitterFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.removeTwitter'
+                    removeTwitterActive = False
+                    if fields.get('removeTwitter'):
+                        if fields['removeTwitter'] == 'on':
+                            removeTwitterActive = True
+                            with open(removeTwitterFilename,
+                                      'w+') as rFile:
+                                rFile.write('\n')
+                    if not removeTwitterActive:
+                        if os.path.isfile(removeTwitterFilename):
+                            os.remove(removeTwitterFilename)
+                    # hide Like button
+                    hideLikeButtonFile = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.hideLikeButton'
+                    notifyLikesFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.notifyLikes'
+                    hideLikeButtonActive = False
+                    if fields.get('hideLikeButton'):
+                        if fields['hideLikeButton'] == 'on':
+                            hideLikeButtonActive = True
+                            with open(hideLikeButtonFile, 'w+') as rFile:
+                                rFile.write('\n')
+                            # remove notify likes selection
+                            if os.path.isfile(notifyLikesFilename):
+                                os.remove(notifyLikesFilename)
+                    if not hideLikeButtonActive:
+                        if os.path.isfile(hideLikeButtonFile):
+                            os.remove(hideLikeButtonFile)
+                    # notify about new Likes
+                    notifyLikesActive = False
+                    if fields.get('notifyLikes'):
+                        if fields['notifyLikes'] == 'on' and \
+                           not hideLikeButtonActive:
+                            notifyLikesActive = True
+                            with open(notifyLikesFilename, 'w+') as rFile:
+                                rFile.write('\n')
+                    if not notifyLikesActive:
+                        if os.path.isfile(notifyLikesFilename):
+                            os.remove(notifyLikesFilename)
+                    # this account is a bot
+                    if fields.get('isBot'):
+                        if fields['isBot'] == 'on':
+                            if actorJson['type'] != 'Service':
+                                actorJson['type'] = 'Service'
+                                actorChanged = True
+                    else:
+                        # this account is a group
+                        if fields.get('isGroup'):
+                            if fields['isGroup'] == 'on':
+                                if actorJson['type'] != 'Group':
+                                    actorJson['type'] = 'Group'
+                                    actorChanged = True
+                        else:
+                            # this account is a person (default)
+                            if actorJson['type'] != 'Person':
+                                actorJson['type'] = 'Person'
+                                actorChanged = True
+                    grayscale = False
+                    if fields.get('grayscale'):
+                        if fields['grayscale'] == 'on':
+                            grayscale = True
+                    if grayscale:
+                        enableGrayscale(baseDir)
+                    else:
+                        disableGrayscale(baseDir)
+                    # save filtered words list
+                    filterFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/filters.txt'
+                    if fields.get('filteredWords'):
+                        with open(filterFilename, 'w+') as filterfile:
+                            filterfile.write(fields['filteredWords'])
+                    else:
+                        if os.path.isfile(filterFilename):
+                            os.remove(filterFilename)
+                    # word replacements
+                    switchFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/replacewords.txt'
+                    if fields.get('switchWords'):
+                        with open(switchFilename, 'w+') as switchfile:
+                            switchfile.write(fields['switchWords'])
+                    else:
+                        if os.path.isfile(switchFilename):
+                            os.remove(switchFilename)
+                    # save blocked accounts list
+                    blockedFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/blocking.txt'
+                    if fields.get('blocked'):
+                        with open(blockedFilename, 'w+') as blockedfile:
+                            blockedfile.write(fields['blocked'])
+                    else:
+                        if os.path.isfile(blockedFilename):
+                            os.remove(blockedFilename)
+                    # save allowed instances list
+                    allowedInstancesFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/allowedinstances.txt'
+                    if fields.get('allowedInstances'):
+                        with open(allowedInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['allowedInstances'])
+                    else:
+                        if os.path.isfile(allowedInstancesFilename):
+                            os.remove(allowedInstancesFilename)
+                    # save git project names list
+                    gitProjectsFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/gitprojects.txt'
+                    if fields.get('gitProjects'):
+                        with open(gitProjectsFilename, 'w+') as aFile:
+                            aFile.write(fields['gitProjects'].lower())
+                    else:
+                        if os.path.isfile(gitProjectsFilename):
+                            os.remove(gitProjectsFilename)
+                    # save actor json file within accounts
+                    if actorChanged:
+                        # update the context for the actor
+                        actorJson['@context'] = [
+                            'https://www.w3.org/ns/activitystreams',
+                            'https://w3id.org/security/v1',
+                            getDefaultPersonContext()
+                        ]
+                        randomizeActorImages(actorJson)
+                        saveJson(actorJson, actorFilename)
+                        webfingerUpdate(baseDir,
+                                        nickname, domain,
+                                        onionDomain,
+                                        self.server.cachedWebfingers)
+                        # also copy to the actors cache and
+                        # personCache in memory
+                        storePersonInCache(baseDir,
+                                           actorJson['id'], actorJson,
+                                           self.server.personCache,
+                                           True)
+                        # clear any cached images for this actor
+                        idStr = actorJson['id'].replace('/', '-')
+                        removeAvatarFromCache(baseDir, idStr)
+                        # save the actor to the cache
+                        actorCacheFilename = \
+                            baseDir + '/cache/actors/' + \
+                            actorJson['id'].replace('/', '#') + '.json'
+                        saveJson(actorJson, actorCacheFilename)
+                        # send profile update to followers
+                        ccStr = 'https://www.w3.org/ns/' + \
+                            'activitystreams#Public'
+                        updateActorJson = {
+                            'type': 'Update',
+                            'actor': actorJson['id'],
+                            'to': [actorJson['id'] + '/followers'],
+                            'cc': [ccStr],
+                            'object': actorJson
+                        }
+                        self._postToOutbox(updateActorJson,
+                                           __version__, nickname)
+                    if fields.get('deactivateThisAccount'):
+                        if fields['deactivateThisAccount'] == 'on':
+                            deactivateAccount(baseDir,
+                                              nickname, domain)
+                            self._clearLoginDetails(nickname,
+                                                    callingDomain)
+                            self.server.POSTbusy = False
+                            return
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -6980,721 +7693,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 2)
 
-        # update of profile/avatar from web interface
+        # update of profile/avatar from web interface,
+        # after selecting Edit button then Submit
         if authorized and self.path.endswith('/profiledata'):
-            usersPath = self.path.replace('/profiledata', '')
-            usersPath = usersPath.replace('/editprofile', '')
-            actorStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            if ' boundary=' in self.headers['Content-type']:
-                boundary = self.headers['Content-type'].split('boundary=')[1]
-                if ';' in boundary:
-                    boundary = boundary.split(';')[0]
-
-                nickname = getNicknameFromActor(actorStr)
-                if not nickname:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actorStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actorStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('WARN: nickname not found in ' + actorStr)
-                    self._redirect_headers(actorStr, cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                length = int(self.headers['Content-length'])
-                if length > self.server.maxPostLength:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actorStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actorStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('Maximum profile data length exceeded ' +
-                          str(length))
-                    self._redirect_headers(actorStr, cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-
-                try:
-                    # read the bytes of the http form POST
-                    postBytes = self.rfile.read(length)
-                except SocketError as e:
-                    if e.errno == errno.ECONNRESET:
-                        print('WARN: connection was reset while ' +
-                              'reading bytes from http form POST')
-                    else:
-                        print('WARN: error while reading bytes ' +
-                              'from http form POST')
-                    self.send_response(400)
-                    self.end_headers()
-                    self.server.POSTbusy = False
-                    return
-                except ValueError as e:
-                    print('ERROR: failed to read bytes for POST')
-                    print(e)
-                    self.send_response(400)
-                    self.end_headers()
-                    self.server.POSTbusy = False
-                    return
-
-                # extract each image type
-                actorChanged = True
-                profileMediaTypes = ('avatar', 'image',
-                                     'banner', 'search_banner',
-                                     'instanceLogo')
-                profileMediaTypesUploaded = {}
-                for mType in profileMediaTypes:
-                    if self.server.debug:
-                        print('DEBUG: profile update extracting ' + mType +
-                              ' image or font from POST')
-                    mediaBytes, postBytes = \
-                        extractMediaInFormPOST(postBytes, boundary, mType)
-                    if mediaBytes:
-                        if self.server.debug:
-                            print('DEBUG: profile update ' + mType +
-                                  ' image or font was found. ' +
-                                  str(len(mediaBytes)) + ' bytes')
-                    else:
-                        if self.server.debug:
-                            print('DEBUG: profile update, no ' + mType +
-                                  ' image or font was found in POST')
-                        continue
-
-                    # Note: a .temp extension is used here so that at no
-                    # time is an image with metadata publicly exposed,
-                    # even for a few mS
-                    if mType == 'instanceLogo':
-                        filenameBase = \
-                            self.server.baseDir + '/accounts/login.temp'
-                    else:
-                        filenameBase = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/' + mType + '.temp'
-
-                    filename, attachmentMediaType = \
-                        saveMediaInFormPOST(mediaBytes, self.server.debug,
-                                            filenameBase)
-                    if filename:
-                        print('Profile update POST ' + mType +
-                              ' media or font filename is ' + filename)
-                    else:
-                        print('Profile update, no ' + mType +
-                              ' media or font filename in POST')
-                        continue
-
-                    postImageFilename = filename.replace('.temp', '')
-                    if self.server.debug:
-                        print('DEBUG: POST ' + mType +
-                              ' media removing metadata')
-                    # remove existing etag
-                    if os.path.isfile(postImageFilename + '.etag'):
-                        try:
-                            os.remove(postImageFilename + '.etag')
-                        except BaseException:
-                            pass
-                    removeMetaData(filename, postImageFilename)
-                    if os.path.isfile(postImageFilename):
-                        print('profile update POST ' + mType +
-                              ' image or font saved to ' + postImageFilename)
-                        if mType != 'instanceLogo':
-                            lastPartOfImageFilename = \
-                                postImageFilename.split('/')[-1]
-                            profileMediaTypesUploaded[mType] = \
-                                lastPartOfImageFilename
-                            actorChanged = True
-                    else:
-                        print('ERROR: profile update POST ' + mType +
-                              ' image or font could not be saved to ' +
-                              postImageFilename)
-
-                fields = \
-                    extractTextFieldsInPOST(postBytes, boundary,
-                                            self.server.debug)
-                if self.server.debug:
-                    if fields:
-                        print('DEBUG: profile update text ' +
-                              'field extracted from POST ' + str(fields))
-                    else:
-                        print('WARN: profile update, no text ' +
-                              'fields could be extracted from POST')
-
-                actorFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    nickname + '@' + self.server.domain + '.json'
-                if os.path.isfile(actorFilename):
-                    actorJson = loadJson(actorFilename)
-                    if actorJson:
-                        # update the avatar/image url file extension
-                        uploads = profileMediaTypesUploaded.items()
-                        for mType, lastPart in uploads:
-                            repStr = '/' + lastPart
-                            if mType == 'avatar':
-                                lastPartOfUrl = \
-                                    actorJson['icon']['url'].split('/')[-1]
-                                srchStr = '/' + lastPartOfUrl
-                                actorJson['icon']['url'] = \
-                                    actorJson['icon']['url'].replace(srchStr,
-                                                                     repStr)
-                            elif mType == 'image':
-                                lastPartOfUrl = \
-                                    actorJson['image']['url'].split('/')[-1]
-                                srchStr = '/' + lastPartOfUrl
-                                actorJson['image']['url'] = \
-                                    actorJson['image']['url'].replace(srchStr,
-                                                                      repStr)
-
-                        skillCtr = 1
-                        newSkills = {}
-                        while skillCtr < 10:
-                            skillName = \
-                                fields.get('skillName' + str(skillCtr))
-                            if not skillName:
-                                skillCtr += 1
-                                continue
-                            skillValue = \
-                                fields.get('skillValue' + str(skillCtr))
-                            if not skillValue:
-                                skillCtr += 1
-                                continue
-                            if not actorJson['skills'].get(skillName):
-                                actorChanged = True
-                            else:
-                                if actorJson['skills'][skillName] != \
-                                   int(skillValue):
-                                    actorChanged = True
-                            newSkills[skillName] = int(skillValue)
-                            skillCtr += 1
-                        if len(actorJson['skills'].items()) != \
-                           len(newSkills.items()):
-                            actorChanged = True
-                        actorJson['skills'] = newSkills
-                        if fields.get('password'):
-                            if fields.get('passwordconfirm'):
-                                if actorJson['password'] == \
-                                   fields['passwordconfirm']:
-                                    if len(actorJson['password']) > 2:
-                                        # set password
-                                        baseDir = self.server.baseDir
-                                        pwd = actorJson['password']
-                                        storeBasicCredentials(baseDir,
-                                                              nickname,
-                                                              pwd)
-                        if fields.get('displayNickname'):
-                            if fields['displayNickname'] != actorJson['name']:
-                                actorJson['name'] = fields['displayNickname']
-                                actorChanged = True
-                        if fields.get('themeDropdown'):
-                            setTheme(self.server.baseDir,
-                                     fields['themeDropdown'])
-#                            self.server.iconsCache={}
-
-                        currentEmailAddress = getEmailAddress(actorJson)
-                        if fields.get('email'):
-                            if fields['email'] != currentEmailAddress:
-                                setEmailAddress(actorJson, fields['email'])
-                                actorChanged = True
-                        else:
-                            if currentEmailAddress:
-                                setEmailAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentXmppAddress = getXmppAddress(actorJson)
-                        if fields.get('xmppAddress'):
-                            if fields['xmppAddress'] != currentXmppAddress:
-                                setXmppAddress(actorJson,
-                                               fields['xmppAddress'])
-                                actorChanged = True
-                        else:
-                            if currentXmppAddress:
-                                setXmppAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentMatrixAddress = getMatrixAddress(actorJson)
-                        if fields.get('matrixAddress'):
-                            if fields['matrixAddress'] != currentMatrixAddress:
-                                setMatrixAddress(actorJson,
-                                                 fields['matrixAddress'])
-                                actorChanged = True
-                        else:
-                            if currentMatrixAddress:
-                                setMatrixAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentSSBAddress = getSSBAddress(actorJson)
-                        if fields.get('ssbAddress'):
-                            if fields['ssbAddress'] != currentSSBAddress:
-                                setSSBAddress(actorJson,
-                                              fields['ssbAddress'])
-                                actorChanged = True
-                        else:
-                            if currentSSBAddress:
-                                setSSBAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentBlogAddress = getBlogAddress(actorJson)
-                        if fields.get('blogAddress'):
-                            if fields['blogAddress'] != currentBlogAddress:
-                                setBlogAddress(actorJson,
-                                               fields['blogAddress'])
-                                actorChanged = True
-                        else:
-                            if currentBlogAddress:
-                                setBlogAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentToxAddress = getToxAddress(actorJson)
-                        if fields.get('toxAddress'):
-                            if fields['toxAddress'] != currentToxAddress:
-                                setToxAddress(actorJson,
-                                              fields['toxAddress'])
-                                actorChanged = True
-                        else:
-                            if currentToxAddress:
-                                setToxAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentPGPpubKey = getPGPpubKey(actorJson)
-                        if fields.get('pgp'):
-                            if fields['pgp'] != currentPGPpubKey:
-                                setPGPpubKey(actorJson,
-                                             fields['pgp'])
-                                actorChanged = True
-                        else:
-                            if currentPGPpubKey:
-                                setPGPpubKey(actorJson, '')
-                                actorChanged = True
-
-                        currentPGPfingerprint = getPGPfingerprint(actorJson)
-                        if fields.get('openpgp'):
-                            if fields['openpgp'] != currentPGPfingerprint:
-                                setPGPfingerprint(actorJson,
-                                                  fields['openpgp'])
-                                actorChanged = True
-                        else:
-                            if currentPGPfingerprint:
-                                setPGPfingerprint(actorJson, '')
-                                actorChanged = True
-
-                        currentDonateUrl = getDonationUrl(actorJson)
-                        if fields.get('donateUrl'):
-                            if fields['donateUrl'] != currentDonateUrl:
-                                setDonationUrl(actorJson,
-                                               fields['donateUrl'])
-                                actorChanged = True
-                        else:
-                            if currentDonateUrl:
-                                setDonationUrl(actorJson, '')
-                                actorChanged = True
-
-                        if fields.get('instanceTitle'):
-                            currInstanceTitle = \
-                                getConfigParam(self.server.baseDir,
-                                               'instanceTitle')
-                            if fields['instanceTitle'] != currInstanceTitle:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceTitle',
-                                               fields['instanceTitle'])
-
-                        if fields.get('ytdomain'):
-                            currYTDomain = self.server.YTReplacementDomain
-                            if fields['ytdomain'] != currYTDomain:
-                                newYTDomain = fields['ytdomain']
-                                if '://' in newYTDomain:
-                                    newYTDomain = newYTDomain.split('://')[1]
-                                if '/' in newYTDomain:
-                                    newYTDomain = newYTDomain.split('/')[0]
-                                if '.' in newYTDomain:
-                                    setConfigParam(self.server.baseDir,
-                                                   'youtubedomain',
-                                                   newYTDomain)
-                                    self.server.YTReplacementDomain = \
-                                        newYTDomain
-                        else:
-                            setConfigParam(self.server.baseDir,
-                                           'youtubedomain', '')
-                            self.server.YTReplacementDomain = None
-
-                        currInstanceDescriptionShort = \
-                            getConfigParam(self.server.baseDir,
-                                           'instanceDescriptionShort')
-                        if fields.get('instanceDescriptionShort'):
-                            if fields['instanceDescriptionShort'] != \
-                               currInstanceDescriptionShort:
-                                iDesc = fields['instanceDescriptionShort']
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescriptionShort',
-                                               iDesc)
-                        else:
-                            if currInstanceDescriptionShort:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescriptionShort', '')
-                        currInstanceDescription = \
-                            getConfigParam(self.server.baseDir,
-                                           'instanceDescription')
-                        if fields.get('instanceDescription'):
-                            if fields['instanceDescription'] != \
-                               currInstanceDescription:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescription',
-                                               fields['instanceDescription'])
-                        else:
-                            if currInstanceDescription:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescription', '')
-                        if fields.get('bio'):
-                            if fields['bio'] != actorJson['summary']:
-                                actorTags = {}
-                                actorJson['summary'] = \
-                                    addHtmlTags(self.server.baseDir,
-                                                self.server.httpPrefix,
-                                                nickname,
-                                                self.server.domainFull,
-                                                fields['bio'], [], actorTags)
-                                if actorTags:
-                                    actorJson['tag'] = []
-                                    for tagName, tag in actorTags.items():
-                                        actorJson['tag'].append(tag)
-                                actorChanged = True
-                        else:
-                            if actorJson['summary']:
-                                actorJson['summary'] = ''
-                                actorChanged = True
-                        if fields.get('moderators'):
-                            adminNickname = \
-                                getConfigParam(self.server.baseDir, 'admin')
-                            if self.path.startswith('/users/' +
-                                                    adminNickname + '/'):
-                                moderatorsFile = \
-                                    self.server.baseDir + \
-                                    '/accounts/moderators.txt'
-                                clearModeratorStatus(self.server.baseDir)
-                                if ',' in fields['moderators']:
-                                    # if the list was given as comma separated
-                                    modFile = open(moderatorsFile, "w+")
-                                    mods = fields['moderators'].split(',')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = self.server.baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + self.server.domain
-                                        if os.path.isdir(modDir):
-                                            modFile.write(modNick + '\n')
-                                    modFile.close()
-                                    mods = fields['moderators'].split(',')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = self.server.baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + self.server.domain
-                                        if os.path.isdir(modDir):
-                                            setRole(self.server.baseDir,
-                                                    modNick,
-                                                    self.server.domain,
-                                                    'instance', 'moderator')
-                                else:
-                                    # nicknames on separate lines
-                                    modFile = open(moderatorsFile, "w+")
-                                    mods = fields['moderators'].split('\n')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = \
-                                            self.server.baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + self.server.domain
-                                        if os.path.isdir(modDir):
-                                            modFile.write(modNick + '\n')
-                                    modFile.close()
-                                    mods = fields['moderators'].split('\n')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = \
-                                            self.server.baseDir + \
-                                            '/accounts/' + \
-                                            modNick + '@' + \
-                                            self.server.domain
-                                        if os.path.isdir(modDir):
-                                            setRole(self.server.baseDir,
-                                                    modNick,
-                                                    self.server.domain,
-                                                    'instance',
-                                                    'moderator')
-
-                        if fields.get('removeScheduledPosts'):
-                            if fields['removeScheduledPosts'] == 'on':
-                                removeScheduledPosts(self.server.baseDir,
-                                                     nickname,
-                                                     self.server.domain)
-
-                        approveFollowers = False
-                        if fields.get('approveFollowers'):
-                            if fields['approveFollowers'] == 'on':
-                                approveFollowers = True
-                        if approveFollowers != \
-                           actorJson['manuallyApprovesFollowers']:
-                            actorJson['manuallyApprovesFollowers'] = \
-                                approveFollowers
-                            actorChanged = True
-
-                        if fields.get('removeCustomFont'):
-                            if fields['removeCustomFont'] == 'on':
-                                fontExt = ('woff', 'woff2', 'otf', 'ttf')
-                                for ext in fontExt:
-                                    if os.path.isfile(self.server.baseDir +
-                                                      '/fonts/custom.' + ext):
-                                        os.remove(self.server.baseDir +
-                                                  '/fonts/custom.' + ext)
-                                    if os.path.isfile(self.server.baseDir +
-                                                      '/fonts/custom.' + ext +
-                                                      '.etag'):
-                                        os.remove(self.server.baseDir +
-                                                  '/fonts/custom.' + ext +
-                                                  '.etag')
-                                currTheme = getTheme(self.server.baseDir)
-                                if currTheme:
-                                    setTheme(self.server.baseDir, currTheme)
-
-                        if fields.get('mediaInstance'):
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            if fields['mediaInstance'] == 'on':
-                                self.server.mediaInstance = True
-                                self.server.defaultTimeline = 'tlmedia'
-                            setConfigParam(self.server.baseDir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
-                        else:
-                            if self.server.mediaInstance:
-                                self.server.mediaInstance = False
-                                self.server.defaultTimeline = 'inbox'
-                                setConfigParam(self.server.baseDir,
-                                               "mediaInstance",
-                                               self.server.mediaInstance)
-                        if fields.get('blogsInstance'):
-                            self.server.blogsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            if fields['blogsInstance'] == 'on':
-                                self.server.blogsInstance = True
-                                self.server.defaultTimeline = 'tlblogs'
-                            setConfigParam(self.server.baseDir,
-                                           "blogsInstance",
-                                           self.server.blogsInstance)
-                        else:
-                            if self.server.blogsInstance:
-                                self.server.blogsInstance = False
-                                self.server.defaultTimeline = 'inbox'
-                                setConfigParam(self.server.baseDir,
-                                               "blogsInstance",
-                                               self.server.blogsInstance)
-                        # only receive DMs from accounts you follow
-                        followDMsFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.followDMs'
-                        followDMsActive = False
-                        if fields.get('followDMs'):
-                            if fields['followDMs'] == 'on':
-                                followDMsActive = True
-                                with open(followDMsFilename, 'w+') as fFile:
-                                    fFile.write('\n')
-                        if not followDMsActive:
-                            if os.path.isfile(followDMsFilename):
-                                os.remove(followDMsFilename)
-                        # remove Twitter retweets
-                        removeTwitterFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.removeTwitter'
-                        removeTwitterActive = False
-                        if fields.get('removeTwitter'):
-                            if fields['removeTwitter'] == 'on':
-                                removeTwitterActive = True
-                                with open(removeTwitterFilename,
-                                          'w+') as rFile:
-                                    rFile.write('\n')
-                        if not removeTwitterActive:
-                            if os.path.isfile(removeTwitterFilename):
-                                os.remove(removeTwitterFilename)
-                        # hide Like button
-                        hideLikeButtonFile = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.hideLikeButton'
-                        notifyLikesFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.notifyLikes'
-                        hideLikeButtonActive = False
-                        if fields.get('hideLikeButton'):
-                            if fields['hideLikeButton'] == 'on':
-                                hideLikeButtonActive = True
-                                with open(hideLikeButtonFile, 'w+') as rFile:
-                                    rFile.write('\n')
-                                # remove notify likes selection
-                                if os.path.isfile(notifyLikesFilename):
-                                    os.remove(notifyLikesFilename)
-                        if not hideLikeButtonActive:
-                            if os.path.isfile(hideLikeButtonFile):
-                                os.remove(hideLikeButtonFile)
-                        # notify about new Likes
-                        notifyLikesActive = False
-                        if fields.get('notifyLikes'):
-                            if fields['notifyLikes'] == 'on' and \
-                               not hideLikeButtonActive:
-                                notifyLikesActive = True
-                                with open(notifyLikesFilename, 'w+') as rFile:
-                                    rFile.write('\n')
-                        if not notifyLikesActive:
-                            if os.path.isfile(notifyLikesFilename):
-                                os.remove(notifyLikesFilename)
-                        # this account is a bot
-                        if fields.get('isBot'):
-                            if fields['isBot'] == 'on':
-                                if actorJson['type'] != 'Service':
-                                    actorJson['type'] = 'Service'
-                                    actorChanged = True
-                        else:
-                            # this account is a group
-                            if fields.get('isGroup'):
-                                if fields['isGroup'] == 'on':
-                                    if actorJson['type'] != 'Group':
-                                        actorJson['type'] = 'Group'
-                                        actorChanged = True
-                            else:
-                                # this account is a person (default)
-                                if actorJson['type'] != 'Person':
-                                    actorJson['type'] = 'Person'
-                                    actorChanged = True
-                        grayscale = False
-                        if fields.get('grayscale'):
-                            if fields['grayscale'] == 'on':
-                                grayscale = True
-                        if grayscale:
-                            enableGrayscale(self.server.baseDir)
-                        else:
-                            disableGrayscale(self.server.baseDir)
-                        # save filtered words list
-                        filterFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/filters.txt'
-                        if fields.get('filteredWords'):
-                            with open(filterFilename, 'w+') as filterfile:
-                                filterfile.write(fields['filteredWords'])
-                        else:
-                            if os.path.isfile(filterFilename):
-                                os.remove(filterFilename)
-                        # word replacements
-                        switchFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/replacewords.txt'
-                        if fields.get('switchWords'):
-                            with open(switchFilename, 'w+') as switchfile:
-                                switchfile.write(fields['switchWords'])
-                        else:
-                            if os.path.isfile(switchFilename):
-                                os.remove(switchFilename)
-                        # save blocked accounts list
-                        blockedFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/blocking.txt'
-                        if fields.get('blocked'):
-                            with open(blockedFilename, 'w+') as blockedfile:
-                                blockedfile.write(fields['blocked'])
-                        else:
-                            if os.path.isfile(blockedFilename):
-                                os.remove(blockedFilename)
-                        # save allowed instances list
-                        allowedInstancesFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/allowedinstances.txt'
-                        if fields.get('allowedInstances'):
-                            with open(allowedInstancesFilename, 'w+') as aFile:
-                                aFile.write(fields['allowedInstances'])
-                        else:
-                            if os.path.isfile(allowedInstancesFilename):
-                                os.remove(allowedInstancesFilename)
-                        # save git project names list
-                        gitProjectsFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/gitprojects.txt'
-                        if fields.get('gitProjects'):
-                            with open(gitProjectsFilename, 'w+') as aFile:
-                                aFile.write(fields['gitProjects'].lower())
-                        else:
-                            if os.path.isfile(gitProjectsFilename):
-                                os.remove(gitProjectsFilename)
-                        # save actor json file within accounts
-                        if actorChanged:
-                            # update the context for the actor
-                            actorJson['@context'] = [
-                                'https://www.w3.org/ns/activitystreams',
-                                'https://w3id.org/security/v1',
-                                getDefaultPersonContext()
-                            ]
-                            randomizeActorImages(actorJson)
-                            saveJson(actorJson, actorFilename)
-                            webfingerUpdate(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.onionDomain,
-                                            self.server.cachedWebfingers)
-                            # also copy to the actors cache and
-                            # personCache in memory
-                            storePersonInCache(self.server.baseDir,
-                                               actorJson['id'], actorJson,
-                                               self.server.personCache,
-                                               True)
-                            # clear any cached images for this actor
-                            idStr = actorJson['id'].replace('/', '-')
-                            removeAvatarFromCache(self.server.baseDir, idStr)
-                            # save the actor to the cache
-                            actorCacheFilename = \
-                                self.server.baseDir + '/cache/actors/' + \
-                                actorJson['id'].replace('/', '#') + '.json'
-                            saveJson(actorJson, actorCacheFilename)
-                            # send profile update to followers
-                            ccStr = 'https://www.w3.org/ns/' + \
-                                'activitystreams#Public'
-                            updateActorJson = {
-                                'type': 'Update',
-                                'actor': actorJson['id'],
-                                'to': [actorJson['id'] + '/followers'],
-                                'cc': [ccStr],
-                                'object': actorJson
-                            }
-                            self._postToOutbox(updateActorJson,
-                                               __version__, nickname)
-                        if fields.get('deactivateThisAccount'):
-                            if fields['deactivateThisAccount'] == 'on':
-                                deactivateAccount(self.server.baseDir,
-                                                  nickname,
-                                                  self.server.domain)
-                                self._clearLoginDetails(nickname,
-                                                        callingDomain)
-                                self.server.POSTbusy = False
-                                return
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actorStr, cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._profileUpdate(callingDomain, cookie, authorized, self.path,
+                                self.server.baseDir, self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.onionDomain,
+                                self.server.i2pDomain, self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)
