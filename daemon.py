@@ -1963,6 +1963,182 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(originPathStr, cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _blockConfirm(self, callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirms a block
+        """
+        usersPath = path.split('/blockconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        blockerNickname = getNicknameFromActor(originPathStr)
+        if not blockerNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + originPathStr)
+            self._redirect_headers(originPathStr,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            blockConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST blockConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST blockConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST blockConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in blockConfirmParams:
+            blockingActor = \
+                urllib.parse.unquote_plus(blockConfirmParams)
+            blockingActor = blockingActor.split('actor=')[1]
+            if '&' in blockingActor:
+                blockingActor = blockingActor.split('&')[0]
+            blockingNickname = getNicknameFromActor(blockingActor)
+            if not blockingNickname:
+                if callingDomain.endswith('.onion') and onionDomain:
+                    originPathStr = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    originPathStr = 'http://' + i2pDomain + usersPath
+                print('WARN: unable to find nickname in ' + blockingActor)
+                self._redirect_headers(originPathStr,
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+            blockingDomain, blockingPort = \
+                getDomainFromActor(blockingActor)
+            blockingDomainFull = blockingDomain
+            if blockingPort:
+                if blockingPort != 80 and blockingPort != 443:
+                    if ':' not in blockingDomain:
+                        blockingDomainFull = \
+                            blockingDomain + ':' + str(blockingPort)
+            if blockerNickname == blockingNickname and \
+               blockingDomain == domain and \
+               blockingPort == port:
+                if debug:
+                    print('You cannot block yourself!')
+            else:
+                if debug:
+                    print('Adding block by ' + blockerNickname +
+                          ' of ' + blockingActor)
+                addBlock(baseDir, blockerNickname,
+                         domain,
+                         blockingNickname,
+                         blockingDomainFull)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _unblockConfirm(self, callingDomain: str, cookie: str,
+                        authorized: bool, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirms a unblock
+        """
+        usersPath = path.split('/unblockconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        blockerNickname = getNicknameFromActor(originPathStr)
+        if not blockerNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + originPathStr)
+            self._redirect_headers(originPathStr,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            blockConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST blockConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST blockConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST blockConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in blockConfirmParams:
+            blockingActor = \
+                urllib.parse.unquote_plus(blockConfirmParams)
+            blockingActor = blockingActor.split('actor=')[1]
+            if '&' in blockingActor:
+                blockingActor = blockingActor.split('&')[0]
+            blockingNickname = getNicknameFromActor(blockingActor)
+            if not blockingNickname:
+                if callingDomain.endswith('.onion') and onionDomain:
+                    originPathStr = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    originPathStr = 'http://' + i2pDomain + usersPath
+                print('WARN: unable to find nickname in ' + blockingActor)
+                self._redirect_headers(originPathStr,
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+            blockingDomain, blockingPort = \
+                getDomainFromActor(blockingActor)
+            blockingDomainFull = blockingDomain
+            if blockingPort:
+                if blockingPort != 80 and blockingPort != 443:
+                    if ':' not in blockingDomain:
+                        blockingDomainFull = \
+                            blockingDomain + ':' + str(blockingPort)
+            if blockerNickname == blockingNickname and \
+               blockingDomain == domain and \
+               blockingPort == port:
+                if debug:
+                    print('You cannot unblock yourself!')
+            else:
+                if debug:
+                    print(blockerNickname + ' stops blocking ' +
+                          blockingActor)
+                removeBlock(baseDir,
+                            blockerNickname, domain,
+                            blockingNickname, blockingDomainFull)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
@@ -8927,194 +9103,28 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to unblock in the web interface is confirmed
         if authorized and self.path.endswith('/unblockconfirm'):
-            usersPath = self.path.split('/unblockconfirm')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            blockerNickname = getNicknameFromActor(originPathStr)
-            if not blockerNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + originPathStr)
-                self._redirect_headers(originPathStr,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            length = int(self.headers['Content-length'])
-            try:
-                blockConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST blockConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST blockConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST blockConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in blockConfirmParams:
-                blockingActor = \
-                    urllib.parse.unquote_plus(blockConfirmParams)
-                blockingActor = blockingActor.split('actor=')[1]
-                if '&' in blockingActor:
-                    blockingActor = blockingActor.split('&')[0]
-                blockingNickname = getNicknameFromActor(blockingActor)
-                if not blockingNickname:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        originPathStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        originPathStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('WARN: unable to find nickname in ' + blockingActor)
-                    self._redirect_headers(originPathStr,
-                                           cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                blockingDomain, blockingPort = \
-                    getDomainFromActor(blockingActor)
-                blockingDomainFull = blockingDomain
-                if blockingPort:
-                    if blockingPort != 80 and blockingPort != 443:
-                        if ':' not in blockingDomain:
-                            blockingDomainFull = \
-                                blockingDomain + ':' + str(blockingPort)
-                if blockerNickname == blockingNickname and \
-                   blockingDomain == self.server.domain and \
-                   blockingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot unblock yourself!')
-                else:
-                    if self.server.debug:
-                        print(blockerNickname + ' stops blocking ' +
-                              blockingActor)
-                    removeBlock(self.server.baseDir,
-                                blockerNickname, self.server.domain,
-                                blockingNickname, blockingDomainFull)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr,
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._unblockConfirm(callingDomain, cookie,
+                                 authorized, self.path,
+                                 self.server.baseDir, self.server.httpPrefix,
+                                 self.server.domain, self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 12)
 
         # decision to block in the web interface is confirmed
         if authorized and self.path.endswith('/blockconfirm'):
-            usersPath = self.path.split('/blockconfirm')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            blockerNickname = getNicknameFromActor(originPathStr)
-            if not blockerNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + originPathStr)
-                self._redirect_headers(originPathStr,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            length = int(self.headers['Content-length'])
-            try:
-                blockConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST blockConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST blockConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST blockConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in blockConfirmParams:
-                blockingActor = \
-                    urllib.parse.unquote_plus(blockConfirmParams)
-                blockingActor = blockingActor.split('actor=')[1]
-                if '&' in blockingActor:
-                    blockingActor = blockingActor.split('&')[0]
-                blockingNickname = getNicknameFromActor(blockingActor)
-                if not blockingNickname:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        originPathStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        originPathStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('WARN: unable to find nickname in ' + blockingActor)
-                    self._redirect_headers(originPathStr,
-                                           cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                blockingDomain, blockingPort = \
-                    getDomainFromActor(blockingActor)
-                blockingDomainFull = blockingDomain
-                if blockingPort:
-                    if blockingPort != 80 and blockingPort != 443:
-                        if ':' not in blockingDomain:
-                            blockingDomainFull = \
-                                blockingDomain + ':' + str(blockingPort)
-                if blockerNickname == blockingNickname and \
-                   blockingDomain == self.server.domain and \
-                   blockingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot block yourself!')
-                else:
-                    if self.server.debug:
-                        print('Adding block by ' + blockerNickname +
-                              ' of ' + blockingActor)
-                    addBlock(self.server.baseDir, blockerNickname,
-                             self.server.domain,
-                             blockingNickname,
-                             blockingDomainFull)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._blockConfirm(callingDomain, cookie,
+                               authorized, self.path,
+                               self.server.baseDir, self.server.httpPrefix,
+                               self.server.domain, self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 13)
