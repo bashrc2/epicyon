@@ -2140,6 +2140,234 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _receiveSearchQuery(self, callingDomain: str, cookie: str,
+                            authorized: bool, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str,
+                            port: int, searchForEmoji: bool,
+                            onionDomain: str, i2pDomain: str, debug: bool):
+        """Receive a search query
+        """
+        # get the page number
+        pageNumber = 1
+        if '/searchhandle?page=' in path:
+            pageNumberStr = path.split('/searchhandle?page=')[1]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+            path = path.split('?page=')[0]
+
+        usersPath = path.replace('/searchhandle', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        length = int(self.headers['Content-length'])
+        try:
+            searchParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST searchParams connection was reset')
+            else:
+                print('WARN: POST searchParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST searchParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        if 'submitBack=' in searchParams:
+            # go back on search screen
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorStr = 'http://' + i2pDomain + usersPath
+            self._redirect_headers(actorStr + '/' +
+                                   self.server.defaultTimeline,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+        if 'searchtext=' in searchParams:
+            searchStr = searchParams.split('searchtext=')[1]
+            if '&' in searchStr:
+                searchStr = searchStr.split('&')[0]
+            searchStr = \
+                urllib.parse.unquote_plus(searchStr.strip())
+            searchStr2 = searchStr.lower().strip('\n').strip('\r')
+            print('searchStr: ' + searchStr)
+            if searchForEmoji:
+                searchStr = ':' + searchStr + ':'
+            if searchStr.startswith('#'):
+                nickname = getNicknameFromActor(actorStr)
+                # hashtag search
+                hashtagStr = \
+                    htmlHashtagSearch(nickname,
+                                      domain,
+                                      port,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.translate,
+                                      baseDir,
+                                      searchStr[1:], 1,
+                                      maxPostsInFeed,
+                                      self.server.session,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      httpPrefix,
+                                      self.server.projectVersion,
+                                      self.server.YTReplacementDomain)
+                if hashtagStr:
+                    msg = hashtagStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif searchStr.startswith('*'):
+                # skill search
+                searchStr = searchStr.replace('*', '').strip()
+                skillStr = \
+                    htmlSkillsSearch(self.server.translate,
+                                     baseDir,
+                                     httpPrefix,
+                                     searchStr,
+                                     self.server.instanceOnlySkillsSearch,
+                                     64)
+                if skillStr:
+                    msg = skillStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif searchStr.startswith('!'):
+                # your post history search
+                nickname = getNicknameFromActor(actorStr)
+                searchStr = searchStr.replace('!', '').strip()
+                historyStr = \
+                    htmlHistorySearch(self.server.translate,
+                                      baseDir,
+                                      httpPrefix,
+                                      nickname,
+                                      domain,
+                                      searchStr,
+                                      maxPostsInFeed,
+                                      pageNumber,
+                                      self.server.projectVersion,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.session,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      port,
+                                      self.server.YTReplacementDomain)
+                if historyStr:
+                    msg = historyStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif ('@' in searchStr or
+                  ('://' in searchStr and
+                   ('/users/' in searchStr or
+                    '/profile/' in searchStr or
+                    '/accounts/' in searchStr or
+                    '/channel/' in searchStr))):
+                # profile search
+                nickname = getNicknameFromActor(actorStr)
+                if not self.server.session:
+                    print('Starting new session during handle search')
+                    self.server.session = \
+                        createSession(self.server.proxyType)
+                    if not self.server.session:
+                        print('ERROR: POST failed to create session ' +
+                              'during handle search')
+                        self._404()
+                        self.server.POSTbusy = False
+                        return
+                profilePathStr = self.path.replace('/searchhandle', '')
+                profileStr = \
+                    htmlProfileAfterSearch(self.server.recentPostsCache,
+                                           self.server.maxRecentPosts,
+                                           self.server.translate,
+                                           baseDir,
+                                           profilePathStr,
+                                           httpPrefix,
+                                           nickname,
+                                           domain,
+                                           port,
+                                           searchStr,
+                                           self.server.session,
+                                           self.server.cachedWebfingers,
+                                           self.server.personCache,
+                                           self.server.debug,
+                                           self.server.projectVersion,
+                                           self.server.YTReplacementDomain)
+                if profileStr:
+                    msg = profileStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+                else:
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        actorStr = 'http://' + onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        actorStr = 'http://' + i2pDomain + usersPath
+                    self._redirect_headers(actorStr + '/search',
+                                           cookie, callingDomain)
+                    self.server.POSTbusy = False
+                    return
+            elif (searchStr.startswith(':') or
+                  searchStr2.endswith(' emoji')):
+                # eg. "cat emoji"
+                if searchStr2.endswith(' emoji'):
+                    searchStr = \
+                        searchStr2.replace(' emoji', '')
+                # emoji search
+                emojiStr = \
+                    htmlSearchEmoji(self.server.translate,
+                                    baseDir,
+                                    httpPrefix,
+                                    searchStr)
+                if emojiStr:
+                    msg = emojiStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            else:
+                # shared items search
+                sharedItemsStr = \
+                    htmlSearchSharedItems(self.server.translate,
+                                          baseDir,
+                                          searchStr, pageNumber,
+                                          maxPostsInFeed,
+                                          httpPrefix,
+                                          domainFull,
+                                          actorStr, callingDomain)
+                if sharedItemsStr:
+                    msg = sharedItemsStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorStr = 'http://' + onionDomain + usersPath
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' +
+                               self.server.defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _receiveVote(self, callingDomain: str, cookie: str,
                      authorized: bool, path: str,
                      baseDir: str, httpPrefix: str,
@@ -8905,233 +9133,17 @@ class PubServer(BaseHTTPRequestHandler):
         if ((authorized or searchForEmoji) and
             (self.path.endswith('/searchhandle') or
              '/searchhandle?page=' in self.path)):
-            # get the page number
-            pageNumber = 1
-            if '/searchhandle?page=' in self.path:
-                pageNumberStr = self.path.split('/searchhandle?page=')[1]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-                self.path = self.path.split('?page=')[0]
-
-            usersPath = self.path.replace('/searchhandle', '')
-            actorStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                searchParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST searchParams connection was reset')
-                else:
-                    print('WARN: POST searchParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST searchParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if 'submitBack=' in searchParams:
-                # go back on search screen
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorStr = 'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorStr = 'http://' + self.server.i2pDomain + usersPath
-                self._redirect_headers(actorStr + '/' +
-                                       self.server.defaultTimeline,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            if 'searchtext=' in searchParams:
-                searchStr = searchParams.split('searchtext=')[1]
-                if '&' in searchStr:
-                    searchStr = searchStr.split('&')[0]
-                searchStr = \
-                    urllib.parse.unquote_plus(searchStr.strip())
-                searchStr2 = searchStr.lower().strip('\n').strip('\r')
-                print('searchStr: ' + searchStr)
-                if searchForEmoji:
-                    searchStr = ':' + searchStr + ':'
-                if searchStr.startswith('#'):
-                    nickname = getNicknameFromActor(actorStr)
-                    # hashtag search
-                    hashtagStr = \
-                        htmlHashtagSearch(nickname,
-                                          self.server.domain,
-                                          self.server.port,
-                                          self.server.recentPostsCache,
-                                          self.server.maxRecentPosts,
-                                          self.server.translate,
-                                          self.server.baseDir,
-                                          searchStr[1:], 1,
-                                          maxPostsInFeed,
-                                          self.server.session,
-                                          self.server.cachedWebfingers,
-                                          self.server.personCache,
-                                          self.server.httpPrefix,
-                                          self.server.projectVersion,
-                                          self.server.YTReplacementDomain)
-                    if hashtagStr:
-                        msg = hashtagStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                elif searchStr.startswith('*'):
-                    # skill search
-                    searchStr = searchStr.replace('*', '').strip()
-                    skillStr = \
-                        htmlSkillsSearch(self.server.translate,
-                                         self.server.baseDir,
-                                         self.server.httpPrefix,
-                                         searchStr,
-                                         self.server.instanceOnlySkillsSearch,
-                                         64)
-                    if skillStr:
-                        msg = skillStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                elif searchStr.startswith('!'):
-                    # your post history search
-                    nickname = getNicknameFromActor(actorStr)
-                    searchStr = searchStr.replace('!', '').strip()
-                    historyStr = \
-                        htmlHistorySearch(self.server.translate,
-                                          self.server.baseDir,
-                                          self.server.httpPrefix,
-                                          nickname,
-                                          self.server.domain,
-                                          searchStr,
-                                          maxPostsInFeed,
-                                          pageNumber,
-                                          self.server.projectVersion,
-                                          self.server.recentPostsCache,
-                                          self.server.maxRecentPosts,
-                                          self.server.session,
-                                          self.server.cachedWebfingers,
-                                          self.server.personCache,
-                                          self.server.port,
-                                          self.server.YTReplacementDomain)
-                    if historyStr:
-                        msg = historyStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                elif ('@' in searchStr or
-                      ('://' in searchStr and
-                       ('/users/' in searchStr or
-                        '/profile/' in searchStr or
-                        '/accounts/' in searchStr or
-                        '/channel/' in searchStr))):
-                    # profile search
-                    nickname = getNicknameFromActor(actorStr)
-                    if not self.server.session:
-                        print('Starting new session during handle search')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: POST failed to create session ' +
-                                  'during handle search')
-                            self._404()
-                            self.server.POSTbusy = False
-                            return
-                    profilePathStr = self.path.replace('/searchhandle', '')
-                    profileStr = \
-                        htmlProfileAfterSearch(self.server.recentPostsCache,
-                                               self.server.maxRecentPosts,
-                                               self.server.translate,
-                                               self.server.baseDir,
-                                               profilePathStr,
-                                               self.server.httpPrefix,
-                                               nickname,
-                                               self.server.domain,
-                                               self.server.port,
-                                               searchStr,
-                                               self.server.session,
-                                               self.server.cachedWebfingers,
-                                               self.server.personCache,
-                                               self.server.debug,
-                                               self.server.projectVersion,
-                                               self.server.YTReplacementDomain)
-                    if profileStr:
-                        msg = profileStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                    else:
-                        if callingDomain.endswith('.onion') and \
-                           self.server.onionDomain:
-                            actorStr = 'http://' + self.server.onionDomain + \
-                                usersPath
-                        elif (callingDomain.endswith('.i2p') and
-                              self.server.i2pDomain):
-                            actorStr = 'http://' + self.server.i2pDomain + \
-                                usersPath
-                        self._redirect_headers(actorStr + '/search',
-                                               cookie, callingDomain)
-                        self.server.POSTbusy = False
-                        return
-                elif (searchStr.startswith(':') or
-                      searchStr2.endswith(' emoji')):
-                    # eg. "cat emoji"
-                    if searchStr2.endswith(' emoji'):
-                        searchStr = \
-                            searchStr2.replace(' emoji', '')
-                    # emoji search
-                    emojiStr = \
-                        htmlSearchEmoji(self.server.translate,
-                                        self.server.baseDir,
-                                        self.server.httpPrefix,
-                                        searchStr)
-                    if emojiStr:
-                        msg = emojiStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                else:
-                    # shared items search
-                    sharedItemsStr = \
-                        htmlSearchSharedItems(self.server.translate,
-                                              self.server.baseDir,
-                                              searchStr, pageNumber,
-                                              maxPostsInFeed,
-                                              self.server.httpPrefix,
-                                              self.server.domainFull,
-                                              actorStr, callingDomain)
-                    if sharedItemsStr:
-                        msg = sharedItemsStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-            if callingDomain.endswith('.onion') and self.server.onionDomain:
-                actorStr = 'http://' + self.server.onionDomain + usersPath
-            elif callingDomain.endswith('.i2p') and self.server.i2pDomain:
-                actorStr = 'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actorStr + '/' +
-                                   self.server.defaultTimeline,
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._receiveSearchQuery(callingDomain, cookie,
+                                     authorized, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     searchForEmoji,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 7)
