@@ -2139,6 +2139,102 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _removePost(self, callingDomain: str, cookie: str,
+                    authorized: bool, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str,
+                    onionDomain: str, i2pDomain: str, debug: bool):
+        """Endpoint for removing posts
+        """
+        pageNumber = 1
+        usersPath = path.split('/rmpost')[0]
+        originPathStr = \
+            httpPrefix + '://' + \
+            domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            removePostConfirmParams = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST removePostConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST removePostConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST removePostConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        if '&submitYes=' in removePostConfirmParams:
+            removePostConfirmParams = \
+                urllib.parse.unquote_plus(removePostConfirmParams)
+            removeMessageId = \
+                removePostConfirmParams.split('messageId=')[1]
+            if '&' in removeMessageId:
+                removeMessageId = removeMessageId.split('&')[0]
+            if 'pageNumber=' in removePostConfirmParams:
+                pageNumberStr = \
+                    removePostConfirmParams.split('pageNumber=')[1]
+                if '&' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('&')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber = int(pageNumberStr)
+            yearStr = None
+            if 'year=' in removePostConfirmParams:
+                yearStr = removePostConfirmParams.split('year=')[1]
+                if '&' in yearStr:
+                    yearStr = yearStr.split('&')[0]
+            monthStr = None
+            if 'month=' in removePostConfirmParams:
+                monthStr = removePostConfirmParams.split('month=')[1]
+                if '&' in monthStr:
+                    monthStr = monthStr.split('&')[0]
+            if '/statuses/' in removeMessageId:
+                removePostActor = removeMessageId.split('/statuses/')[0]
+            if originPathStr in removePostActor:
+                toList = ['https://www.w3.org/ns/activitystreams#Public',
+                          removePostActor]
+                deleteJson = {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    'actor': removePostActor,
+                    'object': removeMessageId,
+                    'to': toList,
+                    'cc': [removePostActor+'/followers'],
+                    'type': 'Delete'
+                }
+                self.postToNickname = getNicknameFromActor(removePostActor)
+                if self.postToNickname:
+                    if monthStr and yearStr:
+                        if monthStr.isdigit() and yearStr.isdigit():
+                            removeCalendarEvent(baseDir,
+                                                self.postToNickname,
+                                                domain,
+                                                int(yearStr),
+                                                int(monthStr),
+                                                removeMessageId)
+                    self._postToOutboxThread(deleteJson)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        if pageNumber == 1:
+            self._redirect_headers(originPathStr + '/outbox', cookie,
+                                   callingDomain)
+        else:
+            self._redirect_headers(originPathStr + '/outbox?page=' +
+                                   str(pageNumber),
+                                   cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
@@ -8977,94 +9073,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
         if authorized and self.path.endswith('/rmpost'):
-            pageNumber = 1
-            usersPath = self.path.split('/rmpost')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                removePostConfirmParams = \
-                    self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST removePostConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST removePostConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST removePostConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in removePostConfirmParams:
-                removePostConfirmParams = \
-                    urllib.parse.unquote_plus(removePostConfirmParams)
-                removeMessageId = \
-                    removePostConfirmParams.split('messageId=')[1]
-                if '&' in removeMessageId:
-                    removeMessageId = removeMessageId.split('&')[0]
-                if 'pageNumber=' in removePostConfirmParams:
-                    pageNumberStr = \
-                        removePostConfirmParams.split('pageNumber=')[1]
-                    if '&' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('&')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                yearStr = None
-                if 'year=' in removePostConfirmParams:
-                    yearStr = removePostConfirmParams.split('year=')[1]
-                    if '&' in yearStr:
-                        yearStr = yearStr.split('&')[0]
-                monthStr = None
-                if 'month=' in removePostConfirmParams:
-                    monthStr = removePostConfirmParams.split('month=')[1]
-                    if '&' in monthStr:
-                        monthStr = monthStr.split('&')[0]
-                if '/statuses/' in removeMessageId:
-                    removePostActor = removeMessageId.split('/statuses/')[0]
-                if originPathStr in removePostActor:
-                    toList = ['https://www.w3.org/ns/activitystreams#Public',
-                              removePostActor]
-                    deleteJson = {
-                        "@context": "https://www.w3.org/ns/activitystreams",
-                        'actor': removePostActor,
-                        'object': removeMessageId,
-                        'to': toList,
-                        'cc': [removePostActor+'/followers'],
-                        'type': 'Delete'
-                    }
-                    self.postToNickname = getNicknameFromActor(removePostActor)
-                    if self.postToNickname:
-                        if monthStr and yearStr:
-                            if monthStr.isdigit() and yearStr.isdigit():
-                                removeCalendarEvent(self.server.baseDir,
-                                                    self.postToNickname,
-                                                    self.server.domain,
-                                                    int(yearStr),
-                                                    int(monthStr),
-                                                    removeMessageId)
-                        self._postToOutboxThread(deleteJson)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = 'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = 'http://' + self.server.i2pDomain + usersPath
-            if pageNumber == 1:
-                self._redirect_headers(originPathStr + '/outbox', cookie,
-                                       callingDomain)
-            else:
-                self._redirect_headers(originPathStr + '/outbox?page=' +
-                                       str(pageNumber),
-                                       cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._removePost(callingDomain, cookie,
+                             authorized, self.path,
+                             self.server.baseDir, self.server.httpPrefix,
+                             self.server.domain, self.server.domainFull,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 9)
