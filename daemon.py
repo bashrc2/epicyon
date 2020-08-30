@@ -1222,33 +1222,25 @@ class PubServer(BaseHTTPRequestHandler):
         if loginNickname:
             self.server.lastLoginTime = int(time.time())
             if register:
-                if not registerAccount(baseDir,
-                                       httpPrefix,
-                                       domain,
-                                       port,
-                                       loginNickname,
-                                       loginPassword,
+                if not registerAccount(baseDir, httpPrefix, domain, port,
+                                       loginNickname, loginPassword,
                                        self.server.manualFollowerApproval):
                     self.server.POSTbusy = False
                     if callingDomain.endswith('.onion') and onionDomain:
-                        self._redirect_headers('http://' +
-                                               onionDomain +
-                                               '/login',
-                                               cookie, callingDomain)
+                        self._redirect_headers('http://' + onionDomain +
+                                               '/login', cookie,
+                                               callingDomain)
                     elif (callingDomain.endswith('.i2p') and i2pDomain):
-                        self._redirect_headers('http://' +
-                                               i2pDomain +
-                                               '/login',
-                                               cookie, callingDomain)
+                        self._redirect_headers('http://' + i2pDomain +
+                                               '/login', cookie,
+                                               callingDomain)
                     else:
-                        self._redirect_headers(httpPrefix +
-                                               '://' +
-                                               domainFull +
-                                               '/login',
+                        self._redirect_headers(httpPrefix + '://' +
+                                               domainFull + '/login',
                                                cookie, callingDomain)
                     return
-            authHeader = createBasicAuthHeader(loginNickname,
-                                               loginPassword)
+            authHeader = \
+                createBasicAuthHeader(loginNickname, loginPassword)
             if not authorizeBasic(baseDir, '/users/' +
                                   loginNickname + '/outbox',
                                   authHeader, False):
@@ -1328,8 +1320,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            cookieStr, callingDomain)
                 else:
                     self._redirect_headers(httpPrefix + '://' +
-                                           domainFull +
-                                           '/users/' +
+                                           domainFull + '/users/' +
                                            loginNickname + '/' +
                                            self.server.defaultTimeline,
                                            cookieStr, callingDomain)
