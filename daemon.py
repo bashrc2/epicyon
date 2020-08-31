@@ -4226,6 +4226,56 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show announce done',
                                   'unannounce')
 
+    def _followApproveButton(self, callingDomain: str, path: str,
+                             cookie: str,
+                             baseDir: str, httpPrefix: str,
+                             domain: str, domainFull: str, port: int,
+                             onionDomain: str, i2pDomain: str,
+                             GETstartTime, GETtimings: {},
+                             proxyType: str, debug: bool):
+        """Follow approve button was pressed
+        """
+        originPathStr = path.split('/followapprove=')[0]
+        followerNickname = originPathStr.replace('/users/', '')
+        followingHandle = path.split('/followapprove=')[1]
+        if '@' in followingHandle:
+            if not self.server.session:
+                print('Starting new session during follow approval')
+                self.server.session = createSession(proxyType)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session ' +
+                          'during follow approval')
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+            manualApproveFollowRequest(self.server.session,
+                                       baseDir, httpPrefix,
+                                       followerNickname,
+                                       domain, port,
+                                       followingHandle,
+                                       self.server.federationList,
+                                       self.server.sendThreads,
+                                       self.server.postLog,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       self.server.acceptedCaps,
+                                       debug,
+                                       self.server.projectVersion)
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'follow approve shown')
+        self.server.GETbusy = False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -5447,51 +5497,18 @@ class PubServer(BaseHTTPRequestHandler):
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and \
            self.path.startswith('/users/'):
-            originPathStr = self.path.split('/followapprove=')[0]
-            followerNickname = originPathStr.replace('/users/', '')
-            followingHandle = self.path.split('/followapprove=')[1]
-            if '@' in followingHandle:
-                if not self.server.session:
-                    print('Starting new session during follow approval')
-                    self.server.session = createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during follow approval')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
-                manualApproveFollowRequest(self.server.session,
-                                           self.server.baseDir,
-                                           self.server.httpPrefix,
-                                           followerNickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           followingHandle,
-                                           self.server.federationList,
-                                           self.server.sendThreads,
-                                           self.server.postLog,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           self.server.acceptedCaps,
-                                           self.server.debug,
-                                           self.server.projectVersion)
-            originPathStrAbsolute = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + originPathStr
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStrAbsolute = \
-                    'http://' + self.server.onionDomain + originPathStr
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStrAbsolute = \
-                    'http://' + self.server.i2pDomain + originPathStr
-            self._redirect_headers(originPathStrAbsolute,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'unannounce done',
-                                      'follow approve shown')
-            self.server.GETbusy = False
+            self._followApproveButton(callingDomain, self.path,
+                                      cookie,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
