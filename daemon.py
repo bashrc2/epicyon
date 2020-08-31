@@ -3435,6 +3435,101 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(actorStr, cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _progressiveWebAppManifest(self, callingDomain: str,
+                                   GETstartTime, GETtimings: {}):
+        """gets the PWA manifest
+        """
+        app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
+        app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
+        manifest = {
+            "name": "Epicyon",
+            "short_name": "Epicyon",
+            "start_url": "/index.html",
+            "display": "standalone",
+            "background_color": "black",
+            "theme_color": "grey",
+            "orientation": "portrait-primary",
+            "categories": ["microblog", "fediverse", "activitypub"],
+            "screenshots": [
+                {
+                    "src": "/mobile.jpg",
+                    "sizes": "418x851",
+                    "type": "image/jpeg"
+                },
+                {
+                    "src": "/mobile_person.jpg",
+                    "sizes": "429x860",
+                    "type": "image/jpeg"
+                },
+                {
+                    "src": "/mobile_search.jpg",
+                    "sizes": "422x861",
+                    "type": "image/jpeg"
+                }
+            ],
+            "icons": [
+                {
+                    "src": "/logo72.png",
+                    "type": "image/png",
+                    "sizes": "72x72"
+                },
+                {
+                    "src": "/logo96.png",
+                    "type": "image/png",
+                    "sizes": "96x96"
+                },
+                {
+                    "src": "/logo128.png",
+                    "type": "image/png",
+                    "sizes": "128x128"
+                },
+                {
+                    "src": "/logo144.png",
+                    "type": "image/png",
+                    "sizes": "144x144"
+                },
+                {
+                    "src": "/logo152.png",
+                    "type": "image/png",
+                    "sizes": "152x152"
+                },
+                {
+                    "src": "/logo192.png",
+                    "type": "image/png",
+                    "sizes": "192x192"
+                },
+                {
+                    "src": "/logo256.png",
+                    "type": "image/png",
+                    "sizes": "256x256"
+                },
+                {
+                    "src": "/logo512.png",
+                    "type": "image/png",
+                    "sizes": "512x512"
+                }
+            ],
+            "related_applications": [
+                {
+                    "platform": "fdroid",
+                    "url": app1
+                },
+                {
+                    "platform": "fdroid",
+                    "url": app2
+                }
+            ]
+        }
+        msg = json.dumps(manifest,
+                         ensure_ascii=False).encode('utf-8')
+        self._set_headers('application/json', len(msg),
+                          None, callingDomain)
+        self._write(msg)
+        if self.server.debug:
+            print('Sent manifest: ' + callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show logout', 'send manifest')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -3515,97 +3610,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
-            app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
-            app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
-            manifest = {
-                "name": "Epicyon",
-                "short_name": "Epicyon",
-                "start_url": "/index.html",
-                "display": "standalone",
-                "background_color": "black",
-                "theme_color": "grey",
-                "orientation": "portrait-primary",
-                "categories": ["microblog", "fediverse", "activitypub"],
-                "screenshots": [
-                    {
-                        "src": "/mobile.jpg",
-                        "sizes": "418x851",
-                        "type": "image/jpeg"
-                    },
-                    {
-                        "src": "/mobile_person.jpg",
-                        "sizes": "429x860",
-                        "type": "image/jpeg"
-                    },
-                    {
-                        "src": "/mobile_search.jpg",
-                        "sizes": "422x861",
-                        "type": "image/jpeg"
-                    }
-                ],
-                "icons": [
-                    {
-                        "src": "/logo72.png",
-                        "type": "image/png",
-                        "sizes": "72x72"
-                    },
-                    {
-                        "src": "/logo96.png",
-                        "type": "image/png",
-                        "sizes": "96x96"
-                    },
-                    {
-                        "src": "/logo128.png",
-                        "type": "image/png",
-                        "sizes": "128x128"
-                    },
-                    {
-                        "src": "/logo144.png",
-                        "type": "image/png",
-                        "sizes": "144x144"
-                    },
-                    {
-                        "src": "/logo152.png",
-                        "type": "image/png",
-                        "sizes": "152x152"
-                    },
-                    {
-                        "src": "/logo192.png",
-                        "type": "image/png",
-                        "sizes": "192x192"
-                    },
-                    {
-                        "src": "/logo256.png",
-                        "type": "image/png",
-                        "sizes": "256x256"
-                    },
-                    {
-                        "src": "/logo512.png",
-                        "type": "image/png",
-                        "sizes": "512x512"
-                    }
-                ],
-                "related_applications": [
-                    {
-                        "platform": "fdroid",
-                        "url": app1
-                    },
-                    {
-                        "platform": "fdroid",
-                        "url": app2
-                    }
-                ]
-            }
-            msg = json.dumps(manifest,
-                             ensure_ascii=False).encode('utf-8')
-            self._set_headers('application/json',
-                              len(msg),
-                              None, callingDomain)
-            self._write(msg)
-            if self.server.debug:
-                print('Sent manifest: ' + callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'show logout', 'send manifest')
+            self._progressiveWebAppManifest(callingDomain,
+                                            GETstartTime, GETtimings)
             return
 
         # favicon image
