@@ -250,23 +250,23 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _pathIsImage(self) -> bool:
-        if self.path.endswith('.png') or \
-           self.path.endswith('.jpg') or \
-           self.path.endswith('.gif') or \
-           self.path.endswith('.webp'):
+    def _pathIsImage(self, path: str) -> bool:
+        if path.endswith('.png') or \
+           path.endswith('.jpg') or \
+           path.endswith('.gif') or \
+           path.endswith('.webp'):
             return True
         return False
 
-    def _pathIsVideo(self) -> bool:
-        if self.path.endswith('.ogv') or \
-           self.path.endswith('.mp4'):
+    def _pathIsVideo(self, path: str) -> bool:
+        if path.endswith('.ogv') or \
+           path.endswith('.mp4'):
             return True
         return False
 
-    def _pathIsAudio(self) -> bool:
-        if self.path.endswith('.ogg') or \
-           self.path.endswith('.mp3'):
+    def _pathIsAudio(self, path: str) -> bool:
+        if path.endswith('.ogg') or \
+           path.endswith('.mp3'):
             return True
         return False
 
@@ -3811,6 +3811,52 @@ class PubServer(BaseHTTPRequestHandler):
         self._redirect_headers(originPathStrAbsolute, cookie,
                                callingDomain)
 
+    def _showMedia(self, callingDomain: str,
+                   path: str, baseDir: str,
+                   GETstartTime, GETtimings: {}):
+        """Returns a media file
+        """
+        if self._pathIsImage(path) or \
+           self._pathIsVideo(path) or \
+           self._pathIsAudio(path):
+            mediaStr = path.split('/media/')[1]
+            mediaFilename = baseDir + '/media/' + mediaStr
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                mediaFileType = 'image/png'
+                if mediaFilename.endswith('.png'):
+                    mediaFileType = 'image/png'
+                elif mediaFilename.endswith('.jpg'):
+                    mediaFileType = 'image/jpeg'
+                elif mediaFilename.endswith('.gif'):
+                    mediaFileType = 'image/gif'
+                elif mediaFilename.endswith('.webp'):
+                    mediaFileType = 'image/webp'
+                elif mediaFilename.endswith('.mp4'):
+                    mediaFileType = 'video/mp4'
+                elif mediaFilename.endswith('.ogv'):
+                    mediaFileType = 'video/ogv'
+                elif mediaFilename.endswith('.mp3'):
+                    mediaFileType = 'audio/mpeg'
+                elif mediaFilename.endswith('.ogg'):
+                    mediaFileType = 'audio/ogg'
+
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self._set_headers_etag(mediaFilename, mediaFileType,
+                                           mediaBinary, None,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show emoji done',
+                                          'show media')
+                return
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -4292,7 +4338,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not self._pathIsImage() and self.path != '/':
+           not self._pathIsImage(self.path) and self.path != '/':
             if '/media/' not in self.path and \
                '/sharefiles/' not in self.path and \
                '/statuses/' not in self.path and \
@@ -4636,7 +4682,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji images
         if '/emoji/' in self.path:
-            if self._pathIsImage():
+            if self._pathIsImage(self.path):
                 emojiStr = self.path.split('/emoji/')[1]
                 emojiFilename = \
                     self.server.baseDir + '/emoji/' + emojiStr
@@ -4676,47 +4722,9 @@ class PubServer(BaseHTTPRequestHandler):
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
-            if self._pathIsImage() or \
-               self._pathIsVideo() or \
-               self._pathIsAudio():
-                mediaStr = self.path.split('/media/')[1]
-                mediaFilename = \
-                    self.server.baseDir + '/media/' + mediaStr
-                if os.path.isfile(mediaFilename):
-                    if self._etag_exists(mediaFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    mediaFileType = 'image/png'
-                    if mediaFilename.endswith('.png'):
-                        mediaFileType = 'image/png'
-                    elif mediaFilename.endswith('.jpg'):
-                        mediaFileType = 'image/jpeg'
-                    elif mediaFilename.endswith('.gif'):
-                        mediaFileType = 'image/gif'
-                    elif mediaFilename.endswith('.webp'):
-                        mediaFileType = 'image/webp'
-                    elif mediaFilename.endswith('.mp4'):
-                        mediaFileType = 'video/mp4'
-                    elif mediaFilename.endswith('.ogv'):
-                        mediaFileType = 'video/ogv'
-                    elif mediaFilename.endswith('.mp3'):
-                        mediaFileType = 'audio/mpeg'
-                    elif mediaFilename.endswith('.ogg'):
-                        mediaFileType = 'audio/ogg'
-
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(mediaFilename, mediaFileType,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show emoji done',
-                                              'show media')
-                    return
-            self._404()
+            self._showMedia(callingDomain,
+                            self.path, self.server.baseDir,
+                            GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -4726,7 +4734,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
-            if self._pathIsImage():
+            if self._pathIsImage(self.path):
                 mediaStr = self.path.split('/sharefiles/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/sharefiles/' + mediaStr
@@ -4858,7 +4866,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
         if '/users/' in self.path:
-            if self._pathIsImage():
+            if self._pathIsImage(self.path):
                 avatarStr = self.path.split('/users/')[1]
                 if '/' in avatarStr and '.temp.' not in self.path:
                     avatarNickname = avatarStr.split('/')[0]
@@ -8198,9 +8206,9 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if self._pathIsImage() or \
-               self._pathIsVideo() or \
-               self._pathIsAudio():
+            if self._pathIsImage(self.path) or \
+               self._pathIsVideo(self.path) or \
+               self._pathIsAudio(self.path):
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr
