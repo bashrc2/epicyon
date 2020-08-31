@@ -3579,6 +3579,65 @@ class PubServer(BaseHTTPRequestHandler):
             print('favicon not sent: ' + callingDomain)
         self._404()
 
+    def _getFonts(self, callingDomain: str, path: str,
+                  baseDir: str, debug: bool,
+                  GETstartTime, GETtimings: {}):
+        """Returns a font
+        """
+        fontStr = path.split('/fonts/')[1]
+        if fontStr.endswith('.otf') or \
+           fontStr.endswith('.ttf') or \
+           fontStr.endswith('.woff') or \
+           fontStr.endswith('.woff2'):
+            if fontStr.endswith('.otf'):
+                fontType = 'font/otf'
+            elif fontStr.endswith('.ttf'):
+                fontType = 'font/ttf'
+            elif fontStr.endswith('.woff'):
+                fontType = 'font/woff'
+            else:
+                fontType = 'font/woff2'
+            fontFilename = \
+                baseDir + '/fonts/' + fontStr
+            if self._etag_exists(fontFilename):
+                # The file has not changed
+                self._304()
+                return
+            if self.server.fontsCache.get(fontStr):
+                fontBinary = self.server.fontsCache[fontStr]
+                self._set_headers_etag(fontFilename,
+                                       fontType,
+                                       fontBinary, None,
+                                       callingDomain)
+                self._write(fontBinary)
+                if debug:
+                    print('font sent from cache: ' +
+                          path + ' ' + callingDomain)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'hasAccept',
+                                          'send font from cache')
+                return
+            else:
+                if os.path.isfile(fontFilename):
+                    with open(fontFilename, 'rb') as fontFile:
+                        fontBinary = fontFile.read()
+                        self._set_headers_etag(fontFilename,
+                                               fontType,
+                                               fontBinary, None,
+                                               callingDomain)
+                        self._write(fontBinary)
+                        self.server.fontsCache[fontStr] = fontBinary
+                    if debug:
+                        print('font sent from file: ' +
+                              path + ' ' + callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'hasAccept',
+                                              'send font from file')
+                    return
+        if debug:
+            print('font not found: ' + path + ' ' + callingDomain)
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -3719,59 +3778,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get fonts
         if '/fonts/' in self.path:
-            fontStr = self.path.split('/fonts/')[1]
-            if fontStr.endswith('.otf') or \
-               fontStr.endswith('.ttf') or \
-               fontStr.endswith('.woff') or \
-               fontStr.endswith('.woff2'):
-                if fontStr.endswith('.otf'):
-                    fontType = 'font/otf'
-                elif fontStr.endswith('.ttf'):
-                    fontType = 'font/ttf'
-                elif fontStr.endswith('.woff'):
-                    fontType = 'font/woff'
-                else:
-                    fontType = 'font/woff2'
-                fontFilename = \
-                    self.server.baseDir + '/fonts/' + fontStr
-                if self._etag_exists(fontFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                if self.server.fontsCache.get(fontStr):
-                    fontBinary = self.server.fontsCache[fontStr]
-                    self._set_headers_etag(fontFilename,
-                                           fontType,
-                                           fontBinary, cookie,
-                                           callingDomain)
-                    self._write(fontBinary)
-                    if self.server.debug:
-                        print('font sent from cache: ' +
-                              self.path + ' ' + callingDomain)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'hasAccept',
-                                              'send font from cache')
-                    return
-                else:
-                    if os.path.isfile(fontFilename):
-                        with open(fontFilename, 'rb') as fontFile:
-                            fontBinary = fontFile.read()
-                            self._set_headers_etag(fontFilename,
-                                                   fontType,
-                                                   fontBinary, cookie,
-                                                   callingDomain)
-                            self._write(fontBinary)
-                            self.server.fontsCache[fontStr] = fontBinary
-                        if self.server.debug:
-                            print('font sent from file: ' +
-                                  self.path + ' ' + callingDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'hasAccept',
-                                                  'send font from file')
-                        return
-            if self.server.debug:
-                print('font not found: ' + self.path + ' ' + callingDomain)
-            self._404()
+            self._getFonts(callingDomain, self.path,
+                           self.server.baseDir, self.server.debug,
+                           GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
