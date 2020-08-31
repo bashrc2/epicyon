@@ -3977,6 +3977,71 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
+    def _hashtagSearch(self, callingDomain: str, path: str,
+                       cookie: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str,
+                       GETstartTime, GETtimings: {}):
+        """Return the result of a hashtag search
+        """
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        hashtag = path.split('/tags/')[1]
+        if '?page=' in hashtag:
+            hashtag = hashtag.split('?page=')[0]
+        if isBlockedHashtag(baseDir, hashtag):
+            msg = htmlHashtagBlocked(baseDir).encode('utf-8')
+            self._login_headers('text/html', len(msg), callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            return
+        nickname = None
+        if '/users/' in path:
+            actor = \
+                httpPrefix + '://' + domainFull + path
+            nickname = \
+                getNicknameFromActor(actor)
+        hashtagStr = \
+            htmlHashtagSearch(nickname,
+                              domain, port,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.translate,
+                              baseDir, hashtag, pageNumber,
+                              maxPostsInFeed, self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              httpPrefix,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain)
+        if hashtagStr:
+            msg = hashtagStr.encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+        else:
+            originPathStr = path.split('/tags/')[0]
+            originPathStrAbsolute = \
+                httpPrefix + '://' + domainFull + originPathStr
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStrAbsolute = \
+                    'http://' + onionDomain + originPathStr
+            elif (callingDomain.endswith('.i2p') and onionDomain):
+                originPathStrAbsolute = \
+                    'http://' + i2pDomain + originPathStr
+            self._redirect_headers(originPathStrAbsolute + '/search',
+                                   cookie, callingDomain)
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'login shown done',
+                                  'hashtag search')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -4991,66 +5056,16 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            hashtag = self.path.split('/tags/')[1]
-            if '?page=' in hashtag:
-                hashtag = hashtag.split('?page=')[0]
-            if isBlockedHashtag(self.server.baseDir, hashtag):
-                msg = htmlHashtagBlocked(self.server.baseDir).encode('utf-8')
-                self._login_headers('text/html', len(msg), callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                return
-            nickname = None
-            if '/users/' in self.path:
-                actor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + self.path
-                nickname = \
-                    getNicknameFromActor(actor)
-            hashtagStr = \
-                htmlHashtagSearch(nickname,
-                                  self.server.domain, self.server.port,
-                                  self.server.recentPostsCache,
-                                  self.server.maxRecentPosts,
-                                  self.server.translate,
-                                  self.server.baseDir, hashtag, pageNumber,
-                                  maxPostsInFeed, self.server.session,
-                                  self.server.cachedWebfingers,
-                                  self.server.personCache,
-                                  self.server.httpPrefix,
-                                  self.server.projectVersion,
-                                  self.server.YTReplacementDomain)
-            if hashtagStr:
-                msg = hashtagStr.encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-            else:
-                originPathStr = self.path.split('/tags/')[0]
-                originPathStrAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + originPathStr
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStrAbsolute = 'http://' + \
-                        self.server.onionDomain + originPathStr
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.onionDomain):
-                    originPathStrAbsolute = 'http://' + \
-                        self.server.i2pDomain + originPathStr
-                self._redirect_headers(originPathStrAbsolute + '/search',
-                                       cookie, callingDomain)
-            self.server.GETbusy = False
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'login shown done',
-                                      'hashtag search')
+            self._hashtagSearch(self, callingDomain,
+                                self.server.path, cookie,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
