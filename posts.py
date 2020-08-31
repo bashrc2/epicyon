@@ -3542,6 +3542,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
             postHtml = cacheFile.read()
             if '/unmute.png' in postHtml:
                 postHtml = postHtml.replace('/unmute.png', '/mute.png')
+                postHtml = postHtml.replace('?mute=', '?unmute=')
                 newCacheFile = open(cachedPostFilename, 'w+')
                 if newCacheFile:
                     newCacheFile.write(postHtml)
@@ -3573,8 +3574,10 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
                     if recentPostsCache['html'].get(postId):
                         postHtml = recentPostsCache['html'][postId]
                         if '/unmute.png' in postHtml:
-                            recentPostsCache['html'][postId] = \
+                            postHtml = \
                                 postHtml.replace('/unmute.png', '/mute.png')
+                            recentPostsCache['html'][postId] = \
+                                postHtml.replace('?mute=', '?unmute=')
                 print('MUTE: ' + postId +
                       ' marked as muted in recent posts memory cache')
 
@@ -3603,6 +3606,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
             postHtml = cacheFile.read()
             if '/mute.png' in postHtml:
                 postHtml = postHtml.replace('/mute.png', '/unmute.png')
+                postHtml = postHtml.replace('?unmute=', '?mute=')
                 newCacheFile = open(cachedPostFilename, 'w+')
                 if newCacheFile:
                     newCacheFile.write(postHtml)
@@ -3626,8 +3630,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
                     if recentPostsCache['html'].get(postId):
                         postHtml = recentPostsCache['html'][postId]
                         if '/mute.png' in postHtml:
-                            recentPostsCache['html'][postId] = \
+                            postHtml = \
                                 postHtml.replace('/mute.png', '/unmute.png')
+                            recentPostsCache['html'][postId] = \
+                                postHtml.replace('?unmute=', '?mute=')
                 print('UNMUTE: ' + postId +
                       ' marked as unmuted in recent posts cache')
 
