@@ -223,14 +223,15 @@ def setThemeDefault(baseDir: str):
     name = 'default'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    themeParams = {
-        "dummyValue": "1234"
-    }
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
         "options": "jpg",
         "search": "jpg"
+    }
+    themeParams = {
+        "*font-family": "'JetBrainsMono-Regular'",
+        "*src": "url('./fonts/JetBrainsMono-Regular.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
