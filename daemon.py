@@ -3530,6 +3530,55 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'send manifest')
 
+    def _getFavicon(self, callingDomain: str,
+                    baseDir: str, debug: bool):
+        """Return the favicon
+        """
+        favType = 'image/x-icon'
+        favFilename = 'favicon.ico'
+        if self._hasAccept(callingDomain):
+            if 'image/webp' in self.headers['Accept']:
+                favType = 'image/webp'
+                favFilename = 'favicon.webp'
+        # custom favicon
+        faviconFilename = baseDir + '/' + favFilename
+        if not os.path.isfile(faviconFilename):
+            # default favicon
+            faviconFilename = \
+                baseDir + '/img/icons/' + favFilename
+        if self._etag_exists(faviconFilename):
+            # The file has not changed
+            if debug:
+                print('favicon icon has not changed: ' + callingDomain)
+            self._304()
+            return
+        if self.server.iconsCache.get(favFilename):
+            favBinary = self.server.iconsCache[favFilename]
+            self._set_headers_etag(faviconFilename,
+                                   favType,
+                                   favBinary, None,
+                                   callingDomain)
+            self._write(favBinary)
+            if debug:
+                print('Sent favicon from cache: ' + callingDomain)
+            return
+        else:
+            if os.path.isfile(faviconFilename):
+                with open(faviconFilename, 'rb') as favFile:
+                    favBinary = favFile.read()
+                    self._set_headers_etag(faviconFilename,
+                                           favType,
+                                           favBinary, None,
+                                           callingDomain)
+                    self._write(favBinary)
+                    self.server.iconsCache[favFilename] = favBinary
+                    if self.server.debug:
+                        print('Sent favicon from file: ' + callingDomain)
+                    return
+        if debug:
+            print('favicon not sent: ' + callingDomain)
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -3616,51 +3665,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # favicon image
         if 'favicon.ico' in self.path:
-            favType = 'image/x-icon'
-            favFilename = 'favicon.ico'
-            if self._hasAccept(callingDomain):
-                if 'image/webp' in self.headers['Accept']:
-                    favType = 'image/webp'
-                    favFilename = 'favicon.webp'
-            # custom favicon
-            faviconFilename = \
-                self.server.baseDir + '/' + favFilename
-            if not os.path.isfile(faviconFilename):
-                # default favicon
-                faviconFilename = \
-                    self.server.baseDir + '/img/icons/' + favFilename
-            if self._etag_exists(faviconFilename):
-                # The file has not changed
-                if self.server.debug:
-                    print('favicon icon has not changed: ' + callingDomain)
-                self._304()
-                return
-            if self.server.iconsCache.get(favFilename):
-                favBinary = self.server.iconsCache[favFilename]
-                self._set_headers_etag(faviconFilename,
-                                       favType,
-                                       favBinary, cookie,
-                                       callingDomain)
-                self._write(favBinary)
-                if self.server.debug:
-                    print('Sent favicon from cache: ' + callingDomain)
-                return
-            else:
-                if os.path.isfile(faviconFilename):
-                    with open(faviconFilename, 'rb') as favFile:
-                        favBinary = favFile.read()
-                        self._set_headers_etag(faviconFilename,
-                                               favType,
-                                               favBinary, cookie,
-                                               callingDomain)
-                        self._write(favBinary)
-                        self.server.iconsCache[favFilename] = favBinary
-                        if self.server.debug:
-                            print('Sent favicon from file: ' + callingDomain)
-                        return
-            if self.server.debug:
-                print('favicon not sent: ' + callingDomain)
-            self._404()
+            self._getFavicon(callingDomain, self.server.baseDir,
+                             self.server.debug)
             return
 
         # check authorization
