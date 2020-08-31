@@ -2196,7 +2196,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchStr.split('&')[0]
             searchStr = \
                 urllib.parse.unquote_plus(searchStr.strip())
-            searchStr2 = searchStr.lower().strip('\n').strip('\r')
+            searchStr = searchStr.lower().strip()
             print('searchStr: ' + searchStr)
             if searchForEmoji:
                 searchStr = ':' + searchStr + ':'
@@ -2324,11 +2324,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
             elif (searchStr.startswith(':') or
-                  searchStr2.endswith(' emoji')):
+                  searchStr.endswith(' emoji')):
                 # eg. "cat emoji"
-                if searchStr2.endswith(' emoji'):
+                if searchStr.endswith(' emoji'):
                     searchStr = \
-                        searchStr2.replace(' emoji', '')
+                        searchStr.replace(' emoji', '')
                 # emoji search
                 emojiStr = \
                     htmlSearchEmoji(self.server.translate,
