@@ -4831,7 +4831,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
             mediaFilename = \
-                self.server.baseDir + '/cache/' + self.path
+                self.server.baseDir + '/cache' + self.path
             if os.path.isfile(mediaFilename):
                 if self._etag_exists(mediaFilename):
                     # The file has not changed
