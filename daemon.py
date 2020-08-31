@@ -3929,6 +3929,54 @@ class PubServer(BaseHTTPRequestHandler):
                     return
         self._404()
 
+    def _showCachedAvatar(self, callingDomain: str, path: str,
+                          baseDir: str,
+                          GETstartTime, GETtimings: {}):
+        """Shows an avatar image obtained from the cache
+        """
+        mediaFilename = baseDir + '/cache' + path
+        if os.path.isfile(mediaFilename):
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
+            with open(mediaFilename, 'rb') as avFile:
+                mediaBinary = avFile.read()
+                if mediaFilename.endswith('.png'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/png',
+                                           mediaBinary, None,
+                                           callingDomain)
+                elif mediaFilename.endswith('.jpg'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/jpeg',
+                                           mediaBinary, None,
+                                           callingDomain)
+                elif mediaFilename.endswith('.gif'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/gif',
+                                           mediaBinary, None,
+                                           callingDomain)
+                elif mediaFilename.endswith('.webp'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/webp',
+                                           mediaBinary, None,
+                                           callingDomain)
+                else:
+                    # default to jpeg
+                    self._set_headers_etag(mediaFilename,
+                                           'image/jpeg',
+                                           mediaBinary, None,
+                                           callingDomain)
+                    # self._404()
+                    return
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'icon shown done',
+                                          'avatar shown')
+                return
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -4830,49 +4878,9 @@ class PubServer(BaseHTTPRequestHandler):
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
-            mediaFilename = \
-                self.server.baseDir + '/cache' + self.path
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
-                    if mediaFilename.endswith('.png'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/png',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    elif mediaFilename.endswith('.jpg'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/jpeg',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    elif mediaFilename.endswith('.gif'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/gif',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    elif mediaFilename.endswith('.webp'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/webp',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    else:
-                        # default to jpeg
-                        self._set_headers_etag(mediaFilename,
-                                               'image/jpeg',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        # self._404()
-                        return
-                    self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'icon shown done',
-                                              'avatar shown')
-                    return
-            self._404()
+            self._showCachedAvatar(callingDomain, self.path,
+                                   self.server.baseDir,
+                                   GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
