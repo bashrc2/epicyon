@@ -3534,26 +3534,13 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if not postJsonObject:
         return
 
-    # change the mute icon in the cached post file
+    # remove cached post so that the muted version gets recreated
+    # without its content text and/or image
     cachedPostFilename = \
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
-        with open(cachedPostFilename, 'r') as cacheFile:
-            postHtml = cacheFile.read()
-            if '/mute.png' in postHtml:
-                postHtml = postHtml.replace('/mute.png', '/unmute.png')
-                postHtml = postHtml.replace('?mute=', '?unmute=')
-                newCacheFile = open(cachedPostFilename, 'w+')
-                if newCacheFile:
-                    newCacheFile.write(postHtml)
-                    newCacheFile.close()
-                    print('MUTE: ' + cachedPostFilename +
-                          ' icon changed')
-            else:
-                print('MUTE: ' + cachedPostFilename +
-                      ' icon not changed')
-    else:
-        print('MUTE: ' + cachedPostFilename + ' not cached to file')
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
 
     muteFile = open(postFilename + '.muted', 'w+')
     if muteFile:
@@ -3598,24 +3585,13 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
         os.remove(muteFilename)
         print('UNMUTE: ' + muteFilename + ' file removed')
 
-    # change the mute icon in the cached post file
+    # remove cached post so that the muted version gets recreated
+    # with its content text and/or image
     cachedPostFilename = \
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
-        with open(cachedPostFilename, 'r') as cacheFile:
-            postHtml = cacheFile.read()
-            if '/mute.png' in postHtml:
-                postHtml = postHtml.replace('/unmute.png', '/mute.png')
-                postHtml = postHtml.replace('?unmute=', '?mute=')
-                newCacheFile = open(cachedPostFilename, 'w+')
-                if newCacheFile:
-                    newCacheFile.write(postHtml)
-                    newCacheFile.close()
-            else:
-                print('MUTE: ' + cachedPostFilename +
-                      ' icon not changed')
-    else:
-        print('MUTE: ' + cachedPostFilename + ' not cached to file')
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
