@@ -3736,6 +3736,81 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + callingDomain)
         self._404()
 
+    def _showPersonOptions(self, callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str,
+                           GETstartTime, GETtimings: {},
+                           onionDomain: str, i2pDomain: str,
+                           cookie: str, debug: bool):
+        """Show person options screen
+        """
+        optionsStr = self.path.split('?options=')[1]
+        originPathStr = self.path.split('?options=')[0]
+        if ';' in optionsStr:
+            pageNumber = 1
+            optionsList = optionsStr.split(';')
+            optionsActor = optionsList[0]
+            optionsPageNumber = optionsList[1]
+            optionsProfileUrl = optionsList[2]
+            if optionsPageNumber.isdigit():
+                pageNumber = int(optionsPageNumber)
+            optionsLink = None
+            if len(optionsList) > 3:
+                optionsLink = optionsList[3]
+            donateUrl = None
+            PGPpubKey = None
+            PGPfingerprint = None
+            xmppAddress = None
+            matrixAddress = None
+            blogAddress = None
+            toxAddress = None
+            ssbAddress = None
+            emailAddress = None
+            actorJson = getPersonFromCache(baseDir,
+                                           optionsActor,
+                                           self.server.personCache,
+                                           True)
+            if actorJson:
+                donateUrl = getDonationUrl(actorJson)
+                xmppAddress = getXmppAddress(actorJson)
+                matrixAddress = getMatrixAddress(actorJson)
+                ssbAddress = getSSBAddress(actorJson)
+                blogAddress = getBlogAddress(actorJson)
+                toxAddress = getToxAddress(actorJson)
+                emailAddress = getEmailAddress(actorJson)
+                PGPpubKey = getPGPpubKey(actorJson)
+                PGPfingerprint = getPGPfingerprint(actorJson)
+            msg = htmlPersonOptions(self.server.translate,
+                                    baseDir, domain,
+                                    originPathStr,
+                                    optionsActor,
+                                    optionsProfileUrl,
+                                    optionsLink,
+                                    pageNumber, donateUrl,
+                                    xmppAddress, matrixAddress,
+                                    ssbAddress, blogAddress,
+                                    toxAddress,
+                                    PGPpubKey, PGPfingerprint,
+                                    emailAddress).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'registered devices done',
+                                      'person options')
+            return
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        else:
+            originPathStrAbsolute = \
+                httpPrefix + '://' + domainFull + originPathStr
+        self._redirect_headers(originPathStrAbsolute, cookie,
+                               callingDomain)
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -4050,76 +4125,15 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
-                optionsStr = self.path.split('?options=')[1]
-                originPathStr = self.path.split('?options=')[0]
-                if ';' in optionsStr:
-                    pageNumber = 1
-                    optionsList = optionsStr.split(';')
-                    optionsActor = optionsList[0]
-                    optionsPageNumber = optionsList[1]
-                    optionsProfileUrl = optionsList[2]
-                    if optionsPageNumber.isdigit():
-                        pageNumber = int(optionsPageNumber)
-                    optionsLink = None
-                    if len(optionsList) > 3:
-                        optionsLink = optionsList[3]
-                    donateUrl = None
-                    PGPpubKey = None
-                    PGPfingerprint = None
-                    xmppAddress = None
-                    matrixAddress = None
-                    blogAddress = None
-                    toxAddress = None
-                    ssbAddress = None
-                    emailAddress = None
-                    actorJson = getPersonFromCache(self.server.baseDir,
-                                                   optionsActor,
-                                                   self.server.personCache,
-                                                   True)
-                    if actorJson:
-                        donateUrl = getDonationUrl(actorJson)
-                        xmppAddress = getXmppAddress(actorJson)
-                        matrixAddress = getMatrixAddress(actorJson)
-                        ssbAddress = getSSBAddress(actorJson)
-                        blogAddress = getBlogAddress(actorJson)
-                        toxAddress = getToxAddress(actorJson)
-                        emailAddress = getEmailAddress(actorJson)
-                        PGPpubKey = getPGPpubKey(actorJson)
-                        PGPfingerprint = getPGPfingerprint(actorJson)
-                    msg = htmlPersonOptions(self.server.translate,
-                                            self.server.baseDir,
-                                            self.server.domain,
-                                            originPathStr,
-                                            optionsActor,
-                                            optionsProfileUrl,
-                                            optionsLink,
-                                            pageNumber, donateUrl,
-                                            xmppAddress, matrixAddress,
-                                            ssbAddress, blogAddress,
-                                            toxAddress,
-                                            PGPpubKey, PGPfingerprint,
-                                            emailAddress).encode('utf-8')
-                    self._set_headers('text/html', len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'registered devices done',
-                                              'person options')
-                    return
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStrAbsolute = \
-                        'http://' + self.server.onionDomain + originPathStr
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStrAbsolute = \
-                        'http://' + self.server.i2pDomain + originPathStr
-                else:
-                    originPathStrAbsolute = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + originPathStr
-                self._redirect_headers(originPathStrAbsolute, cookie,
-                                       callingDomain)
+                self._showPersonOptions(callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        GETstartTime, GETtimings,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        cookie, self.server.debug)
                 return
 
             self._benchmarkGETtimings(GETstartTime, GETtimings,
