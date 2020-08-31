@@ -4136,6 +4136,96 @@ class PubServer(BaseHTTPRequestHandler):
                                   'emoji search shown done',
                                   'show announce')
 
+    def _undoAnnounceButton(self, callingDomain: str, path: str,
+                            baseDir: str,
+                            cookie: str, proxyType: str,
+                            httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            repeatPrivate: bool, debug: bool):
+        """Undo announce/repeat button was pressed
+        """
+        pageNumber = 1
+        repeatUrl = path.split('?unrepeat=')[1]
+        if '?' in repeatUrl:
+            repeatUrl = repeatUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?unrepeat=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' +
+                                   timelineStr + '?page=' +
+                                   str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during undo repeat')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during undo repeat')
+                self._404()
+                self.server.GETbusy = False
+                return
+        undoAnnounceActor = \
+            httpPrefix + '://' + domainFull + \
+            '/users/' + self.postToNickname
+        unRepeatToStr = 'https://www.w3.org/ns/activitystreams#Public'
+        newUndoAnnounce = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'actor': undoAnnounceActor,
+            'type': 'Undo',
+            'cc': [undoAnnounceActor+'/followers'],
+            'to': [unRepeatToStr],
+            'object': {
+                'actor': undoAnnounceActor,
+                'cc': [undoAnnounceActor+'/followers'],
+                'object': repeatUrl,
+                'to': [unRepeatToStr],
+                'type': 'Announce'
+            }
+        }
+        self._postToOutboxThread(newUndoAnnounce)
+        self.server.GETbusy = False
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' +
+                               timelineStr + '?page=' +
+                               str(pageNumber) +
+                               timelineBookmark, cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show announce done',
+                                  'unannounce')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -5336,91 +5426,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
-            pageNumber = 1
-            repeatUrl = self.path.split('?unrepeat=')[1]
-            if '?' in repeatUrl:
-                repeatUrl = repeatUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = self.path.split('?unrepeat=')[0]
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = self.server.httpPrefix + '://' + \
-                    self.server.domainFull + actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' +
-                                       timelineStr + '?page=' +
-                                       str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during undo repeat')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during undo repeat')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            undoAnnounceActor = \
-                self.server.httpPrefix + '://' + self.server.domainFull + \
-                '/users/' + self.postToNickname
-            unRepeatToStr = 'https://www.w3.org/ns/activitystreams#Public'
-            newUndoAnnounce = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'actor': undoAnnounceActor,
-                'type': 'Undo',
-                'cc': [undoAnnounceActor+'/followers'],
-                'to': [unRepeatToStr],
-                'object': {
-                    'actor': undoAnnounceActor,
-                    'cc': [undoAnnounceActor+'/followers'],
-                    'object': repeatUrl,
-                    'to': [unRepeatToStr],
-                    'type': 'Announce'
-                }
-            }
-            self._postToOutboxThread(newUndoAnnounce)
-            self.server.GETbusy = False
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.onionDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' +
-                                   timelineStr + '?page=' +
-                                   str(pageNumber) +
-                                   timelineBookmark, cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'show announce done',
-                                      'unannounce')
+            self._announceButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 cookie, self.server.proxyType,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 repeatPrivate,
+                                 self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
