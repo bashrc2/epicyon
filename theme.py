@@ -230,8 +230,7 @@ def setThemeDefault(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
-        "*font-family": "'JetBrainsMono-Regular'",
-        "*src": "url('./fonts/JetBrainsMono-Regular.woff2') format('woff2')"
+        "dummy": "1234"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
