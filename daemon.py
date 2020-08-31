@@ -5426,18 +5426,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
-            self._announceButton(callingDomain, self.path,
-                                 self.server.baseDir,
-                                 cookie, self.server.proxyType,
-                                 self.server.httpPrefix,
-                                 self.server.domain,
-                                 self.server.domainFull,
-                                 self.server.port,
-                                 self.server.onionDomain,
-                                 self.server.i2pDomain,
-                                 GETstartTime, GETtimings,
-                                 repeatPrivate,
-                                 self.server.debug)
+            self._undoAnnounceButton(callingDomain, self.path,
+                                     self.server.baseDir,
+                                     cookie, self.server.proxyType,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     GETstartTime, GETtimings,
+                                     repeatPrivate,
+                                     self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
