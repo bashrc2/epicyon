@@ -3588,7 +3588,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
-    # if the post is in the recent posts cache then mark it as muted
+    # if the post is in the recent posts cache then mark it as unmuted
     if recentPostsCache.get('index'):
         postId = \
             removeIdEnding(postJsonObject['id']).replace('/', '#')
