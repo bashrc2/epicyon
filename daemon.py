@@ -3893,6 +3893,42 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
+    def _showIcon(self, callingDomain: str, path: str,
+                  baseDir: str,
+                  GETstartTime, GETtimings: {}):
+        """Shows an icon
+        """
+        if path.endswith('.png'):
+            mediaStr = path.split('/icons/')[1]
+            mediaFilename = baseDir + '/img/icons/' + mediaStr
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
+            if self.server.iconsCache.get(mediaStr):
+                mediaBinary = self.server.iconsCache[mediaStr]
+                self._set_headers_etag(mediaFilename,
+                                       'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                return
+            else:
+                if os.path.isfile(mediaFilename):
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self._set_headers_etag(mediaFilename,
+                                               'image/png',
+                                               mediaBinary, None,
+                                               callingDomain)
+                        self._write(mediaBinary)
+                        self.server.iconsCache[mediaStr] = mediaBinary
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show files done',
+                                              'icon shown')
+                    return
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -4782,37 +4818,9 @@ class PubServer(BaseHTTPRequestHandler):
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
-            if self.path.endswith('.png'):
-                mediaStr = self.path.split('/icons/')[1]
-                mediaFilename = \
-                    self.server.baseDir + '/img/icons/' + mediaStr
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                if self.server.iconsCache.get(mediaStr):
-                    mediaBinary = self.server.iconsCache[mediaStr]
-                    self._set_headers_etag(mediaFilename,
-                                           'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    return
-                else:
-                    if os.path.isfile(mediaFilename):
-                        with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers_etag(mediaFilename,
-                                                   'image/png',
-                                                   mediaBinary, cookie,
-                                                   callingDomain)
-                            self._write(mediaBinary)
-                            self.server.iconsCache[mediaStr] = mediaBinary
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show files done',
-                                                  'icon shown')
-                        return
-            self._404()
+            self._showIcon(callingDomain, self.path,
+                           self.server.baseDir,
+                           GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
