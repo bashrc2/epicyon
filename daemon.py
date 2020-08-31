@@ -4276,6 +4276,46 @@ class PubServer(BaseHTTPRequestHandler):
                                   'follow approve shown')
         self.server.GETbusy = False
 
+    def _followDenyButton(self, callingDomain: str, path: str,
+                          cookie: str,
+                          baseDir: str, httpPrefix: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          GETstartTime, GETtimings: {},
+                          proxyType: str, debug: bool):
+        """Follow deny button was pressed
+        """
+        originPathStr = path.split('/followdeny=')[0]
+        followerNickname = originPathStr.replace('/users/', '')
+        followingHandle = path.split('/followdeny=')[1]
+        if '@' in followingHandle:
+            manualDenyFollowRequest(self.server.session,
+                                    baseDir, httpPrefix,
+                                    followerNickname,
+                                    domain, port,
+                                    followingHandle,
+                                    self.server.federationList,
+                                    self.server.sendThreads,
+                                    self.server.postLog,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    debug,
+                                    self.server.projectVersion)
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'follow approve done',
+                                  'follow deny shown')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -5518,41 +5558,18 @@ class PubServer(BaseHTTPRequestHandler):
         # deny a follow request from the web interface
         if authorized and '/followdeny=' in self.path and \
            self.path.startswith('/users/'):
-            originPathStr = self.path.split('/followdeny=')[0]
-            followerNickname = originPathStr.replace('/users/', '')
-            followingHandle = self.path.split('/followdeny=')[1]
-            if '@' in followingHandle:
-                manualDenyFollowRequest(self.server.session,
-                                        self.server.baseDir,
-                                        self.server.httpPrefix,
-                                        followerNickname,
-                                        self.server.domain,
-                                        self.server.port,
-                                        followingHandle,
-                                        self.server.federationList,
-                                        self.server.sendThreads,
-                                        self.server.postLog,
-                                        self.server.cachedWebfingers,
-                                        self.server.personCache,
-                                        self.server.debug,
-                                        self.server.projectVersion)
-            originPathStrAbsolute = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + originPathStr
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStrAbsolute = 'http://' + \
-                    self.server.onionDomain + originPathStr
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStrAbsolute = 'http://' + \
-                    self.server.i2pDomain + originPathStr
-            self._redirect_headers(originPathStrAbsolute,
-                                   cookie, callingDomain)
-            self.server.GETbusy = False
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'follow approve done',
-                                      'follow deny shown')
+            self._followDenyButton(callingDomain, self.path,
+                                   cookie,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
