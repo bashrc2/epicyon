@@ -3857,6 +3857,42 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
+    def _showEmoji(self, callingDomain: str, path: str,
+                   baseDir: str,
+                   GETstartTime, GETtimings: {}):
+        """Returns an emoji image
+        """
+        if self._pathIsImage(path):
+            emojiStr = path.split('/emoji/')[1]
+            emojiFilename = baseDir + '/emoji/' + emojiStr
+            if os.path.isfile(emojiFilename):
+                if self._etag_exists(emojiFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                mediaImageType = 'png'
+                if emojiFilename.endswith('.png'):
+                    mediaImageType = 'png'
+                elif emojiFilename.endswith('.jpg'):
+                    mediaImageType = 'jpeg'
+                elif emojiFilename.endswith('.webp'):
+                    mediaImageType = 'webp'
+                else:
+                    mediaImageType = 'gif'
+                with open(emojiFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self._set_headers_etag(emojiFilename,
+                                           'image/' + mediaImageType,
+                                           mediaBinary, None,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'background shown done',
+                                          'show emoji')
+                return
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -4682,37 +4718,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji images
         if '/emoji/' in self.path:
-            if self._pathIsImage(self.path):
-                emojiStr = self.path.split('/emoji/')[1]
-                emojiFilename = \
-                    self.server.baseDir + '/emoji/' + emojiStr
-                if os.path.isfile(emojiFilename):
-                    if self._etag_exists(emojiFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    mediaImageType = 'png'
-                    if emojiFilename.endswith('.png'):
-                        mediaImageType = 'png'
-                    elif emojiFilename.endswith('.jpg'):
-                        mediaImageType = 'jpeg'
-                    elif emojiFilename.endswith('.webp'):
-                        mediaImageType = 'webp'
-                    else:
-                        mediaImageType = 'gif'
-                    with open(emojiFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(emojiFilename,
-                                               'image/' + mediaImageType,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'background shown done',
-                                              'show emoji')
-                    return
-            self._404()
+            self._showEmoji(callingDomain, self.path,
+                            self.server.baseDir,
+                            GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
