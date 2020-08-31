@@ -3560,7 +3560,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
                 if recentPostsCache.get('html'):
                     if recentPostsCache['html'].get(postId):
                         postHtml = recentPostsCache['html'][postId]
-                        if '/unmute.png' in postHtml:
+                        if '/mute.png' in postHtml:
                             postHtml = \
                                 postHtml.replace('/mute.png', '/unmute.png')
                             recentPostsCache['html'][postId] = \
@@ -3605,7 +3605,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
                 if recentPostsCache.get('html'):
                     if recentPostsCache['html'].get(postId):
                         postHtml = recentPostsCache['html'][postId]
-                        if '/mute.png' in postHtml:
+                        if '/unmute.png' in postHtml:
                             postHtml = \
                                 postHtml.replace('/unmute.png', '/mute.png')
                             recentPostsCache['html'][postId] = \
