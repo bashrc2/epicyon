@@ -5901,7 +5901,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'unbookmark shown done',
                                   'delete shown done')
 
-        # mute a post from the web interface icon
+        # The mute button is pressed
         if htmlGET and '?mute=' in self.path:
             pageNumber = 1
             if '?page=' in self.path:

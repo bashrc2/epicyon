@@ -31,7 +31,6 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from utils import removeIdEnding
 from utils import siteIsActive
-from utils import removePostFromCache
 from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
@@ -3535,18 +3534,24 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if not postJsonObject:
         return
 
+    # change the mute icon in the cached post file
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+    if cachedPostFilename:
+        with open(cachedPostFilename, 'r') as cacheFile:
+            postHtml = cacheFile.read()
+            if '/unmute.png' in postHtml:
+                postHtml = postHtml.replace('/unmute.png', '/mute.png')
+                newCacheFile = open(cachedPostFilename, 'w+')
+                if newCacheFile:
+                    newCacheFile.write(postHtml)
+                    newCacheFile.close()
+
     print('MUTE: ' + postFilename)
     muteFile = open(postFilename + '.muted', 'w+')
     if muteFile:
         muteFile.write('\n')
         muteFile.close()
-
-    # remove cached posts so that the muted version gets created
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
@@ -3557,6 +3562,12 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
             if recentPostsCache['json'].get(postId):
                 postJsonObject['muted'] = True
                 recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+                if recentPostsCache.get('html'):
+                    if recentPostsCache['html'].get(postId):
+                        postHtml = recentPostsCache['html'][postId]
+                        if '/unmute.png' in postHtml:
+                            recentPostsCache['html'][postId] = \
+                                postHtml.replace('/unmute.png', '/mute.png')
                 print('MUTE: ' + postId +
                       ' marked as muted in recent posts cache')
 
@@ -3577,13 +3588,36 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if os.path.isfile(muteFilename):
         os.remove(muteFilename)
 
-    # remove cached posts so that it gets recreated
+    # change the mute icon in the cached post file
     cachedPostFilename = \
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-    removePostFromCache(postJsonObject, recentPostsCache)
+        with open(cachedPostFilename, 'r') as cacheFile:
+            postHtml = cacheFile.read()
+            if '/mute.png' in postHtml:
+                postHtml = postHtml.replace('/mute.png', '/unmute.png')
+                newCacheFile = open(cachedPostFilename, 'w+')
+                if newCacheFile:
+                    newCacheFile.write(postHtml)
+                    newCacheFile.close()
+
+    # if the post is in the recent posts cache then mark it as muted
+    if recentPostsCache.get('index'):
+        postId = \
+            removeIdEnding(postJsonObject['id']).replace('/', '#')
+        if postId in recentPostsCache['index']:
+            print('UNMUTE: ' + postId + ' is in recent posts cache')
+            if recentPostsCache['json'].get(postId):
+                postJsonObject['muted'] = False
+                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+                if recentPostsCache.get('html'):
+                    if recentPostsCache['html'].get(postId):
+                        postHtml = recentPostsCache['html'][postId]
+                        if '/mute.png' in postHtml:
+                            recentPostsCache['html'][postId] = \
+                                postHtml.replace('/mute.png', '/unmute.png')
+                print('UNMUTE: ' + postId +
+                      ' marked as unmuted in recent posts cache')
 
 
 def sendBlockViaServer(baseDir: str, session,
