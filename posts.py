@@ -3559,12 +3559,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
                 recentPostsCache['json'][postId] = json.dumps(postJsonObject)
                 if recentPostsCache.get('html'):
                     if recentPostsCache['html'].get(postId):
-                        postHtml = recentPostsCache['html'][postId]
-                        if '/mute.png' in postHtml:
-                            postHtml = \
-                                postHtml.replace('/mute.png', '/unmute.png')
-                            recentPostsCache['html'][postId] = \
-                                postHtml.replace('?mute=', '?unmute=')
+                        del recentPostsCache['html'][postId]
                 print('MUTE: ' + postId +
                       ' marked as muted in recent posts memory cache')
 
@@ -3604,12 +3599,7 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
                 recentPostsCache['json'][postId] = json.dumps(postJsonObject)
                 if recentPostsCache.get('html'):
                     if recentPostsCache['html'].get(postId):
-                        postHtml = recentPostsCache['html'][postId]
-                        if '/unmute.png' in postHtml:
-                            postHtml = \
-                                postHtml.replace('/unmute.png', '/mute.png')
-                            recentPostsCache['html'][postId] = \
-                                postHtml.replace('?unmute=', '?mute=')
+                        del recentPostsCache['html'][postId]
                 print('UNMUTE: ' + postId +
                       ' marked as unmuted in recent posts cache')
 
