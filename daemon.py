@@ -5057,7 +5057,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
             self._hashtagSearch(self, callingDomain,
-                                self.server.path, cookie,
+                                self.path, cookie,
                                 self.server.baseDir,
                                 self.server.httpPrefix,
                                 self.server.domain,
