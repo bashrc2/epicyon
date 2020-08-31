@@ -3638,6 +3638,57 @@ class PubServer(BaseHTTPRequestHandler):
             print('font not found: ' + path + ' ' + callingDomain)
         self._404()
 
+    def _getRSS2feed(self, authorized: bool,
+                     callingDomain: str, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, port: int, proxyType: str,
+                     GETstartTime, GETtimings: {},
+                     debug: bool):
+        """Returns an RSS2 feed for the blog
+        """
+        nickname = path.split('/blog/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if not nickname.startswith('rss.'):
+            if os.path.isdir(self.server.baseDir +
+                             '/accounts/' + nickname + '@' + domain):
+                if not self.server.session:
+                    print('Starting new session during RSS request')
+                    self.server.session = \
+                        createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during RSS request')
+                        self._404()
+                        return
+
+                msg = \
+                    htmlBlogPageRSS2(authorized,
+                                     self.server.session,
+                                     baseDir,
+                                     httpPrefix,
+                                     self.server.translate,
+                                     nickname,
+                                     domain,
+                                     port,
+                                     maxPostsInRSSFeed, 1)
+                if msg is not None:
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/xml', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                    if debug:
+                        print('Sent rss2 feed: ' +
+                              path + ' ' + callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'sharedInbox enabled',
+                                              'blog rss2')
+                    return
+        if debug:
+            print('Failed to get rss2 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -3804,49 +3855,15 @@ class PubServer(BaseHTTPRequestHandler):
         # RSS 2.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
-            nickname = self.path.split('/blog/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            if not nickname.startswith('rss.'):
-                if os.path.isdir(self.server.baseDir +
-                                 '/accounts/' + nickname +
-                                 '@' + self.server.domain):
-                    if not self.server.session:
-                        print('Starting new session during RSS request')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during RSS request')
-                            self._404()
-                            return
-
-                    msg = \
-                        htmlBlogPageRSS2(authorized,
-                                         self.server.session,
-                                         self.server.baseDir,
-                                         self.server.httpPrefix,
-                                         self.server.translate,
-                                         nickname,
-                                         self.server.domain,
-                                         self.server.port,
-                                         maxPostsInRSSFeed, 1)
-                    if msg is not None:
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/xml', len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        if self.server.debug:
-                            print('Sent rss2 feed: ' +
-                                  self.path + ' ' + callingDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'sharedInbox enabled',
-                                                  'blog rss2')
-                        return
-            if self.server.debug:
-                print('Failed to get rss2 feed: ' +
-                      self.path + ' ' + callingDomain)
-            self._404()
+            self._getRSS2feed(authorized,
+                              callingDomain, self.path,
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.port,
+                              self.server.proxyType,
+                              GETstartTime, GETtimings,
+                              self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
