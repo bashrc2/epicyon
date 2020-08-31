@@ -3546,12 +3546,19 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
                 if newCacheFile:
                     newCacheFile.write(postHtml)
                     newCacheFile.close()
+                    print('MUTE: ' + cachedPostFilename +
+                          ' icon changed')
+            else:
+                print('MUTE: ' + cachedPostFilename +
+                      ' icon not changed')
+    else:
+        print('MUTE: ' + cachedPostFilename + ' not cached to file')
 
-    print('MUTE: ' + postFilename)
     muteFile = open(postFilename + '.muted', 'w+')
     if muteFile:
         muteFile.write('\n')
         muteFile.close()
+        print('MUTE: ' + postFilename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
@@ -3569,7 +3576,7 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
                             recentPostsCache['html'][postId] = \
                                 postHtml.replace('/unmute.png', '/mute.png')
                 print('MUTE: ' + postId +
-                      ' marked as muted in recent posts cache')
+                      ' marked as muted in recent posts memory cache')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
@@ -3583,10 +3590,10 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if not postJsonObject:
         return
 
-    print('UNMUTE: ' + postFilename)
     muteFilename = postFilename + '.muted'
     if os.path.isfile(muteFilename):
         os.remove(muteFilename)
+        print('UNMUTE: ' + muteFilename + ' file removed')
 
     # change the mute icon in the cached post file
     cachedPostFilename = \
@@ -3600,6 +3607,11 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
                 if newCacheFile:
                     newCacheFile.write(postHtml)
                     newCacheFile.close()
+            else:
+                print('MUTE: ' + cachedPostFilename +
+                      ' icon not changed')
+    else:
+        print('MUTE: ' + cachedPostFilename + ' not cached to file')
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
