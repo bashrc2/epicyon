@@ -3977,8 +3977,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
         self._404()
 
-    def _hashtagSearch(self, callingDomain: str, path: str,
-                       cookie: str,
+    def _hashtagSearch(self, callingDomain: str,
+                       path: str, cookie: str,
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
@@ -5056,7 +5056,7 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
-            self._hashtagSearch(self, callingDomain,
+            self._hashtagSearch(callingDomain,
                                 self.path, cookie,
                                 self.server.baseDir,
                                 self.server.httpPrefix,
