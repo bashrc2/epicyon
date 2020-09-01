@@ -1716,7 +1716,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitDM=' in optionsConfirmParams:
             if debug:
                 print('Sending DM to ' + optionsActor)
-            reportPath = self.path.replace('/personoptions', '') + '/newdm'
+            reportPath = path.replace('/personoptions', '') + '/newdm'
             msg = htmlNewPost(False, self.server.translate,
                               baseDir,
                               httpPrefix,
@@ -1734,7 +1734,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # snooze button on person option screen
         if '&submitSnooze=' in optionsConfirmParams:
-            usersPath = self.path.split('/personoptions')[0]
+            usersPath = path.split('/personoptions')[0]
             thisActor = httpPrefix + '://' + domainFull + usersPath
             if debug:
                 print('Snoozing ' + optionsActor + ' ' + thisActor)
@@ -2289,7 +2289,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._404()
                         self.server.POSTbusy = False
                         return
-                profilePathStr = self.path.replace('/searchhandle', '')
+                profilePathStr = path.replace('/searchhandle', '')
                 profileStr = \
                     htmlProfileAfterSearch(self.server.recentPostsCache,
                                            self.server.maxRecentPosts,
@@ -3744,8 +3744,8 @@ class PubServer(BaseHTTPRequestHandler):
                            cookie: str, debug: bool):
         """Show person options screen
         """
-        optionsStr = self.path.split('?options=')[1]
-        originPathStr = self.path.split('?options=')[0]
+        optionsStr = path.split('?options=')[1]
+        originPathStr = path.split('?options=')[0]
         if ';' in optionsStr:
             pageNumber = 1
             optionsList = optionsStr.split(';')
@@ -5252,7 +5252,7 @@ class PubServer(BaseHTTPRequestHandler):
             likedBy = path.split('?likedBy=')[1].strip()
             if '?' in likedBy:
                 likedBy = likedBy.split('?')[0]
-            self.path = path.split('?likedBy=')[0]
+            path = path.split('?likedBy=')[0]
         namedStatus = path.split('/users/')[1]
         if '/' not in namedStatus:
             return False
@@ -5261,7 +5261,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         nickname = postSections[0]
         statusNumber = postSections[2]
-        if not (len(statusNumber) > 10 and statusNumber.isdigit()):
+        if len(statusNumber) <= 10 or (not statusNumber.isdigit()):
             return False
         postFilename = \
             baseDir + '/accounts/' + \
@@ -5375,7 +5375,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show status done',
                                               'show inbox json')
                     if self._requestHTTP():
-                        nickname = self.path.replace('/users/', '')
+                        nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/inbox', '')
                         pageNumber = 1
                         if '?page=' in nickname:
@@ -5442,7 +5442,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
             else:
                 if debug:
-                    nickname = self.path.replace('/users/', '')
+                    nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/inbox', '')
                     print('DEBUG: ' + nickname +
                           ' was not authorized to access ' + path)
@@ -5499,7 +5499,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               baseDir,
                                               domain,
                                               port,
-                                              self.path + '?page=1',
+                                              path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'dm',
                                               authorized,
@@ -5844,7 +5844,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             else:
                 if debug:
-                    nickname = self.path.replace('/users/', '')
+                    nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/tlblogs', '')
                     print('DEBUG: ' + nickname +
                           ' was not authorized to access ' + path)
@@ -6202,6 +6202,101 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy = False
             return True
         return False
+
+    def _showModTimeline(self, authorized: bool,
+                         callingDomain: str, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, domainFull: str, port: int,
+                         onionDomain: str, i2pDomain: str,
+                         GETstartTime, GETtimings: {},
+                         proxyType: str, cookie: str,
+                         debug: str) -> bool:
+        """Shows the moderation timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                moderationFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'moderation',
+                                  True, self.server.ocapAlways)
+                if moderationFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/moderation', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            moderationFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed, 'moderation',
+                                              True, self.server.ocapAlways)
+                        msg = \
+                            htmlModeration(self.server.defaultTimeline,
+                                           self.server.recentPostsCache,
+                                           self.server.maxRecentPosts,
+                                           self.server.translate,
+                                           pageNumber, maxPostsInFeed,
+                                           self.server.session,
+                                           baseDir,
+                                           self.server.cachedWebfingers,
+                                           self.server.personCache,
+                                           nickname,
+                                           domain,
+                                           port,
+                                           moderationFeed,
+                                           True,
+                                           httpPrefix,
+                                           self.server.projectVersion,
+                                           self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show outbox done',
+                                                  'show moderation')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(moderationFeed,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/moderation', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if debug:
+            print('DEBUG: GET access to moderation feed is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
 
     def do_GET(self):
         callingDomain = self.server.domainFull
@@ -8168,92 +8263,19 @@ class PubServer(BaseHTTPRequestHandler):
         # get the moderation feed for a moderator
         if self.path.endswith('/moderation') or \
            '/moderation?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    moderationFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'moderation',
-                                      True, self.server.ocapAlways)
-                    if moderationFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/moderation', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                moderationFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed, 'moderation',
-                                                  True, self.server.ocapAlways)
-                            msg = \
-                                htmlModeration(self.server.defaultTimeline,
-                                               self.server.recentPostsCache,
-                                               self.server.maxRecentPosts,
-                                               self.server.translate,
-                                               pageNumber, maxPostsInFeed,
-                                               self.server.session,
-                                               self.server.baseDir,
-                                               self.server.cachedWebfingers,
-                                               self.server.personCache,
-                                               nickname,
-                                               self.server.domain,
-                                               self.server.port,
-                                               moderationFeed,
-                                               True,
-                                               self.server.httpPrefix,
-                                               self.server.projectVersion,
-                                               self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show outbox done',
-                                                      'show moderation')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(moderationFeed,
-                                             ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/moderation', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to moderation feed is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showModTimeline(authorized,
+                                     callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     GETstartTime, GETtimings,
+                                     self.server.proxyType,
+                                     cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show outbox done',
