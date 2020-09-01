@@ -5858,6 +5858,63 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showSharesTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the shares timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlshares', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    msg = \
+                        htmlShares(self.server.defaultTimeline,
+                                   self.server.recentPostsCache,
+                                   self.server.maxRecentPosts,
+                                   self.server.translate,
+                                   pageNumber, maxPostsInFeed,
+                                   self.server.session,
+                                   baseDir,
+                                   self.server.cachedWebfingers,
+                                   self.server.personCache,
+                                   nickname,
+                                   domain,
+                                   port,
+                                   self.server.allowDeletion,
+                                   httpPrefix,
+                                   self.server.projectVersion,
+                                   self.server.YTReplacementDomain)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show shares 2')
+                    self.server.GETbusy = False
+                    return True
+        # not the shares timeline
+        if debug:
+            print('DEBUG: GET access to shares timeline is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7737,53 +7794,19 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the shared items timeline for a given person
         if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    if self._requestHTTP():
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlshares', '')
-                        pageNumber = 1
-                        if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
-                            nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
-                            else:
-                                pageNumber = 1
-                        msg = \
-                            htmlShares(self.server.defaultTimeline,
-                                       self.server.recentPostsCache,
-                                       self.server.maxRecentPosts,
-                                       self.server.translate,
-                                       pageNumber, maxPostsInFeed,
-                                       self.server.session,
-                                       self.server.baseDir,
-                                       self.server.cachedWebfingers,
-                                       self.server.personCache,
-                                       nickname,
-                                       self.server.domain,
-                                       self.server.port,
-                                       self.server.allowDeletion,
-                                       self.server.httpPrefix,
-                                       self.server.projectVersion,
-                                       self.server.YTReplacementDomain)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html',
-                                          len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show blogs 2 done',
-                                                  'show shares 2')
-                        self.server.GETbusy = False
-                        return
-            # not the shares timeline
-            if self.server.debug:
-                print('DEBUG: GET access to shares timeline is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showSharesTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show blogs 2 done',
