@@ -14,3 +14,9 @@
  * Events timeline
  * Events appear on calendar
  * Check compatibility with Mobilizon
+
+## Code
+
+ * Modularize daemon
+ * Move modules out of the daemon
+ * Make comment notes linking daemon functions to webinterface
