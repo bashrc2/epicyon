@@ -4893,233 +4893,186 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the replies timeline
         Returns true if the timeline was shown
         """
-        if '/statuses/' in path and '/users/' in path:
-            namedStatus = path.split('/users/')[1]
-            if '/' in namedStatus:
-                postSections = namedStatus.split('/')
-                if len(postSections) >= 4:
-                    if postSections[3].startswith('replies'):
-                        nickname = postSections[0]
-                        statusNumber = postSections[2]
-                        if len(statusNumber) > 10 and \
-                           statusNumber.isdigit():
-                            boxname = 'outbox'
-                            # get the replies file
-                            postDir = \
-                                baseDir + '/accounts/' + \
-                                nickname + '@' + domain+'/' + \
-                                boxname
-                            postRepliesFilename = \
-                                postDir + '/' + \
-                                httpPrefix + ':##' + \
-                                domainFull + '#users#' + \
-                                nickname + '#statuses#' + \
-                                statusNumber + '.replies'
-                            if not os.path.isfile(postRepliesFilename):
-                                # There are no replies,
-                                # so show empty collection
-                                contextStr = \
-                                    'https://www.w3.org/ns/activitystreams'
-                                firstStr = \
-                                    httpPrefix + \
-                                    '://' + domainFull + \
-                                    '/users/' + nickname + \
-                                    '/statuses/' + statusNumber + \
-                                    '/replies?page=true'
-                                idStr = \
-                                    httpPrefix + \
-                                    '://' + domainFull + \
-                                    '/users/' + nickname + \
-                                    '/statuses/' + statusNumber + \
-                                    '/replies'
-                                lastStr = \
-                                    httpPrefix + \
-                                    '://' + domainFull + \
-                                    '/users/' + nickname + \
-                                    '/statuses/' + statusNumber + \
-                                    '/replies?page=true'
-                                repliesJson = {
-                                    '@context': contextStr,
-                                    'first': firstStr,
-                                    'id': idStr,
-                                    'last': lastStr,
-                                    'totalItems': 0,
-                                    'type': 'OrderedCollection'
-                                }
-                                if self._requestHTTP():
-                                    if not self.server.session:
-                                        print('DEBUG: ' +
-                                              'creating new session ' +
-                                              'during get replies')
-                                        self.server.session = \
-                                            createSession(proxyType)
-                                        if not self.server.session:
-                                            print('ERROR: GET failed to ' +
-                                                  'create session ' +
-                                                  'during get replies')
-                                            self._404()
-                                            self.server.GETbusy = False
-                                            return
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    maxRecentPosts = \
-                                        self.server.maxRecentPosts
-                                    translate = \
-                                        self.server.translate
-                                    session = \
-                                        self.server.session
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    personCache = \
-                                        self.server.personCache
-                                    projectVersion = \
-                                        self.server.projectVersion
-                                    ytDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlPostReplies(recentPostsCache,
-                                                        maxRecentPosts,
-                                                        translate,
-                                                        baseDir,
-                                                        session,
-                                                        cachedWebfingers,
-                                                        personCache,
-                                                        nickname,
-                                                        domain,
-                                                        port,
-                                                        repliesJson,
-                                                        httpPrefix,
-                                                        projectVersion,
-                                                        ytDomain)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html',
-                                                      len(msg),
-                                                      cookie,
-                                                      callingDomain)
-                                    self._write(msg)
-                                else:
-                                    if self._fetchAuthenticated():
-                                        msg = \
-                                            json.dumps(repliesJson,
-                                                       ensure_ascii=False)
-                                        msg = msg.encode('utf-8')
-                                        protocolStr = 'application/json'
-                                        self._set_headers(protocolStr,
-                                                          len(msg), None,
-                                                          callingDomain)
-                                        self._write(msg)
-                                    else:
-                                        self._404()
-                                self.server.GETbusy = False
-                                return True
-                            else:
-                                # replies exist. Itterate through the
-                                # text file containing message ids
-                                contextStr = \
-                                    'https://www.w3.org/ns/activitystreams'
-                                idStr = \
-                                    httpPrefix + \
-                                    '://' + domainFull + \
-                                    '/users/' + nickname + '/statuses/' + \
-                                    statusNumber + '?page=true'
-                                partOfStr = \
-                                    httpPrefix + \
-                                    '://' + domainFull + \
-                                    '/users/' + nickname + \
-                                    '/statuses/' + statusNumber
-                                repliesJson = {
-                                    '@context': contextStr,
-                                    'id': idStr,
-                                    'orderedItems': [
-                                    ],
-                                    'partOf': partOfStr,
-                                    'type': 'OrderedCollectionPage'
-                                }
+        if not ('/statuses/' in path and '/users/' in path):
+            return False
+        namedStatus = path.split('/users/')[1]
+        if '/' not in namedStatus:
+            return False
+        postSections = namedStatus.split('/')
+        if len(postSections) < 4:
+            return False
+        if not postSections[3].startswith('replies'):
+            return False
+        nickname = postSections[0]
+        statusNumber = postSections[2]
+        if not (len(statusNumber) > 10 and statusNumber.isdigit()):
+            return False
 
-                                # populate the items list with replies
-                                populateRepliesJson(baseDir,
-                                                    nickname,
-                                                    domain,
-                                                    postRepliesFilename,
-                                                    authorized,
-                                                    repliesJson)
+        boxname = 'outbox'
+        # get the replies file
+        postDir = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxname
+        postRepliesFilename = \
+            postDir + '/' + \
+            httpPrefix + ':##' + domainFull + '#users#' + \
+            nickname + '#statuses#' + statusNumber + '.replies'
+        if not os.path.isfile(postRepliesFilename):
+            # There are no replies,
+            # so show empty collection
+            contextStr = \
+                'https://www.w3.org/ns/activitystreams'
+            firstStr = \
+                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                '/statuses/' + statusNumber + '/replies?page=true'
+            idStr = \
+                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                '/statuses/' + statusNumber + '/replies'
+            lastStr = \
+                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                '/statuses/' + statusNumber + '/replies?page=true'
+            repliesJson = {
+                '@context': contextStr,
+                'first': firstStr,
+                'id': idStr,
+                'last': lastStr,
+                'totalItems': 0,
+                'type': 'OrderedCollection'
+            }
+            if self._requestHTTP():
+                if not self.server.session:
+                    print('DEBUG: creating new session during get replies')
+                    self.server.session = createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during get replies')
+                        self._404()
+                        self.server.GETbusy = False
+                        return
+                recentPostsCache = self.server.recentPostsCache
+                maxRecentPosts = self.server.maxRecentPosts
+                translate = self.server.translate
+                session = self.server.session
+                cachedWebfingers = self.server.cachedWebfingers
+                personCache = self.server.personCache
+                projectVersion = self.server.projectVersion
+                ytDomain = self.server.YTReplacementDomain
+                msg = \
+                    htmlPostReplies(recentPostsCache,
+                                    maxRecentPosts,
+                                    translate,
+                                    baseDir,
+                                    session,
+                                    cachedWebfingers,
+                                    personCache,
+                                    nickname,
+                                    domain,
+                                    port,
+                                    repliesJson,
+                                    httpPrefix,
+                                    projectVersion,
+                                    ytDomain)
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(repliesJson, ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    protocolStr = 'application/json'
+                    self._set_headers(protocolStr, len(msg), None,
+                                      callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        else:
+            # replies exist. Itterate through the
+            # text file containing message ids
+            contextStr = 'https://www.w3.org/ns/activitystreams'
+            idStr = \
+                httpPrefix + '://' + domainFull + \
+                '/users/' + nickname + '/statuses/' + \
+                statusNumber + '?page=true'
+            partOfStr = \
+                httpPrefix + '://' + domainFull + \
+                '/users/' + nickname + '/statuses/' + statusNumber
+            repliesJson = {
+                '@context': contextStr,
+                'id': idStr,
+                'orderedItems': [
+                ],
+                'partOf': partOfStr,
+                'type': 'OrderedCollectionPage'
+            }
 
-                                # send the replies json
-                                if self._requestHTTP():
-                                    if not self.server.session:
-                                        print('DEBUG: ' +
-                                              'creating new session ' +
-                                              'during get replies 2')
-                                        self.server.session = \
-                                            createSession(proxyType)
-                                        if not self.server.session:
-                                            print('ERROR: GET failed to ' +
-                                                  'create session ' +
-                                                  'during get replies 2')
-                                            self._404()
-                                            self.server.GETbusy = False
-                                            return
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    maxRecentPosts = \
-                                        self.server.maxRecentPosts
-                                    translate = \
-                                        self.server.translate
-                                    session = \
-                                        self.server.session
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    personCache = \
-                                        self.server.personCache
-                                    projectVersion = \
-                                        self.server.projectVersion
-                                    ytDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlPostReplies(recentPostsCache,
-                                                        maxRecentPosts,
-                                                        translate,
-                                                        baseDir,
-                                                        session,
-                                                        cachedWebfingers,
-                                                        personCache,
-                                                        nickname,
-                                                        self.server.domain,
-                                                        self.server.port,
-                                                        repliesJson,
-                                                        httpPrefix,
-                                                        projectVersion,
-                                                        ytDomain)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html',
-                                                      len(msg),
-                                                      cookie,
-                                                      callingDomain)
-                                    self._write(msg)
-                                    self._benchmarkGETtimings(GETstartTime,
-                                                              GETtimings,
-                                                              'indiv' +
-                                                              'idual' +
-                                                              ' post done',
-                                                              'post ' +
-                                                              'replies ' +
-                                                              'done')
-                                else:
-                                    if self._fetchAuthenticated():
-                                        msg = \
-                                            json.dumps(repliesJson,
-                                                       ensure_ascii=False)
-                                        msg = msg.encode('utf-8')
-                                        protocolStr = 'application/json'
-                                        self._set_headers(protocolStr,
-                                                          len(msg),
-                                                          None,
-                                                          callingDomain)
-                                        self._write(msg)
-                                    else:
-                                        self._404()
-                                self.server.GETbusy = False
-                                return True
+            # populate the items list with replies
+            populateRepliesJson(baseDir,
+                                nickname,
+                                domain,
+                                postRepliesFilename,
+                                authorized,
+                                repliesJson)
+
+            # send the replies json
+            if self._requestHTTP():
+                if not self.server.session:
+                    print('DEBUG: creating new session ' +
+                          'during get replies 2')
+                    self.server.session = createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to ' +
+                              'create session ' +
+                              'during get replies 2')
+                        self._404()
+                        self.server.GETbusy = False
+                        return
+                recentPostsCache = self.server.recentPostsCache
+                maxRecentPosts = self.server.maxRecentPosts
+                translate = self.server.translate
+                session = self.server.session
+                cachedWebfingers = self.server.cachedWebfingers
+                personCache = self.server.personCache
+                projectVersion = self.server.projectVersion
+                ytDomain = self.server.YTReplacementDomain
+                msg = \
+                    htmlPostReplies(recentPostsCache,
+                                    maxRecentPosts,
+                                    translate,
+                                    baseDir,
+                                    session,
+                                    cachedWebfingers,
+                                    personCache,
+                                    nickname,
+                                    domain,
+                                    port,
+                                    repliesJson,
+                                    httpPrefix,
+                                    projectVersion,
+                                    ytDomain)
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime,
+                                          GETtimings,
+                                          'individual post done',
+                                          'post replies done')
+            else:
+                if self._fetchAuthenticated():
+                    msg = \
+                        json.dumps(repliesJson,
+                                   ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    protocolStr = 'application/json'
+                    self._set_headers(protocolStr, len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
         return False
 
     def do_GET(self):
