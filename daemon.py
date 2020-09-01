@@ -4419,6 +4419,106 @@ class PubServer(BaseHTTPRequestHandler):
                                   'follow deny done',
                                   'like shown')
 
+    def _undoLikeButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """A button is pressed to undo
+        """
+        pageNumber = 1
+        likeUrl = path.split('?unlike=')[1]
+        if '?' in likeUrl:
+            likeUrl = likeUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?unlike=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and onionDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during undo like')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during undo like')
+                self._404()
+                self.server.GETbusy = False
+                return
+        undoActor = \
+            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+        actorLiked = path.split('?actor=')[1]
+        if '?' in actorLiked:
+            actorLiked = actorLiked.split('?')[0]
+        undoLikeJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Undo',
+            'actor': undoActor,
+            'to': [actorLiked],
+            'object': {
+                'type': 'Like',
+                'actor': undoActor,
+                'to': [actorLiked],
+                'object': likeUrl
+            }
+        }
+        # directly undo the like within the post file
+        likedPostFilename = locatePost(baseDir,
+                                       self.postToNickname,
+                                       domain, likeUrl)
+        if likedPostFilename:
+            if debug:
+                print('Removing likes for ' + likedPostFilename)
+            undoLikesCollectionEntry(self.server.recentPostsCache,
+                                     baseDir,
+                                     likedPostFilename, likeUrl,
+                                     undoActor, domain, debug)
+        # send out the undo like to followers
+        self._postToOutbox(undoLikeJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'like shown done',
+                                  'unlike shown')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -5700,105 +5800,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo a like from the web interface icon
         if htmlGET and '?unlike=' in self.path:
-            pageNumber = 1
-            likeUrl = self.path.split('?unlike=')[1]
-            if '?' in likeUrl:
-                likeUrl = likeUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = self.path.split('?unlike=')[0]
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.onionDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during undo like')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during undo like')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            undoActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            actorLiked = self.path.split('?actor=')[1]
-            if '?' in actorLiked:
-                actorLiked = actorLiked.split('?')[0]
-            undoLikeJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'type': 'Undo',
-                'actor': undoActor,
-                'to': [actorLiked],
-                'object': {
-                    'type': 'Like',
-                    'actor': undoActor,
-                    'to': [actorLiked],
-                    'object': likeUrl
-                }
-            }
-            # directly undo the like within the post file
-            likedPostFilename = locatePost(self.server.baseDir,
-                                           self.postToNickname,
-                                           self.server.domain,
-                                           likeUrl)
-            if likedPostFilename:
-                if self.server.debug:
-                    print('Removing likes for ' + likedPostFilename)
-                undoLikesCollectionEntry(self.server.recentPostsCache,
-                                         self.server.baseDir,
-                                         likedPostFilename, likeUrl,
-                                         undoActor, self.server.domain,
-                                         self.server.debug)
-            # send out the undo like to followers
-            self._postToOutbox(undoLikeJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull+actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.onionDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'like shown done',
-                                      'unlike shown')
+            self._undoLikeButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 cookie, self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
