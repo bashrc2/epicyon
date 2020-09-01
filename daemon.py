@@ -6975,18 +6975,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show skills on the profile page
         if self.path.endswith('/skills') and '/users/' in self.path:
-            if self._showRoles(authorized,
-                               callingDomain, self.path,
-                               self.server.baseDir,
-                               self.server.httpPrefix,
-                               self.server.domain,
-                               self.server.domainFull,
-                               self.server.port,
-                               self.server.onionDomain,
-                               self.server.i2pDomain,
-                               GETstartTime, GETtimings,
-                               self.server.proxyType,
-                               cookie, self.server.debug):
+            if self._showSkills(authorized,
+                                callingDomain, self.path,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                GETstartTime, GETtimings,
+                                self.server.proxyType,
+                                cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
