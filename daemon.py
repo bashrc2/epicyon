@@ -4840,6 +4840,48 @@ class PubServer(BaseHTTPRequestHandler):
                                   'delete shown done',
                                   'post muted')
 
+    def _undoMuteButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """Undo mute button is pressed
+        """
+        muteUrl = path.split('?unmute=')[1]
+        if '?' in muteUrl:
+            muteUrl = muteUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        timelineStr = self.server.defaultTimeline
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = \
+            httpPrefix + '://' + domainFull + path.split('?unmute=')[0]
+        nickname = getNicknameFromActor(actor)
+        unmutePost(baseDir, nickname, domain,
+                   muteUrl, self.server.recentPostsCache)
+        self.server.GETbusy = False
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = \
+                'http://' + onionDomain + path.split('?unmute=')[0]
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actor = \
+                'http://' + i2pDomain + path.split('?unmute=')[0]
+        self._redirect_headers(actor + '/' + timelineStr +
+                               timelineBookmark,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'post muted done',
+                                  'unmute activated')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -6215,55 +6257,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # unmute a post from the web interface icon
         if htmlGET and '?unmute=' in self.path:
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            muteUrl = self.path.split('?unmute=')[1]
-            if '?' in muteUrl:
-                muteUrl = muteUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            timelineStr = self.server.defaultTimeline
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + self.path.split('?unmute=')[0]
-            nickname = getNicknameFromActor(actor)
-            unmutePost(self.server.baseDir,
-                       nickname,
-                       self.server.domain,
-                       muteUrl,
-                       self.server.recentPostsCache)
-            self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = \
-                    'http://' + \
-                    self.server.onionDomain + self.path.split('?unmute=')[0]
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = \
-                    'http://' + \
-                    self.server.i2pDomain + self.path.split('?unmute=')[0]
-            self._redirect_headers(actor + '/' + timelineStr +
-                                   timelineBookmark,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'post muted done',
-                                      'unmute activated')
+            self._undoMuteButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType, cookie,
+                                 self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
