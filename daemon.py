@@ -5463,14 +5463,24 @@ class PubServer(BaseHTTPRequestHandler):
                    onionDomain: str, i2pDomain: str,
                    GETstartTime, GETtimings: {},
                    proxyType: str, cookie: str,
-                   debug: str) -> bool:
+                   debug: str,
+                   recentPostsCache: {}, session,
+                   ocapAlways: bool,
+                   defaultTimeline: str,
+                   maxRecentPosts: int,
+                   translate: {},
+                   cachedWebfingers: {},
+                   personCache: {},
+                   allowDeletion: bool,
+                   projectVersion: str,
+                   YTReplacementDomain: str) -> bool:
         """Shows the inbox timeline
         """
         if '/users/' in path:
             if authorized:
                 inboxFeed = \
-                    personBoxJson(self.server.recentPostsCache,
-                                  self.server.session,
+                    personBoxJson(recentPostsCache,
+                                  session,
                                   baseDir,
                                   domain,
                                   port,
@@ -5478,7 +5488,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   httpPrefix,
                                   maxPostsInFeed, 'inbox',
                                   authorized,
-                                  self.server.ocapAlways)
+                                  ocapAlways)
                 if inboxFeed:
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show status done',
@@ -5497,8 +5507,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in path:
                             # if no page was specified then show the first
                             inboxFeed = \
-                                personBoxJson(self.server.recentPostsCache,
-                                              self.server.session,
+                                personBoxJson(recentPostsCache,
+                                              session,
                                               baseDir,
                                               domain,
                                               port,
@@ -5506,29 +5516,29 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed, 'inbox',
                                               authorized,
-                                              self.server.ocapAlways)
+                                              ocapAlways)
                             self._benchmarkGETtimings(GETstartTime,
                                                       GETtimings,
                                                       'show status done',
                                                       'show inbox page')
-                        msg = htmlInbox(self.server.defaultTimeline,
-                                        self.server.recentPostsCache,
-                                        self.server.maxRecentPosts,
-                                        self.server.translate,
+                        msg = htmlInbox(defaultTimeline,
+                                        recentPostsCache,
+                                        maxRecentPosts,
+                                        translate,
                                         pageNumber, maxPostsInFeed,
-                                        self.server.session,
+                                        session,
                                         baseDir,
-                                        self.server.cachedWebfingers,
-                                        self.server.personCache,
+                                        cachedWebfingers,
+                                        personCache,
                                         nickname,
                                         domain,
                                         port,
                                         inboxFeed,
-                                        self.server.allowDeletion,
+                                        allowDeletion,
                                         httpPrefix,
-                                        self.server.projectVersion,
+                                        projectVersion,
                                         self._isMinimal(nickname),
-                                        self.server.YTReplacementDomain)
+                                        YTReplacementDomain)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show status done',
                                                   'show inbox html')
@@ -8428,7 +8438,18 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.i2pDomain,
                                GETstartTime, GETtimings,
                                self.server.proxyType,
-                               cookie, self.server.debug):
+                               cookie, self.server.debug,
+                               self.server.recentPostsCache,
+                               self.server.session,
+                               self.server.ocapAlways,
+                               self.server.defaultTimeline,
+                               self.server.maxRecentPosts,
+                               self.server.translate,
+                               self.server.cachedWebfingers,
+                               self.server.personCache,
+                               self.server.allowDeletion,
+                               self.server.projectVersion,
+                               self.server.YTReplacementDomain):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
