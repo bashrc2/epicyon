@@ -4895,12 +4895,15 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not ('/statuses/' in path and '/users/' in path):
             return False
+
         namedStatus = path.split('/users/')[1]
         if '/' not in namedStatus:
             return False
+
         postSections = namedStatus.split('/')
         if len(postSections) < 4:
             return False
+
         if not postSections[3].startswith('replies'):
             return False
         nickname = postSections[0]
@@ -4921,15 +4924,19 @@ class PubServer(BaseHTTPRequestHandler):
             # so show empty collection
             contextStr = \
                 'https://www.w3.org/ns/activitystreams'
+
             firstStr = \
                 httpPrefix + '://' + domainFull + '/users/' + nickname + \
                 '/statuses/' + statusNumber + '/replies?page=true'
+
             idStr = \
                 httpPrefix + '://' + domainFull + '/users/' + nickname + \
                 '/statuses/' + statusNumber + '/replies'
+
             lastStr = \
                 httpPrefix + '://' + domainFull + '/users/' + nickname + \
                 '/statuses/' + statusNumber + '/replies?page=true'
+
             repliesJson = {
                 '@context': contextStr,
                 'first': firstStr,
@@ -4938,6 +4945,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'totalItems': 0,
                 'type': 'OrderedCollection'
             }
+
             if self._requestHTTP():
                 if not self.server.session:
                     print('DEBUG: creating new session during get replies')
@@ -4991,13 +4999,16 @@ class PubServer(BaseHTTPRequestHandler):
             # replies exist. Itterate through the
             # text file containing message ids
             contextStr = 'https://www.w3.org/ns/activitystreams'
+
             idStr = \
                 httpPrefix + '://' + domainFull + \
                 '/users/' + nickname + '/statuses/' + \
                 statusNumber + '?page=true'
+
             partOfStr = \
                 httpPrefix + '://' + domainFull + \
                 '/users/' + nickname + '/statuses/' + statusNumber
+
             repliesJson = {
                 '@context': contextStr,
                 'id': idStr,
@@ -5008,12 +5019,9 @@ class PubServer(BaseHTTPRequestHandler):
             }
 
             # populate the items list with replies
-            populateRepliesJson(baseDir,
-                                nickname,
-                                domain,
+            populateRepliesJson(baseDir, nickname, domain,
                                 postRepliesFilename,
-                                authorized,
-                                repliesJson)
+                                authorized, repliesJson)
 
             # send the replies json
             if self._requestHTTP():
@@ -5061,9 +5069,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           'post replies done')
             else:
                 if self._fetchAuthenticated():
-                    msg = \
-                        json.dumps(repliesJson,
-                                   ensure_ascii=False)
+                    msg = json.dumps(repliesJson,
+                                     ensure_ascii=False)
                     msg = msg.encode('utf-8')
                     protocolStr = 'application/json'
                     self._set_headers(protocolStr, len(msg),
