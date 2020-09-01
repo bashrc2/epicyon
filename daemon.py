@@ -5915,6 +5915,106 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
+    def _showBookmarksTimeline(self, authorized: bool,
+                               callingDomain: str, path: str,
+                               baseDir: str, httpPrefix: str,
+                               domain: str, domainFull: str, port: int,
+                               onionDomain: str, i2pDomain: str,
+                               GETstartTime, GETtimings: {},
+                               proxyType: str, cookie: str,
+                               debug: str) -> bool:
+        """Shows the bookmarks timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                bookmarksFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'tlbookmarks',
+                                  authorized, self.server.ocapAlways)
+                if bookmarksFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/tlbookmarks', '')
+                        nickname = nickname.replace('/bookmarks', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            bookmarksFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed,
+                                              'tlbookmarks',
+                                              authorized,
+                                              self.server.ocapAlways)
+                        msg = \
+                            htmlBookmarks(self.server.defaultTimeline,
+                                          self.server.recentPostsCache,
+                                          self.server.maxRecentPosts,
+                                          self.server.translate,
+                                          pageNumber, maxPostsInFeed,
+                                          self.server.session,
+                                          baseDir,
+                                          self.server.cachedWebfingers,
+                                          self.server.personCache,
+                                          nickname,
+                                          domain,
+                                          port,
+                                          bookmarksFeed,
+                                          self.server.allowDeletion,
+                                          httpPrefix,
+                                          self.server.projectVersion,
+                                          self._isMinimal(nickname),
+                                          self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show shares 2 done',
+                                                  'show bookmarks 2')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(bookmarksFeed,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlbookmarks', '')
+                    nickname = nickname.replace('/bookmarks', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if debug:
+            print('DEBUG: GET access to bookmarks is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7812,102 +7912,24 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show blogs 2 done',
                                   'show shares 2 done')
 
-        # get the bookmarks for a given person
+        # get the bookmarks timeline for a given person
         if self.path.endswith('/tlbookmarks') or \
            '/tlbookmarks?page=' in self.path or \
            self.path.endswith('/bookmarks') or \
            '/bookmarks?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    bookmarksFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'tlbookmarks',
-                                      authorized, self.server.ocapAlways)
-                    if bookmarksFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/tlbookmarks', '')
-                            nickname = nickname.replace('/bookmarks', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                bookmarksFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed,
-                                                  'tlbookmarks',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                            msg = \
-                                htmlBookmarks(self.server.defaultTimeline,
-                                              self.server.recentPostsCache,
-                                              self.server.maxRecentPosts,
-                                              self.server.translate,
-                                              pageNumber, maxPostsInFeed,
-                                              self.server.session,
-                                              self.server.baseDir,
-                                              self.server.cachedWebfingers,
-                                              self.server.personCache,
-                                              nickname,
-                                              self.server.domain,
-                                              self.server.port,
-                                              bookmarksFeed,
-                                              self.server.allowDeletion,
-                                              self.server.httpPrefix,
-                                              self.server.projectVersion,
-                                              self._isMinimal(nickname),
-                                              self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show shares 2 done',
-                                                      'show bookmarks 2')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(bookmarksFeed,
-                                             ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlbookmarks', '')
-                        nickname = nickname.replace('/bookmarks', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to bookmarks is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showBookmarksTimeline(authorized,
+                                           callingDomain, self.path,
+                                           self.server.baseDir,
+                                           self.server.httpPrefix,
+                                           self.server.domain,
+                                           self.server.domainFull,
+                                           self.server.port,
+                                           self.server.onionDomain,
+                                           self.server.i2pDomain,
+                                           GETstartTime, GETtimings,
+                                           self.server.proxyType,
+                                           cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show shares 2 done',
