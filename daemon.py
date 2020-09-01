@@ -6555,6 +6555,64 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showPersonProfile(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the profile for a person
+        """
+        # look up a person
+        getPerson = personLookup(domain, path, baseDir)
+        if getPerson:
+            if self._requestHTTP():
+                if not self.server.session:
+                    print('Starting new session during person lookup')
+                    self.server.session = createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during person lookup')
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
+                msg = \
+                    htmlProfile(self.server.defaultTimeline,
+                                self.server.recentPostsCache,
+                                self.server.maxRecentPosts,
+                                self.server.translate,
+                                self.server.projectVersion,
+                                baseDir,
+                                httpPrefix,
+                                authorized,
+                                self.server.ocapAlways,
+                                getPerson, 'posts',
+                                self.server.session,
+                                self.server.cachedWebfingers,
+                                self.server.personCache,
+                                self.server.YTReplacementDomain,
+                                None, None).encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show profile 4 done',
+                                          'show profile posts')
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(getPerson,
+                                     ensure_ascii=False).encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -8593,55 +8651,18 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show profile 4 done')
 
         # look up a person
-        getPerson = \
-            personLookup(self.server.domain, self.path,
-                         self.server.baseDir)
-        if getPerson:
-            if self._requestHTTP():
-                if not self.server.session:
-                    print('Starting new session during person lookup')
-                    self.server.session = \
-                        createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during person lookup')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
-                msg = \
-                    htmlProfile(self.server.defaultTimeline,
-                                self.server.recentPostsCache,
-                                self.server.maxRecentPosts,
-                                self.server.translate,
-                                self.server.projectVersion,
-                                self.server.baseDir,
-                                self.server.httpPrefix,
-                                authorized,
-                                self.server.ocapAlways,
-                                getPerson, 'posts',
-                                self.server.session,
-                                self.server.cachedWebfingers,
-                                self.server.personCache,
-                                self.server.YTReplacementDomain,
-                                None, None).encode('utf-8')
-                self._set_headers('text/html',
-                                  len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show profile 4 done',
-                                          'show profile posts')
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(getPerson,
-                                     ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-            self.server.GETbusy = False
+        if self._showPersonProfile(authorized,
+                                   callingDomain, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   cookie, self.server.debug):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
