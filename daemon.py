@@ -4519,6 +4519,97 @@ class PubServer(BaseHTTPRequestHandler):
                                   'like shown done',
                                   'unlike shown')
 
+    def _bookmarkButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """Bookmark button was pressed
+        """
+        pageNumber = 1
+        bookmarkUrl = path.split('?bookmark=')[1]
+        if '?' in bookmarkUrl:
+            bookmarkUrl = bookmarkUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        actor = path.split('?bookmark=')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during bookmark')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during bookmark')
+                self._404()
+                self.server.GETbusy = False
+                return
+        bookmarkActor = \
+            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+        ccList = []
+        bookmark(self.server.recentPostsCache,
+                 self.server.session,
+                 baseDir,
+                 self.server.federationList,
+                 self.postToNickname,
+                 domain, port,
+                 ccList,
+                 httpPrefix,
+                 bookmarkUrl, bookmarkActor, False,
+                 self.server.sendThreads,
+                 self.server.postLog,
+                 self.server.personCache,
+                 self.server.cachedWebfingers,
+                 self.server.debug,
+                 self.server.projectVersion)
+        # self._postToOutbox(bookmarkJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = \
+            httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unlike shown done',
+                                  'bookmark shown')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -5818,93 +5909,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # bookmark from the web interface icon
         if htmlGET and '?bookmark=' in self.path:
-            pageNumber = 1
-            bookmarkUrl = self.path.split('?bookmark=')[1]
-            if '?' in bookmarkUrl:
-                bookmarkUrl = bookmarkUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            actor = self.path.split('?bookmark=')[0]
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during bookmark')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during bookmark')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            bookmarkActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            ccList = []
-            bookmark(self.server.recentPostsCache,
-                     self.server.session,
-                     self.server.baseDir,
-                     self.server.federationList,
-                     self.postToNickname,
-                     self.server.domain, self.server.port,
-                     ccList,
-                     self.server.httpPrefix,
-                     bookmarkUrl, bookmarkActor, False,
-                     self.server.sendThreads,
-                     self.server.postLog,
-                     self.server.personCache,
-                     self.server.cachedWebfingers,
-                     self.server.debug,
-                     self.server.projectVersion)
-            # self._postToOutbox(bookmarkJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = \
-                self.server.httpPrefix + '://' + self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'unlike shown done',
-                                      'bookmark shown')
+            self._bookmarkButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 cookie, self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
