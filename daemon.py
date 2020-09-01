@@ -4700,6 +4700,102 @@ class PubServer(BaseHTTPRequestHandler):
                                   'bookmark shown done',
                                   'unbookmark shown')
 
+    def _deleteButton(self, callingDomain: str, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      GETstartTime, GETtimings: {},
+                      proxyType: str, cookie: str,
+                      debug: str):
+        """Delete button is pressed
+        """
+        if not cookie:
+            print('ERROR: no cookie given when deleting')
+            self._400()
+            self.server.GETbusy = False
+            return
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        deleteUrl = path.split('?delete=')[1]
+        if '?' in deleteUrl:
+            deleteUrl = deleteUrl.split('?')[0]
+        timelineStr = self.server.defaultTimeline
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        usersPath = path.split('?delete=')[0]
+        actor = \
+            httpPrefix + '://' + domainFull + usersPath
+        if self.server.allowDeletion or \
+           deleteUrl.startswith(actor):
+            if self.server.debug:
+                print('DEBUG: deleteUrl=' + deleteUrl)
+                print('DEBUG: actor=' + actor)
+            if actor not in deleteUrl:
+                # You can only delete your own posts
+                self.server.GETbusy = False
+                if callingDomain.endswith('.onion') and onionDomain:
+                    actor = 'http://' + onionDomain + usersPath
+                elif callingDomain.endswith('.i2p') and i2pDomain:
+                    actor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(actor + '/' + timelineStr,
+                                       cookie, callingDomain)
+                return
+            self.postToNickname = getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in ' + actor)
+                self.server.GETbusy = False
+                if callingDomain.endswith('.onion') and onionDomain:
+                    actor = 'http://' + onionDomain + usersPath
+                elif callingDomain.endswith('.i2p') and i2pDomain:
+                    actor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(actor + '/' + timelineStr,
+                                       cookie, callingDomain)
+                return
+            if not self.server.session:
+                print('Starting new session during delete')
+                self.server.session = createSession(proxyType)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session ' +
+                          'during delete')
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+
+            deleteStr = \
+                htmlDeletePost(self.server.recentPostsCache,
+                               self.server.maxRecentPosts,
+                               self.server.translate, pageNumber,
+                               self.server.session, baseDir,
+                               deleteUrl, httpPrefix,
+                               __version__, self.server.cachedWebfingers,
+                               self.server.personCache, callingDomain,
+                               self.server.TYReplacementDomain)
+            if deleteStr:
+                self._set_headers('text/html', len(deleteStr),
+                                  cookie, callingDomain)
+                self._write(deleteStr.encode('utf-8'))
+                self.server.GETbusy = False
+                return
+        self.server.GETbusy = False
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actor = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actor + '/' + timelineStr,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unbookmark shown done',
+                                  'delete shown')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -6035,101 +6131,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   'bookmark shown done',
                                   'unbookmark shown done')
 
-        # delete a post from the web interface icon
+        # delete button is pressed on a post
         if htmlGET and '?delete=' in self.path:
-            if not cookie:
-                print('ERROR: no cookie given when deleting')
-                self._400()
-                self.server.GETbusy = False
-                return
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            deleteUrl = self.path.split('?delete=')[1]
-            if '?' in deleteUrl:
-                deleteUrl = deleteUrl.split('?')[0]
-            timelineStr = self.server.defaultTimeline
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            usersPath = self.path.split('?delete=')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            if self.server.allowDeletion or \
-               deleteUrl.startswith(actor):
-                if self.server.debug:
-                    print('DEBUG: deleteUrl=' + deleteUrl)
-                    print('DEBUG: actor=' + actor)
-                if actor not in deleteUrl:
-                    # You can only delete your own posts
-                    self.server.GETbusy = False
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actor = 'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actor = 'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(actor + '/' + timelineStr,
-                                           cookie, callingDomain)
-                    return
-                self.postToNickname = getNicknameFromActor(actor)
-                if not self.postToNickname:
-                    print('WARN: unable to find nickname in ' + actor)
-                    self.server.GETbusy = False
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actor = 'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actor = 'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(actor + '/' + timelineStr,
-                                           cookie, callingDomain)
-                    return
-                if not self.server.session:
-                    print('Starting new session during delete')
-                    self.server.session = createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during delete')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
-
-                deleteStr = \
-                    htmlDeletePost(self.server.recentPostsCache,
-                                   self.server.maxRecentPosts,
-                                   self.server.translate, pageNumber,
-                                   self.server.session, self.server.baseDir,
-                                   deleteUrl, self.server.httpPrefix,
-                                   __version__, self.server.cachedWebfingers,
-                                   self.server.personCache, callingDomain,
-                                   self.server.TYReplacementDomain)
-                if deleteStr:
-                    self._set_headers('text/html', len(deleteStr),
-                                      cookie, callingDomain)
-                    self._write(deleteStr.encode('utf-8'))
-                    self.server.GETbusy = False
-                    return
-            self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = 'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = 'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actor + '/' + timelineStr,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'unbookmark shown done',
-                                      'delete shown')
+            self._deleteButton(callingDomain, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType, cookie,
+                               self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
