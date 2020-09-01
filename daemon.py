@@ -5237,6 +5237,115 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
+    def _showIndividualAtPost(self, authorized: bool,
+                              callingDomain: str, path: str,
+                              baseDir: str, httpPrefix: str,
+                              domain: str, domainFull: str, port: int,
+                              onionDomain: str, i2pDomain: str,
+                              GETstartTime, GETtimings: {},
+                              proxyType: str, cookie: str,
+                              debug: str) -> bool:
+        """get an individual post from the path /@nickname/statusnumber
+        """
+        if '/@' not in path:
+            return False
+
+        likedBy = None
+        if '?likedBy=' in path:
+            likedBy = path.split('?likedBy=')[1].strip()
+            if '?' in likedBy:
+                likedBy = likedBy.split('?')[0]
+            path = path.split('?likedBy=')[0]
+
+        namedStatus = path.split('/@')[1]
+        if '/' not in namedStatus:
+            # show actor
+            nickname = namedStatus
+        else:
+            postSections = namedStatus.split('/')
+            if len(postSections) == 2:
+                nickname = postSections[0]
+                statusNumber = postSections[1]
+                if len(statusNumber) > 10 and statusNumber.isdigit():
+                    postFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + \
+                        domain + '/outbox/' + \
+                        httpPrefix + ':##' + \
+                        domainFull + '#users#' + \
+                        nickname + '#statuses#' + \
+                        statusNumber + '.json'
+                    if os.path.isfile(postFilename):
+                        postJsonObject = loadJson(postFilename)
+                        loadedPost = False
+                        if postJsonObject:
+                            loadedPost = True
+                        else:
+                            postJsonObject = {}
+                        if loadedPost:
+                            # Only authorized viewers get to see likes
+                            # on posts. Otherwize marketers could gain
+                            # more social graph info
+                            if not authorized:
+                                pjo = postJsonObject
+                                self._removePostInteractions(pjo)
+                            if self._requestHTTP():
+                                recentPostsCache = \
+                                    self.server.recentPostsCache
+                                maxRecentPosts = \
+                                    self.server.maxRecentPosts
+                                translate = \
+                                    self.server.translate
+                                cachedWebfingers = \
+                                    self.server.cachedWebfingers
+                                personCache = \
+                                    self.server.personCache
+                                projectVersion = \
+                                    self.server.projectVersion
+                                ytDomain = \
+                                    self.server.YTReplacementDomain
+                                msg = \
+                                    htmlIndividualPost(recentPostsCache,
+                                                       maxRecentPosts,
+                                                       translate,
+                                                       self.server.session,
+                                                       cachedWebfingers,
+                                                       personCache,
+                                                       nickname,
+                                                       domain,
+                                                       port,
+                                                       authorized,
+                                                       postJsonObject,
+                                                       httpPrefix,
+                                                       projectVersion,
+                                                       likedBy,
+                                                       ytDomain)
+                                msg = msg.encode('utf-8')
+                                self._set_headers('text/html', len(msg),
+                                                  cookie, callingDomain)
+                                self._write(msg)
+                            else:
+                                if self._fetchAuthenticated():
+                                    msg = json.dumps(postJsonObject,
+                                                     ensure_ascii=False)
+                                    msg = msg.encode('utf-8')
+                                    self._set_headers('application/json',
+                                                      len(msg),
+                                                      None, callingDomain)
+                                    self._write(msg)
+                                else:
+                                    self._404()
+                        self.server.GETbusy = False
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'new post done',
+                                                  'individual post shown')
+                        return True
+                    else:
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
+        return False
+
     def _showIndividualPost(self, authorized: bool,
                             callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -8208,103 +8317,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   'new post done')
 
         # get an individual post from the path /@nickname/statusnumber
-        if '/@' in self.path:
-            likedBy = None
-            if '?likedBy=' in self.path:
-                likedBy = self.path.split('?likedBy=')[1].strip()
-                if '?' in likedBy:
-                    likedBy = likedBy.split('?')[0]
-                self.path = self.path.split('?likedBy=')[0]
-
-            namedStatus = self.path.split('/@')[1]
-            if '/' not in namedStatus:
-                # show actor
-                nickname = namedStatus
-            else:
-                postSections = namedStatus.split('/')
-                if len(postSections) == 2:
-                    nickname = postSections[0]
-                    statusNumber = postSections[1]
-                    if len(statusNumber) > 10 and statusNumber.isdigit():
-                        postFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + \
-                            self.server.domain + '/outbox/' + \
-                            self.server.httpPrefix + ':##' + \
-                            self.server.domainFull + '#users#' + \
-                            nickname + '#statuses#' + \
-                            statusNumber + '.json'
-                        if os.path.isfile(postFilename):
-                            postJsonObject = loadJson(postFilename)
-                            loadedPost = False
-                            if postJsonObject:
-                                loadedPost = True
-                            else:
-                                postJsonObject = {}
-                            if loadedPost:
-                                # Only authorized viewers get to see likes
-                                # on posts. Otherwize marketers could gain
-                                # more social graph info
-                                if not authorized:
-                                    pjo = postJsonObject
-                                    self._removePostInteractions(pjo)
-                                if self._requestHTTP():
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    maxRecentPosts = \
-                                        self.server.maxRecentPosts
-                                    translate = \
-                                        self.server.translate
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    personCache = \
-                                        self.server.personCache
-                                    httpPrefix = \
-                                        self.server.httpPrefix
-                                    projectVersion = \
-                                        self.server.projectVersion
-                                    ytDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlIndividualPost(recentPostsCache,
-                                                           maxRecentPosts,
-                                                           translate,
-                                                           self.server.session,
-                                                           cachedWebfingers,
-                                                           personCache,
-                                                           nickname,
-                                                           self.server.domain,
-                                                           self.server.port,
-                                                           authorized,
-                                                           postJsonObject,
-                                                           httpPrefix,
-                                                           projectVersion,
-                                                           likedBy,
-                                                           ytDomain)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html', len(msg),
-                                                      cookie, callingDomain)
-                                    self._write(msg)
-                                else:
-                                    if self._fetchAuthenticated():
-                                        msg = json.dumps(postJsonObject,
-                                                         ensure_ascii=False)
-                                        msg = msg.encode('utf-8')
-                                        self._set_headers('application/json',
-                                                          len(msg),
-                                                          None, callingDomain)
-                                        self._write(msg)
-                                    else:
-                                        self._404()
-                            self.server.GETbusy = False
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'new post done',
-                                                      'individual post shown')
-                            return
-                        else:
-                            self._404()
-                            self.server.GETbusy = False
-                            return
+        if self._showIndividualAtPost(authorized,
+                                      callingDomain, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      cookie, self.server.debug):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'new post done',
