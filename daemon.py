@@ -5457,6 +5457,107 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showDMs(self, authorized: bool,
+                 callingDomain: str, path: str,
+                 baseDir: str, httpPrefix: str,
+                 domain: str, domainFull: str, port: int,
+                 onionDomain: str, i2pDomain: str,
+                 GETstartTime, GETtimings: {},
+                 proxyType: str, cookie: str,
+                 debug: str) -> bool:
+        """Shows the DMs timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxDMFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'dm',
+                                  authorized,
+                                  self.server.ocapAlways)
+                if inboxDMFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/dm', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            inboxDMFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              self.path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed, 'dm',
+                                              authorized,
+                                              self.server.ocapAlways)
+                        msg = \
+                            htmlInboxDMs(self.server.defaultTimeline,
+                                         self.server.recentPostsCache,
+                                         self.server.maxRecentPosts,
+                                         self.server.translate,
+                                         pageNumber, maxPostsInFeed,
+                                         self.server.session,
+                                         baseDir,
+                                         self.server.cachedWebfingers,
+                                         self.server.personCache,
+                                         nickname,
+                                         domain,
+                                         port,
+                                         inboxDMFeed,
+                                         self.server.allowDeletion,
+                                         httpPrefix,
+                                         self.server.projectVersion,
+                                         self._isMinimal(nickname),
+                                         self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show inbox done',
+                                                  'show dms')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(inboxDMFeed, ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json',
+                                          len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/dm', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/dm':
+            # not the DM inbox
+            if debug:
+                print('DEBUG: GET access to DM timeline is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7236,104 +7337,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the inbox for a given person
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'inbox',
-                                      authorized,
-                                      self.server.ocapAlways)
-                    if inboxFeed:
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show status done',
-                                                  'show inbox json')
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/inbox', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                inboxFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed, 'inbox',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                                self._benchmarkGETtimings(GETstartTime,
-                                                          GETtimings,
-                                                          'show status done',
-                                                          'show inbox page')
-                            msg = htmlInbox(self.server.defaultTimeline,
-                                            self.server.recentPostsCache,
-                                            self.server.maxRecentPosts,
-                                            self.server.translate,
-                                            pageNumber, maxPostsInFeed,
-                                            self.server.session,
-                                            self.server.baseDir,
-                                            self.server.cachedWebfingers,
-                                            self.server.personCache,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.port,
-                                            inboxFeed,
-                                            self.server.allowDeletion,
-                                            self.server.httpPrefix,
-                                            self.server.projectVersion,
-                                            self._isMinimal(nickname),
-                                            self.server.YTReplacementDomain)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show status done',
-                                                      'show inbox html')
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show status done',
-                                                      'show inbox')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(inboxFeed, ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/inbox', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/inbox':
-                # not the shared inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to inbox is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showInbox(authorized,
+                               callingDomain, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType,
+                               cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -7342,95 +7357,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the direct messages for a given person
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxDMFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'dm',
-                                      authorized,
-                                      self.server.ocapAlways)
-                    if inboxDMFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/dm', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                inboxDMFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path+'?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed, 'dm',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                            msg = \
-                                htmlInboxDMs(self.server.defaultTimeline,
-                                             self.server.recentPostsCache,
-                                             self.server.maxRecentPosts,
-                                             self.server.translate,
-                                             pageNumber, maxPostsInFeed,
-                                             self.server.session,
-                                             self.server.baseDir,
-                                             self.server.cachedWebfingers,
-                                             self.server.personCache,
-                                             nickname,
-                                             self.server.domain,
-                                             self.server.port,
-                                             inboxDMFeed,
-                                             self.server.allowDeletion,
-                                             self.server.httpPrefix,
-                                             self.server.projectVersion,
-                                             self._isMinimal(nickname),
-                                             self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show inbox done',
-                                                      'show dms')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(inboxDMFeed, ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/dm', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/dm':
-                # not the DM inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to inbox is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showDMs(authorized,
+                             callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.httpPrefix,
+                             self.server.domain,
+                             self.server.domainFull,
+                             self.server.port,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             GETstartTime, GETtimings,
+                             self.server.proxyType,
+                             cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
