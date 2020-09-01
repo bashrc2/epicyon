@@ -6382,6 +6382,92 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
 
+    def _showFollowingFeed(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the following feed
+        """
+        following = \
+            getFollowingFeed(baseDir, domain, port, path,
+                             httpPrefix, authorized, followsPerPage)
+        if following:
+            if self._requestHTTP():
+                pageNumber = 1
+                if '?page=' not in path:
+                    searchPath = path
+                    # get a page of following, not the summary
+                    following = \
+                        getFollowingFeed(baseDir,
+                                         domain,
+                                         port,
+                                         path + '?page=true',
+                                         httpPrefix,
+                                         authorized, followsPerPage)
+                else:
+                    pageNumberStr = path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber = int(pageNumberStr)
+                    searchPath = path.split('?page=')[0]
+                getPerson = \
+                    personLookup(domain,
+                                 searchPath.replace('/following', ''),
+                                 baseDir)
+                if getPerson:
+                    if not self.server.session:
+                        print('Starting new session during following')
+                        self.server.session = createSession(proxyType)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session ' +
+                                  'during following')
+                            self._404()
+                            self.server.GETbusy = False
+                            return True
+
+                    msg = \
+                        htmlProfile(self.server.defaultTimeline,
+                                    self.server.recentPostsCache,
+                                    self.server.maxRecentPosts,
+                                    self.server.translate,
+                                    self.server.projectVersion,
+                                    baseDir, httpPrefix,
+                                    authorized,
+                                    self.server.ocapAlways,
+                                    getPerson, 'following',
+                                    self.server.session,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    self.server.YTReplacementDomain,
+                                    following,
+                                    pageNumber,
+                                    followsPerPage).encode('utf-8')
+                    self._set_headers('text/html',
+                                      len(msg), cookie, callingDomain)
+                    self._write(msg)
+                    self.server.GETbusy = False
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show profile 2 done',
+                                              'show profile 3')
+                    return True
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(following,
+                                     ensure_ascii=False).encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+                self.server.GETbusy = False
+                return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -8383,85 +8469,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show moderation done',
                                   'show profile 2 done')
 
-        following = \
-            getFollowingFeed(self.server.baseDir, self.server.domain,
-                             self.server.port, self.path,
-                             self.server.httpPrefix,
-                             authorized, followsPerPage)
-        if following:
-            if self._requestHTTP():
-                pageNumber = 1
-                if '?page=' not in self.path:
-                    searchPath = self.path
-                    # get a page of following, not the summary
-                    following = \
-                        getFollowingFeed(self.server.baseDir,
-                                         self.server.domain,
-                                         self.server.port,
-                                         self.path + '?page=true',
-                                         self.server.httpPrefix,
-                                         authorized, followsPerPage)
-                else:
-                    pageNumberStr = self.path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                    searchPath = self.path.split('?page=')[0]
-                getPerson = \
-                    personLookup(self.server.domain,
-                                 searchPath.replace('/following', ''),
-                                 self.server.baseDir)
-                if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during following')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during following')
-                            self._404()
-                            self.server.GETbusy = False
-                            return
-
-                    msg = \
-                        htmlProfile(self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
-                                    self.server.maxRecentPosts,
-                                    self.server.translate,
-                                    self.server.projectVersion,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    authorized,
-                                    self.server.ocapAlways,
-                                    getPerson, 'following',
-                                    self.server.session,
-                                    self.server.cachedWebfingers,
-                                    self.server.personCache,
-                                    self.server.YTReplacementDomain,
-                                    following,
-                                    pageNumber,
-                                    followsPerPage).encode('utf-8')
-                    self._set_headers('text/html',
-                                      len(msg), cookie, callingDomain)
-                    self._write(msg)
-                    self.server.GETbusy = False
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show profile 2 done',
-                                              'show profile 3')
-                    return
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(following,
-                                     ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-                self.server.GETbusy = False
-                return
+        if self._showFollowingFeed(authorized,
+                                   callingDomain, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   cookie, self.server.debug):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show profile 2 done',
