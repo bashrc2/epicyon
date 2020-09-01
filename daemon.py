@@ -5157,6 +5157,86 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showSkills(self, authorized: bool,
+                    callingDomain: str, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str, port: int,
+                    onionDomain: str, i2pDomain: str,
+                    GETstartTime, GETtimings: {},
+                    proxyType: str, cookie: str,
+                    debug: str) -> bool:
+        """Show skills on the profile screen
+        """
+        namedStatus = path.split('/users/')[1]
+        if '/' in namedStatus:
+            postSections = namedStatus.split('/')
+            nickname = postSections[0]
+            actorFilename = \
+                baseDir + '/accounts/' + \
+                nickname + '@' + domain + '.json'
+            if os.path.isfile(actorFilename):
+                actorJson = loadJson(actorFilename)
+                if actorJson:
+                    if actorJson.get('skills'):
+                        if self._requestHTTP():
+                            getPerson = \
+                                personLookup(domain,
+                                             path.replace('/skills', ''),
+                                             baseDir)
+                            if getPerson:
+                                defaultTimeline =  \
+                                    self.server.defaultTimeline
+                                recentPostsCache = \
+                                    self.server.recentPostsCache
+                                cachedWebfingers = \
+                                    self.server.cachedWebfingers
+                                YTReplacementDomain = \
+                                    self.server.YTReplacementDomain
+                                msg = \
+                                    htmlProfile(defaultTimeline,
+                                                recentPostsCache,
+                                                self.server.maxRecentPosts,
+                                                self.server.translate,
+                                                self.server.projectVersion,
+                                                baseDir, httpPrefix, True,
+                                                self.server.ocapAlways,
+                                                getPerson, 'skills',
+                                                self.server.session,
+                                                cachedWebfingers,
+                                                self.server.personCache,
+                                                YTReplacementDomain,
+                                                actorJson['skills'],
+                                                None, None)
+                                msg = msg.encode('utf-8')
+                                self._set_headers('text/html', len(msg),
+                                                  cookie, callingDomain)
+                                self._write(msg)
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'post roles done',
+                                                          'show skills')
+                        else:
+                            if self._fetchAuthenticated():
+                                msg = json.dumps(actorJson['skills'],
+                                                 ensure_ascii=False)
+                                msg = msg.encode('utf-8')
+                                self._set_headers('application/json',
+                                                  len(msg), None,
+                                                  callingDomain)
+                                self._write(msg)
+                            else:
+                                self._404()
+                        self.server.GETbusy = False
+                        return
+        actor = path.replace('/skills', '')
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute, cookie, callingDomain)
+        self.server.GETbusy = False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -6895,86 +6975,19 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show skills on the profile page
         if self.path.endswith('/skills') and '/users/' in self.path:
-            namedStatus = self.path.split('/users/')[1]
-            if '/' in namedStatus:
-                postSections = namedStatus.split('/')
-                nickname = postSections[0]
-                actorFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    nickname + '@' + self.server.domain + '.json'
-                if os.path.isfile(actorFilename):
-                    actorJson = loadJson(actorFilename)
-                    if actorJson:
-                        if actorJson.get('skills'):
-                            if self._requestHTTP():
-                                getPerson = \
-                                    personLookup(self.server.domain,
-                                                 self.path.replace('/skills',
-                                                                   ''),
-                                                 self.server.baseDir)
-                                if getPerson:
-                                    defaultTimeline =  \
-                                        self.server.defaultTimeline
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    YTReplacementDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlProfile(defaultTimeline,
-                                                    recentPostsCache,
-                                                    self.server.maxRecentPosts,
-                                                    self.server.translate,
-                                                    self.server.projectVersion,
-                                                    self.server.baseDir,
-                                                    self.server.httpPrefix,
-                                                    True,
-                                                    self.server.ocapAlways,
-                                                    getPerson, 'skills',
-                                                    self.server.session,
-                                                    cachedWebfingers,
-                                                    self.server.personCache,
-                                                    YTReplacementDomain,
-                                                    actorJson['skills'],
-                                                    None, None)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html',
-                                                      len(msg),
-                                                      cookie,
-                                                      callingDomain)
-                                    self._write(msg)
-                                    self._benchmarkGETtimings(GETstartTime,
-                                                              GETtimings,
-                                                              'post roles ' +
-                                                              'done',
-                                                              'show skills')
-                            else:
-                                if self._fetchAuthenticated():
-                                    msg = json.dumps(actorJson['skills'],
-                                                     ensure_ascii=False)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('application/json',
-                                                      len(msg),
-                                                      None,
-                                                      callingDomain)
-                                    self._write(msg)
-                                else:
-                                    self._404()
-                            self.server.GETbusy = False
-                            return
-            actor = self.path.replace('/skills', '')
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute, cookie, callingDomain)
-            self.server.GETbusy = False
-            return
+            if self._showRoles(authorized,
+                               callingDomain, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType,
+                               cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'post roles done',
