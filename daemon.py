@@ -4882,16 +4882,15 @@ class PubServer(BaseHTTPRequestHandler):
                                   'post muted done',
                                   'unmute activated')
 
-    def _showReplies(self, authorized: bool,
-                     callingDomain: str, path: str,
-                     baseDir: str, httpPrefix: str,
-                     domain: str, domainFull: str, port: int,
-                     onionDomain: str, i2pDomain: str,
-                     GETstartTime, GETtimings: {},
-                     proxyType: str, cookie: str,
-                     debug: str) -> bool:
-        """Shows the replies timeline
-        Returns true if the timeline was shown
+    def _showRepliesToPost(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the replies to a post
         """
         if not ('/statuses/' in path and '/users/' in path):
             return False
@@ -7257,18 +7256,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
-            if self._showReplies(authorized,
-                                 callingDomain, self.path,
-                                 self.server.baseDir,
-                                 self.server.httpPrefix,
-                                 self.server.domain,
-                                 self.server.domainFull,
-                                 self.server.port,
-                                 self.server.onionDomain,
-                                 self.server.i2pDomain,
-                                 GETstartTime, GETtimings,
-                                 self.server.proxyType, cookie,
-                                 self.server.debug):
+            if self._showRepliesToPost(authorized,
+                                       callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType, cookie,
+                                       self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
