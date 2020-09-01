@@ -5348,6 +5348,115 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showInbox(self, authorized: bool,
+                   callingDomain: str, path: str,
+                   baseDir: str, httpPrefix: str,
+                   domain: str, domainFull: str, port: int,
+                   onionDomain: str, i2pDomain: str,
+                   GETstartTime, GETtimings: {},
+                   proxyType: str, cookie: str,
+                   debug: str) -> bool:
+        """Shows the inbox timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'inbox',
+                                  authorized,
+                                  self.server.ocapAlways)
+                if inboxFeed:
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show status done',
+                                              'show inbox json')
+                    if self._requestHTTP():
+                        nickname = self.path.replace('/users/', '')
+                        nickname = nickname.replace('/inbox', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            inboxFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed, 'inbox',
+                                              authorized,
+                                              self.server.ocapAlways)
+                            self._benchmarkGETtimings(GETstartTime,
+                                                      GETtimings,
+                                                      'show status done',
+                                                      'show inbox page')
+                        msg = htmlInbox(self.server.defaultTimeline,
+                                        self.server.recentPostsCache,
+                                        self.server.maxRecentPosts,
+                                        self.server.translate,
+                                        pageNumber, maxPostsInFeed,
+                                        self.server.session,
+                                        baseDir,
+                                        self.server.cachedWebfingers,
+                                        self.server.personCache,
+                                        nickname,
+                                        domain,
+                                        port,
+                                        inboxFeed,
+                                        self.server.allowDeletion,
+                                        httpPrefix,
+                                        self.server.projectVersion,
+                                        self._isMinimal(nickname),
+                                        self.server.YTReplacementDomain)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox html')
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(inboxFeed, ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = self.path.replace('/users/', '')
+                    nickname = nickname.replace('/inbox', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/inbox':
+            # not the shared inbox
+            if debug:
+                print('DEBUG: GET access to inbox is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
