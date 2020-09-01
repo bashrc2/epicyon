@@ -4316,6 +4316,109 @@ class PubServer(BaseHTTPRequestHandler):
                                   'follow approve done',
                                   'follow deny shown')
 
+    def _likeButton(self, callingDomain: str, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str,
+                    onionDomain: str, i2pDomain: str,
+                    GETstartTime, GETtimings: {},
+                    proxyType: str, cookie: str,
+                    debug: str):
+        """Press the like button
+        """
+        pageNumber = 1
+        likeUrl = path.split('?like=')[1]
+        if '?' in likeUrl:
+            likeUrl = likeUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        actor = path.split('?like=')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber) +
+                                   timelineBookmark, cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during like')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session during like')
+                self._404()
+                self.server.GETbusy = False
+                return
+        likeActor = \
+            httpPrefix + '://' + \
+            domainFull + '/users/' + self.postToNickname
+        actorLiked = path.split('?actor=')[1]
+        if '?' in actorLiked:
+            actorLiked = actorLiked.split('?')[0]
+        likeJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Like',
+            'actor': likeActor,
+            'to': [actorLiked],
+            'object': likeUrl
+        }
+        # directly like the post file
+        likedPostFilename = locatePost(baseDir,
+                                       self.postToNickname,
+                                       domain,
+                                       likeUrl)
+        if likedPostFilename:
+            if debug:
+                print('Updating likes for ' + likedPostFilename)
+            updateLikesCollection(self.server.recentPostsCache,
+                                  baseDir,
+                                  likedPostFilename, likeUrl,
+                                  likeActor, domain,
+                                  debug)
+        else:
+            print('WARN: unable to locate file for liked post ' +
+                  likeUrl)
+        # send out the like to followers
+        self._postToOutbox(likeJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = \
+            httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'follow deny done',
+                                  'like shown')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -5578,105 +5681,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # like from the web interface icon
         if htmlGET and '?like=' in self.path:
-            pageNumber = 1
-            likeUrl = self.path.split('?like=')[1]
-            if '?' in likeUrl:
-                likeUrl = likeUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            actor = self.path.split('?like=')[0]
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber) +
-                                       timelineBookmark, cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during like')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session during like')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            likeActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            actorLiked = self.path.split('?actor=')[1]
-            if '?' in actorLiked:
-                actorLiked = actorLiked.split('?')[0]
-            likeJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'type': 'Like',
-                'actor': likeActor,
-                'to': [actorLiked],
-                'object': likeUrl
-            }
-            # directly like the post file
-            likedPostFilename = locatePost(self.server.baseDir,
-                                           self.postToNickname,
-                                           self.server.domain,
-                                           likeUrl)
-            if likedPostFilename:
-                if self.server.debug:
-                    print('Updating likes for ' + likedPostFilename)
-                updateLikesCollection(self.server.recentPostsCache,
-                                      self.server.baseDir,
-                                      likedPostFilename, likeUrl,
-                                      likeActor, self.server.domain,
-                                      self.server.debug)
-            else:
-                print('WARN: unable to locate file for liked post ' +
-                      likeUrl)
-            # send out the like to followers
-            self._postToOutbox(likeJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'follow deny done',
-                                      'like shown')
+            self._likeButton(callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.httpPrefix,
+                             self.server.domain,
+                             self.server.domainFull,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             GETstartTime, GETtimings,
+                             self.server.proxyType,
+                             cookie,
+                             self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
