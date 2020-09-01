@@ -4796,6 +4796,50 @@ class PubServer(BaseHTTPRequestHandler):
                                   'unbookmark shown done',
                                   'delete shown')
 
+    def _muteButton(self, callingDomain: str, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str, port: int,
+                    onionDomain: str, i2pDomain: str,
+                    GETstartTime, GETtimings: {},
+                    proxyType: str, cookie: str,
+                    debug: str):
+        """Mute button is pressed
+        """
+        muteUrl = path.split('?mute=')[1]
+        if '?' in muteUrl:
+            muteUrl = muteUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        timelineStr = self.server.defaultTimeline
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = \
+            httpPrefix + '://' + domainFull + path.split('?mute=')[0]
+        nickname = getNicknameFromActor(actor)
+        mutePost(baseDir, nickname, domain,
+                 muteUrl, self.server.recentPostsCache)
+        self.server.GETbusy = False
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = \
+                'http://' + onionDomain + \
+                path.split('?mute=')[0]
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actor = \
+                'http://' + i2pDomain + \
+                path.split('?mute=')[0]
+        self._redirect_headers(actor + '/' +
+                               timelineStr + timelineBookmark,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'delete shown done',
+                                  'post muted')
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -6152,52 +6196,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # The mute button is pressed
         if htmlGET and '?mute=' in self.path:
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            muteUrl = self.path.split('?mute=')[1]
-            if '?' in muteUrl:
-                muteUrl = muteUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            timelineStr = self.server.defaultTimeline
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + self.path.split('?mute=')[0]
-            nickname = getNicknameFromActor(actor)
-            mutePost(self.server.baseDir, nickname, self.server.domain,
-                     muteUrl, self.server.recentPostsCache)
-            self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = \
-                    'http://' + self.server.onionDomain + \
-                    self.path.split('?mute=')[0]
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = \
-                    'http://' + self.server.i2pDomain + \
-                    self.path.split('?mute=')[0]
-            self._redirect_headers(actor + '/' +
-                                   timelineStr + timelineBookmark,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'delete shown done',
-                                      'post muted')
+            self._muteButton(callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.httpPrefix,
+                             self.server.domain,
+                             self.server.domainFull,
+                             self.server.port,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             GETstartTime, GETtimings,
+                             self.server.proxyType, cookie,
+                             self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
