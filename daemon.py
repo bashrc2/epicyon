@@ -6015,6 +6015,194 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
+    def _showEventsTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the events timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                # convert /events to /tlevents
+                if path.endswith('/events') or \
+                   '/events?page=' in path:
+                    path = path.replace('/events', '/tlevents')
+                eventsFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'tlevents',
+                                  authorized, self.server.ocapAlways)
+                print('eventsFeed: ' + str(eventsFeed))
+                if eventsFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/tlevents', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            eventsFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed,
+                                              'tlevents',
+                                              authorized,
+                                              self.server.ocapAlways)
+                        msg = \
+                            htmlEvents(self.server.defaultTimeline,
+                                       self.server.recentPostsCache,
+                                       self.server.maxRecentPosts,
+                                       self.server.translate,
+                                       pageNumber, maxPostsInFeed,
+                                       self.server.session,
+                                       baseDir,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       eventsFeed,
+                                       self.server.allowDeletion,
+                                       httpPrefix,
+                                       self.server.projectVersion,
+                                       self._isMinimal(nickname),
+                                       self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show bookmarks 2 done',
+                                                  'show events')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(eventsFeed,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlevents', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if debug:
+            print('DEBUG: GET access to events is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
+    def _showOutboxTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the outbox timeline
+        """
+        # get outbox feed for a person
+        outboxFeed = \
+            personBoxJson(self.server.recentPostsCache,
+                          self.server.session,
+                          baseDir, domain,
+                          port, path,
+                          httpPrefix,
+                          maxPostsInFeed, 'outbox',
+                          authorized,
+                          self.server.ocapAlways)
+        if outboxFeed:
+            if self._requestHTTP():
+                nickname = \
+                    path.replace('/users/', '').replace('/outbox', '')
+                pageNumber = 1
+                if '?page=' in nickname:
+                    pageNumber = nickname.split('?page=')[1]
+                    nickname = nickname.split('?page=')[0]
+                    if pageNumber.isdigit():
+                        pageNumber = int(pageNumber)
+                    else:
+                        pageNumber = 1
+                if 'page=' not in path:
+                    # if a page wasn't specified then show the first one
+                    outboxFeed = \
+                        personBoxJson(self.server.recentPostsCache,
+                                      self.server.session,
+                                      baseDir,
+                                      domain,
+                                      port,
+                                      path + '?page=1',
+                                      httpPrefix,
+                                      maxPostsInFeed, 'outbox',
+                                      authorized,
+                                      self.server.ocapAlways)
+                msg = \
+                    htmlOutbox(self.server.defaultTimeline,
+                               self.server.recentPostsCache,
+                               self.server.maxRecentPosts,
+                               self.server.translate,
+                               pageNumber, maxPostsInFeed,
+                               self.server.session,
+                               baseDir,
+                               self.server.cachedWebfingers,
+                               self.server.personCache,
+                               nickname,
+                               domain,
+                               port,
+                               outboxFeed,
+                               self.server.allowDeletion,
+                               httpPrefix,
+                               self.server.projectVersion,
+                               self._isMinimal(nickname),
+                               self.server.YTReplacementDomain)
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show events done',
+                                          'show outbox')
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(outboxFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7940,179 +8128,37 @@ class PubServer(BaseHTTPRequestHandler):
            '/tlevents?page=' in self.path or \
            self.path.endswith('/events') or \
            '/events?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    # convert /events to /tlevents
-                    if self.path.endswith('/events') or \
-                       '/events?page=' in self.path:
-                        self.path = self.path.replace('/events', '/tlevents')
-                    eventsFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'tlevents',
-                                      authorized, self.server.ocapAlways)
-                    print('eventsFeed: ' + str(eventsFeed))
-                    if eventsFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/tlevents', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                eventsFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed,
-                                                  'tlevents',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                            msg = \
-                                htmlEvents(self.server.defaultTimeline,
-                                           self.server.recentPostsCache,
-                                           self.server.maxRecentPosts,
-                                           self.server.translate,
-                                           pageNumber, maxPostsInFeed,
-                                           self.server.session,
-                                           self.server.baseDir,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           eventsFeed,
-                                           self.server.allowDeletion,
-                                           self.server.httpPrefix,
-                                           self.server.projectVersion,
-                                           self._isMinimal(nickname),
-                                           self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show bookmarks 2 done',
-                                                      'show events')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(eventsFeed,
-                                             ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlevents', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to events is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showEventsTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show bookmarks 2 done',
                                   'show events done')
 
-        # get outbox feed for a person
-        outboxFeed = \
-            personBoxJson(self.server.recentPostsCache,
-                          self.server.session,
-                          self.server.baseDir, self.server.domain,
-                          self.server.port, self.path,
-                          self.server.httpPrefix,
-                          maxPostsInFeed, 'outbox',
-                          authorized,
-                          self.server.ocapAlways)
-        if outboxFeed:
-            if self._requestHTTP():
-                nickname = \
-                    self.path.replace('/users/', '').replace('/outbox', '')
-                pageNumber = 1
-                if '?page=' in nickname:
-                    pageNumber = nickname.split('?page=')[1]
-                    nickname = nickname.split('?page=')[0]
-                    if pageNumber.isdigit():
-                        pageNumber = int(pageNumber)
-                    else:
-                        pageNumber = 1
-                if 'page=' not in self.path:
-                    # if a page wasn't specified then show the first one
-                    outboxFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path + '?page=1',
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'outbox',
-                                      authorized,
-                                      self.server.ocapAlways)
-                msg = \
-                    htmlOutbox(self.server.defaultTimeline,
-                               self.server.recentPostsCache,
-                               self.server.maxRecentPosts,
-                               self.server.translate,
-                               pageNumber, maxPostsInFeed,
-                               self.server.session,
-                               self.server.baseDir,
-                               self.server.cachedWebfingers,
-                               self.server.personCache,
-                               nickname,
-                               self.server.domain,
-                               self.server.port,
-                               outboxFeed,
-                               self.server.allowDeletion,
-                               self.server.httpPrefix,
-                               self.server.projectVersion,
-                               self._isMinimal(nickname),
-                               self.server.YTReplacementDomain)
-                msg = msg.encode('utf-8')
-                self._set_headers('text/html',
-                                  len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show events done',
-                                          'show outbox')
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(outboxFeed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-            self.server.GETbusy = False
+        # outbox timeline
+        if self._showOutboxTimeline(authorized,
+                                    callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    GETstartTime, GETtimings,
+                                    self.server.proxyType,
+                                    cookie, self.server.debug):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
