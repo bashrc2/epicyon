@@ -624,9 +624,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(msg)))
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
-        try:
-            self.wfile.write(msg)
-        except Exception as e:
+        if not self._write(msg):
             print('Error when showing ' + str(httpCode))
             print(e)
 
@@ -685,16 +683,17 @@ class PubServer(BaseHTTPRequestHandler):
                                  'The server is busy. Please try again ' +
                                  'later')
 
-    def _write(self, msg) -> None:
+    def _write(self, msg) -> bool:
         tries = 0
         while tries < 5:
             try:
                 self.wfile.write(msg)
-                break
+                return True
             except Exception as e:
                 print(e)
-                time.sleep(1)
+                time.sleep(0.5)
                 tries += 1
+        return False
 
     def _robotsTxt(self) -> bool:
         if not self.path.lower().startswith('/robot'):
