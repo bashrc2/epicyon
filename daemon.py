@@ -6910,6 +6910,44 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _searchScreenBanner(self, callingDomain: str, path: str,
+                            baseDir: str, domain: str, port: int,
+                            GETstartTime, GETtimings: {}) -> bool:
+        """Shows a banner image on the search screen
+        """
+        nickname = getNicknameFromActor(path)
+        bannerFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/search_banner.png'
+        if os.path.isfile(bannerFilename):
+            if self._etag_exists(bannerFilename):
+                # The file has not changed
+                self._304()
+                return True
+
+            tries = 0
+            mediaBinary = None
+            while tries < 5:
+                try:
+                    with open(bannerFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            if mediaBinary:
+                self._set_headers_etag(bannerFilename, 'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'account qrcode done',
+                                          'search screen banner')
+                return True
+        self._404()
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7532,38 +7570,12 @@ class PubServer(BaseHTTPRequestHandler):
         # search screen banner image
         if '/users/' in self.path and \
            self.path.endswith('/search_banner.png'):
-            nickname = getNicknameFromActor(self.path)
-            bannerFilename = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/search_banner.png'
-            if os.path.isfile(bannerFilename):
-                if self._etag_exists(bannerFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-
-                tries = 0
-                mediaBinary = None
-                while tries < 5:
-                    try:
-                        with open(bannerFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                if mediaBinary:
-                    self._set_headers_etag(bannerFilename, 'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'account qrcode done',
-                                              'search screen banner')
-                    return
-            self._404()
-            return
+            if self._searchScreenBanner(callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.domain,
+                                        self.server.port,
+                                        GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'account qrcode done',
