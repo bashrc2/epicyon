@@ -6787,6 +6787,61 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _redirectToLoginScreen(self, callingDomain: str, path: str,
+                               httpPrefix: str, domainFull: str,
+                               onionDomain: str, i2pDomain: str,
+                               GETstartTime, GETtimings: {},
+                               authorized: bool, debug: bool):
+        """Redirects to the login screen if necessary
+        """
+        divertToLoginScreen = False
+        if '/media/' not in path and \
+           '/sharefiles/' not in path and \
+           '/statuses/' not in path and \
+           '/emoji/' not in path and \
+           '/tags/' not in path and \
+           '/avatars/' not in path and \
+           '/fonts/' not in path and \
+           '/icons/' not in path:
+            divertToLoginScreen = True
+            if path.startswith('/users/'):
+                nickStr = path.split('/users/')[1]
+                if '/' not in nickStr and '?' not in nickStr:
+                    divertToLoginScreen = False
+                else:
+                    if path.endswith('/following') or \
+                       '/following?page=' in path or \
+                       path.endswith('/followers') or \
+                       '/followers?page=' in path or \
+                       path.endswith('/skills') or \
+                       path.endswith('/roles') or \
+                       path.endswith('/shares'):
+                        divertToLoginScreen = False
+
+        if divertToLoginScreen and not authorized:
+            if debug:
+                print('DEBUG: divertToLoginScreen=' +
+                      str(divertToLoginScreen))
+                print('DEBUG: authorized=' + str(authorized))
+                print('DEBUG: path=' + path)
+            if callingDomain.endswith('.onion') and onionDomain:
+                self._redirect_headers('http://' +
+                                       onionDomain + '/login',
+                                       None, callingDomain)
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                self._redirect_headers('http://' +
+                                       i2pDomain + '/login',
+                                       None, callingDomain)
+            else:
+                self._redirect_headers(httpPrefix + '://' +
+                                       domainFull +
+                                       '/login', None, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'robots txt',
+                                      'show login screen')
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7238,54 +7293,14 @@ class PubServer(BaseHTTPRequestHandler):
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
            not self._pathIsImage(self.path) and self.path != '/':
-            if '/media/' not in self.path and \
-               '/sharefiles/' not in self.path and \
-               '/statuses/' not in self.path and \
-               '/emoji/' not in self.path and \
-               '/tags/' not in self.path and \
-               '/avatars/' not in self.path and \
-               '/fonts/' not in self.path and \
-               '/icons/' not in self.path:
-                divertToLoginScreen = True
-                if self.path.startswith('/users/'):
-                    nickStr = self.path.split('/users/')[1]
-                    if '/' not in nickStr and '?' not in nickStr:
-                        divertToLoginScreen = False
-                    else:
-                        if self.path.endswith('/following') or \
-                           '/following?page=' in self.path or \
-                           self.path.endswith('/followers') or \
-                           '/followers?page=' in self.path or \
-                           self.path.endswith('/skills') or \
-                           self.path.endswith('/roles') or \
-                           self.path.endswith('/shares'):
-                            divertToLoginScreen = False
-                if divertToLoginScreen and not authorized:
-                    if self.server.debug:
-                        print('DEBUG: divertToLoginScreen=' +
-                              str(divertToLoginScreen))
-                        print('DEBUG: authorized=' + str(authorized))
-                        print('DEBUG: path=' + self.path)
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        self._redirect_headers('http://' +
-                                               self.server.onionDomain +
-                                               '/login',
-                                               None, callingDomain)
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        self._redirect_headers('http://' +
-                                               self.server.i2pDomain +
-                                               '/login',
-                                               None, callingDomain)
-                    else:
-                        self._redirect_headers(self.server.httpPrefix + '://' +
-                                               self.server.domainFull +
-                                               '/login', None, callingDomain)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'robots txt',
-                                              'show login screen')
-                    return
+            if self._redirectToLoginScreen(callingDomain, self.path,
+                                           self.server.httpPrefix,
+                                           self.server.domainFull,
+                                           self.server.onionDomain,
+                                           self.server.i2pDomain,
+                                           GETstartTime, GETtimings,
+                                           authorized, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'robots txt',
