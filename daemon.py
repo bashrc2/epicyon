@@ -7180,6 +7180,28 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _editProfile(self, callingDomain: str, path: str,
+                     translate: {}, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     cookie: str) -> bool:
+        """Show the edit profile screen
+        """
+        if '/users/' in path and path.endswith('/editprofile'):
+            msg = htmlEditProfile(translate,
+                                  baseDir,
+                                  path, domain,
+                                  port,
+                                  httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -8434,19 +8456,13 @@ class PubServer(BaseHTTPRequestHandler):
                         return
 
             # edit profile in web interface
-            if '/users/' in self.path and self.path.endswith('/editprofile'):
-                msg = htmlEditProfile(self.server.translate,
-                                      self.server.baseDir,
-                                      self.path, self.server.domain,
-                                      self.server.port,
-                                      self.server.httpPrefix).encode('utf-8')
-                if msg:
-                    self._set_headers('text/html', len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-                self.server.GETbusy = False
+            if self._editProfile(callingDomain, self.path,
+                                 self.server.translate,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.port,
+                                 cookie):
                 return
 
             if self._showNewPost(callingDomain, self.path,
