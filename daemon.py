@@ -6842,6 +6842,36 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _getStyleSheet(self, callingDomain: str, path: str,
+                       GETstartTime, GETtimings: {}) -> bool:
+        """Returns the content of a css file
+        """
+        # get the last part of the path
+        # eg. /my/path/file.css becomes file.css
+        if '/' in path:
+            path = path.split('/')[-1]
+        if os.path.isfile(path):
+            tries = 0
+            while tries < 5:
+                try:
+                    with open(path, 'r') as cssfile:
+                        css = cssfile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            msg = css.encode('utf-8')
+            self._set_headers('text/css', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show login screen done',
+                                      'show profile.css')
+            return True
+        self._404()
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7309,31 +7339,9 @@ class PubServer(BaseHTTPRequestHandler):
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
-            # get the last part of the path
-            # eg. /my/path/file.css becomes file.css
-            if '/' in self.path:
-                self.path = self.path.split('/')[-1]
-            if os.path.isfile(self.path):
-                tries = 0
-                while tries < 5:
-                    try:
-                        with open(self.path, 'r') as cssfile:
-                            css = cssfile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                msg = css.encode('utf-8')
-                self._set_headers('text/css', len(msg),
-                                  None, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show login screen done',
-                                          'show profile.css')
+            if self._getStyleSheet(callingDomain, self.path,
+                                   GETstartTime, GETtimings):
                 return
-            self._404()
-            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show login screen done',
