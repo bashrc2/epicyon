@@ -692,7 +692,7 @@ class PubServer(BaseHTTPRequestHandler):
             except Exception as e:
                 print(e)
                 time.sleep(0.5)
-                tries += 1
+            tries += 1
         return False
 
     def _robotsTxt(self) -> bool:
