@@ -7309,11 +7309,15 @@ class PubServer(BaseHTTPRequestHandler):
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
-            if os.path.isfile('epicyon-profile.css'):
+            # get the last part of the path
+            # eg. /my/path/file.css becomes file.css
+            if '/' in self.path:
+                self.path = self.path.split('/')[-1]
+            if os.path.isfile(self.path):
                 tries = 0
                 while tries < 5:
                     try:
-                        with open('epicyon-profile.css', 'r') as cssfile:
+                        with open(self.path, 'r') as cssfile:
                             css = cssfile.read()
                             break
                     except Exception as e:
