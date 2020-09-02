@@ -10515,6 +10515,10 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         serverAddress = ('', proxyPort)
         pubHandler = partial(PubServer)
 
+    if not os.path.isdir(baseDir + '/accounts'):
+        print('Creating accounts directory')
+        os.mkdir(baseDir + '/accounts')
+
     try:
         httpd = EpicyonServer(serverAddress, pubHandler)
     except Exception as e:
