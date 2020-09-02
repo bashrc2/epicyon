@@ -7032,6 +7032,52 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _showAvatarOrBackground(self, callingDomain: str, path: str,
+                                baseDir: str, domain: str,
+                                GETstartTime, GETtimings: {}) -> bool:
+        """Shows an avatar or profile background image
+        """
+        if '/users/' in path:
+            if self._pathIsImage(path):
+                avatarStr = path.split('/users/')[1]
+                if '/' in avatarStr and '.temp.' not in path:
+                    avatarNickname = avatarStr.split('/')[0]
+                    avatarFile = avatarStr.split('/')[1]
+                    # remove any numbers, eg. avatar123.png becomes avatar.png
+                    if avatarFile.startswith('avatar'):
+                        avatarFile = 'avatar.' + avatarFile.split('.')[1]
+                    elif avatarFile.startswith('image'):
+                        avatarFile = 'image.' + avatarFile.split('.')[1]
+                    avatarFilename = \
+                        baseDir + '/accounts/' + \
+                        avatarNickname + '@' + domain + '/' + avatarFile
+                    if os.path.isfile(avatarFilename):
+                        if self._etag_exists(avatarFilename):
+                            # The file has not changed
+                            self._304()
+                            return True
+                        mediaImageType = 'png'
+                        if avatarFile.endswith('.png'):
+                            mediaImageType = 'png'
+                        elif avatarFile.endswith('.jpg'):
+                            mediaImageType = 'jpeg'
+                        elif avatarFile.endswith('.gif'):
+                            mediaImageType = 'gif'
+                        else:
+                            mediaImageType = 'webp'
+                        with open(avatarFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            self._set_headers_etag(avatarFilename,
+                                                   'image/' + mediaImageType,
+                                                   mediaBinary, None,
+                                                   callingDomain)
+                            self._write(mediaBinary)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'icon shown done',
+                                                  'avatar background shown')
+                        return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7736,46 +7782,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
-        if '/users/' in self.path:
-            if self._pathIsImage(self.path):
-                avatarStr = self.path.split('/users/')[1]
-                if '/' in avatarStr and '.temp.' not in self.path:
-                    avatarNickname = avatarStr.split('/')[0]
-                    avatarFile = avatarStr.split('/')[1]
-                    # remove any numbers, eg. avatar123.png becomes avatar.png
-                    if avatarFile.startswith('avatar'):
-                        avatarFile = 'avatar.' + avatarFile.split('.')[1]
-                    elif avatarFile.startswith('image'):
-                        avatarFile = 'image.'+avatarFile.split('.')[1]
-                    avatarFilename = \
-                        self.server.baseDir + '/accounts/' + \
-                        avatarNickname + '@' + \
-                        self.server.domain + '/' + avatarFile
-                    if os.path.isfile(avatarFilename):
-                        if self._etag_exists(avatarFilename):
-                            # The file has not changed
-                            self._304()
-                            return
-                        mediaImageType = 'png'
-                        if avatarFile.endswith('.png'):
-                            mediaImageType = 'png'
-                        elif avatarFile.endswith('.jpg'):
-                            mediaImageType = 'jpeg'
-                        elif avatarFile.endswith('.gif'):
-                            mediaImageType = 'gif'
-                        else:
-                            mediaImageType = 'webp'
-                        with open(avatarFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers_etag(avatarFilename,
-                                                   'image/' + mediaImageType,
-                                                   mediaBinary, cookie,
-                                                   callingDomain)
-                            self._write(mediaBinary)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'icon shown done',
-                                                  'avatar background shown')
-                        return
+        if self._showAvatarOrBackground(callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.domain,
+                                        GETstartTime, GETtimings):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'icon shown done',
