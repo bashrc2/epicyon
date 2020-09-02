@@ -7326,7 +7326,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries += 1
                 msg = css.encode('utf-8')
                 self._set_headers('text/css', len(msg),
-                                  cookie, callingDomain)
+                                  None, callingDomain)
                 self._write(msg)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show login screen done',
