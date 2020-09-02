@@ -7078,6 +7078,63 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
         return False
 
+    def _confirmDeleteEvent(self, callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str, cookie: str,
+                            translate: {}, domainFull: str,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {}) -> bool:
+        """Confirm whether to delete a calendar event
+        """
+        postId = path.split('?id=')[1]
+        if '?' in postId:
+            postId = postId.split('?')[0]
+        postTime = path.split('?time=')[1]
+        if '?' in postTime:
+            postTime = postTime.split('?')[0]
+        postYear = path.split('?year=')[1]
+        if '?' in postYear:
+            postYear = postYear.split('?')[0]
+        postMonth = path.split('?month=')[1]
+        if '?' in postMonth:
+            postMonth = postMonth.split('?')[0]
+        postDay = path.split('?day=')[1]
+        if '?' in postDay:
+            postDay = postDay.split('?')[0]
+        # show the confirmation screen screen
+        msg = htmlCalendarDeleteConfirm(translate,
+                                        baseDir,
+                                        path,
+                                        httpPrefix,
+                                        domainFull,
+                                        postId, postTime,
+                                        postYear, postMonth, postDay,
+                                        callingDomain)
+        if not msg:
+            actor = \
+                httpPrefix + '://' + \
+                domainFull + \
+                path.split('/eventdelete')[0]
+            if callingDomain.endswith('.onion') and onionDomain:
+                actor = \
+                    'http://' + onionDomain + \
+                    path.split('/eventdelete')[0]
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                actor = \
+                    'http://' + i2pDomain + \
+                    path.split('/eventdelete')[0]
+            self._redirect_headers(actor + '/calendar',
+                                   cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'calendar shown done',
+                                      'calendar delete shown')
+            return True
+        msg = msg.encode('utf-8')
+        self._set_headers('text/html', len(msg),
+                          cookie, callingDomain)
+        self._write(msg)
+        self.server.GETbusy = False
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7930,57 +7987,16 @@ class PubServer(BaseHTTPRequestHandler):
             if '/eventdelete' in self.path and \
                '?time=' in self.path and \
                '?id=' in self.path:
-                postId = self.path.split('?id=')[1]
-                if '?' in postId:
-                    postId = postId.split('?')[0]
-                postTime = self.path.split('?time=')[1]
-                if '?' in postTime:
-                    postTime = postTime.split('?')[0]
-                postYear = self.path.split('?year=')[1]
-                if '?' in postYear:
-                    postYear = postYear.split('?')[0]
-                postMonth = self.path.split('?month=')[1]
-                if '?' in postMonth:
-                    postMonth = postMonth.split('?')[0]
-                postDay = self.path.split('?day=')[1]
-                if '?' in postDay:
-                    postDay = postDay.split('?')[0]
-                # show the confirmation screen screen
-                msg = htmlCalendarDeleteConfirm(self.server.translate,
-                                                self.server.baseDir,
-                                                self.path,
-                                                self.server.httpPrefix,
-                                                self.server.domainFull,
-                                                postId, postTime,
-                                                postYear, postMonth, postDay,
-                                                callingDomain)
-                if not msg:
-                    actor = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + \
-                        self.path.split('/eventdelete')[0]
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actor = \
-                            'http://' + self.server.onionDomain + \
-                            self.path.split('/eventdelete')[0]
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actor = \
-                            'http://' + self.server.i2pDomain + \
-                            self.path.split('/eventdelete')[0]
-                    self._redirect_headers(actor + '/calendar',
-                                           cookie, callingDomain)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'calendar shown done',
-                                              'calendar delete shown')
+                if self._confirmDeleteEvent(callingDomain, self.path,
+                                            self.server.baseDir,
+                                            self.server.httpPrefix,
+                                            cookie,
+                                            self.server.translate,
+                                            self.server.domainFull,
+                                            self.server.onionDomain,
+                                            self.server.i2pDomain,
+                                            GETstartTime, GETtimings):
                     return
-                msg = msg.encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'calendar shown done',
