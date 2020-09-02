@@ -6948,6 +6948,52 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _showBackgroundImage(self, callingDomain: str, path: str,
+                             baseDir: str,
+                             GETstartTime, GETtimings: {}) -> bool:
+        """Show a background image
+        """
+        for ext in ('webp', 'gif', 'jpg', 'png'):
+            for bg in ('follow', 'options', 'login'):
+                # follow screen background image
+                if path.endswith('/' + bg + '-background.' + ext):
+                    bgFilename = \
+                        baseDir + '/accounts/' + \
+                        bg + '-background.' + ext
+                    if os.path.isfile(bgFilename):
+                        if self._etag_exists(bgFilename):
+                            # The file has not changed
+                            self._304()
+                            return True
+
+                        tries = 0
+                        bgBinary = None
+                        while tries < 5:
+                            try:
+                                with open(bgFilename, 'rb') as avFile:
+                                    bgBinary = avFile.read()
+                                    break
+                            except Exception as e:
+                                print(e)
+                                time.sleep(1)
+                                tries += 1
+                        if bgBinary:
+                            if ext == 'jpg':
+                                ext = 'jpeg'
+                            self._set_headers_etag(bgFilename,
+                                                   'image/' + ext,
+                                                   bgBinary, None,
+                                                   callingDomain)
+                            self._write(bgBinary)
+                            self._benchmarkGETtimings(GETstartTime,
+                                                      GETtimings,
+                                                      'search screen ' +
+                                                      'banner done',
+                                                      'background shown')
+                            return True
+        self._404()
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7582,46 +7628,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   'search screen banner done')
 
         if '-background.' in self.path:
-            for ext in ('webp', 'gif', 'jpg', 'png'):
-                for bg in ('follow', 'options', 'login'):
-                    # follow screen background image
-                    if self.path.endswith('/' + bg + '-background.' + ext):
-                        bgFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            bg + '-background.' + ext
-                        if os.path.isfile(bgFilename):
-                            if self._etag_exists(bgFilename):
-                                # The file has not changed
-                                self._304()
-                                return
-
-                            tries = 0
-                            bgBinary = None
-                            while tries < 5:
-                                try:
-                                    with open(bgFilename, 'rb') as avFile:
-                                        bgBinary = avFile.read()
-                                        break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries += 1
-                            if bgBinary:
-                                if ext == 'jpg':
-                                    ext = 'jpeg'
-                                self._set_headers_etag(bgFilename,
-                                                       'image/' + ext,
-                                                       bgBinary, cookie,
-                                                       callingDomain)
-                                self._write(bgBinary)
-                                self._benchmarkGETtimings(GETstartTime,
-                                                          GETtimings,
-                                                          'search screen ' +
-                                                          'banner done',
-                                                          'background shown')
-                                return
-            self._404()
-            return
+            if self._showBackgroundImage(callingDomain, self.path,
+                                         self.server.baseDir,
+                                         GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'search screen banner done',
