@@ -7202,6 +7202,43 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _editEvent(self, callingDomain: str, path: str,
+                   httpPrefix: str, domain: str, domainFull: str,
+                   baseDir: str, translate: {},
+                   mediaInstance: bool,
+                   cookie: str) -> bool:
+        """Show edit event screen
+        """
+        messageId = path.split('?editeventpost=')[1]
+        if '?' in messageId:
+            messageId = messageId.split('?')[0]
+        actor = path.split('?actor=')[1]
+        if '?' in actor:
+            actor = actor.split('?')[0]
+        nickname = getNicknameFromActor(path)
+        if nickname == actor:
+            # postUrl = \
+            #     httpPrefix + '://' + \
+            #     domainFull + '/users/' + nickname + \
+            #     '/statuses/' + messageId
+            msg = None
+            # TODO
+            # htmlEditEvent(mediaInstance,
+            #               translate,
+            #               baseDir,
+            #               httpPrefix,
+            #               path,
+            #               nickname, domain,
+            #               postUrl)
+            if msg:
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self.server.GETbusy = False
+                return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -8426,34 +8463,15 @@ class PubServer(BaseHTTPRequestHandler):
                '/tlevents' in self.path and \
                '?editeventpost=' in self.path and \
                '?actor=' in self.path:
-                messageId = self.path.split('?editeventpost=')[1]
-                if '?' in messageId:
-                    messageId = messageId.split('?')[0]
-                actor = self.path.split('?actor=')[1]
-                if '?' in actor:
-                    actor = actor.split('?')[0]
-                nickname = getNicknameFromActor(self.path)
-                if nickname == actor:
-                    postUrl = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + '/users/' + nickname + \
-                        '/statuses/' + messageId
-                    msg = None
-                    # TODO
-                    # htmlEditEvent(self.server.mediaInstance,
-                    #                    self.server.translate,
-                    #                    self.server.baseDir,
-                    #                    self.server.httpPrefix,
-                    #                    self.path,
-                    #                    nickname, self.server.domain,
-                    #                    postUrl)
-                    if msg:
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html', len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self.server.GETbusy = False
-                        return
+                if self._editEvent(callingDomain, self.path,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.baseDir,
+                                   self.server.translate,
+                                   self.server.mediaInstance,
+                                   cookie):
+                    return
 
             # edit profile in web interface
             if self._editProfile(callingDomain, self.path,
