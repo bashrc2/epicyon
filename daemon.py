@@ -626,7 +626,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         if not self._write(msg):
             print('Error when showing ' + str(httpCode))
-            print(e)
 
     def _200(self) -> None:
         if self.server.translate:
@@ -7134,6 +7133,53 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy = False
         return True
 
+    def _showNewPost(self, callingDomain: str, path: str,
+                     mediaInstance: bool, translate: {},
+                     baseDir: str, httpPrefix: str,
+                     inReplyToUrl: str, replyToList: [],
+                     shareDescription: str, replyPageNumber: int,
+                     domain: str, domainFull: str,
+                     GETstartTime, GETtimings: {}, cookie) -> bool:
+        """Shows the new post screen
+        """
+        isNewPostEndpoint = False
+        if '/users/' in path and '/new' in path:
+            # Various types of new post in the web interface
+            newPostEnd = ('newpost', 'newblog', 'newunlisted',
+                          'newfollowers', 'newdm', 'newreminder',
+                          'newevent', 'newreport', 'newquestion',
+                          'newshare')
+            for postType in newPostEnd:
+                if path.endswith('/' + postType):
+                    isNewPostEndpoint = True
+                    break
+        if isNewPostEndpoint:
+            nickname = getNicknameFromActor(path)
+            msg = htmlNewPost(mediaInstance,
+                              translate,
+                              baseDir,
+                              httpPrefix,
+                              path, inReplyToUrl,
+                              replyToList,
+                              shareDescription,
+                              replyPageNumber,
+                              nickname, domain,
+                              domainFull).encode('utf-8')
+            if not msg:
+                print('Error replying to ' + inReplyToUrl)
+                self._404()
+                self.server.GETbusy = False
+                return True
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'unmute activated done',
+                                      'new post made')
+            return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -8403,41 +8449,17 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-            # Various types of new post in the web interface
-            if ('/users/' in self.path and
-                (self.path.endswith('/newpost') or
-                 self.path.endswith('/newblog') or
-                 self.path.endswith('/newunlisted') or
-                 self.path.endswith('/newfollowers') or
-                 self.path.endswith('/newdm') or
-                 self.path.endswith('/newreminder') or
-                 self.path.endswith('/newevent') or
-                 self.path.endswith('/newreport') or
-                 self.path.endswith('/newquestion') or
-                 self.path.endswith('/newshare'))):
-                nickname = getNicknameFromActor(self.path)
-                msg = htmlNewPost(self.server.mediaInstance,
-                                  self.server.translate,
-                                  self.server.baseDir,
-                                  self.server.httpPrefix,
-                                  self.path, inReplyToUrl,
-                                  replyToList,
-                                  shareDescription,
-                                  replyPageNumber,
-                                  nickname, self.server.domain,
-                                  self.server.domainFull).encode('utf-8')
-                if not msg:
-                    print('Error replying to ' + inReplyToUrl)
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'unmute activated done',
-                                          'new post made')
+            if self._showNewPost(callingDomain, self.path,
+                                 self.server.mediaInstance,
+                                 self.server.translate,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 inReplyToUrl, replyToList,
+                                 shareDescription, replyPageNumber,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 GETstartTime, GETtimings,
+                                 cookie):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
