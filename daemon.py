@@ -6994,6 +6994,44 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _showShareImage(self, callingDomain: str, path: str,
+                        baseDir: str,
+                        GETstartTime, GETtimings: {}) -> bool:
+        """Show a shared item image
+        """
+        if self._pathIsImage(path):
+            mediaStr = path.split('/sharefiles/')[1]
+            mediaFilename = \
+                baseDir + '/sharefiles/' + mediaStr
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return True
+
+                mediaFileType = 'png'
+                if mediaFilename.endswith('.png'):
+                    mediaFileType = 'png'
+                elif mediaFilename.endswith('.jpg'):
+                    mediaFileType = 'jpeg'
+                elif mediaFilename.endswith('.webp'):
+                    mediaFileType = 'webp'
+                else:
+                    mediaFileType = 'gif'
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self._set_headers_etag(mediaFilename,
+                                           'image/' + mediaFileType,
+                                           mediaBinary, None,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show media done',
+                                          'share files shown')
+                return True
+        self._404()
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -7663,38 +7701,10 @@ class PubServer(BaseHTTPRequestHandler):
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
-            if self._pathIsImage(self.path):
-                mediaStr = self.path.split('/sharefiles/')[1]
-                mediaFilename = \
-                    self.server.baseDir + '/sharefiles/' + mediaStr
-                if os.path.isfile(mediaFilename):
-                    if self._etag_exists(mediaFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    mediaFileType = 'png'
-                    if mediaFilename.endswith('.png'):
-                        mediaFileType = 'png'
-                    elif mediaFilename.endswith('.jpg'):
-                        mediaFileType = 'jpeg'
-                    elif mediaFilename.endswith('.webp'):
-                        mediaFileType = 'webp'
-                    else:
-                        mediaFileType = 'gif'
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(mediaFilename,
-                                               'image/' + mediaFileType,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show media done',
-                                              'share files shown')
-                    return
-            self._404()
-            return
+            if self._showShareImage(callingDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show media done',
