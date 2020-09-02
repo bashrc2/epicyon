@@ -6732,6 +6732,61 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showBlogPage(self, authorized: bool,
+                      callingDomain: str, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      GETstartTime, GETtimings: {},
+                      proxyType: str, cookie: str,
+                      translate: {}, debug: str) -> bool:
+        """Shows a blog page
+        """
+        pageNumber = 1
+        nickname = path.split('/blog/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if '?' in nickname:
+            nickname = nickname.split('?')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+                if pageNumber < 1:
+                    pageNumber = 1
+                elif pageNumber > 10:
+                    pageNumber = 10
+        if not self.server.session:
+            print('Starting new session during blog page')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during blog page')
+                self._404()
+                return True
+        msg = htmlBlogPage(authorized,
+                           self.server.session,
+                           baseDir,
+                           httpPrefix,
+                           translate,
+                           nickname,
+                           domain, port,
+                           maxPostsInBlogsFeed, pageNumber)
+        if msg is not None:
+            msg = msg.encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog view done', 'blog page')
+            return True
+        self._404()
+        return True
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -6970,51 +7025,20 @@ class PubServer(BaseHTTPRequestHandler):
         # for a particular account
         if htmlGET and self.path.startswith('/blog/'):
             if '/rss.xml' not in self.path:
-                pageNumber = 1
-                nickname = self.path.split('/blog/')[1]
-                if '/' in nickname:
-                    nickname = nickname.split('/')[0]
-                if '?' in nickname:
-                    nickname = nickname.split('?')[0]
-                if '?page=' in self.path:
-                    pageNumberStr = self.path.split('?page=')[1]
-                    if '?' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('?')[0]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                        if pageNumber < 1:
-                            pageNumber = 1
-                        elif pageNumber > 10:
-                            pageNumber = 10
-                if not self.server.session:
-                    print('Starting new session during blog page')
-                    self.server.session = \
-                        createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during blog page')
-                        self._404()
-                        return
-                msg = htmlBlogPage(authorized,
-                                   self.server.session,
-                                   self.server.baseDir,
-                                   self.server.httpPrefix,
-                                   self.server.translate,
-                                   nickname,
-                                   self.server.domain, self.server.port,
-                                   maxPostsInBlogsFeed, pageNumber)
-                if msg is not None:
-                    msg = msg.encode('utf-8')
-                    self._set_headers('text/html', len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'blog view done', 'blog page')
+                if self._showBlogPage(authorized,
+                                      callingDomain, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      cookie, self.server.translate,
+                                      self.server.debug):
                     return
-                self._404()
-                return
 
         # list of registered devices for e2ee
         # see https://github.com/tootsuite/mastodon/pull/13820
