@@ -34,6 +34,28 @@ def getPasswordHash(salt: str, providedPassword: str) -> str:
     return binascii.hexlify(pwdhash).decode('ascii')
 
 
+def constantTimeStringCheck(string1: str, string2: str) -> bool:
+    """Compares two string and returns if they are the same
+    using a constant amount of time
+    See https://sqreen.github.io/DevelopersSecurityBestPractices/
+    timing-attack/python
+    """
+    # strings must be of equal length
+    if len(string1) != len(string2):
+        return False
+    ctr = 0
+    matched = True
+    for ch in string1:
+        if ch != string2[ctr]:
+            matched = False
+        else:
+            # this is to make the timing more even
+            # and not provide clues
+            matched = matched
+        ctr += 1
+    return matched
+
+
 def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
     """Verify a stored password against one provided by user
     """
@@ -44,24 +66,7 @@ def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
     salt = storedPassword[:64]
     storedPassword = storedPassword[64:]
     pwHash = getPasswordHash(salt, providedPassword)
-    # check that hashes are of equal length
-    if len(pwHash) != len(storedPassword):
-        return False
-    # Compare all of the characters before returning true or false.
-    # Hence the match should take a constant amount of time.
-    # See https://sqreen.github.io/DevelopersSecurityBestPractices/
-    # timing-attack/python
-    ctr = 0
-    matched = True
-    for ch in pwHash:
-        if ch != storedPassword[ctr]:
-            matched = False
-        else:
-            # this is to make the timing more even
-            # and not provide clues
-            matched = matched
-        ctr += 1
-    return matched
+    return constantTimeStringCheck(pwHash, storedPassword)
 
 
 def createBasicAuthHeader(nickname: str, password: str) -> str:

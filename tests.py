@@ -54,6 +54,7 @@ from person import setBio
 from skills import setSkillLevel
 from roles import setRole
 from roles import outboxDelegate
+from auth import constantTimeStringCheck
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
@@ -2085,8 +2086,36 @@ def testTranslations():
             assert langJson.get(englishStr)
 
 
+def testConstantTimeStringCheck():
+    print('testConstantTimeStringCheck')
+    assert constantTimeStringCheck('testing', 'testing')
+    assert not constantTimeStringCheck('testing', '1234')
+    assert not constantTimeStringCheck('testing', '1234567')
+
+    itterations = 256
+
+    start = time.time()
+    for timingTest in range(itterations):
+        constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
+                                'nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy')
+    end = time.time()
+    avTime1 = ((end - start) * 1000000 / itterations)
+
+    # change characters and observe timing difference
+    start = time.time()
+    for timingTest in range(itterations):
+        constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
+                                'nnjfbefefbsnjsdnvbcueftqfeuqfbqeznjeniwufgy')
+    end = time.time()
+    avTime2 = ((end - start) * 1000000 / itterations)
+    timeDiffMicroseconds = abs(avTime2 - avTime1)
+    # time difference should be less than 10uS
+    assert timeDiffMicroseconds < 10
+
+
 def runAllTests():
     print('Running tests...')
+    testConstantTimeStringCheck()
     testTranslations()
     testValidContentWarning()
     testRemoveIdEnding()
