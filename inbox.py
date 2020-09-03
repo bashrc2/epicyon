@@ -87,7 +87,13 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
         return
     if not isinstance(postJsonObject['object']['tag'], list):
         return
-    tagsDir = baseDir+'/tags'
+    tagsDir = baseDir + '/tags'
+
+    # add tags directory if it doesn't exist
+    if not os.path.isdir(tagsDir):
+        print('Creating tags directory')
+        os.mkdir(tagsDir)
+
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
             continue
