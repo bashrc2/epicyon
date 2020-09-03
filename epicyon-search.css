@@ -18,6 +18,7 @@
     --text-entry-background: #111;
     --time-color: #aaa;
     --button-text: #FFFFFF;
+    --button-background-hover: #777;
     --button-background: #999;
     --button-selected: #666;
     --hashtag-margin: 2%;
@@ -141,8 +142,7 @@ a:focus {
 }
 
 .button:hover {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background-hover);
 }
 
 input[type=text] {

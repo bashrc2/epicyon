@@ -19,6 +19,7 @@
     --time-color: #aaa;
     --button-text: #FFFFFF;
     --button-small-text: #FFFFFF;
+    --button-background-hover: #777;
     --button-background: #999;
     --button-small-background: #999;
     --button-selected: #666;
@@ -107,8 +108,7 @@ a:focus {
 }
 
 .button:hover {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background-hover);
 }
 
 .options {
