@@ -2369,7 +2369,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                         if inReplyTo:
                             if isinstance(inReplyTo, str):
                                 if not isMuted(baseDir, nickname, domain,
-                                            inReplyTo):
+                                               inReplyTo):
                                     replyNotify(baseDir, handle,
                                                 httpPrefix + '://' + domain +
                                                 '/users/' + nickname +
