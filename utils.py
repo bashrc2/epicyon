@@ -356,6 +356,7 @@ def followPerson(baseDir: str, nickname: str, domain: str,
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
+    followAdded = False
     handleToFollow = followNickname + '@' + followDomain
     filename = baseDir + '/accounts/' + handle + '/' + followFile
     if os.path.isfile(filename):
@@ -371,16 +372,21 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                 followFile.write(handleToFollow + '\n' + content)
                 if debug:
                     print('DEBUG: follow added')
-                return True
+                followAdded = True
         except Exception as e:
             print('WARN: Failed to write entry to follow file ' +
                   filename + ' ' + str(e))
 
+    if followAdded:
+        # Default to adding new follows to the calendar.
+        # Possibly this could be made optional
         if followFile == 'following.txt':
             # if following a person add them to the list of
             # calendar follows
             addPersonToCalendar(baseDir, nickname, domain,
                                 followNickname, followDomain)
+        return True
+
     if debug:
         print('DEBUG: creating new following file to follow ' + handleToFollow)
     with open(filename, 'w+') as followfile:
