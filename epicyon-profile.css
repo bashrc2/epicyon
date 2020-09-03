@@ -35,6 +35,7 @@
     --time-vertical-align: 4px;
     --button-text: #FFFFFF;
     --button-background: #999;
+    --button-background-hover: #777;
     --button-selected: #666;
     --button-highlighted: green;
     --button-fg-highlighted: #FFFFFF;
@@ -236,13 +237,8 @@ a:focus {
     transition: 0.5s;
 }
 
-.button:hover span {
-    padding-right: 25px;
-}
-
-.button:hover span:after {
-    opacity: 1;
-    right: 0;
+.button:hover {
+    background-color: var(--button-background-hover);
 }
 
 .buttonselected span {
@@ -263,13 +259,8 @@ a:focus {
     transition: 0.5s;
 }
 
-.buttonselected:hover span {
-    padding-right: 25px;
-}
-
-.buttonselected:hover span:after {
-    opacity: 1;
-    right: 0;
+.buttonselected:hover {
+    background-color: var(--button-background-hover);
 }
 
 .container {
