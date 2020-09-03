@@ -87,7 +87,13 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
         return
     if not isinstance(postJsonObject['object']['tag'], list):
         return
-    tagsDir = baseDir+'/tags'
+    tagsDir = baseDir + '/tags'
+
+    # add tags directory if it doesn't exist
+    if not os.path.isdir(tagsDir):
+        print('Creating tags directory')
+        os.mkdir(tagsDir)
+
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
             continue
@@ -134,7 +140,7 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     avatarUrl = None
     if boxname != 'tlevents' and boxname != 'outbox':
         boxName = 'inbox'
-    individualPostAsHtml(recentPostsCache, maxRecentPosts,
+    individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                          getIconsDir(baseDir), translate, pageNumber,
                          baseDir, session, cachedWebfingers, personCache,
                          nickname, domain, port, postJsonObject,
@@ -2364,17 +2370,18 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
-                    inReplyTo = postJsonObject['object']['inReplyTo']
-                    if inReplyTo:
-                        if isinstance(inReplyTo, str):
-                            if not isMuted(baseDir, nickname, domain,
-                                           inReplyTo):
-                                replyNotify(baseDir, handle,
-                                            httpPrefix + '://' + domain +
-                                            '/users/' + nickname +
-                                            '/tlreplies')
-                            else:
-                                isReplyToMutedPost = True
+                    if postJsonObject['object'].get('inReplyTo'):
+                        inReplyTo = postJsonObject['object']['inReplyTo']
+                        if inReplyTo:
+                            if isinstance(inReplyTo, str):
+                                if not isMuted(baseDir, nickname, domain,
+                                               inReplyTo):
+                                    replyNotify(baseDir, handle,
+                                                httpPrefix + '://' + domain +
+                                                '/users/' + nickname +
+                                                '/tlreplies')
+                                else:
+                                    isReplyToMutedPost = True
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,

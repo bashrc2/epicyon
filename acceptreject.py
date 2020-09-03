@@ -40,7 +40,7 @@ def createAcceptReject(baseDir: str, federationList: [],
     newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
-        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'actor': httpPrefix+'://' + domain + '/users/' + nickname,
         'to': [toUrl],
         'cc': [],
         'object': objectJson
@@ -107,33 +107,33 @@ def acceptFollow(baseDir: str, domain: str, messageJson: {},
     thisActor = messageJson['object']['actor']
     nickname = getNicknameFromActor(thisActor)
     if not nickname:
-        print('WARN: no nickname found in '+thisActor)
+        print('WARN: no nickname found in ' + thisActor)
         return
     acceptedDomain, acceptedPort = getDomainFromActor(thisActor)
     if not acceptedDomain:
         if debug:
-            print('DEBUG: domain not found in '+thisActor)
+            print('DEBUG: domain not found in ' + thisActor)
         return
     if not nickname:
         if debug:
-            print('DEBUG: nickname not found in '+thisActor)
+            print('DEBUG: nickname not found in ' + thisActor)
         return
     if acceptedPort:
         if '/' + acceptedDomain + ':' + str(acceptedPort) + \
            '/users/' + nickname not in thisActor:
             if debug:
-                print('Port: '+str(acceptedPort))
+                print('Port: ' + str(acceptedPort))
                 print('Expected: /' + acceptedDomain + ':' +
-                      str(acceptedPort) + '/users/'+nickname)
-                print('Actual:   '+thisActor)
-                print('DEBUG: unrecognized actor '+thisActor)
+                      str(acceptedPort) + '/users/' + nickname)
+                print('Actual:   ' + thisActor)
+                print('DEBUG: unrecognized actor ' + thisActor)
             return
     else:
         if not '/' + acceptedDomain+'/users/' + nickname in thisActor:
             if debug:
-                print('Expected: /'+acceptedDomain+'/users/'+nickname)
-                print('Actual:   '+thisActor)
-                print('DEBUG: unrecognized actor '+thisActor)
+                print('Expected: /' + acceptedDomain+'/users/' + nickname)
+                print('Actual:   ' + thisActor)
+                print('DEBUG: unrecognized actor ' + thisActor)
             return
     followedActor = messageJson['object']['object']
     followedDomain, port = getDomainFromActor(followedActor)

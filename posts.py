@@ -31,7 +31,6 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from utils import removeIdEnding
 from utils import siteIsActive
-from utils import removePostFromCache
 from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
@@ -3535,18 +3534,19 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if not postJsonObject:
         return
 
-    print('MUTE: ' + postFilename)
-    muteFile = open(postFilename + '.muted', 'w+')
-    if muteFile:
-        muteFile.write('\n')
-        muteFile.close()
-
-    # remove cached posts so that the muted version gets created
+    # remove cached post so that the muted version gets recreated
+    # without its content text and/or image
     cachedPostFilename = \
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
+
+    muteFile = open(postFilename + '.muted', 'w+')
+    if muteFile:
+        muteFile.write('\n')
+        muteFile.close()
+        print('MUTE: ' + postFilename + '.muted file added')
 
     # if the post is in the recent posts cache then mark it as muted
     if recentPostsCache.get('index'):
@@ -3557,8 +3557,11 @@ def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
             if recentPostsCache['json'].get(postId):
                 postJsonObject['muted'] = True
                 recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+                if recentPostsCache.get('html'):
+                    if recentPostsCache['html'].get(postId):
+                        del recentPostsCache['html'][postId]
                 print('MUTE: ' + postId +
-                      ' marked as muted in recent posts cache')
+                      ' marked as muted in recent posts memory cache')
 
 
 def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
@@ -3572,18 +3575,33 @@ def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
     if not postJsonObject:
         return
 
-    print('UNMUTE: ' + postFilename)
     muteFilename = postFilename + '.muted'
     if os.path.isfile(muteFilename):
         os.remove(muteFilename)
+        print('UNMUTE: ' + muteFilename + ' file removed')
 
-    # remove cached posts so that it gets recreated
+    # remove cached post so that the muted version gets recreated
+    # with its content text and/or image
     cachedPostFilename = \
         getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
-    removePostFromCache(postJsonObject, recentPostsCache)
+
+    # if the post is in the recent posts cache then mark it as unmuted
+    if recentPostsCache.get('index'):
+        postId = \
+            removeIdEnding(postJsonObject['id']).replace('/', '#')
+        if postId in recentPostsCache['index']:
+            print('UNMUTE: ' + postId + ' is in recent posts cache')
+            if recentPostsCache['json'].get(postId):
+                postJsonObject['muted'] = False
+                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+                if recentPostsCache.get('html'):
+                    if recentPostsCache['html'].get(postId):
+                        del recentPostsCache['html'][postId]
+                print('UNMUTE: ' + postId +
+                      ' marked as unmuted in recent posts cache')
 
 
 def sendBlockViaServer(baseDir: str, session,

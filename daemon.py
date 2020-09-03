@@ -250,23 +250,23 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
-    def _pathIsImage(self) -> bool:
-        if self.path.endswith('.png') or \
-           self.path.endswith('.jpg') or \
-           self.path.endswith('.gif') or \
-           self.path.endswith('.webp'):
+    def _pathIsImage(self, path: str) -> bool:
+        if path.endswith('.png') or \
+           path.endswith('.jpg') or \
+           path.endswith('.gif') or \
+           path.endswith('.webp'):
             return True
         return False
 
-    def _pathIsVideo(self) -> bool:
-        if self.path.endswith('.ogv') or \
-           self.path.endswith('.mp4'):
+    def _pathIsVideo(self, path: str) -> bool:
+        if path.endswith('.ogv') or \
+           path.endswith('.mp4'):
             return True
         return False
 
-    def _pathIsAudio(self) -> bool:
-        if self.path.endswith('.ogg') or \
-           self.path.endswith('.mp3'):
+    def _pathIsAudio(self, path: str) -> bool:
+        if path.endswith('.ogg') or \
+           path.endswith('.mp3'):
             return True
         return False
 
@@ -624,11 +624,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(len(msg)))
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
-        try:
-            self.wfile.write(msg)
-        except Exception as e:
+        if not self._write(msg):
             print('Error when showing ' + str(httpCode))
-            print(e)
 
     def _200(self) -> None:
         if self.server.translate:
@@ -685,16 +682,17 @@ class PubServer(BaseHTTPRequestHandler):
                                  'The server is busy. Please try again ' +
                                  'later')
 
-    def _write(self, msg) -> None:
+    def _write(self, msg) -> bool:
         tries = 0
         while tries < 5:
             try:
                 self.wfile.write(msg)
-                break
+                return True
             except Exception as e:
                 print(e)
-                time.sleep(1)
-                tries += 1
+                time.sleep(0.5)
+            tries += 1
+        return False
 
     def _robotsTxt(self) -> bool:
         if not self.path.lower().startswith('/robot'):
@@ -1181,6 +1179,6066 @@ class PubServer(BaseHTTPRequestHandler):
             '/users/' + nickname + '/statuses/' + userEnding2[1]
         return locatePost(baseDir, nickname, domain, messageId), nickname
 
+    def _loginScreen(self, path: str, callingDomain: str, cookie: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str, port: int,
+                     onionDomain: str, i2pDomain: str,
+                     debug: bool):
+        """Shows the login screen
+        """
+        # get the contents of POST containing login credentials
+        length = int(self.headers['Content-length'])
+        if length > 512:
+            print('Login failed - credentials too long')
+            self.send_response(401)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        try:
+            loginParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST login read ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST login read socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST login read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        loginNickname, loginPassword, register = \
+            htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
+        if loginNickname:
+            self.server.lastLoginTime = int(time.time())
+            if register:
+                if not registerAccount(baseDir, httpPrefix, domain, port,
+                                       loginNickname, loginPassword,
+                                       self.server.manualFollowerApproval):
+                    self.server.POSTbusy = False
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        self._redirect_headers('http://' + onionDomain +
+                                               '/login', cookie,
+                                               callingDomain)
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        self._redirect_headers('http://' + i2pDomain +
+                                               '/login', cookie,
+                                               callingDomain)
+                    else:
+                        self._redirect_headers(httpPrefix + '://' +
+                                               domainFull + '/login',
+                                               cookie, callingDomain)
+                    return
+            authHeader = \
+                createBasicAuthHeader(loginNickname, loginPassword)
+            if not authorizeBasic(baseDir, '/users/' +
+                                  loginNickname + '/outbox',
+                                  authHeader, False):
+                print('Login failed: ' + loginNickname)
+                self._clearLoginDetails(loginNickname, callingDomain)
+                self.server.POSTbusy = False
+                return
+            else:
+                if isSuspended(baseDir, loginNickname):
+                    msg = \
+                        htmlSuspended(baseDir).encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+                # login success - redirect with authorization
+                print('Login success: ' + loginNickname)
+                # re-activate account if needed
+                activateAccount(baseDir, loginNickname, domain)
+                # This produces a deterministic token based
+                # on nick+password+salt
+                saltFilename = \
+                    baseDir+'/accounts/' + \
+                    loginNickname + '@' + domain + '/.salt'
+                salt = createPassword(32)
+                if os.path.isfile(saltFilename):
+                    try:
+                        with open(saltFilename, 'r') as fp:
+                            salt = fp.read()
+                    except Exception as e:
+                        print('WARN: Unable to read salt for ' +
+                              loginNickname + ' ' + str(e))
+                else:
+                    try:
+                        with open(saltFilename, 'w+') as fp:
+                            fp.write(salt)
+                    except Exception as e:
+                        print('WARN: Unable to save salt for ' +
+                              loginNickname + ' ' + str(e))
+
+                tokenText = loginNickname + loginPassword + salt
+                token = sha256(tokenText.encode('utf-8')).hexdigest()
+                self.server.tokens[loginNickname] = token
+                loginHandle = loginNickname + '@' + domain
+                tokenFilename = \
+                    baseDir+'/accounts/' + \
+                    loginHandle + '/.token'
+                try:
+                    with open(tokenFilename, 'w+') as fp:
+                        fp.write(token)
+                except Exception as e:
+                    print('WARN: Unable to save token for ' +
+                          loginNickname + ' ' + str(e))
+
+                personUpgradeActor(baseDir, None, loginHandle,
+                                   baseDir + '/accounts/' +
+                                   loginHandle + '.json')
+
+                index = self.server.tokens[loginNickname]
+                self.server.tokensLookup[index] = loginNickname
+                cookieStr = 'SET:epicyon=' + \
+                    self.server.tokens[loginNickname] + '; SameSite=Strict'
+                if callingDomain.endswith('.onion') and onionDomain:
+                    self._redirect_headers('http://' +
+                                           onionDomain +
+                                           '/users/' +
+                                           loginNickname + '/' +
+                                           self.server.defaultTimeline,
+                                           cookieStr, callingDomain)
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    self._redirect_headers('http://' +
+                                           i2pDomain +
+                                           '/users/' +
+                                           loginNickname + '/' +
+                                           self.server.defaultTimeline,
+                                           cookieStr, callingDomain)
+                else:
+                    self._redirect_headers(httpPrefix + '://' +
+                                           domainFull + '/users/' +
+                                           loginNickname + '/' +
+                                           self.server.defaultTimeline,
+                                           cookieStr, callingDomain)
+                self.server.POSTbusy = False
+                return
+        self._200()
+        self.server.POSTbusy = False
+
+    def _moderatorActions(self, path: str, callingDomain: str, cookie: str,
+                          baseDir: str, httpPrefix: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          debug: bool):
+        """Actions on the moderator screeen
+        """
+        usersPath = path.replace('/moderationaction', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            moderationParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST moderationParams connection was reset')
+            else:
+                print('WARN: POST moderationParams ' +
+                      'rfile.read socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST moderationParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&' in moderationParams:
+            moderationText = None
+            moderationButton = None
+            for moderationStr in moderationParams.split('&'):
+                if moderationStr.startswith('moderationAction'):
+                    if '=' in moderationStr:
+                        moderationText = \
+                            moderationStr.split('=')[1].strip()
+                        modText = moderationText.replace('+', ' ')
+                        moderationText = \
+                            urllib.parse.unquote_plus(modText.strip())
+                elif moderationStr.startswith('submitInfo'):
+                    msg = htmlModerationInfo(self.server.translate,
+                                             baseDir, httpPrefix)
+                    msg = msg.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+                elif moderationStr.startswith('submitBlock'):
+                    moderationButton = 'block'
+                elif moderationStr.startswith('submitUnblock'):
+                    moderationButton = 'unblock'
+                elif moderationStr.startswith('submitSuspend'):
+                    moderationButton = 'suspend'
+                elif moderationStr.startswith('submitUnsuspend'):
+                    moderationButton = 'unsuspend'
+                elif moderationStr.startswith('submitRemove'):
+                    moderationButton = 'remove'
+            if moderationButton and moderationText:
+                if debug:
+                    print('moderationButton: ' + moderationButton)
+                    print('moderationText: ' + moderationText)
+                nickname = moderationText
+                if nickname.startswith('http') or \
+                   nickname.startswith('dat'):
+                    nickname = getNicknameFromActor(nickname)
+                if '@' in nickname:
+                    nickname = nickname.split('@')[0]
+                if moderationButton == 'suspend':
+                    suspendAccount(baseDir, nickname, domain)
+                if moderationButton == 'unsuspend':
+                    unsuspendAccount(baseDir, nickname)
+                if moderationButton == 'block':
+                    fullBlockDomain = None
+                    if moderationText.startswith('http') or \
+                       moderationText.startswith('dat'):
+                        blockDomain, blockPort = \
+                            getDomainFromActor(moderationText)
+                        fullBlockDomain = blockDomain
+                        if blockPort:
+                            if blockPort != 80 and blockPort != 443:
+                                if ':' not in blockDomain:
+                                    fullBlockDomain = \
+                                        blockDomain + ':' + str(blockPort)
+                    if '@' in moderationText:
+                        fullBlockDomain = moderationText.split('@')[1]
+                    if fullBlockDomain or nickname.startswith('#'):
+                        addGlobalBlock(baseDir, nickname, fullBlockDomain)
+                if moderationButton == 'unblock':
+                    fullBlockDomain = None
+                    if moderationText.startswith('http') or \
+                       moderationText.startswith('dat'):
+                        blockDomain, blockPort = \
+                            getDomainFromActor(moderationText)
+                        fullBlockDomain = blockDomain
+                        if blockPort:
+                            if blockPort != 80 and blockPort != 443:
+                                if ':' not in blockDomain:
+                                    fullBlockDomain = \
+                                        blockDomain + ':' + str(blockPort)
+                    if '@' in moderationText:
+                        fullBlockDomain = moderationText.split('@')[1]
+                    if fullBlockDomain or nickname.startswith('#'):
+                        removeGlobalBlock(baseDir, nickname, fullBlockDomain)
+                if moderationButton == 'remove':
+                    if '/statuses/' not in moderationText:
+                        removeAccount(baseDir, nickname, domain, port)
+                    else:
+                        # remove a post or thread
+                        postFilename = \
+                            locatePost(baseDir, nickname, domain,
+                                       moderationText)
+                        if postFilename:
+                            if canRemovePost(baseDir,
+                                             nickname,
+                                             domain,
+                                             port,
+                                             moderationText):
+                                deletePost(baseDir,
+                                           httpPrefix,
+                                           nickname, domain,
+                                           postFilename,
+                                           debug,
+                                           self.server.recentPostsCache)
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actorStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/moderation',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
+    def _personOptions(self, path: str,
+                       callingDomain: str, cookie: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str,
+                       debug: bool):
+        """Receive POST from person options screen
+        """
+        pageNumber = 1
+        usersPath = path.split('/personoptions')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+
+        chooserNickname = getNicknameFromActor(originPathStr)
+        if not chooserNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + originPathStr)
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            optionsConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST optionsConfirmParams ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST optionsConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST optionsConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        optionsConfirmParams = \
+            urllib.parse.unquote_plus(optionsConfirmParams)
+
+        # page number to return to
+        if 'pageNumber=' in optionsConfirmParams:
+            pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
+            if '&' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('&')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+
+        # actor for the person
+        optionsActor = optionsConfirmParams.split('actor=')[1]
+        if '&' in optionsActor:
+            optionsActor = optionsActor.split('&')[0]
+
+        # url of the avatar
+        optionsAvatarUrl = optionsConfirmParams.split('avatarUrl=')[1]
+        if '&' in optionsAvatarUrl:
+            optionsAvatarUrl = optionsAvatarUrl.split('&')[0]
+
+        # link to a post, which can then be included in reports
+        postUrl = None
+        if 'postUrl' in optionsConfirmParams:
+            postUrl = optionsConfirmParams.split('postUrl=')[1]
+            if '&' in postUrl:
+                postUrl = postUrl.split('&')[0]
+
+        # petname for this person
+        petname = None
+        if 'optionpetname' in optionsConfirmParams:
+            petname = optionsConfirmParams.split('optionpetname=')[1]
+            if '&' in petname:
+                petname = petname.split('&')[0]
+            # Limit the length of the petname
+            if len(petname) > 20 or \
+               ' ' in petname or '/' in petname or \
+               '?' in petname or '#' in petname:
+                petname = None
+
+        # notes about this person
+        personNotes = None
+        if 'optionnotes' in optionsConfirmParams:
+            personNotes = optionsConfirmParams.split('optionnotes=')[1]
+            if '&' in personNotes:
+                personNotes = personNotes.split('&')[0]
+            personNotes = urllib.parse.unquote_plus(personNotes.strip())
+            # Limit the length of the notes
+            if len(personNotes) > 64000:
+                personNotes = None
+
+        # get the nickname
+        optionsNickname = getNicknameFromActor(optionsActor)
+        if not optionsNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + optionsActor)
+            self._redirect_headers(originPathStr, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        optionsDomain, optionsPort = getDomainFromActor(optionsActor)
+        optionsDomainFull = optionsDomain
+        if optionsPort:
+            if optionsPort != 80 and optionsPort != 443:
+                if ':' not in optionsDomain:
+                    optionsDomainFull = optionsDomain + ':' + \
+                        str(optionsPort)
+        if chooserNickname == optionsNickname and \
+           optionsDomain == domain and \
+           optionsPort == port:
+            if debug:
+                print('You cannot perform an option action on yourself')
+
+        # view button on person option screen
+        if '&submitView=' in optionsConfirmParams:
+            if debug:
+                print('Viewing ' + optionsActor)
+            self._redirect_headers(optionsActor,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # petname submit button on person option screen
+        if '&submitPetname=' in optionsConfirmParams and petname:
+            if debug:
+                print('Change petname to ' + petname)
+            handle = optionsNickname + '@' + optionsDomainFull
+            setPetName(baseDir,
+                       chooserNickname,
+                       domain,
+                       handle, petname)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person notes submit button on person option screen
+        if '&submitPersonNotes=' in optionsConfirmParams:
+            if debug:
+                print('Change person notes')
+            handle = optionsNickname + '@' + optionsDomainFull
+            if not personNotes:
+                personNotes = ''
+            setPersonNotes(baseDir,
+                           chooserNickname,
+                           domain,
+                           handle, personNotes)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person on calendar checkbox on person option screen
+        if '&submitOnCalendar=' in optionsConfirmParams:
+            onCalendar = None
+            if 'onCalendar=' in optionsConfirmParams:
+                onCalendar = optionsConfirmParams.split('onCalendar=')[1]
+                if '&' in onCalendar:
+                    onCalendar = onCalendar.split('&')[0]
+            if onCalendar == 'on':
+                addPersonToCalendar(baseDir,
+                                    chooserNickname,
+                                    domain,
+                                    optionsNickname,
+                                    optionsDomainFull)
+            else:
+                removePersonFromCalendar(baseDir,
+                                         chooserNickname,
+                                         domain,
+                                         optionsNickname,
+                                         optionsDomainFull)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # block person button on person option screen
+        if '&submitBlock=' in optionsConfirmParams:
+            if debug:
+                print('Adding block by ' + chooserNickname +
+                      ' of ' + optionsActor)
+            addBlock(baseDir, chooserNickname,
+                     domain,
+                     optionsNickname, optionsDomainFull)
+
+        # unblock button on person option screen
+        if '&submitUnblock=' in optionsConfirmParams:
+            if debug:
+                print('Unblocking ' + optionsActor)
+            msg = \
+                htmlUnblockConfirm(self.server.translate,
+                                   baseDir,
+                                   usersPath,
+                                   optionsActor,
+                                   optionsAvatarUrl).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # follow button on person option screen
+        if '&submitFollow=' in optionsConfirmParams:
+            if debug:
+                print('Following ' + optionsActor)
+            msg = \
+                htmlFollowConfirm(self.server.translate,
+                                  baseDir,
+                                  usersPath,
+                                  optionsActor,
+                                  optionsAvatarUrl).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # unfollow button on person option screen
+        if '&submitUnfollow=' in optionsConfirmParams:
+            if debug:
+                print('Unfollowing ' + optionsActor)
+            msg = \
+                htmlUnfollowConfirm(self.server.translate,
+                                    baseDir,
+                                    usersPath,
+                                    optionsActor,
+                                    optionsAvatarUrl).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # DM button on person option screen
+        if '&submitDM=' in optionsConfirmParams:
+            if debug:
+                print('Sending DM to ' + optionsActor)
+            reportPath = path.replace('/personoptions', '') + '/newdm'
+            msg = htmlNewPost(False, self.server.translate,
+                              baseDir,
+                              httpPrefix,
+                              reportPath, None,
+                              [optionsActor], None,
+                              pageNumber,
+                              chooserNickname,
+                              domain,
+                              domainFull).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # snooze button on person option screen
+        if '&submitSnooze=' in optionsConfirmParams:
+            usersPath = path.split('/personoptions')[0]
+            thisActor = httpPrefix + '://' + domainFull + usersPath
+            if debug:
+                print('Snoozing ' + optionsActor + ' ' + thisActor)
+            if '/users/' in thisActor:
+                nickname = thisActor.split('/users/')[1]
+                personSnooze(baseDir, nickname,
+                             domain, optionsActor)
+                if callingDomain.endswith('.onion') and onionDomain:
+                    thisActor = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    thisActor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(thisActor + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page='+str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+
+        # unsnooze button on person option screen
+        if '&submitUnSnooze=' in optionsConfirmParams:
+            usersPath = path.split('/personoptions')[0]
+            thisActor = httpPrefix + '://' + domainFull + usersPath
+            if debug:
+                print('Unsnoozing ' + optionsActor + ' ' + thisActor)
+            if '/users/' in thisActor:
+                nickname = thisActor.split('/users/')[1]
+                personUnsnooze(baseDir, nickname,
+                               domain, optionsActor)
+                if callingDomain.endswith('.onion') and onionDomain:
+                    thisActor = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    thisActor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(thisActor + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page=' + str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+
+        # report button on person option screen
+        if '&submitReport=' in optionsConfirmParams:
+            if debug:
+                print('Reporting ' + optionsActor)
+            reportPath = \
+                path.replace('/personoptions', '') + '/newreport'
+            msg = htmlNewPost(False, self.server.translate,
+                              baseDir,
+                              httpPrefix,
+                              reportPath, None, [],
+                              postUrl, pageNumber,
+                              chooserNickname,
+                              domain,
+                              domainFull).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.POSTbusy = False
+            return
+
+        # redirect back from person options screen
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+        return
+
+    def _unfollowConfirm(self, callingDomain: str, cookie: str,
+                         authorized: bool, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, domainFull: str, port: int,
+                         onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirm to unfollow
+        """
+        usersPath = path.split('/unfollowconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        followerNickname = getNicknameFromActor(originPathStr)
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            followConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST followConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST followConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST followConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in followConfirmParams:
+            followingActor = \
+                urllib.parse.unquote_plus(followConfirmParams)
+            followingActor = followingActor.split('actor=')[1]
+            if '&' in followingActor:
+                followingActor = followingActor.split('&')[0]
+            followingNickname = getNicknameFromActor(followingActor)
+            followingDomain, followingPort = \
+                getDomainFromActor(followingActor)
+            if followerNickname == followingNickname and \
+               followingDomain == domain and \
+               followingPort == port:
+                if debug:
+                    print('You cannot unfollow yourself!')
+            else:
+                if debug:
+                    print(followerNickname + ' stops following ' +
+                          followingActor)
+                followActor = \
+                    httpPrefix + '://' + domainFull + \
+                    '/users/' + followerNickname
+                statusNumber, published = getStatusNumber()
+                followId = followActor + '/statuses/' + str(statusNumber)
+                unfollowJson = {
+                    '@context': 'https://www.w3.org/ns/activitystreams',
+                    'id': followId + '/undo',
+                    'type': 'Undo',
+                    'actor': followActor,
+                    'object': {
+                        'id': followId,
+                        'type': 'Follow',
+                        'actor': followActor,
+                        'object': followingActor
+                    }
+                }
+                pathUsersSection = path.split('/users/')[1]
+                self.postToNickname = pathUsersSection.split('/')[0]
+                self._postToOutboxThread(unfollowJson)
+
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _followConfirm(self, callingDomain: str, cookie: str,
+                       authorized: bool, path: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirm to follow
+        """
+        usersPath = path.split('/followconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        followerNickname = getNicknameFromActor(originPathStr)
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            followConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST followConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST followConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST followConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitView=' in followConfirmParams:
+            followingActor = \
+                urllib.parse.unquote_plus(followConfirmParams)
+            followingActor = followingActor.split('actor=')[1]
+            if '&' in followingActor:
+                followingActor = followingActor.split('&')[0]
+            self._redirect_headers(followingActor, cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in followConfirmParams:
+            followingActor = \
+                urllib.parse.unquote_plus(followConfirmParams)
+            followingActor = followingActor.split('actor=')[1]
+            if '&' in followingActor:
+                followingActor = followingActor.split('&')[0]
+            followingNickname = getNicknameFromActor(followingActor)
+            followingDomain, followingPort = \
+                getDomainFromActor(followingActor)
+            if followerNickname == followingNickname and \
+               followingDomain == domain and \
+               followingPort == port:
+                if debug:
+                    print('You cannot follow yourself!')
+            else:
+                if debug:
+                    print('Sending follow request from ' +
+                          followerNickname + ' to ' + followingActor)
+                sendFollowRequest(self.server.session,
+                                  baseDir, followerNickname,
+                                  domain, port,
+                                  httpPrefix,
+                                  followingNickname,
+                                  followingDomain,
+                                  followingPort, httpPrefix,
+                                  False, self.server.federationList,
+                                  self.server.sendThreads,
+                                  self.server.postLog,
+                                  self.server.cachedWebfingers,
+                                  self.server.personCache,
+                                  debug,
+                                  self.server.projectVersion)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _blockConfirm(self, callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirms a block
+        """
+        usersPath = path.split('/blockconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        blockerNickname = getNicknameFromActor(originPathStr)
+        if not blockerNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + originPathStr)
+            self._redirect_headers(originPathStr,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            blockConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST blockConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST blockConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST blockConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in blockConfirmParams:
+            blockingActor = \
+                urllib.parse.unquote_plus(blockConfirmParams)
+            blockingActor = blockingActor.split('actor=')[1]
+            if '&' in blockingActor:
+                blockingActor = blockingActor.split('&')[0]
+            blockingNickname = getNicknameFromActor(blockingActor)
+            if not blockingNickname:
+                if callingDomain.endswith('.onion') and onionDomain:
+                    originPathStr = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    originPathStr = 'http://' + i2pDomain + usersPath
+                print('WARN: unable to find nickname in ' + blockingActor)
+                self._redirect_headers(originPathStr,
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+            blockingDomain, blockingPort = \
+                getDomainFromActor(blockingActor)
+            blockingDomainFull = blockingDomain
+            if blockingPort:
+                if blockingPort != 80 and blockingPort != 443:
+                    if ':' not in blockingDomain:
+                        blockingDomainFull = \
+                            blockingDomain + ':' + str(blockingPort)
+            if blockerNickname == blockingNickname and \
+               blockingDomain == domain and \
+               blockingPort == port:
+                if debug:
+                    print('You cannot block yourself!')
+            else:
+                if debug:
+                    print('Adding block by ' + blockerNickname +
+                          ' of ' + blockingActor)
+                addBlock(baseDir, blockerNickname,
+                         domain,
+                         blockingNickname,
+                         blockingDomainFull)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _unblockConfirm(self, callingDomain: str, cookie: str,
+                        authorized: bool, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str, debug: bool):
+        """Confirms a unblock
+        """
+        usersPath = path.split('/unblockconfirm')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+        blockerNickname = getNicknameFromActor(originPathStr)
+        if not blockerNickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                originPathStr = 'http://' + i2pDomain + usersPath
+            print('WARN: unable to find nickname in ' + originPathStr)
+            self._redirect_headers(originPathStr,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            blockConfirmParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST blockConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST blockConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST blockConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in blockConfirmParams:
+            blockingActor = \
+                urllib.parse.unquote_plus(blockConfirmParams)
+            blockingActor = blockingActor.split('actor=')[1]
+            if '&' in blockingActor:
+                blockingActor = blockingActor.split('&')[0]
+            blockingNickname = getNicknameFromActor(blockingActor)
+            if not blockingNickname:
+                if callingDomain.endswith('.onion') and onionDomain:
+                    originPathStr = 'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and i2pDomain):
+                    originPathStr = 'http://' + i2pDomain + usersPath
+                print('WARN: unable to find nickname in ' + blockingActor)
+                self._redirect_headers(originPathStr,
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+            blockingDomain, blockingPort = \
+                getDomainFromActor(blockingActor)
+            blockingDomainFull = blockingDomain
+            if blockingPort:
+                if blockingPort != 80 and blockingPort != 443:
+                    if ':' not in blockingDomain:
+                        blockingDomainFull = \
+                            blockingDomain + ':' + str(blockingPort)
+            if blockerNickname == blockingNickname and \
+               blockingDomain == domain and \
+               blockingPort == port:
+                if debug:
+                    print('You cannot unblock yourself!')
+            else:
+                if debug:
+                    print(blockerNickname + ' stops blocking ' +
+                          blockingActor)
+                removeBlock(baseDir,
+                            blockerNickname, domain,
+                            blockingNickname, blockingDomainFull)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _receiveSearchQuery(self, callingDomain: str, cookie: str,
+                            authorized: bool, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str,
+                            port: int, searchForEmoji: bool,
+                            onionDomain: str, i2pDomain: str, debug: bool):
+        """Receive a search query
+        """
+        # get the page number
+        pageNumber = 1
+        if '/searchhandle?page=' in path:
+            pageNumberStr = path.split('/searchhandle?page=')[1]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+            path = path.split('?page=')[0]
+
+        usersPath = path.replace('/searchhandle', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        length = int(self.headers['Content-length'])
+        try:
+            searchParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST searchParams connection was reset')
+            else:
+                print('WARN: POST searchParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST searchParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        if 'submitBack=' in searchParams:
+            # go back on search screen
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorStr = 'http://' + i2pDomain + usersPath
+            self._redirect_headers(actorStr + '/' +
+                                   self.server.defaultTimeline,
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+        if 'searchtext=' in searchParams:
+            searchStr = searchParams.split('searchtext=')[1]
+            if '&' in searchStr:
+                searchStr = searchStr.split('&')[0]
+            searchStr = \
+                urllib.parse.unquote_plus(searchStr.strip())
+            searchStr = searchStr.lower().strip()
+            print('searchStr: ' + searchStr)
+            if searchForEmoji:
+                searchStr = ':' + searchStr + ':'
+            if searchStr.startswith('#'):
+                nickname = getNicknameFromActor(actorStr)
+                # hashtag search
+                hashtagStr = \
+                    htmlHashtagSearch(nickname,
+                                      domain,
+                                      port,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.translate,
+                                      baseDir,
+                                      searchStr[1:], 1,
+                                      maxPostsInFeed,
+                                      self.server.session,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      httpPrefix,
+                                      self.server.projectVersion,
+                                      self.server.YTReplacementDomain)
+                if hashtagStr:
+                    msg = hashtagStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif searchStr.startswith('*'):
+                # skill search
+                searchStr = searchStr.replace('*', '').strip()
+                skillStr = \
+                    htmlSkillsSearch(self.server.translate,
+                                     baseDir,
+                                     httpPrefix,
+                                     searchStr,
+                                     self.server.instanceOnlySkillsSearch,
+                                     64)
+                if skillStr:
+                    msg = skillStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif searchStr.startswith('!'):
+                # your post history search
+                nickname = getNicknameFromActor(actorStr)
+                searchStr = searchStr.replace('!', '').strip()
+                historyStr = \
+                    htmlHistorySearch(self.server.translate,
+                                      baseDir,
+                                      httpPrefix,
+                                      nickname,
+                                      domain,
+                                      searchStr,
+                                      maxPostsInFeed,
+                                      pageNumber,
+                                      self.server.projectVersion,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.session,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      port,
+                                      self.server.YTReplacementDomain)
+                if historyStr:
+                    msg = historyStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            elif ('@' in searchStr or
+                  ('://' in searchStr and
+                   ('/users/' in searchStr or
+                    '/profile/' in searchStr or
+                    '/accounts/' in searchStr or
+                    '/channel/' in searchStr))):
+                # profile search
+                nickname = getNicknameFromActor(actorStr)
+                if not self.server.session:
+                    print('Starting new session during handle search')
+                    self.server.session = \
+                        createSession(self.server.proxyType)
+                    if not self.server.session:
+                        print('ERROR: POST failed to create session ' +
+                              'during handle search')
+                        self._404()
+                        self.server.POSTbusy = False
+                        return
+                profilePathStr = path.replace('/searchhandle', '')
+                profileStr = \
+                    htmlProfileAfterSearch(self.server.recentPostsCache,
+                                           self.server.maxRecentPosts,
+                                           self.server.translate,
+                                           baseDir,
+                                           profilePathStr,
+                                           httpPrefix,
+                                           nickname,
+                                           domain,
+                                           port,
+                                           searchStr,
+                                           self.server.session,
+                                           self.server.cachedWebfingers,
+                                           self.server.personCache,
+                                           self.server.debug,
+                                           self.server.projectVersion,
+                                           self.server.YTReplacementDomain)
+                if profileStr:
+                    msg = profileStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+                else:
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        actorStr = 'http://' + onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        actorStr = 'http://' + i2pDomain + usersPath
+                    self._redirect_headers(actorStr + '/search',
+                                           cookie, callingDomain)
+                    self.server.POSTbusy = False
+                    return
+            elif (searchStr.startswith(':') or
+                  searchStr.endswith(' emoji')):
+                # eg. "cat emoji"
+                if searchStr.endswith(' emoji'):
+                    searchStr = \
+                        searchStr.replace(' emoji', '')
+                # emoji search
+                emojiStr = \
+                    htmlSearchEmoji(self.server.translate,
+                                    baseDir,
+                                    httpPrefix,
+                                    searchStr)
+                if emojiStr:
+                    msg = emojiStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+            else:
+                # shared items search
+                sharedItemsStr = \
+                    htmlSearchSharedItems(self.server.translate,
+                                          baseDir,
+                                          searchStr, pageNumber,
+                                          maxPostsInFeed,
+                                          httpPrefix,
+                                          domainFull,
+                                          actorStr, callingDomain)
+                if sharedItemsStr:
+                    msg = sharedItemsStr.encode('utf-8')
+                    self._login_headers('text/html',
+                                        len(msg), callingDomain)
+                    self._write(msg)
+                    self.server.POSTbusy = False
+                    return
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorStr = 'http://' + onionDomain + usersPath
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' +
+                               self.server.defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _receiveVote(self, callingDomain: str, cookie: str,
+                     authorized: bool, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str,
+                     onionDomain: str, i2pDomain: str, debug: bool):
+        """Receive a vote via POST
+        """
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+            path = path.split('?page=')[0]
+
+        # the actor who votes
+        usersPath = path.replace('/question', '')
+        actor = httpPrefix + '://' + domainFull + usersPath
+        nickname = getNicknameFromActor(actor)
+        if not nickname:
+            if callingDomain.endswith('.onion') and onionDomain:
+                actor = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actor = 'http://' + i2pDomain + usersPath
+            self._redirect_headers(actor + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page=' + str(pageNumber),
+                                   cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # get the parameters
+        length = int(self.headers['Content-length'])
+
+        try:
+            questionParams = self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST questionParams connection was reset')
+            else:
+                print('WARN: POST questionParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST questionParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        questionParams = questionParams.replace('+', ' ')
+        questionParams = questionParams.replace('%3F', '')
+        questionParams = \
+            urllib.parse.unquote_plus(questionParams.strip())
+
+        # post being voted on
+        messageId = None
+        if 'messageId=' in questionParams:
+            messageId = questionParams.split('messageId=')[1]
+            if '&' in messageId:
+                messageId = messageId.split('&')[0]
+
+        answer = None
+        if 'answer=' in questionParams:
+            answer = questionParams.split('answer=')[1]
+            if '&' in answer:
+                answer = answer.split('&')[0]
+
+        self._sendReplyToQuestion(nickname, messageId, answer)
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actor = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actor + '/' +
+                               self.server.defaultTimeline +
+                               '?page=' + str(pageNumber), cookie,
+                               callingDomain)
+        self.server.POSTbusy = False
+        return
+
+    def _receiveImage(self, length: int,
+                      callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str,
+                      onionDomain: str, i2pDomain: str, debug: bool):
+        """Receives an image via POST
+        """
+        if not self.outboxAuthenticated:
+            if debug:
+                print('DEBUG: unauthenticated attempt to ' +
+                      'post image to outbox')
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        pathUsersSection = path.split('/users/')[1]
+        if '/' not in pathUsersSection:
+            self._404()
+            self.server.POSTbusy = False
+            return
+        self.postFromNickname = pathUsersSection.split('/')[0]
+        accountsDir = \
+            baseDir + '/accounts/' + \
+            self.postFromNickname + '@' + domain
+        if not os.path.isdir(accountsDir):
+            self._404()
+            self.server.POSTbusy = False
+            return
+
+        try:
+            mediaBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST mediaBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST mediaBytes socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST mediaBytes rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        mediaFilenameBase = accountsDir + '/upload'
+        mediaFilename = mediaFilenameBase + '.png'
+        if self.headers['Content-type'].endswith('jpeg'):
+            mediaFilename = mediaFilenameBase + '.jpg'
+        if self.headers['Content-type'].endswith('gif'):
+            mediaFilename = mediaFilenameBase + '.gif'
+        if self.headers['Content-type'].endswith('webp'):
+            mediaFilename = mediaFilenameBase + '.webp'
+        with open(mediaFilename, 'wb') as avFile:
+            avFile.write(mediaBytes)
+        if debug:
+            print('DEBUG: image saved to ' + mediaFilename)
+        self.send_response(201)
+        self.end_headers()
+        self.server.POSTbusy = False
+
+    def _removeShare(self, callingDomain: str, cookie: str,
+                     authorized: bool, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str,
+                     onionDomain: str, i2pDomain: str, debug: bool):
+        """Removes a shared item
+        """
+        usersPath = path.split('/rmshare')[0]
+        originPathStr = httpPrefix + '://' + domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            removeShareConfirmParams = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST removeShareConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST removeShareConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST removeShareConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
+        if '&submitYes=' in removeShareConfirmParams:
+            removeShareConfirmParams = \
+                removeShareConfirmParams.replace('+', ' ').strip()
+            removeShareConfirmParams = \
+                urllib.parse.unquote_plus(removeShareConfirmParams)
+            shareActor = removeShareConfirmParams.split('actor=')[1]
+            if '&' in shareActor:
+                shareActor = shareActor.split('&')[0]
+            shareName = removeShareConfirmParams.split('shareName=')[1]
+            if '&' in shareName:
+                shareName = shareName.split('&')[0]
+            shareNickname = getNicknameFromActor(shareActor)
+            if shareNickname:
+                shareDomain, sharePort = getDomainFromActor(shareActor)
+                removeShare(baseDir,
+                            shareNickname, shareDomain, shareName)
+
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(originPathStr + '/tlshares',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _removePost(self, callingDomain: str, cookie: str,
+                    authorized: bool, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str,
+                    onionDomain: str, i2pDomain: str, debug: bool):
+        """Endpoint for removing posts
+        """
+        pageNumber = 1
+        usersPath = path.split('/rmpost')[0]
+        originPathStr = \
+            httpPrefix + '://' + \
+            domainFull + usersPath
+
+        length = int(self.headers['Content-length'])
+
+        try:
+            removePostConfirmParams = \
+                self.rfile.read(length).decode('utf-8')
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST removePostConfirmParams ' +
+                      'connection was reset')
+            else:
+                print('WARN: POST removePostConfirmParams socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        except ValueError as e:
+            print('ERROR: POST removePostConfirmParams rfile.read failed')
+            print(e)
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+        if '&submitYes=' in removePostConfirmParams:
+            removePostConfirmParams = \
+                urllib.parse.unquote_plus(removePostConfirmParams)
+            removeMessageId = \
+                removePostConfirmParams.split('messageId=')[1]
+            if '&' in removeMessageId:
+                removeMessageId = removeMessageId.split('&')[0]
+            if 'pageNumber=' in removePostConfirmParams:
+                pageNumberStr = \
+                    removePostConfirmParams.split('pageNumber=')[1]
+                if '&' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('&')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber = int(pageNumberStr)
+            yearStr = None
+            if 'year=' in removePostConfirmParams:
+                yearStr = removePostConfirmParams.split('year=')[1]
+                if '&' in yearStr:
+                    yearStr = yearStr.split('&')[0]
+            monthStr = None
+            if 'month=' in removePostConfirmParams:
+                monthStr = removePostConfirmParams.split('month=')[1]
+                if '&' in monthStr:
+                    monthStr = monthStr.split('&')[0]
+            if '/statuses/' in removeMessageId:
+                removePostActor = removeMessageId.split('/statuses/')[0]
+            if originPathStr in removePostActor:
+                toList = ['https://www.w3.org/ns/activitystreams#Public',
+                          removePostActor]
+                deleteJson = {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    'actor': removePostActor,
+                    'object': removeMessageId,
+                    'to': toList,
+                    'cc': [removePostActor+'/followers'],
+                    'type': 'Delete'
+                }
+                self.postToNickname = getNicknameFromActor(removePostActor)
+                if self.postToNickname:
+                    if monthStr and yearStr:
+                        if monthStr.isdigit() and yearStr.isdigit():
+                            removeCalendarEvent(baseDir,
+                                                self.postToNickname,
+                                                domain,
+                                                int(yearStr),
+                                                int(monthStr),
+                                                removeMessageId)
+                    self._postToOutboxThread(deleteJson)
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStr = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStr = 'http://' + i2pDomain + usersPath
+        if pageNumber == 1:
+            self._redirect_headers(originPathStr + '/outbox', cookie,
+                                   callingDomain)
+        else:
+            self._redirect_headers(originPathStr + '/outbox?page=' +
+                                   str(pageNumber),
+                                   cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _profileUpdate(self, callingDomain: str, cookie: str,
+                       authorized: bool, path: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str,
+                       onionDomain: str, i2pDomain: str, debug: bool):
+        """Updates your user profile after editing via the Edit button
+        on the profile screen
+        """
+        usersPath = path.replace('/profiledata', '')
+        usersPath = usersPath.replace('/editprofile', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            if not nickname:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('WARN: nickname not found in ' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum profile data length exceeded ' +
+                      str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # get the various avatar, banner and background images
+            actorChanged = True
+            profileMediaTypes = ('avatar', 'image',
+                                 'banner', 'search_banner',
+                                 'instanceLogo')
+            profileMediaTypesUploaded = {}
+            for mType in profileMediaTypes:
+                if debug:
+                    print('DEBUG: profile update extracting ' + mType +
+                          ' image or font from POST')
+                mediaBytes, postBytes = \
+                    extractMediaInFormPOST(postBytes, boundary, mType)
+                if mediaBytes:
+                    if debug:
+                        print('DEBUG: profile update ' + mType +
+                              ' image or font was found. ' +
+                              str(len(mediaBytes)) + ' bytes')
+                else:
+                    if debug:
+                        print('DEBUG: profile update, no ' + mType +
+                              ' image or font was found in POST')
+                    continue
+
+                # Note: a .temp extension is used here so that at no
+                # time is an image with metadata publicly exposed,
+                # even for a few mS
+                if mType == 'instanceLogo':
+                    filenameBase = \
+                        baseDir + '/accounts/login.temp'
+                else:
+                    filenameBase = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/' + mType + '.temp'
+
+                filename, attachmentMediaType = \
+                    saveMediaInFormPOST(mediaBytes, debug,
+                                        filenameBase)
+                if filename:
+                    print('Profile update POST ' + mType +
+                          ' media or font filename is ' + filename)
+                else:
+                    print('Profile update, no ' + mType +
+                          ' media or font filename in POST')
+                    continue
+
+                postImageFilename = filename.replace('.temp', '')
+                if debug:
+                    print('DEBUG: POST ' + mType +
+                          ' media removing metadata')
+                # remove existing etag
+                if os.path.isfile(postImageFilename + '.etag'):
+                    try:
+                        os.remove(postImageFilename + '.etag')
+                    except BaseException:
+                        pass
+                removeMetaData(filename, postImageFilename)
+                if os.path.isfile(postImageFilename):
+                    print('profile update POST ' + mType +
+                          ' image or font saved to ' + postImageFilename)
+                    if mType != 'instanceLogo':
+                        lastPartOfImageFilename = \
+                            postImageFilename.split('/')[-1]
+                        profileMediaTypesUploaded[mType] = \
+                            lastPartOfImageFilename
+                        actorChanged = True
+                else:
+                    print('ERROR: profile update POST ' + mType +
+                          ' image or font could not be saved to ' +
+                          postImageFilename)
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary,
+                                        debug)
+            if debug:
+                if fields:
+                    print('DEBUG: profile update text ' +
+                          'field extracted from POST ' + str(fields))
+                else:
+                    print('WARN: profile update, no text ' +
+                          'fields could be extracted from POST')
+
+            # load the json for the actor for this user
+            actorFilename = \
+                baseDir + '/accounts/' + \
+                nickname + '@' + domain + '.json'
+            if os.path.isfile(actorFilename):
+                actorJson = loadJson(actorFilename)
+                if actorJson:
+                    # update the avatar/image url file extension
+                    uploads = profileMediaTypesUploaded.items()
+                    for mType, lastPart in uploads:
+                        repStr = '/' + lastPart
+                        if mType == 'avatar':
+                            lastPartOfUrl = \
+                                actorJson['icon']['url'].split('/')[-1]
+                            srchStr = '/' + lastPartOfUrl
+                            actorJson['icon']['url'] = \
+                                actorJson['icon']['url'].replace(srchStr,
+                                                                 repStr)
+                        elif mType == 'image':
+                            lastPartOfUrl = \
+                                actorJson['image']['url'].split('/')[-1]
+                            srchStr = '/' + lastPartOfUrl
+                            actorJson['image']['url'] = \
+                                actorJson['image']['url'].replace(srchStr,
+                                                                  repStr)
+
+                    # set skill levels
+                    skillCtr = 1
+                    newSkills = {}
+                    while skillCtr < 10:
+                        skillName = \
+                            fields.get('skillName' + str(skillCtr))
+                        if not skillName:
+                            skillCtr += 1
+                            continue
+                        skillValue = \
+                            fields.get('skillValue' + str(skillCtr))
+                        if not skillValue:
+                            skillCtr += 1
+                            continue
+                        if not actorJson['skills'].get(skillName):
+                            actorChanged = True
+                        else:
+                            if actorJson['skills'][skillName] != \
+                               int(skillValue):
+                                actorChanged = True
+                        newSkills[skillName] = int(skillValue)
+                        skillCtr += 1
+                    if len(actorJson['skills'].items()) != \
+                       len(newSkills.items()):
+                        actorChanged = True
+                    actorJson['skills'] = newSkills
+
+                    # change password
+                    if fields.get('password'):
+                        if fields.get('passwordconfirm'):
+                            if actorJson['password'] == \
+                               fields['passwordconfirm']:
+                                if len(actorJson['password']) > 2:
+                                    # set password
+                                    pwd = actorJson['password']
+                                    storeBasicCredentials(baseDir,
+                                                          nickname,
+                                                          pwd)
+
+                    # change displayed name
+                    if fields.get('displayNickname'):
+                        if fields['displayNickname'] != actorJson['name']:
+                            actorJson['name'] = fields['displayNickname']
+                            actorChanged = True
+                    if fields.get('themeDropdown'):
+                        setTheme(baseDir,
+                                 fields['themeDropdown'])
+
+                    # change email address
+                    currentEmailAddress = getEmailAddress(actorJson)
+                    if fields.get('email'):
+                        if fields['email'] != currentEmailAddress:
+                            setEmailAddress(actorJson, fields['email'])
+                            actorChanged = True
+                    else:
+                        if currentEmailAddress:
+                            setEmailAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change xmpp address
+                    currentXmppAddress = getXmppAddress(actorJson)
+                    if fields.get('xmppAddress'):
+                        if fields['xmppAddress'] != currentXmppAddress:
+                            setXmppAddress(actorJson,
+                                           fields['xmppAddress'])
+                            actorChanged = True
+                    else:
+                        if currentXmppAddress:
+                            setXmppAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change matrix address
+                    currentMatrixAddress = getMatrixAddress(actorJson)
+                    if fields.get('matrixAddress'):
+                        if fields['matrixAddress'] != currentMatrixAddress:
+                            setMatrixAddress(actorJson,
+                                             fields['matrixAddress'])
+                            actorChanged = True
+                    else:
+                        if currentMatrixAddress:
+                            setMatrixAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change SSB address
+                    currentSSBAddress = getSSBAddress(actorJson)
+                    if fields.get('ssbAddress'):
+                        if fields['ssbAddress'] != currentSSBAddress:
+                            setSSBAddress(actorJson,
+                                          fields['ssbAddress'])
+                            actorChanged = True
+                    else:
+                        if currentSSBAddress:
+                            setSSBAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change blog address
+                    currentBlogAddress = getBlogAddress(actorJson)
+                    if fields.get('blogAddress'):
+                        if fields['blogAddress'] != currentBlogAddress:
+                            setBlogAddress(actorJson,
+                                           fields['blogAddress'])
+                            actorChanged = True
+                    else:
+                        if currentBlogAddress:
+                            setBlogAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change tox address
+                    currentToxAddress = getToxAddress(actorJson)
+                    if fields.get('toxAddress'):
+                        if fields['toxAddress'] != currentToxAddress:
+                            setToxAddress(actorJson,
+                                          fields['toxAddress'])
+                            actorChanged = True
+                    else:
+                        if currentToxAddress:
+                            setToxAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change PGP public key
+                    currentPGPpubKey = getPGPpubKey(actorJson)
+                    if fields.get('pgp'):
+                        if fields['pgp'] != currentPGPpubKey:
+                            setPGPpubKey(actorJson,
+                                         fields['pgp'])
+                            actorChanged = True
+                    else:
+                        if currentPGPpubKey:
+                            setPGPpubKey(actorJson, '')
+                            actorChanged = True
+
+                    # change PGP fingerprint
+                    currentPGPfingerprint = getPGPfingerprint(actorJson)
+                    if fields.get('openpgp'):
+                        if fields['openpgp'] != currentPGPfingerprint:
+                            setPGPfingerprint(actorJson,
+                                              fields['openpgp'])
+                            actorChanged = True
+                    else:
+                        if currentPGPfingerprint:
+                            setPGPfingerprint(actorJson, '')
+                            actorChanged = True
+
+                    # change donation link
+                    currentDonateUrl = getDonationUrl(actorJson)
+                    if fields.get('donateUrl'):
+                        if fields['donateUrl'] != currentDonateUrl:
+                            setDonationUrl(actorJson,
+                                           fields['donateUrl'])
+                            actorChanged = True
+                    else:
+                        if currentDonateUrl:
+                            setDonationUrl(actorJson, '')
+                            actorChanged = True
+
+                    # change instance title
+                    if fields.get('instanceTitle'):
+                        currInstanceTitle = \
+                            getConfigParam(baseDir,
+                                           'instanceTitle')
+                        if fields['instanceTitle'] != currInstanceTitle:
+                            setConfigParam(baseDir,
+                                           'instanceTitle',
+                                           fields['instanceTitle'])
+
+                    # change YouTube alternate domain
+                    if fields.get('ytdomain'):
+                        currYTDomain = self.server.YTReplacementDomain
+                        if fields['ytdomain'] != currYTDomain:
+                            newYTDomain = fields['ytdomain']
+                            if '://' in newYTDomain:
+                                newYTDomain = newYTDomain.split('://')[1]
+                            if '/' in newYTDomain:
+                                newYTDomain = newYTDomain.split('/')[0]
+                            if '.' in newYTDomain:
+                                setConfigParam(baseDir,
+                                               'youtubedomain',
+                                               newYTDomain)
+                                self.server.YTReplacementDomain = \
+                                    newYTDomain
+                    else:
+                        setConfigParam(baseDir,
+                                       'youtubedomain', '')
+                        self.server.YTReplacementDomain = None
+
+                    # change instance description
+                    currInstanceDescriptionShort = \
+                        getConfigParam(baseDir,
+                                       'instanceDescriptionShort')
+                    if fields.get('instanceDescriptionShort'):
+                        if fields['instanceDescriptionShort'] != \
+                           currInstanceDescriptionShort:
+                            iDesc = fields['instanceDescriptionShort']
+                            setConfigParam(baseDir,
+                                           'instanceDescriptionShort',
+                                           iDesc)
+                    else:
+                        if currInstanceDescriptionShort:
+                            setConfigParam(baseDir,
+                                           'instanceDescriptionShort', '')
+                    currInstanceDescription = \
+                        getConfigParam(baseDir,
+                                       'instanceDescription')
+                    if fields.get('instanceDescription'):
+                        if fields['instanceDescription'] != \
+                           currInstanceDescription:
+                            setConfigParam(baseDir,
+                                           'instanceDescription',
+                                           fields['instanceDescription'])
+                    else:
+                        if currInstanceDescription:
+                            setConfigParam(baseDir,
+                                           'instanceDescription', '')
+
+                    # change user bio
+                    if fields.get('bio'):
+                        if fields['bio'] != actorJson['summary']:
+                            actorTags = {}
+                            actorJson['summary'] = \
+                                addHtmlTags(baseDir,
+                                            httpPrefix,
+                                            nickname,
+                                            domainFull,
+                                            fields['bio'], [], actorTags)
+                            if actorTags:
+                                actorJson['tag'] = []
+                                for tagName, tag in actorTags.items():
+                                    actorJson['tag'].append(tag)
+                            actorChanged = True
+                    else:
+                        if actorJson['summary']:
+                            actorJson['summary'] = ''
+                            actorChanged = True
+
+                    # change moderators list
+                    if fields.get('moderators'):
+                        adminNickname = \
+                            getConfigParam(baseDir, 'admin')
+                        if path.startswith('/users/' +
+                                           adminNickname + '/'):
+                            moderatorsFile = \
+                                baseDir + \
+                                '/accounts/moderators.txt'
+                            clearModeratorStatus(baseDir)
+                            if ',' in fields['moderators']:
+                                # if the list was given as comma separated
+                                modFile = open(moderatorsFile, "w+")
+                                mods = fields['moderators'].split(',')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = baseDir + \
+                                        '/accounts/' + modNick + \
+                                        '@' + domain
+                                    if os.path.isdir(modDir):
+                                        modFile.write(modNick + '\n')
+                                modFile.close()
+                                mods = fields['moderators'].split(',')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = baseDir + \
+                                        '/accounts/' + modNick + \
+                                        '@' + domain
+                                    if os.path.isdir(modDir):
+                                        setRole(baseDir,
+                                                modNick, domain,
+                                                'instance', 'moderator')
+                            else:
+                                # nicknames on separate lines
+                                modFile = open(moderatorsFile, "w+")
+                                mods = fields['moderators'].split('\n')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = \
+                                        baseDir + \
+                                        '/accounts/' + modNick + \
+                                        '@' + domain
+                                    if os.path.isdir(modDir):
+                                        modFile.write(modNick + '\n')
+                                modFile.close()
+                                mods = fields['moderators'].split('\n')
+                                for modNick in mods:
+                                    modNick = modNick.strip()
+                                    modDir = \
+                                        baseDir + \
+                                        '/accounts/' + \
+                                        modNick + '@' + \
+                                        domain
+                                    if os.path.isdir(modDir):
+                                        setRole(baseDir,
+                                                modNick, domain,
+                                                'instance',
+                                                'moderator')
+
+                    # remove scheduled posts
+                    if fields.get('removeScheduledPosts'):
+                        if fields['removeScheduledPosts'] == 'on':
+                            removeScheduledPosts(baseDir,
+                                                 nickname, domain)
+
+                    # approve followers
+                    approveFollowers = False
+                    if fields.get('approveFollowers'):
+                        if fields['approveFollowers'] == 'on':
+                            approveFollowers = True
+                    if approveFollowers != \
+                       actorJson['manuallyApprovesFollowers']:
+                        actorJson['manuallyApprovesFollowers'] = \
+                            approveFollowers
+                        actorChanged = True
+
+                    # remove a custom font
+                    if fields.get('removeCustomFont'):
+                        if fields['removeCustomFont'] == 'on':
+                            fontExt = ('woff', 'woff2', 'otf', 'ttf')
+                            for ext in fontExt:
+                                if os.path.isfile(baseDir +
+                                                  '/fonts/custom.' + ext):
+                                    os.remove(baseDir +
+                                              '/fonts/custom.' + ext)
+                                if os.path.isfile(baseDir +
+                                                  '/fonts/custom.' + ext +
+                                                  '.etag'):
+                                    os.remove(baseDir +
+                                              '/fonts/custom.' + ext +
+                                              '.etag')
+                            currTheme = getTheme(baseDir)
+                            if currTheme:
+                                setTheme(baseDir, currTheme)
+
+                    # change media instance status
+                    if fields.get('mediaInstance'):
+                        self.server.mediaInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['mediaInstance'] == 'on':
+                            self.server.mediaInstance = True
+                            self.server.defaultTimeline = 'tlmedia'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                    else:
+                        if self.server.mediaInstance:
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "mediaInstance",
+                                           self.server.mediaInstance)
+
+                    # change blog instance status
+                    if fields.get('blogsInstance'):
+                        self.server.blogsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['blogsInstance'] == 'on':
+                            self.server.blogsInstance = True
+                            self.server.defaultTimeline = 'tlblogs'
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                    else:
+                        if self.server.blogsInstance:
+                            self.server.blogsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "blogsInstance",
+                                           self.server.blogsInstance)
+
+                    # only receive DMs from accounts you follow
+                    followDMsFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.followDMs'
+                    followDMsActive = False
+                    if fields.get('followDMs'):
+                        if fields['followDMs'] == 'on':
+                            followDMsActive = True
+                            with open(followDMsFilename, 'w+') as fFile:
+                                fFile.write('\n')
+                    if not followDMsActive:
+                        if os.path.isfile(followDMsFilename):
+                            os.remove(followDMsFilename)
+
+                    # remove Twitter retweets
+                    removeTwitterFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.removeTwitter'
+                    removeTwitterActive = False
+                    if fields.get('removeTwitter'):
+                        if fields['removeTwitter'] == 'on':
+                            removeTwitterActive = True
+                            with open(removeTwitterFilename,
+                                      'w+') as rFile:
+                                rFile.write('\n')
+                    if not removeTwitterActive:
+                        if os.path.isfile(removeTwitterFilename):
+                            os.remove(removeTwitterFilename)
+
+                    # hide Like button
+                    hideLikeButtonFile = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.hideLikeButton'
+                    notifyLikesFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/.notifyLikes'
+                    hideLikeButtonActive = False
+                    if fields.get('hideLikeButton'):
+                        if fields['hideLikeButton'] == 'on':
+                            hideLikeButtonActive = True
+                            with open(hideLikeButtonFile, 'w+') as rFile:
+                                rFile.write('\n')
+                            # remove notify likes selection
+                            if os.path.isfile(notifyLikesFilename):
+                                os.remove(notifyLikesFilename)
+                    if not hideLikeButtonActive:
+                        if os.path.isfile(hideLikeButtonFile):
+                            os.remove(hideLikeButtonFile)
+
+                    # notify about new Likes
+                    notifyLikesActive = False
+                    if fields.get('notifyLikes'):
+                        if fields['notifyLikes'] == 'on' and \
+                           not hideLikeButtonActive:
+                            notifyLikesActive = True
+                            with open(notifyLikesFilename, 'w+') as rFile:
+                                rFile.write('\n')
+                    if not notifyLikesActive:
+                        if os.path.isfile(notifyLikesFilename):
+                            os.remove(notifyLikesFilename)
+
+                    # this account is a bot
+                    if fields.get('isBot'):
+                        if fields['isBot'] == 'on':
+                            if actorJson['type'] != 'Service':
+                                actorJson['type'] = 'Service'
+                                actorChanged = True
+                    else:
+                        # this account is a group
+                        if fields.get('isGroup'):
+                            if fields['isGroup'] == 'on':
+                                if actorJson['type'] != 'Group':
+                                    actorJson['type'] = 'Group'
+                                    actorChanged = True
+                        else:
+                            # this account is a person (default)
+                            if actorJson['type'] != 'Person':
+                                actorJson['type'] = 'Person'
+                                actorChanged = True
+
+                    # grayscale theme
+                    grayscale = False
+                    if fields.get('grayscale'):
+                        if fields['grayscale'] == 'on':
+                            grayscale = True
+                    if grayscale:
+                        enableGrayscale(baseDir)
+                    else:
+                        disableGrayscale(baseDir)
+
+                    # save filtered words list
+                    filterFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/filters.txt'
+                    if fields.get('filteredWords'):
+                        with open(filterFilename, 'w+') as filterfile:
+                            filterfile.write(fields['filteredWords'])
+                    else:
+                        if os.path.isfile(filterFilename):
+                            os.remove(filterFilename)
+
+                    # word replacements
+                    switchFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/replacewords.txt'
+                    if fields.get('switchWords'):
+                        with open(switchFilename, 'w+') as switchfile:
+                            switchfile.write(fields['switchWords'])
+                    else:
+                        if os.path.isfile(switchFilename):
+                            os.remove(switchFilename)
+
+                    # save blocked accounts list
+                    blockedFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/blocking.txt'
+                    if fields.get('blocked'):
+                        with open(blockedFilename, 'w+') as blockedfile:
+                            blockedfile.write(fields['blocked'])
+                    else:
+                        if os.path.isfile(blockedFilename):
+                            os.remove(blockedFilename)
+
+                    # save allowed instances list
+                    allowedInstancesFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/allowedinstances.txt'
+                    if fields.get('allowedInstances'):
+                        with open(allowedInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['allowedInstances'])
+                    else:
+                        if os.path.isfile(allowedInstancesFilename):
+                            os.remove(allowedInstancesFilename)
+
+                    # save git project names list
+                    gitProjectsFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/gitprojects.txt'
+                    if fields.get('gitProjects'):
+                        with open(gitProjectsFilename, 'w+') as aFile:
+                            aFile.write(fields['gitProjects'].lower())
+                    else:
+                        if os.path.isfile(gitProjectsFilename):
+                            os.remove(gitProjectsFilename)
+
+                    # save actor json file within accounts
+                    if actorChanged:
+                        # update the context for the actor
+                        actorJson['@context'] = [
+                            'https://www.w3.org/ns/activitystreams',
+                            'https://w3id.org/security/v1',
+                            getDefaultPersonContext()
+                        ]
+                        randomizeActorImages(actorJson)
+                        saveJson(actorJson, actorFilename)
+                        webfingerUpdate(baseDir,
+                                        nickname, domain,
+                                        onionDomain,
+                                        self.server.cachedWebfingers)
+                        # also copy to the actors cache and
+                        # personCache in memory
+                        storePersonInCache(baseDir,
+                                           actorJson['id'], actorJson,
+                                           self.server.personCache,
+                                           True)
+                        # clear any cached images for this actor
+                        idStr = actorJson['id'].replace('/', '-')
+                        removeAvatarFromCache(baseDir, idStr)
+                        # save the actor to the cache
+                        actorCacheFilename = \
+                            baseDir + '/cache/actors/' + \
+                            actorJson['id'].replace('/', '#') + '.json'
+                        saveJson(actorJson, actorCacheFilename)
+                        # send profile update to followers
+                        ccStr = 'https://www.w3.org/ns/' + \
+                            'activitystreams#Public'
+                        updateActorJson = {
+                            'type': 'Update',
+                            'actor': actorJson['id'],
+                            'to': [actorJson['id'] + '/followers'],
+                            'cc': [ccStr],
+                            'object': actorJson
+                        }
+                        self._postToOutbox(updateActorJson,
+                                           __version__, nickname)
+
+                    # deactivate the account
+                    if fields.get('deactivateThisAccount'):
+                        if fields['deactivateThisAccount'] == 'on':
+                            deactivateAccount(baseDir,
+                                              nickname, domain)
+                            self._clearLoginDetails(nickname,
+                                                    callingDomain)
+                            self.server.POSTbusy = False
+                            return
+
+        # redirect back to the profile screen
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr, cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _progressiveWebAppManifest(self, callingDomain: str,
+                                   GETstartTime, GETtimings: {}):
+        """gets the PWA manifest
+        """
+        app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
+        app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
+        manifest = {
+            "name": "Epicyon",
+            "short_name": "Epicyon",
+            "start_url": "/index.html",
+            "display": "standalone",
+            "background_color": "black",
+            "theme_color": "grey",
+            "orientation": "portrait-primary",
+            "categories": ["microblog", "fediverse", "activitypub"],
+            "screenshots": [
+                {
+                    "src": "/mobile.jpg",
+                    "sizes": "418x851",
+                    "type": "image/jpeg"
+                },
+                {
+                    "src": "/mobile_person.jpg",
+                    "sizes": "429x860",
+                    "type": "image/jpeg"
+                },
+                {
+                    "src": "/mobile_search.jpg",
+                    "sizes": "422x861",
+                    "type": "image/jpeg"
+                }
+            ],
+            "icons": [
+                {
+                    "src": "/logo72.png",
+                    "type": "image/png",
+                    "sizes": "72x72"
+                },
+                {
+                    "src": "/logo96.png",
+                    "type": "image/png",
+                    "sizes": "96x96"
+                },
+                {
+                    "src": "/logo128.png",
+                    "type": "image/png",
+                    "sizes": "128x128"
+                },
+                {
+                    "src": "/logo144.png",
+                    "type": "image/png",
+                    "sizes": "144x144"
+                },
+                {
+                    "src": "/logo152.png",
+                    "type": "image/png",
+                    "sizes": "152x152"
+                },
+                {
+                    "src": "/logo192.png",
+                    "type": "image/png",
+                    "sizes": "192x192"
+                },
+                {
+                    "src": "/logo256.png",
+                    "type": "image/png",
+                    "sizes": "256x256"
+                },
+                {
+                    "src": "/logo512.png",
+                    "type": "image/png",
+                    "sizes": "512x512"
+                }
+            ],
+            "related_applications": [
+                {
+                    "platform": "fdroid",
+                    "url": app1
+                },
+                {
+                    "platform": "fdroid",
+                    "url": app2
+                }
+            ]
+        }
+        msg = json.dumps(manifest,
+                         ensure_ascii=False).encode('utf-8')
+        self._set_headers('application/json', len(msg),
+                          None, callingDomain)
+        self._write(msg)
+        if self.server.debug:
+            print('Sent manifest: ' + callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show logout', 'send manifest')
+
+    def _getFavicon(self, callingDomain: str,
+                    baseDir: str, debug: bool):
+        """Return the favicon
+        """
+        favType = 'image/x-icon'
+        favFilename = 'favicon.ico'
+        if self._hasAccept(callingDomain):
+            if 'image/webp' in self.headers['Accept']:
+                favType = 'image/webp'
+                favFilename = 'favicon.webp'
+        # custom favicon
+        faviconFilename = baseDir + '/' + favFilename
+        if not os.path.isfile(faviconFilename):
+            # default favicon
+            faviconFilename = \
+                baseDir + '/img/icons/' + favFilename
+        if self._etag_exists(faviconFilename):
+            # The file has not changed
+            if debug:
+                print('favicon icon has not changed: ' + callingDomain)
+            self._304()
+            return
+        if self.server.iconsCache.get(favFilename):
+            favBinary = self.server.iconsCache[favFilename]
+            self._set_headers_etag(faviconFilename,
+                                   favType,
+                                   favBinary, None,
+                                   callingDomain)
+            self._write(favBinary)
+            if debug:
+                print('Sent favicon from cache: ' + callingDomain)
+            return
+        else:
+            if os.path.isfile(faviconFilename):
+                with open(faviconFilename, 'rb') as favFile:
+                    favBinary = favFile.read()
+                    self._set_headers_etag(faviconFilename,
+                                           favType,
+                                           favBinary, None,
+                                           callingDomain)
+                    self._write(favBinary)
+                    self.server.iconsCache[favFilename] = favBinary
+                    if self.server.debug:
+                        print('Sent favicon from file: ' + callingDomain)
+                    return
+        if debug:
+            print('favicon not sent: ' + callingDomain)
+        self._404()
+
+    def _getFonts(self, callingDomain: str, path: str,
+                  baseDir: str, debug: bool,
+                  GETstartTime, GETtimings: {}):
+        """Returns a font
+        """
+        fontStr = path.split('/fonts/')[1]
+        if fontStr.endswith('.otf') or \
+           fontStr.endswith('.ttf') or \
+           fontStr.endswith('.woff') or \
+           fontStr.endswith('.woff2'):
+            if fontStr.endswith('.otf'):
+                fontType = 'font/otf'
+            elif fontStr.endswith('.ttf'):
+                fontType = 'font/ttf'
+            elif fontStr.endswith('.woff'):
+                fontType = 'font/woff'
+            else:
+                fontType = 'font/woff2'
+            fontFilename = \
+                baseDir + '/fonts/' + fontStr
+            if self._etag_exists(fontFilename):
+                # The file has not changed
+                self._304()
+                return
+            if self.server.fontsCache.get(fontStr):
+                fontBinary = self.server.fontsCache[fontStr]
+                self._set_headers_etag(fontFilename,
+                                       fontType,
+                                       fontBinary, None,
+                                       callingDomain)
+                self._write(fontBinary)
+                if debug:
+                    print('font sent from cache: ' +
+                          path + ' ' + callingDomain)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'hasAccept',
+                                          'send font from cache')
+                return
+            else:
+                if os.path.isfile(fontFilename):
+                    with open(fontFilename, 'rb') as fontFile:
+                        fontBinary = fontFile.read()
+                        self._set_headers_etag(fontFilename,
+                                               fontType,
+                                               fontBinary, None,
+                                               callingDomain)
+                        self._write(fontBinary)
+                        self.server.fontsCache[fontStr] = fontBinary
+                    if debug:
+                        print('font sent from file: ' +
+                              path + ' ' + callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'hasAccept',
+                                              'send font from file')
+                    return
+        if debug:
+            print('font not found: ' + path + ' ' + callingDomain)
+        self._404()
+
+    def _getRSS2feed(self, authorized: bool,
+                     callingDomain: str, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, port: int, proxyType: str,
+                     GETstartTime, GETtimings: {},
+                     debug: bool):
+        """Returns an RSS2 feed for the blog
+        """
+        nickname = path.split('/blog/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if not nickname.startswith('rss.'):
+            if os.path.isdir(self.server.baseDir +
+                             '/accounts/' + nickname + '@' + domain):
+                if not self.server.session:
+                    print('Starting new session during RSS request')
+                    self.server.session = \
+                        createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during RSS request')
+                        self._404()
+                        return
+
+                msg = \
+                    htmlBlogPageRSS2(authorized,
+                                     self.server.session,
+                                     baseDir,
+                                     httpPrefix,
+                                     self.server.translate,
+                                     nickname,
+                                     domain,
+                                     port,
+                                     maxPostsInRSSFeed, 1)
+                if msg is not None:
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/xml', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                    if debug:
+                        print('Sent rss2 feed: ' +
+                              path + ' ' + callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'sharedInbox enabled',
+                                              'blog rss2')
+                    return
+        if debug:
+            print('Failed to get rss2 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
+    def _getRSS3feed(self, authorized: bool,
+                     callingDomain: str, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, port: int, proxyType: str,
+                     GETstartTime, GETtimings: {},
+                     debug: bool):
+        """Returns an RSS3 feed
+        """
+        nickname = path.split('/blog/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if not nickname.startswith('rss.'):
+            if os.path.isdir(baseDir +
+                             '/accounts/' + nickname + '@' + domain):
+                if not self.server.session:
+                    print('Starting new session during RSS3 request')
+                    self.server.session = \
+                        createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during RSS3 request')
+                        self._404()
+                        return
+                msg = \
+                    htmlBlogPageRSS3(authorized,
+                                     self.server.session,
+                                     baseDir, httpPrefix,
+                                     self.server.translate,
+                                     nickname, domain, port,
+                                     maxPostsInRSSFeed, 1)
+                if msg is not None:
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/plain; charset=utf-8',
+                                      len(msg), None, callingDomain)
+                    self._write(msg)
+                    if self.server.debug:
+                        print('Sent rss3 feed: ' +
+                              path + ' ' + callingDomain)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'sharedInbox enabled',
+                                              'blog rss3')
+                    return
+        if debug:
+            print('Failed to get rss3 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
+    def _showPersonOptions(self, callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str,
+                           GETstartTime, GETtimings: {},
+                           onionDomain: str, i2pDomain: str,
+                           cookie: str, debug: bool):
+        """Show person options screen
+        """
+        optionsStr = path.split('?options=')[1]
+        originPathStr = path.split('?options=')[0]
+        if ';' in optionsStr:
+            pageNumber = 1
+            optionsList = optionsStr.split(';')
+            optionsActor = optionsList[0]
+            optionsPageNumber = optionsList[1]
+            optionsProfileUrl = optionsList[2]
+            if optionsPageNumber.isdigit():
+                pageNumber = int(optionsPageNumber)
+            optionsLink = None
+            if len(optionsList) > 3:
+                optionsLink = optionsList[3]
+            donateUrl = None
+            PGPpubKey = None
+            PGPfingerprint = None
+            xmppAddress = None
+            matrixAddress = None
+            blogAddress = None
+            toxAddress = None
+            ssbAddress = None
+            emailAddress = None
+            actorJson = getPersonFromCache(baseDir,
+                                           optionsActor,
+                                           self.server.personCache,
+                                           True)
+            if actorJson:
+                donateUrl = getDonationUrl(actorJson)
+                xmppAddress = getXmppAddress(actorJson)
+                matrixAddress = getMatrixAddress(actorJson)
+                ssbAddress = getSSBAddress(actorJson)
+                blogAddress = getBlogAddress(actorJson)
+                toxAddress = getToxAddress(actorJson)
+                emailAddress = getEmailAddress(actorJson)
+                PGPpubKey = getPGPpubKey(actorJson)
+                PGPfingerprint = getPGPfingerprint(actorJson)
+            msg = htmlPersonOptions(self.server.translate,
+                                    baseDir, domain,
+                                    originPathStr,
+                                    optionsActor,
+                                    optionsProfileUrl,
+                                    optionsLink,
+                                    pageNumber, donateUrl,
+                                    xmppAddress, matrixAddress,
+                                    ssbAddress, blogAddress,
+                                    toxAddress,
+                                    PGPpubKey, PGPfingerprint,
+                                    emailAddress).encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'registered devices done',
+                                      'person options')
+            return
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        else:
+            originPathStrAbsolute = \
+                httpPrefix + '://' + domainFull + originPathStr
+        self._redirect_headers(originPathStrAbsolute, cookie,
+                               callingDomain)
+
+    def _showMedia(self, callingDomain: str,
+                   path: str, baseDir: str,
+                   GETstartTime, GETtimings: {}):
+        """Returns a media file
+        """
+        if self._pathIsImage(path) or \
+           self._pathIsVideo(path) or \
+           self._pathIsAudio(path):
+            mediaStr = path.split('/media/')[1]
+            mediaFilename = baseDir + '/media/' + mediaStr
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                mediaFileType = 'image/png'
+                if mediaFilename.endswith('.png'):
+                    mediaFileType = 'image/png'
+                elif mediaFilename.endswith('.jpg'):
+                    mediaFileType = 'image/jpeg'
+                elif mediaFilename.endswith('.gif'):
+                    mediaFileType = 'image/gif'
+                elif mediaFilename.endswith('.webp'):
+                    mediaFileType = 'image/webp'
+                elif mediaFilename.endswith('.mp4'):
+                    mediaFileType = 'video/mp4'
+                elif mediaFilename.endswith('.ogv'):
+                    mediaFileType = 'video/ogv'
+                elif mediaFilename.endswith('.mp3'):
+                    mediaFileType = 'audio/mpeg'
+                elif mediaFilename.endswith('.ogg'):
+                    mediaFileType = 'audio/ogg'
+
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self._set_headers_etag(mediaFilename, mediaFileType,
+                                           mediaBinary, None,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show emoji done',
+                                          'show media')
+                return
+        self._404()
+
+    def _showEmoji(self, callingDomain: str, path: str,
+                   baseDir: str,
+                   GETstartTime, GETtimings: {}):
+        """Returns an emoji image
+        """
+        if self._pathIsImage(path):
+            emojiStr = path.split('/emoji/')[1]
+            emojiFilename = baseDir + '/emoji/' + emojiStr
+            if os.path.isfile(emojiFilename):
+                if self._etag_exists(emojiFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                mediaImageType = 'png'
+                if emojiFilename.endswith('.png'):
+                    mediaImageType = 'png'
+                elif emojiFilename.endswith('.jpg'):
+                    mediaImageType = 'jpeg'
+                elif emojiFilename.endswith('.webp'):
+                    mediaImageType = 'webp'
+                else:
+                    mediaImageType = 'gif'
+                with open(emojiFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self._set_headers_etag(emojiFilename,
+                                           'image/' + mediaImageType,
+                                           mediaBinary, None,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'background shown done',
+                                          'show emoji')
+                return
+        self._404()
+
+    def _showIcon(self, callingDomain: str, path: str,
+                  baseDir: str,
+                  GETstartTime, GETtimings: {}):
+        """Shows an icon
+        """
+        if path.endswith('.png'):
+            mediaStr = path.split('/icons/')[1]
+            mediaFilename = baseDir + '/img/icons/' + mediaStr
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
+            if self.server.iconsCache.get(mediaStr):
+                mediaBinary = self.server.iconsCache[mediaStr]
+                self._set_headers_etag(mediaFilename,
+                                       'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                return
+            else:
+                if os.path.isfile(mediaFilename):
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self._set_headers_etag(mediaFilename,
+                                               'image/png',
+                                               mediaBinary, None,
+                                               callingDomain)
+                        self._write(mediaBinary)
+                        self.server.iconsCache[mediaStr] = mediaBinary
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show files done',
+                                              'icon shown')
+                    return
+        self._404()
+
+    def _showCachedAvatar(self, callingDomain: str, path: str,
+                          baseDir: str,
+                          GETstartTime, GETtimings: {}):
+        """Shows an avatar image obtained from the cache
+        """
+        mediaFilename = baseDir + '/cache' + path
+        if os.path.isfile(mediaFilename):
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
+            with open(mediaFilename, 'rb') as avFile:
+                mediaBinary = avFile.read()
+                if mediaFilename.endswith('.png'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/png',
+                                           mediaBinary, None,
+                                           callingDomain)
+                elif mediaFilename.endswith('.jpg'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/jpeg',
+                                           mediaBinary, None,
+                                           callingDomain)
+                elif mediaFilename.endswith('.gif'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/gif',
+                                           mediaBinary, None,
+                                           callingDomain)
+                elif mediaFilename.endswith('.webp'):
+                    self._set_headers_etag(mediaFilename,
+                                           'image/webp',
+                                           mediaBinary, None,
+                                           callingDomain)
+                else:
+                    # default to jpeg
+                    self._set_headers_etag(mediaFilename,
+                                           'image/jpeg',
+                                           mediaBinary, None,
+                                           callingDomain)
+                    # self._404()
+                    return
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'icon shown done',
+                                          'avatar shown')
+                return
+        self._404()
+
+    def _hashtagSearch(self, callingDomain: str,
+                       path: str, cookie: str,
+                       baseDir: str, httpPrefix: str,
+                       domain: str, domainFull: str, port: int,
+                       onionDomain: str, i2pDomain: str,
+                       GETstartTime, GETtimings: {}):
+        """Return the result of a hashtag search
+        """
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        hashtag = path.split('/tags/')[1]
+        if '?page=' in hashtag:
+            hashtag = hashtag.split('?page=')[0]
+        if isBlockedHashtag(baseDir, hashtag):
+            msg = htmlHashtagBlocked(baseDir).encode('utf-8')
+            self._login_headers('text/html', len(msg), callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            return
+        nickname = None
+        if '/users/' in path:
+            actor = \
+                httpPrefix + '://' + domainFull + path
+            nickname = \
+                getNicknameFromActor(actor)
+        hashtagStr = \
+            htmlHashtagSearch(nickname,
+                              domain, port,
+                              self.server.recentPostsCache,
+                              self.server.maxRecentPosts,
+                              self.server.translate,
+                              baseDir, hashtag, pageNumber,
+                              maxPostsInFeed, self.server.session,
+                              self.server.cachedWebfingers,
+                              self.server.personCache,
+                              httpPrefix,
+                              self.server.projectVersion,
+                              self.server.YTReplacementDomain)
+        if hashtagStr:
+            msg = hashtagStr.encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+        else:
+            originPathStr = path.split('/tags/')[0]
+            originPathStrAbsolute = \
+                httpPrefix + '://' + domainFull + originPathStr
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStrAbsolute = \
+                    'http://' + onionDomain + originPathStr
+            elif (callingDomain.endswith('.i2p') and onionDomain):
+                originPathStrAbsolute = \
+                    'http://' + i2pDomain + originPathStr
+            self._redirect_headers(originPathStrAbsolute + '/search',
+                                   cookie, callingDomain)
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'login shown done',
+                                  'hashtag search')
+
+    def _announceButton(self, callingDomain: str, path: str,
+                        baseDir: str,
+                        cookie: str, proxyType: str,
+                        httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        repeatPrivate: bool, debug: bool):
+        """The announce/repeat button was pressed on a post
+        """
+        pageNumber = 1
+        repeatUrl = path.split('?repeat=')[1]
+        if '?' in repeatUrl:
+            repeatUrl = repeatUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?repeat=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during repeat button')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during repeat button')
+                self._404()
+                self.server.GETbusy = False
+                return
+        self.server.actorRepeat = path.split('?actor=')[1]
+        announceToStr = \
+            httpPrefix + '://' + domainFull + '/users/' + \
+            self.postToNickname + '/followers'
+        if not repeatPrivate:
+            announceToStr = 'https://www.w3.org/ns/activitystreams#Public'
+        announceJson = \
+            createAnnounce(self.server.session,
+                           baseDir,
+                           self.server.federationList,
+                           self.postToNickname,
+                           domain, port,
+                           announceToStr,
+                           None, httpPrefix,
+                           repeatUrl, False, False,
+                           self.server.sendThreads,
+                           self.server.postLog,
+                           self.server.personCache,
+                           self.server.cachedWebfingers,
+                           debug,
+                           self.server.projectVersion)
+        if announceJson:
+            self._postToOutboxThread(announceJson)
+        self.server.GETbusy = False
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' +
+                               timelineStr + '?page=' +
+                               str(pageNumber) +
+                               timelineBookmark, cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'emoji search shown done',
+                                  'show announce')
+
+    def _undoAnnounceButton(self, callingDomain: str, path: str,
+                            baseDir: str,
+                            cookie: str, proxyType: str,
+                            httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            repeatPrivate: bool, debug: bool):
+        """Undo announce/repeat button was pressed
+        """
+        pageNumber = 1
+        repeatUrl = path.split('?unrepeat=')[1]
+        if '?' in repeatUrl:
+            repeatUrl = repeatUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?unrepeat=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' +
+                                   timelineStr + '?page=' +
+                                   str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during undo repeat')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during undo repeat')
+                self._404()
+                self.server.GETbusy = False
+                return
+        undoAnnounceActor = \
+            httpPrefix + '://' + domainFull + \
+            '/users/' + self.postToNickname
+        unRepeatToStr = 'https://www.w3.org/ns/activitystreams#Public'
+        newUndoAnnounce = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'actor': undoAnnounceActor,
+            'type': 'Undo',
+            'cc': [undoAnnounceActor+'/followers'],
+            'to': [unRepeatToStr],
+            'object': {
+                'actor': undoAnnounceActor,
+                'cc': [undoAnnounceActor+'/followers'],
+                'object': repeatUrl,
+                'to': [unRepeatToStr],
+                'type': 'Announce'
+            }
+        }
+        self._postToOutboxThread(newUndoAnnounce)
+        self.server.GETbusy = False
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' +
+                               timelineStr + '?page=' +
+                               str(pageNumber) +
+                               timelineBookmark, cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show announce done',
+                                  'unannounce')
+
+    def _followApproveButton(self, callingDomain: str, path: str,
+                             cookie: str,
+                             baseDir: str, httpPrefix: str,
+                             domain: str, domainFull: str, port: int,
+                             onionDomain: str, i2pDomain: str,
+                             GETstartTime, GETtimings: {},
+                             proxyType: str, debug: bool):
+        """Follow approve button was pressed
+        """
+        originPathStr = path.split('/followapprove=')[0]
+        followerNickname = originPathStr.replace('/users/', '')
+        followingHandle = path.split('/followapprove=')[1]
+        if '@' in followingHandle:
+            if not self.server.session:
+                print('Starting new session during follow approval')
+                self.server.session = createSession(proxyType)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session ' +
+                          'during follow approval')
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+            manualApproveFollowRequest(self.server.session,
+                                       baseDir, httpPrefix,
+                                       followerNickname,
+                                       domain, port,
+                                       followingHandle,
+                                       self.server.federationList,
+                                       self.server.sendThreads,
+                                       self.server.postLog,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       self.server.acceptedCaps,
+                                       debug,
+                                       self.server.projectVersion)
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'follow approve shown')
+        self.server.GETbusy = False
+
+    def _followDenyButton(self, callingDomain: str, path: str,
+                          cookie: str,
+                          baseDir: str, httpPrefix: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          GETstartTime, GETtimings: {},
+                          proxyType: str, debug: bool):
+        """Follow deny button was pressed
+        """
+        originPathStr = path.split('/followdeny=')[0]
+        followerNickname = originPathStr.replace('/users/', '')
+        followingHandle = path.split('/followdeny=')[1]
+        if '@' in followingHandle:
+            manualDenyFollowRequest(self.server.session,
+                                    baseDir, httpPrefix,
+                                    followerNickname,
+                                    domain, port,
+                                    followingHandle,
+                                    self.server.federationList,
+                                    self.server.sendThreads,
+                                    self.server.postLog,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    debug,
+                                    self.server.projectVersion)
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'follow approve done',
+                                  'follow deny shown')
+
+    def _likeButton(self, callingDomain: str, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str,
+                    onionDomain: str, i2pDomain: str,
+                    GETstartTime, GETtimings: {},
+                    proxyType: str, cookie: str,
+                    debug: str):
+        """Press the like button
+        """
+        pageNumber = 1
+        likeUrl = path.split('?like=')[1]
+        if '?' in likeUrl:
+            likeUrl = likeUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        actor = path.split('?like=')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber) +
+                                   timelineBookmark, cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during like')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session during like')
+                self._404()
+                self.server.GETbusy = False
+                return
+        likeActor = \
+            httpPrefix + '://' + \
+            domainFull + '/users/' + self.postToNickname
+        actorLiked = path.split('?actor=')[1]
+        if '?' in actorLiked:
+            actorLiked = actorLiked.split('?')[0]
+        likeJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Like',
+            'actor': likeActor,
+            'to': [actorLiked],
+            'object': likeUrl
+        }
+        # directly like the post file
+        likedPostFilename = locatePost(baseDir,
+                                       self.postToNickname,
+                                       domain,
+                                       likeUrl)
+        if likedPostFilename:
+            if debug:
+                print('Updating likes for ' + likedPostFilename)
+            updateLikesCollection(self.server.recentPostsCache,
+                                  baseDir,
+                                  likedPostFilename, likeUrl,
+                                  likeActor, domain,
+                                  debug)
+        else:
+            print('WARN: unable to locate file for liked post ' +
+                  likeUrl)
+        # send out the like to followers
+        self._postToOutbox(likeJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = \
+            httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'follow deny done',
+                                  'like shown')
+
+    def _undoLikeButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """A button is pressed to undo
+        """
+        pageNumber = 1
+        likeUrl = path.split('?unlike=')[1]
+        if '?' in likeUrl:
+            likeUrl = likeUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?unlike=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and onionDomain):
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during undo like')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during undo like')
+                self._404()
+                self.server.GETbusy = False
+                return
+        undoActor = \
+            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+        actorLiked = path.split('?actor=')[1]
+        if '?' in actorLiked:
+            actorLiked = actorLiked.split('?')[0]
+        undoLikeJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'type': 'Undo',
+            'actor': undoActor,
+            'to': [actorLiked],
+            'object': {
+                'type': 'Like',
+                'actor': undoActor,
+                'to': [actorLiked],
+                'object': likeUrl
+            }
+        }
+        # directly undo the like within the post file
+        likedPostFilename = locatePost(baseDir,
+                                       self.postToNickname,
+                                       domain, likeUrl)
+        if likedPostFilename:
+            if debug:
+                print('Removing likes for ' + likedPostFilename)
+            undoLikesCollectionEntry(self.server.recentPostsCache,
+                                     baseDir,
+                                     likedPostFilename, likeUrl,
+                                     undoActor, domain, debug)
+        # send out the undo like to followers
+        self._postToOutbox(undoLikeJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'like shown done',
+                                  'unlike shown')
+
+    def _bookmarkButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """Bookmark button was pressed
+        """
+        pageNumber = 1
+        bookmarkUrl = path.split('?bookmark=')[1]
+        if '?' in bookmarkUrl:
+            bookmarkUrl = bookmarkUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        actor = path.split('?bookmark=')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during bookmark')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during bookmark')
+                self._404()
+                self.server.GETbusy = False
+                return
+        bookmarkActor = \
+            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+        ccList = []
+        bookmark(self.server.recentPostsCache,
+                 self.server.session,
+                 baseDir,
+                 self.server.federationList,
+                 self.postToNickname,
+                 domain, port,
+                 ccList,
+                 httpPrefix,
+                 bookmarkUrl, bookmarkActor, False,
+                 self.server.sendThreads,
+                 self.server.postLog,
+                 self.server.personCache,
+                 self.server.cachedWebfingers,
+                 self.server.debug,
+                 self.server.projectVersion)
+        # self._postToOutbox(bookmarkJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = \
+            httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unlike shown done',
+                                  'bookmark shown')
+
+    def _undoBookmarkButton(self, callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str):
+        """Button pressed to undo a bookmark
+        """
+        pageNumber = 1
+        bookmarkUrl = path.split('?unbookmark=')[1]
+        if '?' in bookmarkUrl:
+            bookmarkUrl = bookmarkUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        timelineStr = 'inbox'
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = path.split('?unbookmark=')[0]
+        self.postToNickname = getNicknameFromActor(actor)
+        if not self.postToNickname:
+            print('WARN: unable to find nickname in ' + actor)
+            self.server.GETbusy = False
+            actorAbsolute = \
+                httpPrefix + '://' + domainFull + actor
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorAbsolute = 'http://' + onionDomain + actor
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                actorAbsolute = 'http://' + i2pDomain + actor
+            self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                                   '?page=' + str(pageNumber), cookie,
+                                   callingDomain)
+            return
+        if not self.server.session:
+            print('Starting new session during undo bookmark')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during undo bookmark')
+                self._404()
+                self.server.GETbusy = False
+                return
+        undoActor = \
+            httpPrefix + '://' + domainFull + '/users/' + self.postToNickname
+        ccList = []
+        undoBookmark(self.server.recentPostsCache,
+                     self.server.session,
+                     baseDir,
+                     self.server.federationList,
+                     self.postToNickname,
+                     domain, port,
+                     ccList,
+                     httpPrefix,
+                     bookmarkUrl, undoActor, False,
+                     self.server.sendThreads,
+                     self.server.postLog,
+                     self.server.personCache,
+                     self.server.cachedWebfingers,
+                     debug,
+                     self.server.projectVersion)
+        # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
+        self.server.GETbusy = False
+        actorAbsolute = \
+            httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute + '/' + timelineStr +
+                               '?page=' + str(pageNumber) +
+                               timelineBookmark, cookie,
+                               callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'bookmark shown done',
+                                  'unbookmark shown')
+
+    def _deleteButton(self, callingDomain: str, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      GETstartTime, GETtimings: {},
+                      proxyType: str, cookie: str,
+                      debug: str):
+        """Delete button is pressed
+        """
+        if not cookie:
+            print('ERROR: no cookie given when deleting')
+            self._400()
+            self.server.GETbusy = False
+            return
+        pageNumber = 1
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+        deleteUrl = path.split('?delete=')[1]
+        if '?' in deleteUrl:
+            deleteUrl = deleteUrl.split('?')[0]
+        timelineStr = self.server.defaultTimeline
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        usersPath = path.split('?delete=')[0]
+        actor = \
+            httpPrefix + '://' + domainFull + usersPath
+        if self.server.allowDeletion or \
+           deleteUrl.startswith(actor):
+            if self.server.debug:
+                print('DEBUG: deleteUrl=' + deleteUrl)
+                print('DEBUG: actor=' + actor)
+            if actor not in deleteUrl:
+                # You can only delete your own posts
+                self.server.GETbusy = False
+                if callingDomain.endswith('.onion') and onionDomain:
+                    actor = 'http://' + onionDomain + usersPath
+                elif callingDomain.endswith('.i2p') and i2pDomain:
+                    actor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(actor + '/' + timelineStr,
+                                       cookie, callingDomain)
+                return
+            self.postToNickname = getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in ' + actor)
+                self.server.GETbusy = False
+                if callingDomain.endswith('.onion') and onionDomain:
+                    actor = 'http://' + onionDomain + usersPath
+                elif callingDomain.endswith('.i2p') and i2pDomain:
+                    actor = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(actor + '/' + timelineStr,
+                                       cookie, callingDomain)
+                return
+            if not self.server.session:
+                print('Starting new session during delete')
+                self.server.session = createSession(proxyType)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session ' +
+                          'during delete')
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+
+            deleteStr = \
+                htmlDeletePost(self.server.recentPostsCache,
+                               self.server.maxRecentPosts,
+                               self.server.translate, pageNumber,
+                               self.server.session, baseDir,
+                               deleteUrl, httpPrefix,
+                               __version__, self.server.cachedWebfingers,
+                               self.server.personCache, callingDomain,
+                               self.server.TYReplacementDomain)
+            if deleteStr:
+                self._set_headers('text/html', len(deleteStr),
+                                  cookie, callingDomain)
+                self._write(deleteStr.encode('utf-8'))
+                self.server.GETbusy = False
+                return
+        self.server.GETbusy = False
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = 'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actor = 'http://' + i2pDomain + usersPath
+        self._redirect_headers(actor + '/' + timelineStr,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unbookmark shown done',
+                                  'delete shown')
+
+    def _muteButton(self, callingDomain: str, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str, port: int,
+                    onionDomain: str, i2pDomain: str,
+                    GETstartTime, GETtimings: {},
+                    proxyType: str, cookie: str,
+                    debug: str):
+        """Mute button is pressed
+        """
+        muteUrl = path.split('?mute=')[1]
+        if '?' in muteUrl:
+            muteUrl = muteUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        timelineStr = self.server.defaultTimeline
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = \
+            httpPrefix + '://' + domainFull + path.split('?mute=')[0]
+        nickname = getNicknameFromActor(actor)
+        mutePost(baseDir, nickname, domain,
+                 muteUrl, self.server.recentPostsCache)
+        self.server.GETbusy = False
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = \
+                'http://' + onionDomain + \
+                path.split('?mute=')[0]
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            actor = \
+                'http://' + i2pDomain + \
+                path.split('?mute=')[0]
+        self._redirect_headers(actor + '/' +
+                               timelineStr + timelineBookmark,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'delete shown done',
+                                  'post muted')
+
+    def _undoMuteButton(self, callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str):
+        """Undo mute button is pressed
+        """
+        muteUrl = path.split('?unmute=')[1]
+        if '?' in muteUrl:
+            muteUrl = muteUrl.split('?')[0]
+        timelineBookmark = ''
+        if '?bm=' in path:
+            timelineBookmark = path.split('?bm=')[1]
+            if '?' in timelineBookmark:
+                timelineBookmark = timelineBookmark.split('?')[0]
+            timelineBookmark = '#' + timelineBookmark
+        timelineStr = self.server.defaultTimeline
+        if '?tl=' in path:
+            timelineStr = path.split('?tl=')[1]
+            if '?' in timelineStr:
+                timelineStr = timelineStr.split('?')[0]
+        actor = \
+            httpPrefix + '://' + domainFull + path.split('?unmute=')[0]
+        nickname = getNicknameFromActor(actor)
+        unmutePost(baseDir, nickname, domain,
+                   muteUrl, self.server.recentPostsCache)
+        self.server.GETbusy = False
+        if callingDomain.endswith('.onion') and onionDomain:
+            actor = \
+                'http://' + onionDomain + path.split('?unmute=')[0]
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actor = \
+                'http://' + i2pDomain + path.split('?unmute=')[0]
+        self._redirect_headers(actor + '/' + timelineStr +
+                               timelineBookmark,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'post muted done',
+                                  'unmute activated')
+
+    def _showRepliesToPost(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the replies to a post
+        """
+        if not ('/statuses/' in path and '/users/' in path):
+            return False
+
+        namedStatus = path.split('/users/')[1]
+        if '/' not in namedStatus:
+            return False
+
+        postSections = namedStatus.split('/')
+        if len(postSections) < 4:
+            return False
+
+        if not postSections[3].startswith('replies'):
+            return False
+        nickname = postSections[0]
+        statusNumber = postSections[2]
+        if not (len(statusNumber) > 10 and statusNumber.isdigit()):
+            return False
+
+        boxname = 'outbox'
+        # get the replies file
+        postDir = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxname
+        postRepliesFilename = \
+            postDir + '/' + \
+            httpPrefix + ':##' + domainFull + '#users#' + \
+            nickname + '#statuses#' + statusNumber + '.replies'
+        if not os.path.isfile(postRepliesFilename):
+            # There are no replies,
+            # so show empty collection
+            contextStr = \
+                'https://www.w3.org/ns/activitystreams'
+
+            firstStr = \
+                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                '/statuses/' + statusNumber + '/replies?page=true'
+
+            idStr = \
+                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                '/statuses/' + statusNumber + '/replies'
+
+            lastStr = \
+                httpPrefix + '://' + domainFull + '/users/' + nickname + \
+                '/statuses/' + statusNumber + '/replies?page=true'
+
+            repliesJson = {
+                '@context': contextStr,
+                'first': firstStr,
+                'id': idStr,
+                'last': lastStr,
+                'totalItems': 0,
+                'type': 'OrderedCollection'
+            }
+
+            if self._requestHTTP():
+                if not self.server.session:
+                    print('DEBUG: creating new session during get replies')
+                    self.server.session = createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during get replies')
+                        self._404()
+                        self.server.GETbusy = False
+                        return
+                recentPostsCache = self.server.recentPostsCache
+                maxRecentPosts = self.server.maxRecentPosts
+                translate = self.server.translate
+                session = self.server.session
+                cachedWebfingers = self.server.cachedWebfingers
+                personCache = self.server.personCache
+                projectVersion = self.server.projectVersion
+                ytDomain = self.server.YTReplacementDomain
+                msg = \
+                    htmlPostReplies(recentPostsCache,
+                                    maxRecentPosts,
+                                    translate,
+                                    baseDir,
+                                    session,
+                                    cachedWebfingers,
+                                    personCache,
+                                    nickname,
+                                    domain,
+                                    port,
+                                    repliesJson,
+                                    httpPrefix,
+                                    projectVersion,
+                                    ytDomain)
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(repliesJson, ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    protocolStr = 'application/json'
+                    self._set_headers(protocolStr, len(msg), None,
+                                      callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        else:
+            # replies exist. Itterate through the
+            # text file containing message ids
+            contextStr = 'https://www.w3.org/ns/activitystreams'
+
+            idStr = \
+                httpPrefix + '://' + domainFull + \
+                '/users/' + nickname + '/statuses/' + \
+                statusNumber + '?page=true'
+
+            partOfStr = \
+                httpPrefix + '://' + domainFull + \
+                '/users/' + nickname + '/statuses/' + statusNumber
+
+            repliesJson = {
+                '@context': contextStr,
+                'id': idStr,
+                'orderedItems': [
+                ],
+                'partOf': partOfStr,
+                'type': 'OrderedCollectionPage'
+            }
+
+            # populate the items list with replies
+            populateRepliesJson(baseDir, nickname, domain,
+                                postRepliesFilename,
+                                authorized, repliesJson)
+
+            # send the replies json
+            if self._requestHTTP():
+                if not self.server.session:
+                    print('DEBUG: creating new session ' +
+                          'during get replies 2')
+                    self.server.session = createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to ' +
+                              'create session ' +
+                              'during get replies 2')
+                        self._404()
+                        self.server.GETbusy = False
+                        return
+                recentPostsCache = self.server.recentPostsCache
+                maxRecentPosts = self.server.maxRecentPosts
+                translate = self.server.translate
+                session = self.server.session
+                cachedWebfingers = self.server.cachedWebfingers
+                personCache = self.server.personCache
+                projectVersion = self.server.projectVersion
+                ytDomain = self.server.YTReplacementDomain
+                msg = \
+                    htmlPostReplies(recentPostsCache,
+                                    maxRecentPosts,
+                                    translate,
+                                    baseDir,
+                                    session,
+                                    cachedWebfingers,
+                                    personCache,
+                                    nickname,
+                                    domain,
+                                    port,
+                                    repliesJson,
+                                    httpPrefix,
+                                    projectVersion,
+                                    ytDomain)
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime,
+                                          GETtimings,
+                                          'individual post done',
+                                          'post replies done')
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(repliesJson,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    protocolStr = 'application/json'
+                    self._set_headers(protocolStr, len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showRoles(self, authorized: bool,
+                   callingDomain: str, path: str,
+                   baseDir: str, httpPrefix: str,
+                   domain: str, domainFull: str, port: int,
+                   onionDomain: str, i2pDomain: str,
+                   GETstartTime, GETtimings: {},
+                   proxyType: str, cookie: str,
+                   debug: str) -> bool:
+        """Show roles within profile screen
+        """
+        namedStatus = path.split('/users/')[1]
+        if '/' not in namedStatus:
+            return False
+
+        postSections = namedStatus.split('/')
+        nickname = postSections[0]
+        actorFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+        if not os.path.isfile(actorFilename):
+            return False
+
+        actorJson = loadJson(actorFilename)
+        if not actorJson:
+            return False
+
+        if actorJson.get('roles'):
+            if self._requestHTTP():
+                getPerson = \
+                    personLookup(domain, path.replace('/roles', ''),
+                                 baseDir)
+                if getPerson:
+                    defaultTimeline = \
+                        self.server.defaultTimeline
+                    recentPostsCache = \
+                        self.server.recentPostsCache
+                    cachedWebfingers = \
+                        self.server.cachedWebfingers
+                    YTReplacementDomain = \
+                        self.server.YTReplacementDomain
+                    msg = \
+                        htmlProfile(defaultTimeline,
+                                    recentPostsCache,
+                                    self.server.maxRecentPosts,
+                                    self.server.translate,
+                                    self.server.projectVersion,
+                                    baseDir, httpPrefix, True,
+                                    self.server.ocapAlways,
+                                    getPerson, 'roles',
+                                    self.server.session,
+                                    cachedWebfingers,
+                                    self.server.personCache,
+                                    YTReplacementDomain,
+                                    actorJson['roles'],
+                                    None, None)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'post replies done',
+                                              'show roles')
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(actorJson['roles'],
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showSkills(self, authorized: bool,
+                    callingDomain: str, path: str,
+                    baseDir: str, httpPrefix: str,
+                    domain: str, domainFull: str, port: int,
+                    onionDomain: str, i2pDomain: str,
+                    GETstartTime, GETtimings: {},
+                    proxyType: str, cookie: str,
+                    debug: str) -> bool:
+        """Show skills on the profile screen
+        """
+        namedStatus = path.split('/users/')[1]
+        if '/' in namedStatus:
+            postSections = namedStatus.split('/')
+            nickname = postSections[0]
+            actorFilename = \
+                baseDir + '/accounts/' + \
+                nickname + '@' + domain + '.json'
+            if os.path.isfile(actorFilename):
+                actorJson = loadJson(actorFilename)
+                if actorJson:
+                    if actorJson.get('skills'):
+                        if self._requestHTTP():
+                            getPerson = \
+                                personLookup(domain,
+                                             path.replace('/skills', ''),
+                                             baseDir)
+                            if getPerson:
+                                defaultTimeline =  \
+                                    self.server.defaultTimeline
+                                recentPostsCache = \
+                                    self.server.recentPostsCache
+                                cachedWebfingers = \
+                                    self.server.cachedWebfingers
+                                YTReplacementDomain = \
+                                    self.server.YTReplacementDomain
+                                msg = \
+                                    htmlProfile(defaultTimeline,
+                                                recentPostsCache,
+                                                self.server.maxRecentPosts,
+                                                self.server.translate,
+                                                self.server.projectVersion,
+                                                baseDir, httpPrefix, True,
+                                                self.server.ocapAlways,
+                                                getPerson, 'skills',
+                                                self.server.session,
+                                                cachedWebfingers,
+                                                self.server.personCache,
+                                                YTReplacementDomain,
+                                                actorJson['skills'],
+                                                None, None)
+                                msg = msg.encode('utf-8')
+                                self._set_headers('text/html', len(msg),
+                                                  cookie, callingDomain)
+                                self._write(msg)
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'post roles done',
+                                                          'show skills')
+                        else:
+                            if self._fetchAuthenticated():
+                                msg = json.dumps(actorJson['skills'],
+                                                 ensure_ascii=False)
+                                msg = msg.encode('utf-8')
+                                self._set_headers('application/json',
+                                                  len(msg), None,
+                                                  callingDomain)
+                                self._write(msg)
+                            else:
+                                self._404()
+                        self.server.GETbusy = False
+                        return True
+        actor = path.replace('/skills', '')
+        actorAbsolute = httpPrefix + '://' + domainFull + actor
+        if callingDomain.endswith('.onion') and onionDomain:
+            actorAbsolute = 'http://' + onionDomain + actor
+        elif callingDomain.endswith('.i2p') and i2pDomain:
+            actorAbsolute = 'http://' + i2pDomain + actor
+        self._redirect_headers(actorAbsolute, cookie, callingDomain)
+        self.server.GETbusy = False
+        return True
+
+    def _showIndividualAtPost(self, authorized: bool,
+                              callingDomain: str, path: str,
+                              baseDir: str, httpPrefix: str,
+                              domain: str, domainFull: str, port: int,
+                              onionDomain: str, i2pDomain: str,
+                              GETstartTime, GETtimings: {},
+                              proxyType: str, cookie: str,
+                              debug: str) -> bool:
+        """get an individual post from the path /@nickname/statusnumber
+        """
+        if '/@' not in path:
+            return False
+
+        likedBy = None
+        if '?likedBy=' in path:
+            likedBy = path.split('?likedBy=')[1].strip()
+            if '?' in likedBy:
+                likedBy = likedBy.split('?')[0]
+            path = path.split('?likedBy=')[0]
+
+        namedStatus = path.split('/@')[1]
+        if '/' not in namedStatus:
+            # show actor
+            nickname = namedStatus
+        else:
+            postSections = namedStatus.split('/')
+            if len(postSections) == 2:
+                nickname = postSections[0]
+                statusNumber = postSections[1]
+                if len(statusNumber) > 10 and statusNumber.isdigit():
+                    postFilename = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + \
+                        domain + '/outbox/' + \
+                        httpPrefix + ':##' + \
+                        domainFull + '#users#' + \
+                        nickname + '#statuses#' + \
+                        statusNumber + '.json'
+                    if os.path.isfile(postFilename):
+                        postJsonObject = loadJson(postFilename)
+                        loadedPost = False
+                        if postJsonObject:
+                            loadedPost = True
+                        else:
+                            postJsonObject = {}
+                        if loadedPost:
+                            # Only authorized viewers get to see likes
+                            # on posts. Otherwize marketers could gain
+                            # more social graph info
+                            if not authorized:
+                                pjo = postJsonObject
+                                self._removePostInteractions(pjo)
+                            if self._requestHTTP():
+                                recentPostsCache = \
+                                    self.server.recentPostsCache
+                                maxRecentPosts = \
+                                    self.server.maxRecentPosts
+                                translate = \
+                                    self.server.translate
+                                cachedWebfingers = \
+                                    self.server.cachedWebfingers
+                                personCache = \
+                                    self.server.personCache
+                                projectVersion = \
+                                    self.server.projectVersion
+                                ytDomain = \
+                                    self.server.YTReplacementDomain
+                                msg = \
+                                    htmlIndividualPost(recentPostsCache,
+                                                       maxRecentPosts,
+                                                       translate,
+                                                       self.server.session,
+                                                       cachedWebfingers,
+                                                       personCache,
+                                                       nickname,
+                                                       domain,
+                                                       port,
+                                                       authorized,
+                                                       postJsonObject,
+                                                       httpPrefix,
+                                                       projectVersion,
+                                                       likedBy,
+                                                       ytDomain)
+                                msg = msg.encode('utf-8')
+                                self._set_headers('text/html', len(msg),
+                                                  cookie, callingDomain)
+                                self._write(msg)
+                            else:
+                                if self._fetchAuthenticated():
+                                    msg = json.dumps(postJsonObject,
+                                                     ensure_ascii=False)
+                                    msg = msg.encode('utf-8')
+                                    self._set_headers('application/json',
+                                                      len(msg),
+                                                      None, callingDomain)
+                                    self._write(msg)
+                                else:
+                                    self._404()
+                        self.server.GETbusy = False
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'new post done',
+                                                  'individual post shown')
+                        return True
+                    else:
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
+        return False
+
+    def _showIndividualPost(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows an individual post
+        """
+        likedBy = None
+        if '?likedBy=' in path:
+            likedBy = path.split('?likedBy=')[1].strip()
+            if '?' in likedBy:
+                likedBy = likedBy.split('?')[0]
+            path = path.split('?likedBy=')[0]
+        namedStatus = path.split('/users/')[1]
+        if '/' not in namedStatus:
+            return False
+        postSections = namedStatus.split('/')
+        if len(postSections) < 3:
+            return False
+        nickname = postSections[0]
+        statusNumber = postSections[2]
+        if len(statusNumber) <= 10 or (not statusNumber.isdigit()):
+            return False
+        postFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + \
+            domain + '/outbox/' + \
+            httpPrefix + ':##' + \
+            domainFull + '#users#' + \
+            nickname + '#statuses#' + \
+            statusNumber + '.json'
+        if os.path.isfile(postFilename):
+            postJsonObject = loadJson(postFilename)
+            if not postJsonObject:
+                self.send_response(429)
+                self.end_headers()
+                self.server.GETbusy = False
+                return True
+            else:
+                # Only authorized viewers get to see likes
+                # on posts
+                # Otherwize marketers could gain more social
+                # graph info
+                if not authorized:
+                    pjo = postJsonObject
+                    self._removePostInteractions(pjo)
+
+                if self._requestHTTP():
+                    recentPostsCache = \
+                        self.server.recentPostsCache
+                    maxRecentPosts = \
+                        self.server.maxRecentPosts
+                    translate = \
+                        self.server.translate
+                    cachedWebfingers = \
+                        self.server.cachedWebfingers
+                    personCache = \
+                        self.server.personCache
+                    projectVersion = \
+                        self.server.projectVersion
+                    ytDomain = \
+                        self.server.YTReplacementDomain
+                    msg = \
+                        htmlIndividualPost(recentPostsCache,
+                                           maxRecentPosts,
+                                           translate,
+                                           baseDir,
+                                           self.server.session,
+                                           cachedWebfingers,
+                                           personCache,
+                                           nickname,
+                                           domain,
+                                           port,
+                                           authorized,
+                                           postJsonObject,
+                                           httpPrefix,
+                                           projectVersion,
+                                           likedBy,
+                                           ytDomain)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime,
+                                              GETtimings,
+                                              'show skills ' +
+                                              'done',
+                                              'show status')
+                else:
+                    if self._fetchAuthenticated():
+                        msg = json.dumps(postJsonObject,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json',
+                                          len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    else:
+                        self._404()
+            self.server.GETbusy = False
+            return True
+        else:
+            self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showInbox(self, authorized: bool,
+                   callingDomain: str, path: str,
+                   baseDir: str, httpPrefix: str,
+                   domain: str, domainFull: str, port: int,
+                   onionDomain: str, i2pDomain: str,
+                   GETstartTime, GETtimings: {},
+                   proxyType: str, cookie: str,
+                   debug: str,
+                   recentPostsCache: {}, session,
+                   ocapAlways: bool,
+                   defaultTimeline: str,
+                   maxRecentPosts: int,
+                   translate: {},
+                   cachedWebfingers: {},
+                   personCache: {},
+                   allowDeletion: bool,
+                   projectVersion: str,
+                   YTReplacementDomain: str) -> bool:
+        """Shows the inbox timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxFeed = \
+                    personBoxJson(recentPostsCache,
+                                  session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'inbox',
+                                  authorized,
+                                  ocapAlways)
+                if inboxFeed:
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show status done',
+                                              'show inbox json')
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/inbox', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            inboxFeed = \
+                                personBoxJson(recentPostsCache,
+                                              session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed, 'inbox',
+                                              authorized,
+                                              ocapAlways)
+                            self._benchmarkGETtimings(GETstartTime,
+                                                      GETtimings,
+                                                      'show status done',
+                                                      'show inbox page')
+                        msg = htmlInbox(defaultTimeline,
+                                        recentPostsCache,
+                                        maxRecentPosts,
+                                        translate,
+                                        pageNumber, maxPostsInFeed,
+                                        session,
+                                        baseDir,
+                                        cachedWebfingers,
+                                        personCache,
+                                        nickname,
+                                        domain,
+                                        port,
+                                        inboxFeed,
+                                        allowDeletion,
+                                        httpPrefix,
+                                        projectVersion,
+                                        self._isMinimal(nickname),
+                                        YTReplacementDomain)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox html')
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(inboxFeed, ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/inbox', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/inbox':
+            # not the shared inbox
+            if debug:
+                print('DEBUG: GET access to inbox is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showDMs(self, authorized: bool,
+                 callingDomain: str, path: str,
+                 baseDir: str, httpPrefix: str,
+                 domain: str, domainFull: str, port: int,
+                 onionDomain: str, i2pDomain: str,
+                 GETstartTime, GETtimings: {},
+                 proxyType: str, cookie: str,
+                 debug: str) -> bool:
+        """Shows the DMs timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxDMFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'dm',
+                                  authorized,
+                                  self.server.ocapAlways)
+                if inboxDMFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/dm', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            inboxDMFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed, 'dm',
+                                              authorized,
+                                              self.server.ocapAlways)
+                        msg = \
+                            htmlInboxDMs(self.server.defaultTimeline,
+                                         self.server.recentPostsCache,
+                                         self.server.maxRecentPosts,
+                                         self.server.translate,
+                                         pageNumber, maxPostsInFeed,
+                                         self.server.session,
+                                         baseDir,
+                                         self.server.cachedWebfingers,
+                                         self.server.personCache,
+                                         nickname,
+                                         domain,
+                                         port,
+                                         inboxDMFeed,
+                                         self.server.allowDeletion,
+                                         httpPrefix,
+                                         self.server.projectVersion,
+                                         self._isMinimal(nickname),
+                                         self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show inbox done',
+                                                  'show dms')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(inboxDMFeed, ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json',
+                                          len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/dm', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/dm':
+            # not the DM inbox
+            if debug:
+                print('DEBUG: GET access to DM timeline is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showReplies(self, authorized: bool,
+                     callingDomain: str, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str, port: int,
+                     onionDomain: str, i2pDomain: str,
+                     GETstartTime, GETtimings: {},
+                     proxyType: str, cookie: str,
+                     debug: str) -> bool:
+        """Shows the replies timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxRepliesFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'tlreplies',
+                                  True, self.server.ocapAlways)
+                if not inboxRepliesFeed:
+                    inboxRepliesFeed = []
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlreplies', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxRepliesFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          path + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInFeed, 'tlreplies',
+                                          True, self.server.ocapAlways)
+                    msg = \
+                        htmlInboxReplies(self.server.defaultTimeline,
+                                         self.server.recentPostsCache,
+                                         self.server.maxRecentPosts,
+                                         self.server.translate,
+                                         pageNumber, maxPostsInFeed,
+                                         self.server.session,
+                                         baseDir,
+                                         self.server.cachedWebfingers,
+                                         self.server.personCache,
+                                         nickname,
+                                         domain,
+                                         port,
+                                         inboxRepliesFeed,
+                                         self.server.allowDeletion,
+                                         httpPrefix,
+                                         self.server.projectVersion,
+                                         self._isMinimal(nickname),
+                                         self.server.YTReplacementDomain)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show dms done',
+                                              'show replies 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxRepliesFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlreplies', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlreplies':
+            # not the replies inbox
+            if debug:
+                print('DEBUG: GET access to inbox is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showMediaTimeline(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the media timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxMediaFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInMediaFeed, 'tlmedia',
+                                  True, self.server.ocapAlways)
+                if not inboxMediaFeed:
+                    inboxMediaFeed = []
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlmedia', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxMediaFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          path + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInMediaFeed, 'tlmedia',
+                                          True, self.server.ocapAlways)
+                    msg = \
+                        htmlInboxMedia(self.server.defaultTimeline,
+                                       self.server.recentPostsCache,
+                                       self.server.maxRecentPosts,
+                                       self.server.translate,
+                                       pageNumber, maxPostsInMediaFeed,
+                                       self.server.session,
+                                       baseDir,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       inboxMediaFeed,
+                                       self.server.allowDeletion,
+                                       httpPrefix,
+                                       self.server.projectVersion,
+                                       self._isMinimal(nickname),
+                                       self.server.YTReplacementDomain)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show replies 2 done',
+                                              'show media 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxMediaFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlmedia', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlmedia':
+            # not the media inbox
+            if debug:
+                print('DEBUG: GET access to inbox is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showBlogsTimeline(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the blogs timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxBlogsFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInBlogsFeed, 'tlblogs',
+                                  True, self.server.ocapAlways)
+                if not inboxBlogsFeed:
+                    inboxBlogsFeed = []
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlblogs', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxBlogsFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          path + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInBlogsFeed, 'tlblogs',
+                                          True, self.server.ocapAlways)
+                    msg = \
+                        htmlInboxBlogs(self.server.defaultTimeline,
+                                       self.server.recentPostsCache,
+                                       self.server.maxRecentPosts,
+                                       self.server.translate,
+                                       pageNumber, maxPostsInBlogsFeed,
+                                       self.server.session,
+                                       baseDir,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       inboxBlogsFeed,
+                                       self.server.allowDeletion,
+                                       httpPrefix,
+                                       self.server.projectVersion,
+                                       self._isMinimal(nickname),
+                                       self.server.YTReplacementDomain)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show media 2 done',
+                                              'show blogs 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxBlogsFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json',
+                                      len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlblogs', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlblogs':
+            # not the blogs inbox
+            if debug:
+                print('DEBUG: GET access to blogs is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showSharesTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the shares timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlshares', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    msg = \
+                        htmlShares(self.server.defaultTimeline,
+                                   self.server.recentPostsCache,
+                                   self.server.maxRecentPosts,
+                                   self.server.translate,
+                                   pageNumber, maxPostsInFeed,
+                                   self.server.session,
+                                   baseDir,
+                                   self.server.cachedWebfingers,
+                                   self.server.personCache,
+                                   nickname,
+                                   domain,
+                                   port,
+                                   self.server.allowDeletion,
+                                   httpPrefix,
+                                   self.server.projectVersion,
+                                   self.server.YTReplacementDomain)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show shares 2')
+                    self.server.GETbusy = False
+                    return True
+        # not the shares timeline
+        if debug:
+            print('DEBUG: GET access to shares timeline is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
+    def _showBookmarksTimeline(self, authorized: bool,
+                               callingDomain: str, path: str,
+                               baseDir: str, httpPrefix: str,
+                               domain: str, domainFull: str, port: int,
+                               onionDomain: str, i2pDomain: str,
+                               GETstartTime, GETtimings: {},
+                               proxyType: str, cookie: str,
+                               debug: str) -> bool:
+        """Shows the bookmarks timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                bookmarksFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'tlbookmarks',
+                                  authorized, self.server.ocapAlways)
+                if bookmarksFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/tlbookmarks', '')
+                        nickname = nickname.replace('/bookmarks', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            bookmarksFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed,
+                                              'tlbookmarks',
+                                              authorized,
+                                              self.server.ocapAlways)
+                        msg = \
+                            htmlBookmarks(self.server.defaultTimeline,
+                                          self.server.recentPostsCache,
+                                          self.server.maxRecentPosts,
+                                          self.server.translate,
+                                          pageNumber, maxPostsInFeed,
+                                          self.server.session,
+                                          baseDir,
+                                          self.server.cachedWebfingers,
+                                          self.server.personCache,
+                                          nickname,
+                                          domain,
+                                          port,
+                                          bookmarksFeed,
+                                          self.server.allowDeletion,
+                                          httpPrefix,
+                                          self.server.projectVersion,
+                                          self._isMinimal(nickname),
+                                          self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show shares 2 done',
+                                                  'show bookmarks 2')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(bookmarksFeed,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlbookmarks', '')
+                    nickname = nickname.replace('/bookmarks', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if debug:
+            print('DEBUG: GET access to bookmarks is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
+    def _showEventsTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the events timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                # convert /events to /tlevents
+                if path.endswith('/events') or \
+                   '/events?page=' in path:
+                    path = path.replace('/events', '/tlevents')
+                eventsFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'tlevents',
+                                  authorized, self.server.ocapAlways)
+                print('eventsFeed: ' + str(eventsFeed))
+                if eventsFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/tlevents', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            eventsFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed,
+                                              'tlevents',
+                                              authorized,
+                                              self.server.ocapAlways)
+                        msg = \
+                            htmlEvents(self.server.defaultTimeline,
+                                       self.server.recentPostsCache,
+                                       self.server.maxRecentPosts,
+                                       self.server.translate,
+                                       pageNumber, maxPostsInFeed,
+                                       self.server.session,
+                                       baseDir,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       eventsFeed,
+                                       self.server.allowDeletion,
+                                       httpPrefix,
+                                       self.server.projectVersion,
+                                       self._isMinimal(nickname),
+                                       self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show bookmarks 2 done',
+                                                  'show events')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(eventsFeed,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlevents', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if debug:
+            print('DEBUG: GET access to events is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
+    def _showOutboxTimeline(self, authorized: bool,
+                            callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str, port: int,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
+                            proxyType: str, cookie: str,
+                            debug: str) -> bool:
+        """Shows the outbox timeline
+        """
+        # get outbox feed for a person
+        outboxFeed = \
+            personBoxJson(self.server.recentPostsCache,
+                          self.server.session,
+                          baseDir, domain,
+                          port, path,
+                          httpPrefix,
+                          maxPostsInFeed, 'outbox',
+                          authorized,
+                          self.server.ocapAlways)
+        if outboxFeed:
+            if self._requestHTTP():
+                nickname = \
+                    path.replace('/users/', '').replace('/outbox', '')
+                pageNumber = 1
+                if '?page=' in nickname:
+                    pageNumber = nickname.split('?page=')[1]
+                    nickname = nickname.split('?page=')[0]
+                    if pageNumber.isdigit():
+                        pageNumber = int(pageNumber)
+                    else:
+                        pageNumber = 1
+                if 'page=' not in path:
+                    # if a page wasn't specified then show the first one
+                    outboxFeed = \
+                        personBoxJson(self.server.recentPostsCache,
+                                      self.server.session,
+                                      baseDir,
+                                      domain,
+                                      port,
+                                      path + '?page=1',
+                                      httpPrefix,
+                                      maxPostsInFeed, 'outbox',
+                                      authorized,
+                                      self.server.ocapAlways)
+                msg = \
+                    htmlOutbox(self.server.defaultTimeline,
+                               self.server.recentPostsCache,
+                               self.server.maxRecentPosts,
+                               self.server.translate,
+                               pageNumber, maxPostsInFeed,
+                               self.server.session,
+                               baseDir,
+                               self.server.cachedWebfingers,
+                               self.server.personCache,
+                               nickname,
+                               domain,
+                               port,
+                               outboxFeed,
+                               self.server.allowDeletion,
+                               httpPrefix,
+                               self.server.projectVersion,
+                               self._isMinimal(nickname),
+                               self.server.YTReplacementDomain)
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show events done',
+                                          'show outbox')
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(outboxFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showModTimeline(self, authorized: bool,
+                         callingDomain: str, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, domainFull: str, port: int,
+                         onionDomain: str, i2pDomain: str,
+                         GETstartTime, GETtimings: {},
+                         proxyType: str, cookie: str,
+                         debug: str) -> bool:
+        """Shows the moderation timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                moderationFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInFeed, 'moderation',
+                                  True, self.server.ocapAlways)
+                if moderationFeed:
+                    if self._requestHTTP():
+                        nickname = path.replace('/users/', '')
+                        nickname = nickname.replace('/moderation', '')
+                        pageNumber = 1
+                        if '?page=' in nickname:
+                            pageNumber = nickname.split('?page=')[1]
+                            nickname = nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber = int(pageNumber)
+                            else:
+                                pageNumber = 1
+                        if 'page=' not in path:
+                            # if no page was specified then show the first
+                            moderationFeed = \
+                                personBoxJson(self.server.recentPostsCache,
+                                              self.server.session,
+                                              baseDir,
+                                              domain,
+                                              port,
+                                              path + '?page=1',
+                                              httpPrefix,
+                                              maxPostsInFeed, 'moderation',
+                                              True, self.server.ocapAlways)
+                        msg = \
+                            htmlModeration(self.server.defaultTimeline,
+                                           self.server.recentPostsCache,
+                                           self.server.maxRecentPosts,
+                                           self.server.translate,
+                                           pageNumber, maxPostsInFeed,
+                                           self.server.session,
+                                           baseDir,
+                                           self.server.cachedWebfingers,
+                                           self.server.personCache,
+                                           nickname,
+                                           domain,
+                                           port,
+                                           moderationFeed,
+                                           True,
+                                           httpPrefix,
+                                           self.server.projectVersion,
+                                           self.server.YTReplacementDomain)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('text/html', len(msg),
+                                          cookie, callingDomain)
+                        self._write(msg)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show outbox done',
+                                                  'show moderation')
+                    else:
+                        # don't need authenticated fetch here because
+                        # there is already the authorization check
+                        msg = json.dumps(moderationFeed,
+                                         ensure_ascii=False)
+                        msg = msg.encode('utf-8')
+                        self._set_headers('application/json', len(msg),
+                                          None, callingDomain)
+                        self._write(msg)
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/moderation', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if debug:
+            print('DEBUG: GET access to moderation feed is unauthorized')
+        self.send_response(405)
+        self.end_headers()
+        self.server.GETbusy = False
+        return True
+
+    def _showSharesFeed(self, authorized: bool,
+                        callingDomain: str, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, cookie: str,
+                        debug: str) -> bool:
+        """Shows the shares feed
+        """
+        shares = \
+            getSharesFeedForPerson(baseDir, domain, port, path,
+                                   httpPrefix, sharesPerPage)
+        if shares:
+            if self._requestHTTP():
+                pageNumber = 1
+                if '?page=' not in path:
+                    searchPath = path
+                    # get a page of shares, not the summary
+                    shares = \
+                        getSharesFeedForPerson(baseDir, domain, port,
+                                               path + '?page=true',
+                                               httpPrefix,
+                                               sharesPerPage)
+                else:
+                    pageNumberStr = path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber = int(pageNumberStr)
+                    searchPath = path.split('?page=')[0]
+                getPerson = \
+                    personLookup(domain,
+                                 searchPath.replace('/shares', ''),
+                                 baseDir)
+                if getPerson:
+                    if not self.server.session:
+                        print('Starting new session during profile')
+                        self.server.session = createSession(proxyType)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session ' +
+                                  'during profile')
+                            self._404()
+                            self.server.GETbusy = False
+                            return True
+                    msg = \
+                        htmlProfile(self.server.defaultTimeline,
+                                    self.server.recentPostsCache,
+                                    self.server.maxRecentPosts,
+                                    self.server.translate,
+                                    self.server.projectVersion,
+                                    baseDir, httpPrefix,
+                                    authorized,
+                                    self.server.ocapAlways,
+                                    getPerson, 'shares',
+                                    self.server.session,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    self.server.YTReplacementDomain,
+                                    shares,
+                                    pageNumber, sharesPerPage)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show moderation done',
+                                              'show profile 2')
+                    self.server.GETbusy = False
+                    return True
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(shares,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+                self.server.GETbusy = False
+                return True
+        return False
+
+    def _showFollowingFeed(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the following feed
+        """
+        following = \
+            getFollowingFeed(baseDir, domain, port, path,
+                             httpPrefix, authorized, followsPerPage)
+        if following:
+            if self._requestHTTP():
+                pageNumber = 1
+                if '?page=' not in path:
+                    searchPath = path
+                    # get a page of following, not the summary
+                    following = \
+                        getFollowingFeed(baseDir,
+                                         domain,
+                                         port,
+                                         path + '?page=true',
+                                         httpPrefix,
+                                         authorized, followsPerPage)
+                else:
+                    pageNumberStr = path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber = int(pageNumberStr)
+                    searchPath = path.split('?page=')[0]
+                getPerson = \
+                    personLookup(domain,
+                                 searchPath.replace('/following', ''),
+                                 baseDir)
+                if getPerson:
+                    if not self.server.session:
+                        print('Starting new session during following')
+                        self.server.session = createSession(proxyType)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session ' +
+                                  'during following')
+                            self._404()
+                            self.server.GETbusy = False
+                            return True
+
+                    msg = \
+                        htmlProfile(self.server.defaultTimeline,
+                                    self.server.recentPostsCache,
+                                    self.server.maxRecentPosts,
+                                    self.server.translate,
+                                    self.server.projectVersion,
+                                    baseDir, httpPrefix,
+                                    authorized,
+                                    self.server.ocapAlways,
+                                    getPerson, 'following',
+                                    self.server.session,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    self.server.YTReplacementDomain,
+                                    following,
+                                    pageNumber,
+                                    followsPerPage).encode('utf-8')
+                    self._set_headers('text/html',
+                                      len(msg), cookie, callingDomain)
+                    self._write(msg)
+                    self.server.GETbusy = False
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show profile 2 done',
+                                              'show profile 3')
+                    return True
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(following,
+                                     ensure_ascii=False).encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+                self.server.GETbusy = False
+                return True
+        return False
+
+    def _showFollowersFeed(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the followers feed
+        """
+        followers = \
+            getFollowingFeed(baseDir, domain, port, path, httpPrefix,
+                             authorized, followsPerPage, 'followers')
+        if followers:
+            if self._requestHTTP():
+                pageNumber = 1
+                if '?page=' not in path:
+                    searchPath = path
+                    # get a page of followers, not the summary
+                    followers = \
+                        getFollowingFeed(baseDir,
+                                         domain,
+                                         port,
+                                         path + '?page=1',
+                                         httpPrefix,
+                                         authorized, followsPerPage,
+                                         'followers')
+                else:
+                    pageNumberStr = path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber = int(pageNumberStr)
+                    searchPath = path.split('?page=')[0]
+                getPerson = \
+                    personLookup(domain,
+                                 searchPath.replace('/followers', ''),
+                                 baseDir)
+                if getPerson:
+                    if not self.server.session:
+                        print('Starting new session during following2')
+                        self.server.session = createSession(proxyType)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session ' +
+                                  'during following2')
+                            self._404()
+                            self.server.GETbusy = False
+                            return True
+                    msg = \
+                        htmlProfile(self.server.defaultTimeline,
+                                    self.server.recentPostsCache,
+                                    self.server.maxRecentPosts,
+                                    self.server.translate,
+                                    self.server.projectVersion,
+                                    baseDir,
+                                    httpPrefix,
+                                    authorized,
+                                    self.server.ocapAlways,
+                                    getPerson, 'followers',
+                                    self.server.session,
+                                    self.server.cachedWebfingers,
+                                    self.server.personCache,
+                                    self.server.YTReplacementDomain,
+                                    followers,
+                                    pageNumber,
+                                    followsPerPage).encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self.server.GETbusy = False
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show profile 3 done',
+                                              'show profile 4')
+                    return True
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(followers,
+                                     ensure_ascii=False).encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showPersonProfile(self, authorized: bool,
+                           callingDomain: str, path: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {},
+                           proxyType: str, cookie: str,
+                           debug: str) -> bool:
+        """Shows the profile for a person
+        """
+        # look up a person
+        getPerson = personLookup(domain, path, baseDir)
+        if getPerson:
+            if self._requestHTTP():
+                if not self.server.session:
+                    print('Starting new session during person lookup')
+                    self.server.session = createSession(proxyType)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session ' +
+                              'during person lookup')
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
+                msg = \
+                    htmlProfile(self.server.defaultTimeline,
+                                self.server.recentPostsCache,
+                                self.server.maxRecentPosts,
+                                self.server.translate,
+                                self.server.projectVersion,
+                                baseDir,
+                                httpPrefix,
+                                authorized,
+                                self.server.ocapAlways,
+                                getPerson, 'posts',
+                                self.server.session,
+                                self.server.cachedWebfingers,
+                                self.server.personCache,
+                                self.server.YTReplacementDomain,
+                                None, None).encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show profile 4 done',
+                                          'show profile posts')
+            else:
+                if self._fetchAuthenticated():
+                    msg = json.dumps(getPerson,
+                                     ensure_ascii=False).encode('utf-8')
+                    self._set_headers('application/json', len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showBlogPage(self, authorized: bool,
+                      callingDomain: str, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      GETstartTime, GETtimings: {},
+                      proxyType: str, cookie: str,
+                      translate: {}, debug: str) -> bool:
+        """Shows a blog page
+        """
+        pageNumber = 1
+        nickname = path.split('/blog/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if '?' in nickname:
+            nickname = nickname.split('?')[0]
+        if '?page=' in path:
+            pageNumberStr = path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
+            if pageNumberStr.isdigit():
+                pageNumber = int(pageNumberStr)
+                if pageNumber < 1:
+                    pageNumber = 1
+                elif pageNumber > 10:
+                    pageNumber = 10
+        if not self.server.session:
+            print('Starting new session during blog page')
+            self.server.session = createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during blog page')
+                self._404()
+                return True
+        msg = htmlBlogPage(authorized,
+                           self.server.session,
+                           baseDir,
+                           httpPrefix,
+                           translate,
+                           nickname,
+                           domain, port,
+                           maxPostsInBlogsFeed, pageNumber)
+        if msg is not None:
+            msg = msg.encode('utf-8')
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'blog view done', 'blog page')
+            return True
+        self._404()
+        return True
+
+    def _redirectToLoginScreen(self, callingDomain: str, path: str,
+                               httpPrefix: str, domainFull: str,
+                               onionDomain: str, i2pDomain: str,
+                               GETstartTime, GETtimings: {},
+                               authorized: bool, debug: bool):
+        """Redirects to the login screen if necessary
+        """
+        divertToLoginScreen = False
+        if '/media/' not in path and \
+           '/sharefiles/' not in path and \
+           '/statuses/' not in path and \
+           '/emoji/' not in path and \
+           '/tags/' not in path and \
+           '/avatars/' not in path and \
+           '/fonts/' not in path and \
+           '/icons/' not in path:
+            divertToLoginScreen = True
+            if path.startswith('/users/'):
+                nickStr = path.split('/users/')[1]
+                if '/' not in nickStr and '?' not in nickStr:
+                    divertToLoginScreen = False
+                else:
+                    if path.endswith('/following') or \
+                       '/following?page=' in path or \
+                       path.endswith('/followers') or \
+                       '/followers?page=' in path or \
+                       path.endswith('/skills') or \
+                       path.endswith('/roles') or \
+                       path.endswith('/shares'):
+                        divertToLoginScreen = False
+
+        if divertToLoginScreen and not authorized:
+            if debug:
+                print('DEBUG: divertToLoginScreen=' +
+                      str(divertToLoginScreen))
+                print('DEBUG: authorized=' + str(authorized))
+                print('DEBUG: path=' + path)
+            if callingDomain.endswith('.onion') and onionDomain:
+                self._redirect_headers('http://' +
+                                       onionDomain + '/login',
+                                       None, callingDomain)
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                self._redirect_headers('http://' +
+                                       i2pDomain + '/login',
+                                       None, callingDomain)
+            else:
+                self._redirect_headers(httpPrefix + '://' +
+                                       domainFull +
+                                       '/login', None, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'robots txt',
+                                      'show login screen')
+            return True
+        return False
+
+    def _getStyleSheet(self, callingDomain: str, path: str,
+                       GETstartTime, GETtimings: {}) -> bool:
+        """Returns the content of a css file
+        """
+        # get the last part of the path
+        # eg. /my/path/file.css becomes file.css
+        if '/' in path:
+            path = path.split('/')[-1]
+        if os.path.isfile(path):
+            tries = 0
+            while tries < 5:
+                try:
+                    with open(path, 'r') as cssfile:
+                        css = cssfile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            msg = css.encode('utf-8')
+            self._set_headers('text/css', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show login screen done',
+                                      'show profile.css')
+            return True
+        self._404()
+        return True
+
+    def _showQRcode(self, callingDomain: str, path: str,
+                    baseDir: str, domain: str, port: int,
+                    GETstartTime, GETtimings: {}) -> bool:
+        """Shows a QR code for an account
+        """
+        nickname = getNicknameFromActor(path)
+        savePersonQrcode(baseDir, nickname, domain, port)
+        qrFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/qrcode.png'
+        if os.path.isfile(qrFilename):
+            if self._etag_exists(qrFilename):
+                # The file has not changed
+                self._304()
+                return
+
+            tries = 0
+            mediaBinary = None
+            while tries < 5:
+                try:
+                    with open(qrFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            if mediaBinary:
+                self._set_headers_etag(qrFilename, 'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'login screen logo done',
+                                          'account qrcode')
+                return True
+        self._404()
+        return True
+
+    def _searchScreenBanner(self, callingDomain: str, path: str,
+                            baseDir: str, domain: str, port: int,
+                            GETstartTime, GETtimings: {}) -> bool:
+        """Shows a banner image on the search screen
+        """
+        nickname = getNicknameFromActor(path)
+        bannerFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/search_banner.png'
+        if os.path.isfile(bannerFilename):
+            if self._etag_exists(bannerFilename):
+                # The file has not changed
+                self._304()
+                return True
+
+            tries = 0
+            mediaBinary = None
+            while tries < 5:
+                try:
+                    with open(bannerFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            if mediaBinary:
+                self._set_headers_etag(bannerFilename, 'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'account qrcode done',
+                                          'search screen banner')
+                return True
+        self._404()
+        return True
+
+    def _showBackgroundImage(self, callingDomain: str, path: str,
+                             baseDir: str,
+                             GETstartTime, GETtimings: {}) -> bool:
+        """Show a background image
+        """
+        for ext in ('webp', 'gif', 'jpg', 'png'):
+            for bg in ('follow', 'options', 'login'):
+                # follow screen background image
+                if path.endswith('/' + bg + '-background.' + ext):
+                    bgFilename = \
+                        baseDir + '/accounts/' + \
+                        bg + '-background.' + ext
+                    if os.path.isfile(bgFilename):
+                        if self._etag_exists(bgFilename):
+                            # The file has not changed
+                            self._304()
+                            return True
+
+                        tries = 0
+                        bgBinary = None
+                        while tries < 5:
+                            try:
+                                with open(bgFilename, 'rb') as avFile:
+                                    bgBinary = avFile.read()
+                                    break
+                            except Exception as e:
+                                print(e)
+                                time.sleep(1)
+                                tries += 1
+                        if bgBinary:
+                            if ext == 'jpg':
+                                ext = 'jpeg'
+                            self._set_headers_etag(bgFilename,
+                                                   'image/' + ext,
+                                                   bgBinary, None,
+                                                   callingDomain)
+                            self._write(bgBinary)
+                            self._benchmarkGETtimings(GETstartTime,
+                                                      GETtimings,
+                                                      'search screen ' +
+                                                      'banner done',
+                                                      'background shown')
+                            return True
+        self._404()
+        return True
+
+    def _showShareImage(self, callingDomain: str, path: str,
+                        baseDir: str,
+                        GETstartTime, GETtimings: {}) -> bool:
+        """Show a shared item image
+        """
+        if self._pathIsImage(path):
+            mediaStr = path.split('/sharefiles/')[1]
+            mediaFilename = \
+                baseDir + '/sharefiles/' + mediaStr
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return True
+
+                mediaFileType = 'png'
+                if mediaFilename.endswith('.png'):
+                    mediaFileType = 'png'
+                elif mediaFilename.endswith('.jpg'):
+                    mediaFileType = 'jpeg'
+                elif mediaFilename.endswith('.webp'):
+                    mediaFileType = 'webp'
+                else:
+                    mediaFileType = 'gif'
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self._set_headers_etag(mediaFilename,
+                                           'image/' + mediaFileType,
+                                           mediaBinary, None,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show media done',
+                                          'share files shown')
+                return True
+        self._404()
+        return True
+
+    def _showAvatarOrBackground(self, callingDomain: str, path: str,
+                                baseDir: str, domain: str,
+                                GETstartTime, GETtimings: {}) -> bool:
+        """Shows an avatar or profile background image
+        """
+        if '/users/' in path:
+            if self._pathIsImage(path):
+                avatarStr = path.split('/users/')[1]
+                if '/' in avatarStr and '.temp.' not in path:
+                    avatarNickname = avatarStr.split('/')[0]
+                    avatarFile = avatarStr.split('/')[1]
+                    # remove any numbers, eg. avatar123.png becomes avatar.png
+                    if avatarFile.startswith('avatar'):
+                        avatarFile = 'avatar.' + avatarFile.split('.')[1]
+                    elif avatarFile.startswith('image'):
+                        avatarFile = 'image.' + avatarFile.split('.')[1]
+                    avatarFilename = \
+                        baseDir + '/accounts/' + \
+                        avatarNickname + '@' + domain + '/' + avatarFile
+                    if os.path.isfile(avatarFilename):
+                        if self._etag_exists(avatarFilename):
+                            # The file has not changed
+                            self._304()
+                            return True
+                        mediaImageType = 'png'
+                        if avatarFile.endswith('.png'):
+                            mediaImageType = 'png'
+                        elif avatarFile.endswith('.jpg'):
+                            mediaImageType = 'jpeg'
+                        elif avatarFile.endswith('.gif'):
+                            mediaImageType = 'gif'
+                        else:
+                            mediaImageType = 'webp'
+                        with open(avatarFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            self._set_headers_etag(avatarFilename,
+                                                   'image/' + mediaImageType,
+                                                   mediaBinary, None,
+                                                   callingDomain)
+                            self._write(mediaBinary)
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'icon shown done',
+                                                  'avatar background shown')
+                        return True
+        return False
+
+    def _confirmDeleteEvent(self, callingDomain: str, path: str,
+                            baseDir: str, httpPrefix: str, cookie: str,
+                            translate: {}, domainFull: str,
+                            onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {}) -> bool:
+        """Confirm whether to delete a calendar event
+        """
+        postId = path.split('?id=')[1]
+        if '?' in postId:
+            postId = postId.split('?')[0]
+        postTime = path.split('?time=')[1]
+        if '?' in postTime:
+            postTime = postTime.split('?')[0]
+        postYear = path.split('?year=')[1]
+        if '?' in postYear:
+            postYear = postYear.split('?')[0]
+        postMonth = path.split('?month=')[1]
+        if '?' in postMonth:
+            postMonth = postMonth.split('?')[0]
+        postDay = path.split('?day=')[1]
+        if '?' in postDay:
+            postDay = postDay.split('?')[0]
+        # show the confirmation screen screen
+        msg = htmlCalendarDeleteConfirm(translate,
+                                        baseDir,
+                                        path,
+                                        httpPrefix,
+                                        domainFull,
+                                        postId, postTime,
+                                        postYear, postMonth, postDay,
+                                        callingDomain)
+        if not msg:
+            actor = \
+                httpPrefix + '://' + \
+                domainFull + \
+                path.split('/eventdelete')[0]
+            if callingDomain.endswith('.onion') and onionDomain:
+                actor = \
+                    'http://' + onionDomain + \
+                    path.split('/eventdelete')[0]
+            elif callingDomain.endswith('.i2p') and i2pDomain:
+                actor = \
+                    'http://' + i2pDomain + \
+                    path.split('/eventdelete')[0]
+            self._redirect_headers(actor + '/calendar',
+                                   cookie, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'calendar shown done',
+                                      'calendar delete shown')
+            return True
+        msg = msg.encode('utf-8')
+        self._set_headers('text/html', len(msg),
+                          cookie, callingDomain)
+        self._write(msg)
+        self.server.GETbusy = False
+        return True
+
+    def _showNewPost(self, callingDomain: str, path: str,
+                     mediaInstance: bool, translate: {},
+                     baseDir: str, httpPrefix: str,
+                     inReplyToUrl: str, replyToList: [],
+                     shareDescription: str, replyPageNumber: int,
+                     domain: str, domainFull: str,
+                     GETstartTime, GETtimings: {}, cookie) -> bool:
+        """Shows the new post screen
+        """
+        isNewPostEndpoint = False
+        if '/users/' in path and '/new' in path:
+            # Various types of new post in the web interface
+            newPostEnd = ('newpost', 'newblog', 'newunlisted',
+                          'newfollowers', 'newdm', 'newreminder',
+                          'newevent', 'newreport', 'newquestion',
+                          'newshare')
+            for postType in newPostEnd:
+                if path.endswith('/' + postType):
+                    isNewPostEndpoint = True
+                    break
+        if isNewPostEndpoint:
+            nickname = getNicknameFromActor(path)
+            msg = htmlNewPost(mediaInstance,
+                              translate,
+                              baseDir,
+                              httpPrefix,
+                              path, inReplyToUrl,
+                              replyToList,
+                              shareDescription,
+                              replyPageNumber,
+                              nickname, domain,
+                              domainFull).encode('utf-8')
+            if not msg:
+                print('Error replying to ' + inReplyToUrl)
+                self._404()
+                self.server.GETbusy = False
+                return True
+            self._set_headers('text/html', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'unmute activated done',
+                                      'new post made')
+            return True
+        return False
+
+    def _editProfile(self, callingDomain: str, path: str,
+                     translate: {}, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     cookie: str) -> bool:
+        """Show the edit profile screen
+        """
+        if '/users/' in path and path.endswith('/editprofile'):
+            msg = htmlEditProfile(translate,
+                                  baseDir,
+                                  path, domain,
+                                  port,
+                                  httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _editEvent(self, callingDomain: str, path: str,
+                   httpPrefix: str, domain: str, domainFull: str,
+                   baseDir: str, translate: {},
+                   mediaInstance: bool,
+                   cookie: str) -> bool:
+        """Show edit event screen
+        """
+        messageId = path.split('?editeventpost=')[1]
+        if '?' in messageId:
+            messageId = messageId.split('?')[0]
+        actor = path.split('?actor=')[1]
+        if '?' in actor:
+            actor = actor.split('?')[0]
+        nickname = getNicknameFromActor(path)
+        if nickname == actor:
+            # postUrl = \
+            #     httpPrefix + '://' + \
+            #     domainFull + '/users/' + nickname + \
+            #     '/statuses/' + messageId
+            msg = None
+            # TODO
+            # htmlEditEvent(mediaInstance,
+            #               translate,
+            #               baseDir,
+            #               httpPrefix,
+            #               path,
+            #               nickname, domain,
+            #               postUrl)
+            if msg:
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self.server.GETbusy = False
+                return True
+        return False
+
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
@@ -1261,146 +7319,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
-            app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
-            app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
-            manifest = {
-                "name": "Epicyon",
-                "short_name": "Epicyon",
-                "start_url": "/index.html",
-                "display": "standalone",
-                "background_color": "black",
-                "theme_color": "grey",
-                "orientation": "portrait-primary",
-                "categories": ["microblog", "fediverse", "activitypub"],
-                "screenshots": [
-                    {
-                        "src": "/mobile.jpg",
-                        "sizes": "418x851",
-                        "type": "image/jpeg"
-                    },
-                    {
-                        "src": "/mobile_person.jpg",
-                        "sizes": "429x860",
-                        "type": "image/jpeg"
-                    },
-                    {
-                        "src": "/mobile_search.jpg",
-                        "sizes": "422x861",
-                        "type": "image/jpeg"
-                    }
-                ],
-                "icons": [
-                    {
-                        "src": "/logo72.png",
-                        "type": "image/png",
-                        "sizes": "72x72"
-                    },
-                    {
-                        "src": "/logo96.png",
-                        "type": "image/png",
-                        "sizes": "96x96"
-                    },
-                    {
-                        "src": "/logo128.png",
-                        "type": "image/png",
-                        "sizes": "128x128"
-                    },
-                    {
-                        "src": "/logo144.png",
-                        "type": "image/png",
-                        "sizes": "144x144"
-                    },
-                    {
-                        "src": "/logo152.png",
-                        "type": "image/png",
-                        "sizes": "152x152"
-                    },
-                    {
-                        "src": "/logo192.png",
-                        "type": "image/png",
-                        "sizes": "192x192"
-                    },
-                    {
-                        "src": "/logo256.png",
-                        "type": "image/png",
-                        "sizes": "256x256"
-                    },
-                    {
-                        "src": "/logo512.png",
-                        "type": "image/png",
-                        "sizes": "512x512"
-                    }
-                ],
-                "related_applications": [
-                    {
-                        "platform": "fdroid",
-                        "url": app1
-                    },
-                    {
-                        "platform": "fdroid",
-                        "url": app2
-                    }
-                ]
-            }
-            msg = json.dumps(manifest,
-                             ensure_ascii=False).encode('utf-8')
-            self._set_headers('application/json',
-                              len(msg),
-                              None, callingDomain)
-            self._write(msg)
-            if self.server.debug:
-                print('Sent manifest: ' + callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'show logout', 'send manifest')
+            self._progressiveWebAppManifest(callingDomain,
+                                            GETstartTime, GETtimings)
             return
 
         # favicon image
         if 'favicon.ico' in self.path:
-            favType = 'image/x-icon'
-            favFilename = 'favicon.ico'
-            if self._hasAccept(callingDomain):
-                if 'image/webp' in self.headers['Accept']:
-                    favType = 'image/webp'
-                    favFilename = 'favicon.webp'
-            # custom favicon
-            faviconFilename = \
-                self.server.baseDir + '/' + favFilename
-            if not os.path.isfile(faviconFilename):
-                # default favicon
-                faviconFilename = \
-                    self.server.baseDir + '/img/icons/' + favFilename
-            if self._etag_exists(faviconFilename):
-                # The file has not changed
-                if self.server.debug:
-                    print('favicon icon has not changed: ' + callingDomain)
-                self._304()
-                return
-            if self.server.iconsCache.get(favFilename):
-                favBinary = self.server.iconsCache[favFilename]
-                self._set_headers_etag(faviconFilename,
-                                       favType,
-                                       favBinary, cookie,
-                                       callingDomain)
-                self._write(favBinary)
-                if self.server.debug:
-                    print('Sent favicon from cache: ' + callingDomain)
-                return
-            else:
-                if os.path.isfile(faviconFilename):
-                    with open(faviconFilename, 'rb') as favFile:
-                        favBinary = favFile.read()
-                        self._set_headers_etag(faviconFilename,
-                                               favType,
-                                               favBinary, cookie,
-                                               callingDomain)
-                        self._write(favBinary)
-                        self.server.iconsCache[favFilename] = favBinary
-                        if self.server.debug:
-                            print('Sent favicon from file: ' + callingDomain)
-                        return
-            if self.server.debug:
-                print('favicon not sent: ' + callingDomain)
-            self._404()
+            self._getFavicon(callingDomain, self.server.baseDir,
+                             self.server.debug)
             return
 
         # check authorization
@@ -1453,59 +7379,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get fonts
         if '/fonts/' in self.path:
-            fontStr = self.path.split('/fonts/')[1]
-            if fontStr.endswith('.otf') or \
-               fontStr.endswith('.ttf') or \
-               fontStr.endswith('.woff') or \
-               fontStr.endswith('.woff2'):
-                if fontStr.endswith('.otf'):
-                    fontType = 'font/otf'
-                elif fontStr.endswith('.ttf'):
-                    fontType = 'font/ttf'
-                elif fontStr.endswith('.woff'):
-                    fontType = 'font/woff'
-                else:
-                    fontType = 'font/woff2'
-                fontFilename = \
-                    self.server.baseDir + '/fonts/' + fontStr
-                if self._etag_exists(fontFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                if self.server.fontsCache.get(fontStr):
-                    fontBinary = self.server.fontsCache[fontStr]
-                    self._set_headers_etag(fontFilename,
-                                           fontType,
-                                           fontBinary, cookie,
-                                           callingDomain)
-                    self._write(fontBinary)
-                    if self.server.debug:
-                        print('font sent from cache: ' +
-                              self.path + ' ' + callingDomain)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'hasAccept',
-                                              'send font from cache')
-                    return
-                else:
-                    if os.path.isfile(fontFilename):
-                        with open(fontFilename, 'rb') as fontFile:
-                            fontBinary = fontFile.read()
-                            self._set_headers_etag(fontFilename,
-                                                   fontType,
-                                                   fontBinary, cookie,
-                                                   callingDomain)
-                            self._write(fontBinary)
-                            self.server.fontsCache[fontStr] = fontBinary
-                        if self.server.debug:
-                            print('font sent from file: ' +
-                                  self.path + ' ' + callingDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'hasAccept',
-                                                  'send font from file')
-                        return
-            if self.server.debug:
-                print('font not found: ' + self.path + ' ' + callingDomain)
-            self._404()
+            self._getFonts(callingDomain, self.path,
+                           self.server.baseDir, self.server.debug,
+                           GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -1529,49 +7405,15 @@ class PubServer(BaseHTTPRequestHandler):
         # RSS 2.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
-            nickname = self.path.split('/blog/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            if not nickname.startswith('rss.'):
-                if os.path.isdir(self.server.baseDir +
-                                 '/accounts/' + nickname +
-                                 '@' + self.server.domain):
-                    if not self.server.session:
-                        print('Starting new session during RSS request')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during RSS request')
-                            self._404()
-                            return
-
-                    msg = \
-                        htmlBlogPageRSS2(authorized,
-                                         self.server.session,
-                                         self.server.baseDir,
-                                         self.server.httpPrefix,
-                                         self.server.translate,
-                                         nickname,
-                                         self.server.domain,
-                                         self.server.port,
-                                         maxPostsInRSSFeed, 1)
-                    if msg is not None:
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/xml', len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        if self.server.debug:
-                            print('Sent rss2 feed: ' +
-                                  self.path + ' ' + callingDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'sharedInbox enabled',
-                                                  'blog rss2')
-                        return
-            if self.server.debug:
-                print('Failed to get rss2 feed: ' +
-                      self.path + ' ' + callingDomain)
-            self._404()
+            self._getRSS2feed(authorized,
+                              callingDomain, self.path,
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.port,
+                              self.server.proxyType,
+                              GETstartTime, GETtimings,
+                              self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -1580,48 +7422,15 @@ class PubServer(BaseHTTPRequestHandler):
         # RSS 3.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.txt'):
-            nickname = self.path.split('/blog/')[1]
-            if '/' in nickname:
-                nickname = nickname.split('/')[0]
-            if not nickname.startswith('rss.'):
-                if os.path.isdir(self.server.baseDir +
-                                 '/accounts/' + nickname +
-                                 '@' + self.server.domain):
-                    if not self.server.session:
-                        print('Starting new session during RSS3 request')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during RSS3 request')
-                            self._404()
-                            return
-                    msg = \
-                        htmlBlogPageRSS3(authorized,
-                                         self.server.session,
-                                         self.server.baseDir,
-                                         self.server.httpPrefix,
-                                         self.server.translate,
-                                         nickname,
-                                         self.server.domain,
-                                         self.server.port,
-                                         maxPostsInRSSFeed, 1)
-                    if msg is not None:
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/plain; charset=utf-8',
-                                          len(msg), cookie, callingDomain)
-                        self._write(msg)
-                        if self.server.debug:
-                            print('Sent rss3 feed: ' +
-                                  self.path + ' ' + callingDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'sharedInbox enabled',
-                                                  'blog rss3')
-                        return
-            if self.server.debug:
-                print('Failed to get rss3 feed: ' +
-                      self.path + ' ' + callingDomain)
-            self._404()
+            self._getRSS3feed(authorized,
+                              callingDomain, self.path,
+                              self.server.baseDir,
+                              self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.port,
+                              self.server.proxyType,
+                              GETstartTime, GETtimings,
+                              self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -1668,51 +7477,20 @@ class PubServer(BaseHTTPRequestHandler):
         # for a particular account
         if htmlGET and self.path.startswith('/blog/'):
             if '/rss.xml' not in self.path:
-                pageNumber = 1
-                nickname = self.path.split('/blog/')[1]
-                if '/' in nickname:
-                    nickname = nickname.split('/')[0]
-                if '?' in nickname:
-                    nickname = nickname.split('?')[0]
-                if '?page=' in self.path:
-                    pageNumberStr = self.path.split('?page=')[1]
-                    if '?' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('?')[0]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                        if pageNumber < 1:
-                            pageNumber = 1
-                        elif pageNumber > 10:
-                            pageNumber = 10
-                if not self.server.session:
-                    print('Starting new session during blog page')
-                    self.server.session = \
-                        createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during blog page')
-                        self._404()
-                        return
-                msg = htmlBlogPage(authorized,
-                                   self.server.session,
-                                   self.server.baseDir,
-                                   self.server.httpPrefix,
-                                   self.server.translate,
-                                   nickname,
-                                   self.server.domain, self.server.port,
-                                   maxPostsInBlogsFeed, pageNumber)
-                if msg is not None:
-                    msg = msg.encode('utf-8')
-                    self._set_headers('text/html', len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'blog view done', 'blog page')
+                if self._showBlogPage(authorized,
+                                      callingDomain, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      cookie, self.server.translate,
+                                      self.server.debug):
                     return
-                self._404()
-                return
 
         # list of registered devices for e2ee
         # see https://github.com/tootsuite/mastodon/pull/13820
@@ -1744,76 +7522,15 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
-                optionsStr = self.path.split('?options=')[1]
-                originPathStr = self.path.split('?options=')[0]
-                if ';' in optionsStr:
-                    pageNumber = 1
-                    optionsList = optionsStr.split(';')
-                    optionsActor = optionsList[0]
-                    optionsPageNumber = optionsList[1]
-                    optionsProfileUrl = optionsList[2]
-                    if optionsPageNumber.isdigit():
-                        pageNumber = int(optionsPageNumber)
-                    optionsLink = None
-                    if len(optionsList) > 3:
-                        optionsLink = optionsList[3]
-                    donateUrl = None
-                    PGPpubKey = None
-                    PGPfingerprint = None
-                    xmppAddress = None
-                    matrixAddress = None
-                    blogAddress = None
-                    toxAddress = None
-                    ssbAddress = None
-                    emailAddress = None
-                    actorJson = getPersonFromCache(self.server.baseDir,
-                                                   optionsActor,
-                                                   self.server.personCache,
-                                                   True)
-                    if actorJson:
-                        donateUrl = getDonationUrl(actorJson)
-                        xmppAddress = getXmppAddress(actorJson)
-                        matrixAddress = getMatrixAddress(actorJson)
-                        ssbAddress = getSSBAddress(actorJson)
-                        blogAddress = getBlogAddress(actorJson)
-                        toxAddress = getToxAddress(actorJson)
-                        emailAddress = getEmailAddress(actorJson)
-                        PGPpubKey = getPGPpubKey(actorJson)
-                        PGPfingerprint = getPGPfingerprint(actorJson)
-                    msg = htmlPersonOptions(self.server.translate,
-                                            self.server.baseDir,
-                                            self.server.domain,
-                                            originPathStr,
-                                            optionsActor,
-                                            optionsProfileUrl,
-                                            optionsLink,
-                                            pageNumber, donateUrl,
-                                            xmppAddress, matrixAddress,
-                                            ssbAddress, blogAddress,
-                                            toxAddress,
-                                            PGPpubKey, PGPfingerprint,
-                                            emailAddress).encode('utf-8')
-                    self._set_headers('text/html', len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'registered devices done',
-                                              'person options')
-                    return
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStrAbsolute = \
-                        'http://' + self.server.onionDomain + originPathStr
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStrAbsolute = \
-                        'http://' + self.server.i2pDomain + originPathStr
-                else:
-                    originPathStrAbsolute = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + originPathStr
-                self._redirect_headers(originPathStrAbsolute, cookie,
-                                       callingDomain)
+                self._showPersonOptions(callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        GETstartTime, GETtimings,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        cookie, self.server.debug)
                 return
 
             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -1972,55 +7689,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not self._pathIsImage() and self.path != '/':
-            if '/media/' not in self.path and \
-               '/sharefiles/' not in self.path and \
-               '/statuses/' not in self.path and \
-               '/emoji/' not in self.path and \
-               '/tags/' not in self.path and \
-               '/avatars/' not in self.path and \
-               '/fonts/' not in self.path and \
-               '/icons/' not in self.path:
-                divertToLoginScreen = True
-                if self.path.startswith('/users/'):
-                    nickStr = self.path.split('/users/')[1]
-                    if '/' not in nickStr and '?' not in nickStr:
-                        divertToLoginScreen = False
-                    else:
-                        if self.path.endswith('/following') or \
-                           '/following?page=' in self.path or \
-                           self.path.endswith('/followers') or \
-                           '/followers?page=' in self.path or \
-                           self.path.endswith('/skills') or \
-                           self.path.endswith('/roles') or \
-                           self.path.endswith('/shares'):
-                            divertToLoginScreen = False
-                if divertToLoginScreen and not authorized:
-                    if self.server.debug:
-                        print('DEBUG: divertToLoginScreen=' +
-                              str(divertToLoginScreen))
-                        print('DEBUG: authorized=' + str(authorized))
-                        print('DEBUG: path=' + self.path)
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        self._redirect_headers('http://' +
-                                               self.server.onionDomain +
-                                               '/login',
-                                               None, callingDomain)
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        self._redirect_headers('http://' +
-                                               self.server.i2pDomain +
-                                               '/login',
-                                               None, callingDomain)
-                    else:
-                        self._redirect_headers(self.server.httpPrefix + '://' +
-                                               self.server.domainFull +
-                                               '/login', None, callingDomain)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'robots txt',
-                                              'show login screen')
-                    return
+           not self._pathIsImage(self.path) and self.path != '/':
+            if self._redirectToLoginScreen(callingDomain, self.path,
+                                           self.server.httpPrefix,
+                                           self.server.domainFull,
+                                           self.server.onionDomain,
+                                           self.server.i2pDomain,
+                                           GETstartTime, GETtimings,
+                                           authorized, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'robots txt',
@@ -2029,27 +7706,9 @@ class PubServer(BaseHTTPRequestHandler):
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
-            if os.path.isfile('epicyon-profile.css'):
-                tries = 0
-                while tries < 5:
-                    try:
-                        with open('epicyon-profile.css', 'r') as cssfile:
-                            css = cssfile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                msg = css.encode('utf-8')
-                self._set_headers('text/css', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show login screen done',
-                                          'show profile.css')
+            if self._getStyleSheet(callingDomain, self.path,
+                                   GETstartTime, GETtimings):
                 return
-            self._404()
-            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show login screen done',
@@ -2188,41 +7847,12 @@ class PubServer(BaseHTTPRequestHandler):
         # QR code for account handle
         if '/users/' in self.path and \
            self.path.endswith('/qrcode.png'):
-            nickname = getNicknameFromActor(self.path)
-            savePersonQrcode(self.server.baseDir,
-                             nickname, self.server.domain,
-                             self.server.port)
-            qrFilename = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/qrcode.png'
-            if os.path.isfile(qrFilename):
-                if self._etag_exists(qrFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-
-                tries = 0
-                mediaBinary = None
-                while tries < 5:
-                    try:
-                        with open(qrFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                if mediaBinary:
-                    self._set_headers_etag(qrFilename, 'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'login screen logo done',
-                                              'account qrcode')
-                    return
-            self._404()
-            return
+            if self._showQRcode(callingDomain, self.path,
+                                self.server.baseDir,
+                                self.server.domain,
+                                self.server.port,
+                                GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'login screen logo done',
@@ -2231,84 +7861,22 @@ class PubServer(BaseHTTPRequestHandler):
         # search screen banner image
         if '/users/' in self.path and \
            self.path.endswith('/search_banner.png'):
-            nickname = getNicknameFromActor(self.path)
-            bannerFilename = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/search_banner.png'
-            if os.path.isfile(bannerFilename):
-                if self._etag_exists(bannerFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-
-                tries = 0
-                mediaBinary = None
-                while tries < 5:
-                    try:
-                        with open(bannerFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                if mediaBinary:
-                    self._set_headers_etag(bannerFilename, 'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'account qrcode done',
-                                              'search screen banner')
-                    return
-            self._404()
-            return
+            if self._searchScreenBanner(callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.domain,
+                                        self.server.port,
+                                        GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'account qrcode done',
                                   'search screen banner done')
 
         if '-background.' in self.path:
-            for ext in ('webp', 'gif', 'jpg', 'png'):
-                for bg in ('follow', 'options', 'login'):
-                    # follow screen background image
-                    if self.path.endswith('/' + bg + '-background.' + ext):
-                        bgFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            bg + '-background.' + ext
-                        if os.path.isfile(bgFilename):
-                            if self._etag_exists(bgFilename):
-                                # The file has not changed
-                                self._304()
-                                return
-
-                            tries = 0
-                            bgBinary = None
-                            while tries < 5:
-                                try:
-                                    with open(bgFilename, 'rb') as avFile:
-                                        bgBinary = avFile.read()
-                                        break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries += 1
-                            if bgBinary:
-                                if ext == 'jpg':
-                                    ext = 'jpeg'
-                                self._set_headers_etag(bgFilename,
-                                                       'image/' + ext,
-                                                       bgBinary, cookie,
-                                                       callingDomain)
-                                self._write(bgBinary)
-                                self._benchmarkGETtimings(GETstartTime,
-                                                          GETtimings,
-                                                          'search screen ' +
-                                                          'banner done',
-                                                          'background shown')
-                                return
-            self._404()
-            return
+            if self._showBackgroundImage(callingDomain, self.path,
+                                         self.server.baseDir,
+                                         GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'search screen banner done',
@@ -2316,37 +7884,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji images
         if '/emoji/' in self.path:
-            if self._pathIsImage():
-                emojiStr = self.path.split('/emoji/')[1]
-                emojiFilename = \
-                    self.server.baseDir + '/emoji/' + emojiStr
-                if os.path.isfile(emojiFilename):
-                    if self._etag_exists(emojiFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    mediaImageType = 'png'
-                    if emojiFilename.endswith('.png'):
-                        mediaImageType = 'png'
-                    elif emojiFilename.endswith('.jpg'):
-                        mediaImageType = 'jpeg'
-                    elif emojiFilename.endswith('.webp'):
-                        mediaImageType = 'webp'
-                    else:
-                        mediaImageType = 'gif'
-                    with open(emojiFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(emojiFilename,
-                                               'image/' + mediaImageType,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'background shown done',
-                                              'show emoji')
-                    return
-            self._404()
+            self._showEmoji(callingDomain, self.path,
+                            self.server.baseDir,
+                            GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -2356,47 +7896,9 @@ class PubServer(BaseHTTPRequestHandler):
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
-            if self._pathIsImage() or \
-               self._pathIsVideo() or \
-               self._pathIsAudio():
-                mediaStr = self.path.split('/media/')[1]
-                mediaFilename = \
-                    self.server.baseDir + '/media/' + mediaStr
-                if os.path.isfile(mediaFilename):
-                    if self._etag_exists(mediaFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    mediaFileType = 'image/png'
-                    if mediaFilename.endswith('.png'):
-                        mediaFileType = 'image/png'
-                    elif mediaFilename.endswith('.jpg'):
-                        mediaFileType = 'image/jpeg'
-                    elif mediaFilename.endswith('.gif'):
-                        mediaFileType = 'image/gif'
-                    elif mediaFilename.endswith('.webp'):
-                        mediaFileType = 'image/webp'
-                    elif mediaFilename.endswith('.mp4'):
-                        mediaFileType = 'video/mp4'
-                    elif mediaFilename.endswith('.ogv'):
-                        mediaFileType = 'video/ogv'
-                    elif mediaFilename.endswith('.mp3'):
-                        mediaFileType = 'audio/mpeg'
-                    elif mediaFilename.endswith('.ogg'):
-                        mediaFileType = 'audio/ogg'
-
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(mediaFilename, mediaFileType,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show emoji done',
-                                              'show media')
-                    return
-            self._404()
+            self._showMedia(callingDomain,
+                            self.path, self.server.baseDir,
+                            GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -2406,38 +7908,10 @@ class PubServer(BaseHTTPRequestHandler):
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
-            if self._pathIsImage():
-                mediaStr = self.path.split('/sharefiles/')[1]
-                mediaFilename = \
-                    self.server.baseDir + '/sharefiles/' + mediaStr
-                if os.path.isfile(mediaFilename):
-                    if self._etag_exists(mediaFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    mediaFileType = 'png'
-                    if mediaFilename.endswith('.png'):
-                        mediaFileType = 'png'
-                    elif mediaFilename.endswith('.jpg'):
-                        mediaFileType = 'jpeg'
-                    elif mediaFilename.endswith('.webp'):
-                        mediaFileType = 'webp'
-                    else:
-                        mediaFileType = 'gif'
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(mediaFilename,
-                                               'image/' + mediaFileType,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show media done',
-                                              'share files shown')
-                    return
-            self._404()
-            return
+            if self._showShareImage(callingDomain, self.path,
+                                    self.server.baseDir,
+                                    GETstartTime, GETtimings):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show media done',
@@ -2446,37 +7920,9 @@ class PubServer(BaseHTTPRequestHandler):
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
-            if self.path.endswith('.png'):
-                mediaStr = self.path.split('/icons/')[1]
-                mediaFilename = \
-                    self.server.baseDir + '/img/icons/' + mediaStr
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                if self.server.iconsCache.get(mediaStr):
-                    mediaBinary = self.server.iconsCache[mediaStr]
-                    self._set_headers_etag(mediaFilename,
-                                           'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    return
-                else:
-                    if os.path.isfile(mediaFilename):
-                        with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers_etag(mediaFilename,
-                                                   'image/png',
-                                                   mediaBinary, cookie,
-                                                   callingDomain)
-                            self._write(mediaBinary)
-                            self.server.iconsCache[mediaStr] = mediaBinary
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show files done',
-                                                  'icon shown')
-                        return
-            self._404()
+            self._showIcon(callingDomain, self.path,
+                           self.server.baseDir,
+                           GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -2486,49 +7932,9 @@ class PubServer(BaseHTTPRequestHandler):
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
-            mediaFilename = \
-                self.server.baseDir + '/cache/' + self.path
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
-                    if mediaFilename.endswith('.png'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/png',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    elif mediaFilename.endswith('.jpg'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/jpeg',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    elif mediaFilename.endswith('.gif'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/gif',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    elif mediaFilename.endswith('.webp'):
-                        self._set_headers_etag(mediaFilename,
-                                               'image/webp',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                    else:
-                        # default to jpeg
-                        self._set_headers_etag(mediaFilename,
-                                               'image/jpeg',
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        # self._404()
-                        return
-                    self._write(mediaBinary)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'icon shown done',
-                                              'avatar shown')
-                    return
-            self._404()
+            self._showCachedAvatar(callingDomain, self.path,
+                                   self.server.baseDir,
+                                   GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -2537,46 +7943,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
-        if '/users/' in self.path:
-            if self._pathIsImage():
-                avatarStr = self.path.split('/users/')[1]
-                if '/' in avatarStr and '.temp.' not in self.path:
-                    avatarNickname = avatarStr.split('/')[0]
-                    avatarFile = avatarStr.split('/')[1]
-                    # remove any numbers, eg. avatar123.png becomes avatar.png
-                    if avatarFile.startswith('avatar'):
-                        avatarFile = 'avatar.' + avatarFile.split('.')[1]
-                    elif avatarFile.startswith('image'):
-                        avatarFile = 'image.'+avatarFile.split('.')[1]
-                    avatarFilename = \
-                        self.server.baseDir + '/accounts/' + \
-                        avatarNickname + '@' + \
-                        self.server.domain + '/' + avatarFile
-                    if os.path.isfile(avatarFilename):
-                        if self._etag_exists(avatarFilename):
-                            # The file has not changed
-                            self._304()
-                            return
-                        mediaImageType = 'png'
-                        if avatarFile.endswith('.png'):
-                            mediaImageType = 'png'
-                        elif avatarFile.endswith('.jpg'):
-                            mediaImageType = 'jpeg'
-                        elif avatarFile.endswith('.gif'):
-                            mediaImageType = 'gif'
-                        else:
-                            mediaImageType = 'webp'
-                        with open(avatarFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers_etag(avatarFilename,
-                                                   'image/' + mediaImageType,
-                                                   mediaBinary, cookie,
-                                                   callingDomain)
-                            self._write(mediaBinary)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'icon shown done',
-                                                  'avatar background shown')
-                        return
+        if self._showAvatarOrBackground(callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.domain,
+                                        GETstartTime, GETtimings):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'icon shown done',
@@ -2639,66 +8010,16 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            hashtag = self.path.split('/tags/')[1]
-            if '?page=' in hashtag:
-                hashtag = hashtag.split('?page=')[0]
-            if isBlockedHashtag(self.server.baseDir, hashtag):
-                msg = htmlHashtagBlocked(self.server.baseDir).encode('utf-8')
-                self._login_headers('text/html', len(msg), callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                return
-            nickname = None
-            if '/users/' in self.path:
-                actor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + self.path
-                nickname = \
-                    getNicknameFromActor(actor)
-            hashtagStr = \
-                htmlHashtagSearch(nickname,
-                                  self.server.domain, self.server.port,
-                                  self.server.recentPostsCache,
-                                  self.server.maxRecentPosts,
-                                  self.server.translate,
-                                  self.server.baseDir, hashtag, pageNumber,
-                                  maxPostsInFeed, self.server.session,
-                                  self.server.cachedWebfingers,
-                                  self.server.personCache,
-                                  self.server.httpPrefix,
-                                  self.server.projectVersion,
-                                  self.server.YTReplacementDomain)
-            if hashtagStr:
-                msg = hashtagStr.encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-            else:
-                originPathStr = self.path.split('/tags/')[0]
-                originPathStrAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + originPathStr
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStrAbsolute = 'http://' + \
-                        self.server.onionDomain + originPathStr
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.onionDomain):
-                    originPathStrAbsolute = 'http://' + \
-                        self.server.i2pDomain + originPathStr
-                self._redirect_headers(originPathStrAbsolute + '/search',
-                                       cookie, callingDomain)
-            self.server.GETbusy = False
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'login shown done',
-                                      'hashtag search')
+            self._hashtagSearch(callingDomain,
+                                self.path, cookie,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -2770,57 +8091,16 @@ class PubServer(BaseHTTPRequestHandler):
             if '/eventdelete' in self.path and \
                '?time=' in self.path and \
                '?id=' in self.path:
-                postId = self.path.split('?id=')[1]
-                if '?' in postId:
-                    postId = postId.split('?')[0]
-                postTime = self.path.split('?time=')[1]
-                if '?' in postTime:
-                    postTime = postTime.split('?')[0]
-                postYear = self.path.split('?year=')[1]
-                if '?' in postYear:
-                    postYear = postYear.split('?')[0]
-                postMonth = self.path.split('?month=')[1]
-                if '?' in postMonth:
-                    postMonth = postMonth.split('?')[0]
-                postDay = self.path.split('?day=')[1]
-                if '?' in postDay:
-                    postDay = postDay.split('?')[0]
-                # show the confirmation screen screen
-                msg = htmlCalendarDeleteConfirm(self.server.translate,
-                                                self.server.baseDir,
-                                                self.path,
-                                                self.server.httpPrefix,
-                                                self.server.domainFull,
-                                                postId, postTime,
-                                                postYear, postMonth, postDay,
-                                                callingDomain)
-                if not msg:
-                    actor = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + \
-                        self.path.split('/eventdelete')[0]
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actor = \
-                            'http://' + self.server.onionDomain + \
-                            self.path.split('/eventdelete')[0]
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actor = \
-                            'http://' + self.server.i2pDomain + \
-                            self.path.split('/eventdelete')[0]
-                    self._redirect_headers(actor + '/calendar',
-                                           cookie, callingDomain)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'calendar shown done',
-                                              'calendar delete shown')
+                if self._confirmDeleteEvent(callingDomain, self.path,
+                                            self.server.baseDir,
+                                            self.server.httpPrefix,
+                                            cookie,
+                                            self.server.translate,
+                                            self.server.domainFull,
+                                            self.server.onionDomain,
+                                            self.server.i2pDomain,
+                                            GETstartTime, GETtimings):
                     return
-                msg = msg.encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'calendar shown done',
@@ -2850,98 +8130,20 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '?repeatprivate=' in self.path:
             repeatPrivate = True
             self.path = self.path.replace('?repeatprivate=', '?repeat=')
-        # announce/repeat from the web interface
+        # announce/repeat button was pressed
         if htmlGET and '?repeat=' in self.path:
-            pageNumber = 1
-            repeatUrl = self.path.split('?repeat=')[1]
-            if '?' in repeatUrl:
-                repeatUrl = repeatUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = self.path.split('?repeat=')[0]
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during repeat button')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during repeat button')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            self.server.actorRepeat = self.path.split('?actor=')[1]
-            announceToStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domain + '/users/' + \
-                self.postToNickname + '/followers'
-            if not repeatPrivate:
-                announceToStr = 'https://www.w3.org/ns/activitystreams#Public'
-            announceJson = \
-                createAnnounce(self.server.session,
-                               self.server.baseDir,
-                               self.server.federationList,
-                               self.postToNickname,
-                               self.server.domain, self.server.port,
-                               announceToStr,
-                               None, self.server.httpPrefix,
-                               repeatUrl, False, False,
-                               self.server.sendThreads,
-                               self.server.postLog,
-                               self.server.personCache,
-                               self.server.cachedWebfingers,
-                               self.server.debug,
-                               self.server.projectVersion)
-            if announceJson:
-                self._postToOutboxThread(announceJson)
-            self.server.GETbusy = False
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' +
-                                   timelineStr + '?page=' +
-                                   str(pageNumber) +
-                                   timelineBookmark, cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'emoji search shown done',
-                                      'show announce')
+            self._announceButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 cookie, self.server.proxyType,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 repeatPrivate,
+                                 self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -2953,91 +8155,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
-            pageNumber = 1
-            repeatUrl = self.path.split('?unrepeat=')[1]
-            if '?' in repeatUrl:
-                repeatUrl = repeatUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = self.path.split('?unrepeat=')[0]
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = self.server.httpPrefix + '://' + \
-                    self.server.domainFull + actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' +
-                                       timelineStr + '?page=' +
-                                       str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during undo repeat')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during undo repeat')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            undoAnnounceActor = \
-                self.server.httpPrefix + '://' + self.server.domainFull + \
-                '/users/' + self.postToNickname
-            unRepeatToStr = 'https://www.w3.org/ns/activitystreams#Public'
-            newUndoAnnounce = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'actor': undoAnnounceActor,
-                'type': 'Undo',
-                'cc': [undoAnnounceActor+'/followers'],
-                'to': [unRepeatToStr],
-                'object': {
-                    'actor': undoAnnounceActor,
-                    'cc': [undoAnnounceActor+'/followers'],
-                    'object': repeatUrl,
-                    'to': [unRepeatToStr],
-                    'type': 'Announce'
-                }
-            }
-            self._postToOutboxThread(newUndoAnnounce)
-            self.server.GETbusy = False
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.onionDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' +
-                                   timelineStr + '?page=' +
-                                   str(pageNumber) +
-                                   timelineBookmark, cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'show announce done',
-                                      'unannounce')
+            self._undoAnnounceButton(callingDomain, self.path,
+                                     self.server.baseDir,
+                                     cookie, self.server.proxyType,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     GETstartTime, GETtimings,
+                                     repeatPrivate,
+                                     self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3047,51 +8176,18 @@ class PubServer(BaseHTTPRequestHandler):
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and \
            self.path.startswith('/users/'):
-            originPathStr = self.path.split('/followapprove=')[0]
-            followerNickname = originPathStr.replace('/users/', '')
-            followingHandle = self.path.split('/followapprove=')[1]
-            if '@' in followingHandle:
-                if not self.server.session:
-                    print('Starting new session during follow approval')
-                    self.server.session = createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during follow approval')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
-                manualApproveFollowRequest(self.server.session,
-                                           self.server.baseDir,
-                                           self.server.httpPrefix,
-                                           followerNickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           followingHandle,
-                                           self.server.federationList,
-                                           self.server.sendThreads,
-                                           self.server.postLog,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           self.server.acceptedCaps,
-                                           self.server.debug,
-                                           self.server.projectVersion)
-            originPathStrAbsolute = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + originPathStr
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStrAbsolute = \
-                    'http://' + self.server.onionDomain + originPathStr
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStrAbsolute = \
-                    'http://' + self.server.i2pDomain + originPathStr
-            self._redirect_headers(originPathStrAbsolute,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'unannounce done',
-                                      'follow approve shown')
-            self.server.GETbusy = False
+            self._followApproveButton(callingDomain, self.path,
+                                      cookie,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3101,41 +8197,18 @@ class PubServer(BaseHTTPRequestHandler):
         # deny a follow request from the web interface
         if authorized and '/followdeny=' in self.path and \
            self.path.startswith('/users/'):
-            originPathStr = self.path.split('/followdeny=')[0]
-            followerNickname = originPathStr.replace('/users/', '')
-            followingHandle = self.path.split('/followdeny=')[1]
-            if '@' in followingHandle:
-                manualDenyFollowRequest(self.server.session,
-                                        self.server.baseDir,
-                                        self.server.httpPrefix,
-                                        followerNickname,
-                                        self.server.domain,
-                                        self.server.port,
-                                        followingHandle,
-                                        self.server.federationList,
-                                        self.server.sendThreads,
-                                        self.server.postLog,
-                                        self.server.cachedWebfingers,
-                                        self.server.personCache,
-                                        self.server.debug,
-                                        self.server.projectVersion)
-            originPathStrAbsolute = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + originPathStr
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStrAbsolute = 'http://' + \
-                    self.server.onionDomain + originPathStr
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStrAbsolute = 'http://' + \
-                    self.server.i2pDomain + originPathStr
-            self._redirect_headers(originPathStrAbsolute,
-                                   cookie, callingDomain)
-            self.server.GETbusy = False
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'follow approve done',
-                                      'follow deny shown')
+            self._followDenyButton(callingDomain, self.path,
+                                   cookie,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3144,105 +8217,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # like from the web interface icon
         if htmlGET and '?like=' in self.path:
-            pageNumber = 1
-            likeUrl = self.path.split('?like=')[1]
-            if '?' in likeUrl:
-                likeUrl = likeUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            actor = self.path.split('?like=')[0]
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber) +
-                                       timelineBookmark, cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during like')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session during like')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            likeActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            actorLiked = self.path.split('?actor=')[1]
-            if '?' in actorLiked:
-                actorLiked = actorLiked.split('?')[0]
-            likeJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'type': 'Like',
-                'actor': likeActor,
-                'to': [actorLiked],
-                'object': likeUrl
-            }
-            # directly like the post file
-            likedPostFilename = locatePost(self.server.baseDir,
-                                           self.postToNickname,
-                                           self.server.domain,
-                                           likeUrl)
-            if likedPostFilename:
-                if self.server.debug:
-                    print('Updating likes for ' + likedPostFilename)
-                updateLikesCollection(self.server.recentPostsCache,
-                                      self.server.baseDir,
-                                      likedPostFilename, likeUrl,
-                                      likeActor, self.server.domain,
-                                      self.server.debug)
-            else:
-                print('WARN: unable to locate file for liked post ' +
-                      likeUrl)
-            # send out the like to followers
-            self._postToOutbox(likeJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'follow deny done',
-                                      'like shown')
+            self._likeButton(callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.httpPrefix,
+                             self.server.domain,
+                             self.server.domainFull,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             GETstartTime, GETtimings,
+                             self.server.proxyType,
+                             cookie,
+                             self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3251,105 +8236,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo a like from the web interface icon
         if htmlGET and '?unlike=' in self.path:
-            pageNumber = 1
-            likeUrl = self.path.split('?unlike=')[1]
-            if '?' in likeUrl:
-                likeUrl = likeUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = self.path.split('?unlike=')[0]
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.onionDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during undo like')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during undo like')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            undoActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            actorLiked = self.path.split('?actor=')[1]
-            if '?' in actorLiked:
-                actorLiked = actorLiked.split('?')[0]
-            undoLikeJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'type': 'Undo',
-                'actor': undoActor,
-                'to': [actorLiked],
-                'object': {
-                    'type': 'Like',
-                    'actor': undoActor,
-                    'to': [actorLiked],
-                    'object': likeUrl
-                }
-            }
-            # directly undo the like within the post file
-            likedPostFilename = locatePost(self.server.baseDir,
-                                           self.postToNickname,
-                                           self.server.domain,
-                                           likeUrl)
-            if likedPostFilename:
-                if self.server.debug:
-                    print('Removing likes for ' + likedPostFilename)
-                undoLikesCollectionEntry(self.server.recentPostsCache,
-                                         self.server.baseDir,
-                                         likedPostFilename, likeUrl,
-                                         undoActor, self.server.domain,
-                                         self.server.debug)
-            # send out the undo like to followers
-            self._postToOutbox(undoLikeJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull+actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.onionDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'like shown done',
-                                      'unlike shown')
+            self._undoLikeButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 cookie, self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3358,93 +8254,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # bookmark from the web interface icon
         if htmlGET and '?bookmark=' in self.path:
-            pageNumber = 1
-            bookmarkUrl = self.path.split('?bookmark=')[1]
-            if '?' in bookmarkUrl:
-                bookmarkUrl = bookmarkUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            actor = self.path.split('?bookmark=')[0]
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during bookmark')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during bookmark')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            bookmarkActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            ccList = []
-            bookmark(self.server.recentPostsCache,
-                     self.server.session,
-                     self.server.baseDir,
-                     self.server.federationList,
-                     self.postToNickname,
-                     self.server.domain, self.server.port,
-                     ccList,
-                     self.server.httpPrefix,
-                     bookmarkUrl, bookmarkActor, False,
-                     self.server.sendThreads,
-                     self.server.postLog,
-                     self.server.personCache,
-                     self.server.cachedWebfingers,
-                     self.server.debug,
-                     self.server.projectVersion)
-            # self._postToOutbox(bookmarkJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = \
-                self.server.httpPrefix + '://' + self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'unlike shown done',
-                                      'bookmark shown')
+            self._bookmarkButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 cookie, self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3453,248 +8273,55 @@ class PubServer(BaseHTTPRequestHandler):
 
         # undo a bookmark from the web interface icon
         if htmlGET and '?unbookmark=' in self.path:
-            pageNumber = 1
-            bookmarkUrl = self.path.split('?unbookmark=')[1]
-            if '?' in bookmarkUrl:
-                bookmarkUrl = bookmarkUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            timelineStr = 'inbox'
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = self.path.split('?unbookmark=')[0]
-            self.postToNickname = getNicknameFromActor(actor)
-            if not self.postToNickname:
-                print('WARN: unable to find nickname in ' + actor)
-                self.server.GETbusy = False
-                actorAbsolute = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + actor
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorAbsolute = 'http://' + \
-                        self.server.onionDomain + actor
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorAbsolute = 'http://' + self.server.i2pDomain + actor
-                self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                       '?page=' + str(pageNumber), cookie,
-                                       callingDomain)
-                return
-            if not self.server.session:
-                print('Starting new session during undo bookmark')
-                self.server.session = createSession(self.server.proxyType)
-                if not self.server.session:
-                    print('ERROR: GET failed to create session ' +
-                          'during undo bookmark')
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-            undoActor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + '/users/' + self.postToNickname
-            ccList = []
-            undoBookmark(self.server.recentPostsCache,
-                         self.server.session,
-                         self.server.baseDir,
-                         self.server.federationList,
-                         self.postToNickname,
-                         self.server.domain, self.server.port,
-                         ccList,
-                         self.server.httpPrefix,
-                         bookmarkUrl, undoActor, False,
-                         self.server.sendThreads,
-                         self.server.postLog,
-                         self.server.personCache,
-                         self.server.cachedWebfingers,
-                         self.server.debug,
-                         self.server.projectVersion)
-            # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
-            self.server.GETbusy = False
-            actorAbsolute = \
-                self.server.httpPrefix + '://' + self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute + '/' + timelineStr +
-                                   '?page=' + str(pageNumber) +
-                                   timelineBookmark, cookie,
-                                   callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'bookmark shown done',
-                                      'unbookmark shown')
+            self._undoBookmarkButton(callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     GETstartTime, GETtimings,
+                                     self.server.proxyType, cookie,
+                                     self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'bookmark shown done',
                                   'unbookmark shown done')
 
-        # delete a post from the web interface icon
+        # delete button is pressed on a post
         if htmlGET and '?delete=' in self.path:
-            if not cookie:
-                print('ERROR: no cookie given when deleting')
-                self._400()
-                self.server.GETbusy = False
-                return
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            deleteUrl = self.path.split('?delete=')[1]
-            if '?' in deleteUrl:
-                deleteUrl = deleteUrl.split('?')[0]
-            timelineStr = self.server.defaultTimeline
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            usersPath = self.path.split('?delete=')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            if self.server.allowDeletion or \
-               deleteUrl.startswith(actor):
-                if self.server.debug:
-                    print('DEBUG: deleteUrl=' + deleteUrl)
-                    print('DEBUG: actor=' + actor)
-                if actor not in deleteUrl:
-                    # You can only delete your own posts
-                    self.server.GETbusy = False
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actor = 'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actor = 'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(actor + '/' + timelineStr,
-                                           cookie, callingDomain)
-                    return
-                self.postToNickname = getNicknameFromActor(actor)
-                if not self.postToNickname:
-                    print('WARN: unable to find nickname in ' + actor)
-                    self.server.GETbusy = False
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actor = 'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actor = 'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(actor + '/' + timelineStr,
-                                           cookie, callingDomain)
-                    return
-                if not self.server.session:
-                    print('Starting new session during delete')
-                    self.server.session = createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during delete')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
-
-                deleteStr = \
-                    htmlDeletePost(self.server.recentPostsCache,
-                                   self.server.maxRecentPosts,
-                                   self.server.translate, pageNumber,
-                                   self.server.session, self.server.baseDir,
-                                   deleteUrl, self.server.httpPrefix,
-                                   __version__, self.server.cachedWebfingers,
-                                   self.server.personCache, callingDomain,
-                                   self.server.TYReplacementDomain)
-                if deleteStr:
-                    self._set_headers('text/html', len(deleteStr),
-                                      cookie, callingDomain)
-                    self._write(deleteStr.encode('utf-8'))
-                    self.server.GETbusy = False
-                    return
-            self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = 'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = 'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actor + '/' + timelineStr,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'unbookmark shown done',
-                                      'delete shown')
+            self._deleteButton(callingDomain, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType, cookie,
+                               self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'unbookmark shown done',
                                   'delete shown done')
 
-        # mute a post from the web interface icon
+        # The mute button is pressed
         if htmlGET and '?mute=' in self.path:
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            muteUrl = self.path.split('?mute=')[1]
-            if '?' in muteUrl:
-                muteUrl = muteUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            timelineStr = self.server.defaultTimeline
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + self.path.split('?mute=')[0]
-            nickname = getNicknameFromActor(actor)
-            mutePost(self.server.baseDir, nickname, self.server.domain,
-                     muteUrl, self.server.recentPostsCache)
-            self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = \
-                    'http://' + self.server.onionDomain + \
-                    self.path.split('?mute=')[0]
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = \
-                    'http://' + self.server.i2pDomain + \
-                    self.path.split('?mute=')[0]
-            self._redirect_headers(actor + '/' +
-                                   timelineStr + timelineBookmark,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'delete shown done',
-                                      'post muted')
+            self._muteButton(callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.httpPrefix,
+                             self.server.domain,
+                             self.server.domainFull,
+                             self.server.port,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             GETstartTime, GETtimings,
+                             self.server.proxyType, cookie,
+                             self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3703,55 +8330,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # unmute a post from the web interface icon
         if htmlGET and '?unmute=' in self.path:
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('?')[0]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            muteUrl = self.path.split('?unmute=')[1]
-            if '?' in muteUrl:
-                muteUrl = muteUrl.split('?')[0]
-            timelineBookmark = ''
-            if '?bm=' in self.path:
-                timelineBookmark = self.path.split('?bm=')[1]
-                if '?' in timelineBookmark:
-                    timelineBookmark = timelineBookmark.split('?')[0]
-                timelineBookmark = '#' + timelineBookmark
-            timelineStr = self.server.defaultTimeline
-            if '?tl=' in self.path:
-                timelineStr = self.path.split('?tl=')[1]
-                if '?' in timelineStr:
-                    timelineStr = timelineStr.split('?')[0]
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + self.path.split('?unmute=')[0]
-            nickname = getNicknameFromActor(actor)
-            unmutePost(self.server.baseDir,
-                       nickname,
-                       self.server.domain,
-                       muteUrl,
-                       self.server.recentPostsCache)
-            self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = \
-                    'http://' + \
-                    self.server.onionDomain + self.path.split('?unmute=')[0]
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = \
-                    'http://' + \
-                    self.server.i2pDomain + self.path.split('?unmute=')[0]
-            self._redirect_headers(actor + '/' + timelineStr +
-                                   timelineBookmark,
-                                   cookie, callingDomain)
-            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                      'post muted done',
-                                      'unmute activated')
+            self._undoMuteButton(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType, cookie,
+                                 self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3874,86 +8463,37 @@ class PubServer(BaseHTTPRequestHandler):
                '/tlevents' in self.path and \
                '?editeventpost=' in self.path and \
                '?actor=' in self.path:
-                messageId = self.path.split('?editeventpost=')[1]
-                if '?' in messageId:
-                    messageId = messageId.split('?')[0]
-                actor = self.path.split('?actor=')[1]
-                if '?' in actor:
-                    actor = actor.split('?')[0]
-                nickname = getNicknameFromActor(self.path)
-                if nickname == actor:
-                    postUrl = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + '/users/' + nickname + \
-                        '/statuses/' + messageId
-                    msg = None
-                    # TODO
-                    # htmlEditEvent(self.server.mediaInstance,
-                    #                    self.server.translate,
-                    #                    self.server.baseDir,
-                    #                    self.server.httpPrefix,
-                    #                    self.path,
-                    #                    nickname, self.server.domain,
-                    #                    postUrl)
-                    if msg:
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html', len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self.server.GETbusy = False
-                        return
+                if self._editEvent(callingDomain, self.path,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.baseDir,
+                                   self.server.translate,
+                                   self.server.mediaInstance,
+                                   cookie):
+                    return
 
             # edit profile in web interface
-            if '/users/' in self.path and self.path.endswith('/editprofile'):
-                msg = htmlEditProfile(self.server.translate,
-                                      self.server.baseDir,
-                                      self.path, self.server.domain,
-                                      self.server.port,
-                                      self.server.httpPrefix).encode('utf-8')
-                if msg:
-                    self._set_headers('text/html', len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-                self.server.GETbusy = False
+            if self._editProfile(callingDomain, self.path,
+                                 self.server.translate,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.port,
+                                 cookie):
                 return
 
-            # Various types of new post in the web interface
-            if ('/users/' in self.path and
-                (self.path.endswith('/newpost') or
-                 self.path.endswith('/newblog') or
-                 self.path.endswith('/newunlisted') or
-                 self.path.endswith('/newfollowers') or
-                 self.path.endswith('/newdm') or
-                 self.path.endswith('/newreminder') or
-                 self.path.endswith('/newevent') or
-                 self.path.endswith('/newreport') or
-                 self.path.endswith('/newquestion') or
-                 self.path.endswith('/newshare'))):
-                nickname = getNicknameFromActor(self.path)
-                msg = htmlNewPost(self.server.mediaInstance,
-                                  self.server.translate,
-                                  self.server.baseDir,
-                                  self.server.httpPrefix,
-                                  self.path, inReplyToUrl,
-                                  replyToList,
-                                  shareDescription,
-                                  replyPageNumber,
-                                  nickname, self.server.domain,
-                                  self.server.domainFull).encode('utf-8')
-                if not msg:
-                    print('Error replying to ' + inReplyToUrl)
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'unmute activated done',
-                                          'new post made')
+            if self._showNewPost(callingDomain, self.path,
+                                 self.server.mediaInstance,
+                                 self.server.translate,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 inReplyToUrl, replyToList,
+                                 shareDescription, replyPageNumber,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 GETstartTime, GETtimings,
+                                 cookie):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -3961,103 +8501,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   'new post done')
 
         # get an individual post from the path /@nickname/statusnumber
-        if '/@' in self.path:
-            likedBy = None
-            if '?likedBy=' in self.path:
-                likedBy = self.path.split('?likedBy=')[1].strip()
-                if '?' in likedBy:
-                    likedBy = likedBy.split('?')[0]
-                self.path = self.path.split('?likedBy=')[0]
-
-            namedStatus = self.path.split('/@')[1]
-            if '/' not in namedStatus:
-                # show actor
-                nickname = namedStatus
-            else:
-                postSections = namedStatus.split('/')
-                if len(postSections) == 2:
-                    nickname = postSections[0]
-                    statusNumber = postSections[1]
-                    if len(statusNumber) > 10 and statusNumber.isdigit():
-                        postFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + \
-                            self.server.domain + '/outbox/' + \
-                            self.server.httpPrefix + ':##' + \
-                            self.server.domainFull + '#users#' + \
-                            nickname + '#statuses#' + \
-                            statusNumber + '.json'
-                        if os.path.isfile(postFilename):
-                            postJsonObject = loadJson(postFilename)
-                            loadedPost = False
-                            if postJsonObject:
-                                loadedPost = True
-                            else:
-                                postJsonObject = {}
-                            if loadedPost:
-                                # Only authorized viewers get to see likes
-                                # on posts. Otherwize marketers could gain
-                                # more social graph info
-                                if not authorized:
-                                    pjo = postJsonObject
-                                    self._removePostInteractions(pjo)
-                                if self._requestHTTP():
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    maxRecentPosts = \
-                                        self.server.maxRecentPosts
-                                    translate = \
-                                        self.server.translate
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    personCache = \
-                                        self.server.personCache
-                                    httpPrefix = \
-                                        self.server.httpPrefix
-                                    projectVersion = \
-                                        self.server.projectVersion
-                                    ytDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlIndividualPost(recentPostsCache,
-                                                           maxRecentPosts,
-                                                           translate,
-                                                           self.server.session,
-                                                           cachedWebfingers,
-                                                           personCache,
-                                                           nickname,
-                                                           self.server.domain,
-                                                           self.server.port,
-                                                           authorized,
-                                                           postJsonObject,
-                                                           httpPrefix,
-                                                           projectVersion,
-                                                           likedBy,
-                                                           ytDomain)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html', len(msg),
-                                                      cookie, callingDomain)
-                                    self._write(msg)
-                                else:
-                                    if self._fetchAuthenticated():
-                                        msg = json.dumps(postJsonObject,
-                                                         ensure_ascii=False)
-                                        msg = msg.encode('utf-8')
-                                        self._set_headers('application/json',
-                                                          len(msg),
-                                                          None, callingDomain)
-                                        self._write(msg)
-                                    else:
-                                        self._404()
-                            self.server.GETbusy = False
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'new post done',
-                                                      'individual post shown')
-                            return
-                        else:
-                            self._404()
-                            self.server.GETbusy = False
-                            return
+        if self._showIndividualAtPost(authorized,
+                                      callingDomain, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      cookie, self.server.debug):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'new post done',
@@ -4065,315 +8521,38 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
-            if '/statuses/' in self.path and '/users/' in self.path:
-                namedStatus = self.path.split('/users/')[1]
-                if '/' in namedStatus:
-                    postSections = namedStatus.split('/')
-                    if len(postSections) >= 4:
-                        if postSections[3].startswith('replies'):
-                            nickname = postSections[0]
-                            statusNumber = postSections[2]
-                            if len(statusNumber) > 10 and \
-                               statusNumber.isdigit():
-                                boxname = 'outbox'
-                                # get the replies file
-                                postDir = \
-                                    self.server.baseDir + '/accounts/' + \
-                                    nickname + '@' + self.server.domain+'/' + \
-                                    boxname
-                                postRepliesFilename = \
-                                    postDir + '/' + \
-                                    self.server.httpPrefix + ':##' + \
-                                    self.server.domainFull + '#users#' + \
-                                    nickname + '#statuses#' + \
-                                    statusNumber + '.replies'
-                                if not os.path.isfile(postRepliesFilename):
-                                    # There are no replies,
-                                    # so show empty collection
-                                    contextStr = \
-                                        'https://www.w3.org/ns/activitystreams'
-                                    firstStr = \
-                                        self.server.httpPrefix + \
-                                        '://' + self.server.domainFull + \
-                                        '/users/' + nickname + \
-                                        '/statuses/' + statusNumber + \
-                                        '/replies?page=true'
-                                    idStr = \
-                                        self.server.httpPrefix + \
-                                        '://' + self.server.domainFull + \
-                                        '/users/' + nickname + \
-                                        '/statuses/' + statusNumber + \
-                                        '/replies'
-                                    lastStr = \
-                                        self.server.httpPrefix + \
-                                        '://' + self.server.domainFull + \
-                                        '/users/' + nickname + \
-                                        '/statuses/' + statusNumber + \
-                                        '/replies?page=true'
-                                    repliesJson = {
-                                        '@context': contextStr,
-                                        'first': firstStr,
-                                        'id': idStr,
-                                        'last': lastStr,
-                                        'totalItems': 0,
-                                        'type': 'OrderedCollection'
-                                    }
-                                    if self._requestHTTP():
-                                        if not self.server.session:
-                                            print('DEBUG: ' +
-                                                  'creating new session ' +
-                                                  'during get replies')
-                                            proxyType = \
-                                                self.server.proxyType
-                                            self.server.session = \
-                                                createSession(proxyType)
-                                            if not self.server.session:
-                                                print('ERROR: GET failed to ' +
-                                                      'create session ' +
-                                                      'during get replies')
-                                                self._404()
-                                                self.server.GETbusy = False
-                                                return
-                                        recentPostsCache = \
-                                            self.server.recentPostsCache
-                                        maxRecentPosts = \
-                                            self.server.maxRecentPosts
-                                        translate = \
-                                            self.server.translate
-                                        baseDir = \
-                                            self.server.baseDir
-                                        session = \
-                                            self.server.session
-                                        cachedWebfingers = \
-                                            self.server.cachedWebfingers
-                                        personCache = \
-                                            self.server.personCache
-                                        httpPrefix = \
-                                            self.server.httpPrefix
-                                        projectVersion = \
-                                            self.server.projectVersion
-                                        ytDomain = \
-                                            self.server.YTReplacementDomain
-                                        msg = \
-                                            htmlPostReplies(recentPostsCache,
-                                                            maxRecentPosts,
-                                                            translate,
-                                                            baseDir,
-                                                            session,
-                                                            cachedWebfingers,
-                                                            personCache,
-                                                            nickname,
-                                                            self.server.domain,
-                                                            self.server.port,
-                                                            repliesJson,
-                                                            httpPrefix,
-                                                            projectVersion,
-                                                            ytDomain)
-                                        msg = msg.encode('utf-8')
-                                        self._set_headers('text/html',
-                                                          len(msg),
-                                                          cookie,
-                                                          callingDomain)
-                                        self._write(msg)
-                                    else:
-                                        if self._fetchAuthenticated():
-                                            msg = \
-                                                json.dumps(repliesJson,
-                                                           ensure_ascii=False)
-                                            msg = msg.encode('utf-8')
-                                            protocolStr = 'application/json'
-                                            self._set_headers(protocolStr,
-                                                              len(msg), None,
-                                                              callingDomain)
-                                            self._write(msg)
-                                        else:
-                                            self._404()
-                                    self.server.GETbusy = False
-                                    return
-                                else:
-                                    # replies exist. Itterate through the
-                                    # text file containing message ids
-                                    contextStr = \
-                                        'https://www.w3.org/ns/activitystreams'
-                                    idStr = \
-                                        self.server.httpPrefix + \
-                                        '://' + self.server.domainFull + \
-                                        '/users/' + nickname + '/statuses/' + \
-                                        statusNumber + '?page=true'
-                                    partOfStr = \
-                                        self.server.httpPrefix + \
-                                        '://' + self.server.domainFull + \
-                                        '/users/' + nickname + \
-                                        '/statuses/' + statusNumber
-                                    repliesJson = {
-                                        '@context': contextStr,
-                                        'id': idStr,
-                                        'orderedItems': [
-                                        ],
-                                        'partOf': partOfStr,
-                                        'type': 'OrderedCollectionPage'
-                                    }
-
-                                    # populate the items list with replies
-                                    populateRepliesJson(self.server.baseDir,
-                                                        nickname,
-                                                        self.server.domain,
-                                                        postRepliesFilename,
-                                                        authorized,
-                                                        repliesJson)
-
-                                    # send the replies json
-                                    if self._requestHTTP():
-                                        if not self.server.session:
-                                            print('DEBUG: ' +
-                                                  'creating new session ' +
-                                                  'during get replies 2')
-                                            proxyType = self.server.proxyType
-                                            self.server.session = \
-                                                createSession(proxyType)
-                                            if not self.server.session:
-                                                print('ERROR: GET failed to ' +
-                                                      'create session ' +
-                                                      'during get replies 2')
-                                                self._404()
-                                                self.server.GETbusy = False
-                                                return
-                                        recentPostsCache = \
-                                            self.server.recentPostsCache
-                                        maxRecentPosts = \
-                                            self.server.maxRecentPosts
-                                        translate = \
-                                            self.server.translate
-                                        baseDir = \
-                                            self.server.baseDir
-                                        session = \
-                                            self.server.session
-                                        cachedWebfingers = \
-                                            self.server.cachedWebfingers
-                                        personCache = \
-                                            self.server.personCache
-                                        httpPrefix = \
-                                            self.server.httpPrefix
-                                        projectVersion = \
-                                            self.server.projectVersion
-                                        ytDomain = \
-                                            self.server.YTReplacementDomain
-                                        msg = \
-                                            htmlPostReplies(recentPostsCache,
-                                                            maxRecentPosts,
-                                                            translate,
-                                                            baseDir,
-                                                            session,
-                                                            cachedWebfingers,
-                                                            personCache,
-                                                            nickname,
-                                                            self.server.domain,
-                                                            self.server.port,
-                                                            repliesJson,
-                                                            httpPrefix,
-                                                            projectVersion,
-                                                            ytDomain)
-                                        msg = msg.encode('utf-8')
-                                        self._set_headers('text/html',
-                                                          len(msg),
-                                                          cookie,
-                                                          callingDomain)
-                                        self._write(msg)
-                                        self._benchmarkGETtimings(GETstartTime,
-                                                                  GETtimings,
-                                                                  'indiv' +
-                                                                  'idual' +
-                                                                  ' post done',
-                                                                  'post ' +
-                                                                  'replies ' +
-                                                                  'done')
-                                    else:
-                                        if self._fetchAuthenticated():
-                                            msg = \
-                                                json.dumps(repliesJson,
-                                                           ensure_ascii=False)
-                                            msg = msg.encode('utf-8')
-                                            protocolStr = 'application/json'
-                                            self._set_headers(protocolStr,
-                                                              len(msg),
-                                                              None,
-                                                              callingDomain)
-                                            self._write(msg)
-                                        else:
-                                            self._404()
-                                    self.server.GETbusy = False
-                                    return
+            if self._showRepliesToPost(authorized,
+                                       callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType, cookie,
+                                       self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'individual post done',
                                   'post replies done')
 
         if self.path.endswith('/roles') and '/users/' in self.path:
-            namedStatus = self.path.split('/users/')[1]
-            if '/' in namedStatus:
-                postSections = namedStatus.split('/')
-                nickname = postSections[0]
-                actorFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    nickname + '@' + self.server.domain + '.json'
-                if os.path.isfile(actorFilename):
-                    actorJson = loadJson(actorFilename)
-                    if actorJson:
-                        if actorJson.get('roles'):
-                            if self._requestHTTP():
-                                getPerson = \
-                                    personLookup(self.server.domain,
-                                                 self.path.replace('/roles',
-                                                                   ''),
-                                                 self.server.baseDir)
-                                if getPerson:
-                                    defaultTimeline = \
-                                        self.server.defaultTimeline
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    YTReplacementDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlProfile(defaultTimeline,
-                                                    recentPostsCache,
-                                                    self.server.maxRecentPosts,
-                                                    self.server.translate,
-                                                    self.server.projectVersion,
-                                                    self.server.baseDir,
-                                                    self.server.httpPrefix,
-                                                    True,
-                                                    self.server.ocapAlways,
-                                                    getPerson, 'roles',
-                                                    self.server.session,
-                                                    cachedWebfingers,
-                                                    self.server.personCache,
-                                                    YTReplacementDomain,
-                                                    actorJson['roles'],
-                                                    None, None)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html', len(msg),
-                                                      cookie, callingDomain)
-                                    self._write(msg)
-                                    self._benchmarkGETtimings(GETstartTime,
-                                                              GETtimings,
-                                                              'post replies ' +
-                                                              'done',
-                                                              'show roles')
-                            else:
-                                if self._fetchAuthenticated():
-                                    msg = json.dumps(actorJson['roles'],
-                                                     ensure_ascii=False)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('application/json',
-                                                      len(msg),
-                                                      None, callingDomain)
-                                    self._write(msg)
-                                else:
-                                    self._404()
-                            self.server.GETbusy = False
-                            return
+            if self._showRoles(authorized,
+                               callingDomain, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType,
+                               cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'post replies done',
@@ -4381,86 +8560,19 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show skills on the profile page
         if self.path.endswith('/skills') and '/users/' in self.path:
-            namedStatus = self.path.split('/users/')[1]
-            if '/' in namedStatus:
-                postSections = namedStatus.split('/')
-                nickname = postSections[0]
-                actorFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    nickname + '@' + self.server.domain + '.json'
-                if os.path.isfile(actorFilename):
-                    actorJson = loadJson(actorFilename)
-                    if actorJson:
-                        if actorJson.get('skills'):
-                            if self._requestHTTP():
-                                getPerson = \
-                                    personLookup(self.server.domain,
-                                                 self.path.replace('/skills',
-                                                                   ''),
-                                                 self.server.baseDir)
-                                if getPerson:
-                                    defaultTimeline =  \
-                                        self.server.defaultTimeline
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    YTReplacementDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlProfile(defaultTimeline,
-                                                    recentPostsCache,
-                                                    self.server.maxRecentPosts,
-                                                    self.server.translate,
-                                                    self.server.projectVersion,
-                                                    self.server.baseDir,
-                                                    self.server.httpPrefix,
-                                                    True,
-                                                    self.server.ocapAlways,
-                                                    getPerson, 'skills',
-                                                    self.server.session,
-                                                    cachedWebfingers,
-                                                    self.server.personCache,
-                                                    YTReplacementDomain,
-                                                    actorJson['skills'],
-                                                    None, None)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html',
-                                                      len(msg),
-                                                      cookie,
-                                                      callingDomain)
-                                    self._write(msg)
-                                    self._benchmarkGETtimings(GETstartTime,
-                                                              GETtimings,
-                                                              'post roles ' +
-                                                              'done',
-                                                              'show skills')
-                            else:
-                                if self._fetchAuthenticated():
-                                    msg = json.dumps(actorJson['skills'],
-                                                     ensure_ascii=False)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('application/json',
-                                                      len(msg),
-                                                      None,
-                                                      callingDomain)
-                                    self._write(msg)
-                                else:
-                                    self._404()
-                            self.server.GETbusy = False
-                            return
-            actor = self.path.replace('/skills', '')
-            actorAbsolute = self.server.httpPrefix + '://' + \
-                self.server.domainFull + actor
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorAbsolute = 'http://' + self.server.onionDomain + actor
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorAbsolute = 'http://' + self.server.i2pDomain + actor
-            self._redirect_headers(actorAbsolute, cookie, callingDomain)
-            self.server.GETbusy = False
-            return
+            if self._showSkills(authorized,
+                                callingDomain, self.path,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                GETstartTime, GETtimings,
+                                self.server.proxyType,
+                                cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'post roles done',
@@ -4469,501 +8581,109 @@ class PubServer(BaseHTTPRequestHandler):
         # get an individual post from the path
         # /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
-            likedBy = None
-            if '?likedBy=' in self.path:
-                likedBy = self.path.split('?likedBy=')[1].strip()
-                if '?' in likedBy:
-                    likedBy = likedBy.split('?')[0]
-                self.path = self.path.split('?likedBy=')[0]
-            namedStatus = self.path.split('/users/')[1]
-            if '/' in namedStatus:
-                postSections = namedStatus.split('/')
-                if len(postSections) >= 3:
-                    nickname = postSections[0]
-                    statusNumber = postSections[2]
-                    if len(statusNumber) > 10 and statusNumber.isdigit():
-                        postFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + \
-                            self.server.domain + '/outbox/' + \
-                            self.server.httpPrefix + ':##' + \
-                            self.server.domainFull + '#users#' + \
-                            nickname + '#statuses#' + \
-                            statusNumber + '.json'
-                        if os.path.isfile(postFilename):
-                            postJsonObject = loadJson(postFilename)
-                            if not postJsonObject:
-                                self.send_response(429)
-                                self.end_headers()
-                                self.server.GETbusy = False
-                                return
-                            else:
-                                # Only authorized viewers get to see likes
-                                # on posts
-                                # Otherwize marketers could gain more social
-                                # graph info
-                                if not authorized:
-                                    pjo = postJsonObject
-                                    self._removePostInteractions(pjo)
-
-                                if self._requestHTTP():
-                                    recentPostsCache = \
-                                        self.server.recentPostsCache
-                                    maxRecentPosts = \
-                                        self.server.maxRecentPosts
-                                    translate = \
-                                        self.server.translate
-                                    cachedWebfingers = \
-                                        self.server.cachedWebfingers
-                                    personCache = \
-                                        self.server.personCache
-                                    httpPrefix = \
-                                        self.server.httpPrefix
-                                    projectVersion = \
-                                        self.server.projectVersion
-                                    ytDomain = \
-                                        self.server.YTReplacementDomain
-                                    msg = \
-                                        htmlIndividualPost(recentPostsCache,
-                                                           maxRecentPosts,
-                                                           translate,
-                                                           self.server.baseDir,
-                                                           self.server.session,
-                                                           cachedWebfingers,
-                                                           personCache,
-                                                           nickname,
-                                                           self.server.domain,
-                                                           self.server.port,
-                                                           authorized,
-                                                           postJsonObject,
-                                                           httpPrefix,
-                                                           projectVersion,
-                                                           likedBy,
-                                                           ytDomain)
-                                    msg = msg.encode('utf-8')
-                                    self._set_headers('text/html',
-                                                      len(msg),
-                                                      cookie,
-                                                      callingDomain)
-                                    self._write(msg)
-                                    self._benchmarkGETtimings(GETstartTime,
-                                                              GETtimings,
-                                                              'show skills ' +
-                                                              'done',
-                                                              'show status')
-                                else:
-                                    if self._fetchAuthenticated():
-                                        msg = json.dumps(postJsonObject,
-                                                         ensure_ascii=False)
-                                        msg = msg.encode('utf-8')
-                                        self._set_headers('application/json',
-                                                          len(msg),
-                                                          None, callingDomain)
-                                        self._write(msg)
-                                    else:
-                                        self._404()
-                            self.server.GETbusy = False
-                            return
-                        else:
-                            self._404()
-                            self.server.GETbusy = False
-                            return
+            if self._showIndividualPost(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show skills done',
                                   'show status done')
 
-        # get the inbox for a given person
+        # get the inbox timeline for a given person
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'inbox',
-                                      authorized,
-                                      self.server.ocapAlways)
-                    if inboxFeed:
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show status done',
-                                                  'show inbox json')
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/inbox', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                inboxFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed, 'inbox',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                                self._benchmarkGETtimings(GETstartTime,
-                                                          GETtimings,
-                                                          'show status done',
-                                                          'show inbox page')
-                            msg = htmlInbox(self.server.defaultTimeline,
-                                            self.server.recentPostsCache,
-                                            self.server.maxRecentPosts,
-                                            self.server.translate,
-                                            pageNumber, maxPostsInFeed,
-                                            self.server.session,
-                                            self.server.baseDir,
-                                            self.server.cachedWebfingers,
-                                            self.server.personCache,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.port,
-                                            inboxFeed,
-                                            self.server.allowDeletion,
-                                            self.server.httpPrefix,
-                                            self.server.projectVersion,
-                                            self._isMinimal(nickname),
-                                            self.server.YTReplacementDomain)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show status done',
-                                                      'show inbox html')
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show status done',
-                                                      'show inbox')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(inboxFeed, ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/inbox', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/inbox':
-                # not the shared inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to inbox is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showInbox(authorized,
+                               callingDomain, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType,
+                               cookie, self.server.debug,
+                               self.server.recentPostsCache,
+                               self.server.session,
+                               self.server.ocapAlways,
+                               self.server.defaultTimeline,
+                               self.server.maxRecentPosts,
+                               self.server.translate,
+                               self.server.cachedWebfingers,
+                               self.server.personCache,
+                               self.server.allowDeletion,
+                               self.server.projectVersion,
+                               self.server.YTReplacementDomain):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show status done',
                                   'show inbox done')
 
-        # get the direct messages for a given person
+        # get the direct messages timeline for a given person
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxDMFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'dm',
-                                      authorized,
-                                      self.server.ocapAlways)
-                    if inboxDMFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/dm', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                inboxDMFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path+'?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed, 'dm',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                            msg = \
-                                htmlInboxDMs(self.server.defaultTimeline,
-                                             self.server.recentPostsCache,
-                                             self.server.maxRecentPosts,
-                                             self.server.translate,
-                                             pageNumber, maxPostsInFeed,
-                                             self.server.session,
-                                             self.server.baseDir,
-                                             self.server.cachedWebfingers,
-                                             self.server.personCache,
-                                             nickname,
-                                             self.server.domain,
-                                             self.server.port,
-                                             inboxDMFeed,
-                                             self.server.allowDeletion,
-                                             self.server.httpPrefix,
-                                             self.server.projectVersion,
-                                             self._isMinimal(nickname),
-                                             self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show inbox done',
-                                                      'show dms')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(inboxDMFeed, ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/dm', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/dm':
-                # not the DM inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to inbox is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showDMs(authorized,
+                             callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.httpPrefix,
+                             self.server.domain,
+                             self.server.domainFull,
+                             self.server.port,
+                             self.server.onionDomain,
+                             self.server.i2pDomain,
+                             GETstartTime, GETtimings,
+                             self.server.proxyType,
+                             cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show inbox done',
                                   'show dms done')
 
-        # get the replies for a given person
+        # get the replies timeline for a given person
         if self.path.endswith('/tlreplies') or '/tlreplies?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxRepliesFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'tlreplies',
-                                      True, self.server.ocapAlways)
-                    if not inboxRepliesFeed:
-                        inboxRepliesFeed = []
-                    if self._requestHTTP():
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlreplies', '')
-                        pageNumber = 1
-                        if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
-                            nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
-                            else:
-                                pageNumber = 1
-                        if 'page=' not in self.path:
-                            # if no page was specified then show the first
-                            inboxRepliesFeed = \
-                                personBoxJson(self.server.recentPostsCache,
-                                              self.server.session,
-                                              self.server.baseDir,
-                                              self.server.domain,
-                                              self.server.port,
-                                              self.path + '?page=1',
-                                              self.server.httpPrefix,
-                                              maxPostsInFeed, 'tlreplies',
-                                              True, self.server.ocapAlways)
-                        msg = \
-                            htmlInboxReplies(self.server.defaultTimeline,
-                                             self.server.recentPostsCache,
-                                             self.server.maxRecentPosts,
-                                             self.server.translate,
-                                             pageNumber, maxPostsInFeed,
-                                             self.server.session,
-                                             self.server.baseDir,
-                                             self.server.cachedWebfingers,
-                                             self.server.personCache,
-                                             nickname,
-                                             self.server.domain,
-                                             self.server.port,
-                                             inboxRepliesFeed,
-                                             self.server.allowDeletion,
-                                             self.server.httpPrefix,
-                                             self.server.projectVersion,
-                                             self._isMinimal(nickname),
-                                             self.server.YTReplacementDomain)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html',
-                                          len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show dms done',
-                                                  'show replies 2')
-                    else:
-                        # don't need authenticated fetch here because there is
-                        # already the authorization check
-                        msg = json.dumps(inboxRepliesFeed,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('application/json',
-                                          len(msg),
-                                          None, callingDomain)
-                        self._write(msg)
-                    self.server.GETbusy = False
-                    return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlreplies', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/tlreplies':
-                # not the replies inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to inbox is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showReplies(authorized,
+                                 callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show dms done',
                                   'show replies 2 done')
 
-        # get the media for a given person
+        # get the media timeline for a given person
         if self.path.endswith('/tlmedia') or '/tlmedia?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxMediaFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInMediaFeed, 'tlmedia',
-                                      True, self.server.ocapAlways)
-                    if not inboxMediaFeed:
-                        inboxMediaFeed = []
-                    if self._requestHTTP():
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlmedia', '')
-                        pageNumber = 1
-                        if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
-                            nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
-                            else:
-                                pageNumber = 1
-                        if 'page=' not in self.path:
-                            # if no page was specified then show the first
-                            inboxMediaFeed = \
-                                personBoxJson(self.server.recentPostsCache,
-                                              self.server.session,
-                                              self.server.baseDir,
-                                              self.server.domain,
-                                              self.server.port,
-                                              self.path + '?page=1',
-                                              self.server.httpPrefix,
-                                              maxPostsInMediaFeed, 'tlmedia',
-                                              True, self.server.ocapAlways)
-                        msg = \
-                            htmlInboxMedia(self.server.defaultTimeline,
-                                           self.server.recentPostsCache,
-                                           self.server.maxRecentPosts,
-                                           self.server.translate,
-                                           pageNumber, maxPostsInMediaFeed,
-                                           self.server.session,
-                                           self.server.baseDir,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           inboxMediaFeed,
-                                           self.server.allowDeletion,
-                                           self.server.httpPrefix,
-                                           self.server.projectVersion,
-                                           self._isMinimal(nickname),
-                                           self.server.YTReplacementDomain)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html',
-                                          len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show replies 2 done',
-                                                  'show media 2')
-                    else:
-                        # don't need authenticated fetch here because there is
-                        # already the authorization check
-                        msg = json.dumps(inboxMediaFeed,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('application/json',
-                                          len(msg),
-                                          None, callingDomain)
-                        self._write(msg)
-                    self.server.GETbusy = False
-                    return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlmedia', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/tlmedia':
-                # not the media inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to inbox is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showMediaTimeline(authorized,
+                                       callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType,
+                                       cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -4972,95 +8692,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the blogs for a given person
         if self.path.endswith('/tlblogs') or '/tlblogs?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    inboxBlogsFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInBlogsFeed, 'tlblogs',
-                                      True, self.server.ocapAlways)
-                    if not inboxBlogsFeed:
-                        inboxBlogsFeed = []
-                    if self._requestHTTP():
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlblogs', '')
-                        pageNumber = 1
-                        if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
-                            nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
-                            else:
-                                pageNumber = 1
-                        if 'page=' not in self.path:
-                            # if no page was specified then show the first
-                            inboxBlogsFeed = \
-                                personBoxJson(self.server.recentPostsCache,
-                                              self.server.session,
-                                              self.server.baseDir,
-                                              self.server.domain,
-                                              self.server.port,
-                                              self.path + '?page=1',
-                                              self.server.httpPrefix,
-                                              maxPostsInBlogsFeed, 'tlblogs',
-                                              True, self.server.ocapAlways)
-                        msg = \
-                            htmlInboxBlogs(self.server.defaultTimeline,
-                                           self.server.recentPostsCache,
-                                           self.server.maxRecentPosts,
-                                           self.server.translate,
-                                           pageNumber, maxPostsInBlogsFeed,
-                                           self.server.session,
-                                           self.server.baseDir,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           inboxBlogsFeed,
-                                           self.server.allowDeletion,
-                                           self.server.httpPrefix,
-                                           self.server.projectVersion,
-                                           self._isMinimal(nickname),
-                                           self.server.YTReplacementDomain)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html',
-                                          len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show media 2 done',
-                                                  'show blogs 2')
-                    else:
-                        # don't need authenticated fetch here because there is
-                        # already the authorization check
-                        msg = json.dumps(inboxBlogsFeed,
-                                         ensure_ascii=False)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('application/json',
-                                          len(msg),
-                                          None, callingDomain)
-                        self._write(msg)
-                    self.server.GETbusy = False
-                    return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlblogs', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.path != '/tlblogs':
-                # not the blogs inbox
-                if self.server.debug:
-                    print('DEBUG: GET access to blogs is unauthorized')
-                self.send_response(405)
-                self.end_headers()
-                self.server.GETbusy = False
+            if self._showBlogsTimeline(authorized,
+                                       callingDomain, self.path,
+                                       self.server.baseDir,
+                                       self.server.httpPrefix,
+                                       self.server.domain,
+                                       self.server.domainFull,
+                                       self.server.port,
+                                       self.server.onionDomain,
+                                       self.server.i2pDomain,
+                                       GETstartTime, GETtimings,
+                                       self.server.proxyType,
+                                       cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5069,154 +8712,42 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the shared items timeline for a given person
         if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    if self._requestHTTP():
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlshares', '')
-                        pageNumber = 1
-                        if '?page=' in nickname:
-                            pageNumber = nickname.split('?page=')[1]
-                            nickname = nickname.split('?page=')[0]
-                            if pageNumber.isdigit():
-                                pageNumber = int(pageNumber)
-                            else:
-                                pageNumber = 1
-                        msg = \
-                            htmlShares(self.server.defaultTimeline,
-                                       self.server.recentPostsCache,
-                                       self.server.maxRecentPosts,
-                                       self.server.translate,
-                                       pageNumber, maxPostsInFeed,
-                                       self.server.session,
-                                       self.server.baseDir,
-                                       self.server.cachedWebfingers,
-                                       self.server.personCache,
-                                       nickname,
-                                       self.server.domain,
-                                       self.server.port,
-                                       self.server.allowDeletion,
-                                       self.server.httpPrefix,
-                                       self.server.projectVersion,
-                                       self.server.YTReplacementDomain)
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html',
-                                          len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show blogs 2 done',
-                                                  'show shares 2')
-                        self.server.GETbusy = False
-                        return
-            # not the shares timeline
-            if self.server.debug:
-                print('DEBUG: GET access to shares timeline is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showSharesTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show blogs 2 done',
                                   'show shares 2 done')
 
-        # get the bookmarks for a given person
+        # get the bookmarks timeline for a given person
         if self.path.endswith('/tlbookmarks') or \
            '/tlbookmarks?page=' in self.path or \
            self.path.endswith('/bookmarks') or \
            '/bookmarks?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    bookmarksFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'tlbookmarks',
-                                      authorized, self.server.ocapAlways)
-                    if bookmarksFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/tlbookmarks', '')
-                            nickname = nickname.replace('/bookmarks', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                bookmarksFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed,
-                                                  'tlbookmarks',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                            msg = \
-                                htmlBookmarks(self.server.defaultTimeline,
-                                              self.server.recentPostsCache,
-                                              self.server.maxRecentPosts,
-                                              self.server.translate,
-                                              pageNumber, maxPostsInFeed,
-                                              self.server.session,
-                                              self.server.baseDir,
-                                              self.server.cachedWebfingers,
-                                              self.server.personCache,
-                                              nickname,
-                                              self.server.domain,
-                                              self.server.port,
-                                              bookmarksFeed,
-                                              self.server.allowDeletion,
-                                              self.server.httpPrefix,
-                                              self.server.projectVersion,
-                                              self._isMinimal(nickname),
-                                              self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show shares 2 done',
-                                                      'show bookmarks 2')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(bookmarksFeed,
-                                             ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlbookmarks', '')
-                        nickname = nickname.replace('/bookmarks', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to bookmarks is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showBookmarksTimeline(authorized,
+                                           callingDomain, self.path,
+                                           self.server.baseDir,
+                                           self.server.httpPrefix,
+                                           self.server.domain,
+                                           self.server.domainFull,
+                                           self.server.port,
+                                           self.server.onionDomain,
+                                           self.server.i2pDomain,
+                                           GETstartTime, GETtimings,
+                                           self.server.proxyType,
+                                           cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show shares 2 done',
@@ -5227,179 +8758,37 @@ class PubServer(BaseHTTPRequestHandler):
            '/tlevents?page=' in self.path or \
            self.path.endswith('/events') or \
            '/events?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    # convert /events to /tlevents
-                    if self.path.endswith('/events') or \
-                       '/events?page=' in self.path:
-                        self.path = self.path.replace('/events', '/tlevents')
-                    eventsFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'tlevents',
-                                      authorized, self.server.ocapAlways)
-                    print('eventsFeed: ' + str(eventsFeed))
-                    if eventsFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/tlevents', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                eventsFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed,
-                                                  'tlevents',
-                                                  authorized,
-                                                  self.server.ocapAlways)
-                            msg = \
-                                htmlEvents(self.server.defaultTimeline,
-                                           self.server.recentPostsCache,
-                                           self.server.maxRecentPosts,
-                                           self.server.translate,
-                                           pageNumber, maxPostsInFeed,
-                                           self.server.session,
-                                           self.server.baseDir,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           nickname,
-                                           self.server.domain,
-                                           self.server.port,
-                                           eventsFeed,
-                                           self.server.allowDeletion,
-                                           self.server.httpPrefix,
-                                           self.server.projectVersion,
-                                           self._isMinimal(nickname),
-                                           self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show bookmarks 2 done',
-                                                      'show events')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(eventsFeed,
-                                             ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/tlevents', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to events is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showEventsTimeline(authorized,
+                                        callingDomain, self.path,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings,
+                                        self.server.proxyType,
+                                        cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show bookmarks 2 done',
                                   'show events done')
 
-        # get outbox feed for a person
-        outboxFeed = \
-            personBoxJson(self.server.recentPostsCache,
-                          self.server.session,
-                          self.server.baseDir, self.server.domain,
-                          self.server.port, self.path,
-                          self.server.httpPrefix,
-                          maxPostsInFeed, 'outbox',
-                          authorized,
-                          self.server.ocapAlways)
-        if outboxFeed:
-            if self._requestHTTP():
-                nickname = \
-                    self.path.replace('/users/', '').replace('/outbox', '')
-                pageNumber = 1
-                if '?page=' in nickname:
-                    pageNumber = nickname.split('?page=')[1]
-                    nickname = nickname.split('?page=')[0]
-                    if pageNumber.isdigit():
-                        pageNumber = int(pageNumber)
-                    else:
-                        pageNumber = 1
-                if 'page=' not in self.path:
-                    # if a page wasn't specified then show the first one
-                    outboxFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path + '?page=1',
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'outbox',
-                                      authorized,
-                                      self.server.ocapAlways)
-                msg = \
-                    htmlOutbox(self.server.defaultTimeline,
-                               self.server.recentPostsCache,
-                               self.server.maxRecentPosts,
-                               self.server.translate,
-                               pageNumber, maxPostsInFeed,
-                               self.server.session,
-                               self.server.baseDir,
-                               self.server.cachedWebfingers,
-                               self.server.personCache,
-                               nickname,
-                               self.server.domain,
-                               self.server.port,
-                               outboxFeed,
-                               self.server.allowDeletion,
-                               self.server.httpPrefix,
-                               self.server.projectVersion,
-                               self._isMinimal(nickname),
-                               self.server.YTReplacementDomain)
-                msg = msg.encode('utf-8')
-                self._set_headers('text/html',
-                                  len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show events done',
-                                          'show outbox')
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(outboxFeed,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-            self.server.GETbusy = False
+        # outbox timeline
+        if self._showOutboxTimeline(authorized,
+                                    callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    GETstartTime, GETtimings,
+                                    self.server.proxyType,
+                                    cookie, self.server.debug):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5409,346 +8798,72 @@ class PubServer(BaseHTTPRequestHandler):
         # get the moderation feed for a moderator
         if self.path.endswith('/moderation') or \
            '/moderation?page=' in self.path:
-            if '/users/' in self.path:
-                if authorized:
-                    moderationFeed = \
-                        personBoxJson(self.server.recentPostsCache,
-                                      self.server.session,
-                                      self.server.baseDir,
-                                      self.server.domain,
-                                      self.server.port,
-                                      self.path,
-                                      self.server.httpPrefix,
-                                      maxPostsInFeed, 'moderation',
-                                      True, self.server.ocapAlways)
-                    if moderationFeed:
-                        if self._requestHTTP():
-                            nickname = self.path.replace('/users/', '')
-                            nickname = nickname.replace('/moderation', '')
-                            pageNumber = 1
-                            if '?page=' in nickname:
-                                pageNumber = nickname.split('?page=')[1]
-                                nickname = nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber = int(pageNumber)
-                                else:
-                                    pageNumber = 1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                moderationFeed = \
-                                    personBoxJson(self.server.recentPostsCache,
-                                                  self.server.session,
-                                                  self.server.baseDir,
-                                                  self.server.domain,
-                                                  self.server.port,
-                                                  self.path + '?page=1',
-                                                  self.server.httpPrefix,
-                                                  maxPostsInFeed, 'moderation',
-                                                  True, self.server.ocapAlways)
-                            msg = \
-                                htmlModeration(self.server.defaultTimeline,
-                                               self.server.recentPostsCache,
-                                               self.server.maxRecentPosts,
-                                               self.server.translate,
-                                               pageNumber, maxPostsInFeed,
-                                               self.server.session,
-                                               self.server.baseDir,
-                                               self.server.cachedWebfingers,
-                                               self.server.personCache,
-                                               nickname,
-                                               self.server.domain,
-                                               self.server.port,
-                                               moderationFeed,
-                                               True,
-                                               self.server.httpPrefix,
-                                               self.server.projectVersion,
-                                               self.server.YTReplacementDomain)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(msg),
-                                              cookie, callingDomain)
-                            self._write(msg)
-                            self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                      'show outbox done',
-                                                      'show moderation')
-                        else:
-                            # don't need authenticated fetch here because
-                            # there is already the authorization check
-                            msg = json.dumps(moderationFeed,
-                                             ensure_ascii=False)
-                            msg = msg.encode('utf-8')
-                            self._set_headers('application/json',
-                                              len(msg),
-                                              None, callingDomain)
-                            self._write(msg)
-                        self.server.GETbusy = False
-                        return
-                else:
-                    if self.server.debug:
-                        nickname = self.path.replace('/users/', '')
-                        nickname = nickname.replace('/moderation', '')
-                        print('DEBUG: ' + nickname +
-                              ' was not authorized to access ' + self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to moderation feed is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.GETbusy = False
-            return
+            if self._showModTimeline(authorized,
+                                     callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     GETstartTime, GETtimings,
+                                     self.server.proxyType,
+                                     cookie, self.server.debug):
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show outbox done',
                                   'show moderation done')
 
-        shares = \
-            getSharesFeedForPerson(self.server.baseDir,
-                                   self.server.domain,
-                                   self.server.port, self.path,
-                                   self.server.httpPrefix,
-                                   sharesPerPage)
-        if shares:
-            if self._requestHTTP():
-                pageNumber = 1
-                if '?page=' not in self.path:
-                    searchPath = self.path
-                    # get a page of shares, not the summary
-                    shares = \
-                        getSharesFeedForPerson(self.server.baseDir,
-                                               self.server.domain,
-                                               self.server.port,
-                                               self.path + '?page=true',
-                                               self.server.httpPrefix,
-                                               sharesPerPage)
-                else:
-                    pageNumberStr = self.path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                    searchPath = self.path.split('?page=')[0]
-                getPerson = \
-                    personLookup(self.server.domain,
-                                 searchPath.replace('/shares', ''),
-                                 self.server.baseDir)
-                if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during profile')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during profile')
-                            self._404()
-                            self.server.GETbusy = False
-                            return
-                    msg = \
-                        htmlProfile(self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
-                                    self.server.maxRecentPosts,
-                                    self.server.translate,
-                                    self.server.projectVersion,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    authorized,
-                                    self.server.ocapAlways,
-                                    getPerson, 'shares',
-                                    self.server.session,
-                                    self.server.cachedWebfingers,
-                                    self.server.personCache,
-                                    self.server.YTReplacementDomain,
-                                    shares,
-                                    pageNumber, sharesPerPage)
-                    msg = msg.encode('utf-8')
-                    self._set_headers('text/html',
-                                      len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show moderation done',
-                                              'show profile 2')
-                    self.server.GETbusy = False
-                    return
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(shares,
-                                     ensure_ascii=False)
-                    msg = msg.encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-                self.server.GETbusy = False
-                return
+        if self._showSharesFeed(authorized,
+                                callingDomain, self.path,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.port,
+                                self.server.onionDomain,
+                                self.server.i2pDomain,
+                                GETstartTime, GETtimings,
+                                self.server.proxyType,
+                                cookie, self.server.debug):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show moderation done',
                                   'show profile 2 done')
 
-        following = \
-            getFollowingFeed(self.server.baseDir, self.server.domain,
-                             self.server.port, self.path,
-                             self.server.httpPrefix,
-                             authorized, followsPerPage)
-        if following:
-            if self._requestHTTP():
-                pageNumber = 1
-                if '?page=' not in self.path:
-                    searchPath = self.path
-                    # get a page of following, not the summary
-                    following = \
-                        getFollowingFeed(self.server.baseDir,
-                                         self.server.domain,
-                                         self.server.port,
-                                         self.path + '?page=true',
-                                         self.server.httpPrefix,
-                                         authorized, followsPerPage)
-                else:
-                    pageNumberStr = self.path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                    searchPath = self.path.split('?page=')[0]
-                getPerson = \
-                    personLookup(self.server.domain,
-                                 searchPath.replace('/following', ''),
-                                 self.server.baseDir)
-                if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during following')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during following')
-                            self._404()
-                            self.server.GETbusy = False
-                            return
-
-                    msg = \
-                        htmlProfile(self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
-                                    self.server.maxRecentPosts,
-                                    self.server.translate,
-                                    self.server.projectVersion,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    authorized,
-                                    self.server.ocapAlways,
-                                    getPerson, 'following',
-                                    self.server.session,
-                                    self.server.cachedWebfingers,
-                                    self.server.personCache,
-                                    self.server.YTReplacementDomain,
-                                    following,
-                                    pageNumber,
-                                    followsPerPage).encode('utf-8')
-                    self._set_headers('text/html',
-                                      len(msg), cookie, callingDomain)
-                    self._write(msg)
-                    self.server.GETbusy = False
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show profile 2 done',
-                                              'show profile 3')
-                    return
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(following,
-                                     ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-                self.server.GETbusy = False
-                return
+        if self._showFollowingFeed(authorized,
+                                   callingDomain, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   cookie, self.server.debug):
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show profile 2 done',
                                   'show profile 3 done')
 
-        followers = \
-            getFollowingFeed(self.server.baseDir, self.server.domain,
-                             self.server.port, self.path,
-                             self.server.httpPrefix,
-                             authorized, followsPerPage, 'followers')
-        if followers:
-            if self._requestHTTP():
-                pageNumber = 1
-                if '?page=' not in self.path:
-                    searchPath = self.path
-                    # get a page of followers, not the summary
-                    followers = \
-                        getFollowingFeed(self.server.baseDir,
-                                         self.server.domain,
-                                         self.server.port,
-                                         self.path + '?page=1',
-                                         self.server.httpPrefix,
-                                         authorized, followsPerPage,
-                                         'followers')
-                else:
-                    pageNumberStr = self.path.split('?page=')[1]
-                    if '#' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('#')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                    searchPath = self.path.split('?page=')[0]
-                getPerson = \
-                    personLookup(self.server.domain,
-                                 searchPath.replace('/followers', ''),
-                                 self.server.baseDir)
-                if getPerson:
-                    if not self.server.session:
-                        print('Starting new session during following2')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: GET failed to create session ' +
-                                  'during following2')
-                            self._404()
-                            self.server.GETbusy = False
-                            return
-                    msg = \
-                        htmlProfile(self.server.defaultTimeline,
-                                    self.server.recentPostsCache,
-                                    self.server.maxRecentPosts,
-                                    self.server.translate,
-                                    self.server.projectVersion,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
-                                    authorized,
-                                    self.server.ocapAlways,
-                                    getPerson, 'followers',
-                                    self.server.session,
-                                    self.server.cachedWebfingers,
-                                    self.server.personCache,
-                                    self.server.YTReplacementDomain,
-                                    followers,
-                                    pageNumber,
-                                    followsPerPage).encode('utf-8')
-                    self._set_headers('text/html',
-                                      len(msg),
-                                      cookie, callingDomain)
-                    self._write(msg)
-                    self.server.GETbusy = False
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show profile 3 done',
-                                              'show profile 4')
-                    return
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(followers,
-                                     ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-            self.server.GETbusy = False
+        if self._showFollowersFeed(authorized,
+                                   callingDomain, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   cookie, self.server.debug):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5756,55 +8871,18 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show profile 4 done')
 
         # look up a person
-        getPerson = \
-            personLookup(self.server.domain, self.path,
-                         self.server.baseDir)
-        if getPerson:
-            if self._requestHTTP():
-                if not self.server.session:
-                    print('Starting new session during person lookup')
-                    self.server.session = \
-                        createSession(self.server.proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during person lookup')
-                        self._404()
-                        self.server.GETbusy = False
-                        return
-                msg = \
-                    htmlProfile(self.server.defaultTimeline,
-                                self.server.recentPostsCache,
-                                self.server.maxRecentPosts,
-                                self.server.translate,
-                                self.server.projectVersion,
-                                self.server.baseDir,
-                                self.server.httpPrefix,
-                                authorized,
-                                self.server.ocapAlways,
-                                getPerson, 'posts',
-                                self.server.session,
-                                self.server.cachedWebfingers,
-                                self.server.personCache,
-                                self.server.YTReplacementDomain,
-                                None, None).encode('utf-8')
-                self._set_headers('text/html',
-                                  len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show profile 4 done',
-                                          'show profile posts')
-            else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(getPerson,
-                                     ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',
-                                      len(msg),
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-            self.server.GETbusy = False
+        if self._showPersonProfile(authorized,
+                                   callingDomain, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   GETstartTime, GETtimings,
+                                   self.server.proxyType,
+                                   cookie, self.server.debug):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5878,9 +8956,9 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if self._pathIsImage() or \
-               self._pathIsVideo() or \
-               self._pathIsAudio():
+            if self._pathIsImage(self.path) or \
+               self._pathIsVideo(self.path) or \
+               self._pathIsAudio(self.path):
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr
@@ -6821,879 +9899,27 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 1)
 
+        # login screen
         if self.path.startswith('/login'):
-            # get the contents of POST containing login credentials
-            length = int(self.headers['Content-length'])
-            if length > 512:
-                print('Login failed - credentials too long')
-                self.send_response(401)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-
-            try:
-                loginParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST login read ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST login read socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST login read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-
-            loginNickname, loginPassword, register = \
-                htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
-            if loginNickname:
-                self.server.lastLoginTime = int(time.time())
-                if register:
-                    if not registerAccount(self.server.baseDir,
-                                           self.server.httpPrefix,
-                                           self.server.domain,
-                                           self.server.port,
-                                           loginNickname,
-                                           loginPassword,
-                                           self.server.manualFollowerApproval):
-                        self.server.POSTbusy = False
-                        if callingDomain.endswith('.onion') and \
-                           self.server.onionDomain:
-                            self._redirect_headers('http://' +
-                                                   self.server.onionDomain +
-                                                   '/login',
-                                                   cookie, callingDomain)
-                        elif (callingDomain.endswith('.i2p') and
-                              self.server.i2pDomain):
-                            self._redirect_headers('http://' +
-                                                   self.server.i2pDomain +
-                                                   '/login',
-                                                   cookie, callingDomain)
-                        else:
-                            self._redirect_headers(self.server.httpPrefix +
-                                                   '://' +
-                                                   self.server.domainFull +
-                                                   '/login',
-                                                   cookie, callingDomain)
-                        return
-                authHeader = createBasicAuthHeader(loginNickname,
-                                                   loginPassword)
-                if not authorizeBasic(self.server.baseDir, '/users/' +
-                                      loginNickname + '/outbox',
-                                      authHeader, False):
-                    print('Login failed: ' + loginNickname)
-                    self._clearLoginDetails(loginNickname, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                else:
-                    if isSuspended(self.server.baseDir, loginNickname):
-                        msg = \
-                            htmlSuspended(self.server.baseDir).encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                    # login success - redirect with authorization
-                    print('Login success: ' + loginNickname)
-                    # re-activate account if needed
-                    activateAccount(self.server.baseDir, loginNickname,
-                                    self.server.domain)
-                    # This produces a deterministic token based
-                    # on nick+password+salt
-                    saltFilename = \
-                        self.server.baseDir+'/accounts/' + \
-                        loginNickname + '@' + self.server.domain + '/.salt'
-                    salt = createPassword(32)
-                    if os.path.isfile(saltFilename):
-                        try:
-                            with open(saltFilename, 'r') as fp:
-                                salt = fp.read()
-                        except Exception as e:
-                            print('WARN: Unable to read salt for ' +
-                                  loginNickname + ' ' + str(e))
-                    else:
-                        try:
-                            with open(saltFilename, 'w+') as fp:
-                                fp.write(salt)
-                        except Exception as e:
-                            print('WARN: Unable to save salt for ' +
-                                  loginNickname + ' ' + str(e))
-
-                    tokenText = loginNickname + loginPassword + salt
-                    token = sha256(tokenText.encode('utf-8')).hexdigest()
-                    self.server.tokens[loginNickname] = token
-                    loginHandle = loginNickname + '@' + self.server.domain
-                    tokenFilename = \
-                        self.server.baseDir+'/accounts/' + \
-                        loginHandle + '/.token'
-                    try:
-                        with open(tokenFilename, 'w+') as fp:
-                            fp.write(token)
-                    except Exception as e:
-                        print('WARN: Unable to save token for ' +
-                              loginNickname + ' ' + str(e))
-
-                    personUpgradeActor(self.server.baseDir, None, loginHandle,
-                                       self.server.baseDir + '/accounts/' +
-                                       loginHandle + '.json')
-
-                    index = self.server.tokens[loginNickname]
-                    self.server.tokensLookup[index] = loginNickname
-                    cookieStr = 'SET:epicyon=' + \
-                        self.server.tokens[loginNickname] + '; SameSite=Strict'
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        self._redirect_headers('http://' +
-                                               self.server.onionDomain +
-                                               '/users/' +
-                                               loginNickname + '/' +
-                                               self.server.defaultTimeline,
-                                               cookieStr, callingDomain)
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        self._redirect_headers('http://' +
-                                               self.server.i2pDomain +
-                                               '/users/' +
-                                               loginNickname + '/' +
-                                               self.server.defaultTimeline,
-                                               cookieStr, callingDomain)
-                    else:
-                        self._redirect_headers(self.server.httpPrefix+'://' +
-                                               self.server.domainFull +
-                                               '/users/' +
-                                               loginNickname + '/' +
-                                               self.server.defaultTimeline,
-                                               cookieStr, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-            self._200()
-            self.server.POSTbusy = False
+            self._loginScreen(self.path, callingDomain, cookie,
+                              self.server.baseDir, self.server.httpPrefix,
+                              self.server.domain, self.server.domainFull,
+                              self.server.port,
+                              self.server.onionDomain, self.server.i2pDomain,
+                              self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 2)
 
-        # update of profile/avatar from web interface
+        # update of profile/avatar from web interface,
+        # after selecting Edit button then Submit
         if authorized and self.path.endswith('/profiledata'):
-            usersPath = self.path.replace('/profiledata', '')
-            usersPath = usersPath.replace('/editprofile', '')
-            actorStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            if ' boundary=' in self.headers['Content-type']:
-                boundary = self.headers['Content-type'].split('boundary=')[1]
-                if ';' in boundary:
-                    boundary = boundary.split(';')[0]
-
-                nickname = getNicknameFromActor(actorStr)
-                if not nickname:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actorStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actorStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('WARN: nickname not found in ' + actorStr)
-                    self._redirect_headers(actorStr, cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                length = int(self.headers['Content-length'])
-                if length > self.server.maxPostLength:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        actorStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        actorStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('Maximum profile data length exceeded ' +
-                          str(length))
-                    self._redirect_headers(actorStr, cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-
-                try:
-                    # read the bytes of the http form POST
-                    postBytes = self.rfile.read(length)
-                except SocketError as e:
-                    if e.errno == errno.ECONNRESET:
-                        print('WARN: connection was reset while ' +
-                              'reading bytes from http form POST')
-                    else:
-                        print('WARN: error while reading bytes ' +
-                              'from http form POST')
-                    self.send_response(400)
-                    self.end_headers()
-                    self.server.POSTbusy = False
-                    return
-                except ValueError as e:
-                    print('ERROR: failed to read bytes for POST')
-                    print(e)
-                    self.send_response(400)
-                    self.end_headers()
-                    self.server.POSTbusy = False
-                    return
-
-                # extract each image type
-                actorChanged = True
-                profileMediaTypes = ('avatar', 'image',
-                                     'banner', 'search_banner',
-                                     'instanceLogo')
-                profileMediaTypesUploaded = {}
-                for mType in profileMediaTypes:
-                    if self.server.debug:
-                        print('DEBUG: profile update extracting ' + mType +
-                              ' image or font from POST')
-                    mediaBytes, postBytes = \
-                        extractMediaInFormPOST(postBytes, boundary, mType)
-                    if mediaBytes:
-                        if self.server.debug:
-                            print('DEBUG: profile update ' + mType +
-                                  ' image or font was found. ' +
-                                  str(len(mediaBytes)) + ' bytes')
-                    else:
-                        if self.server.debug:
-                            print('DEBUG: profile update, no ' + mType +
-                                  ' image or font was found in POST')
-                        continue
-
-                    # Note: a .temp extension is used here so that at no
-                    # time is an image with metadata publicly exposed,
-                    # even for a few mS
-                    if mType == 'instanceLogo':
-                        filenameBase = \
-                            self.server.baseDir + '/accounts/login.temp'
-                    else:
-                        filenameBase = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/' + mType + '.temp'
-
-                    filename, attachmentMediaType = \
-                        saveMediaInFormPOST(mediaBytes, self.server.debug,
-                                            filenameBase)
-                    if filename:
-                        print('Profile update POST ' + mType +
-                              ' media or font filename is ' + filename)
-                    else:
-                        print('Profile update, no ' + mType +
-                              ' media or font filename in POST')
-                        continue
-
-                    postImageFilename = filename.replace('.temp', '')
-                    if self.server.debug:
-                        print('DEBUG: POST ' + mType +
-                              ' media removing metadata')
-                    # remove existing etag
-                    if os.path.isfile(postImageFilename + '.etag'):
-                        try:
-                            os.remove(postImageFilename + '.etag')
-                        except BaseException:
-                            pass
-                    removeMetaData(filename, postImageFilename)
-                    if os.path.isfile(postImageFilename):
-                        print('profile update POST ' + mType +
-                              ' image or font saved to ' + postImageFilename)
-                        if mType != 'instanceLogo':
-                            lastPartOfImageFilename = \
-                                postImageFilename.split('/')[-1]
-                            profileMediaTypesUploaded[mType] = \
-                                lastPartOfImageFilename
-                            actorChanged = True
-                    else:
-                        print('ERROR: profile update POST ' + mType +
-                              ' image or font could not be saved to ' +
-                              postImageFilename)
-
-                fields = \
-                    extractTextFieldsInPOST(postBytes, boundary,
-                                            self.server.debug)
-                if self.server.debug:
-                    if fields:
-                        print('DEBUG: profile update text ' +
-                              'field extracted from POST ' + str(fields))
-                    else:
-                        print('WARN: profile update, no text ' +
-                              'fields could be extracted from POST')
-
-                actorFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    nickname + '@' + self.server.domain + '.json'
-                if os.path.isfile(actorFilename):
-                    actorJson = loadJson(actorFilename)
-                    if actorJson:
-                        # update the avatar/image url file extension
-                        uploads = profileMediaTypesUploaded.items()
-                        for mType, lastPart in uploads:
-                            repStr = '/' + lastPart
-                            if mType == 'avatar':
-                                lastPartOfUrl = \
-                                    actorJson['icon']['url'].split('/')[-1]
-                                srchStr = '/' + lastPartOfUrl
-                                actorJson['icon']['url'] = \
-                                    actorJson['icon']['url'].replace(srchStr,
-                                                                     repStr)
-                            elif mType == 'image':
-                                lastPartOfUrl = \
-                                    actorJson['image']['url'].split('/')[-1]
-                                srchStr = '/' + lastPartOfUrl
-                                actorJson['image']['url'] = \
-                                    actorJson['image']['url'].replace(srchStr,
-                                                                      repStr)
-
-                        skillCtr = 1
-                        newSkills = {}
-                        while skillCtr < 10:
-                            skillName = \
-                                fields.get('skillName' + str(skillCtr))
-                            if not skillName:
-                                skillCtr += 1
-                                continue
-                            skillValue = \
-                                fields.get('skillValue' + str(skillCtr))
-                            if not skillValue:
-                                skillCtr += 1
-                                continue
-                            if not actorJson['skills'].get(skillName):
-                                actorChanged = True
-                            else:
-                                if actorJson['skills'][skillName] != \
-                                   int(skillValue):
-                                    actorChanged = True
-                            newSkills[skillName] = int(skillValue)
-                            skillCtr += 1
-                        if len(actorJson['skills'].items()) != \
-                           len(newSkills.items()):
-                            actorChanged = True
-                        actorJson['skills'] = newSkills
-                        if fields.get('password'):
-                            if fields.get('passwordconfirm'):
-                                if actorJson['password'] == \
-                                   fields['passwordconfirm']:
-                                    if len(actorJson['password']) > 2:
-                                        # set password
-                                        baseDir = self.server.baseDir
-                                        pwd = actorJson['password']
-                                        storeBasicCredentials(baseDir,
-                                                              nickname,
-                                                              pwd)
-                        if fields.get('displayNickname'):
-                            if fields['displayNickname'] != actorJson['name']:
-                                actorJson['name'] = fields['displayNickname']
-                                actorChanged = True
-                        if fields.get('themeDropdown'):
-                            setTheme(self.server.baseDir,
-                                     fields['themeDropdown'])
-#                            self.server.iconsCache={}
-
-                        currentEmailAddress = getEmailAddress(actorJson)
-                        if fields.get('email'):
-                            if fields['email'] != currentEmailAddress:
-                                setEmailAddress(actorJson, fields['email'])
-                                actorChanged = True
-                        else:
-                            if currentEmailAddress:
-                                setEmailAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentXmppAddress = getXmppAddress(actorJson)
-                        if fields.get('xmppAddress'):
-                            if fields['xmppAddress'] != currentXmppAddress:
-                                setXmppAddress(actorJson,
-                                               fields['xmppAddress'])
-                                actorChanged = True
-                        else:
-                            if currentXmppAddress:
-                                setXmppAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentMatrixAddress = getMatrixAddress(actorJson)
-                        if fields.get('matrixAddress'):
-                            if fields['matrixAddress'] != currentMatrixAddress:
-                                setMatrixAddress(actorJson,
-                                                 fields['matrixAddress'])
-                                actorChanged = True
-                        else:
-                            if currentMatrixAddress:
-                                setMatrixAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentSSBAddress = getSSBAddress(actorJson)
-                        if fields.get('ssbAddress'):
-                            if fields['ssbAddress'] != currentSSBAddress:
-                                setSSBAddress(actorJson,
-                                              fields['ssbAddress'])
-                                actorChanged = True
-                        else:
-                            if currentSSBAddress:
-                                setSSBAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentBlogAddress = getBlogAddress(actorJson)
-                        if fields.get('blogAddress'):
-                            if fields['blogAddress'] != currentBlogAddress:
-                                setBlogAddress(actorJson,
-                                               fields['blogAddress'])
-                                actorChanged = True
-                        else:
-                            if currentBlogAddress:
-                                setBlogAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentToxAddress = getToxAddress(actorJson)
-                        if fields.get('toxAddress'):
-                            if fields['toxAddress'] != currentToxAddress:
-                                setToxAddress(actorJson,
-                                              fields['toxAddress'])
-                                actorChanged = True
-                        else:
-                            if currentToxAddress:
-                                setToxAddress(actorJson, '')
-                                actorChanged = True
-
-                        currentPGPpubKey = getPGPpubKey(actorJson)
-                        if fields.get('pgp'):
-                            if fields['pgp'] != currentPGPpubKey:
-                                setPGPpubKey(actorJson,
-                                             fields['pgp'])
-                                actorChanged = True
-                        else:
-                            if currentPGPpubKey:
-                                setPGPpubKey(actorJson, '')
-                                actorChanged = True
-
-                        currentPGPfingerprint = getPGPfingerprint(actorJson)
-                        if fields.get('openpgp'):
-                            if fields['openpgp'] != currentPGPfingerprint:
-                                setPGPfingerprint(actorJson,
-                                                  fields['openpgp'])
-                                actorChanged = True
-                        else:
-                            if currentPGPfingerprint:
-                                setPGPfingerprint(actorJson, '')
-                                actorChanged = True
-
-                        currentDonateUrl = getDonationUrl(actorJson)
-                        if fields.get('donateUrl'):
-                            if fields['donateUrl'] != currentDonateUrl:
-                                setDonationUrl(actorJson,
-                                               fields['donateUrl'])
-                                actorChanged = True
-                        else:
-                            if currentDonateUrl:
-                                setDonationUrl(actorJson, '')
-                                actorChanged = True
-
-                        if fields.get('instanceTitle'):
-                            currInstanceTitle = \
-                                getConfigParam(self.server.baseDir,
-                                               'instanceTitle')
-                            if fields['instanceTitle'] != currInstanceTitle:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceTitle',
-                                               fields['instanceTitle'])
-
-                        if fields.get('ytdomain'):
-                            currYTDomain = self.server.YTReplacementDomain
-                            if fields['ytdomain'] != currYTDomain:
-                                newYTDomain = fields['ytdomain']
-                                if '://' in newYTDomain:
-                                    newYTDomain = newYTDomain.split('://')[1]
-                                if '/' in newYTDomain:
-                                    newYTDomain = newYTDomain.split('/')[0]
-                                if '.' in newYTDomain:
-                                    setConfigParam(self.server.baseDir,
-                                                   'youtubedomain',
-                                                   newYTDomain)
-                                    self.server.YTReplacementDomain = \
-                                        newYTDomain
-                        else:
-                            setConfigParam(self.server.baseDir,
-                                           'youtubedomain', '')
-                            self.server.YTReplacementDomain = None
-
-                        currInstanceDescriptionShort = \
-                            getConfigParam(self.server.baseDir,
-                                           'instanceDescriptionShort')
-                        if fields.get('instanceDescriptionShort'):
-                            if fields['instanceDescriptionShort'] != \
-                               currInstanceDescriptionShort:
-                                iDesc = fields['instanceDescriptionShort']
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescriptionShort',
-                                               iDesc)
-                        else:
-                            if currInstanceDescriptionShort:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescriptionShort', '')
-                        currInstanceDescription = \
-                            getConfigParam(self.server.baseDir,
-                                           'instanceDescription')
-                        if fields.get('instanceDescription'):
-                            if fields['instanceDescription'] != \
-                               currInstanceDescription:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescription',
-                                               fields['instanceDescription'])
-                        else:
-                            if currInstanceDescription:
-                                setConfigParam(self.server.baseDir,
-                                               'instanceDescription', '')
-                        if fields.get('bio'):
-                            if fields['bio'] != actorJson['summary']:
-                                actorTags = {}
-                                actorJson['summary'] = \
-                                    addHtmlTags(self.server.baseDir,
-                                                self.server.httpPrefix,
-                                                nickname,
-                                                self.server.domainFull,
-                                                fields['bio'], [], actorTags)
-                                if actorTags:
-                                    actorJson['tag'] = []
-                                    for tagName, tag in actorTags.items():
-                                        actorJson['tag'].append(tag)
-                                actorChanged = True
-                        else:
-                            if actorJson['summary']:
-                                actorJson['summary'] = ''
-                                actorChanged = True
-                        if fields.get('moderators'):
-                            adminNickname = \
-                                getConfigParam(self.server.baseDir, 'admin')
-                            if self.path.startswith('/users/' +
-                                                    adminNickname + '/'):
-                                moderatorsFile = \
-                                    self.server.baseDir + \
-                                    '/accounts/moderators.txt'
-                                clearModeratorStatus(self.server.baseDir)
-                                if ',' in fields['moderators']:
-                                    # if the list was given as comma separated
-                                    modFile = open(moderatorsFile, "w+")
-                                    mods = fields['moderators'].split(',')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = self.server.baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + self.server.domain
-                                        if os.path.isdir(modDir):
-                                            modFile.write(modNick + '\n')
-                                    modFile.close()
-                                    mods = fields['moderators'].split(',')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = self.server.baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + self.server.domain
-                                        if os.path.isdir(modDir):
-                                            setRole(self.server.baseDir,
-                                                    modNick,
-                                                    self.server.domain,
-                                                    'instance', 'moderator')
-                                else:
-                                    # nicknames on separate lines
-                                    modFile = open(moderatorsFile, "w+")
-                                    mods = fields['moderators'].split('\n')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = \
-                                            self.server.baseDir + \
-                                            '/accounts/' + modNick + \
-                                            '@' + self.server.domain
-                                        if os.path.isdir(modDir):
-                                            modFile.write(modNick + '\n')
-                                    modFile.close()
-                                    mods = fields['moderators'].split('\n')
-                                    for modNick in mods:
-                                        modNick = modNick.strip()
-                                        modDir = \
-                                            self.server.baseDir + \
-                                            '/accounts/' + \
-                                            modNick + '@' + \
-                                            self.server.domain
-                                        if os.path.isdir(modDir):
-                                            setRole(self.server.baseDir,
-                                                    modNick,
-                                                    self.server.domain,
-                                                    'instance',
-                                                    'moderator')
-
-                        if fields.get('removeScheduledPosts'):
-                            if fields['removeScheduledPosts'] == 'on':
-                                removeScheduledPosts(self.server.baseDir,
-                                                     nickname,
-                                                     self.server.domain)
-
-                        approveFollowers = False
-                        if fields.get('approveFollowers'):
-                            if fields['approveFollowers'] == 'on':
-                                approveFollowers = True
-                        if approveFollowers != \
-                           actorJson['manuallyApprovesFollowers']:
-                            actorJson['manuallyApprovesFollowers'] = \
-                                approveFollowers
-                            actorChanged = True
-
-                        if fields.get('removeCustomFont'):
-                            if fields['removeCustomFont'] == 'on':
-                                fontExt = ('woff', 'woff2', 'otf', 'ttf')
-                                for ext in fontExt:
-                                    if os.path.isfile(self.server.baseDir +
-                                                      '/fonts/custom.' + ext):
-                                        os.remove(self.server.baseDir +
-                                                  '/fonts/custom.' + ext)
-                                    if os.path.isfile(self.server.baseDir +
-                                                      '/fonts/custom.' + ext +
-                                                      '.etag'):
-                                        os.remove(self.server.baseDir +
-                                                  '/fonts/custom.' + ext +
-                                                  '.etag')
-                                currTheme = getTheme(self.server.baseDir)
-                                if currTheme:
-                                    setTheme(self.server.baseDir, currTheme)
-
-                        if fields.get('mediaInstance'):
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            if fields['mediaInstance'] == 'on':
-                                self.server.mediaInstance = True
-                                self.server.defaultTimeline = 'tlmedia'
-                            setConfigParam(self.server.baseDir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
-                        else:
-                            if self.server.mediaInstance:
-                                self.server.mediaInstance = False
-                                self.server.defaultTimeline = 'inbox'
-                                setConfigParam(self.server.baseDir,
-                                               "mediaInstance",
-                                               self.server.mediaInstance)
-                        if fields.get('blogsInstance'):
-                            self.server.blogsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            if fields['blogsInstance'] == 'on':
-                                self.server.blogsInstance = True
-                                self.server.defaultTimeline = 'tlblogs'
-                            setConfigParam(self.server.baseDir,
-                                           "blogsInstance",
-                                           self.server.blogsInstance)
-                        else:
-                            if self.server.blogsInstance:
-                                self.server.blogsInstance = False
-                                self.server.defaultTimeline = 'inbox'
-                                setConfigParam(self.server.baseDir,
-                                               "blogsInstance",
-                                               self.server.blogsInstance)
-                        # only receive DMs from accounts you follow
-                        followDMsFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.followDMs'
-                        followDMsActive = False
-                        if fields.get('followDMs'):
-                            if fields['followDMs'] == 'on':
-                                followDMsActive = True
-                                with open(followDMsFilename, 'w+') as fFile:
-                                    fFile.write('\n')
-                        if not followDMsActive:
-                            if os.path.isfile(followDMsFilename):
-                                os.remove(followDMsFilename)
-                        # remove Twitter retweets
-                        removeTwitterFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.removeTwitter'
-                        removeTwitterActive = False
-                        if fields.get('removeTwitter'):
-                            if fields['removeTwitter'] == 'on':
-                                removeTwitterActive = True
-                                with open(removeTwitterFilename, 'w+') as rFile:
-                                    rFile.write('\n')
-                        if not removeTwitterActive:
-                            if os.path.isfile(removeTwitterFilename):
-                                os.remove(removeTwitterFilename)
-                        # hide Like button
-                        hideLikeButtonFile = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.hideLikeButton'
-                        notifyLikesFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/.notifyLikes'
-                        hideLikeButtonActive = False
-                        if fields.get('hideLikeButton'):
-                            if fields['hideLikeButton'] == 'on':
-                                hideLikeButtonActive = True
-                                with open(hideLikeButtonFile, 'w+') as rFile:
-                                    rFile.write('\n')
-                                # remove notify likes selection
-                                if os.path.isfile(notifyLikesFilename):
-                                    os.remove(notifyLikesFilename)
-                        if not hideLikeButtonActive:
-                            if os.path.isfile(hideLikeButtonFile):
-                                os.remove(hideLikeButtonFile)
-                        # notify about new Likes
-                        notifyLikesActive = False
-                        if fields.get('notifyLikes'):
-                            if fields['notifyLikes'] == 'on' and \
-                               not hideLikeButtonActive:
-                                notifyLikesActive = True
-                                with open(notifyLikesFilename, 'w+') as rFile:
-                                    rFile.write('\n')
-                        if not notifyLikesActive:
-                            if os.path.isfile(notifyLikesFilename):
-                                os.remove(notifyLikesFilename)
-                        # this account is a bot
-                        if fields.get('isBot'):
-                            if fields['isBot'] == 'on':
-                                if actorJson['type'] != 'Service':
-                                    actorJson['type'] = 'Service'
-                                    actorChanged = True
-                        else:
-                            # this account is a group
-                            if fields.get('isGroup'):
-                                if fields['isGroup'] == 'on':
-                                    if actorJson['type'] != 'Group':
-                                        actorJson['type'] = 'Group'
-                                        actorChanged = True
-                            else:
-                                # this account is a person (default)
-                                if actorJson['type'] != 'Person':
-                                    actorJson['type'] = 'Person'
-                                    actorChanged = True
-                        grayscale = False
-                        if fields.get('grayscale'):
-                            if fields['grayscale'] == 'on':
-                                grayscale = True
-                        if grayscale:
-                            enableGrayscale(self.server.baseDir)
-                        else:
-                            disableGrayscale(self.server.baseDir)
-                        # save filtered words list
-                        filterFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/filters.txt'
-                        if fields.get('filteredWords'):
-                            with open(filterFilename, 'w+') as filterfile:
-                                filterfile.write(fields['filteredWords'])
-                        else:
-                            if os.path.isfile(filterFilename):
-                                os.remove(filterFilename)
-                        # word replacements
-                        switchFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/replacewords.txt'
-                        if fields.get('switchWords'):
-                            with open(switchFilename, 'w+') as switchfile:
-                                switchfile.write(fields['switchWords'])
-                        else:
-                            if os.path.isfile(switchFilename):
-                                os.remove(switchFilename)
-                        # save blocked accounts list
-                        blockedFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/blocking.txt'
-                        if fields.get('blocked'):
-                            with open(blockedFilename, 'w+') as blockedfile:
-                                blockedfile.write(fields['blocked'])
-                        else:
-                            if os.path.isfile(blockedFilename):
-                                os.remove(blockedFilename)
-                        # save allowed instances list
-                        allowedInstancesFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/allowedinstances.txt'
-                        if fields.get('allowedInstances'):
-                            with open(allowedInstancesFilename, 'w+') as aFile:
-                                aFile.write(fields['allowedInstances'])
-                        else:
-                            if os.path.isfile(allowedInstancesFilename):
-                                os.remove(allowedInstancesFilename)
-                        # save git project names list
-                        gitProjectsFilename = \
-                            self.server.baseDir + '/accounts/' + \
-                            nickname + '@' + self.server.domain + \
-                            '/gitprojects.txt'
-                        if fields.get('gitProjects'):
-                            with open(gitProjectsFilename, 'w+') as aFile:
-                                aFile.write(fields['gitProjects'].lower())
-                        else:
-                            if os.path.isfile(gitProjectsFilename):
-                                os.remove(gitProjectsFilename)
-                        # save actor json file within accounts
-                        if actorChanged:
-                            # update the context for the actor
-                            actorJson['@context'] = [
-                                'https://www.w3.org/ns/activitystreams',
-                                'https://w3id.org/security/v1',
-                                getDefaultPersonContext()
-                            ]
-                            randomizeActorImages(actorJson)
-                            saveJson(actorJson, actorFilename)
-                            webfingerUpdate(self.server.baseDir,
-                                            nickname,
-                                            self.server.domain,
-                                            self.server.onionDomain,
-                                            self.server.cachedWebfingers)
-                            # also copy to the actors cache and
-                            # personCache in memory
-                            storePersonInCache(self.server.baseDir,
-                                               actorJson['id'], actorJson,
-                                               self.server.personCache,
-                                               True)
-                            # clear any cached images for this actor
-                            idStr = actorJson['id'].replace('/', '-')
-                            removeAvatarFromCache(self.server.baseDir, idStr)
-                            # save the actor to the cache
-                            actorCacheFilename = \
-                                self.server.baseDir + '/cache/actors/' + \
-                                actorJson['id'].replace('/', '#') + '.json'
-                            saveJson(actorJson, actorCacheFilename)
-                            # send profile update to followers
-                            ccStr = 'https://www.w3.org/ns/' + \
-                                'activitystreams#Public'
-                            updateActorJson = {
-                                'type': 'Update',
-                                'actor': actorJson['id'],
-                                'to': [actorJson['id'] + '/followers'],
-                                'cc': [ccStr],
-                                'object': actorJson
-                            }
-                            self._postToOutbox(updateActorJson,
-                                               __version__, nickname)
-                        if fields.get('deactivateThisAccount'):
-                            if fields['deactivateThisAccount'] == 'on':
-                                deactivateAccount(self.server.baseDir,
-                                                  nickname,
-                                                  self.server.domain)
-                                self._clearLoginDetails(nickname,
-                                                        callingDomain)
-                                self.server.POSTbusy = False
-                                return
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actorStr, cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._profileUpdate(callingDomain, cookie, authorized, self.path,
+                                self.server.baseDir, self.server.httpPrefix,
+                                self.server.domain,
+                                self.server.domainFull,
+                                self.server.onionDomain,
+                                self.server.i2pDomain, self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)
@@ -7701,145 +9927,15 @@ class PubServer(BaseHTTPRequestHandler):
         # moderator action buttons
         if authorized and '/users/' in self.path and \
            self.path.endswith('/moderationaction'):
-            usersPath = self.path.replace('/moderationaction', '')
-            actorStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                moderationParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST moderationParams connection was reset')
-                else:
-                    print('WARN: POST moderationParams ' +
-                          'rfile.read socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST moderationParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&' in moderationParams:
-                moderationText = None
-                moderationButton = None
-                for moderationStr in moderationParams.split('&'):
-                    if moderationStr.startswith('moderationAction'):
-                        if '=' in moderationStr:
-                            moderationText = \
-                                moderationStr.split('=')[1].strip()
-                            modText = moderationText.replace('+', ' ')
-                            moderationText = \
-                                urllib.parse.unquote_plus(modText.strip())
-                    elif moderationStr.startswith('submitInfo'):
-                        msg = htmlModerationInfo(self.server.translate,
-                                                 self.server.baseDir,
-                                                 self.server.httpPrefix)
-                        msg = msg.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                    elif moderationStr.startswith('submitBlock'):
-                        moderationButton = 'block'
-                    elif moderationStr.startswith('submitUnblock'):
-                        moderationButton = 'unblock'
-                    elif moderationStr.startswith('submitSuspend'):
-                        moderationButton = 'suspend'
-                    elif moderationStr.startswith('submitUnsuspend'):
-                        moderationButton = 'unsuspend'
-                    elif moderationStr.startswith('submitRemove'):
-                        moderationButton = 'remove'
-                if moderationButton and moderationText:
-                    if self.server.debug:
-                        print('moderationButton: ' + moderationButton)
-                        print('moderationText: ' + moderationText)
-                    nickname = moderationText
-                    if nickname.startswith('http') or \
-                       nickname.startswith('dat'):
-                        nickname = getNicknameFromActor(nickname)
-                    if '@' in nickname:
-                        nickname = nickname.split('@')[0]
-                    if moderationButton == 'suspend':
-                        suspendAccount(self.server.baseDir, nickname,
-                                       self.server.domain)
-                    if moderationButton == 'unsuspend':
-                        unsuspendAccount(self.server.baseDir, nickname)
-                    if moderationButton == 'block':
-                        fullBlockDomain = None
-                        if moderationText.startswith('http') or \
-                           moderationText.startswith('dat'):
-                            blockDomain, blockPort = \
-                                getDomainFromActor(moderationText)
-                            fullBlockDomain = blockDomain
-                            if blockPort:
-                                if blockPort != 80 and blockPort != 443:
-                                    if ':' not in blockDomain:
-                                        fullBlockDomain = \
-                                            blockDomain + ':' + str(blockPort)
-                        if '@' in moderationText:
-                            fullBlockDomain = moderationText.split('@')[1]
-                        if fullBlockDomain or nickname.startswith('#'):
-                            addGlobalBlock(self.server.baseDir,
-                                           nickname, fullBlockDomain)
-                    if moderationButton == 'unblock':
-                        fullBlockDomain = None
-                        if moderationText.startswith('http') or \
-                           moderationText.startswith('dat'):
-                            blockDomain, blockPort = \
-                                getDomainFromActor(moderationText)
-                            fullBlockDomain = blockDomain
-                            if blockPort:
-                                if blockPort != 80 and blockPort != 443:
-                                    if ':' not in blockDomain:
-                                        fullBlockDomain = \
-                                            blockDomain + ':' + str(blockPort)
-                        if '@' in moderationText:
-                            fullBlockDomain = moderationText.split('@')[1]
-                        if fullBlockDomain or nickname.startswith('#'):
-                            removeGlobalBlock(self.server.baseDir,
-                                              nickname, fullBlockDomain)
-                    if moderationButton == 'remove':
-                        if '/statuses/' not in moderationText:
-                            removeAccount(self.server.baseDir,
-                                          nickname,
-                                          self.server.domain,
-                                          self.server.port)
-                        else:
-                            # remove a post or thread
-                            postFilename = \
-                                locatePost(self.server.baseDir,
-                                           nickname, self.server.domain,
-                                           moderationText)
-                            if postFilename:
-                                if canRemovePost(self.server.baseDir,
-                                                 nickname,
-                                                 self.server.domain,
-                                                 self.server.port,
-                                                 moderationText):
-                                    deletePost(self.server.baseDir,
-                                               self.server.httpPrefix,
-                                               nickname, self.server.domain,
-                                               postFilename,
-                                               self.server.debug,
-                                               self.server.recentPostsCache)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actorStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actorStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actorStr + '/moderation',
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._moderatorActions(self.path, callingDomain, cookie,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 4)
@@ -7855,1156 +9951,156 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 5)
 
-        # a vote/question/poll is posted
-        if (authorized and
-            (self.path.endswith('/question') or
-             '/question?page=' in self.path)):
-            pageNumber = 1
-            if '?page=' in self.path:
-                pageNumberStr = self.path.split('?page=')[1]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-                self.path = self.path.split('?page=')[0]
-            # the actor who votes
-            usersPath = self.path.replace('/question', '')
-            actor = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            nickname = getNicknameFromActor(actor)
-            if not nickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actor = 'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actor = 'http://' + self.server.i2pDomain + usersPath
-                self._redirect_headers(actor + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page=' + str(pageNumber),
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            # get the parameters
-            length = int(self.headers['Content-length'])
-            try:
-                questionParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST questionParams connection was reset')
-                else:
-                    print('WARN: POST questionParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST questionParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            questionParams = questionParams.replace('+', ' ')
-            questionParams = questionParams.replace('%3F', '')
-            questionParams = \
-                urllib.parse.unquote_plus(questionParams.strip())
-            # post being voted on
-            messageId = None
-            if 'messageId=' in questionParams:
-                messageId = questionParams.split('messageId=')[1]
-                if '&' in messageId:
-                    messageId = messageId.split('&')[0]
-            answer = None
-            if 'answer=' in questionParams:
-                answer = questionParams.split('answer=')[1]
-                if '&' in answer:
-                    answer = answer.split('&')[0]
-            self._sendReplyToQuestion(nickname, messageId, answer)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                actor = 'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                actor = 'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actor + '/' +
-                                   self.server.defaultTimeline +
-                                   '?page=' + str(pageNumber), cookie,
-                                   callingDomain)
-            self.server.POSTbusy = False
-            return
-
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 6)
 
         # a search was made
         if ((authorized or searchForEmoji) and
             (self.path.endswith('/searchhandle') or
              '/searchhandle?page=' in self.path)):
-            # get the page number
-            pageNumber = 1
-            if '/searchhandle?page=' in self.path:
-                pageNumberStr = self.path.split('/searchhandle?page=')[1]
-                if '#' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('#')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-                self.path = self.path.split('?page=')[0]
-
-            usersPath = self.path.replace('/searchhandle', '')
-            actorStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                searchParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST searchParams connection was reset')
-                else:
-                    print('WARN: POST searchParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST searchParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if 'submitBack=' in searchParams:
-                # go back on search screen
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    actorStr = 'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    actorStr = 'http://' + self.server.i2pDomain + usersPath
-                self._redirect_headers(actorStr + '/' +
-                                       self.server.defaultTimeline,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            if 'searchtext=' in searchParams:
-                searchStr = searchParams.split('searchtext=')[1]
-                if '&' in searchStr:
-                    searchStr = searchStr.split('&')[0]
-                searchStr = \
-                    urllib.parse.unquote_plus(searchStr.strip())
-                searchStr2 = searchStr.lower().strip('\n').strip('\r')
-                print('searchStr: ' + searchStr)
-                if searchForEmoji:
-                    searchStr = ':' + searchStr + ':'
-                if searchStr.startswith('#'):
-                    nickname = getNicknameFromActor(actorStr)
-                    # hashtag search
-                    hashtagStr = \
-                        htmlHashtagSearch(nickname,
-                                          self.server.domain,
-                                          self.server.port,
-                                          self.server.recentPostsCache,
-                                          self.server.maxRecentPosts,
-                                          self.server.translate,
-                                          self.server.baseDir,
-                                          searchStr[1:], 1,
-                                          maxPostsInFeed,
-                                          self.server.session,
-                                          self.server.cachedWebfingers,
-                                          self.server.personCache,
-                                          self.server.httpPrefix,
-                                          self.server.projectVersion,
-                                          self.server.YTReplacementDomain)
-                    if hashtagStr:
-                        msg = hashtagStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                elif searchStr.startswith('*'):
-                    # skill search
-                    searchStr = searchStr.replace('*', '').strip()
-                    skillStr = \
-                        htmlSkillsSearch(self.server.translate,
-                                         self.server.baseDir,
-                                         self.server.httpPrefix,
-                                         searchStr,
-                                         self.server.instanceOnlySkillsSearch,
-                                         64)
-                    if skillStr:
-                        msg = skillStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                elif searchStr.startswith('!'):
-                    # your post history search
-                    nickname = getNicknameFromActor(actorStr)
-                    searchStr = searchStr.replace('!', '').strip()
-                    historyStr = \
-                        htmlHistorySearch(self.server.translate,
-                                          self.server.baseDir,
-                                          self.server.httpPrefix,
-                                          nickname,
-                                          self.server.domain,
-                                          searchStr,
-                                          maxPostsInFeed,
-                                          pageNumber,
-                                          self.server.projectVersion,
-                                          self.server.recentPostsCache,
-                                          self.server.maxRecentPosts,
-                                          self.server.session,
-                                          self.server.cachedWebfingers,
-                                          self.server.personCache,
-                                          self.server.port,
-                                          self.server.YTReplacementDomain)
-                    if historyStr:
-                        msg = historyStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                elif ('@' in searchStr or
-                      ('://' in searchStr and
-                       ('/users/' in searchStr or
-                        '/profile/' in searchStr or
-                        '/accounts/' in searchStr or
-                        '/channel/' in searchStr))):
-                    # profile search
-                    nickname = getNicknameFromActor(actorStr)
-                    if not self.server.session:
-                        print('Starting new session during handle search')
-                        self.server.session = \
-                            createSession(self.server.proxyType)
-                        if not self.server.session:
-                            print('ERROR: POST failed to create session ' +
-                                  'during handle search')
-                            self._404()
-                            self.server.POSTbusy = False
-                            return
-                    profilePathStr = self.path.replace('/searchhandle', '')
-                    profileStr = \
-                        htmlProfileAfterSearch(self.server.recentPostsCache,
-                                               self.server.maxRecentPosts,
-                                               self.server.translate,
-                                               self.server.baseDir,
-                                               profilePathStr,
-                                               self.server.httpPrefix,
-                                               nickname,
-                                               self.server.domain,
-                                               self.server.port,
-                                               searchStr,
-                                               self.server.session,
-                                               self.server.cachedWebfingers,
-                                               self.server.personCache,
-                                               self.server.debug,
-                                               self.server.projectVersion,
-                                               self.server.YTReplacementDomain)
-                    if profileStr:
-                        msg = profileStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                    else:
-                        if callingDomain.endswith('.onion') and \
-                           self.server.onionDomain:
-                            actorStr = 'http://' + self.server.onionDomain + \
-                                usersPath
-                        elif (callingDomain.endswith('.i2p') and
-                              self.server.i2pDomain):
-                            actorStr = 'http://' + self.server.i2pDomain + \
-                                usersPath
-                        self._redirect_headers(actorStr + '/search',
-                                               cookie, callingDomain)
-                        self.server.POSTbusy = False
-                        return
-                elif (searchStr.startswith(':') or
-                      searchStr2.endswith(' emoji')):
-                    # eg. "cat emoji"
-                    if searchStr2.endswith(' emoji'):
-                        searchStr = \
-                            searchStr2.replace(' emoji', '')
-                    # emoji search
-                    emojiStr = \
-                        htmlSearchEmoji(self.server.translate,
-                                        self.server.baseDir,
-                                        self.server.httpPrefix,
-                                        searchStr)
-                    if emojiStr:
-                        msg = emojiStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-                else:
-                    # shared items search
-                    sharedItemsStr = \
-                        htmlSearchSharedItems(self.server.translate,
-                                              self.server.baseDir,
-                                              searchStr, pageNumber,
-                                              maxPostsInFeed,
-                                              self.server.httpPrefix,
-                                              self.server.domainFull,
-                                              actorStr, callingDomain)
-                    if sharedItemsStr:
-                        msg = sharedItemsStr.encode('utf-8')
-                        self._login_headers('text/html',
-                                            len(msg), callingDomain)
-                        self._write(msg)
-                        self.server.POSTbusy = False
-                        return
-            if callingDomain.endswith('.onion') and self.server.onionDomain:
-                actorStr = 'http://' + self.server.onionDomain + usersPath
-            elif callingDomain.endswith('.i2p') and self.server.i2pDomain:
-                actorStr = 'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(actorStr + '/' +
-                                   self.server.defaultTimeline,
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
+            self._receiveSearchQuery(callingDomain, cookie,
+                                     authorized, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     searchForEmoji,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     self.server.debug)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 7)
 
-        # removes a shared item
-        if authorized and self.path.endswith('/rmshare'):
-            usersPath = self.path.split('/rmshare')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                removeShareConfirmParams = \
-                    self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST removeShareConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST removeShareConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
+        if authorized:
+            # a vote/question/poll is posted
+            if self.path.endswith('/question') or \
+               '/question?page=' in self.path:
+                self._receiveVote(callingDomain, cookie,
+                                  authorized, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.domainFull,
+                                  self.server.onionDomain,
+                                  self.server.i2pDomain,
+                                  self.server.debug)
                 return
-            except ValueError as e:
-                print('ERROR: POST removeShareConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in removeShareConfirmParams:
-                removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('+', ' ').strip()
-                removeShareConfirmParams = \
-                    urllib.parse.unquote_plus(removeShareConfirmParams)
-                shareActor = removeShareConfirmParams.split('actor=')[1]
-                if '&' in shareActor:
-                    shareActor = shareActor.split('&')[0]
-                shareName = removeShareConfirmParams.split('shareName=')[1]
-                if '&' in shareName:
-                    shareName = shareName.split('&')[0]
-                shareNickname = getNicknameFromActor(shareActor)
-                if shareNickname:
-                    shareDomain, sharePort = getDomainFromActor(shareActor)
-                    removeShare(self.server.baseDir,
-                                shareNickname, shareDomain, shareName)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr + '/tlshares',
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
+            # removes a shared item
+            if self.path.endswith('/rmshare'):
+                self._removeShare(callingDomain, cookie,
+                                  authorized, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.domainFull,
+                                  self.server.onionDomain,
+                                  self.server.i2pDomain,
+                                  self.server.debug)
+                return
 
-        # removes a post
-        if not authorized and self.path.endswith('/rmpost'):
-            print('ERROR: attempt to remove post was not authorized. ' +
-                  self.path)
-            self._400()
-            self.server.POSTbusy = False
-            return
-        if authorized and self.path.endswith('/rmpost'):
-            pageNumber = 1
-            usersPath = self.path.split('/rmpost')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            length = int(self.headers['Content-length'])
-            try:
-                removePostConfirmParams = \
-                    self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST removePostConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST removePostConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST removePostConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in removePostConfirmParams:
-                removePostConfirmParams = \
-                    urllib.parse.unquote_plus(removePostConfirmParams)
-                removeMessageId = \
-                    removePostConfirmParams.split('messageId=')[1]
-                if '&' in removeMessageId:
-                    removeMessageId = removeMessageId.split('&')[0]
-                if 'pageNumber=' in removePostConfirmParams:
-                    pageNumberStr = \
-                        removePostConfirmParams.split('pageNumber=')[1]
-                    if '&' in pageNumberStr:
-                        pageNumberStr = pageNumberStr.split('&')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber = int(pageNumberStr)
-                yearStr = None
-                if 'year=' in removePostConfirmParams:
-                    yearStr = removePostConfirmParams.split('year=')[1]
-                    if '&' in yearStr:
-                        yearStr = yearStr.split('&')[0]
-                monthStr = None
-                if 'month=' in removePostConfirmParams:
-                    monthStr = removePostConfirmParams.split('month=')[1]
-                    if '&' in monthStr:
-                        monthStr = monthStr.split('&')[0]
-                if '/statuses/' in removeMessageId:
-                    removePostActor = removeMessageId.split('/statuses/')[0]
-                if originPathStr in removePostActor:
-                    toList = ['https://www.w3.org/ns/activitystreams#Public',
-                              removePostActor]
-                    deleteJson = {
-                        "@context": "https://www.w3.org/ns/activitystreams",
-                        'actor': removePostActor,
-                        'object': removeMessageId,
-                        'to': toList,
-                        'cc': [removePostActor+'/followers'],
-                        'type': 'Delete'
-                    }
-                    self.postToNickname = getNicknameFromActor(removePostActor)
-                    if self.postToNickname:
-                        if monthStr and yearStr:
-                            if monthStr.isdigit() and yearStr.isdigit():
-                                removeCalendarEvent(self.server.baseDir,
-                                                    self.postToNickname,
-                                                    self.server.domain,
-                                                    int(yearStr),
-                                                    int(monthStr),
-                                                    removeMessageId)
-                        self._postToOutboxThread(deleteJson)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = 'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = 'http://' + self.server.i2pDomain + usersPath
-            if pageNumber == 1:
-                self._redirect_headers(originPathStr + '/outbox', cookie,
-                                       callingDomain)
-            else:
-                self._redirect_headers(originPathStr + '/outbox?page=' +
-                                       str(pageNumber),
-                                       cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
 
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 9)
+            # removes a post
+            if self.path.endswith('/rmpost'):
+                print('ERROR: attempt to remove post was not authorized. ' +
+                      self.path)
+                self._400()
+                self.server.POSTbusy = False
+                return
+            if self.path.endswith('/rmpost'):
+                self._removePost(callingDomain, cookie,
+                                 authorized, self.path,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 self.server.debug)
+                return
 
-        # decision to follow in the web interface is confirmed
-        if authorized and self.path.endswith('/followconfirm'):
-            usersPath = self.path.split('/followconfirm')[0]
-            originPathStr = self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            followerNickname = getNicknameFromActor(originPathStr)
-            length = int(self.headers['Content-length'])
-            try:
-                followConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST followConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST followConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 9)
+
+            # decision to follow in the web interface is confirmed
+            if self.path.endswith('/followconfirm'):
+                self._followConfirm(callingDomain, cookie,
+                                    authorized, self.path,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    self.server.debug)
                 return
-            except ValueError as e:
-                print('ERROR: POST followConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitView=' in followConfirmParams:
-                followingActor = \
-                    urllib.parse.unquote_plus(followConfirmParams)
-                followingActor = followingActor.split('actor=')[1]
-                if '&' in followingActor:
-                    followingActor = followingActor.split('&')[0]
-                self._redirect_headers(followingActor, cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in followConfirmParams:
-                followingActor = \
-                    urllib.parse.unquote_plus(followConfirmParams)
-                followingActor = followingActor.split('actor=')[1]
-                if '&' in followingActor:
-                    followingActor = followingActor.split('&')[0]
-                followingNickname = getNicknameFromActor(followingActor)
-                followingDomain, followingPort = \
-                    getDomainFromActor(followingActor)
-                if followerNickname == followingNickname and \
-                   followingDomain == self.server.domain and \
-                   followingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot follow yourself!')
-                else:
-                    if self.server.debug:
-                        print('Sending follow request from ' +
-                              followerNickname + ' to ' + followingActor)
-                    sendFollowRequest(self.server.session,
+
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 10)
+
+            # decision to unfollow in the web interface is confirmed
+            if self.path.endswith('/unfollowconfirm'):
+                self._unfollowConfirm(callingDomain, cookie,
+                                      authorized, self.path,
                                       self.server.baseDir,
-                                      followerNickname,
-                                      self.server.domain, self.server.port,
                                       self.server.httpPrefix,
-                                      followingNickname,
-                                      followingDomain,
-                                      followingPort, self.server.httpPrefix,
-                                      False, self.server.federationList,
-                                      self.server.sendThreads,
-                                      self.server.postLog,
-                                      self.server.cachedWebfingers,
-                                      self.server.personCache,
-                                      self.server.debug,
-                                      self.server.projectVersion)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 10)
-
-        # decision to unfollow in the web interface is confirmed
-        if authorized and self.path.endswith('/unfollowconfirm'):
-            usersPath = self.path.split('/unfollowconfirm')[0]
-            originPathStr = self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            followerNickname = getNicknameFromActor(originPathStr)
-            length = int(self.headers['Content-length'])
-            try:
-                followConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST followConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST followConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST followConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in followConfirmParams:
-                followingActor = \
-                    urllib.parse.unquote_plus(followConfirmParams)
-                followingActor = followingActor.split('actor=')[1]
-                if '&' in followingActor:
-                    followingActor = followingActor.split('&')[0]
-                followingNickname = getNicknameFromActor(followingActor)
-                followingDomain, followingPort = \
-                    getDomainFromActor(followingActor)
-                if followerNickname == followingNickname and \
-                   followingDomain == self.server.domain and \
-                   followingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot unfollow yourself!')
-                else:
-                    if self.server.debug:
-                        print(followerNickname + ' stops following ' +
-                              followingActor)
-                    followActor = \
-                        self.server.httpPrefix + '://' + \
-                        self.server.domainFull + \
-                        '/users/' + followerNickname
-                    statusNumber, published = getStatusNumber()
-                    followId = followActor + '/statuses/' + str(statusNumber)
-                    unfollowJson = {
-                        '@context': 'https://www.w3.org/ns/activitystreams',
-                        'id': followId + '/undo',
-                        'type': 'Undo',
-                        'actor': followActor,
-                        'object': {
-                            'id': followId,
-                            'type': 'Follow',
-                            'actor': followActor,
-                            'object': followingActor
-                        }
-                    }
-                    pathUsersSection = self.path.split('/users/')[1]
-                    self.postToNickname = pathUsersSection.split('/')[0]
-                    self._postToOutboxThread(unfollowJson)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 11)
-
-        # decision to unblock in the web interface is confirmed
-        if authorized and self.path.endswith('/unblockconfirm'):
-            usersPath = self.path.split('/unblockconfirm')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            blockerNickname = getNicknameFromActor(originPathStr)
-            if not blockerNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + originPathStr)
-                self._redirect_headers(originPathStr,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            length = int(self.headers['Content-length'])
-            try:
-                blockConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST blockConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST blockConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST blockConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in blockConfirmParams:
-                blockingActor = \
-                    urllib.parse.unquote_plus(blockConfirmParams)
-                blockingActor = blockingActor.split('actor=')[1]
-                if '&' in blockingActor:
-                    blockingActor = blockingActor.split('&')[0]
-                blockingNickname = getNicknameFromActor(blockingActor)
-                if not blockingNickname:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        originPathStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        originPathStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('WARN: unable to find nickname in ' + blockingActor)
-                    self._redirect_headers(originPathStr,
-                                           cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                blockingDomain, blockingPort = \
-                    getDomainFromActor(blockingActor)
-                blockingDomainFull = blockingDomain
-                if blockingPort:
-                    if blockingPort != 80 and blockingPort != 443:
-                        if ':' not in blockingDomain:
-                            blockingDomainFull = \
-                                blockingDomain + ':' + str(blockingPort)
-                if blockerNickname == blockingNickname and \
-                   blockingDomain == self.server.domain and \
-                   blockingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot unblock yourself!')
-                else:
-                    if self.server.debug:
-                        print(blockerNickname + ' stops blocking ' +
-                              blockingActor)
-                    removeBlock(self.server.baseDir,
-                                blockerNickname, self.server.domain,
-                                blockingNickname, blockingDomainFull)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr,
-                                   cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 12)
-
-        # decision to block in the web interface is confirmed
-        if authorized and self.path.endswith('/blockconfirm'):
-            usersPath = self.path.split('/blockconfirm')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-            blockerNickname = getNicknameFromActor(originPathStr)
-            if not blockerNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + originPathStr)
-                self._redirect_headers(originPathStr,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            length = int(self.headers['Content-length'])
-            try:
-                blockConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST blockConfirmParams ' +
-                          'connection was reset')
-                else:
-                    print('WARN: POST blockConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST blockConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            if '&submitYes=' in blockConfirmParams:
-                blockingActor = \
-                    urllib.parse.unquote_plus(blockConfirmParams)
-                blockingActor = blockingActor.split('actor=')[1]
-                if '&' in blockingActor:
-                    blockingActor = blockingActor.split('&')[0]
-                blockingNickname = getNicknameFromActor(blockingActor)
-                if not blockingNickname:
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        originPathStr = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        originPathStr = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    print('WARN: unable to find nickname in ' + blockingActor)
-                    self._redirect_headers(originPathStr,
-                                           cookie, callingDomain)
-                    self.server.POSTbusy = False
-                    return
-                blockingDomain, blockingPort = \
-                    getDomainFromActor(blockingActor)
-                blockingDomainFull = blockingDomain
-                if blockingPort:
-                    if blockingPort != 80 and blockingPort != 443:
-                        if ':' not in blockingDomain:
-                            blockingDomainFull = \
-                                blockingDomain + ':' + str(blockingPort)
-                if blockerNickname == blockingNickname and \
-                   blockingDomain == self.server.domain and \
-                   blockingPort == self.server.port:
-                    if self.server.debug:
-                        print('You cannot block yourself!')
-                else:
-                    if self.server.debug:
-                        print('Adding block by ' + blockerNickname +
-                              ' of ' + blockingActor)
-                    addBlock(self.server.baseDir, blockerNickname,
-                             self.server.domain,
-                             blockingNickname,
-                             blockingDomainFull)
-            if callingDomain.endswith('.onion') and \
-               self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif (callingDomain.endswith('.i2p') and
-                  self.server.i2pDomain):
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
-
-        self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 13)
-
-        # an option was chosen from person options screen
-        # view/follow/block/report
-        if authorized and self.path.endswith('/personoptions'):
-            pageNumber = 1
-            usersPath = self.path.split('/personoptions')[0]
-            originPathStr = \
-                self.server.httpPrefix + '://' + \
-                self.server.domainFull + usersPath
-
-            chooserNickname = getNicknameFromActor(originPathStr)
-            if not chooserNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + originPathStr)
-                self._redirect_headers(originPathStr, cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            length = int(self.headers['Content-length'])
-            try:
-                optionsConfirmParams = self.rfile.read(length).decode('utf-8')
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST optionsConfirmParams ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST optionsConfirmParams socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST optionsConfirmParams rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            optionsConfirmParams = \
-                urllib.parse.unquote_plus(optionsConfirmParams)
-            # page number to return to
-            if 'pageNumber=' in optionsConfirmParams:
-                pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
-                if '&' in pageNumberStr:
-                    pageNumberStr = pageNumberStr.split('&')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber = int(pageNumberStr)
-            # actor for the person
-            optionsActor = optionsConfirmParams.split('actor=')[1]
-            if '&' in optionsActor:
-                optionsActor = optionsActor.split('&')[0]
-            # url of the avatar
-            optionsAvatarUrl = optionsConfirmParams.split('avatarUrl=')[1]
-            if '&' in optionsAvatarUrl:
-                optionsAvatarUrl = optionsAvatarUrl.split('&')[0]
-            # link to a post, which can then be included in reports
-            postUrl = None
-            if 'postUrl' in optionsConfirmParams:
-                postUrl = optionsConfirmParams.split('postUrl=')[1]
-                if '&' in postUrl:
-                    postUrl = postUrl.split('&')[0]
-            petname = None
-            if 'optionpetname' in optionsConfirmParams:
-                petname = optionsConfirmParams.split('optionpetname=')[1]
-                if '&' in petname:
-                    petname = petname.split('&')[0]
-                # Limit the length of the petname
-                if len(petname) > 20 or \
-                   ' ' in petname or '/' in petname or \
-                   '?' in petname or '#' in petname:
-                    petname = None
-
-            personNotes = None
-            if 'optionnotes' in optionsConfirmParams:
-                personNotes = optionsConfirmParams.split('optionnotes=')[1]
-                if '&' in personNotes:
-                    personNotes = personNotes.split('&')[0]
-                personNotes = urllib.parse.unquote_plus(personNotes.strip())
-                # Limit the length of the notes
-                if len(personNotes) > 64000:
-                    personNotes = None
-
-            optionsNickname = getNicknameFromActor(optionsActor)
-            if not optionsNickname:
-                if callingDomain.endswith('.onion') and \
-                   self.server.onionDomain:
-                    originPathStr = \
-                        'http://' + self.server.onionDomain + usersPath
-                elif (callingDomain.endswith('.i2p') and
-                      self.server.i2pDomain):
-                    originPathStr = \
-                        'http://' + self.server.i2pDomain + usersPath
-                print('WARN: unable to find nickname in ' + optionsActor)
-                self._redirect_headers(originPathStr, cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-            optionsDomainFull = optionsDomain
-            if optionsPort:
-                if optionsPort != 80 and optionsPort != 443:
-                    if ':' not in optionsDomain:
-                        optionsDomainFull = optionsDomain + ':' + \
-                            str(optionsPort)
-            if chooserNickname == optionsNickname and \
-               optionsDomain == self.server.domain and \
-               optionsPort == self.server.port:
-                if self.server.debug:
-                    print('You cannot perform an option action on yourself')
-
-            if '&submitView=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Viewing ' + optionsActor)
-                self._redirect_headers(optionsActor,
-                                       cookie, callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitPetname=' in optionsConfirmParams and petname:
-                if self.server.debug:
-                    print('Change petname to ' + petname)
-                handle = optionsNickname + '@' + optionsDomainFull
-                setPetName(self.server.baseDir,
-                           chooserNickname,
-                           self.server.domain,
-                           handle, petname)
-                self._redirect_headers(usersPath + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page='+str(pageNumber), cookie,
-                                       callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitPersonNotes=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Change person notes')
-                handle = optionsNickname + '@' + optionsDomainFull
-                if not personNotes:
-                    personNotes = ''
-                setPersonNotes(self.server.baseDir,
-                               chooserNickname,
-                               self.server.domain,
-                               handle, personNotes)
-                self._redirect_headers(usersPath + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page='+str(pageNumber), cookie,
-                                       callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitOnCalendar=' in optionsConfirmParams:
-                onCalendar = None
-                if 'onCalendar=' in optionsConfirmParams:
-                    onCalendar = optionsConfirmParams.split('onCalendar=')[1]
-                    if '&' in onCalendar:
-                        onCalendar = onCalendar.split('&')[0]
-                if onCalendar == 'on':
-                    addPersonToCalendar(self.server.baseDir,
-                                        chooserNickname,
-                                        self.server.domain,
-                                        optionsNickname,
-                                        optionsDomainFull)
-                else:
-                    removePersonFromCalendar(self.server.baseDir,
-                                             chooserNickname,
-                                             self.server.domain,
-                                             optionsNickname,
-                                             optionsDomainFull)
-                self._redirect_headers(usersPath + '/' +
-                                       self.server.defaultTimeline +
-                                       '?page='+str(pageNumber), cookie,
-                                       callingDomain)
-                self.server.POSTbusy = False
-                return
-            if '&submitBlock=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Adding block by ' + chooserNickname +
-                          ' of ' + optionsActor)
-                addBlock(self.server.baseDir, chooserNickname,
-                         self.server.domain,
-                         optionsNickname, optionsDomainFull)
-            if '&submitUnblock=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Unblocking ' + optionsActor)
-                msg = \
-                    htmlUnblockConfirm(self.server.translate,
-                                       self.server.baseDir,
-                                       usersPath,
-                                       optionsActor,
-                                       optionsAvatarUrl).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitFollow=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Following ' + optionsActor)
-                msg = \
-                    htmlFollowConfirm(self.server.translate,
-                                      self.server.baseDir,
-                                      usersPath,
-                                      optionsActor,
-                                      optionsAvatarUrl).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitUnfollow=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Unfollowing ' + optionsActor)
-                msg = \
-                    htmlUnfollowConfirm(self.server.translate,
-                                        self.server.baseDir,
-                                        usersPath,
-                                        optionsActor,
-                                        optionsAvatarUrl).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitDM=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Sending DM to ' + optionsActor)
-                reportPath = self.path.replace('/personoptions', '') + '/newdm'
-                msg = htmlNewPost(False, self.server.translate,
-                                  self.server.baseDir,
-                                  self.server.httpPrefix,
-                                  reportPath, None,
-                                  [optionsActor], None,
-                                  pageNumber,
-                                  chooserNickname,
-                                  self.server.domain,
-                                  self.server.domainFull).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
-                return
-            if '&submitSnooze=' in optionsConfirmParams:
-                usersPath = self.path.split('/personoptions')[0]
-                thisActor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull+usersPath
-                if self.server.debug:
-                    print('Snoozing ' + optionsActor + ' ' + thisActor)
-                if '/users/' in thisActor:
-                    nickname = thisActor.split('/users/')[1]
-                    personSnooze(self.server.baseDir, nickname,
-                                 self.server.domain, optionsActor)
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        thisActor = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        thisActor = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(thisActor + '/' +
-                                           self.server.defaultTimeline +
-                                           '?page='+str(pageNumber), cookie,
-                                           callingDomain)
-                    self.server.POSTbusy = False
-                    return
-            if '&submitUnSnooze=' in optionsConfirmParams:
-                usersPath = self.path.split('/personoptions')[0]
-                thisActor = \
-                    self.server.httpPrefix + '://' + \
-                    self.server.domainFull + usersPath
-                if self.server.debug:
-                    print('Unsnoozing ' + optionsActor + ' ' + thisActor)
-                if '/users/' in thisActor:
-                    nickname = thisActor.split('/users/')[1]
-                    personUnsnooze(self.server.baseDir, nickname,
-                                   self.server.domain, optionsActor)
-                    if callingDomain.endswith('.onion') and \
-                       self.server.onionDomain:
-                        thisActor = \
-                            'http://' + self.server.onionDomain + usersPath
-                    elif (callingDomain.endswith('.i2p') and
-                          self.server.i2pDomain):
-                        thisActor = \
-                            'http://' + self.server.i2pDomain + usersPath
-                    self._redirect_headers(thisActor + '/' +
-                                           self.server.defaultTimeline +
-                                           '?page=' + str(pageNumber), cookie,
-                                           callingDomain)
-                    self.server.POSTbusy = False
-                    return
-            if '&submitReport=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Reporting ' + optionsActor)
-                reportPath = \
-                    self.path.replace('/personoptions', '') + '/newreport'
-                msg = htmlNewPost(False, self.server.translate,
-                                  self.server.baseDir,
-                                  self.server.httpPrefix,
-                                  reportPath, None, [],
-                                  postUrl, pageNumber,
-                                  chooserNickname,
-                                  self.server.domain,
-                                  self.server.domainFull).encode('utf-8')
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
-                self.server.POSTbusy = False
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      self.server.debug)
                 return
 
-            if callingDomain.endswith('.onion') and self.server.onionDomain:
-                originPathStr = \
-                    'http://' + self.server.onionDomain + usersPath
-            elif callingDomain.endswith('.i2p') and self.server.i2pDomain:
-                originPathStr = \
-                    'http://' + self.server.i2pDomain + usersPath
-            self._redirect_headers(originPathStr, cookie, callingDomain)
-            self.server.POSTbusy = False
-            return
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 11)
+
+            # decision to unblock in the web interface is confirmed
+            if self.path.endswith('/unblockconfirm'):
+                self._unblockConfirm(callingDomain, cookie,
+                                     authorized, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.port,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     self.server.debug)
+                return
+
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 12)
+
+            # decision to block in the web interface is confirmed
+            if self.path.endswith('/blockconfirm'):
+                self._blockConfirm(callingDomain, cookie,
+                                   authorized, self.path,
+                                   self.server.baseDir,
+                                   self.server.httpPrefix,
+                                   self.server.domain,
+                                   self.server.domainFull,
+                                   self.server.port,
+                                   self.server.onionDomain,
+                                   self.server.i2pDomain,
+                                   self.server.debug)
+                return
+
+            self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 13)
+
+            # an option was chosen from person options screen
+            # view/follow/block/report
+            if self.path.endswith('/personoptions'):
+                self._personOptions(self.path,
+                                    callingDomain, cookie,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    self.server.domain,
+                                    self.server.domainFull,
+                                    self.server.port,
+                                    self.server.onionDomain,
+                                    self.server.i2pDomain,
+                                    self.server.debug)
+                return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 14)
 
@@ -9106,61 +10202,15 @@ class PubServer(BaseHTTPRequestHandler):
         # receive images to the outbox
         if self.headers['Content-type'].startswith('image/') and \
            '/users/' in self.path:
-            if not self.outboxAuthenticated:
-                if self.server.debug:
-                    print('DEBUG: unauthenticated attempt to ' +
-                          'post image to outbox')
-                self.send_response(403)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            pathUsersSection = self.path.split('/users/')[1]
-            if '/' not in pathUsersSection:
-                self._404()
-                self.server.POSTbusy = False
-                return
-            self.postFromNickname = pathUsersSection.split('/')[0]
-            accountsDir = \
-                self.server.baseDir + '/accounts/' + \
-                self.postFromNickname + '@' + self.server.domain
-            if not os.path.isdir(accountsDir):
-                self._404()
-                self.server.POSTbusy = False
-                return
-            try:
-                mediaBytes = self.rfile.read(length)
-            except SocketError as e:
-                if e.errno == errno.ECONNRESET:
-                    print('WARN: POST mediaBytes ' +
-                          'connection reset by peer')
-                else:
-                    print('WARN: POST mediaBytes socket error')
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            except ValueError as e:
-                print('ERROR: POST mediaBytes rfile.read failed')
-                print(e)
-                self.send_response(400)
-                self.end_headers()
-                self.server.POSTbusy = False
-                return
-            mediaFilenameBase = accountsDir + '/upload'
-            mediaFilename = mediaFilenameBase + '.png'
-            if self.headers['Content-type'].endswith('jpeg'):
-                mediaFilename = mediaFilenameBase + '.jpg'
-            if self.headers['Content-type'].endswith('gif'):
-                mediaFilename = mediaFilenameBase + '.gif'
-            if self.headers['Content-type'].endswith('webp'):
-                mediaFilename = mediaFilenameBase + '.webp'
-            with open(mediaFilename, 'wb') as avFile:
-                avFile.write(mediaBytes)
-            if self.server.debug:
-                print('DEBUG: image saved to ' + mediaFilename)
-            self.send_response(201)
-            self.end_headers()
-            self.server.POSTbusy = False
+            self._receiveImage(length, callingDomain, cookie,
+                               authorized, self.path,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               self.server.debug)
             return
 
         # refuse to receive non-json content
@@ -9464,6 +10514,10 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     else:
         serverAddress = ('', proxyPort)
         pubHandler = partial(PubServer)
+
+    if not os.path.isdir(baseDir + '/accounts'):
+        print('Creating accounts directory')
+        os.mkdir(baseDir + '/accounts')
 
     try:
         httpd = EpicyonServer(serverAddress, pubHandler)

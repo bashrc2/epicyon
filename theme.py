@@ -223,14 +223,14 @@ def setThemeDefault(baseDir: str):
     name = 'default'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    themeParams = {
-        "dummyValue": "1234"
-    }
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
         "options": "jpg",
         "search": "jpg"
+    }
+    themeParams = {
+        "dummy": "1234"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 

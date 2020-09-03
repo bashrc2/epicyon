@@ -365,26 +365,30 @@ def followPerson(baseDir: str, nickname: str, domain: str,
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+') as followFile:
-                content = followFile.read()
-                followFile.seek(0, 0)
-                followFile.write(handleToFollow + '\n' + content)
+            with open(filename, 'r+') as f:
+                content = f.read()
+                f.seek(0, 0)
+                f.write(handleToFollow + '\n' + content)
                 if debug:
                     print('DEBUG: follow added')
-                return True
         except Exception as e:
             print('WARN: Failed to write entry to follow file ' +
                   filename + ' ' + str(e))
+    else:
+        # first follow
+        if debug:
+            print('DEBUG: creating new following file to follow ' +
+                  handleToFollow)
+        with open(filename, 'w+') as f:
+            f.write(handleToFollow + '\n')
 
-        if followFile == 'following.txt':
-            # if following a person add them to the list of
-            # calendar follows
-            addPersonToCalendar(baseDir, nickname, domain,
-                                followNickname, followDomain)
-    if debug:
-        print('DEBUG: creating new following file to follow ' + handleToFollow)
-    with open(filename, 'w+') as followfile:
-        followfile.write(handleToFollow + '\n')
+    # Default to adding new follows to the calendar.
+    # Possibly this could be made optional
+    if followFile == 'following.txt':
+        # if following a person add them to the list of
+        # calendar follows
+        addPersonToCalendar(baseDir, nickname, domain,
+                            followNickname, followDomain)
     return True
 
 
@@ -621,7 +625,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'likes', 'users', 'statuses',
                      'accounts', 'channels', 'profile',
                      'updates', 'repeat', 'announce',
-                     'shares', 'fonts', 'icons')
+                     'shares', 'fonts', 'icons', 'avatars')
     if nickname in reservedNames:
         return False
     return True
@@ -907,21 +911,19 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
 def getFileCaseInsensitive(path: str) -> str:
     """Returns a case specific filename given a case insensitive version of it
     """
-    # does the given file exist? If so then we don't need
-    # to do a directory search
     if os.path.isfile(path):
         return path
     if path != path.lower():
         if os.path.isfile(path.lower()):
             return path.lower()
-    directory, filename = os.path.split(path)
-    directory, filename = (directory or '.'), filename.lower()
-    for f in os.listdir(directory):
-        if f.lower() == filename:
-            newpath = os.path.join(directory, f)
-            if os.path.isfile(newpath):
-                return newpath
-    return path
+    # directory, filename = os.path.split(path)
+    # directory, filename = (directory or '.'), filename.lower()
+    # for f in os.listdir(directory):
+    #     if f.lower() == filename:
+    #         newpath = os.path.join(directory, f)
+    #         if os.path.isfile(newpath):
+    #             return newpath
+    return None
 
 
 def undoLikesCollectionEntry(recentPostsCache: {},
