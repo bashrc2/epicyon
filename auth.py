@@ -10,7 +10,6 @@ import base64
 import hashlib
 import binascii
 import os
-import secrets
 
 
 def hashPassword(password: str) -> str:
@@ -24,17 +23,39 @@ def hashPassword(password: str) -> str:
     return (salt + pwdhash).decode('ascii')
 
 
-def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
-    """Verify a stored password against one provided by user
+def getPasswordHash(salt: str, providedPassword: str) -> str:
+    """Returns the hash of a password
     """
-    salt = storedPassword[:64]
-    storedPassword = storedPassword[64:]
     pwdhash = hashlib.pbkdf2_hmac('sha512',
                                   providedPassword.encode('utf-8'),
                                   salt.encode('ascii'),
                                   100000)
-    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-    return pwdhash == storedPassword
+    return binascii.hexlify(pwdhash).decode('ascii')
+
+def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
+    """Verify a stored password against one provided by user
+    """
+    if not storedPassword:
+        return False
+    if not providedPassword:
+        return False
+    salt = storedPassword[:64]
+    storedPassword = storedPassword[64:]
+    pwHash = getPasswordHash(salt, providedPassword)
+    # check that hashes are of equal length
+    if len(pwHash) != len(storedPassword):
+        return False
+    # Compare all of the characters before returning true or false.
+    # Hence the match should take a constant amount of time.
+    # See https://sqreen.github.io/DevelopersSecurityBestPractices/
+    # timing-attack/python
+    ctr = 0
+    matched = True
+    for ch in pwHash:
+        if ch != storedPassword[ctr]:
+            matched = False
+        ctr += 1
+    return matched
 
 
 def createBasicAuthHeader(nickname: str, password: str) -> str:
