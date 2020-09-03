@@ -2101,11 +2101,22 @@ def testConstantTimeStringCheck():
     end = time.time()
     avTime1 = ((end - start) * 1000000 / itterations)
 
-    # change characters and observe timing difference
+    # change a single character and observe timing difference
     start = time.time()
     for timingTest in range(itterations):
         constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
                                 'nnjfbefefbsnjsdnvbcueftqfeuqfbqeznjeniwufgy')
+    end = time.time()
+    avTime2 = ((end - start) * 1000000 / itterations)
+    timeDiffMicroseconds = abs(avTime2 - avTime1)
+    # time difference should be less than 10uS
+    assert timeDiffMicroseconds < 10
+
+    # change multiple characters and observe timing difference
+    start = time.time()
+    for timingTest in range(itterations):
+        constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
+                                'ano1befffbsn7sd3vbluef6qseuqfpqeznjgni9bfgi')
     end = time.time()
     avTime2 = ((end - start) * 1000000 / itterations)
     timeDiffMicroseconds = abs(avTime2 - avTime1)
