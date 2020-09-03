@@ -369,24 +369,27 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                 content = f.read()
                 f.seek(0, 0)
                 f.write(handleToFollow + '\n' + content)
-                if debug:
-                    print('DEBUG: follow added')
+                print('DEBUG: follow added')
         except Exception as e:
             print('WARN: Failed to write entry to follow file ' +
                   filename + ' ' + str(e))
     else:
         # first follow
         if debug:
-            print('DEBUG: creating new following file to follow ' +
-                  handleToFollow)
+            print('DEBUG: ' + handle +
+                  ' creating new following file to follow ' + handleToFollow +
+                  ', filename is ' + filename)
         with open(filename, 'w+') as f:
             f.write(handleToFollow + '\n')
 
     # Default to adding new follows to the calendar.
     # Possibly this could be made optional
-    if followFile == 'following.txt':
+    if followFile.endswith('following.txt'):
         # if following a person add them to the list of
         # calendar follows
+        print('DEBUG: adding ' +
+              followNickname + '@' + followDomain + ' to calendar of ' +
+              nickname + '@' + domain)
         addPersonToCalendar(baseDir, nickname, domain,
                             followNickname, followDomain)
     return True

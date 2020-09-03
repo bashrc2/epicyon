@@ -777,12 +777,21 @@ def testFollowBetweenServers():
                           bobDomain + '/followers.txt'):
             if os.path.isfile(aliceDir + '/accounts/alice@' +
                               aliceDomain + '/following.txt'):
-                break
+                if os.path.isfile(aliceDir + '/accounts/alice@' +
+                                  aliceDomain + '/followingCalendar.txt'):
+                    break
         time.sleep(1)
 
     assert validInbox(bobDir, 'bob', bobDomain)
     assert validInboxFilenames(bobDir, 'bob', bobDomain,
                                aliceDomain, alicePort)
+    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
+                                          bobDomain + '/followers.txt').read()
+    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
+                                      aliceDomain + '/following.txt').read()
+    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
+                                      aliceDomain +
+                                      '/followingCalendar.txt').read()
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
@@ -827,11 +836,6 @@ def testFollowBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive() is False
-
-    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
-                                          bobDomain + '/followers.txt').read()
-    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
-                                      aliceDomain + '/following.txt').read()
 
     # queue item removed
     time.sleep(4)
