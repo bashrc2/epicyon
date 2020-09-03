@@ -365,10 +365,10 @@ def followPerson(baseDir: str, nickname: str, domain: str,
             return True
         # prepend to follow file
         try:
-            with open(filename, 'r+') as followFile:
-                content = followFile.read()
-                followFile.seek(0, 0)
-                followFile.write(handleToFollow + '\n' + content)
+            with open(filename, 'r+') as f:
+                content = f.read()
+                f.seek(0, 0)
+                f.write(handleToFollow + '\n' + content)
                 if debug:
                     print('DEBUG: follow added')
         except Exception as e:
@@ -379,8 +379,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         if debug:
             print('DEBUG: creating new following file to follow ' +
                   handleToFollow)
-        with open(filename, 'w+') as followfile:
-            followfile.write(handleToFollow + '\n')
+        with open(filename, 'w+') as f:
+            f.write(handleToFollow + '\n')
 
     # Default to adding new follows to the calendar.
     # Possibly this could be made optional
