@@ -2084,6 +2084,7 @@ def testTranslations():
                 print(englishStr + ' is missing from ' + lang + '.json')
             assert langJson.get(englishStr)
 
+
 def runAllTests():
     print('Running tests...')
     testTranslations()

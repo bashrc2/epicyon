@@ -10,6 +10,7 @@ import base64
 import hashlib
 import binascii
 import os
+import secrets
 
 
 def hashPassword(password: str) -> str:
@@ -31,6 +32,7 @@ def getPasswordHash(salt: str, providedPassword: str) -> str:
                                   salt.encode('ascii'),
                                   100000)
     return binascii.hexlify(pwdhash).decode('ascii')
+
 
 def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
     """Verify a stored password against one provided by user
@@ -54,6 +56,10 @@ def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
     for ch in pwHash:
         if ch != storedPassword[ctr]:
             matched = False
+        else:
+            # this is to make the timing more even
+            # and not provide clues
+            matched = matched
         ctr += 1
     return matched
 
