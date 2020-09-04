@@ -107,6 +107,10 @@ a:link:hover {
     color: var(--main-link-color-hover);
 }
 
+a:visited:hover {
+    color: var(--main-link-color-hover);
+}
+
 a:focus {
     border: 2px solid var(--focus-color);
 }
