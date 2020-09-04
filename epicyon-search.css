@@ -5,6 +5,7 @@
     --link-bg-color: #282c37;
     --main-fg-color: #dddddd;
     --main-link-color: #999;
+    --main-link-color-hover: #bbb;
     --main-visited-color: #888;
     --border-color: #505050;
     --font-size-header: 18px;
@@ -67,6 +68,10 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
 }
 
 a:focus {
