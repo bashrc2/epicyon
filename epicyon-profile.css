@@ -223,6 +223,10 @@ a:focus {
 .container img.timelineicon:hover {
     filter: brightness(150%);
 }
+
+.buttonunfollow:hover {
+    filter: brightness(150%);
+}
  
 .followRequestHandle {
     padding: 0px 20px;
