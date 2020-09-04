@@ -86,7 +86,7 @@ a:focus {
 }
 
 .follow {
-    background-image: url("search-background.jpg");
+    background-image: url("follow-background.jpg");
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
