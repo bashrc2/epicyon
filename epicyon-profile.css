@@ -241,6 +241,10 @@ a:focus {
     background-color: var(--button-background-hover);
 }
 
+.donateButton:hover {
+    background-color: var(--button-background-hover);
+}
+
 .buttonselected span {
     font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;
