@@ -225,7 +225,7 @@ a:focus {
 }
 
 .buttonunfollow:hover {
-    filter: brightness(150%);
+    background-color: var(--button-background-hover);
 }
  
 .followRequestHandle {
