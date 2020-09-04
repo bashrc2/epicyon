@@ -2913,7 +2913,7 @@ def htmlProfile(defaultTimeline: str,
                                 '/followapprove=' + followerHandle + '">'
                             followApprovalsSection += \
                                 '<button class="followApprove">' + \
-                                translate['Approve'] + '</button></a>'
+                                translate['Approve'] + '</button></a><br><br>'
                             followApprovalsSection += \
                                 '<a href="' + basePath + \
                                 '/followdeny=' + followerHandle + '">'
