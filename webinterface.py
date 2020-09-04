@@ -6814,8 +6814,8 @@ def htmlSearch(translate: {},
                      baseDir + '/accounts/search-background.png')
 
     cssFilename = baseDir + '/epicyon-search.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    if os.path.isfile(baseDir + '/search.css'):
+        cssFilename = baseDir + '/search.css'
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
     followStr = htmlHeader(cssFilename, profileStyle)
