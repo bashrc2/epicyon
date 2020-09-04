@@ -333,7 +333,7 @@ def setThemeStarlight(baseDir: str):
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
         "main-link-color": "#ffc4bc",
-        "main-link-color-hover": "#f9282c",
+        "main-link-color-hover": "white",
         "title-color": "#ffc4bc",
         "main-visited-color": "#e1c4bc",
         "main-fg-color": "#ffc4bc",
