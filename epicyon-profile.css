@@ -555,6 +555,10 @@ input[type=submit]:hover {
     padding: 0px 0px;
 }
 
+.timeline-avatar:hover {
+    filter: brightness(120%);
+}
+
 .timeline-avatar-reply {
     padding: 0px 0px;
     width: 80%;
