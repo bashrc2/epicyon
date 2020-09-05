@@ -4232,6 +4232,11 @@ def individualPostAsHtml(allowDownloads: bool,
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
 
+        if likeCountStr:
+            # show the number of likes next to icon
+            likeStr += '<label class="likesCount">'
+            likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
+            likeStr += '</label>\n'
         likeStr = \
             '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
@@ -4244,11 +4249,6 @@ def individualPostAsHtml(allowDownloads: bool,
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
-        if likeCountStr:
-            # show the number of likes next to icon
-            likeStr += '<label class="likesCount">'
-            likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
-            likeStr += '</label>\n'
 
     # benchmark 12.5
     if not allowDownloads:

@@ -142,6 +142,7 @@ a:focus {
 .likesCount {
     font-size: var(--font-size-likes);
     font-family: Arial, Helvetica, sans-serif;
+    float: right;
 }
 
 .about {
