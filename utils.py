@@ -731,11 +731,9 @@ def getCachedPostFilename(baseDir: str, nickname: str, domain: str,
     if '@' not in cachedPostDir:
         # print('ERROR: invalid html cache directory '+cachedPostDir)
         return None
-    cachedPostFilename = \
-        cachedPostDir + \
-        '/' + removeIdEnding(postJsonObject['id']).replace('/', '#')
-    cachedPostFilename = cachedPostFilename + '.html'
-    return cachedPostFilename
+    cachedPostId = removeIdEnding(postJsonObject['id'])
+    cachedPostFilename = cachedPostDir + '/' + cachedPostId.replace('/', '#')
+    return cachedPostFilename + '.html'
 
 
 def removePostFromCache(postJsonObject: {}, recentPostsCache: {}):
