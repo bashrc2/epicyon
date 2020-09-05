@@ -1407,6 +1407,7 @@ class PubServer(BaseHTTPRequestHandler):
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
                        moderationText.startswith('dat'):
+                        # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
                         fullBlockDomain = blockDomain
@@ -1416,13 +1417,20 @@ class PubServer(BaseHTTPRequestHandler):
                                     fullBlockDomain = \
                                         blockDomain + ':' + str(blockPort)
                     if '@' in moderationText:
+                        # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
+                    else:
+                        # assume the text is a domain name
+                        if not fullBlockDomain and '.' in moderationText:
+                            nickname = '*'
+                            fullBlockDomain = moderationText.strip()
                     if fullBlockDomain or nickname.startswith('#'):
                         addGlobalBlock(baseDir, nickname, fullBlockDomain)
                 if moderationButton == 'unblock':
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
                        moderationText.startswith('dat'):
+                        # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
                         fullBlockDomain = blockDomain
@@ -1432,7 +1440,13 @@ class PubServer(BaseHTTPRequestHandler):
                                     fullBlockDomain = \
                                         blockDomain + ':' + str(blockPort)
                     if '@' in moderationText:
+                        # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
+                    else:
+                        # assume the text is a domain name
+                        if not fullBlockDomain and '.' in moderationText:
+                            nickname = '*'
+                            fullBlockDomain = moderationText.strip()
                     if fullBlockDomain or nickname.startswith('#'):
                         removeGlobalBlock(baseDir, nickname, fullBlockDomain)
                 if moderationButton == 'remove':
