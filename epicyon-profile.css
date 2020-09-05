@@ -26,6 +26,7 @@
     --font-size3: 38px;
     --font-size4: 22px;
     --font-size5: 20px;
+    --font-size-likes: 16px;
     --font-size-pgp-key: 16px;
     --font-size-pgp-key2: 8px;
     --font-size-tox: 16px;
@@ -136,6 +137,11 @@ a:focus {
 .rssfeed img {
     width: 5%;
     float: right;
+}
+
+.likesCount {
+    font-size: var(--font-size-likes);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .about {

@@ -4214,12 +4214,14 @@ def individualPostAsHtml(allowDownloads: bool,
 
         likeCountStr = ''
         if likeCount > 0:
-            if likeCount > 1:
-                if likeCount <= 10:
-                    likeCountStr = ' (' + str(likeCount) + ')'
-                else:
-                    likeCountStr = ' (10+)'
+            if likeCount <= 10:
+                likeCountStr = ' (' + str(likeCount) + ')'
+            else:
+                likeCountStr = ' (10+)'
             if likedByPerson(postJsonObject, nickname, fullDomain):
+                if likeCount == 1:
+                    # liked by the reader only
+                    likeCountStr = ''
                 likeIcon = 'like.png'
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
@@ -4241,7 +4243,13 @@ def individualPostAsHtml(allowDownloads: bool,
         likeStr += \
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
-            ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
+            ' |" src="/' + iconsDir + '/' + likeIcon + '"/>'
+        if likeCountStr:
+            # show the number of likes next to icon
+            likeStr += '<label class="likesCount">'
+            likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
+            likeStr += '</label>'
+        likeStr += '</a>\n'
 
     # benchmark 12.5
     if not allowDownloads:
