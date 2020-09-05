@@ -22,7 +22,7 @@ def addGlobalBlock(baseDir: str,
     blockingFilename = baseDir + '/accounts/blocking.txt'
     if not blockNickname.startswith('#'):
         # is the handle already blocked?
-        blockHandle = blockNickname + '@' + blockDomain        
+        blockHandle = blockNickname + '@' + blockDomain
         if os.path.isfile(blockingFilename):
             if blockHandle in open(blockingFilename).read():
                 return False
