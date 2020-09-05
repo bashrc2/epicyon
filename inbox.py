@@ -28,6 +28,8 @@ from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import loadJson
 from utils import saveJson
+from utils import updateLikesCollection
+from utils import undoLikesCollectionEntry
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -41,8 +43,6 @@ from acceptreject import receiveAcceptReject
 from capabilities import getOcapFilename
 from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
-from like import updateLikesCollection
-from like import undoLikesCollectionEntry
 from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
