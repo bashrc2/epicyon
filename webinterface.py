@@ -4243,13 +4243,12 @@ def individualPostAsHtml(allowDownloads: bool,
         likeStr += \
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
-            ' |" src="/' + iconsDir + '/' + likeIcon + '"/>'
+            ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
         if likeCountStr:
             # show the number of likes next to icon
             likeStr += '<label class="likesCount">'
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
-            likeStr += '</label>'
-        likeStr += '</a>\n'
+            likeStr += '</label>\n'
 
     # benchmark 12.5
     if not allowDownloads:
