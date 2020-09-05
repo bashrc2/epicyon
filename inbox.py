@@ -319,6 +319,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
     postDomain = None
     actor = None
     if postJsonObject.get('actor'):
+        if not isinstance(postJsonObject['actor'], str):
+            return None
         actor = postJsonObject['actor']
         postNickname = getNicknameFromActor(postJsonObject['actor'])
         if not postNickname:
@@ -371,6 +373,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         return None
     originalPostId = None
     if postJsonObject.get('id'):
+        if not isinstance(postJsonObject['id'], str):
+            return None
         originalPostId = removeIdEnding(postJsonObject['id'])
 
     currTime = datetime.datetime.utcnow()
