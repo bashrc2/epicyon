@@ -4219,8 +4219,8 @@ def individualPostAsHtml(allowDownloads: bool,
                     likeCountStr = ' (' + str(likeCount) + ')'
                 else:
                     likeCountStr = ' (10+)'
-            likeIcon = 'like.png'
             if likedByPerson(postJsonObject, nickname, fullDomain):
+                likeIcon = 'like.png'
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
 
