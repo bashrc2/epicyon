@@ -4232,12 +4232,13 @@ def individualPostAsHtml(allowDownloads: bool,
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
 
+        likeStr = ''
         if likeCountStr:
             # show the number of likes next to icon
             likeStr += '<label class="likesCount">'
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
             likeStr += '</label>\n'
-        likeStr = \
+        likeStr += \
             '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
