@@ -113,6 +113,10 @@ a:visited:hover {
     color: var(--main-link-color-hover);
 }
 
+.buttonevent:hover {
+    filter: brightness(150%);
+}
+
 a:focus {
     border: 2px solid var(--focus-color);
 }
@@ -233,7 +237,7 @@ a:focus {
 .buttonunfollow:hover {
     background-color: var(--button-background-hover);
 }
- 
+
 .followRequestHandle {
     padding: 0px 20px;
 }
