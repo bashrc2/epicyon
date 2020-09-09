@@ -801,7 +801,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
-    extensions = ('webp', 'gif', 'jpg', 'png')
+    extensions = ('webp', 'gif', 'jpg', 'png', 'avif')
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:

@@ -56,7 +56,7 @@ def getImageHash(imageFilename: str) -> str:
 
 
 def isMedia(imageFilename: str) -> bool:
-    permittedMedia = ('png', 'jpg', 'gif', 'webp',
+    permittedMedia = ('png', 'jpg', 'gif', 'webp', 'avif',
                       'mp4', 'ogv', 'mp3', 'ogg')
     for m in permittedMedia:
         if imageFilename.endswith('.' + m):
@@ -84,7 +84,7 @@ def getAttachmentMediaType(filename: str) -> str:
     """
     mediaType = None
     imageTypes = ('png', 'jpg', 'jpeg',
-                  'gif', 'webp')
+                  'gif', 'webp', 'avif')
     for mType in imageTypes:
         if filename.endswith('.' + mType):
             return 'image'
@@ -143,7 +143,7 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
         return postJson
 
     fileExtension = None
-    acceptedTypes = ('png', 'jpg', 'gif', 'webp',
+    acceptedTypes = ('png', 'jpg', 'gif', 'webp', 'avif',
                      'mp4', 'webm', 'ogv', 'mp3', 'ogg')
     for mType in acceptedTypes:
         if imageFilename.endswith('.' + mType):

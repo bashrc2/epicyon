@@ -230,6 +230,11 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
             'Accept': 'image/webp'
         }
         avatarImageFilename = avatarImagePath + '.webp'
+    elif avatarUrl.endswith('.avif') or '.avif?' in avatarUrl:
+        sessionHeaders = {
+            'Accept': 'image/avif'
+        }
+        avatarImageFilename = avatarImagePath + '.avif'
     else:
         return None
 
@@ -304,7 +309,7 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
     actorStr = personJson['id'].replace('/', '-')
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
 
-    imageExtension = ('png', 'jpg', 'jpeg', 'gif', 'webp')
+    imageExtension = ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
     for ext in imageExtension:
         if os.path.isfile(avatarImagePath + '.' + ext):
             return '/avatars/' + actorStr + '.' + ext
@@ -1064,7 +1069,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit profile screen
     """
-    imageFormats = '.png, .jpg, .jpeg, .gif, .webp'
+    imageFormats = '.png, .jpg, .jpeg, .gif, .webp, .avif'
     pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
@@ -1621,6 +1626,9 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
     elif os.path.isfile(baseDir + '/accounts/login.webp'):
         loginImage = 'login.webp'
         loginImageFilename = baseDir + '/accounts/' + loginImage
+    elif os.path.isfile(baseDir + '/accounts/login.avif'):
+        loginImage = 'login.avif'
+        loginImageFilename = baseDir + '/accounts/' + loginImage
 
     if not loginImageFilename:
         loginImageFilename = baseDir + '/accounts/' + loginImage
@@ -1965,13 +1973,13 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         newPostImageSection += \
             '      <input type="file" id="attachpic" name="attachpic"'
         newPostImageSection += \
-            '            accept=".png, .jpg, .jpeg, .gif, .webp">\n'
+            '            accept=".png, .jpg, .jpeg, .gif, .webp, .avif">\n'
     else:
         newPostImageSection += \
             '      <input type="file" id="attachpic" name="attachpic"'
         newPostImageSection += \
-            '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, ' + \
-            '.webm, .ogv, .mp3, .ogg">\n'
+            '            accept=".png, .jpg, .jpeg, .gif, ' + \
+            '.webp, .avif, .mp4, .webm, .ogv, .mp3, .ogg">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
@@ -3623,11 +3631,13 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         if mediaType == 'image/png' or \
            mediaType == 'image/jpeg' or \
            mediaType == 'image/webp' or \
+           mediaType == 'image/avif' or \
            mediaType == 'image/gif':
             if attach['url'].endswith('.png') or \
                attach['url'].endswith('.jpg') or \
                attach['url'].endswith('.jpeg') or \
                attach['url'].endswith('.webp') or \
+               attach['url'].endswith('.avif') or \
                attach['url'].endswith('.gif'):
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
@@ -4920,6 +4930,10 @@ def htmlTimeline(defaultTimeline: str,
             nickname + '@' + domain + '/' + bannerFile
     if not os.path.isfile(bannerFilename):
         bannerFile = 'banner.gif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.avif'
         bannerFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + bannerFile
     if not os.path.isfile(bannerFilename):

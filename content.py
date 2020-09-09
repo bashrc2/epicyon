@@ -737,6 +737,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
         'webp': 'image/webp',
+        'avif': 'image/avif',
         'mp4': 'video/mp4',
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
@@ -771,7 +772,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 break
 
     # remove any existing image files with a different format
-    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp')
+    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
     for ex in extensionTypes:
         if ex == detectedExtension:
             continue

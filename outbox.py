@@ -122,6 +122,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                     fileExtension = 'gif'
                 elif mediaTypeStr.endswith('webp'):
                     fileExtension = 'webp'
+                elif mediaTypeStr.endswith('avif'):
+                    fileExtension = 'avif'
                 elif mediaTypeStr.endswith('audio/mpeg'):
                     fileExtension = 'mp3'
                 elif mediaTypeStr.endswith('ogg'):

@@ -51,7 +51,7 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
-    avatarFilenameExtensions = ('png', 'jpg', 'gif', 'webp')
+    avatarFilenameExtensions = ('png', 'jpg', 'gif', 'webp', 'avif')
     for extension in avatarFilenameExtensions:
         avatarFilename = \
             baseDir + '/cache/avatars/' + actorStr + '.' + extension
