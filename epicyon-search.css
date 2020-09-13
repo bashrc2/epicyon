@@ -5,6 +5,7 @@
     --link-bg-color: #282c37;
     --main-fg-color: #dddddd;
     --main-link-color: #999;
+    --main-link-color-hover: #bbb;
     --main-visited-color: #888;
     --border-color: #505050;
     --font-size-header: 18px;
@@ -18,6 +19,7 @@
     --text-entry-background: #111;
     --time-color: #aaa;
     --button-text: #FFFFFF;
+    --button-background-hover: #777;
     --button-background: #999;
     --button-selected: #666;
     --hashtag-margin: 2%;
@@ -68,6 +70,14 @@ a:link {
     font-weight: bold;
 }
 
+a:link:hover {
+    color: var(--main-link-color-hover);
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
+}
+
 a:focus {
     border: 2px solid var(--focus-color);
 }
@@ -80,7 +90,7 @@ a:focus {
 }
 
 .follow {
-    background-image: url("search-background.jpg");
+    background-image: url("follow-background.jpg");
     background-size: cover;
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -141,8 +151,7 @@ a:focus {
 }
 
 .button:hover {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background-hover);
 }
 
 input[type=text] {

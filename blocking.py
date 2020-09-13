@@ -21,18 +21,22 @@ def addGlobalBlock(baseDir: str,
     """
     blockingFilename = baseDir + '/accounts/blocking.txt'
     if not blockNickname.startswith('#'):
+        # is the handle already blocked?
         blockHandle = blockNickname + '@' + blockDomain
         if os.path.isfile(blockingFilename):
             if blockHandle in open(blockingFilename).read():
                 return False
+        # block an account handle or domain
         blockFile = open(blockingFilename, "a+")
         blockFile.write(blockHandle + '\n')
         blockFile.close()
     else:
         blockHashtag = blockNickname
+        # is the hashtag already blocked?
         if os.path.isfile(blockingFilename):
             if blockHashtag + '\n' in open(blockingFilename).read():
                 return False
+        # block a hashtag
         blockFile = open(blockingFilename, "a+")
         blockFile.write(blockHashtag + '\n')
         blockFile.close()

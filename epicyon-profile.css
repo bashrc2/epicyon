@@ -13,6 +13,7 @@
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
     --main-link-color: #999;
+    --main-link-color-hover: #bbb;
     --main-visited-color: #888;
     --border-color: #505050;
     --border-width: 2px;
@@ -25,16 +26,17 @@
     --font-size3: 38px;
     --font-size4: 22px;
     --font-size5: 20px;
+    --font-size-likes: 20px;
+    --font-size-likes-mobile: 32px;
     --font-size-pgp-key: 16px;
     --font-size-pgp-key2: 8px;
     --font-size-tox: 16px;
     --font-size-tox2: 8px;
-    --text-entry-foreground: #ccc;
-    --text-entry-background: #111;
     --time-color: #aaa;
     --time-vertical-align: 4px;
     --button-text: #FFFFFF;
     --button-background: #999;
+    --button-background-hover: #777;
     --button-selected: #666;
     --button-highlighted: green;
     --button-fg-highlighted: #FFFFFF;
@@ -99,6 +101,18 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
+}
+
+.buttonevent:hover {
+    filter: brightness(150%);
 }
 
 a:focus {
@@ -214,6 +228,14 @@ a:focus {
     width: 10%;
 }
 
+.container img.timelineicon:hover {
+    filter: brightness(150%);
+}
+
+.buttonunfollow:hover {
+    background-color: var(--button-background-hover);
+}
+
 .followRequestHandle {
     padding: 0px 20px;
 }
@@ -236,13 +258,12 @@ a:focus {
     transition: 0.5s;
 }
 
-.button:hover span {
-    padding-right: 25px;
+.button:hover {
+    background-color: var(--button-background-hover);
 }
 
-.button:hover span:after {
-    opacity: 1;
-    right: 0;
+.donateButton:hover {
+    background-color: var(--button-background-hover);
 }
 
 .buttonselected span {
@@ -263,13 +284,8 @@ a:focus {
     transition: 0.5s;
 }
 
-.buttonselected:hover span {
-    padding-right: 25px;
-}
-
-.buttonselected:hover span:after {
-    opacity: 1;
-    right: 0;
+.buttonselected:hover {
+    background-color: var(--button-background-hover);
 }
 
 .container {
@@ -404,6 +420,10 @@ a:focus {
     float: var(--icons-side);
     margin-left: 20px;
     margin-right: 0;
+}
+
+.containericons img:hover {
+    filter: brightness(150%);
 }
 
 .post-title {
@@ -545,6 +565,10 @@ input[type=submit]:hover {
 .timeline-avatar {
     margin: 10px auto;
     padding: 0px 0px;
+}
+
+.timeline-avatar:hover {
+    filter: brightness(120%);
 }
 
 .timeline-avatar-reply {
@@ -860,6 +884,14 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    .likesCount {
+        font-size: var(--font-size-likes);
+        font-family: Arial, Helvetica, sans-serif;
+        float: right;
+        padding: 10px 0;
+        transform: translateX(-10px);
+        font-weight: bold;
+    }
     .container p.administeredby {
         font-size: var(--font-size-header);
         font-family: Arial, Helvetica, sans-serif;
@@ -1301,6 +1333,14 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    .likesCount {
+        font-size: var(--font-size-likes-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        float: right;
+        padding: 32px 0;
+        transform: translateX(-20px);
+        font-weight: bold;
+    }
     .container p.administeredby {
         font-size: var(--font-size-tox2);
         font-family: Arial, Helvetica, sans-serif;

@@ -890,7 +890,10 @@ def removeTagsForNickname(baseDir: str, nickname: str,
         filename = os.fsdecode(f)
         if not filename.endswith(".txt"):
             continue
-        tagFilename = os.path.join(directory, filename)
+        try:
+            tagFilename = os.path.join(directory, filename)
+        except BaseException:
+            continue
         if not os.path.isfile(tagFilename):
             continue
         if matchStr not in open(tagFilename).read():

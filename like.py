@@ -25,7 +25,7 @@ def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     """
     if noOfLikes(postJsonObject) == 0:
         return False
-    actorMatch = domain+'/users/'+nickname
+    actorMatch = domain + '/users/' + nickname
     for item in postJsonObject['object']['likes']['items']:
         if item['actor'].endswith(actorMatch):
             return True
@@ -70,7 +70,7 @@ def like(recentPostsCache: {},
     if port:
         if port != 80 and port != 443:
             if ':' not in domain:
-                fullDomain = domain+':'+str(port)
+                fullDomain = domain + ':' + str(port)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -174,7 +174,7 @@ def undolike(recentPostsCache: {},
     newUndoLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
         'object': {
             'type': 'Like',
             'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
@@ -476,4 +476,4 @@ def outboxUndoLike(recentPostsCache: {},
                              messageId, messageJson['actor'],
                              domain, debug)
     if debug:
-        print('DEBUG: post undo liked via c2s - '+postFilename)
+        print('DEBUG: post undo liked via c2s - ' + postFilename)

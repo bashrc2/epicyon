@@ -28,6 +28,8 @@ from utils import deletePost
 from utils import removeModerationPostFromIndex
 from utils import loadJson
 from utils import saveJson
+from utils import updateLikesCollection
+from utils import undoLikesCollectionEntry
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -41,8 +43,6 @@ from acceptreject import receiveAcceptReject
 from capabilities import getOcapFilename
 from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
-from like import updateLikesCollection
-from like import undoLikesCollectionEntry
 from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
@@ -319,6 +319,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
     postDomain = None
     actor = None
     if postJsonObject.get('actor'):
+        if not isinstance(postJsonObject['actor'], str):
+            return None
         actor = postJsonObject['actor']
         postNickname = getNicknameFromActor(postJsonObject['actor'])
         if not postNickname:
@@ -371,6 +373,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         return None
     originalPostId = None
     if postJsonObject.get('id'):
+        if not isinstance(postJsonObject['id'], str):
+            return None
         originalPostId = removeIdEnding(postJsonObject['id'])
 
     currTime = datetime.datetime.utcnow()

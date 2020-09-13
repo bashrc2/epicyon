@@ -54,6 +54,7 @@ from person import setBio
 from skills import setSkillLevel
 from roles import setRole
 from roles import outboxDelegate
+from auth import constantTimeStringCheck
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
@@ -777,12 +778,21 @@ def testFollowBetweenServers():
                           bobDomain + '/followers.txt'):
             if os.path.isfile(aliceDir + '/accounts/alice@' +
                               aliceDomain + '/following.txt'):
-                break
+                if os.path.isfile(aliceDir + '/accounts/alice@' +
+                                  aliceDomain + '/followingCalendar.txt'):
+                    break
         time.sleep(1)
 
     assert validInbox(bobDir, 'bob', bobDomain)
     assert validInboxFilenames(bobDir, 'bob', bobDomain,
                                aliceDomain, alicePort)
+    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
+                                          bobDomain + '/followers.txt').read()
+    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
+                                      aliceDomain + '/following.txt').read()
+    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
+                                      aliceDomain +
+                                      '/followingCalendar.txt').read()
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
@@ -827,11 +837,6 @@ def testFollowBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive() is False
-
-    assert 'alice@' + aliceDomain in open(bobDir + '/accounts/bob@' +
-                                          bobDomain + '/followers.txt').read()
-    assert 'bob@' + bobDomain in open(aliceDir + '/accounts/alice@' +
-                                      aliceDomain + '/following.txt').read()
 
     # queue item removed
     time.sleep(4)
@@ -2081,8 +2086,47 @@ def testTranslations():
             assert langJson.get(englishStr)
 
 
+def testConstantTimeStringCheck():
+    print('testConstantTimeStringCheck')
+    assert constantTimeStringCheck('testing', 'testing')
+    assert not constantTimeStringCheck('testing', '1234')
+    assert not constantTimeStringCheck('testing', '1234567')
+
+    itterations = 256
+
+    start = time.time()
+    for timingTest in range(itterations):
+        constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
+                                'nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy')
+    end = time.time()
+    avTime1 = ((end - start) * 1000000 / itterations)
+
+    # change a single character and observe timing difference
+    start = time.time()
+    for timingTest in range(itterations):
+        constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
+                                'nnjfbefefbsnjsdnvbcueftqfeuqfbqeznjeniwufgy')
+    end = time.time()
+    avTime2 = ((end - start) * 1000000 / itterations)
+    timeDiffMicroseconds = abs(avTime2 - avTime1)
+    # time difference should be less than 10uS
+    assert timeDiffMicroseconds < 10
+
+    # change multiple characters and observe timing difference
+    start = time.time()
+    for timingTest in range(itterations):
+        constantTimeStringCheck('nnjfbefefbsnjsdnvbcueftqfeuqfbqefnjeniwufgy',
+                                'ano1befffbsn7sd3vbluef6qseuqfpqeznjgni9bfgi')
+    end = time.time()
+    avTime2 = ((end - start) * 1000000 / itterations)
+    timeDiffMicroseconds = abs(avTime2 - avTime1)
+    # time difference should be less than 10uS
+    assert timeDiffMicroseconds < 10
+
+
 def runAllTests():
     print('Running tests...')
+    testConstantTimeStringCheck()
     testTranslations()
     testValidContentWarning()
     testRemoveIdEnding()

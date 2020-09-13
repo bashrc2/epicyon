@@ -42,14 +42,19 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     indicating whether to receive calendar events from that account
     """
     # check that a following file exists
+    if ':' in domain:
+        domain = domain.split(':')[0]
     followingFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/following.txt'
     if not os.path.isfile(followingFilename):
+        print("WARN: following.txt doesn't exist for " +
+              nickname + '@' + domain)
         return
     handle = followingNickname + '@' + followingDomain
 
     # check that you are following this handle
     if handle + '\n' not in open(followingFilename).read():
+        print('WARN: ' + handle + ' is not in ' + followingFilename)
         return
 
     calendarFilename = baseDir + '/accounts/' + \
@@ -59,17 +64,22 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     # a set of handles
     followingHandles = ''
     if os.path.isfile(calendarFilename):
+        print('Calendar file exists')
         with open(calendarFilename, 'r') as calendarFile:
             followingHandles = calendarFile.read()
     else:
         # create a new calendar file from the following file
+        print('Creating calendar file ' + calendarFilename)
+        followingHandles = ''
         with open(followingFilename, 'r') as followingFile:
             followingHandles = followingFile.read()
+        if add:
             with open(calendarFilename, 'w+') as fp:
-                fp.write(followingHandles)
+                fp.write(followingHandles + handle + '\n')
 
     # already in the calendar file?
     if handle + '\n' in followingHandles:
+        print(handle + ' exists in followingCalendar.txt')
         if add:
             # already added
             return
@@ -78,6 +88,7 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
         with open(calendarFilename, 'w+') as fp:
             fp.write(followingHandles)
     else:
+        print(handle + ' not in followingCalendar.txt')
         # not already in the calendar file
         if add:
             # append to the list of handles

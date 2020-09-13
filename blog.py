@@ -722,7 +722,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
     editBlogImageSection += \
-        '            accept=".png, .jpg, .jpeg, .gif, .webp, ' + \
+        '            accept=".png, .jpg, .jpeg, .gif, .webp, .avif, ' + \
         '.mp4, .webm, .ogv, .mp3, .ogg">'
     editBlogImageSection += '    </div>'
 
