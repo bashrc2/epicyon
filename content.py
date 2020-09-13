@@ -570,6 +570,41 @@ def removeLongWords(content: str, maxWordLength: int,
     return content
 
 
+def loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
+    """Loads automatic tags file and returns a list containing
+    the lines of the file
+    """
+    filename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/autotags.txt'
+    if not os.path.isfile(filename):
+        return []
+    with open(filename, "r") as f:
+        return f.readlines()
+    return []
+
+
+def autoTag(baseDir: str, nickname: str, domain: str,
+            wordStr: str, autoTagList: [],
+            appendTags: []):
+    """Generates a list of tags to be automatically appended to the content
+    """
+    for tagRule in autoTagList:
+        if wordStr not in tagRule:
+            continue
+        if '->' not in tagRule:
+            continue
+        match = tagRule.split('->')[0].strip()
+        if match != wordStr:
+            continue
+        tagName = tagRule.split('->')[1].strip()
+        if tagName.startswith('#'):
+            if tagName not in appendTags:
+                appendTags.append(tagName)
+        else:
+            if '#' + tagName not in appendTags:
+                appendTags.append('#' + tagName)
+
+
 def addHtmlTags(baseDir: str, httpPrefix: str,
                 nickname: str, domain: str, content: str,
                 recipients: [], hashtags: {}, isJsonContent=False) -> str:
@@ -616,6 +651,9 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
 
     # extract mentions and tags from words
     longWordsList = []
+    prevWordStr = ''
+    autoTagsList = loadAutoTags(baseDir, nickname, domain)
+    appendTags = []
     for wordStr in words:
         wordLen = len(wordStr)
         if wordLen > 2:
@@ -625,10 +663,12 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
             if firstChar == '@':
                 if addMention(wordStr, httpPrefix, following,
                               replaceMentions, recipients, hashtags):
+                    prevWordStr = ''
                     continue
             elif firstChar == '#':
                 if addHashTags(wordStr, httpPrefix, originalDomain,
                                replaceHashTags, hashtags):
+                    prevWordStr = ''
                     continue
             elif ':' in wordStr:
                 wordStr2 = wordStr.split(':')[1]
@@ -646,6 +686,24 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                 addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
                          originalDomain, replaceEmoji, hashtags,
                          emojiDict)
+            else:
+                if autoTag(baseDir, nickname, domain, wordStr,
+                           autoTagsList, appendTags):
+                    prevWordStr = ''
+                    continue
+                if prevWordStr:
+                    if autoTag(baseDir, nickname, domain,
+                               prevWordStr + ' ' + wordStr,
+                               autoTagsList, appendTags):
+                        prevWordStr = ''
+                        continue
+            prevWordStr = wordStr
+
+    # add any auto generated tags
+    for appended in appendTags:
+        content = content + ' ' + appended
+        addHashTags(appended, httpPrefix, originalDomain,
+                    replaceHashTags, hashtags)
 
     # replace words with their html versions
     for wordStr, replaceStr in replaceMentions.items():
