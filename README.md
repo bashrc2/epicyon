@@ -178,7 +178,7 @@ ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
 Generate a LetsEncrypt certificate.
 
 ``` bash
-certbot certonly -n --server https://acme-v01.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
+certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
 ```
 
 And restart the web server:
