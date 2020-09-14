@@ -14,6 +14,25 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def htmlReplaceEmailQuote(content: str) -> str:
+    """Replaces an email style quote "> Some quote" with html blockquote
+    """
+    if '>&gt; ' not in content:
+        return content
+    contentStr = content.replace('<p>', '')
+    contentLines = contentStr.split('</p>')
+    newContent = ''
+    for lineStr in contentLines:
+        if not lineStr:
+            continue
+        if '>&gt; ' not in lineStr:
+            newContent += '<p>' + lineStr + '</p>'
+        else:
+            lineStr = lineStr.replace('>&gt; ', '><blockquote>')
+            newContent += '<p>' + lineStr + '</blockquote></p>'
+    return newContent
+
+
 def htmlReplaceQuoteMarks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
@@ -612,6 +631,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     by matching against known following accounts
     """
     if content.startswith('<p>'):
+        content = htmlReplaceEmailQuote(content)
         return htmlReplaceQuoteMarks(content)
     maxWordLength = 40
     content = content.replace('\r', '')
@@ -718,6 +738,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     if longWordsList:
         content = removeLongWords(content, maxWordLength, longWordsList)
     content = content.replace(' --linebreak-- ', '</p><p>')
+    content = htmlReplaceEmailQuote(content)
     return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
 
 

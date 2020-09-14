@@ -68,6 +68,7 @@ from delete import sendDeleteViaServer
 from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
+from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
 from content import removeHtml
@@ -2124,8 +2125,33 @@ def testConstantTimeStringCheck():
     assert timeDiffMicroseconds < 10
 
 
+def testReplaceEmailQuote():
+    print('testReplaceEmailQuote')
+    testStr='<p>This content has no quote.</p>'
+    assert htmlReplaceEmailQuote(testStr) == testStr
+
+    testStr='<p>This content has no quote.\nWith multiple\nlines</p>'
+    assert htmlReplaceEmailQuote(testStr) == testStr
+
+    testStr = "<p><span class=\"h-card\">" + \
+        "<a href=\"https://somewebsite/@nickname\" " + \
+        "class=\"u-url mention\">@<span>nickname</span></a></span> " + \
+        "<br />&gt; This is a quote</p><p>Some other text.</p>"
+    expectedStr = "<p><span class=\"h-card\">" + \
+        "<a href=\"https://somewebsite/@nickname\" " + \
+        "class=\"u-url mention\">@<span>nickname</span></a></span> " + \
+        "<br /><blockquote>This is a quote</blockquote></p>" + \
+        "<p>Some other text.</p>"
+    resultStr = htmlReplaceEmailQuote(testStr)
+    if resultStr != expectedStr:
+        print('Result: ' + resultStr)
+        print('Expect: ' + expectedStr)
+    assert resultStr == expectedStr
+
+
 def runAllTests():
     print('Running tests...')
+    testReplaceEmailQuote()
     testConstantTimeStringCheck()
     testTranslations()
     testValidContentWarning()
