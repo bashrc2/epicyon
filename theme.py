@@ -68,7 +68,10 @@ def setCSSparam(css: str, param: str, value: str) -> str:
         return css.replace(param, value)
     # if the parameter begins with * then don't prepend --
     if param.startswith('*'):
-        searchStr = param.replace('*', '') + ':'
+        if param.startswith('**'):
+            searchStr = param.replace('**', '', 1) + ':'
+        else:
+            searchStr = param.replace('*', '') + ':'
     else:
         searchStr = '--' + param + ':'
     if searchStr not in css:
@@ -276,6 +279,8 @@ def setThemeNight(baseDir: str):
     setThemeInConfig(baseDir, name)
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
+    fontStrItalic = \
+        "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
         "focus-color": "blue",
         "font-size-button-mobile": "36px",
@@ -306,7 +311,8 @@ def setThemeNight(baseDir: str):
         "event-color": "#7961ab",
         "event-background": "#333",
         "*font-family": "'solidaric'",
-        "*src": fontStr
+        "*src": fontStr,
+        "**src": fontStrItalic
     }
     bgParams = {
         "login": "jpg",
@@ -767,7 +773,8 @@ def setThemeSolidaric(baseDir: str):
         "title-background": "#ccc",
         "gallery-text-color": "black",
         "*font-family": "'solidaric'",
-        "*src": "url('./fonts/solidaric.woff2') format('woff2')"
+        "*src": "url('./fonts/solidaric.woff2') format('woff2')",
+        "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')"
     }
     bgParams = {
         "login": "jpg",
