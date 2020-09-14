@@ -105,7 +105,6 @@ blockquote:after {
   content: close-quote;
   font-size: 2em;
   line-height: 0.1em;
-  margin-left: 0.25em;
   vertical-align: -0.4em;
 }
 blockquote p {
