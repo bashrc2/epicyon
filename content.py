@@ -26,9 +26,15 @@ def htmlReplaceEmailQuote(content: str) -> str:
         if not lineStr:
             continue
         if '>&gt; ' not in lineStr:
-            newContent += '<p>' + lineStr + '</p>'
+            if lineStr.startswith('&gt; '):
+                lineStr = lineStr.replace('&gt; ', '<blockquote>')
+                lineStr = lineStr.replace('&gt;', '<br>')
+                newContent += '<p>' + lineStr + '</blockquote></p>'
+            else:
+                newContent += '<p>' + lineStr + '</p>'
         else:
             lineStr = lineStr.replace('>&gt; ', '><blockquote>')
+            lineStr = lineStr.replace('&gt;', '<br>')
             newContent += '<p>' + lineStr + '</blockquote></p>'
     return newContent
 

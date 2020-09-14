@@ -2149,6 +2149,16 @@ def testReplaceEmailQuote():
         print('Expect: ' + expectedStr)
     assert resultStr == expectedStr
 
+    testStr = "<p>Some text:</p><p>&gt; first line-&gt;second line</p>" + \
+        "<p>Some question?</p>"
+    expectedStr = "<p>Some text:</p><p><blockquote>first line-<br>" + \
+        "second line</blockquote></p><p>Some question?</p>"
+    resultStr = htmlReplaceEmailQuote(testStr)
+    if resultStr != expectedStr:
+        print('Result: ' + resultStr)
+        print('Expect: ' + expectedStr)
+    assert resultStr == expectedStr
+
 
 def runAllTests():
     print('Running tests...')
