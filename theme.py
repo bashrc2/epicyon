@@ -315,6 +315,7 @@ def setThemeNight(baseDir: str):
         "place-color": "#7961ab",
         "event-color": "#7961ab",
         "event-background": "#333",
+        "quote-right-margin": "0",
         "*font-family": "'solidaric'",
         "*src": fontStr,
         "**src": fontStrItalic
@@ -430,6 +431,7 @@ def setThemeHenge(baseDir: str):
         "event-background": "#333",
         "timeline-border-radius": "20px",
         "image-corners": "8%",
+        "quote-right-margin": "0.25em",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
