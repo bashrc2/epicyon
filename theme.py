@@ -299,7 +299,7 @@ def setThemeNight(baseDir: str):
         "link-bg-color": "#0f0d10",
         "main-fg-color": "#a961ab",
         "main-bg-color-dm": "#0b0a0a",
-        "border-color": "#a961ab",
+        "border-color": "#606984",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
