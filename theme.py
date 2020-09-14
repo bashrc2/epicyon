@@ -78,7 +78,10 @@ def setCSSparam(css: str, param: str, value: str) -> str:
         searchStr = '--' + param + ':'
     if searchStr not in css:
         return css
-    s = css.split(searchStr)
+    if onceOnly:
+        s = css.split(searchStr, 1)
+    else:
+        s = css.split(searchStr)
     newcss = ''
     for sectionStr in s:
         if not newcss:
@@ -92,8 +95,6 @@ def setCSSparam(css: str, param: str, value: str) -> str:
                     searchStr + ' ' + value + ';' + sectionStr.split(';', 1)[1]
             else:
                 newcss += searchStr + ' ' + sectionStr
-        if onceOnly:
-            break
     return newcss.strip()
 
 
