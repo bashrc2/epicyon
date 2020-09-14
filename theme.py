@@ -67,9 +67,11 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     if param.startswith('rgba('):
         return css.replace(param, value)
     # if the parameter begins with * then don't prepend --
+    onceOnly = False
     if param.startswith('*'):
         if param.startswith('**'):
-            searchStr = param.replace('**', '', 1) + ':'
+            onceOnly = True
+            searchStr = param.replace('**', '') + ':'
         else:
             searchStr = param.replace('*', '') + ':'
     else:
@@ -90,6 +92,8 @@ def setCSSparam(css: str, param: str, value: str) -> str:
                     searchStr + ' ' + value + ';' + sectionStr.split(';', 1)[1]
             else:
                 newcss += searchStr + ' ' + sectionStr
+        if onceOnly:
+            break
     return newcss.strip()
 
 
