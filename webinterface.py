@@ -58,6 +58,7 @@ from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from blocking import isBlockedHashtag
+from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import removeTextFormatting
 from content import switchWords
@@ -4761,6 +4762,7 @@ def individualPostAsHtml(allowDownloads: bool,
         objectContent = removeTextFormatting(objectContent)
         objectContent = \
             switchWords(baseDir, nickname, domain, objectContent)
+        objectContent = htmlReplaceEmailQuote(objectContent)
         objectContent = htmlReplaceQuoteMarks(objectContent)
     else:
         objectContent = \

@@ -2127,10 +2127,11 @@ def testConstantTimeStringCheck():
 
 def testReplaceEmailQuote():
     print('testReplaceEmailQuote')
-    testStr='<p>This content has no quote.</p>'
+    testStr = '<p>This content has no quote.</p>'
     assert htmlReplaceEmailQuote(testStr) == testStr
 
-    testStr='<p>This content has no quote.\nWith multiple\nlines</p>'
+    testStr = '<p>This content has no quote.</p>' + \
+        '<p>With multiple</p><p>lines</p>'
     assert htmlReplaceEmailQuote(testStr) == testStr
 
     testStr = "<p><span class=\"h-card\">" + \
