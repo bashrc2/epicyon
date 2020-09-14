@@ -375,6 +375,7 @@ def setThemeStarlight(baseDir: str):
         "place-color": "#ffc4bc",
         "event-color": "#ffc4bc",
         "image-corners": "2%",
+        "quote-right-margin": "0.25em",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
@@ -777,6 +778,7 @@ def setThemeSolidaric(baseDir: str):
         "title-text": "#282c37",
         "title-background": "#ccc",
         "gallery-text-color": "black",
+        "quote-right-margin": "0",
         "*font-family": "'solidaric'",
         "*src": "url('./fonts/solidaric.woff2') format('woff2')",
         "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')"

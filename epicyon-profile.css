@@ -57,6 +57,7 @@
     --icons-side: right;
     --title-color: #999;
     --focus-color: white;
+    --quote-right-margin: 0.25em;
 }
 
 @font-face {
@@ -105,6 +106,7 @@ blockquote:after {
   content: close-quote;
   font-size: 2em;
   line-height: 0.1em;
+  margin-left: var(--quote-right-margin);
   vertical-align: -0.4em;
 }
 blockquote p {
