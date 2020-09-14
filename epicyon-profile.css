@@ -58,6 +58,7 @@
     --title-color: #999;
     --focus-color: white;
     --quote-right-margin: 0.25em;
+    --quote-font-weight: bold;
 }
 
 @font-face {
@@ -91,7 +92,7 @@ blockquote {
   border-left: 10px;
   margin: 1.5em 10px;
   padding: 0.5em 10px;
-  font-weight: bold;
+  font-weight: var(--quote-font-weight);
   font-style: italic;
   quotes: "\201C""\201D""\2018""\2019";
 }
