@@ -2134,6 +2134,10 @@ def testReplaceEmailQuote():
         '<p>With multiple</p><p>lines</p>'
     assert htmlReplaceEmailQuote(testStr) == testStr
 
+    testStr = '<p>&quot;This is a quoted paragraph.&quot;</p>'
+    assert htmlReplaceEmailQuote(testStr) == \
+        '<p><blockquote>This is a quoted paragraph.</blockquote></p>'
+
     testStr = "<p><span class=\"h-card\">" + \
         "<a href=\"https://somewebsite/@nickname\" " + \
         "class=\"u-url mention\">@<span>nickname</span></a></span> " + \

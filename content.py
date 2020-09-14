@@ -17,6 +17,12 @@ from utils import getLinkPrefixes
 def htmlReplaceEmailQuote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
+    # replace quote paragraph
+    if '<p>&quot;' in content:
+        if '&quot;</p>' in content:
+            content = content.replace('<p>&quot;', '<p><blockquote>')
+            content = content.replace('&quot;</p>', '</blockquote></p>')
+    # replace email style quote
     if '>&gt; ' not in content:
         return content
     contentStr = content.replace('<p>', '')
