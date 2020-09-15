@@ -58,7 +58,8 @@
     --title-color: #999;
     --focus-color: white;
     --quote-right-margin: 0.25em;
-    --quote-font-weight: bold;
+    --quote-font-weight: normal;
+    --quote-font-size: 120%;
     --line-spacing: 100%;
 }
 
@@ -96,6 +97,7 @@ blockquote {
   padding: 0.5em 10px;
   font-weight: var(--quote-font-weight);
   font-style: italic;
+  font-size: var(--quote-font-size);
   quotes: "\201C""\201D""\2018""\2019";
 }
 blockquote:before {
