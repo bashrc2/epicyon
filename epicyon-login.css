@@ -20,6 +20,7 @@
     --button-selected: #666;
     --form-border-radius: 30px;
     --focus-color: white;
+    --line-spacing: 100%;
 }
 
 @font-face {
@@ -53,6 +54,7 @@ body, html {
     min-width: 600px;
     margin: 0 auto;
     font-size: var(--font-size);
+    line-height: var(--line-spacing);
 }
 
 a, u {

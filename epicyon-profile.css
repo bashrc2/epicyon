@@ -59,6 +59,7 @@
     --focus-color: white;
     --quote-right-margin: 0.25em;
     --quote-font-weight: bold;
+    --line-spacing: 100%;
 }
 
 @font-face {
@@ -86,6 +87,7 @@ body, html {
     min-width: 950px;
     margin: 0 auto;
     font-size: var(--font-size);
+    line-height: var(--line-spacing);
 }
 
 blockquote {

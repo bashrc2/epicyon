@@ -316,6 +316,7 @@ def setThemeNight(baseDir: str):
         "event-color": "#a961ab",
         "event-background": "#333",
         "quote-right-margin": "0",
+        "line-spacing": "150%",
         "*font-family": "'solidaric'",
         "*src": fontStr,
         "**src": fontStrItalic
@@ -781,6 +782,7 @@ def setThemeSolidaric(baseDir: str):
         "title-background": "#ccc",
         "gallery-text-color": "black",
         "quote-right-margin": "0",
+        "line-spacing": "150%",
         "*font-family": "'solidaric'",
         "*src": "url('./fonts/solidaric.woff2') format('woff2')",
         "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')"

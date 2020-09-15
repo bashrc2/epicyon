@@ -43,6 +43,7 @@
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
     --focus-color: white;
+    --line-spacing: 100%;
 }
 
 @font-face {
@@ -70,6 +71,7 @@ body, html {
     min-width: 950px;
     margin: 0 auto;
     font-size: var(--font-size);
+    line-height: var(--line-spacing);
 }
 
 a, u {
