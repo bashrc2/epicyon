@@ -244,7 +244,7 @@ def clearFollows(baseDir: str, nickname: str, domain: str,
                  followFile='following.txt') -> None:
     """Removes all follows
     """
-    handle = nickname.lower() + '@' + domain.lower()
+    handle = nickname + '@' + domain
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     if not os.path.isdir(baseDir + '/accounts/' + handle):
@@ -269,7 +269,7 @@ def getNoOfFollows(baseDir: str, nickname: str, domain: str,
     # account holders
     # if not authenticated:
     #     return 9999
-    handle = nickname.lower() + '@' + domain.lower()
+    handle = nickname + '@' + domain
     filename = baseDir + '/accounts/' + handle + '/' + followFile
     if not os.path.isfile(filename):
         return 0
@@ -378,7 +378,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     handleDomain = domain
     if ':' in handleDomain:
         handleDomain = domain.split(':')[0]
-    handle = nickname.lower() + '@' + handleDomain.lower()
+    handle = nickname + '@' + handleDomain
     filename = baseDir + '/accounts/' + handle + '/' + followFile + '.txt'
     if not os.path.isfile(filename):
         return following

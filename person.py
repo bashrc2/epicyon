@@ -73,7 +73,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
             if ':' not in domain:
                 fullDomain = domain + ':' + str(port)
 
-    handle = nickname.lower() + '@' + domain.lower()
+    handle = nickname + '@' + domain
     personFilename = baseDir + '/accounts/' + handle + '.json'
     if not os.path.isfile(personFilename):
         print('person definition not found: ' + personFilename)
@@ -210,7 +210,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         storeWebfingerEndpoint(nickname, domain, port,
                                baseDir, webfingerEndpoint)
 
-    handle = nickname.lower() + '@' + domain.lower()
+    handle = nickname + '@' + domain
     originalDomain = domain
     if port:
         if port != 80 and port != 443:
@@ -736,8 +736,8 @@ def setDisplayNickname(baseDir: str, nickname: str, domain: str,
                        displayName: str) -> bool:
     if len(displayName) > 32:
         return False
-    handle = nickname.lower() + '@' + domain.lower()
-    filename = baseDir + '/accounts/' + handle.lower() + '.json'
+    handle = nickname + '@' + domain
+    filename = baseDir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
         return False
 
@@ -752,8 +752,8 @@ def setDisplayNickname(baseDir: str, nickname: str, domain: str,
 def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
     if len(bio) > 32:
         return False
-    handle = nickname.lower() + '@' + domain.lower()
-    filename = baseDir + '/accounts/' + handle.lower() + '.json'
+    handle = nickname + '@' + domain
+    filename = baseDir + '/accounts/' + handle + '.json'
     if not os.path.isfile(filename):
         return False
 

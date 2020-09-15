@@ -121,11 +121,11 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
     wfSubdir = '/wfendpoints'
     if not os.path.isdir(baseDir + wfSubdir):
         os.mkdir(baseDir + wfSubdir)
-    filename = baseDir + wfSubdir + '/' + handle.lower() + '.json'
+    filename = baseDir + wfSubdir + '/' + handle + '.json'
     saveJson(wfJson, filename)
     if nickname == 'inbox':
         handle = originalDomain + '@' + domain
-        filename = baseDir + wfSubdir + '/' + handle.lower() + '.json'
+        filename = baseDir + wfSubdir + '/' + handle + '.json'
         saveJson(wfJson, filename)
     return True
 
@@ -261,7 +261,7 @@ def webfingerLookup(path: str, baseDir: str,
         if onionDomain in handle:
             handle = handle.replace(onionDomain, domain)
             onionify = True
-    filename = baseDir + '/wfendpoints/' + handle.lower() + '.json'
+    filename = baseDir + '/wfendpoints/' + handle + '.json'
     if debug:
         print('DEBUG: WEBFINGER filename ' + filename)
     if not os.path.isfile(filename):
@@ -339,7 +339,7 @@ def webfingerUpdate(baseDir: str, nickname: str, domain: str,
     if not os.path.isdir(baseDir + wfSubdir):
         return
 
-    filename = baseDir + wfSubdir + '/' + handle.lower() + '.json'
+    filename = baseDir + wfSubdir + '/' + handle + '.json'
     onionify = False
     if onionDomain:
         if onionDomain in handle:
@@ -352,7 +352,7 @@ def webfingerUpdate(baseDir: str, nickname: str, domain: str,
     if not wfJson:
         return
 
-    actorFilename = baseDir + '/accounts/' + handle.lower() + '.json'
+    actorFilename = baseDir + '/accounts/' + handle + '.json'
     actorJson = loadJson(actorFilename)
     if not actorJson:
         return
