@@ -254,6 +254,8 @@ def setThemeIndymedia(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "button-corner-radius": "5px",
+        "timeline-border-radius": "5px",
         "focus-color": "blue",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
