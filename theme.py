@@ -264,7 +264,7 @@ def setThemeIndymedia(baseDir: str):
         "main-bg-color": "black",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "black",
-        "main-link-color": "ff9900",
+        "main-link-color": "#ff9900",
         "main-link-color-hover": "#d09338",
         "main-visited-color": "#ffb900",
         "main-fg-color": "white",
