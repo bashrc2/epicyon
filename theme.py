@@ -25,8 +25,8 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
-            'Starlight', 'Zen')
+            'Indymedia', 'LCD', 'Light', 'Night', 'Purple',
+            'Solidaric', 'Starlight', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -243,6 +243,51 @@ def setThemeDefault(baseDir: str):
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
+def setThemeIndymedia(baseDir: str):
+    name = 'indymedia'
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, name)
+    bgParams = {
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
+    }
+    themeParams = {
+        "focus-color": "blue",
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "main-bg-color": "black",
+        "text-entry-background": "#0f0d10",
+        "link-bg-color": "#0f0d10",
+        "main-fg-color": "white",
+        "main-bg-color-dm": "#0b0a0a",
+        "border-color": "#003366",
+        "main-bg-color-reply": "#0f0d10",
+        "main-bg-color-report": "#0f0d10",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
+        "button-background-hover": "#173048",
+        "button-background": "#003366",
+        "button-selected": "#011830",
+        "calendar-bg-color": "#0f0d10",
+        "lines-color": "#a961ab",
+        "day-number": "#a961ab",
+        "day-number2": "#555",
+        "time-color": "#a961ab",
+        "place-color": "#a961ab",
+        "event-color": "#a961ab",
+        "event-background": "#333",
+        "quote-right-margin": "0",
+        "border-color": "#003366"
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
+
+
 def setThemeBlue(baseDir: str):
     name = 'blue'
     removeTheme(baseDir)
@@ -296,7 +341,9 @@ def setThemeNight(baseDir: str):
         "font-size5": "22px",
         "main-bg-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
-        "link-bg-color": "#0f0d10",
+        "link-bg-color": "black",
+        "main-link-color": "ff9900",
+        "main-link-color-hover": "#d09338";
         "main-fg-color": "#a961ab",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#606984",
