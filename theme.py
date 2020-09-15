@@ -343,7 +343,7 @@ def setThemeNight(baseDir: str):
         "text-entry-background": "#0f0d10",
         "link-bg-color": "black",
         "main-link-color": "ff9900",
-        "main-link-color-hover": "#d09338";
+        "main-link-color-hover": "#d09338",
         "main-fg-color": "#a961ab",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#606984",
