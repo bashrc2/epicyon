@@ -270,6 +270,7 @@ def setThemeIndymedia(baseDir: str):
         "main-fg-color": "white",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#003366",
+        "border-width": "0",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
