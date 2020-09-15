@@ -281,15 +281,17 @@ def setThemeIndymedia(baseDir: str):
         "button-background": "#003366",
         "button-selected": "#011830",
         "calendar-bg-color": "#0f0d10",
-        "lines-color": "#a961ab",
-        "day-number": "#a961ab",
-        "day-number2": "#555",
-        "time-color": "#a961ab",
-        "place-color": "#a961ab",
-        "event-color": "#a961ab",
-        "event-background": "#333",
+        "event-background": "#555",
         "quote-right-margin": "0",
-        "border-color": "#003366"
+        "border-color": "#003366",
+        "lines-color": "#003366",
+        "day-number": "#003366",
+        "day-number2": "blue",
+        "time-color": "#003366",
+        "place-color": "#003366",
+        "event-color": "#003366",
+        "title-text": "white",
+        "title-background": "#003366"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
