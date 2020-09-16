@@ -291,7 +291,8 @@ def setThemeIndymedia(baseDir: str):
         "place-color": "#003366",
         "event-color": "#003366",
         "title-text": "white",
-        "title-background": "#003366"
+        "title-background": "#003366",
+        "quote-right-margin": "0.25em",
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
