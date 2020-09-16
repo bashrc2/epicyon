@@ -279,7 +279,7 @@ def setThemeIndymedia(baseDir: str):
         "hashtag-vertical-spacing4": "150px",
         "button-background-hover": "#173048",
         "button-background": "#003366",
-        "button-selected": "#011830",
+        "button-selected": "blue",
         "calendar-bg-color": "#0f0d10",
         "event-background": "#555",
         "quote-right-margin": "0",
