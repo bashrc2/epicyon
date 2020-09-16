@@ -292,7 +292,7 @@ def setThemeIndymedia(baseDir: str):
         "event-color": "#003366",
         "title-text": "white",
         "title-background": "#003366",
-        "quote-right-margin": "0.25em",
+        "quote-right-margin": "0.1em",
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -433,7 +433,7 @@ def setThemeStarlight(baseDir: str):
         "place-color": "#ffc4bc",
         "event-color": "#ffc4bc",
         "image-corners": "2%",
-        "quote-right-margin": "0.25em",
+        "quote-right-margin": "0.1em",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
@@ -488,7 +488,7 @@ def setThemeHenge(baseDir: str):
         "event-background": "#333",
         "timeline-border-radius": "20px",
         "image-corners": "8%",
-        "quote-right-margin": "0.25em",
+        "quote-right-margin": "0.1em",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
