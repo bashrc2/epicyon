@@ -277,7 +277,7 @@ def setThemeIndymedia(baseDir: str):
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
-        "button-background-hover": "#173048",
+        "button-background-hover": "darkblue",
         "button-background": "#003366",
         "button-selected": "blue",
         "calendar-bg-color": "#0f0d10",
