@@ -524,20 +524,20 @@ def htmlSearchSharedItems(translate: {},
                             break
                     if matched:
                         if currPage == pageNumber:
-                            sharedItemsForm += '<div class="container">'
+                            sharedItemsForm += '<div class="container">\n'
                             sharedItemsForm += \
                                 '<p class="share-title">' + \
-                                sharedItem['displayName'] + '</p>'
+                                sharedItem['displayName'] + '</p>\n'
                             if sharedItem.get('imageUrl'):
                                 sharedItemsForm += \
                                     '<a href="' + \
-                                    sharedItem['imageUrl'] + '">'
+                                    sharedItem['imageUrl'] + '">\n'
                                 sharedItemsForm += \
                                     '<img loading="lazy" src="' + \
                                     sharedItem['imageUrl'] + \
-                                    '" alt="Item image"></a>'
+                                    '" alt="Item image"></a>\n'
                             sharedItemsForm += \
-                                '<p>' + sharedItem['summary'] + '</p>'
+                                '<p>' + sharedItem['summary'] + '</p>\n'
                             sharedItemsForm += \
                                 '<p><b>' + translate['Type'] + \
                                 ':</b> ' + sharedItem['itemType'] + ' '
@@ -546,7 +546,7 @@ def htmlSearchSharedItems(translate: {},
                                 ':</b> ' + sharedItem['category'] + ' '
                             sharedItemsForm += \
                                 '<b>' + translate['Location'] + \
-                                ':</b> ' + sharedItem['location'] + '</p>'
+                                ':</b> ' + sharedItem['location'] + '</p>\n'
                             contactActor = \
                                 httpPrefix + '://' + domainFull + \
                                 '/users/' + contactNickname
@@ -556,13 +556,13 @@ def htmlSearchSharedItems(translate: {},
                                 sharedItem['displayName'] + \
                                 '?mention=' + contactActor + \
                                 '"><button class="button">' + \
-                                translate['Contact'] + '</button></a>'
+                                translate['Contact'] + '</button></a>\n'
                             if actor.endswith('/users/' + contactNickname):
                                 sharedItemsForm += \
                                     ' <a href="' + actor + '?rmshare=' + \
                                     name + '"><button class="button">' + \
-                                    translate['Remove'] + '</button></a>'
-                            sharedItemsForm += '</p></div>'
+                                    translate['Remove'] + '</button></a>\n'
+                            sharedItemsForm += '</p></div>\n'
                             if not resultsExist and currPage > 1:
                                 postActor = \
                                     getAltPath(actor, domainFull,
@@ -572,26 +572,26 @@ def htmlSearchSharedItems(translate: {},
                                     '<form method="POST" action="' + \
                                     postActor + \
                                     '/searchhandle?page=' + \
-                                    str(pageNumber - 1) + '">'
+                                    str(pageNumber - 1) + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
-                                    'name="actor" value="' + actor + '">'
+                                    'name="actor" value="' + actor + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
                                     'name="searchtext" value="' + \
-                                    searchStrLower + '"><br>'
+                                    searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
                                     '  <center><a href="' + actor + \
-                                    '" type="submit" name="submitSearch">'
+                                    '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
                                     'class="pageicon" src="/' + iconsDir + \
                                     '/pageup.png" title="' + \
                                     translate['Page up'] + \
                                     '" alt="' + translate['Page up'] + \
-                                    '"/></a>'
-                                sharedItemsForm += '  </center>'
-                                sharedItemsForm += '</form>'
+                                    '"/></a>\n'
+                                sharedItemsForm += '  </center>\n'
+                                sharedItemsForm += '</form>\n'
                                 resultsExist = True
                         ctr += 1
                         if ctr >= resultsPerPage:
@@ -605,31 +605,31 @@ def htmlSearchSharedItems(translate: {},
                                     '<form method="POST" action="' + \
                                     postActor + \
                                     '/searchhandle?page=' + \
-                                    str(pageNumber + 1) + '">'
+                                    str(pageNumber + 1) + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
-                                    'name="actor" value="' + actor + '">'
+                                    'name="actor" value="' + actor + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
                                     'name="searchtext" value="' + \
-                                    searchStrLower + '"><br>'
+                                    searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
                                     '  <center><a href="' + actor + \
-                                    '" type="submit" name="submitSearch">'
+                                    '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
                                     'class="pageicon" src="/' + iconsDir + \
                                     '/pagedown.png" title="' + \
                                     translate['Page down'] + \
                                     '" alt="' + translate['Page down'] + \
-                                    '"/></a>'
-                                sharedItemsForm += '  </center>'
-                                sharedItemsForm += '</form>'
+                                    '"/></a>\n'
+                                sharedItemsForm += '  </center>\n'
+                                sharedItemsForm += '</form>\n'
                                 break
                             ctr = 0
         if not resultsExist:
             sharedItemsForm += \
-                '<center><h5>' + translate['No results'] + '</h5></center>'
+                '<center><h5>' + translate['No results'] + '</h5></center>\n'
         sharedItemsForm += htmlFooter()
     return sharedItemsForm
 
@@ -1913,7 +1913,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                     ' <a href="' + inReplyTo + '">' + \
                     translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
-                    'name="replyTo" value="' + inReplyTo + '">'
+                    'name="replyTo" value="' + inReplyTo + '">\n'
 
                 # if replying to a non-public post then also make
                 # this post non-public
@@ -6199,7 +6199,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     if optionsLink:
         optionsLinkStr = \
             '    <input type="hidden" name="postUrl" value="' + \
-            optionsLink + '">'
+            optionsLink + '">\n'
     cssFilename = baseDir + '/epicyon-options.css'
     if os.path.isfile(baseDir + '/options.css'):
         cssFilename = baseDir + '/options.css'
@@ -6304,7 +6304,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += optionsLinkStr
     optionsStr += \
-        '    <a href="/"><button type="buttonIcon" class="button" ' + \
+        '<a href="/"><button type="buttonIcon" class="button" ' + \
         'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
