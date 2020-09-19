@@ -282,7 +282,6 @@ def setThemeIndymedia(baseDir: str):
         "button-selected": "blue",
         "calendar-bg-color": "#0f0d10",
         "event-background": "#555",
-        "quote-right-margin": "0",
         "border-color": "#003366",
         "lines-color": "#003366",
         "day-number": "#003366",

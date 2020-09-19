@@ -6304,7 +6304,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += optionsLinkStr
     optionsStr += \
-        '    <a href="/"><button type="button" class="button" ' + \
+        '    <a href="/"><button type="buttonIcon" class="button" ' + \
         'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
