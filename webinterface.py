@@ -6276,7 +6276,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         handle = optionsNickname + '@' + optionsDomainFull
         petname = getPetName(baseDir, nickname, domain, handle)
         optionsStr += \
-            translate['Petname'] + ': ' + \
+            '    ' + translate['Petname'] + ': \n' + \
             '    <input type="text" name="optionpetname" value="' + \
             petname + '">\n' \
             '    <button type="submit" class="buttonsmall" ' + \
@@ -6304,7 +6304,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += optionsLinkStr
     optionsStr += \
-        '<a href="/"><button type="buttonIcon" class="button" ' + \
+        '    <a href="/"><button type="buttonIcon" class="button" ' + \
         'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
