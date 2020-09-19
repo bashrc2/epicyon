@@ -6277,9 +6277,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         petname = getPetName(baseDir, nickname, domain, handle)
         optionsStr += \
             translate['Petname'] + ': ' + \
-            '<input type="text" name="optionpetname" value="' + \
+            '    <input type="text" name="optionpetname" value="' + \
             petname + '">\n' \
-            '<button type="submit" class="buttonsmall" ' + \
+            '    <button type="submit" class="buttonsmall" ' + \
             'name="submitPetname">' + \
             translate['Submit'] + '</button><br>\n'
 
@@ -6287,18 +6287,18 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         if receivingCalendarEvents(baseDir, nickname, domain,
                                    optionsNickname, optionsDomainFull):
             optionsStr += \
-                '<input type="checkbox" ' + \
+                '    <input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar" checked> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="buttonsmall" ' + \
+                '\n    <button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
         else:
             optionsStr += \
-                '<input type="checkbox" ' + \
+                '    <input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar"> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="buttonsmall" ' + \
+                '\n    <button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
 
@@ -6336,7 +6336,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += \
         '    <br><br>' + translate['Notes'] + ': \n'
-    optionsStr += '<button type="submit" class="buttonsmall" ' + \
+    optionsStr += '    <button type="submit" class="buttonsmall" ' + \
         'name="submitPersonNotes">' + \
         translate['Submit'] + '</button><br>\n'
     optionsStr += \
