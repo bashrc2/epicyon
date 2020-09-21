@@ -158,7 +158,7 @@ Enable the site:
 
 Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured. Add a TLS certificate:
 
-    certbot certonly -n --server https://acme-v01.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
+    certbot certonly -n --server https://acme-v02.api.letsencrypt.org/directory --standalone -d YOUR_DOMAIN --renew-by-default --agree-tos --email YOUR_EMAIL
 
 Restart your web server:
 

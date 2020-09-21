@@ -327,9 +327,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         print('DEBUG: follow of domain ' + followDomain)
 
     if ':' in domain:
-        handle = nickname + '@' + domain.split(':')[0].lower()
+        handle = nickname + '@' + domain.split(':')[0]
     else:
-        handle = nickname + '@' + domain.lower()
+        handle = nickname + '@' + domain
 
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('WARN: account for ' + handle + ' does not exist')

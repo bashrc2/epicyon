@@ -23,3 +23,4 @@ clean:
 	rm -f deploy/*~
 	rm -f translations/*~
 	rm -rf __pycache__
+	rm calendar.css blog.css epicyon.css follow.css login.css options.css search.css suspended.css

@@ -57,8 +57,19 @@
     --icons-side: right;
     --title-color: #999;
     --focus-color: white;
+    --quote-right-margin: 0.1em;
+    --quote-font-weight: normal;
+    --quote-font-size: 120%;
+    --line-spacing: 130%;
 }
 
+@font-face {
+  font-family: 'Bedstead';
+  font-style: italic;
+  font-weight: normal;
+  font-display: block;
+  src: url('./fonts/bedstead.otf') format('opentype');
+}
 @font-face {
   font-family: 'Bedstead';
   font-style: normal;
@@ -77,6 +88,34 @@ body, html {
     min-width: 950px;
     margin: 0 auto;
     font-size: var(--font-size);
+    line-height: var(--line-spacing);
+}
+
+blockquote {
+  border-left: 10px;
+  margin: 1.5em 10px;
+  padding: 0.5em 10px;
+  font-weight: var(--quote-font-weight);
+  font-style: italic;
+  font-size: var(--quote-font-size);
+  quotes: "\201C""\201D""\2018""\2019";
+}
+blockquote:before {
+  content: open-quote;
+  font-size: 2em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+blockquote:after {
+  content: close-quote;
+  font-size: 2em;
+  line-height: 0.1em;
+  margin-left: var(--quote-right-margin);
+  vertical-align: -0.4em;
+}
+blockquote p {
+  display: inline;
 }
 
 .imageAnchor:focus img{

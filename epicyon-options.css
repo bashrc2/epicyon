@@ -37,6 +37,13 @@
 
 @font-face {
   font-family: 'Bedstead';
+  font-style: italic;
+  font-weight: normal;
+  font-display: block;
+  src: url('./fonts/bedstead.otf') format('opentype');
+}
+@font-face {
+  font-family: 'Bedstead';
   font-style: normal;
   font-weight: normal;
   font-display: block;
@@ -153,6 +160,19 @@ a:focus {
         cursor: pointer;
         margin: 30px;
     }
+    .buttonIcon {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        font-family: Arial, Helvetica, sans-serif;
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px 65px;
+        font-size: 24px;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+    }
     .buttonsmall {
         border-radius: 4px;
         background-color: var(--button-small-background);
@@ -214,6 +234,19 @@ a:focus {
         min-width: 100px;
         cursor: pointer;
         margin: 30px;
+    }
+    .buttonIcon {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        font-family: Arial, Helvetica, sans-serif;
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 6px 80px;
+        font-size: 40px;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
     }
     .buttonsmall {
         border-radius: 4px;

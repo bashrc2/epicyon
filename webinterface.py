@@ -58,6 +58,7 @@ from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from blocking import isBlockedHashtag
+from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import removeTextFormatting
 from content import switchWords
@@ -523,20 +524,20 @@ def htmlSearchSharedItems(translate: {},
                             break
                     if matched:
                         if currPage == pageNumber:
-                            sharedItemsForm += '<div class="container">'
+                            sharedItemsForm += '<div class="container">\n'
                             sharedItemsForm += \
                                 '<p class="share-title">' + \
-                                sharedItem['displayName'] + '</p>'
+                                sharedItem['displayName'] + '</p>\n'
                             if sharedItem.get('imageUrl'):
                                 sharedItemsForm += \
                                     '<a href="' + \
-                                    sharedItem['imageUrl'] + '">'
+                                    sharedItem['imageUrl'] + '">\n'
                                 sharedItemsForm += \
                                     '<img loading="lazy" src="' + \
                                     sharedItem['imageUrl'] + \
-                                    '" alt="Item image"></a>'
+                                    '" alt="Item image"></a>\n'
                             sharedItemsForm += \
-                                '<p>' + sharedItem['summary'] + '</p>'
+                                '<p>' + sharedItem['summary'] + '</p>\n'
                             sharedItemsForm += \
                                 '<p><b>' + translate['Type'] + \
                                 ':</b> ' + sharedItem['itemType'] + ' '
@@ -545,7 +546,7 @@ def htmlSearchSharedItems(translate: {},
                                 ':</b> ' + sharedItem['category'] + ' '
                             sharedItemsForm += \
                                 '<b>' + translate['Location'] + \
-                                ':</b> ' + sharedItem['location'] + '</p>'
+                                ':</b> ' + sharedItem['location'] + '</p>\n'
                             contactActor = \
                                 httpPrefix + '://' + domainFull + \
                                 '/users/' + contactNickname
@@ -555,13 +556,13 @@ def htmlSearchSharedItems(translate: {},
                                 sharedItem['displayName'] + \
                                 '?mention=' + contactActor + \
                                 '"><button class="button">' + \
-                                translate['Contact'] + '</button></a>'
+                                translate['Contact'] + '</button></a>\n'
                             if actor.endswith('/users/' + contactNickname):
                                 sharedItemsForm += \
                                     ' <a href="' + actor + '?rmshare=' + \
                                     name + '"><button class="button">' + \
-                                    translate['Remove'] + '</button></a>'
-                            sharedItemsForm += '</p></div>'
+                                    translate['Remove'] + '</button></a>\n'
+                            sharedItemsForm += '</p></div>\n'
                             if not resultsExist and currPage > 1:
                                 postActor = \
                                     getAltPath(actor, domainFull,
@@ -571,26 +572,26 @@ def htmlSearchSharedItems(translate: {},
                                     '<form method="POST" action="' + \
                                     postActor + \
                                     '/searchhandle?page=' + \
-                                    str(pageNumber - 1) + '">'
+                                    str(pageNumber - 1) + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
-                                    'name="actor" value="' + actor + '">'
+                                    'name="actor" value="' + actor + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
                                     'name="searchtext" value="' + \
-                                    searchStrLower + '"><br>'
+                                    searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
                                     '  <center><a href="' + actor + \
-                                    '" type="submit" name="submitSearch">'
+                                    '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
                                     'class="pageicon" src="/' + iconsDir + \
                                     '/pageup.png" title="' + \
                                     translate['Page up'] + \
                                     '" alt="' + translate['Page up'] + \
-                                    '"/></a>'
-                                sharedItemsForm += '  </center>'
-                                sharedItemsForm += '</form>'
+                                    '"/></a>\n'
+                                sharedItemsForm += '  </center>\n'
+                                sharedItemsForm += '</form>\n'
                                 resultsExist = True
                         ctr += 1
                         if ctr >= resultsPerPage:
@@ -604,31 +605,31 @@ def htmlSearchSharedItems(translate: {},
                                     '<form method="POST" action="' + \
                                     postActor + \
                                     '/searchhandle?page=' + \
-                                    str(pageNumber + 1) + '">'
+                                    str(pageNumber + 1) + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
-                                    'name="actor" value="' + actor + '">'
+                                    'name="actor" value="' + actor + '">\n'
                                 sharedItemsForm += \
                                     '  <input type="hidden" ' + \
                                     'name="searchtext" value="' + \
-                                    searchStrLower + '"><br>'
+                                    searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
                                     '  <center><a href="' + actor + \
-                                    '" type="submit" name="submitSearch">'
+                                    '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
                                     'class="pageicon" src="/' + iconsDir + \
                                     '/pagedown.png" title="' + \
                                     translate['Page down'] + \
                                     '" alt="' + translate['Page down'] + \
-                                    '"/></a>'
-                                sharedItemsForm += '  </center>'
-                                sharedItemsForm += '</form>'
+                                    '"/></a>\n'
+                                sharedItemsForm += '  </center>\n'
+                                sharedItemsForm += '</form>\n'
                                 break
                             ctr = 0
         if not resultsExist:
             sharedItemsForm += \
-                '<center><h5>' + translate['No results'] + '</h5></center>'
+                '<center><h5>' + translate['No results'] + '</h5></center>\n'
         sharedItemsForm += htmlFooter()
     return sharedItemsForm
 
@@ -1167,6 +1168,22 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         with open(switchFilename, 'r') as switchfile:
             switchStr = switchfile.read()
 
+    autoTags = ''
+    autoTagsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/autotags.txt'
+    if os.path.isfile(autoTagsFilename):
+        with open(autoTagsFilename, 'r') as autoTagsFile:
+            autoTags = autoTagsFile.read()
+
+    autoCW = ''
+    autoCWFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/autocw.txt'
+    if os.path.isfile(autoCWFilename):
+        with open(autoCWFilename, 'r') as autoCWFile:
+            autoCW = autoCWFile.read()
+
     blockedStr = ''
     blockedFilename = \
         baseDir + '/accounts/' + \
@@ -1506,6 +1523,22 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="switchWords" ' + \
         'style="height:200px">' + switchStr + '</textarea>\n'
+
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Autogenerated Hashtags'] + '</label></b>\n'
+    editProfileForm += '      <br><label class="labels">A -> #B</label>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="autoTags" ' + \
+        'style="height:200px">' + autoTags + '</textarea>\n'
+
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Autogenerated Content Warnings'] + '</label></b>\n'
+    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
+    editProfileForm += \
+        '      <textarea id="message" name="autoCW" ' + \
+        'style="height:200px">' + autoCW + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1880,7 +1913,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                     ' <a href="' + inReplyTo + '">' + \
                     translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
-                    'name="replyTo" value="' + inReplyTo + '">'
+                    'name="replyTo" value="' + inReplyTo + '">\n'
 
                 # if replying to a non-public post then also make
                 # this post non-public
@@ -4729,6 +4762,7 @@ def individualPostAsHtml(allowDownloads: bool,
         objectContent = removeTextFormatting(objectContent)
         objectContent = \
             switchWords(baseDir, nickname, domain, objectContent)
+        objectContent = htmlReplaceEmailQuote(objectContent)
         objectContent = htmlReplaceQuoteMarks(objectContent)
     else:
         objectContent = \
@@ -6165,7 +6199,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     if optionsLink:
         optionsLinkStr = \
             '    <input type="hidden" name="postUrl" value="' + \
-            optionsLink + '">'
+            optionsLink + '">\n'
     cssFilename = baseDir + '/epicyon-options.css'
     if os.path.isfile(baseDir + '/options.css'):
         cssFilename = baseDir + '/options.css'
@@ -6242,10 +6276,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         handle = optionsNickname + '@' + optionsDomainFull
         petname = getPetName(baseDir, nickname, domain, handle)
         optionsStr += \
-            translate['Petname'] + ': ' + \
-            '<input type="text" name="optionpetname" value="' + \
+            '    ' + translate['Petname'] + ': \n' + \
+            '    <input type="text" name="optionpetname" value="' + \
             petname + '">\n' \
-            '<button type="submit" class="buttonsmall" ' + \
+            '    <button type="submit" class="buttonsmall" ' + \
             'name="submitPetname">' + \
             translate['Submit'] + '</button><br>\n'
 
@@ -6253,24 +6287,24 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         if receivingCalendarEvents(baseDir, nickname, domain,
                                    optionsNickname, optionsDomainFull):
             optionsStr += \
-                '<input type="checkbox" ' + \
+                '    <input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar" checked> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="buttonsmall" ' + \
+                '\n    <button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
         else:
             optionsStr += \
-                '<input type="checkbox" ' + \
+                '    <input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar"> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="buttonsmall" ' + \
+                '\n    <button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
 
     optionsStr += optionsLinkStr
     optionsStr += \
-        '    <a href="/"><button type="button" class="button" ' + \
+        '    <a href="/"><button type="button" class="buttonIcon" ' + \
         'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
@@ -6302,7 +6336,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += \
         '    <br><br>' + translate['Notes'] + ': \n'
-    optionsStr += '<button type="submit" class="buttonsmall" ' + \
+    optionsStr += '    <button type="submit" class="buttonsmall" ' + \
         'name="submitPersonNotes">' + \
         translate['Submit'] + '</button><br>\n'
     optionsStr += \

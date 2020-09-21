@@ -25,8 +25,8 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
-            'Starlight', 'Zen')
+            'Indymedia', 'LCD', 'Light', 'Night', 'Purple',
+            'Solidaric', 'Starlight', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -67,13 +67,21 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     if param.startswith('rgba('):
         return css.replace(param, value)
     # if the parameter begins with * then don't prepend --
+    onceOnly = False
     if param.startswith('*'):
-        searchStr = param.replace('*', '') + ':'
+        if param.startswith('**'):
+            onceOnly = True
+            searchStr = param.replace('**', '') + ':'
+        else:
+            searchStr = param.replace('*', '') + ':'
     else:
         searchStr = '--' + param + ':'
     if searchStr not in css:
         return css
-    s = css.split(searchStr)
+    if onceOnly:
+        s = css.split(searchStr, 1)
+    else:
+        s = css.split(searchStr)
     newcss = ''
     for sectionStr in s:
         if not newcss:
@@ -235,6 +243,59 @@ def setThemeDefault(baseDir: str):
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
+def setThemeIndymedia(baseDir: str):
+    name = 'indymedia'
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, name)
+    bgParams = {
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
+    }
+    themeParams = {
+        "button-corner-radius": "5px",
+        "timeline-border-radius": "5px",
+        "focus-color": "blue",
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "main-bg-color": "black",
+        "text-entry-background": "#0f0d10",
+        "link-bg-color": "black",
+        "main-link-color": "#ff9900",
+        "main-link-color-hover": "#d09338",
+        "main-visited-color": "#ffb900",
+        "main-fg-color": "white",
+        "main-bg-color-dm": "#0b0a0a",
+        "border-color": "#003366",
+        "border-width": "0",
+        "main-bg-color-reply": "#0f0d10",
+        "main-bg-color-report": "#0f0d10",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
+        "button-background-hover": "darkblue",
+        "button-background": "#003366",
+        "button-selected": "blue",
+        "calendar-bg-color": "#0f0d10",
+        "event-background": "#555",
+        "border-color": "#003366",
+        "lines-color": "#ff9900",
+        "day-number": "lightblue",
+        "day-number2": "white",
+        "time-color": "#003366",
+        "place-color": "#003366",
+        "event-color": "#003366",
+        "title-text": "white",
+        "title-background": "#003366",
+        "quote-right-margin": "0.1em",
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
+
+
 def setThemeBlue(baseDir: str):
     name = 'blue'
     removeTheme(baseDir)
@@ -276,6 +337,8 @@ def setThemeNight(baseDir: str):
     setThemeInConfig(baseDir, name)
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
+    fontStrItalic = \
+        "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
         "focus-color": "blue",
         "font-size-button-mobile": "36px",
@@ -287,9 +350,11 @@ def setThemeNight(baseDir: str):
         "main-bg-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
-        "main-fg-color": "#7961ab",
+        "main-link-color": "ff9900",
+        "main-link-color-hover": "#d09338",
+        "main-fg-color": "#a961ab",
         "main-bg-color-dm": "#0b0a0a",
-        "border-color": "#7961ab",
+        "border-color": "#606984",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
@@ -298,15 +363,18 @@ def setThemeNight(baseDir: str):
         "button-background": "#a961ab",
         "button-selected": "#86579d",
         "calendar-bg-color": "#0f0d10",
-        "lines-color": "#7961ab",
-        "day-number": "#7961ab",
+        "lines-color": "#a961ab",
+        "day-number": "#a961ab",
         "day-number2": "#555",
-        "time-color": "#7961ab",
-        "place-color": "#7961ab",
-        "event-color": "#7961ab",
+        "time-color": "#a961ab",
+        "place-color": "#a961ab",
+        "event-color": "#a961ab",
         "event-background": "#333",
+        "quote-right-margin": "0",
+        "line-spacing": "150%",
         "*font-family": "'solidaric'",
-        "*src": fontStr
+        "*src": fontStr,
+        "**src": fontStrItalic
     }
     bgParams = {
         "login": "jpg",
@@ -364,6 +432,7 @@ def setThemeStarlight(baseDir: str):
         "place-color": "#ffc4bc",
         "event-color": "#ffc4bc",
         "image-corners": "2%",
+        "quote-right-margin": "0.1em",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
@@ -418,6 +487,7 @@ def setThemeHenge(baseDir: str):
         "event-background": "#333",
         "timeline-border-radius": "20px",
         "image-corners": "8%",
+        "quote-right-margin": "0.1em",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
@@ -766,8 +836,11 @@ def setThemeSolidaric(baseDir: str):
         "title-text": "#282c37",
         "title-background": "#ccc",
         "gallery-text-color": "black",
+        "quote-right-margin": "0",
+        "line-spacing": "150%",
         "*font-family": "'solidaric'",
-        "*src": "url('./fonts/solidaric.woff2') format('woff2')"
+        "*src": "url('./fonts/solidaric.woff2') format('woff2')",
+        "**src": "url('./fonts/solidaric-italic.woff2') format('woff2')"
     }
     bgParams = {
         "login": "jpg",

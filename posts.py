@@ -668,6 +668,41 @@ def validContentWarning(cw: str) -> str:
     return cw
 
 
+def loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
+    """Loads automatic CWs file and returns a list containing
+    the lines of the file
+    """
+    filename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/autocw.txt'
+    if not os.path.isfile(filename):
+        return []
+    with open(filename, "r") as f:
+        return f.readlines()
+    return []
+
+
+def addAutoCW(baseDir: str, nickname: str, domain: str,
+              subject: str, content: str) -> str:
+    """Appends any automatic CW to the subject line
+    and returns the new subject line
+    """
+    newSubject = subject
+    autoCWList = loadAutoCW(baseDir, nickname, domain)
+    for cwRule in autoCWList:
+        if '->' not in cwRule:
+            continue
+        match = cwRule.split('->')[0].strip()
+        if match not in content:
+            continue
+        cwStr = cwRule.split('->')[1].strip()
+        if newSubject:
+            if cwStr not in newSubject:
+                newSubject += ', ' + cwStr
+        else:
+            newSubject = cwStr
+    return newSubject
+
+
 def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str,
                    followersOnly: bool, saveToFile: bool, clientToServer: bool,
@@ -687,6 +722,8 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    eventStatus=None, ticketUrl=None) -> {}:
     """Creates a message
     """
+    subject = addAutoCW(baseDir, nickname, domain, subject, content)
+
     mentionedRecipients = \
         getMentionedPeople(baseDir, httpPrefix, content, domain, False)
 

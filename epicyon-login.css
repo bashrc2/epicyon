@@ -20,8 +20,16 @@
     --button-selected: #666;
     --form-border-radius: 30px;
     --focus-color: white;
+    --line-spacing: 130%;
 }
 
+@font-face {
+  font-family: 'Bedstead';
+  font-style: italic;
+  font-weight: normal;
+  font-display: block;
+  src: url('./fonts/bedstead.otf') format('opentype');
+}
 @font-face {
   font-family: 'Bedstead';
   font-style: normal;
@@ -46,6 +54,7 @@ body, html {
     min-width: 600px;
     margin: 0 auto;
     font-size: var(--font-size);
+    line-height: var(--line-spacing);
 }
 
 a, u {
