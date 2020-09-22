@@ -63,6 +63,9 @@ def removeShare(baseDir: str, nickname: str, domain: str,
             if sharesJson[itemID]['imageUrl'].endswith('.gif'):
                 if os.path.isfile(itemIDfile + '.gif'):
                     os.remove(itemIDfile + '.gif')
+            if sharesJson[itemID]['imageUrl'].endswith('.webp'):
+                if os.path.isfile(itemIDfile + '.webp'):
+                    os.remove(itemIDfile + '.webp')
         # remove the item itself
         del sharesJson[itemID]
         saveJson(sharesJson, sharesFilename)
@@ -76,7 +79,7 @@ def addShare(baseDir: str,
              displayName: str, summary: str, imageFilename: str,
              itemType: str, itemCategory: str, location: str,
              duration: str, debug: bool) -> None:
-    """Updates the likes collection within a post
+    """Adds a new share
     """
     sharesFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/shares.json'
@@ -121,6 +124,9 @@ def addShare(baseDir: str,
         elif os.path.isfile(sharesImageFilename + '.gif'):
             imageFilename = sharesImageFilename + '.gif'
             moveImage = True
+        elif os.path.isfile(sharesImageFilename + '.webp'):
+            imageFilename = sharesImageFilename + '.webp'
+            moveImage = True
 
     domainFull = domain
     if port:
@@ -143,20 +149,27 @@ def addShare(baseDir: str,
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
                     '/sharefiles/' + nickname + '/' + itemID + '.png'
-            if imageFilename.endswith('.jpg'):
+            elif imageFilename.endswith('.jpg'):
                 removeMetaData(imageFilename, itemIDfile + '.jpg')
                 if moveImage:
                     os.remove(imageFilename)
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
                     '/sharefiles/' + nickname + '/' + itemID + '.jpg'
-            if imageFilename.endswith('.gif'):
+            elif imageFilename.endswith('.gif'):
                 removeMetaData(imageFilename, itemIDfile + '.gif')
                 if moveImage:
                     os.remove(imageFilename)
                 imageUrl = \
                     httpPrefix + '://' + domainFull + \
                     '/sharefiles/' + nickname + '/' + itemID + '.gif'
+            elif imageFilename.endswith('.webp'):
+                removeMetaData(imageFilename, itemIDfile + '.webp')
+                if moveImage:
+                    os.remove(imageFilename)
+                imageUrl = \
+                    httpPrefix + '://' + domainFull + \
+                    '/sharefiles/' + nickname + '/' + itemID + '.webp'
 
     sharesJson[itemID] = {
         "displayName": displayName,
@@ -228,6 +241,8 @@ def expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
                         os.remove(itemIDfile + '.jpg')
                     if os.path.isfile(itemIDfile + '.gif'):
                         os.remove(itemIDfile + '.gif')
+                    if os.path.isfile(itemIDfile + '.webp'):
+                        os.remove(itemIDfile + '.webp')
                 saveJson(sharesJson, sharesFilename)
 
 
