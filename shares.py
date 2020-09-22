@@ -181,7 +181,7 @@ def expireShares(baseDir: str) -> None:
 
 
 def expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
-    """Removes expired items from shares
+    """Removes expired items from shares for a particular account
     """
     handleDomain = domain
     if ':' in handleDomain:
