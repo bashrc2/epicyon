@@ -3288,6 +3288,42 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
     return postDomains
 
 
+def getPublicPostDomainsBlocked(baseDir: str, nickname: str, domain: str,
+                                proxyType: str, port: int, httpPrefix: str,
+                                debug: bool, projectVersion: str,
+                                domainList=[]) -> []:
+    """ Returns a list of domains referenced within public posts which
+    are globally blocked on this instance
+    """
+    postDomains = \
+        getPublicPostDomains(baseDir, nickname, domain,
+                             proxyType, port, httpPrefix,
+                             debug, projectVersion,
+                             domainList)
+    if not postDomains:
+        return []
+
+    blockingFilename = baseDir + '/accounts/blocking.txt'
+    if not os.path.isfile(blockingFilename):
+        return []
+
+    # read the blocked domains as a single string
+    blockedStr = ''
+    with open(blockingFilename, 'r') as fp:
+        blockedStr = fp.read()
+
+    blockedDomains = []
+    for domainName in postDomains:
+        if '@' not in domainName:
+            continue
+        # get the domain after the @
+        domainName = domainName.split('@')[1].strip()
+        if domainName in blockedStr:
+            blockedDomains.append(domainName)
+
+    return blockedDomains
+
+
 def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            followerUrl, updateCaps: [],

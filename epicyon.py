@@ -16,6 +16,7 @@ from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
 from posts import getPublicPostDomains
+from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
 from posts import sendUndoBlockViaServer
 from posts import createPublicPost
@@ -156,6 +157,10 @@ parser.add_argument('--posts', dest='posts', type=str,
 parser.add_argument('--postDomains', dest='postDomains', type=str,
                     default=None,
                     help='Show domains referenced in public '
+                    'posts for the given handle')
+parser.add_argument('--postDomainsBlocked', dest='postDomainsBlocked',
+                    type=str, default=None,
+                    help='Show blocked domains referenced in public '
                     'posts for the given handle')
 parser.add_argument('--socnet', dest='socnet', type=str,
                     default=None,
@@ -471,6 +476,44 @@ if args.postDomains:
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__, domainList)
+    for postDomain in domainList:
+        print(postDomain)
+    sys.exit()
+
+if args.postDomainsBlocked:
+    # Domains which were referenced in public posts by a
+    # given handle but which are globally blocked on this instance
+    if '@' not in args.postDomainsBlocked:
+        if '/users/' in args.postDomainsBlocked:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.postDomainsBlocked = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.postDomainsBlocked += ':' + str(postsPort)
+        else:
+            print('Syntax: --postDomainsBlocked nickname@domain')
+            sys.exit()
+    if not args.http:
+        args.port = 443
+    nickname = args.postDomainsBlocked.split('@')[0]
+    domain = args.postDomainsBlocked.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+    domainList = []
+    domainList = getPublicPostDomainsBlocked(baseDir, nickname, domain,
+                                             proxyType, args.port,
+                                             httpPrefix, debug,
+                                             __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
