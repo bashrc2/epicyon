@@ -15,7 +15,6 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
-#from posts import checkDomains
 #from posts import getPublicPostDomains
 #from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
@@ -36,6 +35,7 @@ import sys
 import time
 from pprint import pprint
 from daemon import runDaemon
+from follow import checkDomains
 from follow import clearFollows
 from follow import followerOfPerson
 from follow import sendFollowRequestViaServer
