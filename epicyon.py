@@ -71,7 +71,9 @@ from socnet import instancesGraph
 import argparse
 
 
-def str2bool(v):
+def str2bool(v) -> bool:
+    """Returns true if the given value is a boolean
+    """
     if isinstance(v, bool):
         return v
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
