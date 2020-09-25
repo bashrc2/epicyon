@@ -112,8 +112,7 @@ def isFollowingActor(baseDir: str,
 
 
 def getMutualsOfPerson(baseDir: str,
-                       nickname: str, domain: str,
-                       followFile='following.txt') -> []:
+                       nickname: str, domain: str) -> []:
     """Returns the mutuals of a person
     i.e. accounts which they follow and which also follow back
     """
@@ -126,6 +125,22 @@ def getMutualsOfPerson(baseDir: str,
         if handle in followers:
             mutuals.append(handle)
     return mutuals
+
+
+def getNonMutualsOfPerson(baseDir: str,
+                          nickname: str, domain: str) -> []:
+    """Returns the followers who are not mutuals of a person
+    i.e. accounts which follow you but you don't follow them
+    """
+    followers = \
+        getFollowersOfPerson(baseDir, nickname, domain, 'followers')
+    following = \
+        getFollowersOfPerson(baseDir, nickname, domain, 'following')
+    nonMutuals = []
+    for handle in following:
+        if handle not in followers:
+            nonMutuals.append(handle)
+    return nonMutuals
 
 
 def getFollowersOfPerson(baseDir: str,
