@@ -49,7 +49,7 @@ def createSession(proxyType: str):
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:7777'
         session.proxies['https'] = 'socks5h://localhost:7777'
-    print('New session created with proxy ' + str(proxyType))
+    # print('New session created with proxy ' + str(proxyType))
     return session
 
 
