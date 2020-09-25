@@ -3373,6 +3373,9 @@ def checkDomains(session, baseDir: str,
                                             proxyType, port, httpPrefix,
                                             debug, projectVersion, [])
             if blockedDomains:
+                print(domainName)
+                for d in blockedDomains:
+                    print('  ' + d)
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += domainName + '\n'
                     updateFollowerWarnings = True
@@ -3380,7 +3383,8 @@ def checkDomains(session, baseDir: str,
     if updateFollowerWarnings and followerWarningStr:
         with open(followerWarningFilename, 'w+') as fp:
             fp.write(followerWarningStr)
-        print(followerWarningStr)
+        if not singleCheck:
+            print(followerWarningStr)
 
 
 def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,
