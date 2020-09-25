@@ -477,11 +477,11 @@ if args.postDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-    domainList = getPublicPostDomains(None,
-                                      baseDir, nickname, domain,
-                                      proxyType, args.port,
-                                      httpPrefix, debug,
-                                      __version__, domainList)
+#    domainList = getPublicPostDomains(None,
+#                                      baseDir, nickname, domain,
+#                                      proxyType, args.port,
+#                                      httpPrefix, debug,
+#                                      __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
