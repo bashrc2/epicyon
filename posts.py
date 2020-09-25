@@ -3342,8 +3342,8 @@ def getNonMutualsOfPerson(baseDir: str,
     following = \
         getFollowersList(baseDir, nickname, domain, 'following.txt')
     nonMutuals = []
-    for handle in following:
-        if handle not in followers:
+    for handle in followers:
+        if handle not in following:
             nonMutuals.append(handle)
     return nonMutuals
 
