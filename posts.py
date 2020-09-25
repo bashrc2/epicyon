@@ -3369,32 +3369,41 @@ def checkDomains(session, baseDir: str,
     if singleCheck:
         # checks a single random non-mutual
         index = random.randrange(0, len(nonMutuals))
-        domainName = nonMutuals[index]
-        blockedDomains = \
-            getPublicPostDomainsBlocked(session, baseDir,
-                                        nickname, domain,
-                                        proxyType, port, httpPrefix,
-                                        debug, projectVersion, [])
-        if blockedDomains:
-            if len(blockedDomains) > maxBlockedDomains:
-                followerWarningStr += domainName + '\n'
-                updateFollowerWarnings = True
-    else:
-        # checks all non-mutuals
-        for domainName in nonMutuals:
-            if domainName in followerWarningStr:
-                continue
+        handle = nonMutuals[index]
+        if '@' in handle:
+            nonMutualNickname = handle.split('@')[0]
+            nonMutualDomain = handle.split('@')[1].strip()
             blockedDomains = \
                 getPublicPostDomainsBlocked(session, baseDir,
-                                            nickname, domain,
+                                            nonMutualNickname,
+                                            nonMutualDomain,
                                             proxyType, port, httpPrefix,
                                             debug, projectVersion, [])
             if blockedDomains:
-                print(domainName)
+                if len(blockedDomains) > maxBlockedDomains:
+                    followerWarningStr += handle + '\n'
+                    updateFollowerWarnings = True
+    else:
+        # checks all non-mutuals
+        for handle in nonMutuals:
+            if '@' not in handle:
+                continue
+            if handle in followerWarningStr:
+                continue
+            nonMutualNickname = handle.split('@')[0]
+            nonMutualDomain = handle.split('@')[1].strip()
+            blockedDomains = \
+                getPublicPostDomainsBlocked(session, baseDir,
+                                            nonMutualNickname,
+                                            nonMutualDomain,
+                                            proxyType, port, httpPrefix,
+                                            debug, projectVersion, [])
+            if blockedDomains:
+                print(handle)
                 for d in blockedDomains:
                     print('  ' + d)
                 if len(blockedDomains) > maxBlockedDomains:
-                    followerWarningStr += domainName + '\n'
+                    followerWarningStr += handle + '\n'
                     updateFollowerWarnings = True
 
     if updateFollowerWarnings and followerWarningStr:
