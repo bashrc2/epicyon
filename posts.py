@@ -3240,13 +3240,14 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
              projectVersion, httpPrefix, domain)
 
 
-def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
+def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
                          domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts
     """
-    session = createSession(proxyType)
+    if not session:
+        session = createSession(proxyType)
     if not session:
         return domainList
     personCache = {}
@@ -3288,7 +3289,8 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
     return postDomains
 
 
-def getPublicPostDomainsBlocked(baseDir: str, nickname: str, domain: str,
+def getPublicPostDomainsBlocked(session, baseDir: str,
+                                nickname: str, domain: str,
                                 proxyType: str, port: int, httpPrefix: str,
                                 debug: bool, projectVersion: str,
                                 domainList=[]) -> []:
@@ -3296,7 +3298,7 @@ def getPublicPostDomainsBlocked(baseDir: str, nickname: str, domain: str,
     are globally blocked on this instance
     """
     postDomains = \
-        getPublicPostDomains(baseDir, nickname, domain,
+        getPublicPostDomains(session, baseDir, nickname, domain,
                              proxyType, port, httpPrefix,
                              debug, projectVersion,
                              domainList)

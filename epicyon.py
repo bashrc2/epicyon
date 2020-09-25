@@ -472,7 +472,8 @@ if args.postDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-    domainList = getPublicPostDomains(baseDir, nickname, domain,
+    domainList = getPublicPostDomains(None,
+                                      baseDir, nickname, domain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__, domainList)
@@ -510,7 +511,8 @@ if args.postDomainsBlocked:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-    domainList = getPublicPostDomainsBlocked(baseDir, nickname, domain,
+    domainList = getPublicPostDomainsBlocked(None,
+                                             baseDir, nickname, domain,
                                              proxyType, args.port,
                                              httpPrefix, debug,
                                              __version__, domainList)
