@@ -3273,7 +3273,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
         return domainList
 
     (personUrl, pubKeyId, pubKey,
-     personId, shaedInbox,
+     personId, sharedInbox,
      capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,

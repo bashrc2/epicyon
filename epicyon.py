@@ -15,8 +15,8 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
-#from posts import getPublicPostDomains
-#from posts import getPublicPostDomainsBlocked
+from posts import getPublicPostDomains
+from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
 from posts import sendUndoBlockViaServer
 from posts import createPublicPost
@@ -477,11 +477,11 @@ if args.postDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-#    domainList = getPublicPostDomains(None,
-#                                      baseDir, nickname, domain,
-#                                      proxyType, args.port,
-#                                      httpPrefix, debug,
-#                                      __version__, domainList)
+    domainList = getPublicPostDomains(None,
+                                      baseDir, nickname, domain,
+                                      proxyType, args.port,
+                                      httpPrefix, debug,
+                                      __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -516,11 +516,11 @@ if args.postDomainsBlocked:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-#    domainList = getPublicPostDomainsBlocked(None,
-#                                             baseDir, nickname, domain,
-#                                             proxyType, args.port,
-#                                             httpPrefix, debug,
-#                                             __version__, domainList)
+    domainList = getPublicPostDomainsBlocked(None,
+                                             baseDir, nickname, domain,
+                                             proxyType, args.port,
+                                             httpPrefix, debug,
+                                             __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
