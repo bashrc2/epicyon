@@ -29,6 +29,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import isEvil
 from utils import removeIdEnding
 from utils import siteIsActive
 from utils import getCachedPostFilename
@@ -3320,6 +3321,9 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
             continue
         # get the domain after the @
         domainName = domainName.split('@')[1].strip()
+        if isEvil(domainName):
+            blockedDomains.append(domainName)
+            continue
         if domainName in blockedStr:
             blockedDomains.append(domainName)
 
