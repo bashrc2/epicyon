@@ -19,6 +19,36 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getFollowersOfPerson(baseDir: str,
+                         nickname: str, domain: str,
+                         followFile='following.txt') -> []:
+    """Returns a list containing the followers of the given person
+    Used by the shared inbox to know who to send incoming mail to
+    """
+    followers = []
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    handle = nickname + '@' + domain
+    if not os.path.isdir(baseDir + '/accounts/' + handle):
+        return followers
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for account in dirs:
+            filename = os.path.join(subdir, account) + '/' + followFile
+            if account == handle or account.startswith('inbox@'):
+                continue
+            if not os.path.isfile(filename):
+                continue
+            with open(filename, 'r') as followingfile:
+                for followingHandle in followingfile:
+                    followingHandle2 = followingHandle.replace('\n', '')
+                    followingHandle2 = followingHandle2.replace('\r', '')
+                    if followingHandle2 == handle:
+                        if account not in followers:
+                            followers.append(account)
+                        break
+    return followers
+
+
 def removeIdEnding(idStr: str) -> str:
     """Removes endings such as /activity and /undo
     """

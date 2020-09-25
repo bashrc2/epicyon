@@ -42,10 +42,10 @@ from utils import copytree
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
+from utils import getFollowersOfPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
-from follow import getFollowersOfPerson
 from follow import sendFollowRequest
 from person import createPerson
 from person import setDisplayNickname

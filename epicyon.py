@@ -25,6 +25,7 @@ from posts import archivePosts
 from posts import sendPostViaServer
 from posts import getPublicPostsOfPerson
 from posts import getUserUrl
+from posts import checkDomains
 from session import createSession
 from session import getJson
 from filters import addFilter
@@ -35,7 +36,6 @@ import sys
 import time
 from pprint import pprint
 from daemon import runDaemon
-from follow import checkDomains
 from follow import clearFollows
 from follow import followerOfPerson
 from follow import sendFollowRequestViaServer
@@ -555,12 +555,12 @@ if args.checkDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     maxBlockedDomains = 2
-#    checkDomains(None,
-#                 baseDir, nickname, domain,
-#                 proxyType, args.port,
-#                 httpPrefix, debug,
-#                 __version__,
-#                 maxBlockedDomains, False)
+    checkDomains(None,
+                 baseDir, nickname, domain,
+                 proxyType, args.port,
+                 httpPrefix, debug,
+                 __version__,
+                 maxBlockedDomains, False)
     sys.exit()
 
 if args.socnet:

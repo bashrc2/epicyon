@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
+from utils import getFollowersOfPerson
 from utils import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
@@ -23,61 +24,6 @@ from acceptreject import createReject
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from session import postJson
-
-
-def checkDomains(session, baseDir: str,
-                 nickname: str, domain: str,
-                 proxyType: str, port: int, httpPrefix: str,
-                 debug: bool, projectVersion: str,
-                 maxBlockedDomains: int, singleCheck: bool):
-    """Checks follower accounts for references to globally blocked domains
-    """
-    nonMutuals = getNonMutualsOfPerson(baseDir, nickname, domain)
-    if not nonMutuals:
-        return
-    followerWarningFilename = baseDir + '/accounts/followerWarnings.txt'
-    updateFollowerWarnings = False
-    followerWarningStr = ''
-    if os.path.isfile(followerWarningFilename):
-        with open(followerWarningFilename, 'r') as fp:
-            followerWarningStr = fp.read()
-
-    if singleCheck:
-        # checks a single random non-mutual
-        index = random.randrange(0, len(nonMutuals))
-        domainName = nonMutuals[index]
-        blockedDomains = \
-            getPublicPostDomainsBlocked(session, baseDir,
-                                        nickname, domain,
-                                        proxyType, port, httpPrefix,
-                                        debug, projectVersion, [])
-        if blockedDomains:
-            if len(blockedDomains) > maxBlockedDomains:
-                followerWarningStr += domainName + '\n'
-                updateFollowerWarnings = True
-    else:
-        # checks all non-mutuals
-        for domainName in nonMutuals:
-            if domainName in followerWarningStr:
-                continue
-            blockedDomains = \
-                getPublicPostDomainsBlocked(session, baseDir,
-                                            nickname, domain,
-                                            proxyType, port, httpPrefix,
-                                            debug, projectVersion, [])
-            if blockedDomains:
-                print(domainName)
-                for d in blockedDomains:
-                    print('  ' + d)
-                if len(blockedDomains) > maxBlockedDomains:
-                    followerWarningStr += domainName + '\n'
-                    updateFollowerWarnings = True
-
-    if updateFollowerWarnings and followerWarningStr:
-        with open(followerWarningFilename, 'w+') as fp:
-            fp.write(followerWarningStr)
-        if not singleCheck:
-            print(followerWarningStr)
 
 
 def preApprovedFollower(baseDir: str,
@@ -180,52 +126,6 @@ def getMutualsOfPerson(baseDir: str,
         if handle in followers:
             mutuals.append(handle)
     return mutuals
-
-
-def getNonMutualsOfPerson(baseDir: str,
-                          nickname: str, domain: str) -> []:
-    """Returns the followers who are not mutuals of a person
-    i.e. accounts which follow you but you don't follow them
-    """
-    followers = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'followers')
-    following = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'following')
-    nonMutuals = []
-    for handle in following:
-        if handle not in followers:
-            nonMutuals.append(handle)
-    return nonMutuals
-
-
-def getFollowersOfPerson(baseDir: str,
-                         nickname: str, domain: str,
-                         followFile='following.txt') -> []:
-    """Returns a list containing the followers of the given person
-    Used by the shared inbox to know who to send incoming mail to
-    """
-    followers = []
-    if ':' in domain:
-        domain = domain.split(':')[0]
-    handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        return followers
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-        for account in dirs:
-            filename = os.path.join(subdir, account) + '/' + followFile
-            if account == handle or account.startswith('inbox@'):
-                continue
-            if not os.path.isfile(filename):
-                continue
-            with open(filename, 'r') as followingfile:
-                for followingHandle in followingfile:
-                    followingHandle2 = followingHandle.replace('\n', '')
-                    followingHandle2 = followingHandle2.replace('\r', '')
-                    if followingHandle2 == handle:
-                        if account not in followers:
-                            followers.append(account)
-                        break
-    return followers
 
 
 def followerOfPerson(baseDir: str, nickname: str, domain: str,
