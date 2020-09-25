@@ -15,9 +15,9 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
-from posts import checkDomains
-from posts import getPublicPostDomains
-from posts import getPublicPostDomainsBlocked
+#from posts import checkDomains
+#from posts import getPublicPostDomains
+#from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
 from posts import sendUndoBlockViaServer
 from posts import createPublicPost
@@ -516,11 +516,11 @@ if args.postDomainsBlocked:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-    domainList = getPublicPostDomainsBlocked(None,
-                                             baseDir, nickname, domain,
-                                             proxyType, args.port,
-                                             httpPrefix, debug,
-                                             __version__, domainList)
+#    domainList = getPublicPostDomainsBlocked(None,
+#                                             baseDir, nickname, domain,
+#                                             proxyType, args.port,
+#                                             httpPrefix, debug,
+#                                             __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -555,12 +555,12 @@ if args.checkDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     maxBlockedDomains = 2
-    checkDomains(None,
-                 baseDir, nickname, domain,
-                 proxyType, args.port,
-                 httpPrefix, debug,
-                 __version__,
-                 maxBlockedDomains, False)
+#    checkDomains(None,
+#                 baseDir, nickname, domain,
+#                 proxyType, args.port,
+#                 httpPrefix, debug,
+#                 __version__,
+#                 maxBlockedDomains, False)
     sys.exit()
 
 if args.socnet:
