@@ -15,6 +15,7 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from posts import checkDomains
 from posts import getPublicPostDomains
 from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
@@ -162,6 +163,10 @@ parser.add_argument('--postDomainsBlocked', dest='postDomainsBlocked',
                     type=str, default=None,
                     help='Show blocked domains referenced in public '
                     'posts for the given handle')
+parser.add_argument('--checkDomains', dest='checkDomains', type=str,
+                    default=None,
+                    help='Check domains of non-mutual followers for '
+                    'domains which are globally blocked by this instance')
 parser.add_argument('--socnet', dest='socnet', type=str,
                     default=None,
                     help='Show dot diagram for social network '
@@ -518,6 +523,44 @@ if args.postDomainsBlocked:
                                              __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
+    sys.exit()
+
+if args.checkDomains:
+    # Domains which were referenced in public posts by a
+    # given handle but which are globally blocked on this instance
+    if '@' not in args.checkDomains:
+        if '/users/' in args.checkDomains:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.checkDomains = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.checkDomains += ':' + str(postsPort)
+        else:
+            print('Syntax: --checkDomains nickname@domain')
+            sys.exit()
+    if not args.http:
+        args.port = 443
+    nickname = args.checkDomains.split('@')[0]
+    domain = args.checkDomains.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+    maxBlockedDomains = 2
+    checkDomains(None,
+                 baseDir, nickname, domain,
+                 proxyType, args.port,
+                 httpPrefix, debug,
+                 __version__,
+                 maxBlockedDomains, False)
     sys.exit()
 
 if args.socnet:

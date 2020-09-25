@@ -14,6 +14,7 @@ import shutil
 import sys
 import time
 import uuid
+import random
 from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
@@ -59,6 +60,7 @@ from filters import isFiltered
 from git import convertPostToPatch
 from jsonldsig import jsonldSign
 from petnames import resolvePetnames
+from follow import getNonMutualsOfPerson
 # try:
 #     from BeautifulSoup import BeautifulSoup
 # except ImportError:
@@ -3328,6 +3330,57 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
             blockedDomains.append(domainName)
 
     return blockedDomains
+
+
+def checkDomains(session, baseDir: str,
+                 nickname: str, domain: str,
+                 proxyType: str, port: int, httpPrefix: str,
+                 debug: bool, projectVersion: str,
+                 maxBlockedDomains: int, singleCheck: bool):
+    """Checks follower accounts for references to globally blocked domains
+    """
+    nonMutuals = getNonMutualsOfPerson(baseDir, nickname, domain)
+    if not nonMutuals:
+        return
+    followerWarningFilename = baseDir + '/accounts/followerWarnings.txt'
+    updateFollowerWarnings = False
+    followerWarningStr = ''
+    if os.path.isfile(followerWarningFilename):
+        with open(followerWarningFilename, 'r') as fp:
+            followerWarningStr = fp.read()
+
+    if singleCheck:
+        # checks a single random non-mutual
+        index = random.randrange(0, len(nonMutuals))
+        domainName = nonMutuals[index]
+        blockedDomains = \
+            getPublicPostDomainsBlocked(session, baseDir,
+                                        nickname, domain,
+                                        proxyType, port, httpPrefix,
+                                        debug, projectVersion, [])
+        if blockedDomains:
+            if len(blockedDomains) > maxBlockedDomains:
+                followerWarningStr += domainName + '\n'
+                updateFollowerWarnings = True
+    else:
+        # checks all non-mutuals
+        for domainName in nonMutuals:
+            if domainName in followerWarningStr:
+                continue
+            blockedDomains = \
+                getPublicPostDomainsBlocked(session, baseDir,
+                                            nickname, domain,
+                                            proxyType, port, httpPrefix,
+                                            debug, projectVersion, [])
+            if blockedDomains:
+                if len(blockedDomains) > maxBlockedDomains:
+                    followerWarningStr += domainName + '\n'
+                    updateFollowerWarnings = True
+
+    if updateFollowerWarnings and followerWarningStr:
+        with open(followerWarningFilename, 'w+') as fp:
+            fp.write(followerWarningStr)
+        print(followerWarningStr)
 
 
 def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,
