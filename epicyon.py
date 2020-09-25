@@ -554,7 +554,7 @@ if args.checkDomains:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
-    maxBlockedDomains = 2
+    maxBlockedDomains = 0
     checkDomains(None,
                  baseDir, nickname, domain,
                  proxyType, args.port,
