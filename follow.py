@@ -118,9 +118,9 @@ def getMutualsOfPerson(baseDir: str,
     i.e. accounts which they follow and which also follow back
     """
     followers = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'followers')
+        getFollowersOfPerson(baseDir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'following')
+        getFollowersOfPerson(baseDir, nickname, domain, 'following.txt')
     mutuals = []
     for handle in following:
         if handle in followers:

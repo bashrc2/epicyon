@@ -3338,9 +3338,9 @@ def getNonMutualsOfPerson(baseDir: str,
     i.e. accounts which follow you but you don't follow them
     """
     followers = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'followers')
+        getFollowersOfPerson(baseDir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'following')
+        getFollowersOfPerson(baseDir, nickname, domain, 'following.txt')
     nonMutuals = []
     for handle in following:
         if handle not in followers:
@@ -3357,6 +3357,7 @@ def checkDomains(session, baseDir: str,
     """
     nonMutuals = getNonMutualsOfPerson(baseDir, nickname, domain)
     if not nonMutuals:
+        print('No non-mutual followers were found')
         return
     followerWarningFilename = baseDir + '/accounts/followerWarnings.txt'
     updateFollowerWarnings = False
