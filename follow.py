@@ -8,7 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
-from utils import getFollowersOfPerson
+from utils import getFollowersList
 from utils import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
@@ -118,9 +118,9 @@ def getMutualsOfPerson(baseDir: str,
     i.e. accounts which they follow and which also follow back
     """
     followers = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'followers.txt')
+        getFollowersList(baseDir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'following.txt')
+        getFollowersList(baseDir, nickname, domain, 'following.txt')
     mutuals = []
     for handle in following:
         if handle in followers:

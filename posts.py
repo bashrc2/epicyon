@@ -30,7 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
-from utils import getFollowersOfPerson
+from utils import getFollowersList
 from utils import isEvil
 from utils import removeIdEnding
 from utils import siteIsActive
@@ -3338,9 +3338,9 @@ def getNonMutualsOfPerson(baseDir: str,
     i.e. accounts which follow you but you don't follow them
     """
     followers = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'followers.txt')
+        getFollowersList(baseDir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'following.txt')
+        getFollowersList(baseDir, nickname, domain, 'following.txt')
     nonMutuals = []
     for handle in following:
         if handle not in followers:
