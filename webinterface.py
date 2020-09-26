@@ -924,16 +924,21 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                     break
                 continue
             # add to feed
-            if postJsonObject['object'].get('id') and \
+            if postJsonObject['object'].get('content') and \
                postJsonObject['object'].get('published'):
-                messageLink = \
-                    postJsonObject['object']['id'].replace('/statuses/', '/')
                 published = postJsonObject['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 hashtagFeed += '     <item>'
+                if postJsonObject['object'].get('summary'):
+                    hashtagFeed += \
+                        '         <title>' + \
+                        postJsonObject['object']['summary'] + \
+                        '</title>'
                 hashtagFeed += \
-                    '         <link>' + messageLink + '</link>'
+                    '         <description>' + \
+                    postJsonObject['object']['content'] + \
+                    '</description>'
                 hashtagFeed += \
                     '         <pubDate>' + rssDateStr + '</pubDate>'
                 hashtagFeed += '     </item>'
