@@ -769,7 +769,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     # RSS link for hashtag feed
     hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
     hashtagSearchForm += \
-        '<img style="width:3%;min-width:30px" loading="lazy" alt="RSS 2.0" ' + \
+        '<img style="width:3%;min-width:60px" loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
         iconsDir + '/rss.png" /></a></center>'
 
