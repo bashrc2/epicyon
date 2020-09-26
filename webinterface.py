@@ -925,11 +925,16 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                 continue
             # add to feed
             if postJsonObject['object'].get('content') and \
+               postJsonObject['object'].get('attributedTo') and \
                postJsonObject['object'].get('published'):
                 published = postJsonObject['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
                 hashtagFeed += '     <item>'
+                hashtagFeed += \
+                    '         <author>' + \
+                    postJsonObject['object']['attributedTo'] + \
+                    '</author>'
                 if postJsonObject['object'].get('summary'):
                     hashtagFeed += \
                         '         <title>' + \
