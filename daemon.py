@@ -148,6 +148,7 @@ from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
 from webinterface import htmlHashtagSearch
+from webinterface import rssHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
@@ -4092,6 +4093,60 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'login shown done',
                                   'hashtag search')
+
+    def _hashtagSearchRSS2(self, callingDomain: str,
+                           path: str, cookie: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {}):
+        """Return an RSS 2 feed for a hashtag
+        """
+        hashtag = path.split('/tags/rss2/')[1]
+        if isBlockedHashtag(baseDir, hashtag):
+            self._400()
+            self.server.GETbusy = False
+            return
+        nickname = None
+        if '/users/' in path:
+            actor = \
+                httpPrefix + '://' + domainFull + path
+            nickname = \
+                getNicknameFromActor(actor)
+        hashtagStr = \
+            rssHashtagSearch(nickname,
+                             domain, port,
+                             self.server.recentPostsCache,
+                             self.server.maxRecentPosts,
+                             self.server.translate,
+                             baseDir, hashtag,
+                             maxPostsInFeed, self.server.session,
+                             self.server.cachedWebfingers,
+                             self.server.personCache,
+                             httpPrefix,
+                             self.server.projectVersion,
+                             self.server.YTReplacementDomain)
+        if hashtagStr:
+            msg = hashtagStr.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+        else:
+            originPathStr = path.split('/tags/rss2/')[0]
+            originPathStrAbsolute = \
+                httpPrefix + '://' + domainFull + originPathStr
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStrAbsolute = \
+                    'http://' + onionDomain + originPathStr
+            elif (callingDomain.endswith('.i2p') and onionDomain):
+                originPathStrAbsolute = \
+                    'http://' + i2pDomain + originPathStr
+            self._redirect_headers(originPathStrAbsolute + '/search',
+                                   cookie, callingDomain)
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'login shown done',
+                                  'hashtag rss feed')
 
     def _announceButton(self, callingDomain: str, path: str,
                         baseDir: str,
@@ -8068,6 +8123,18 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
+            if self.path.startswith('/tags/rss2/'):
+                self._hashtagSearchRSS2(callingDomain,
+                                        self.path, cookie,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings)
+                return
             self._hashtagSearch(callingDomain,
                                 self.path, cookie,
                                 self.server.baseDir,

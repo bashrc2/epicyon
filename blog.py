@@ -282,7 +282,8 @@ def htmlBlogPostRSS2(authorized: bool,
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
         if not restrictToDomain or \
            (restrictToDomain and '/' + domain in messageLink):
-            if postJsonObject['object'].get('summary'):
+            if postJsonObject['object'].get('summary') and \
+               postJsonObject['object'].get('published'):
                 published = postJsonObject['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
@@ -307,7 +308,8 @@ def htmlBlogPostRSS3(authorized: bool,
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
         if not restrictToDomain or \
            (restrictToDomain and '/' + domain in messageLink):
-            if postJsonObject['object'].get('summary'):
+            if postJsonObject['object'].get('summary') and \
+               postJsonObject['object'].get('published'):
                 published = postJsonObject['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']

@@ -787,7 +787,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
         else:
             postFields = postId.split('  ')
             if len(postFields) != 3:
-                index = +1
+                index += 1
                 continue
             nickname = postFields[1]
             postId = postFields[2]
@@ -831,6 +831,117 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page down'] + '"></a></center>'
     hashtagSearchForm += htmlFooter()
     return hashtagSearchForm
+
+
+def rss2TagHeader(hashtag: str, httpPrefix: str, domainFull: str) -> str:
+    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+    rssStr += "<rss version=\"2.0\">"
+    rssStr += '<channel>'
+    rssStr += '    <title>#' + hashtag + '</title>'
+    rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        '/tags/rss2/' + hashtag + '</link>'
+    return rssStr
+
+
+def rss2TagFooter() -> str:
+    rssStr = '</channel>'
+    rssStr += '</rss>'
+    return rssStr
+
+
+def rssHashtagSearch(nickname: str, domain: str, port: int,
+                     recentPostsCache: {}, maxRecentPosts: int,
+                     translate: {},
+                     baseDir: str, hashtag: str,
+                     postsPerPage: int,
+                     session, wfRequest: {}, personCache: {},
+                     httpPrefix: str, projectVersion: str,
+                     YTReplacementDomain: str) -> str:
+    """Show an rss feed for a hashtag
+    """
+    if hashtag.startswith('#'):
+        hashtag = hashtag[1:]
+    hashtag = urllib.parse.unquote(hashtag)
+    hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagIndexFile):
+        if hashtag != hashtag.lower():
+            hashtag = hashtag.lower()
+            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagIndexFile):
+        print('WARN: hashtag file not found ' + hashtagIndexFile)
+        return None
+
+    # check that the directory for the nickname exists
+    if nickname:
+        if not os.path.isdir(baseDir + '/accounts/' +
+                             nickname + '@' + domain):
+            nickname = None
+
+    # read the index
+    lines = []
+    with open(hashtagIndexFile, "r") as f:
+        lines = f.readlines()
+    if not lines:
+        return None
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    maxFeedLength = 10
+    hashtagFeed = \
+        rss2TagHeader(hashtag, httpPrefix, domainFull)
+    for index in range(len(lines)):
+        postId = lines[index].strip('\n').strip('\r')
+        if '  ' not in postId:
+            nickname = getNicknameFromActor(postId)
+            if not nickname:
+                index += 1
+                if index >= maxFeedLength:
+                    break
+                continue
+        else:
+            postFields = postId.split('  ')
+            if len(postFields) != 3:
+                index += 1
+                if index >= maxFeedLength:
+                    break
+                continue
+            nickname = postFields[1]
+            postId = postFields[2]
+        postFilename = locatePost(baseDir, nickname, domain, postId)
+        if not postFilename:
+            index += 1
+            if index >= maxFeedLength:
+                break
+            continue
+        postJsonObject = loadJson(postFilename)
+        if postJsonObject:
+            if not isPublicPost(postJsonObject):
+                index += 1
+                if index >= maxFeedLength:
+                    break
+                continue
+            # add to feed
+            if postJsonObject['object'].get('id') and \
+               postJsonObject['object'].get('published'):
+                messageLink = \
+                    postJsonObject['object']['id'].replace('/statuses/', '/')
+                published = postJsonObject['object']['published']
+                pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                hashtagFeed += '     <item>'
+                hashtagFeed += \
+                    '         <link>' + messageLink + '</link>'
+                hashtagFeed += \
+                    '         <pubDate>' + rssDateStr + '</pubDate>'
+                hashtagFeed += '     </item>'
+        index += 1
+        if index >= maxFeedLength:
+            break
+
+    return hashtagFeed + rss2TagFooter()
 
 
 def htmlSkillsSearch(translate: {}, baseDir: str,
