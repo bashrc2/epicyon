@@ -946,6 +946,12 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                     '</description>'
                 hashtagFeed += \
                     '         <pubDate>' + rssDateStr + '</pubDate>'
+                if postJsonObject['object'].get('attachment'):
+                    for attach in postJsonObject['object']['attachment']:
+                        if not attach.get('url'):
+                            continue
+                        hashtagFeed += \
+                            '         <link>' + attach['url'] + '</link>'
                 hashtagFeed += '     </item>'
         index += 1
         if index >= maxFeedLength:
