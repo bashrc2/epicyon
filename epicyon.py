@@ -1895,8 +1895,6 @@ if __name__ == "__main__":
               port, proxyPort, httpPrefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.authenticatedFetch,
-              False, False, False,
-              False, False,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,

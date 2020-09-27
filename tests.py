@@ -249,11 +249,6 @@ def createServerAlice(path: str, domain: str, port: int,
     httpPrefix = 'http'
     proxyType = None
     password = 'alicepass'
-    noreply = False
-    nolike = False
-    nopics = False
-    noannounce = False
-    cw = False
     useBlurhash = True
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -296,7 +291,6 @@ def createServerAlice(path: str, domain: str, port: int,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
-              noreply, nolike, nopics, noannounce, cw,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads, False,
@@ -317,11 +311,6 @@ def createServerBob(path: str, domain: str, port: int,
     proxyType = None
     clientToServer = False
     password = 'bobpass'
-    noreply = False
-    nolike = False
-    nopics = False
-    noannounce = False
-    cw = False
     useBlurhash = False
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -364,7 +353,6 @@ def createServerBob(path: str, domain: str, port: int,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
-              noreply, nolike, nopics, noannounce, cw,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads, False,
@@ -383,11 +371,6 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     httpPrefix = 'http'
     proxyType = None
     password = 'evepass'
-    noreply = False
-    nolike = False
-    nopics = False
-    noannounce = False
-    cw = False
     maxReplies = 64
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
@@ -406,7 +389,6 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
-              noreply, nolike, nopics, noannounce, cw,
               proxyType, maxReplies, allowDeletion, True, True, False,
               sendThreads, False, False)
 
