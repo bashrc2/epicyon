@@ -45,8 +45,6 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
-from capabilities import getOcapFilename
-from capabilities import capabilitiesUpdate
 from media import attachMedia
 from media import replaceYouTube
 from content import removeHtml
@@ -893,24 +891,12 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
 
-        # if capabilities have been granted for this actor
-        # then get the corresponding id
-        capabilityIdList = []
-        ocapFilename = getOcapFilename(baseDir, nickname, domain,
-                                       toUrl, 'granted')
-        if ocapFilename:
-            if os.path.isfile(ocapFilename):
-                oc = loadJson(ocapFilename)
-                if oc:
-                    if oc.get('id'):
-                        capabilityIdList = [oc['id']]
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
         newPost = {
             '@context': postContext,
             'id': newPostId + '/activity',
-            'capability': capabilityIdList,
             'type': 'Create',
             'actor': actorUrl,
             'published': published,
@@ -1674,20 +1660,13 @@ def sendPost(projectVersion: str,
                                             projectVersion, httpPrefix,
                                             nickname, domain, postToBox)
 
-    # If there are more than one followers on the target domain
-    # then send to the shared inbox indead of the individual inbox
-    if nickname == 'capabilities':
-        inboxUrl = capabilityAcquisition
-        if not capabilityAcquisition:
-            return 2
-
     if not inboxUrl:
         return 3
     if not pubKey:
         return 4
     if not toPersonId:
         return 5
-    # sharedInbox and capabilities are optional
+    # sharedInbox is optional
 
     postJsonObject = \
         createPostBase(baseDir, nickname, domain, port,
@@ -2003,7 +1982,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     else:
         postToBox = 'outbox'
 
-    # get the actor inbox/outbox/capabilities for the To handle
+    # get the actor inbox/outbox for the To handle
     (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl,
      capabilityAcquisition, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest,
@@ -2011,17 +1990,12 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
                                  projectVersion, httpPrefix,
                                  nickname, domain, postToBox)
 
-    if nickname == 'capabilities':
-        inboxUrl = capabilityAcquisition
-        if not capabilityAcquisition:
-            return 2
-    else:
-        print("inboxUrl: " + str(inboxUrl))
-        print("toPersonId: " + str(toPersonId))
-        print("sharedInboxUrl: " + str(sharedInboxUrl))
-        if inboxUrl:
-            if inboxUrl.endswith('/actor/inbox'):
-                inboxUrl = sharedInboxUrl
+    print("inboxUrl: " + str(inboxUrl))
+    print("toPersonId: " + str(toPersonId))
+    print("sharedInboxUrl: " + str(sharedInboxUrl))
+    if inboxUrl:
+        if inboxUrl.endswith('/actor/inbox'):
+            inboxUrl = sharedInboxUrl
 
     if not inboxUrl:
         if debug:
@@ -2039,7 +2013,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         if debug:
             print('DEBUG: missing personId')
         return 5
-    # sharedInbox and capabilities are optional
+    # sharedInbox is optional
 
     # get the senders private key
     privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private', debug)
@@ -2791,32 +2765,8 @@ def createSharedInboxIndex(baseDir: str, sharedBoxDir: str,
         if actorNickname + '@' + actorDomain not in followingHandles:
             continue
 
-        if ocapAlways:
-            capsList = None
-            # Note: should this be in the Create or the object of a post?
-            if postJsonObject.get('capability'):
-                if isinstance(postJsonObject['capability'], list):
-                    capsList = postJsonObject['capability']
-
-            # Have capabilities been granted for the sender?
-            ocapFilename = \
-                baseDir + '/accounts/' + handle + '/ocap/granted/' + \
-                postJsonObject['actor'].replace('/', '#') + '.json'
-            if not os.path.isfile(ocapFilename):
-                continue
-
-            # read the capabilities id
-            ocapJson = loadJson(ocapFilename, 0)
-            if not ocapJson:
-                print('WARN: json load exception createSharedInboxIndex')
-            else:
-                if ocapJson.get('id'):
-                    if ocapJson['id'] in capsList:
-                        postsInBoxDict[statusNumber] = sharedInboxFilename
-                        postsCtr += 1
-        else:
-            postsInBoxDict[statusNumber] = sharedInboxFilename
-            postsCtr += 1
+        postsInBoxDict[statusNumber] = sharedInboxFilename
+        postsCtr += 1
     return postsCtr
 
 
@@ -3411,45 +3361,6 @@ def checkDomains(session, baseDir: str,
             fp.write(followerWarningStr)
         if not singleCheck:
             print(followerWarningStr)
-
-
-def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,
-                           nickname: str, domain: str, port: int,
-                           followerUrl, updateCaps: [],
-                           sendThreads: [], postLog: [],
-                           cachedWebfingers: {}, personCache: {},
-                           federationList: [], debug: bool,
-                           projectVersion: str) -> int:
-    """When the capabilities for a follower are changed this
-    sends out an update. followerUrl is the actor of the follower.
-    """
-    updateJson = \
-        capabilitiesUpdate(baseDir, httpPrefix,
-                           nickname, domain, port,
-                           followerUrl, updateCaps)
-
-    if not updateJson:
-        return 1
-
-    if debug:
-        pprint(updateJson)
-        print('DEBUG: sending capabilities update from ' +
-              nickname + '@' + domain + ' port ' + str(port) +
-              ' to ' + followerUrl)
-
-    clientToServer = False
-    followerNickname = getNicknameFromActor(followerUrl)
-    if not followerNickname:
-        print('WARN: unable to find nickname in ' + followerUrl)
-        return 1
-    followerDomain, followerPort = getDomainFromActor(followerUrl)
-    return sendSignedJson(updateJson, session, baseDir,
-                          nickname, domain, port,
-                          followerNickname, followerDomain, followerPort, '',
-                          httpPrefix, True, clientToServer,
-                          federationList,
-                          sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion)
 
 
 def populateRepliesJson(baseDir: str, nickname: str, domain: str,

@@ -230,26 +230,6 @@ parser.add_argument("--testsnetwork", type=str2bool, nargs='?',
 parser.add_argument("--testdata", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Generate some data for testing purposes")
-parser.add_argument("--ocap", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Always strictly enforce object capabilities")
-parser.add_argument("--noreply", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow replies on posts")
-parser.add_argument("--nolike", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow " +
-                    "likes/favourites on posts")
-parser.add_argument("--nopics", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow attached pictures")
-parser.add_argument("--noannounce", "--norepeat", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow announce/repeat")
-parser.add_argument("--cw", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow posts " +
-                    "without content warnings")
 parser.add_argument('--icon', '--avatar', dest='avatar', type=str,
                     default=None,
                     help='Set the avatar filename for an account')
@@ -1920,8 +1900,8 @@ if __name__ == "__main__":
               port, proxyPort, httpPrefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.authenticatedFetch,
-              args.noreply, args.nolike, args.nopics,
-              args.noannounce, args.cw, ocapAlways,
+              False, False, False,
+              False, False, ocapAlways,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,

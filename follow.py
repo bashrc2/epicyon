@@ -1045,14 +1045,12 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
     This returns a list of account handles which follow the given actor
-    and also the corresponding capability id if it exists
     """
     if debug:
         print('DEBUG: getting followers of ' + actor)
     recipientsDict = {}
     if ':' not in actor:
         return recipientsDict
-    httpPrefix = actor.split(':')[0]
     nickname = getNicknameFromActor(actor)
     if not nickname:
         if debug:
@@ -1084,35 +1082,7 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
                         if debug:
                             print('DEBUG: ' + account +
                                   ' follows ' + actorHandle)
-                        ocapFilename = baseDir + '/accounts/' + \
-                            account + '/ocap/accept/' + httpPrefix + \
-                            ':##' + domain + ':' + str(port) + \
-                            '#users#' + nickname + '.json'
-                        if debug:
-                            print('DEBUG: checking capabilities of' + account)
-                        if os.path.isfile(ocapFilename):
-                            ocapJson = loadJson(ocapFilename)
-                            if ocapJson:
-                                if ocapJson.get('id'):
-                                    if debug:
-                                        print('DEBUG: ' +
-                                              'capabilities id found for ' +
-                                              account)
-
-                                    recipientsDict[account] = ocapJson['id']
-                                else:
-                                    if debug:
-                                        print('DEBUG: ' +
-                                              'capabilities has no ' +
-                                              'id attribute')
-                                    recipientsDict[account] = None
-                        else:
-                            if debug:
-                                print('DEBUG: ' +
-                                      'No capabilities file found for ' +
-                                      account + ' granted by ' + actorHandle)
-                                print(ocapFilename)
-                            recipientsDict[account] = None
+                        recipientsDict[account] = None
     return recipientsDict
 
 

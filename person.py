@@ -259,7 +259,6 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             'id': personId+'/endpoints',
             'sharedInbox': httpPrefix+'://'+domain+'/inbox',
         },
-        'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
         'followers': personId+'/followers',
         'following': personId+'/following',
         'shares': personId+'/shares',
@@ -504,15 +503,6 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
     """
     return createPersonBase(baseDir, nickname, domain, port, httpPrefix,
                             True, True, None)
-
-
-def createCapabilitiesInbox(baseDir: str, nickname: str,
-                            domain: str, port: int,
-                            httpPrefix: str) -> (str, str, {}, {}):
-    """Generates the capabilities inbox to sign requests
-    """
-    return createPersonBase(baseDir, nickname, domain, port,
-                            httpPrefix, True, True, None)
 
 
 def personUpgradeActor(baseDir: str, personJson: {},

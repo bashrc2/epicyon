@@ -141,13 +141,6 @@ def postJsonString(session, postJsonStr: str,
     conversions between string and json format don't invalidate
     the message body digest of http signatures
     """
-    # always allow capability requests
-    if not capability.startswith('cap'):
-        # check that we are posting to a permitted domain
-        if not urlPermitted(inboxUrl, federationList, capability):
-            print('postJson: ' + inboxUrl + ' not permitted by capabilities')
-            return None, None
-
     try:
         postResult = \
             session.post(url=inboxUrl, data=postJsonStr, headers=headers)

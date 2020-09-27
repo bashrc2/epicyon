@@ -7,8 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from capabilities import capabilitiesAccept
-from capabilities import capabilitiesGrantedSave
 from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -19,7 +17,7 @@ from utils import followPerson
 def createAcceptReject(baseDir: str, federationList: [],
                        nickname: str, domain: str, port: int,
                        toUrl: str, ccUrl: str, httpPrefix: str,
-                       objectJson: {}, ocapJson, acceptType: str) -> {}:
+                       objectJson: {}, acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and
@@ -48,9 +46,6 @@ def createAcceptReject(baseDir: str, federationList: [],
     if ccUrl:
         if len(ccUrl) > 0:
             newAccept['cc'] = [ccUrl]
-    # attach capabilities for follow accept
-    if ocapJson:
-        newAccept['capabilities'] = ocapJson
     return newAccept
 
 
@@ -59,14 +54,10 @@ def createAccept(baseDir: str, federationList: [],
                  toUrl: str, ccUrl: str, httpPrefix: str,
                  objectJson: {},
                  acceptedCaps=["inbox:write", "objects:read"]) -> {}:
-    # create capabilities accept
-    ocapNew = capabilitiesAccept(baseDir, httpPrefix,
-                                 nickname, domain, port,
-                                 toUrl, True, acceptedCaps)
     return createAcceptReject(baseDir, federationList,
                               nickname, domain, port,
                               toUrl, ccUrl, httpPrefix,
-                              objectJson, ocapNew, 'Accept')
+                              objectJson, 'Accept')
 
 
 def createReject(baseDir: str, federationList: [],
@@ -153,13 +144,6 @@ def acceptFollow(baseDir: str, domain: str, messageJson: {},
     acceptedDomainFull = acceptedDomain
     if acceptedPort:
         acceptedDomainFull = acceptedDomain + ':' + str(acceptedPort)
-
-    # are capabilities attached? If so then store them
-    if messageJson.get('capabilities'):
-        if isinstance(messageJson['capabilities'], dict):
-            capabilitiesGrantedSave(baseDir,
-                                    nickname, acceptedDomainFull,
-                                    messageJson['capabilities'])
 
     # has this person already been unfollowed?
     unfollowedFilename = baseDir + '/accounts/' + \
