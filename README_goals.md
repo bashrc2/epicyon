@@ -15,7 +15,6 @@
  * http signatures and basic auth
  * Compatible with http (onion addresses), https and dat
  * Minimal dependencies.
- * Capabilities based security
  * Support image blurhashes
  * Data minimization principle. Configurable post expiry time
  * Likes and repeats only visible to authorized viewers
