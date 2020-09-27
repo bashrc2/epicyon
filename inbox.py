@@ -265,7 +265,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     if domain in actor:
         return True
 
-    if not urlPermitted(actor, federationList, "inbox:write"):
+    if not urlPermitted(actor, federationList):
         return False
 
     alwaysAllowedTypes = ('Follow', 'Like', 'Delete', 'Announce')
@@ -278,7 +278,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
             inReplyTo = messageJson['object']['inReplyTo']
             if not isinstance(inReplyTo, str):
                 return False
-            if not urlPermitted(inReplyTo, federationList, "inbox:write"):
+            if not urlPermitted(inReplyTo, federationList):
                 return False
 
     return True
@@ -652,8 +652,7 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
                 port: int, sendThreads: [], postLog: [],
                 cachedWebfingers: {}, personCache: {},
                 messageJson: {}, federationList: [],
-                debug: bool,
-                acceptedCaps=["inbox:write", "objects:read"]) -> bool:
+                debug: bool) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Undo'):
@@ -2024,8 +2023,7 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                       queue: [], domain: str,
                       onionDomain: str, i2pDomain: str,
                       port: int, proxyType: str,
-                      federationList: [], ocapAlways: bool, debug: bool,
-                      acceptedCaps: [],
+                      federationList: [], debug: bool,
                       queueFilename: str, destinationFilename: str,
                       maxReplies: int, allowDeletion: bool,
                       maxMentions: int, maxEmoji: int, translate: {},
@@ -2419,13 +2417,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   cachedWebfingers: {}, personCache: {}, queue: [],
                   domain: str,
                   onionDomain: str, i2pDomain: str, port: int, proxyType: str,
-                  federationList: [],
-                  ocapAlways: bool, maxReplies: int,
+                  federationList: [], maxReplies: int,
                   domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, maxMentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
-                  YTReplacementDomain: str,
-                  acceptedCaps=["inbox:write", "objects:read"]) -> None:
+                  YTReplacementDomain: str) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2694,8 +2690,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                        personCache,
                        queueJson['post'],
                        federationList,
-                       debug,
-                       acceptedCaps=["inbox:write", "objects:read"]):
+                       debug):
             print('Queue: Undo accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
@@ -2712,9 +2707,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 personCache,
                                 queueJson['post'],
                                 federationList,
-                                debug, projectVersion,
-                                acceptedCaps=["inbox:write",
-                                              "objects:read"]):
+                                debug, projectVersion):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -2810,15 +2803,6 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             pprint(recipientsDictFollowers)
             print('*************************************')
 
-        if queueJson['post'].get('capability'):
-            if not isinstance(queueJson['post']['capability'], list):
-                print('Queue: capability on post should be a list')
-                if os.path.isfile(queueFilename):
-                    os.remove(queueFilename)
-                if len(queue) > 0:
-                    queue.pop(0)
-                continue
-
         # Copy any posts addressed to followers into the shared inbox
         # this avoid copying file multiple times to potentially many
         # individual inboxes
@@ -2843,8 +2827,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                               domain,
                               onionDomain, i2pDomain,
                               port, proxyType,
-                              federationList, ocapAlways,
-                              debug, acceptedCaps,
+                              federationList,
+                              debug,
                               queueFilename, destination,
                               maxReplies, allowDeletion,
                               maxMentions, maxEmoji,

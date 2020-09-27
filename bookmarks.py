@@ -234,7 +234,7 @@ def bookmark(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was bookmarked
     object is typically the url of the message which was bookmarked
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     fullDomain = domain
@@ -330,7 +330,7 @@ def undoBookmark(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was bookmarked
     object is typically the url of the message which was bookmarked
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     fullDomain = domain
@@ -457,8 +457,7 @@ def sendBookmarkViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -480,7 +479,7 @@ def sendBookmarkViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newBookmarkJson, [],
-                          inboxUrl, headers, "inbox:write")
+                          inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
@@ -539,8 +538,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -562,7 +560,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newUndoBookmarkJson, [],
-                          inboxUrl, headers, "inbox:write")
+                          inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)

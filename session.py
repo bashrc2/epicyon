@@ -93,16 +93,13 @@ def getJson(session, url: str, headers: {}, params: {},
 
 
 def postJson(session, postJsonObject: {}, federationList: [],
-             inboxUrl: str, headers: {}, capability: str) -> str:
+             inboxUrl: str, headers: {}) -> str:
     """Post a json message to the inbox of another person
-    Supplying a capability, such as "inbox:write"
     """
-    # always allow capability requests
-    if not capability.startswith('cap'):
-        # check that we are posting to a permitted domain
-        if not urlPermitted(inboxUrl, federationList, capability):
-            print('postJson: ' + inboxUrl + ' not permitted')
-            return None
+    # check that we are posting to a permitted domain
+    if not urlPermitted(inboxUrl, federationList):
+        print('postJson: ' + inboxUrl + ' not permitted')
+        return None
 
     try:
         postResult = \
@@ -132,10 +129,8 @@ def postJsonString(session, postJsonStr: str,
                    federationList: [],
                    inboxUrl: str,
                    headers: {},
-                   capability: str,
                    debug: bool) -> (bool, bool):
     """Post a json message string to the inbox of another person
-    Supplying a capability, such as "inbox:write"
     The second boolean returned is true if the send is unauthorized
     NOTE: Here we post a string rather than the original json so that
     conversions between string and json format don't invalidate
@@ -174,16 +169,13 @@ def postJsonString(session, postJsonStr: str,
 
 
 def postImage(session, attachImageFilename: str, federationList: [],
-              inboxUrl: str, headers: {}, capability: str) -> str:
+              inboxUrl: str, headers: {}) -> str:
     """Post an image to the inbox of another person or outbox via c2s
-    Supplying a capability, such as "inbox:write"
     """
-    # always allow capability requests
-    if not capability.startswith('cap'):
-        # check that we are posting to a permitted domain
-        if not urlPermitted(inboxUrl, federationList, capability):
-            print('postJson: ' + inboxUrl + ' not permitted')
-            return None
+    # check that we are posting to a permitted domain
+    if not urlPermitted(inboxUrl, federationList):
+        print('postJson: ' + inboxUrl + ' not permitted')
+        return None
 
     if not (attachImageFilename.endswith('.jpg') or
             attachImageFilename.endswith('.jpeg') or

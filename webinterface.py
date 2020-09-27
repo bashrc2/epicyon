@@ -2650,7 +2650,7 @@ def htmlFooter() -> str:
 def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                      translate: {},
                      baseDir: str, httpPrefix: str,
-                     authorized: bool, ocapAlways: bool,
+                     authorized: bool,
                      nickname: str, domain: str, port: int,
                      session, wfRequest: {}, personCache: {},
                      projectVersion: str,
@@ -2671,8 +2671,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                           str(currPage),
                           httpPrefix,
                           10, 'outbox',
-                          authorized,
-                          ocapAlways)
+                          authorized)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:
@@ -2700,7 +2699,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
 
 
 def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
-                         authorized: bool, ocapAlways: bool,
+                         authorized: bool,
                          nickname: str, domain: str, port: int,
                          session, wfRequest: {}, personCache: {},
                          followingJson: {}, projectVersion: str,
@@ -2930,7 +2929,7 @@ def htmlProfile(defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
                 baseDir: str, httpPrefix: str, authorized: bool,
-                ocapAlways: bool, profileJson: {}, selected: str,
+                profileJson: {}, selected: str,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 extraJson=None,
@@ -3190,14 +3189,14 @@ def htmlProfile(defaultTimeline: str,
                 htmlProfilePosts(recentPostsCache, maxRecentPosts,
                                  translate,
                                  baseDir, httpPrefix, authorized,
-                                 ocapAlways, nickname, domain, port,
+                                 nickname, domain, port,
                                  session, wfRequest, personCache,
                                  projectVersion,
                                  YTReplacementDomain) + licenseStr
         if selected == 'following':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, ocapAlways, nickname,
+                                     authorized, nickname,
                                      domain, port, session,
                                      wfRequest, personCache, extraJson,
                                      projectVersion, ["unfollow"], selected,
@@ -3205,7 +3204,7 @@ def htmlProfile(defaultTimeline: str,
         if selected == 'followers':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, ocapAlways, nickname,
+                                     authorized, nickname,
                                      domain, port, session,
                                      wfRequest, personCache, extraJson,
                                      projectVersion, ["block"],
@@ -3247,7 +3246,6 @@ def individualFollowAsHtml(translate: {},
     if domain not in followUrl:
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
-         capabilityAcquisition,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache, projectVersion,
                                                  httpPrefix, nickname,
@@ -4101,7 +4099,6 @@ def individualPostAsHtml(allowDownloads: bool,
     if fullDomain not in postActor:
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
-         capabilityAcquisition,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache,
                                                  projectVersion, httpPrefix,

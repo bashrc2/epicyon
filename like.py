@@ -63,7 +63,7 @@ def like(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was liked
     object is typically the url of the message which was liked
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     fullDomain = domain
@@ -162,7 +162,7 @@ def undolike(recentPostsCache: {},
     'to' might be a specific person (actor) whose post was liked
     object is typically the url of the message which was liked
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     fullDomain = domain
@@ -267,8 +267,7 @@ def sendLikeViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey, fromPersonId,
-     sharedInbox, capabilityAcquisition,
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -291,8 +290,7 @@ def sendLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newLikeJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newLikeJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: POST announce failed for c2s to ' + inboxUrl)
         return 5
@@ -352,8 +350,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
     postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    (inboxUrl, pubKeyId, pubKey, fromPersonId,
-     sharedInbox, capabilityAcquisition,
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
@@ -375,8 +372,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newUndoLikeJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newUndoLikeJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: POST announce failed for c2s to ' + inboxUrl)
         return 5

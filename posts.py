@@ -208,7 +208,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         else:
             personUrl = httpPrefix + '://' + domain + '/users/' + nickname
     if not personUrl:
-        return None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None
     personJson = \
         getPersonFromCache(baseDir, personUrl, personCache, True)
     if not personJson:
@@ -226,7 +226,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                                  projectVersion, httpPrefix, domain)
             if not personJson:
                 print('Unable to get actor')
-                return None, None, None, None, None, None, None, None
+                return None, None, None, None, None, None, None
     boxJson = None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
@@ -236,7 +236,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         boxJson = personJson[boxName]
 
     if not boxJson:
-        return None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None
 
     personId = None
     if personJson.get('id'):
@@ -255,9 +255,6 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         if personJson.get('endpoints'):
             if personJson['endpoints'].get('sharedInbox'):
                 sharedInbox = personJson['endpoints']['sharedInbox']
-    capabilityAcquisition = None
-    if personJson.get('capabilityAcquisitionEndpoint'):
-        capabilityAcquisition = personJson['capabilityAcquisitionEndpoint']
     avatarUrl = None
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
@@ -269,7 +266,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
-        capabilityAcquisition, avatarUrl, displayName
+        avatarUrl, displayName
 
 
 def getPosts(session, outboxUrl: str, maxPosts: int,
@@ -1061,11 +1058,9 @@ def outboxMessageCreateWrap(httpPrefix: str,
     cc = []
     if messageJson.get('cc'):
         cc = messageJson['cc']
-    capabilityUrl = []
     newPost = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId + '/activity',
-        'capability': capabilityUrl,
         'type': 'Create',
         'actor': httpPrefix + '://' + domain + '/users/' + nickname,
         'published': published,
@@ -1569,7 +1564,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
             postResult, unauthorized = \
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
-                               "inbox:write", debug)
+                               debug)
         except Exception as e:
             print('ERROR: postJsonString failed ' + str(e))
         if unauthorized:
@@ -1654,7 +1649,6 @@ def sendPost(projectVersion: str,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      toPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -1772,7 +1766,6 @@ def sendPostViaServer(projectVersion: str,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -1838,7 +1831,7 @@ def sendPostViaServer(projectVersion: str,
         }
         postResult = \
             postImage(session, attachImageFilename, [],
-                      inboxUrl, headers, "inbox:write")
+                      inboxUrl, headers)
         if not postResult:
             if debug:
                 print('DEBUG: Failed to upload image')
@@ -1851,7 +1844,7 @@ def sendPostViaServer(projectVersion: str,
     }
     postResult = \
         postJsonString(session, json.dumps(postJsonObject), [],
-                       inboxUrl, headers, "inbox:write", debug)
+                       inboxUrl, headers, debug)
     if not postResult:
         if debug:
             print('DEBUG: POST failed for c2s to '+inboxUrl)
@@ -1983,8 +1976,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         postToBox = 'outbox'
 
     # get the actor inbox/outbox for the To handle
-    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl,
-     capabilityAcquisition, avatarUrl,
+    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix,
@@ -2447,75 +2439,69 @@ def sendToFollowersThread(session, baseDir: str,
 def createInbox(recentPostsCache: {},
                 session, baseDir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                ocapAlways: bool, pageNumber=None) -> {}:
+                pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'inbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             port: int, httpPrefix: str, itemsPerPage: int,
-                            headerOnly: bool, ocapAlways: bool,
-                            pageNumber=None) -> {}:
+                            headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, ocapAlways, pageNumber)
+                            True, pageNumber)
 
 
 def createEventsTimeline(recentPostsCache: {},
                          session, baseDir: str, nickname: str, domain: str,
                          port: int, httpPrefix: str, itemsPerPage: int,
-                         headerOnly: bool, ocapAlways: bool,
-                         pageNumber=None) -> {}:
+                         headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, ocapAlways, pageNumber)
+                            True, pageNumber)
 
 
 def createDMTimeline(recentPostsCache: {},
                      session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
-                     headerOnly: bool, ocapAlways: bool,
-                     pageNumber=None) -> {}:
+                     headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'dm', nickname,
                             domain, port, httpPrefix, itemsPerPage,
-                            headerOnly, True, ocapAlways, pageNumber)
+                            headerOnly, True, pageNumber)
 
 
 def createRepliesTimeline(recentPostsCache: {},
                           session, baseDir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
-                          headerOnly: bool, ocapAlways: bool,
-                          pageNumber=None) -> {}:
+                          headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, ocapAlways: bool,
-                        pageNumber=None) -> {}:
+                        headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, ocapAlways: bool,
-                        pageNumber=None) -> {}:
+                        headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
@@ -2530,7 +2516,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                     ocapAlways: bool, pageNumber=None) -> {}:
+                     pageNumber=None) -> {}:
     boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
     boxname = 'moderation'
 
@@ -2728,8 +2714,7 @@ def createBoxIndex(boxDir: str, postsInBoxDict: {}) -> int:
 
 def createSharedInboxIndex(baseDir: str, sharedBoxDir: str,
                            postsInBoxDict: {}, postsCtr: int,
-                           nickname: str, domain: str,
-                           ocapAlways: bool) -> int:
+                           nickname: str, domain: str) -> int:
     """ Creates an index for the given shared inbox
     """
     handle = nickname + '@' + domain
@@ -2819,7 +2804,7 @@ def createBoxIndexed(recentPostsCache: {},
                      session, baseDir: str, boxname: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      itemsPerPage: int, headerOnly: bool, authorized: bool,
-                     ocapAlways: bool, pageNumber=None) -> {}:
+                     pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -2957,10 +2942,6 @@ def createBoxIndexed(recentPostsCache: {},
             p = json.loads(postStr)
         except BaseException:
             continue
-
-        # remove any capability so that it's not displayed
-        if p.get('capability'):
-            del p['capability']
 
         # Don't show likes, replies or shares (announces) to
         # unauthorized viewers
@@ -3179,7 +3160,6 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 
     (personUrl, pubKeyId, pubKey,
      personId, shaedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -3225,7 +3205,6 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
 
     (personUrl, pubKeyId, pubKey,
      personId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -3728,8 +3707,7 @@ def sendBlockViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix, fromNickname,
@@ -3751,8 +3729,7 @@ def sendBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newBlockJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: Unable to post block')
 
@@ -3817,8 +3794,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -3839,8 +3815,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newBlockJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: Unable to post block')
 

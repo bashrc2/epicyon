@@ -326,8 +326,6 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         if not os.path.isdir(baseDir + peopleSubdir + '/' +
                              handle + '/outbox'):
             os.mkdir(baseDir + peopleSubdir + '/' + handle + '/outbox')
-        if not os.path.isdir(baseDir + peopleSubdir + '/' + handle + '/ocap'):
-            os.mkdir(baseDir + peopleSubdir + '/' + handle + '/ocap')
         if not os.path.isdir(baseDir + peopleSubdir + '/' + handle + '/queue'):
             os.mkdir(baseDir + peopleSubdir + '/' + handle + '/queue')
         filename = baseDir + peopleSubdir + '/' + handle + '.json'
@@ -588,7 +586,7 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
 def personBoxJson(recentPostsCache: {},
                   session, baseDir: str, domain: str, port: int, path: str,
                   httpPrefix: str, noOfItems: int, boxname: str,
-                  authorized: bool, ocapAlways: bool) -> {}:
+                  authorized: bool) -> {}:
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname != 'inbox' and boxname != 'dm' and \
@@ -634,38 +632,36 @@ def personBoxJson(recentPostsCache: {},
         return createInbox(recentPostsCache,
                            session, baseDir, nickname, domain, port,
                            httpPrefix,
-                           noOfItems, headerOnly, ocapAlways, pageNumber)
+                           noOfItems, headerOnly, pageNumber)
     elif boxname == 'dm':
         return createDMTimeline(recentPostsCache,
                                 session, baseDir, nickname, domain, port,
                                 httpPrefix,
-                                noOfItems, headerOnly, ocapAlways, pageNumber)
+                                noOfItems, headerOnly, pageNumber)
     elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
         return createBookmarksTimeline(session, baseDir, nickname, domain,
                                        port, httpPrefix,
-                                       noOfItems, headerOnly, ocapAlways,
+                                       noOfItems, headerOnly,
                                        pageNumber)
     elif boxname == 'tlevents':
         return createEventsTimeline(recentPostsCache,
                                     session, baseDir, nickname, domain,
                                     port, httpPrefix,
-                                    noOfItems, headerOnly, ocapAlways,
+                                    noOfItems, headerOnly,
                                     pageNumber)
     elif boxname == 'tlreplies':
         return createRepliesTimeline(recentPostsCache,
                                      session, baseDir, nickname, domain,
                                      port, httpPrefix,
-                                     noOfItems, headerOnly, ocapAlways,
+                                     noOfItems, headerOnly,
                                      pageNumber)
     elif boxname == 'tlmedia':
         return createMediaTimeline(session, baseDir, nickname, domain, port,
-                                   httpPrefix,
-                                   noOfItems, headerOnly, ocapAlways,
+                                   httpPrefix, noOfItems, headerOnly,
                                    pageNumber)
     elif boxname == 'tlblogs':
         return createBlogsTimeline(session, baseDir, nickname, domain, port,
-                                   httpPrefix,
-                                   noOfItems, headerOnly, ocapAlways,
+                                   httpPrefix, noOfItems, headerOnly,
                                    pageNumber)
     elif boxname == 'outbox':
         return createOutbox(session, baseDir, nickname, domain, port,
@@ -682,7 +678,7 @@ def personBoxJson(recentPostsCache: {},
 
 def personInboxJson(recentPostsCache: {},
                     baseDir: str, domain: str, port: int, path: str,
-                    httpPrefix: str, noOfItems: int, ocapAlways: bool) -> []:
+                    httpPrefix: str, noOfItems: int) -> []:
     """Obtain the inbox feed for the given person
     Authentication is expected to have already happened
     """
@@ -719,7 +715,7 @@ def personInboxJson(recentPostsCache: {},
         return None
     return createInbox(recentPostsCache, baseDir, nickname,
                        domain, port, httpPrefix,
-                       noOfItems, headerOnly, ocapAlways, pageNumber)
+                       noOfItems, headerOnly, pageNumber)
 
 
 def setDisplayNickname(baseDir: str, nickname: str, domain: str,

@@ -27,7 +27,7 @@ def createAcceptReject(baseDir: str, federationList: [],
     if not objectJson.get('actor'):
         return None
 
-    if not urlPermitted(objectJson['actor'], federationList, "inbox:write"):
+    if not urlPermitted(objectJson['actor'], federationList):
         return None
 
     if port:
@@ -52,8 +52,7 @@ def createAcceptReject(baseDir: str, federationList: [],
 def createAccept(baseDir: str, federationList: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, httpPrefix: str,
-                 objectJson: {},
-                 acceptedCaps=["inbox:write", "objects:read"]) -> {}:
+                 objectJson: {}) -> {}:
     return createAcceptReject(baseDir, federationList,
                               nickname, domain, port,
                               toUrl, ccUrl, httpPrefix,

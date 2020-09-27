@@ -788,7 +788,6 @@ if args.approve:
     postLog = []
     cachedWebfingers = {}
     personCache = {}
-    acceptedCaps = []
     manualApproveFollowRequest(session, baseDir,
                                httpPrefix,
                                args.nickname, domain, port,
@@ -796,7 +795,6 @@ if args.approve:
                                federationList,
                                sendThreads, postLog,
                                cachedWebfingers, personCache,
-                               acceptedCaps,
                                debug, __version__)
     sys.exit()
 
@@ -1181,9 +1179,6 @@ if args.port:
 if args.proxyPort:
     proxyPort = args.proxyPort
     setConfigParam(baseDir, 'proxyPort', proxyPort)
-ocapAlways = False
-if args.ocap:
-    ocapAlways = args.ocap
 if args.gnunet:
     httpPrefix = 'gnunet'
 if args.dat:
@@ -1901,7 +1896,7 @@ if __name__ == "__main__":
               federationList, args.maxMentions,
               args.maxEmoji, args.authenticatedFetch,
               False, False, False,
-              False, False, ocapAlways,
+              False, False,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,

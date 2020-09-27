@@ -85,7 +85,6 @@ def manualApproveFollowRequest(session, baseDir: str,
                                federationList: [],
                                sendThreads: [], postLog: [],
                                cachedWebfingers: {}, personCache: {},
-                               acceptedCaps: [],
                                debug: bool,
                                projectVersion: str) -> None:
     """Manually approve a follow request
@@ -142,7 +141,7 @@ def manualApproveFollowRequest(session, baseDir: str,
                                                approvePort,
                                                followJson['actor'],
                                                federationList,
-                                               followJson, acceptedCaps,
+                                               followJson,
                                                sendThreads, postLog,
                                                cachedWebfingers, personCache,
                                                debug, projectVersion, False)

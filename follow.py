@@ -513,8 +513,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          port: int, sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
-                         debug: bool, projectVersion: str,
-                         acceptedCaps=["inbox:write", "objects:read"]) -> bool:
+                         debug: bool, projectVersion: str) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -655,8 +654,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
                                   messageJson['actor'], federationList,
-                                  messageJson, acceptedCaps,
-                                  sendThreads, postLog,
+                                  messageJson, sendThreads, postLog,
                                   cachedWebfingers, personCache,
                                   debug, projectVersion, True)
 
@@ -666,8 +664,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
                            personUrl: str, federationList: [],
-                           followJson: {}, acceptedCaps: [],
-                           sendThreads: [], postLog: [],
+                           followJson: {}, sendThreads: [], postLog: [],
                            cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
                            removeFollowActivity: bool):
@@ -685,7 +682,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
     acceptJson = createAccept(baseDir, federationList,
                               nicknameToFollow, domainToFollow, port,
                               personUrl, '', httpPrefix,
-                              followJson, acceptedCaps)
+                              followJson)
     if debug:
         pprint(acceptJson)
         print('DEBUG: sending follow Accept from ' +
@@ -908,8 +905,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -931,7 +927,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newFollowJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, newFollowJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
@@ -1007,10 +1003,11 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+     avatarUrl, displayName) = getPersonBox(baseDir, session,
+                                            wfRequest, personCache,
+                                            projectVersion, httpPrefix,
+                                            fromNickname,
+                                            fromDomain, postToBox)
 
     if not inboxUrl:
         if debug:
@@ -1029,7 +1026,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, unfollowJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, unfollowJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
