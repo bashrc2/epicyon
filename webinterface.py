@@ -1999,7 +1999,8 @@ def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
             '  <p class="screentitle">' + \
             translate['Hashtag Blocked'] + '</p>\n'
         blockedHashtagForm += \
-            '  <p>See <a href="/terms">Terms of Service</a></p>\n'
+            '  <p>See <a href="/terms">' + \
+            translate['Terms of Service'] + '</a></p>\n'
         blockedHashtagForm += '</center></div>\n'
         blockedHashtagForm += htmlFooter()
     return blockedHashtagForm
@@ -2013,12 +2014,14 @@ def htmlSendingPost(baseDir: str, translate: {}) -> str:
     if os.path.isfile(baseDir + '/send.css'):
         cssFilename = baseDir + '/send.css'
     with open(cssFilename, 'r') as cssFile:
-        blockedHashtagCSS = cssFile.read()
-        sendForm = htmlHeader(cssFilename, blockedHashtagCSS)
+        sendingCSS = cssFile.read()
+        sendForm = htmlHeader(cssFilename, sendingCSS)
         sendForm += '<div><center>\n'
-        sendForm += '  <p class="screentitle">Sending Post</p>\n'
         sendForm += \
-            '  <p>Please wait</p>\n'
+            '  <p class="screentitle">' + \
+            translate['Sending Post'] + '</p>\n'
+        sendForm += \
+            '  <p>' + translate['Please wait'] + '</p>\n'
         sendForm += '</center></div>\n'
         sendForm += htmlFooter()
     return sendForm
