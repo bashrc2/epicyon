@@ -152,7 +152,7 @@ from webinterface import rssHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
-# from webinterface import htmlSendingPost
+from webinterface import htmlSendingPost
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -9262,6 +9262,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # show a sending post screen
             currHeaders = self.headers.items()
+            print('currHeaders: ' + str(currHeaders))
             msg = \
                 htmlSendingPost(self.server.baseDir,
                                 self.server.translate).encode('utf-8')
