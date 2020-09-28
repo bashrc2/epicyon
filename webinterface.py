@@ -2006,27 +2006,6 @@ def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
     return blockedHashtagForm
 
 
-def htmlSendingPost(baseDir: str, translate: {}) -> str:
-    """A wait screen while sending a post
-    """
-    sendForm = ''
-    cssFilename = baseDir + '/epicyon-send.css'
-    if os.path.isfile(baseDir + '/send.css'):
-        cssFilename = baseDir + '/send.css'
-    with open(cssFilename, 'r') as cssFile:
-        sendingCSS = cssFile.read()
-        sendForm = htmlHeader(cssFilename, sendingCSS)
-        sendForm += '<div><center>\n'
-        sendForm += \
-            '  <p class="screentitle">' + \
-            translate['Sending Post'] + '</p>\n'
-        sendForm += \
-            '  <p>' + translate['Please wait'] + '</p>\n'
-        sendForm += '</center></div>\n'
-        sendForm += htmlFooter()
-    return sendForm
-
-
 def htmlSuspended(baseDir: str) -> str:
     """Show the screen for suspended accounts
     """

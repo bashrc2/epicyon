@@ -152,7 +152,6 @@ from webinterface import rssHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
-from webinterface import htmlSendingPost
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -482,16 +481,6 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.debug):
             return True
         return False
-
-    def _headers_without_response(self, fileFormat: str, length: int,
-                                  callingDomain: str) -> None:
-        self.send_header('Content-type', fileFormat)
-        self.send_header('Content-Length', str(length))
-        self.send_header('Host', callingDomain)
-        self.send_header('WWW-Authenticate',
-                         'title="Login to Epicyon", Basic realm="epicyon"')
-        self.send_header('X-Robots-Tag', 'noindex')
-        self.end_headers()
 
     def _login_headers(self, fileFormat: str, length: int,
                        callingDomain: str) -> None:
@@ -9710,13 +9699,6 @@ class PubServer(BaseHTTPRequestHandler):
             return None
 
         print('New post begins: ' + postType + ' ' + path)
-
-        msg = \
-            htmlSendingPost(self.server.baseDir,
-                            self.server.translate).encode('utf-8')
-        self._headers_without_response('text/html', len(msg), callingDomain)
-        self._write(msg)
-        self.wfile.flush()
 
         if '?page=' in path:
             pageNumberStr = path.split('?page=')[1]
