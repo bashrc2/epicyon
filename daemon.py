@@ -483,6 +483,16 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _headers_without_response(self, fileFormat: str, length: int,
+                                  callingDomain: str) -> None:
+        self.send_header('Content-type', fileFormat)
+        self.send_header('Content-Length', str(length))
+        self.send_header('Host', callingDomain)
+        self.send_header('WWW-Authenticate',
+                         'title="Login to Epicyon", Basic realm="epicyon"')
+        self.send_header('X-Robots-Tag', 'noindex')
+        self.end_headers()
+
     def _login_headers(self, fileFormat: str, length: int,
                        callingDomain: str) -> None:
         self.send_response(200)
@@ -9704,7 +9714,7 @@ class PubServer(BaseHTTPRequestHandler):
         msg = \
             htmlSendingPost(self.server.baseDir,
                             self.server.translate).encode('utf-8')
-        self._login_headers('text/html', len(msg), callingDomain)
+        self._headers_without_response('text/html', len(msg), callingDomain)
         self._write(msg)
         self.wfile.flush()
 
