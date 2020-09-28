@@ -9334,7 +9334,11 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 privateEvent = True
 
-            self._showSendingScreen(authorized, callingDomain)
+            # self._showSendingScreen(authorized, callingDomain)
+            self._clearSendingScreen(authorized,
+                                     self.server.defaultTimeline,
+                                     self.path, callingDomain,
+                                     cookie)
 
             if postType == 'newpost':
                 messageJson = \
