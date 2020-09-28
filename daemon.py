@@ -9261,11 +9261,11 @@ class PubServer(BaseHTTPRequestHandler):
                 privateEvent = True
 
             # show a sending post screen
-            msg = \
-                htmlSendingPost(self.server.baseDir,
-                                self.server.translate).encode('utf-8')
-            self._login_headers('text/html', len(msg), callingDomain)
-            self._write(msg)
+            # msg = \
+            #     htmlSendingPost(self.server.baseDir,
+            #                     self.server.translate).encode('utf-8')
+            # self._login_headers('text/html', len(msg), callingDomain)
+            # self._write(msg)
 
             if postType == 'newpost':
                 messageJson = \
@@ -9544,8 +9544,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-#                    if self.server.debug:
-                    print('DEBUG: new DM to ' +
+                    print('Sending new DM to ' +
                           str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
