@@ -15,7 +15,7 @@ from shutil import copyfile
 def getThemeFiles() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
-            'options.css', 'search.css')
+            'options.css', 'search.css', 'send.css')
 
 
 def getThemesList() -> []:

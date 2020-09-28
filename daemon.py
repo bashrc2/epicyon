@@ -152,6 +152,7 @@ from webinterface import rssHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
+from webinterface import htmlSendingPost
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -921,6 +922,7 @@ class PubServer(BaseHTTPRequestHandler):
         if postToNickname:
             print('Posting to nickname ' + postToNickname)
             self.postToNickname = postToNickname
+
         return postMessageToOutbox(messageJson, self.postToNickname,
                                    self.server, self.server.baseDir,
                                    self.server.httpPrefix,
@@ -4048,7 +4050,8 @@ class PubServer(BaseHTTPRequestHandler):
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
         if isBlockedHashtag(baseDir, hashtag):
-            msg = htmlHashtagBlocked(baseDir).encode('utf-8')
+            msg = htmlHashtagBlocked(baseDir,
+                                     self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             self.server.GETbusy = False
@@ -9114,7 +9117,8 @@ class PubServer(BaseHTTPRequestHandler):
                                etag, callingDomain)
 
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
-                               length: int, postBytes, boundary: str) -> int:
+                               length: int, postBytes, boundary: str,
+                               callingDomain: str) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
         # 1=new post success
@@ -9255,6 +9259,14 @@ class PubServer(BaseHTTPRequestHandler):
                 privateEvent = False
             else:
                 privateEvent = True
+
+            # show a sending post screen
+            msg = \
+                htmlSendingPost(self.server.baseDir,
+                                self.server.translate).encode('utf-8')
+            self._login_headers('text/html', len(msg), callingDomain)
+            self._write(msg)
+
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -9274,6 +9286,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
+
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
@@ -9668,7 +9681,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return 1
         return -1
 
-    def _receiveNewPost(self, postType: str, path: str) -> int:
+    def _receiveNewPost(self, postType: str, path: str,
+                        callingDomain: str) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -9769,7 +9783,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Creating new post from: ' + newPostThreadName)
                 self._receiveNewPostProcess(postType,
                                             path, headers, length,
-                                            postBytes, boundary)
+                                            postBytes, boundary,
+                                            callingDomain)
         return pageNumber
 
     def _cryptoAPIreadHandle(self):
@@ -10229,7 +10244,8 @@ class PubServer(BaseHTTPRequestHandler):
             elif currPostType == 'newevent':
                 postRedirect = 'tlevents'
 
-            pageNumber = self._receiveNewPost(currPostType, self.path)
+            pageNumber = \
+                self._receiveNewPost(currPostType, self.path, callingDomain)
             if pageNumber:
                 nickname = self.path.split('/users/')[1]
                 if '/' in nickname:

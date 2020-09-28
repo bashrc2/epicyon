@@ -1984,7 +1984,7 @@ def htmlAbout(baseDir: str, httpPrefix: str,
     return aboutForm
 
 
-def htmlHashtagBlocked(baseDir: str) -> str:
+def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''
@@ -2001,6 +2001,25 @@ def htmlHashtagBlocked(baseDir: str) -> str:
         blockedHashtagForm += '</center></div>\n'
         blockedHashtagForm += htmlFooter()
     return blockedHashtagForm
+
+
+def htmlSendingPost(baseDir: str, translate: {}) -> str:
+    """A wait screen while sending a post
+    """
+    sendForm = ''
+    cssFilename = baseDir + '/epicyon-send.css'
+    if os.path.isfile(baseDir + '/send.css'):
+        cssFilename = baseDir + '/send.css'
+    with open(cssFilename, 'r') as cssFile:
+        blockedHashtagCSS = cssFile.read()
+        sendForm = htmlHeader(cssFilename, blockedHashtagCSS)
+        sendForm += '<div><center>\n'
+        sendForm += '  <p class="screentitle">Sending Post</p>\n'
+        sendForm += \
+            '  <p>Please wait</p>\n'
+        sendForm += '</center></div>\n'
+        sendForm += htmlFooter()
+    return sendForm
 
 
 def htmlSuspended(baseDir: str) -> str:
