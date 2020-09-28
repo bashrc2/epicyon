@@ -9279,7 +9279,7 @@ class PubServer(BaseHTTPRequestHandler):
                 privateEvent = True
 
             # make a copy of the headers
-            # currHeaders = self.headers.items()
+            currHeaders = self.headers.items()
             # show a sending post screen
             msg = \
                 htmlSendingPost(self.server.baseDir,
@@ -9287,10 +9287,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             # restore headers
-            # for headerField in currHeaders:
-            #     fieldName = headerField[0]
-            #     fieldValue = headerField[1]
-            #     self.headers[fieldName] = fieldValue
+            for headerField in currHeaders:
+                fieldName = headerField[0]
+                fieldValue = headerField[1]
+                self.headers[fieldName] = fieldValue
 
             if postType == 'newpost':
                 messageJson = \
