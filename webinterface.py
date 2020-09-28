@@ -1995,7 +1995,9 @@ def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
         blockedHashtagCSS = cssFile.read()
         blockedHashtagForm = htmlHeader(cssFilename, blockedHashtagCSS)
         blockedHashtagForm += '<div><center>\n'
-        blockedHashtagForm += '  <p class="screentitle">Hashtag Blocked</p>\n'
+        blockedHashtagForm += \
+            '  <p class="screentitle">' + \
+            translate['Hashtag Blocked'] + '</p>\n'
         blockedHashtagForm += \
             '  <p>See <a href="/terms">Terms of Service</a></p>\n'
         blockedHashtagForm += '</center></div>\n'
