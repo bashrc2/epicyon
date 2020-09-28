@@ -5594,9 +5594,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'inbox',
                                   authorized)
                 if inboxFeed:
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show status done',
-                                              'show inbox json')
+                    if GETstartTime:
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox json')
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/inbox', '')
@@ -5620,10 +5621,11 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed, 'inbox',
                                               authorized)
-                            self._benchmarkGETtimings(GETstartTime,
-                                                      GETtimings,
-                                                      'show status done',
-                                                      'show inbox page')
+                            if GETstartTime:
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'show status done',
+                                                          'show inbox page')
                         msg = htmlInbox(defaultTimeline,
                                         recentPostsCache,
                                         maxRecentPosts,
@@ -5642,16 +5644,18 @@ class PubServer(BaseHTTPRequestHandler):
                                         projectVersion,
                                         self._isMinimal(nickname),
                                         YTReplacementDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show status done',
-                                                  'show inbox html')
+                        if GETstartTime:
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox html')
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show status done',
-                                                  'show inbox')
+                        if GETstartTime:
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox')
                     else:
                         # don't need authenticated fetch here because
                         # there is already the authorization check
@@ -9116,29 +9120,61 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_head(mediaFileType, fileLength,
                                etag, callingDomain)
 
-    def _redirectAfterPost(self, boxName: str, path: str,
-                           callingDomain: str, cookie: str) -> None:
+    def _showSendingScreen(self, authorized: bool, callingDomain: str) -> None:
+        """Shows a 'sending post' wait screen
+        """
+        if self.server.defaultTimeline != 'inbox':
+            return
+        # make a copy of the headers
+        currHeaders = self.headers.items()
+
+        # show a sending post screen
+        msg = \
+            htmlSendingPost(self.server.baseDir,
+                            self.server.translate).encode('utf-8')
+        self._login_headers('text/html', len(msg), callingDomain)
+        self._write(msg)
+
+        # restore headers
+        for headerField in currHeaders:
+            fieldName = headerField[0]
+            fieldValue = headerField[1]
+            self.headers[fieldName] = fieldValue
+
+    def _clearSendingScreen(self, authorized: bool,
+                            boxName: str, path: str,
+                            callingDomain: str, cookie: str) -> None:
         """Redirects to the given box
         """
-        if '/users/' not in path:
+        if boxName != 'inbox':
             return
-        nickname = path.split('/users/')[1]
-        if '/' in nickname:
-            nickname = nickname.split('/')[0]
-        usersPath = '/users/' + nickname
-        actorStr = self.server.httpPrefix + '://' + self.server.domainFull + \
-            path.split('/users/')[0] + usersPath
-        if callingDomain.endswith('.onion') and self.server.onionDomain:
-            actorStr = 'http://' + self.server.onionDomain + usersPath
-        elif (callingDomain.endswith('.i2p') and self.server.i2pDomain):
-            actorStr = 'http://' + self.server.i2pDomain + usersPath
-        print('Redirecting to: ' + actorStr + '/' + boxName)
-        self._redirect_headers(actorStr + '/' + boxName,
-                               cookie, callingDomain)
+        self._showInbox(authorized,
+                        callingDomain, self.path,
+                        self.server.baseDir,
+                        self.server.httpPrefix,
+                        self.server.domain,
+                        self.server.domainFull,
+                        self.server.port,
+                        self.server.onionDomain,
+                        self.server.i2pDomain,
+                        None, None,
+                        self.server.proxyType,
+                        cookie, self.server.debug,
+                        self.server.recentPostsCache,
+                        self.server.session,
+                        self.server.defaultTimeline,
+                        self.server.maxRecentPosts,
+                        self.server.translate,
+                        self.server.cachedWebfingers,
+                        self.server.personCache,
+                        self.server.allowDeletion,
+                        self.server.projectVersion,
+                        self.server.YTReplacementDomain)
 
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str,
-                               callingDomain: str, cookie: str) -> int:
+                               callingDomain: str, cookie: str,
+                               authorized: bool) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
         # 1=new post success
@@ -9280,19 +9316,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 privateEvent = True
 
-            # make a copy of the headers
-            currHeaders = self.headers.items()
-            # show a sending post screen
-            msg = \
-                htmlSendingPost(self.server.baseDir,
-                                self.server.translate).encode('utf-8')
-            self._login_headers('text/html', len(msg), callingDomain)
-            self._write(msg)
-            # restore headers
-            for headerField in currHeaders:
-                fieldName = headerField[0]
-                fieldValue = headerField[1]
-                self.headers[fieldName] = fieldValue
+            self._showSendingScreen(authorized, callingDomain)
 
             if postType == 'newpost':
                 messageJson = \
@@ -9312,9 +9336,10 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
 
                     if self._postToOutbox(messageJson, __version__, nickname):
@@ -9324,14 +9349,16 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newblog':
                 messageJson = \
@@ -9349,9 +9376,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9360,14 +9388,16 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'editblogpost':
                 print('Edited blog post received')
@@ -9436,9 +9466,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.YTReplacementDomain)
                         saveJson(postJsonObject, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
                         print('Edited blog post, unable to load json for ' +
@@ -9446,8 +9477,9 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('Edited blog post not found ' +
                           str(fields['postUrl']))
-                self._redirectAfterPost(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                self._clearSendingScreen(authorized,
+                                         self.server.defaultTimeline,
+                                         self.path, callingDomain, cookie)
                 return -1
             elif postType == 'newunlisted':
                 messageJson = \
@@ -9469,9 +9501,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9480,14 +9513,16 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newfollowers':
                 messageJson = \
@@ -9511,9 +9546,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9522,14 +9558,16 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newevent':
                 # A Mobilizon-type event is posted
@@ -9580,19 +9618,22 @@ class PubServer(BaseHTTPRequestHandler):
                                     fields['ticketUrl'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newdm':
                 messageJson = None
@@ -9620,9 +9661,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     print('Sending new DM to ' +
                           str(messageJson['object']['to']))
@@ -9633,14 +9675,16 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newreminder':
                 messageJson = None
@@ -9667,28 +9711,32 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     print('DEBUG: new reminder to ' +
                           str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newreport':
                 if attachmentMediaType:
                     if attachmentMediaType != 'image':
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
                 # So as to be sure that this only goes to moderators
                 # and not accounts being reported we disable any
@@ -9707,24 +9755,28 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug, fields['subject'])
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
                     else:
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
             elif postType == 'newquestion':
                 if not fields.get('duration'):
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain,
-                                            cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain,
+                                             cookie)
                     return -1
                 if not fields.get('message'):
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain, cookie)
                     return -1
 #                questionStr = fields['message']
                 qOptions = []
@@ -9733,8 +9785,9 @@ class PubServer(BaseHTTPRequestHandler):
                         qOptions.append(fields['questionOption' +
                                                str(questionCtr)])
                 if not qOptions:
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain, cookie)
                     return -1
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
@@ -9754,35 +9807,42 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: new Question')
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return 1
-                self._redirectAfterPost(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                self._clearSendingScreen(authorized,
+                                         self.server.defaultTimeline,
+                                         self.path, callingDomain, cookie)
                 return -1
             elif postType == 'newshare':
                 if not fields.get('itemType'):
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain, cookie)
                     return -1
                 if not fields.get('category'):
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain, cookie)
                     return -1
                 if not fields.get('location'):
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain, cookie)
                     return -1
                 if not fields.get('duration'):
-                    self._redirectAfterPost(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                    self._clearSendingScreen(authorized,
+                                             self.server.defaultTimeline,
+                                             self.path, callingDomain, cookie)
                     return -1
                 if attachmentMediaType:
                     if attachmentMediaType != 'image':
-                        self._redirectAfterPost(self.server.defaultTimeline,
-                                                self.path, callingDomain,
-                                                cookie)
+                        self._clearSendingScreen(authorized,
+                                                 self.server.defaultTimeline,
+                                                 self.path, callingDomain,
+                                                 cookie)
                         return -1
                 durationStr = fields['duration']
                 if durationStr:
@@ -9804,15 +9864,18 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(filename):
                         os.remove(filename)
                 self.postToNickname = nickname
-                self._redirectAfterPost(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                self._clearSendingScreen(authorized,
+                                         self.server.defaultTimeline,
+                                         self.path, callingDomain, cookie)
                 return 1
-            self._redirectAfterPost(self.server.defaultTimeline,
-                                    self.path, callingDomain, cookie)
+            self._clearSendingScreen(authorized,
+                                     self.server.defaultTimeline,
+                                     self.path, callingDomain, cookie)
         return -1
 
     def _receiveNewPost(self, postType: str, path: str,
-                        callingDomain: str, cookie: str) -> int:
+                        callingDomain: str, cookie: str,
+                        authorized: bool) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -9914,7 +9977,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._receiveNewPostProcess(postType,
                                             path, headers, length,
                                             postBytes, boundary,
-                                            callingDomain, cookie)
+                                            callingDomain, cookie,
+                                            authorized)
         return pageNumber
 
     def _cryptoAPIreadHandle(self):
@@ -10376,7 +10440,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             pageNumber = \
                 self._receiveNewPost(currPostType, self.path,
-                                     callingDomain, cookie)
+                                     callingDomain, cookie,
+                                     authorized)
             if pageNumber:
                 nickname = self.path.split('/users/')[1]
                 if '/' in nickname:
