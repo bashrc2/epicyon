@@ -9268,7 +9268,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
-            for fieldName, fieldValue in currHeaders.items():
+            for headerField in currHeaders:
+                print(str(headerField))
+                fieldName = headerField[0]
+                fieldValue = headerField[1]
                 self.headers[fieldName] = fieldValue
 
             if postType == 'newpost':
