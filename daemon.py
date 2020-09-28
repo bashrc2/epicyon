@@ -5648,10 +5648,13 @@ class PubServer(BaseHTTPRequestHandler):
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
                                                       'show inbox html')
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html', len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
+
+                        if msg:
+                            msg = msg.encode('utf-8')
+                            self._set_headers('text/html', len(msg),
+                                              cookie, callingDomain)
+                            self._write(msg)
+
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
