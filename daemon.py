@@ -9128,6 +9128,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if self.server.defaultTimeline != 'inbox':
             return
+        if not self._requestHTTP():
+            return
         # make a copy of the headers
         currHeaders = self.headers.items()
 
@@ -9150,6 +9152,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Redirects to the given box
         """
         if boxName != 'inbox':
+            return
+        if not self._requestHTTP():
             return
         self._showInbox(authorized,
                         callingDomain, self.path,
