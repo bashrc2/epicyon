@@ -5581,8 +5581,11 @@ class PubServer(BaseHTTPRequestHandler):
                    YTReplacementDomain: str) -> bool:
         """Shows the inbox timeline
         """
+        print('Inbox test 1')
         if '/users/' in path:
+            print('Inbox test 2')
             if authorized:
+                print('Inbox test 3')
                 inboxFeed = \
                     personBoxJson(recentPostsCache,
                                   session,
@@ -5594,11 +5597,13 @@ class PubServer(BaseHTTPRequestHandler):
                                   maxPostsInFeed, 'inbox',
                                   authorized)
                 if inboxFeed:
+                    print('Inbox test 4')
                     if GETstartTime:
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'show status done',
                                                   'show inbox json')
                     if self._requestHTTP():
+                        print('Inbox test 5')
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/inbox', '')
                         pageNumber = 1
@@ -5610,6 +5615,7 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 pageNumber = 1
                         if 'page=' not in path:
+                            print('Inbox test 6')
                             # if no page was specified then show the first
                             inboxFeed = \
                                 personBoxJson(recentPostsCache,
@@ -5650,6 +5656,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                       'show inbox html')
 
                         if msg:
+                            print('Inbox test 7')
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html', len(msg),
                                               cookie, callingDomain)
@@ -5660,6 +5667,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                       'show status done',
                                                       'show inbox')
                     else:
+                        print('Inbox test 8')
                         # don't need authenticated fetch here because
                         # there is already the authorization check
                         msg = json.dumps(inboxFeed, ensure_ascii=False)
@@ -5670,12 +5678,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy = False
                     return True
             else:
+                print('Inbox test 9')
                 if debug:
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/inbox', '')
                     print('DEBUG: ' + nickname +
                           ' was not authorized to access ' + path)
         if path != '/inbox':
+            print('Inbox test 10')
             # not the shared inbox
             if debug:
                 print('DEBUG: GET access to inbox is unauthorized')
