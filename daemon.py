@@ -9149,6 +9149,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.translate).encode('utf-8')
         self._login_headers('text/html', len(msg), callingDomain)
         self._write(msg)
+        self.wfile.flush()
 
         # restore headers
         for headerField in currHeaders:
