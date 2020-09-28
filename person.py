@@ -671,7 +671,7 @@ def personBoxJson(recentPostsCache: {},
     elif boxname == 'moderation':
         return createModeration(baseDir, nickname, domain, port,
                                 httpPrefix,
-                                noOfItems, headerOnly, authorized,
+                                noOfItems, headerOnly,
                                 pageNumber)
     return None
 
