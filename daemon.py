@@ -9126,7 +9126,8 @@ class PubServer(BaseHTTPRequestHandler):
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         usersPath = '/users/' + nickname
-        actorStr = path.split('/users/')[0] + usersPath
+        actorStr = self.server.httpPrefix + '://' + self.server.domainFull + \
+            path.split('/users/')[0] + usersPath
         if callingDomain.endswith('.onion') and self.server.onionDomain:
             actorStr = 'http://' + self.server.onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and self.server.i2pDomain):
