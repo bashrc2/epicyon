@@ -9116,8 +9116,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_head(mediaFileType, fileLength,
                                etag, callingDomain)
 
-    def _redirectToBox(self, boxName: str, path: str,
-                       callingDomain: str, cookie: str) -> None:
+    def _redirectAfterPost(self, boxName: str, path: str,
+                           callingDomain: str, cookie: str) -> None:
         """Redirects to the given box
         """
         if '/users/' not in path:
@@ -9132,6 +9132,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr = 'http://' + self.server.onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and self.server.i2pDomain):
             actorStr = 'http://' + self.server.i2pDomain + usersPath
+        print('Redirecting to: ' + actorStr + '/' + boxName)
         self._redirect_headers(actorStr + '/' + boxName,
                                cookie, callingDomain)
 
@@ -9311,8 +9312,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
 
                     if self._postToOutbox(messageJson, __version__, nickname):
@@ -9322,12 +9324,14 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newblog':
                 messageJson = \
@@ -9345,8 +9349,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9355,12 +9360,14 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'editblogpost':
                 print('Edited blog post received')
@@ -9429,8 +9436,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.YTReplacementDomain)
                         saveJson(postJsonObject, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
                         print('Edited blog post, unable to load json for ' +
@@ -9438,8 +9446,8 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('Edited blog post not found ' +
                           str(fields['postUrl']))
-                self._redirectToBox(self.server.defaultTimeline,
-                                    self.path, callingDomain, cookie)
+                self._redirectAfterPost(self.server.defaultTimeline,
+                                        self.path, callingDomain, cookie)
                 return -1
             elif postType == 'newunlisted':
                 messageJson = \
@@ -9461,8 +9469,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9471,12 +9480,14 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newfollowers':
                 messageJson = \
@@ -9500,8 +9511,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9510,12 +9522,14 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newevent':
                 # A Mobilizon-type event is posted
@@ -9566,16 +9580,19 @@ class PubServer(BaseHTTPRequestHandler):
                                     fields['ticketUrl'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newdm':
                 messageJson = None
@@ -9603,8 +9620,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     print('Sending new DM to ' +
                           str(messageJson['object']['to']))
@@ -9615,12 +9633,14 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newreminder':
                 messageJson = None
@@ -9647,24 +9667,28 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     print('DEBUG: new reminder to ' +
                           str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newreport':
                 if attachmentMediaType:
                     if attachmentMediaType != 'image':
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
                 # So as to be sure that this only goes to moderators
                 # and not accounts being reported we disable any
@@ -9683,21 +9707,24 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.debug, fields['subject'])
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
                     else:
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
             elif postType == 'newquestion':
                 if not fields.get('duration'):
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain,
+                                            cookie)
                     return -1
                 if not fields.get('message'):
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain, cookie)
                     return -1
 #                questionStr = fields['message']
                 qOptions = []
@@ -9706,8 +9733,8 @@ class PubServer(BaseHTTPRequestHandler):
                         qOptions.append(fields['questionOption' +
                                                str(questionCtr)])
                 if not qOptions:
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain, cookie)
                     return -1
                 messageJson = \
                     createQuestionPost(self.server.baseDir,
@@ -9727,33 +9754,35 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: new Question')
                     if self._postToOutbox(messageJson, __version__, nickname):
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return 1
-                self._redirectToBox(self.server.defaultTimeline,
-                                    self.path, callingDomain, cookie)
+                self._redirectAfterPost(self.server.defaultTimeline,
+                                        self.path, callingDomain, cookie)
                 return -1
             elif postType == 'newshare':
                 if not fields.get('itemType'):
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain, cookie)
                     return -1
                 if not fields.get('category'):
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain, cookie)
                     return -1
                 if not fields.get('location'):
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain, cookie)
                     return -1
                 if not fields.get('duration'):
-                    self._redirectToBox(self.server.defaultTimeline,
-                                        self.path, callingDomain, cookie)
+                    self._redirectAfterPost(self.server.defaultTimeline,
+                                            self.path, callingDomain, cookie)
                     return -1
                 if attachmentMediaType:
                     if attachmentMediaType != 'image':
-                        self._redirectToBox(self.server.defaultTimeline,
-                                            self.path, callingDomain, cookie)
+                        self._redirectAfterPost(self.server.defaultTimeline,
+                                                self.path, callingDomain,
+                                                cookie)
                         return -1
                 durationStr = fields['duration']
                 if durationStr:
@@ -9775,11 +9804,11 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(filename):
                         os.remove(filename)
                 self.postToNickname = nickname
-                self._redirectToBox(self.server.defaultTimeline,
-                                    self.path, callingDomain, cookie)
+                self._redirectAfterPost(self.server.defaultTimeline,
+                                        self.path, callingDomain, cookie)
                 return 1
-            self._redirectToBox(self.server.defaultTimeline,
-                                self.path, callingDomain, cookie)
+            self._redirectAfterPost(self.server.defaultTimeline,
+                                    self.path, callingDomain, cookie)
         return -1
 
     def _receiveNewPost(self, postType: str, path: str,
