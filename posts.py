@@ -2511,7 +2511,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'outbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, authorized,
-                            False, pageNumber)
+                            pageNumber)
 
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
