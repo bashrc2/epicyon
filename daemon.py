@@ -9261,13 +9261,14 @@ class PubServer(BaseHTTPRequestHandler):
                 privateEvent = True
 
             # show a sending post screen
-            currHeaders = self.headers.copy()
+            currHeaders = self.headers.items()
             msg = \
                 htmlSendingPost(self.server.baseDir,
                                 self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
-            self.headers = currHeaders.copy()
+            for fieldName, fieldValue in currHeaders.items():
+                self.headers[fieldName] = fieldValue
 
             if postType == 'newpost':
                 messageJson = \
