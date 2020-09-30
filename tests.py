@@ -2139,6 +2139,25 @@ def testReplaceEmailQuote():
         print('Expect: ' + expectedStr)
     assert resultStr == expectedStr
 
+    testStr = "<p><span class=\"h-card\">" + \
+        "<a href=\"https://somedomain/@somenick\" " + \
+        "class=\"u-url mention\">@<span>somenick</span>" + \
+        "</a></span> </p><p>&gt; Text1.<br />&gt; <br />" + \
+        "&gt; Text2<br />&gt; <br />&gt; Text3<br />" + \
+        "&gt;<br />&gt; Text4<br />&gt; <br />&gt; " + \
+        "Text5<br />&gt; <br />&gt; Text6</p><p>Text7</p>"
+    expectedStr = "<p><span class=\"h-card\">" + \
+        "<a href=\"https://somedomain/@somenick\" " + \
+        "class=\"u-url mention\">@<span>somenick</span></a>" + \
+        "</span> </p><p><blockquote> Text1.<br /><br />" + \
+        "Text2<br /><br />Text3<br /><br><br />Text4<br />" + \
+        "<br />Text5<br /><br />Text6</blockquote></p><p>Text7</p>"
+    resultStr = htmlReplaceEmailQuote(testStr)
+    if resultStr != expectedStr:
+        print('Result: ' + resultStr)
+        print('Expect: ' + expectedStr)
+    assert resultStr == expectedStr
+
 
 def runAllTests():
     print('Running tests...')
