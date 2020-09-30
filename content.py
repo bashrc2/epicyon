@@ -13,6 +13,7 @@ from utils import loadJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
 
+
 def removeQuotesWithinQuotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """
