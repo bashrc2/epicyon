@@ -4544,7 +4544,7 @@ def individualPostAsHtml(allowDownloads: bool,
                     attributedTo = postJsonObject['object']['attributedTo']
                 if attributedTo.startswith(postActor):
                     titleStr += \
-                        ' <img loading="lazy" title="' + \
+                        '        <img loading="lazy" title="' + \
                         translate['announces'] + \
                         '" alt="' + translate['announces'] + \
                         '" src="/' + iconsDir + \
@@ -4594,7 +4594,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 translate['announces'] + '" alt="' + \
                                 translate['announces'] + '" src="/' + \
                                 iconsDir + '/repeat_inactive.png" ' + \
-                                'class="announceOrReply"/> <a href="' + \
+                                'class="announceOrReply"/>\n' + \
+                                '        <a href="' + \
                                 postJsonObject['object']['id'] + '">' + \
                                 announceDisplayName + '</a>\n'
                             # show avatar of person replied to
@@ -4635,7 +4636,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '" alt="' + translate['announces'] + \
                                 '" src="/' + iconsDir + \
                                 '/repeat_inactive.png" ' + \
-                                'class="announceOrReply"/> <a href="' + \
+                                'class="announceOrReply"/>\n' + \
+                                '      <a href="' + \
                                 postJsonObject['object']['id'] + '">@' + \
                                 announceNickname + '@' + \
                                 announceDomain + '</a>\n'
@@ -4645,7 +4647,8 @@ def individualPostAsHtml(allowDownloads: bool,
                             translate['announces'] + '" alt="' + \
                             translate['announces'] + '" src="/' + iconsDir + \
                             '/repeat_inactive.png" ' + \
-                            'class="announceOrReply"/> <a href="' + \
+                            'class="announceOrReply"/>\n' + \
+                            '      <a href="' + \
                             postJsonObject['object']['id'] + \
                             '">@unattributed</a>\n'
             else:
@@ -4654,7 +4657,8 @@ def individualPostAsHtml(allowDownloads: bool,
                     '" alt="' + translate['announces'] + \
                     '" src="/' + iconsDir + \
                     '/repeat_inactive.png" ' + \
-                    'class="announceOrReply"/> <a href="' + \
+                    'class="announceOrReply"/>\n' + \
+                    '      <a href="' + \
                     postJsonObject['object']['id'] + '">@unattributed</a>\n'
         else:
             if postJsonObject['object'].get('inReplyTo'):
@@ -4717,7 +4721,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                         translate['replying to'] + \
                                         '" src="/' + \
                                         iconsDir + '/reply.png" ' + \
-                                        'class="announceOrReply"/> ' + \
+                                        'class="announceOrReply"/>\n' + \
+                                        '      ' + \
                                         '<a href="' + inReplyTo + \
                                         '">' + replyDisplayName + '</a>\n'
 
@@ -4774,8 +4779,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                         translate['replying to'] + \
                                         '" src="/' + \
                                         iconsDir + '/reply.png" ' + \
-                                        'class="announceOrReply"/> ' + \
-                                        '<a href="' + \
+                                        'class="announceOrReply"/>\n' + \
+                                        '      <a href="' + \
                                         inReplyTo + '">@' + \
                                         replyNickname + '@' + \
                                         replyDomain + '</a>\n'
@@ -4787,8 +4792,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 translate['replying to'] + \
                                 '" src="/' + \
                                 iconsDir + \
-                                '/reply.png" class="announceOrReply"/> ' + \
-                                '<a href="' + \
+                                '/reply.png" class="announceOrReply"/>\n' + \
+                                '      <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">@unknown</a>\n'
                     else:
@@ -4806,7 +4811,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '" alt="' + translate['replying to'] + \
                                 '" src="/' + \
                                 iconsDir + '/reply.png" ' + \
-                                'class="announceOrReply"/> <a href="' + \
+                                'class="announceOrReply"/>\n' + \
+                                '      <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">' + postDomain + '</a>\n'
 
