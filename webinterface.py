@@ -4751,9 +4751,10 @@ def individualPostAsHtml(allowDownloads: bool,
 
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost = \
-                                            '<div class=' + \
+                                            '        <div class=' + \
                                             '"timeline-avatar-reply">\n'
                                         replyAvatarImageInPost += \
+                                            '          ' + \
                                             '<a class="imageAnchor" ' + \
                                             'href="/users/' + nickname + \
                                             '?options=' + replyActor + \
@@ -4761,6 +4762,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                             replyAvatarUrl + \
                                             messageIdStr + '">\n'
                                         replyAvatarImageInPost += \
+                                            '          ' + \
                                             '<img loading="lazy" src="' + \
                                             replyAvatarUrl + '" '
                                         replyAvatarImageInPost += \
@@ -4768,7 +4770,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                             translate['Show profile']
                                         replyAvatarImageInPost += \
                                             '" alt=" "' + \
-                                            avatarPosition + '/></a>\n</div>\n'
+                                            avatarPosition + '/></a>\n' + \
+                                            '        </div>\n'
                                 else:
                                     inReplyTo = \
                                         postJsonObject['object']['inReplyTo']
@@ -4987,7 +4990,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '        ' + titleStr + \
             replyAvatarImageInPost + '      </p>\n'
         postHtml += contentStr + footerStr + '\n'
-        postHtml += '</div>\n'
+        postHtml += '    </div>\n'
     else:
         postHtml = galleryStr
 
