@@ -4155,11 +4155,11 @@ def individualPostAsHtml(allowDownloads: bool,
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
         avatarLink += \
-            '    <img loading="lazy" title="' + \
+            '      <img loading="lazy" title="' + \
             translate['Show options for this person'] + \
             '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
     avatarImageInPost = \
-        '  <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
+        '      <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -4615,6 +4615,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
+                                    '      ' \
                                     '<div class="timeline-avatar-reply">\n' \
                                     '<a class="imageAnchor" ' + \
                                     'href="/users/' + nickname + \
@@ -4964,7 +4965,7 @@ def individualPostAsHtml(allowDownloads: bool,
         contentStr = ''
     else:
         if not isPatch:
-            contentStr = '<div class="message">' + contentStr + '</div>\n'
+            contentStr = '    <div class="message">' + contentStr + '</div>\n'
         else:
             contentStr = \
                 '<div class="gitpatch"><pre><code>' + contentStr + \
@@ -4972,7 +4973,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     postHtml = ''
     if boxName != 'tlmedia':
-        postHtml = '<div id="' + timelinePostBookmark + \
+        postHtml = '    <div id="' + timelinePostBookmark + \
             '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
         postHtml += '<p class="post-title">' + titleStr + \
@@ -5627,6 +5628,7 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    # end of column-center
     tlStr += '  </div>\n'
     tlStr += '  <div class="column-right">\n'
     tlStr += '  </div>\n'
