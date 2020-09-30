@@ -4377,6 +4377,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '?bm=' + timelinePostBookmark + \
             '?tl=' + boxName + '" title="' + announceTitle + '">\n'
         announceStr += \
+            '          ' + \
             '<img loading="lazy" title="' + translate['Repeat this post'] + \
             '" alt="' + translate['Repeat this post'] + \
             ' |" src="/' + iconsDir + '/' + announceIcon + '"/></a>\n'
@@ -4442,6 +4443,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '?tl=' + boxName + '" title="' + \
             likeTitle + likeCountStr + '">\n'
         likeStr += \
+            '          ' + \
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
