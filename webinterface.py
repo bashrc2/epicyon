@@ -5328,6 +5328,10 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '</div>\n</a>\n'
     tlStr += '<div class="container">\n'
 
+    tlStr += '<div class="row">\n'
+    tlStr += '  <div class="column-left">\n'
+    tlStr += '  </div>\n'
+    
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
@@ -5619,6 +5623,10 @@ def htmlTimeline(defaultTimeline: str,
                     tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
+
+    tlStr += '  <div class="column-right">\n'
+    tlStr += '  </div>\n'
+    tlStr += '</div>'
 
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)

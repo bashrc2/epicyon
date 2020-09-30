@@ -61,6 +61,8 @@
     --quote-font-weight: normal;
     --quote-font-size: 120%;
     --line-spacing: 130%;
+    --column-left-width: 0%;
+    --column-right-width: 0%;
 }
 
 @font-face {
@@ -923,6 +925,14 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    .column-left {
+	float: left;
+	width: var(--column-left-width);
+    } 
+    .column-right {
+	float: right;
+	width: var(--column-right-width);
+    } 
     .likesCount {
         font-size: var(--font-size-likes);
         font-family: Arial, Helvetica, sans-serif;
@@ -1372,6 +1382,14 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    .column-left {
+	float: left;
+	width: var(--column-left-width);
+    } 
+    .column-right {
+	float: right;
+	width: var(--column-right-width);
+    } 
     .likesCount {
         font-size: var(--font-size-likes-mobile);
         font-family: Arial, Helvetica, sans-serif;
