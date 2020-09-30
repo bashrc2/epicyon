@@ -738,22 +738,22 @@ a, button, input:focus, input[type='button'], input[type='reset'], input[type='s
     text-decoration: none;
 }
 .button-msgScope {
-    display:flex;
-    flex-direction:row;
-    justify-content:center;
-    width:100%;
-    min-height:100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
 }
 .button-msgScope button, .button-msgScope div.lined-thin {
-    align-self:center;
-    background:transparent;
-    padding:1rem 1rem;
-    margin:0 1rem;
-    transition:all .5s ease;
-    color:var(--dropdown-fg-color);
-    font-size:2rem;
-    letter-spacing:1px;
-    outline:none;
+    align-self: center;
+    background: transparent;
+    padding: 1rem 1rem;
+    margin: 0 1rem;
+    transition: all .5s ease;
+    color: var(--dropdown-fg-color);
+    font-size: 2rem;
+    letter-spacing: 1px;
+    outline: none;
 }
 .btn {
     margin: -3px 0 0 0;
@@ -930,13 +930,13 @@ aside .toggle-inside li {
         float: left;
         width: var(--column-left-width);
     } 
-    .column-center {
-        display: inline-block;
-        width: var(--column-center-width);
-    } 
     .column-right {
         float: right;
         width: var(--column-right-width);
+    } 
+    .column-center {
+        display: inline-block;
+        width: var(--column-center-width);
     } 
     .likesCount {
         font-size: var(--font-size-likes);
@@ -1391,13 +1391,13 @@ aside .toggle-inside li {
         float: left;
         width: 0%;
     } 
-    .column-center {
-        display: inline-block;
-        width: 100%;
-    } 
     .column-right {
         float: right;
         width: 0%;
+    } 
+    .column-center {
+        display: inline-block;
+        width: 100%;
     } 
     .likesCount {
         font-size: var(--font-size-likes-mobile);

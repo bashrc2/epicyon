@@ -5326,7 +5326,6 @@ def htmlTimeline(defaultTimeline: str,
         translate['Switch to profile view'] + '">\n'
     tlStr += '<div class="timeline-banner">'
     tlStr += '</div>\n</a>\n'
-    tlStr += '<div class="container">\n'
 
     tlStr += '<div class="row">\n'
     tlStr += '  <div class="column-left">\n'
