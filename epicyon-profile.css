@@ -61,9 +61,9 @@
     --quote-font-weight: normal;
     --quote-font-size: 120%;
     --line-spacing: 130%;
-    --column-left-width: 0%;
+    --column-left-width: 10%;
     --column-center-width: 80%;
-    --column-right-width: 0%;
+    --column-right-width: 10%;
 }
 
 @font-face {
@@ -89,7 +89,7 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
     max-width: var(--column-center-width);
     min-width: 950px;
-    margin: 0 auto;
+    margin-left: var(--column-left-width);
     font-size: var(--font-size);
     line-height: var(--line-spacing);
 }
@@ -926,6 +926,18 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    body, html {
+	background-color: var(--main-bg-color);
+	color: var(--main-fg-color);
+
+	height: 100%;
+	font-family: Arial, Helvetica, sans-serif;
+	max-width: var(--column-center-width);
+	min-width: 950px;
+	margin-left: var(--column-left-width);
+	font-size: var(--font-size);
+	line-height: var(--line-spacing);
+    }
     .column-left {
         float: left;
         width: var(--column-left-width);
@@ -1387,6 +1399,18 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    body, html {
+	background-color: var(--main-bg-color);
+	color: var(--main-fg-color);
+
+	height: 100%;
+	font-family: Arial, Helvetica, sans-serif;
+	max-width: var(--column-center-width);
+	min-width: 950px;
+	margin-left: 0;
+	font-size: var(--font-size);
+	line-height: var(--line-spacing);
+    }
     .column-left {
         float: left;
         width: 0%;
