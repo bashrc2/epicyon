@@ -1290,7 +1290,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
             mediaInstanceStr = 'checked'
             blogsInstanceStr = ''
 
-    blogsInstance = getConfigParam(baseDir, "blogInstance")
+    blogsInstance = getConfigParam(baseDir, "blogsInstance")
     if blogsInstance:
         if blogsInstance is True:
             blogsInstanceStr = 'checked'
