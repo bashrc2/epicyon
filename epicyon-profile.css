@@ -1389,15 +1389,15 @@ aside .toggle-inside li {
 @media screen and (max-width: 1000px) {
     .column-left {
         float: left;
-        width: var(--column-left-width);
+        width: 0%;
     } 
     .column-center {
         display: inline-block;
-        width: var(--column-center-width);
+        width: 100%;
     } 
     .column-right {
         float: right;
-        width: var(--column-right-width);
+        width: 0%;
     } 
     .likesCount {
         font-size: var(--font-size-likes-mobile);

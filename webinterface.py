@@ -5441,7 +5441,7 @@ def htmlTimeline(defaultTimeline: str,
         '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>\n'
     tlStr += followApprovals
-    tlStr += '</div>'
+#    tlStr += '</div>\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
