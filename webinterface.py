@@ -5332,33 +5332,34 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  </div>\n'
     tlStr += '  <div class="column-center">\n'
     
+    tlStr += '    <div class="container">\n'
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
-            '    <a href="' + usersPath + \
+            '      <a href="' + usersPath + \
             '/tlmedia"><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>\n'
     elif defaultTimeline == 'tlblogs':
         tlStr += \
-            '    <a href="' + usersPath + \
+            '      <a href="' + usersPath + \
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>\n'
     else:
         tlStr += \
-            '    <a href="' + usersPath + \
+            '      <a href="' + usersPath + \
             '/inbox"><button class="' + \
             inboxButton + '"><span>' + \
             translate['Inbox'] + '</span></button></a>\n'
 
     tlStr += \
-        '    <a href="' + usersPath + '/dm"><button class="' + dmButton + \
+        '      <a href="' + usersPath + '/dm"><button class="' + dmButton + \
         '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
         '</span></button></a>\n'
 
     tlStr += \
-        '    <a href="' + usersPath + '/tlreplies"><button class="' + \
+        '      <a href="' + usersPath + '/tlreplies"><button class="' + \
         repliesButton + '"><span>' + \
         htmlHighlightLabel(translate['Replies'], newReply) + \
         '</span></button></a>\n'
@@ -5367,14 +5368,14 @@ def htmlTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlmedia':
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/tlmedia"><button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>\n'
     else:
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton+'"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
@@ -5384,21 +5385,21 @@ def htmlTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlblogs':
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/tlblogs"><button class="' + \
                 blogsButton + '"><span>' + translate['Blogs'] + \
                 '</span></button></a>\n'
     else:
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
 
     # button for the outbox
     tlStr += \
-        '    <a href="' + usersPath + \
+        '      <a href="' + usersPath + \
         '/outbox"><button class="' + \
         sentButton+'"><span>' + translate['Outbox'] + \
         '</span></button></a>\n'
@@ -5410,7 +5411,7 @@ def htmlTimeline(defaultTimeline: str,
 
     # the search button
     tlStr += \
-        '    <a class="imageAnchor" href="' + usersPath + \
+        '      <a class="imageAnchor" href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
         iconsDir + '/search.png" title="' + \
         translate['Search and follow'] + '" alt="| ' + \
@@ -5427,20 +5428,20 @@ def htmlTimeline(defaultTimeline: str,
         # indicate that the calendar icon is highlighted
         calendarAltText = '*' + calendarAltText + '*'
     tlStr += \
-        '    <a class="imageAnchor" href="' + usersPath + calendarPath + \
+        '      <a class="imageAnchor" href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
         calendarImage + '" title="' + translate['Calendar'] + \
         '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
 
     # the show/hide button, for a simpler header appearance
     tlStr += \
-        '    <a class="imageAnchor" href="' + usersPath + '/minimal' + \
+        '      <a class="imageAnchor" href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>\n'
     tlStr += followApprovals
-#    tlStr += '</div>\n'
+    tlStr += '      </div>\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
