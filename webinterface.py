@@ -5273,7 +5273,7 @@ def htmlTimeline(defaultTimeline: str,
     # what screen to go to when a new post is created
     if boxName == 'dm':
         newPostButtonStr = \
-            '<a class="imageAnchor" href="' + usersPath + \
+            '    <a class="imageAnchor" href="' + usersPath + \
             '/newdm"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new DM'] + \
@@ -5281,7 +5281,7 @@ def htmlTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     elif boxName == 'tlblogs':
         newPostButtonStr = \
-            '<a class="imageAnchor" href="' + usersPath + \
+            '    <a class="imageAnchor" href="' + usersPath + \
             '/newblog"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new post'] + '" alt="| ' + \
@@ -5289,7 +5289,7 @@ def htmlTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     elif boxName == 'tlevents':
         newPostButtonStr = \
-            '<a class="imageAnchor" href="' + usersPath + \
+            '    <a class="imageAnchor" href="' + usersPath + \
             '/newevent"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new event'] + '" alt="| ' + \
@@ -5298,7 +5298,7 @@ def htmlTimeline(defaultTimeline: str,
     else:
         if not manuallyApproveFollowers:
             newPostButtonStr = \
-                '<a class="imageAnchor" href="' + usersPath + \
+                '    <a class="imageAnchor" href="' + usersPath + \
                 '/newpost"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -5306,7 +5306,7 @@ def htmlTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr = \
-                '<a class="imageAnchor" href="' + usersPath + \
+                '    <a class="imageAnchor" href="' + usersPath + \
                 '/newfollowers"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + \
