@@ -4715,14 +4715,14 @@ def individualPostAsHtml(allowDownloads: bool,
                                                       boxName + ' 13.6 = ' +
                                                       str(timeDiff))
                                     titleStr += \
-                                        '    <img loading="lazy" title="' + \
+                                        '      <img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
                                         '" src="/' + \
                                         iconsDir + '/reply.png" ' + \
                                         'class="announceOrReply"/>\n' + \
-                                        '      ' + \
+                                        '        ' + \
                                         '<a href="' + inReplyTo + \
                                         '">' + replyDisplayName + '</a>\n'
 
@@ -4773,27 +4773,27 @@ def individualPostAsHtml(allowDownloads: bool,
                                     inReplyTo = \
                                         postJsonObject['object']['inReplyTo']
                                     titleStr += \
-                                        '    <img loading="lazy" title="' + \
+                                        '      <img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
                                         '" src="/' + \
                                         iconsDir + '/reply.png" ' + \
                                         'class="announceOrReply"/>\n' + \
-                                        '      <a href="' + \
+                                        '        <a href="' + \
                                         inReplyTo + '">@' + \
                                         replyNickname + '@' + \
                                         replyDomain + '</a>\n'
                         else:
                             titleStr += \
-                                '    <img loading="lazy" title="' + \
+                                '      <img loading="lazy" title="' + \
                                 translate['replying to'] + \
                                 '" alt="' + \
                                 translate['replying to'] + \
                                 '" src="/' + \
                                 iconsDir + \
                                 '/reply.png" class="announceOrReply"/>\n' + \
-                                '      <a href="' + \
+                                '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">@unknown</a>\n'
                     else:
@@ -4806,13 +4806,13 @@ def individualPostAsHtml(allowDownloads: bool,
                             postDomain = postDomain.split('/', 1)[0]
                         if postDomain:
                             titleStr += \
-                                '    <img loading="lazy" title="' + \
+                                '      <img loading="lazy" title="' + \
                                 translate['replying to'] + \
                                 '" alt="' + translate['replying to'] + \
                                 '" src="/' + \
                                 iconsDir + '/reply.png" ' + \
                                 'class="announceOrReply"/>\n' + \
-                                '      <a href="' + \
+                                '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">' + postDomain + '</a>\n'
 
