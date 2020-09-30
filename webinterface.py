@@ -101,7 +101,7 @@ def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
     """
-    return '      <details><summary><b>' + \
+    return '       <details><summary><b>' + \
         translate['SHOW MORE'] + '</b></summary>' + \
         '<div id="' + postID + '">' + content + \
         '</div></details>\n'
@@ -4872,7 +4872,7 @@ def individualPostAsHtml(allowDownloads: bool,
         containerClass = 'container dm'
 
     if showIcons:
-        footerStr = '      <div class="' + containerClassIcons + '">\n'
+        footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
         footerStr += '      <a href="' + publishedLink + '" class="' + \
