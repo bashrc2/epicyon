@@ -4143,7 +4143,7 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
-    avatarLink = '    <a class="imageAnchor" href="' + postActor + '">'
+    avatarLink = '      <a class="imageAnchor" href="' + postActor + '">'
     avatarLink += \
         '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
         translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>\n'
@@ -4151,7 +4151,7 @@ def individualPostAsHtml(allowDownloads: bool,
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
         avatarLink = \
-            '    <a class="imageAnchor" href="/users/' + \
+            '      <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
         avatarLink += \
@@ -4230,7 +4230,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
-            '    <a class="imageAnchor" href="/users/' + \
+            '      <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">' + displayName + '</a>\n'
@@ -4245,7 +4245,7 @@ def individualPostAsHtml(allowDownloads: bool,
             # pprint(postJsonObject)
             print('ERROR: no actorDomain')
         titleStr += \
-            '    <a class="imageAnchor" href="/users/' + \
+            '      <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
@@ -4289,20 +4289,20 @@ def individualPostAsHtml(allowDownloads: bool,
         replyStr = ''
         if isPublicRepeat:
             replyStr += \
-                '    <a class="imageAnchor" href="/users/' + \
+                '      <a class="imageAnchor" href="/users/' + \
                 nickname + '?replyto=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
                 '" title="' + translate['Reply to this post'] + '">\n'
         else:
             if isDM(postJsonObject):
                 replyStr += \
-                    '    <a class="imageAnchor" href="/users/' + nickname + \
+                    '      <a class="imageAnchor" href="/users/' + nickname + \
                     '?replydm=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
             else:
                 replyStr += \
-                    '    <a class="imageAnchor" href="/users/' + nickname + \
+                    '      <a class="imageAnchor" href="/users/' + nickname + \
                     '?replyfollowers=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
@@ -4333,7 +4333,7 @@ def individualPostAsHtml(allowDownloads: bool,
             if isBlogPost(postJsonObject):
                 blogPostId = postJsonObject['object']['id']
                 editStr += \
-                    '    <a class="imageAnchor" href="/users/' + nickname + \
+                    '      <a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
                     blogPostId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
@@ -4345,7 +4345,7 @@ def individualPostAsHtml(allowDownloads: bool,
             elif isEvent:
                 eventPostId = postJsonObject['object']['id']
                 editStr += \
-                    '    <a class="imageAnchor" href="/users/' + nickname + \
+                    '      <a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editeventpost=' + \
                     eventPostId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
@@ -4369,7 +4369,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
         announceStr = \
-            '    <a class="imageAnchor" href="/users/' + \
+            '      <a class="imageAnchor" href="/users/' + \
             nickname + '?' + announceLink + \
             '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -4433,7 +4433,7 @@ def individualPostAsHtml(allowDownloads: bool,
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
             likeStr += '</label>\n'
         likeStr += \
-            '    <a class="imageAnchor" href="/users/' + nickname + '?' + \
+            '      <a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -4466,7 +4466,7 @@ def individualPostAsHtml(allowDownloads: bool,
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
         bookmarkStr = \
-            '    <a class="imageAnchor" href="/users/' + nickname + '?' + \
+            '      <a class="imageAnchor" href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -4498,7 +4498,7 @@ def individualPostAsHtml(allowDownloads: bool,
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             deleteStr = \
-                '    <a class="imageAnchor" href="/users/' + nickname + \
+                '      <a class="imageAnchor" href="/users/' + nickname + \
                 '?delete=' + messageId + pageNumberParam + \
                 '" title="' + translate['Delete this post'] + '">\n'
             deleteStr += \
@@ -4508,7 +4508,7 @@ def individualPostAsHtml(allowDownloads: bool,
     else:
         if not isMuted:
             muteStr = \
-                '    <a class="imageAnchor" href="/users/' + nickname + \
+                '      <a class="imageAnchor" href="/users/' + nickname + \
                 '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
                 '?bm=' + timelinePostBookmark + \
                 '" title="' + translate['Mute this post'] + '">\n'
@@ -4519,7 +4519,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 '" src="/' + iconsDir + '/mute.png"/></a>\n'
         else:
             muteStr = \
-                '    <a class="imageAnchor" href="/users/' + \
+                '      <a class="imageAnchor" href="/users/' + \
                 nickname + '?unmute=' + messageId + \
                 pageNumberParam + '?tl=' + boxName + '?bm=' + \
                 timelinePostBookmark + '" title="' + \
@@ -4866,7 +4866,7 @@ def individualPostAsHtml(allowDownloads: bool,
         containerClass = 'container dm'
 
     if showIcons:
-        footerStr = '    <div class="' + containerClassIcons + '">\n'
+        footerStr = '      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
         footerStr += '      <a href="' + publishedLink + '" class="' + \
@@ -4965,7 +4965,8 @@ def individualPostAsHtml(allowDownloads: bool,
         contentStr = ''
     else:
         if not isPatch:
-            contentStr = '    <div class="message">' + contentStr + '</div>\n'
+            contentStr = '      <div class="message">' + \
+                contentStr + '</div>\n'
         else:
             contentStr = \
                 '<div class="gitpatch"><pre><code>' + contentStr + \
