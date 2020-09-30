@@ -4308,6 +4308,7 @@ def individualPostAsHtml(allowDownloads: bool,
                     '" title="' + translate['Reply to this post'] + '">\n'
 
         replyStr += \
+            '        ' + \
             '<img loading="lazy" title="' + \
             translate['Reply to this post'] + '" alt="' + \
             translate['Reply to this post'] + \
@@ -4473,6 +4474,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '?bm=' + timelinePostBookmark + \
             '?tl=' + boxName + '" title="' + bookmarkTitle + '">\n'
         bookmarkStr += \
+            '        ' + \
             '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
             bookmarkTitle + ' |" src="/' + iconsDir + \
             '/' + bookmarkIcon + '"/></a>\n'
