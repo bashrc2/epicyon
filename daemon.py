@@ -3205,10 +3205,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.defaultTimeline = 'inbox'
                         if fields['mediaInstance'] == 'on':
                             self.server.mediaInstance = True
+                            self.server.blogsInstance = False
                             self.server.defaultTimeline = 'tlmedia'
                         setConfigParam(baseDir,
                                        "mediaInstance",
                                        self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
                     else:
                         if self.server.mediaInstance:
                             self.server.mediaInstance = False
@@ -3223,10 +3227,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.defaultTimeline = 'inbox'
                         if fields['blogsInstance'] == 'on':
                             self.server.blogsInstance = True
+                            self.server.mediaInstance = False
                             self.server.defaultTimeline = 'tlblogs'
                         setConfigParam(baseDir,
                                        "blogsInstance",
                                        self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
                     else:
                         if self.server.blogsInstance:
                             self.server.blogsInstance = False

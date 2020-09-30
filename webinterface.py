@@ -1230,6 +1230,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     notifyLikes = ''
     hideLikeButton = ''
     mediaInstanceStr = ''
+    blogsInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
     donateUrl = ''
@@ -1287,6 +1288,13 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     if mediaInstance:
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
+            blogsInstanceStr = ''
+
+    blogsInstance = getConfigParam(baseDir, "blogInstance")
+    if blogsInstance:
+        if blogsInstance is True:
+            blogsInstanceStr = 'checked'
+            mediaInstanceStr = ''
 
     filterStr = ''
     filterFilename = \
@@ -1607,6 +1615,19 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="passwordconfirm" value="">\n'
     editProfileForm += '    </div>\n'
+
+    if path.startswith('/users/' + adminNickname + '/'):
+        editProfileForm += '    <div class="container">\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
+            translate['This is a media instance'] + '<br>\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
+            translate['This is a blogging instance'] + '<br>\n'
+        editProfileForm += '    </div>\n'
+
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
@@ -1628,11 +1649,6 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="removeTwitter" ' + removeTwitter + '> ' + \
         translate['Remove Twitter posts'] + '<br>\n'
-    if path.startswith('/users/' + adminNickname + '/'):
-        editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-            translate['This is a media instance'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="notifyLikes" ' + notifyLikes + '> ' + \

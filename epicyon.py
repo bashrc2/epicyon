@@ -615,11 +615,15 @@ if not args.mediainstance:
     mediaInstance = getConfigParam(baseDir, 'mediaInstance')
     if mediaInstance is not None:
         args.mediainstance = mediaInstance
+        if args.mediainstance:
+            args.blogsinstance = False
 
 if not args.blogsinstance:
     blogsInstance = getConfigParam(baseDir, 'blogsInstance')
     if blogsInstance is not None:
         args.blogsinstance = blogsInstance
+        if args.blogsinstance:
+            args.mediainstance = False
 
 # set the instance title in config.json
 title = getConfigParam(baseDir, 'instanceTitle')
