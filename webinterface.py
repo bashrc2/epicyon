@@ -4875,9 +4875,9 @@ def individualPostAsHtml(allowDownloads: bool,
         footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
-        footerStr += '      <a href="' + publishedLink + '" class="' + \
+        footerStr += '        <a href="' + publishedLink + '" class="' + \
             timeClass + '">' + publishedStr + '</a>\n'
-        footerStr += '    </div>\n'
+        footerStr += '      </div>\n'
 
     postIsSensitive = False
     if postJsonObject['object'].get('sensitive'):
