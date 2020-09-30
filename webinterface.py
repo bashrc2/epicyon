@@ -5281,7 +5281,7 @@ def htmlTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     elif boxName == 'tlblogs':
         newPostButtonStr = \
-            '    <a class="imageAnchor" href="' + usersPath + \
+            '      <a class="imageAnchor" href="' + usersPath + \
             '/newblog"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new post'] + '" alt="| ' + \
@@ -5289,7 +5289,7 @@ def htmlTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     elif boxName == 'tlevents':
         newPostButtonStr = \
-            '    <a class="imageAnchor" href="' + usersPath + \
+            '      <a class="imageAnchor" href="' + usersPath + \
             '/newevent"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new event'] + '" alt="| ' + \
@@ -5298,7 +5298,7 @@ def htmlTimeline(defaultTimeline: str,
     else:
         if not manuallyApproveFollowers:
             newPostButtonStr = \
-                '    <a class="imageAnchor" href="' + usersPath + \
+                '      <a class="imageAnchor" href="' + usersPath + \
                 '/newpost"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -5306,7 +5306,7 @@ def htmlTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr = \
-                '    <a class="imageAnchor" href="' + usersPath + \
+                '      <a class="imageAnchor" href="' + usersPath + \
                 '/newfollowers"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + \
@@ -5332,6 +5332,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  </div>\n'
     tlStr += '  <div class="column-center">\n'
     
+    # start of the button header with inbox, outbox, etc
     tlStr += '    <div class="container">\n'
     # first button
     if defaultTimeline == 'tlmedia':
@@ -5441,7 +5442,8 @@ def htmlTimeline(defaultTimeline: str,
         '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>\n'
     tlStr += followApprovals
-    tlStr += '      </div>\n'
+    # end of the button header with inbox, outbox, etc
+    tlStr += '    </div>\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
