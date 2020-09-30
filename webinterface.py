@@ -4504,6 +4504,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 '?delete=' + messageId + pageNumberParam + \
                 '" title="' + translate['Delete this post'] + '">\n'
             deleteStr += \
+                '          ' + \
                 '<img loading="lazy" alt="' + translate['Delete this post'] + \
                 ' |" title="' + translate['Delete this post'] + \
                 '" src="/' + iconsDir + '/delete.png"/></a>\n'
@@ -4515,6 +4516,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 '?bm=' + timelinePostBookmark + \
                 '" title="' + translate['Mute this post'] + '">\n'
             muteStr += \
+                '          ' + \
                 '<img loading="lazy" alt="' + \
                 translate['Mute this post'] + \
                 ' |" title="' + translate['Mute this post'] + \
@@ -4527,6 +4529,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 timelinePostBookmark + '" title="' + \
                 translate['Undo mute'] + '">\n'
             muteStr += \
+                '          ' + \
                 '<img loading="lazy" alt="' + translate['Undo mute'] + \
                 ' |" title="' + translate['Undo mute'] + \
                 '" src="/' + iconsDir+'/unmute.png"/></a>\n'
