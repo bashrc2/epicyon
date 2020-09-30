@@ -4155,7 +4155,7 @@ def individualPostAsHtml(allowDownloads: bool,
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
         avatarLink += \
-            '      <img loading="lazy" title="' + \
+            '        <img loading="lazy" title="' + \
             translate['Show options for this person'] + \
             '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
     avatarImageInPost = \
@@ -4615,7 +4615,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
-                                    '      ' \
+                                    '        ' \
                                     '<div class="timeline-avatar-reply">\n' \
                                     '<a class="imageAnchor" ' + \
                                     'href="/users/' + nickname + \
@@ -4711,7 +4711,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                       boxName + ' 13.6 = ' +
                                                       str(timeDiff))
                                     titleStr += \
-                                        ' <img loading="lazy" title="' + \
+                                        '    <img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
@@ -4768,7 +4768,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                     inReplyTo = \
                                         postJsonObject['object']['inReplyTo']
                                     titleStr += \
-                                        ' <img loading="lazy" title="' + \
+                                        '    <img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
@@ -4781,7 +4781,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                         replyDomain + '</a>\n'
                         else:
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '    <img loading="lazy" title="' + \
                                 translate['replying to'] + \
                                 '" alt="' + \
                                 translate['replying to'] + \
@@ -4801,7 +4801,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             postDomain = postDomain.split('/', 1)[0]
                         if postDomain:
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '    <img loading="lazy" title="' + \
                                 translate['replying to'] + \
                                 '" alt="' + translate['replying to'] + \
                                 '" src="/' + \
@@ -4976,7 +4976,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postHtml = '    <div id="' + timelinePostBookmark + \
             '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
-        postHtml += '<p class="post-title">' + titleStr + \
+        postHtml += '      <p class="post-title">' + titleStr + \
             replyAvatarImageInPost + '</p>\n'
         postHtml += contentStr + footerStr + '\n'
         postHtml += '</div>\n'
