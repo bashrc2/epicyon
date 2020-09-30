@@ -4296,13 +4296,15 @@ def individualPostAsHtml(allowDownloads: bool,
         else:
             if isDM(postJsonObject):
                 replyStr += \
-                    '        <a class="imageAnchor" href="/users/' + nickname + \
+                    '        ' + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replydm=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
             else:
                 replyStr += \
-                    '        <a class="imageAnchor" href="/users/' + nickname + \
+                    '        ' + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replyfollowers=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
@@ -4334,7 +4336,8 @@ def individualPostAsHtml(allowDownloads: bool,
             if isBlogPost(postJsonObject):
                 blogPostId = postJsonObject['object']['id']
                 editStr += \
-                    '        <a class="imageAnchor" href="/users/' + nickname + \
+                    '        ' + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
                     blogPostId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
@@ -4346,7 +4349,8 @@ def individualPostAsHtml(allowDownloads: bool,
             elif isEvent:
                 eventPostId = postJsonObject['object']['id']
                 editStr += \
-                    '        <a class="imageAnchor" href="/users/' + nickname + \
+                    '        ' + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editeventpost=' + \
                     eventPostId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
@@ -4597,7 +4601,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                           ' 13.3.1 = ' + str(timeDiff))
 
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '          ' + \
+                                '<img loading="lazy" title="' + \
                                 translate['announces'] + '" alt="' + \
                                 translate['announces'] + '" src="/' + \
                                 iconsDir + '/repeat_inactive.png" ' + \
@@ -4660,7 +4665,8 @@ def individualPostAsHtml(allowDownloads: bool,
                             '">@unattributed</a>\n'
             else:
                 titleStr += \
-                    '    <img loading="lazy" title="' + translate['announces'] + \
+                    '    ' + \
+                    '<img loading="lazy" title="' + translate['announces'] + \
                     '" alt="' + translate['announces'] + \
                     '" src="/' + iconsDir + \
                     '/repeat_inactive.png" ' + \
@@ -4722,7 +4728,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                                       boxName + ' 13.6 = ' +
                                                       str(timeDiff))
                                     titleStr += \
-                                        '        <img loading="lazy" title="' + \
+                                        '        ' + \
+                                        '<img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
@@ -4783,7 +4790,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                     inReplyTo = \
                                         postJsonObject['object']['inReplyTo']
                                     titleStr += \
-                                        '        <img loading="lazy" title="' + \
+                                        '        ' + \
+                                        '<img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
@@ -4982,7 +4990,8 @@ def individualPostAsHtml(allowDownloads: bool,
     else:
         if not isPatch:
             contentStr = '      <div class="message">' + \
-                contentStr + '</div>\n'
+                contentStr + \
+                '      </div>\n'
         else:
             contentStr = \
                 '<div class="gitpatch"><pre><code>' + contentStr + \
@@ -5350,7 +5359,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  <div class="column-left">\n'
     tlStr += '  </div>\n'
     tlStr += '  <div class="column-center">\n'
-    
+
     # start of the button header with inbox, outbox, etc
     tlStr += '    <div class="container">\n'
     # first button
