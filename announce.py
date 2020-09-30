@@ -108,7 +108,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
     followers url objectUrl is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     if ':' in domain:
@@ -231,7 +231,7 @@ def undoAnnounce(session, baseDir: str, federationList: [],
     objectUrl is typically the url of the message which was repeated,
     corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     if ':' in domain:
@@ -391,12 +391,12 @@ def sendAnnounceViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey, fromPersonId,
-     sharedInbox, capabilityAcquisition,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            fromNickname, fromDomain,
-                                            postToBox)
+     sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix,
+                                 fromNickname, fromDomain,
+                                 postToBox)
 
     if not inboxUrl:
         if debug:
@@ -414,8 +414,7 @@ def sendAnnounceViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newAnnounceJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newAnnounceJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: Announce not posted')
 

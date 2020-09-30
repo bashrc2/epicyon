@@ -148,6 +148,7 @@ from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
 from webinterface import htmlHashtagSearch
+from webinterface import rssHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
@@ -443,7 +444,7 @@ class PubServer(BaseHTTPRequestHandler):
                       'failed to obtain keyId from signature')
             return False
         # is the keyId (actor) valid?
-        if not urlPermitted(keyId, self.server.federationList, "inbox:read"):
+        if not urlPermitted(keyId, self.server.federationList):
             if self.server.debug:
                 print('Authorized fetch failed: ' + keyId +
                       ' is not permitted')
@@ -920,6 +921,7 @@ class PubServer(BaseHTTPRequestHandler):
         if postToNickname:
             print('Posting to nickname ' + postToNickname)
             self.postToNickname = postToNickname
+
         return postMessageToOutbox(messageJson, self.postToNickname,
                                    self.server, self.server.baseDir,
                                    self.server.httpPrefix,
@@ -4047,7 +4049,8 @@ class PubServer(BaseHTTPRequestHandler):
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
         if isBlockedHashtag(baseDir, hashtag):
-            msg = htmlHashtagBlocked(baseDir).encode('utf-8')
+            msg = htmlHashtagBlocked(baseDir,
+                                     self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             self.server.GETbusy = False
@@ -4092,6 +4095,60 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'login shown done',
                                   'hashtag search')
+
+    def _hashtagSearchRSS2(self, callingDomain: str,
+                           path: str, cookie: str,
+                           baseDir: str, httpPrefix: str,
+                           domain: str, domainFull: str, port: int,
+                           onionDomain: str, i2pDomain: str,
+                           GETstartTime, GETtimings: {}):
+        """Return an RSS 2 feed for a hashtag
+        """
+        hashtag = path.split('/tags/rss2/')[1]
+        if isBlockedHashtag(baseDir, hashtag):
+            self._400()
+            self.server.GETbusy = False
+            return
+        nickname = None
+        if '/users/' in path:
+            actor = \
+                httpPrefix + '://' + domainFull + path
+            nickname = \
+                getNicknameFromActor(actor)
+        hashtagStr = \
+            rssHashtagSearch(nickname,
+                             domain, port,
+                             self.server.recentPostsCache,
+                             self.server.maxRecentPosts,
+                             self.server.translate,
+                             baseDir, hashtag,
+                             maxPostsInFeed, self.server.session,
+                             self.server.cachedWebfingers,
+                             self.server.personCache,
+                             httpPrefix,
+                             self.server.projectVersion,
+                             self.server.YTReplacementDomain)
+        if hashtagStr:
+            msg = hashtagStr.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              cookie, callingDomain)
+            self._write(msg)
+        else:
+            originPathStr = path.split('/tags/rss2/')[0]
+            originPathStrAbsolute = \
+                httpPrefix + '://' + domainFull + originPathStr
+            if callingDomain.endswith('.onion') and onionDomain:
+                originPathStrAbsolute = \
+                    'http://' + onionDomain + originPathStr
+            elif (callingDomain.endswith('.i2p') and onionDomain):
+                originPathStrAbsolute = \
+                    'http://' + i2pDomain + originPathStr
+            self._redirect_headers(originPathStrAbsolute + '/search',
+                                   cookie, callingDomain)
+        self.server.GETbusy = False
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'login shown done',
+                                  'hashtag rss feed')
 
     def _announceButton(self, callingDomain: str, path: str,
                         baseDir: str,
@@ -4309,7 +4366,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.postLog,
                                        self.server.cachedWebfingers,
                                        self.server.personCache,
-                                       self.server.acceptedCaps,
                                        debug,
                                        self.server.projectVersion)
         originPathStrAbsolute = \
@@ -5178,7 +5234,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.translate,
                                     self.server.projectVersion,
                                     baseDir, httpPrefix, True,
-                                    self.server.ocapAlways,
                                     getPerson, 'roles',
                                     self.server.session,
                                     cachedWebfingers,
@@ -5249,7 +5304,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.translate,
                                                 self.server.projectVersion,
                                                 baseDir, httpPrefix, True,
-                                                self.server.ocapAlways,
                                                 getPerson, 'skills',
                                                 self.server.session,
                                                 cachedWebfingers,
@@ -5516,7 +5570,6 @@ class PubServer(BaseHTTPRequestHandler):
                    proxyType: str, cookie: str,
                    debug: str,
                    recentPostsCache: {}, session,
-                   ocapAlways: bool,
                    defaultTimeline: str,
                    maxRecentPosts: int,
                    translate: {},
@@ -5538,12 +5591,12 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'inbox',
-                                  authorized,
-                                  ocapAlways)
+                                  authorized)
                 if inboxFeed:
-                    self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                              'show status done',
-                                              'show inbox json')
+                    if GETstartTime:
+                        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                  'show status done',
+                                                  'show inbox json')
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
                         nickname = nickname.replace('/inbox', '')
@@ -5566,12 +5619,12 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'inbox',
-                                              authorized,
-                                              ocapAlways)
-                            self._benchmarkGETtimings(GETstartTime,
-                                                      GETtimings,
-                                                      'show status done',
-                                                      'show inbox page')
+                                              authorized)
+                            if GETstartTime:
+                                self._benchmarkGETtimings(GETstartTime,
+                                                          GETtimings,
+                                                          'show status done',
+                                                          'show inbox page')
                         msg = htmlInbox(defaultTimeline,
                                         recentPostsCache,
                                         maxRecentPosts,
@@ -5590,16 +5643,21 @@ class PubServer(BaseHTTPRequestHandler):
                                         projectVersion,
                                         self._isMinimal(nickname),
                                         YTReplacementDomain)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show status done',
-                                                  'show inbox html')
-                        msg = msg.encode('utf-8')
-                        self._set_headers('text/html', len(msg),
-                                          cookie, callingDomain)
-                        self._write(msg)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'show status done',
-                                                  'show inbox')
+                        if GETstartTime:
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox html')
+
+                        if msg:
+                            msg = msg.encode('utf-8')
+                            self._set_headers('text/html', len(msg),
+                                              cookie, callingDomain)
+                            self._write(msg)
+
+                        if GETstartTime:
+                            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                                      'show status done',
+                                                      'show inbox')
                     else:
                         # don't need authenticated fetch here because
                         # there is already the authorization check
@@ -5647,8 +5705,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'dm',
-                                  authorized,
-                                  self.server.ocapAlways)
+                                  authorized)
                 if inboxDMFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -5672,8 +5729,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'dm',
-                                              authorized,
-                                              self.server.ocapAlways)
+                                              authorized)
                         msg = \
                             htmlInboxDMs(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -5748,7 +5804,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlreplies',
-                                  True, self.server.ocapAlways)
+                                  True)
                 if not inboxRepliesFeed:
                     inboxRepliesFeed = []
                 if self._requestHTTP():
@@ -5773,7 +5829,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInFeed, 'tlreplies',
-                                          True, self.server.ocapAlways)
+                                          True)
                     msg = \
                         htmlInboxReplies(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -5848,7 +5904,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInMediaFeed, 'tlmedia',
-                                  True, self.server.ocapAlways)
+                                  True)
                 if not inboxMediaFeed:
                     inboxMediaFeed = []
                 if self._requestHTTP():
@@ -5873,7 +5929,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInMediaFeed, 'tlmedia',
-                                          True, self.server.ocapAlways)
+                                          True)
                     msg = \
                         htmlInboxMedia(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -5948,7 +6004,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInBlogsFeed, 'tlblogs',
-                                  True, self.server.ocapAlways)
+                                  True)
                 if not inboxBlogsFeed:
                     inboxBlogsFeed = []
                 if self._requestHTTP():
@@ -5973,7 +6029,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInBlogsFeed, 'tlblogs',
-                                          True, self.server.ocapAlways)
+                                          True)
                     msg = \
                         htmlInboxBlogs(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6106,7 +6162,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlbookmarks',
-                                  authorized, self.server.ocapAlways)
+                                  authorized)
                 if bookmarksFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6132,8 +6188,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed,
                                               'tlbookmarks',
-                                              authorized,
-                                              self.server.ocapAlways)
+                                              authorized)
                         msg = \
                             htmlBookmarks(self.server.defaultTimeline,
                                           self.server.recentPostsCache,
@@ -6210,7 +6265,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlevents',
-                                  authorized, self.server.ocapAlways)
+                                  authorized)
                 print('eventsFeed: ' + str(eventsFeed))
                 if eventsFeed:
                     if self._requestHTTP():
@@ -6236,8 +6291,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed,
                                               'tlevents',
-                                              authorized,
-                                              self.server.ocapAlways)
+                                              authorized)
                         msg = \
                             htmlEvents(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6306,8 +6360,7 @@ class PubServer(BaseHTTPRequestHandler):
                           port, path,
                           httpPrefix,
                           maxPostsInFeed, 'outbox',
-                          authorized,
-                          self.server.ocapAlways)
+                          authorized)
         if outboxFeed:
             if self._requestHTTP():
                 nickname = \
@@ -6331,8 +6384,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       path + '?page=1',
                                       httpPrefix,
                                       maxPostsInFeed, 'outbox',
-                                      authorized,
-                                      self.server.ocapAlways)
+                                      authorized)
                 msg = \
                     htmlOutbox(self.server.defaultTimeline,
                                self.server.recentPostsCache,
@@ -6394,7 +6446,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'moderation',
-                                  True, self.server.ocapAlways)
+                                  True)
                 if moderationFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6418,7 +6470,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'moderation',
-                                              True, self.server.ocapAlways)
+                                              True)
                         msg = \
                             htmlModeration(self.server.defaultTimeline,
                                            self.server.recentPostsCache,
@@ -6521,7 +6573,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.projectVersion,
                                     baseDir, httpPrefix,
                                     authorized,
-                                    self.server.ocapAlways,
                                     getPerson, 'shares',
                                     self.server.session,
                                     self.server.cachedWebfingers,
@@ -6608,7 +6659,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.projectVersion,
                                     baseDir, httpPrefix,
                                     authorized,
-                                    self.server.ocapAlways,
                                     getPerson, 'following',
                                     self.server.session,
                                     self.server.cachedWebfingers,
@@ -6695,7 +6745,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     baseDir,
                                     httpPrefix,
                                     authorized,
-                                    self.server.ocapAlways,
                                     getPerson, 'followers',
                                     self.server.session,
                                     self.server.cachedWebfingers,
@@ -6757,7 +6806,6 @@ class PubServer(BaseHTTPRequestHandler):
                                 baseDir,
                                 httpPrefix,
                                 authorized,
-                                self.server.ocapAlways,
                                 getPerson, 'posts',
                                 self.server.session,
                                 self.server.cachedWebfingers,
@@ -8068,6 +8116,18 @@ class PubServer(BaseHTTPRequestHandler):
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
+            if self.path.startswith('/tags/rss2/'):
+                self._hashtagSearchRSS2(callingDomain,
+                                        self.path, cookie,
+                                        self.server.baseDir,
+                                        self.server.httpPrefix,
+                                        self.server.domain,
+                                        self.server.domainFull,
+                                        self.server.port,
+                                        self.server.onionDomain,
+                                        self.server.i2pDomain,
+                                        GETstartTime, GETtimings)
+                return
             self._hashtagSearch(callingDomain,
                                 self.path, cookie,
                                 self.server.baseDir,
@@ -8673,7 +8733,6 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, self.server.debug,
                                self.server.recentPostsCache,
                                self.server.session,
-                               self.server.ocapAlways,
                                self.server.defaultTimeline,
                                self.server.maxRecentPosts,
                                self.server.translate,
@@ -9064,7 +9123,9 @@ class PubServer(BaseHTTPRequestHandler):
                                etag, callingDomain)
 
     def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
-                               length: int, postBytes, boundary: str) -> int:
+                               length: int, postBytes, boundary: str,
+                               callingDomain: str, cookie: str,
+                               authorized: bool) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
         # 1=new post success
@@ -9205,6 +9266,7 @@ class PubServer(BaseHTTPRequestHandler):
                 privateEvent = False
             else:
                 privateEvent = True
+
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -9224,6 +9286,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
+
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
@@ -9481,8 +9544,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-#                    if self.server.debug:
-                    print('DEBUG: new DM to ' +
+                    print('Sending new DM to ' +
                           str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
@@ -9618,7 +9680,9 @@ class PubServer(BaseHTTPRequestHandler):
                 return 1
         return -1
 
-    def _receiveNewPost(self, postType: str, path: str) -> int:
+    def _receiveNewPost(self, postType: str, path: str,
+                        callingDomain: str, cookie: str,
+                        authorized: bool) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -9719,7 +9783,9 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Creating new post from: ' + newPostThreadName)
                 self._receiveNewPostProcess(postType,
                                             path, headers, length,
-                                            postBytes, boundary)
+                                            postBytes, boundary,
+                                            callingDomain, cookie,
+                                            authorized)
         return pageNumber
 
     def _cryptoAPIreadHandle(self):
@@ -10179,7 +10245,10 @@ class PubServer(BaseHTTPRequestHandler):
             elif currPostType == 'newevent':
                 postRedirect = 'tlevents'
 
-            pageNumber = self._receiveNewPost(currPostType, self.path)
+            pageNumber = \
+                self._receiveNewPost(currPostType, self.path,
+                                     callingDomain, cookie,
+                                     authorized)
             if pageNumber:
                 nickname = self.path.split('/users/')[1]
                 if '/' in nickname:
@@ -10232,7 +10301,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/inbox') or
                 self.path.endswith('/shares') or
                 self.path.endswith('/moderationaction') or
-                self.path.endswith('/caps/new') or
                 self.path == '/sharedInbox'):
             print('Attempt to POST to invalid path ' + self.path)
             self._400()
@@ -10554,8 +10622,6 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
               port=80, proxyPort=80, httpPrefix='https',
               fedList=[], maxMentions=10, maxEmoji=10,
               authenticatedFetch=False,
-              noreply=False, nolike=False, nopics=False,
-              noannounce=False, cw=False, ocapAlways=False,
               proxyType=None, maxReplies=64,
               domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
               allowDeletion=False, debug=False, unitTest=False,
@@ -10687,7 +10753,6 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.sendThreads = sendThreads
     httpd.postLog = []
     httpd.maxQueueLength = 64
-    httpd.ocapAlways = ocapAlways
     httpd.allowDeletion = allowDeletion
     httpd.lastLoginTime = 0
     httpd.maxReplies = maxReplies
@@ -10695,19 +10760,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.tokensLookup = {}
     loadTokens(baseDir, httpd.tokens, httpd.tokensLookup)
     httpd.instanceOnlySkillsSearch = instanceOnlySkillsSearch
-    httpd.acceptedCaps = ["inbox:write", "objects:read"]
     # contains threads used to send posts to followers
     httpd.followersThreads = []
-    if noreply:
-        httpd.acceptedCaps.append('inbox:noreply')
-    if nolike:
-        httpd.acceptedCaps.append('inbox:nolike')
-    if nopics:
-        httpd.acceptedCaps.append('inbox:nopics')
-    if noannounce:
-        httpd.acceptedCaps.append('inbox:noannounce')
-    if cw:
-        httpd.acceptedCaps.append('inbox:cw')
 
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
@@ -10778,12 +10832,11 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                               httpd.personCache, httpd.inboxQueue,
                               domain, onionDomain, i2pDomain, port, proxyType,
                               httpd.federationList,
-                              httpd.ocapAlways, maxReplies,
+                              maxReplies,
                               domainMaxPostsPerDay, accountMaxPostsPerDay,
                               allowDeletion, debug, maxMentions, maxEmoji,
                               httpd.translate, unitTest,
-                              httpd.YTReplacementDomain,
-                              httpd.acceptedCaps), daemon=True)
+                              httpd.YTReplacementDomain), daemon=True)
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
         threadWithTrace(target=runPostSchedule,

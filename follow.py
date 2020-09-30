@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
+from utils import getFollowersList
 from utils import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
@@ -112,50 +113,19 @@ def isFollowingActor(baseDir: str,
 
 
 def getMutualsOfPerson(baseDir: str,
-                       nickname: str, domain: str,
-                       followFile='following.txt') -> []:
+                       nickname: str, domain: str) -> []:
     """Returns the mutuals of a person
     i.e. accounts which they follow and which also follow back
     """
     followers = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'followers')
+        getFollowersList(baseDir, nickname, domain, 'followers.txt')
     following = \
-        getFollowersOfPerson(baseDir, nickname, domain, 'following')
+        getFollowersList(baseDir, nickname, domain, 'following.txt')
     mutuals = []
     for handle in following:
         if handle in followers:
             mutuals.append(handle)
     return mutuals
-
-
-def getFollowersOfPerson(baseDir: str,
-                         nickname: str, domain: str,
-                         followFile='following.txt') -> []:
-    """Returns a list containing the followers of the given person
-    Used by the shared inbox to know who to send incoming mail to
-    """
-    followers = []
-    if ':' in domain:
-        domain = domain.split(':')[0]
-    handle = nickname + '@' + domain
-    if not os.path.isdir(baseDir + '/accounts/' + handle):
-        return followers
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-        for account in dirs:
-            filename = os.path.join(subdir, account) + '/' + followFile
-            if account == handle or account.startswith('inbox@'):
-                continue
-            if not os.path.isfile(filename):
-                continue
-            with open(filename, 'r') as followingfile:
-                for followingHandle in followingfile:
-                    followingHandle2 = followingHandle.replace('\n', '')
-                    followingHandle2 = followingHandle2.replace('\r', '')
-                    if followingHandle2 == handle:
-                        if account not in followers:
-                            followers.append(account)
-                        break
-    return followers
 
 
 def followerOfPerson(baseDir: str, nickname: str, domain: str,
@@ -543,8 +513,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          port: int, sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
-                         debug: bool, projectVersion: str,
-                         acceptedCaps=["inbox:write", "objects:read"]) -> bool:
+                         debug: bool, projectVersion: str) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -685,8 +654,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
                                   messageJson['actor'], federationList,
-                                  messageJson, acceptedCaps,
-                                  sendThreads, postLog,
+                                  messageJson, sendThreads, postLog,
                                   cachedWebfingers, personCache,
                                   debug, projectVersion, True)
 
@@ -696,8 +664,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
                            port: int,
                            nickname: str, domain: str, fromPort: int,
                            personUrl: str, federationList: [],
-                           followJson: {}, acceptedCaps: [],
-                           sendThreads: [], postLog: [],
+                           followJson: {}, sendThreads: [], postLog: [],
                            cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
                            removeFollowActivity: bool):
@@ -715,7 +682,7 @@ def followedAccountAccepts(session, baseDir: str, httpPrefix: str,
     acceptJson = createAccept(baseDir, federationList,
                               nicknameToFollow, domainToFollow, port,
                               personUrl, '', httpPrefix,
-                              followJson, acceptedCaps)
+                              followJson)
     if debug:
         pprint(acceptJson)
         print('DEBUG: sending follow Accept from ' +
@@ -938,8 +905,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -961,7 +927,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newFollowJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, newFollowJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
@@ -1037,10 +1003,11 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
-     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
-                                 projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+     avatarUrl, displayName) = getPersonBox(baseDir, session,
+                                            wfRequest, personCache,
+                                            projectVersion, httpPrefix,
+                                            fromNickname,
+                                            fromDomain, postToBox)
 
     if not inboxUrl:
         if debug:
@@ -1059,7 +1026,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, unfollowJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, unfollowJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
@@ -1075,14 +1042,12 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
     This returns a list of account handles which follow the given actor
-    and also the corresponding capability id if it exists
     """
     if debug:
         print('DEBUG: getting followers of ' + actor)
     recipientsDict = {}
     if ':' not in actor:
         return recipientsDict
-    httpPrefix = actor.split(':')[0]
     nickname = getNicknameFromActor(actor)
     if not nickname:
         if debug:
@@ -1114,35 +1079,7 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
                         if debug:
                             print('DEBUG: ' + account +
                                   ' follows ' + actorHandle)
-                        ocapFilename = baseDir + '/accounts/' + \
-                            account + '/ocap/accept/' + httpPrefix + \
-                            ':##' + domain + ':' + str(port) + \
-                            '#users#' + nickname + '.json'
-                        if debug:
-                            print('DEBUG: checking capabilities of' + account)
-                        if os.path.isfile(ocapFilename):
-                            ocapJson = loadJson(ocapFilename)
-                            if ocapJson:
-                                if ocapJson.get('id'):
-                                    if debug:
-                                        print('DEBUG: ' +
-                                              'capabilities id found for ' +
-                                              account)
-
-                                    recipientsDict[account] = ocapJson['id']
-                                else:
-                                    if debug:
-                                        print('DEBUG: ' +
-                                              'capabilities has no ' +
-                                              'id attribute')
-                                    recipientsDict[account] = None
-                        else:
-                            if debug:
-                                print('DEBUG: ' +
-                                      'No capabilities file found for ' +
-                                      account + ' granted by ' + actorHandle)
-                                print(ocapFilename)
-                            recipientsDict[account] = None
+                        recipientsDict[account] = None
     return recipientsDict
 
 

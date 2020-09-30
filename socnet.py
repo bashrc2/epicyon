@@ -65,7 +65,6 @@ def instancesGraph(baseDir: str, handles: str,
 
         (personUrl, pubKeyId, pubKey,
          personId, shaedInbox,
-         capabilityAcquisition,
          avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                 personCache,
                                                 projectVersion, httpPrefix,

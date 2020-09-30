@@ -282,7 +282,8 @@ def htmlBlogPostRSS2(authorized: bool,
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
         if not restrictToDomain or \
            (restrictToDomain and '/' + domain in messageLink):
-            if postJsonObject['object'].get('summary'):
+            if postJsonObject['object'].get('summary') and \
+               postJsonObject['object'].get('published'):
                 published = postJsonObject['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
@@ -307,7 +308,8 @@ def htmlBlogPostRSS3(authorized: bool,
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
         if not restrictToDomain or \
            (restrictToDomain and '/' + domain in messageLink):
-            if postJsonObject['object'].get('summary'):
+            if postJsonObject['object'].get('summary') and \
+               postJsonObject['object'].get('published'):
                 published = postJsonObject['object']['published']
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
@@ -358,13 +360,15 @@ def htmlBlogPost(authorized: bool,
 
         blogStr += '<a href="' + httpPrefix + '://' + \
             domainFull + '/blog/' + nickname + '/rss.xml">'
-        blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
+        blogStr += '<img style="width:3%;min-width:50px" ' + \
+            'loading="lazy" alt="RSS 2.0" ' + \
             'title="RSS 2.0" src="/' + \
             iconsDir + '/rss.png" /></a>'
 
         blogStr += '<a href="' + httpPrefix + '://' + \
             domainFull + '/blog/' + nickname + '/rss.txt">'
-        blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
+        blogStr += '<img style="width:3%;min-width:50px" ' + \
+            'loading="lazy" alt="RSS 3.0" ' + \
             'title="RSS 3.0" src="/' + \
             iconsDir + '/rss3.png" /></a>'
 

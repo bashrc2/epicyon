@@ -16,6 +16,7 @@ from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
 from posts import getPublicPostDomains
+from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
 from posts import sendUndoBlockViaServer
 from posts import createPublicPost
@@ -24,6 +25,7 @@ from posts import archivePosts
 from posts import sendPostViaServer
 from posts import getPublicPostsOfPerson
 from posts import getUserUrl
+from posts import checkDomains
 from session import createSession
 from session import getJson
 from filters import addFilter
@@ -71,7 +73,9 @@ from socnet import instancesGraph
 import argparse
 
 
-def str2bool(v):
+def str2bool(v) -> bool:
+    """Returns true if the given value is a boolean
+    """
     if isinstance(v, bool):
         return v
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
@@ -155,6 +159,14 @@ parser.add_argument('--postDomains', dest='postDomains', type=str,
                     default=None,
                     help='Show domains referenced in public '
                     'posts for the given handle')
+parser.add_argument('--postDomainsBlocked', dest='postDomainsBlocked',
+                    type=str, default=None,
+                    help='Show blocked domains referenced in public '
+                    'posts for the given handle')
+parser.add_argument('--checkDomains', dest='checkDomains', type=str,
+                    default=None,
+                    help='Check domains of non-mutual followers for '
+                    'domains which are globally blocked by this instance')
 parser.add_argument('--socnet', dest='socnet', type=str,
                     default=None,
                     help='Show dot diagram for social network '
@@ -218,26 +230,6 @@ parser.add_argument("--testsnetwork", type=str2bool, nargs='?',
 parser.add_argument("--testdata", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Generate some data for testing purposes")
-parser.add_argument("--ocap", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Always strictly enforce object capabilities")
-parser.add_argument("--noreply", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow replies on posts")
-parser.add_argument("--nolike", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow " +
-                    "likes/favourites on posts")
-parser.add_argument("--nopics", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow attached pictures")
-parser.add_argument("--noannounce", "--norepeat", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow announce/repeat")
-parser.add_argument("--cw", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Default capabilities don't allow posts " +
-                    "without content warnings")
 parser.add_argument('--icon', '--avatar', dest='avatar', type=str,
                     default=None,
                     help='Set the avatar filename for an account')
@@ -465,12 +457,90 @@ if args.postDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-    domainList = getPublicPostDomains(baseDir, nickname, domain,
+    domainList = getPublicPostDomains(None,
+                                      baseDir, nickname, domain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
                                       __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
+    sys.exit()
+
+if args.postDomainsBlocked:
+    # Domains which were referenced in public posts by a
+    # given handle but which are globally blocked on this instance
+    if '@' not in args.postDomainsBlocked:
+        if '/users/' in args.postDomainsBlocked:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.postDomainsBlocked = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.postDomainsBlocked += ':' + str(postsPort)
+        else:
+            print('Syntax: --postDomainsBlocked nickname@domain')
+            sys.exit()
+    if not args.http:
+        args.port = 443
+    nickname = args.postDomainsBlocked.split('@')[0]
+    domain = args.postDomainsBlocked.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+    domainList = []
+    domainList = getPublicPostDomainsBlocked(None,
+                                             baseDir, nickname, domain,
+                                             proxyType, args.port,
+                                             httpPrefix, debug,
+                                             __version__, domainList)
+    for postDomain in domainList:
+        print(postDomain)
+    sys.exit()
+
+if args.checkDomains:
+    # Domains which were referenced in public posts by a
+    # given handle but which are globally blocked on this instance
+    if '@' not in args.checkDomains:
+        if '/users/' in args.checkDomains:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.checkDomains = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.checkDomains += ':' + str(postsPort)
+        else:
+            print('Syntax: --checkDomains nickname@domain')
+            sys.exit()
+    if not args.http:
+        args.port = 443
+    nickname = args.checkDomains.split('@')[0]
+    domain = args.checkDomains.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+    maxBlockedDomains = 0
+    checkDomains(None,
+                 baseDir, nickname, domain,
+                 proxyType, args.port,
+                 httpPrefix, debug,
+                 __version__,
+                 maxBlockedDomains, False)
     sys.exit()
 
 if args.socnet:
@@ -718,7 +788,6 @@ if args.approve:
     postLog = []
     cachedWebfingers = {}
     personCache = {}
-    acceptedCaps = []
     manualApproveFollowRequest(session, baseDir,
                                httpPrefix,
                                args.nickname, domain, port,
@@ -726,7 +795,6 @@ if args.approve:
                                federationList,
                                sendThreads, postLog,
                                cachedWebfingers, personCache,
-                               acceptedCaps,
                                debug, __version__)
     sys.exit()
 
@@ -1111,9 +1179,6 @@ if args.port:
 if args.proxyPort:
     proxyPort = args.proxyPort
     setConfigParam(baseDir, 'proxyPort', proxyPort)
-ocapAlways = False
-if args.ocap:
-    ocapAlways = args.ocap
 if args.gnunet:
     httpPrefix = 'gnunet'
 if args.dat:
@@ -1830,8 +1895,6 @@ if __name__ == "__main__":
               port, proxyPort, httpPrefix,
               federationList, args.maxMentions,
               args.maxEmoji, args.authenticatedFetch,
-              args.noreply, args.nolike, args.nopics,
-              args.noannounce, args.cw, ocapAlways,
               proxyType, args.maxReplies,
               args.domainMaxPostsPerDay,
               args.accountMaxPostsPerDay,

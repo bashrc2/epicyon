@@ -380,7 +380,6 @@ def sendShareViaServer(baseDir, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
@@ -405,7 +404,7 @@ def sendShareViaServer(baseDir, session,
         postResult = \
             postImage(session, imageFilename, [],
                       inboxUrl.replace('/' + postToBox, '/shares'),
-                      headers, "inbox:write")
+                      headers)
 
     headers = {
         'host': fromDomain,
@@ -413,7 +412,7 @@ def sendShareViaServer(baseDir, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newShareJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, newShareJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
@@ -483,7 +482,6 @@ def sendUndoShareViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
@@ -506,7 +504,7 @@ def sendUndoShareViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, undoShareJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, undoShareJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)

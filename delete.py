@@ -34,7 +34,7 @@ def createDelete(session, baseDir: str, federationList: [],
     objectUrl is typically the url of the message, corresponding to url
     or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl, federationList, "inbox:write"):
+    if not urlPermitted(objectUrl, federationList):
         return None
 
     if ':' in domain:
@@ -137,8 +137,7 @@ def sendDeleteViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -160,7 +159,7 @@ def sendDeleteViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newDeleteJson, [], inboxUrl, headers, "inbox:write")
+        postJson(session, newDeleteJson, [], inboxUrl, headers)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)

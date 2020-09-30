@@ -14,6 +14,7 @@ import shutil
 import sys
 import time
 import uuid
+import random
 from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
@@ -29,6 +30,8 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import getFollowersList
+from utils import isEvil
 from utils import removeIdEnding
 from utils import siteIsActive
 from utils import getCachedPostFilename
@@ -42,8 +45,6 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
-from capabilities import getOcapFilename
-from capabilities import capabilitiesUpdate
 from media import attachMedia
 from media import replaceYouTube
 from content import removeHtml
@@ -207,7 +208,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         else:
             personUrl = httpPrefix + '://' + domain + '/users/' + nickname
     if not personUrl:
-        return None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None
     personJson = \
         getPersonFromCache(baseDir, personUrl, personCache, True)
     if not personJson:
@@ -225,7 +226,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                                  projectVersion, httpPrefix, domain)
             if not personJson:
                 print('Unable to get actor')
-                return None, None, None, None, None, None, None, None
+                return None, None, None, None, None, None, None
     boxJson = None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
@@ -235,7 +236,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         boxJson = personJson[boxName]
 
     if not boxJson:
-        return None, None, None, None, None, None, None, None
+        return None, None, None, None, None, None, None
 
     personId = None
     if personJson.get('id'):
@@ -254,9 +255,6 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         if personJson.get('endpoints'):
             if personJson['endpoints'].get('sharedInbox'):
                 sharedInbox = personJson['endpoints']['sharedInbox']
-    capabilityAcquisition = None
-    if personJson.get('capabilityAcquisitionEndpoint'):
-        capabilityAcquisition = personJson['capabilityAcquisitionEndpoint']
     avatarUrl = None
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
@@ -268,7 +266,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
     return boxJson, pubKeyId, pubKey, personId, sharedInbox, \
-        capabilityAcquisition, avatarUrl, displayName
+        avatarUrl, displayName
 
 
 def getPosts(session, outboxUrl: str, maxPosts: int,
@@ -890,24 +888,12 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
 
-        # if capabilities have been granted for this actor
-        # then get the corresponding id
-        capabilityIdList = []
-        ocapFilename = getOcapFilename(baseDir, nickname, domain,
-                                       toUrl, 'granted')
-        if ocapFilename:
-            if os.path.isfile(ocapFilename):
-                oc = loadJson(ocapFilename)
-                if oc:
-                    if oc.get('id'):
-                        capabilityIdList = [oc['id']]
         idStr = \
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
         newPost = {
             '@context': postContext,
             'id': newPostId + '/activity',
-            'capability': capabilityIdList,
             'type': 'Create',
             'actor': actorUrl,
             'published': published,
@@ -1072,11 +1058,9 @@ def outboxMessageCreateWrap(httpPrefix: str,
     cc = []
     if messageJson.get('cc'):
         cc = messageJson['cc']
-    capabilityUrl = []
     newPost = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId + '/activity',
-        'capability': capabilityUrl,
         'type': 'Create',
         'actor': httpPrefix + '://' + domain + '/users/' + nickname,
         'published': published,
@@ -1580,7 +1564,7 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
             postResult, unauthorized = \
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
-                               "inbox:write", debug)
+                               debug)
         except Exception as e:
             print('ERROR: postJsonString failed ' + str(e))
         if unauthorized:
@@ -1665,18 +1649,10 @@ def sendPost(projectVersion: str,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      toPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             nickname, domain, postToBox)
-
-    # If there are more than one followers on the target domain
-    # then send to the shared inbox indead of the individual inbox
-    if nickname == 'capabilities':
-        inboxUrl = capabilityAcquisition
-        if not capabilityAcquisition:
-            return 2
 
     if not inboxUrl:
         return 3
@@ -1684,7 +1660,7 @@ def sendPost(projectVersion: str,
         return 4
     if not toPersonId:
         return 5
-    # sharedInbox and capabilities are optional
+    # sharedInbox is optional
 
     postJsonObject = \
         createPostBase(baseDir, nickname, domain, port,
@@ -1790,7 +1766,6 @@ def sendPostViaServer(projectVersion: str,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -1856,7 +1831,7 @@ def sendPostViaServer(projectVersion: str,
         }
         postResult = \
             postImage(session, attachImageFilename, [],
-                      inboxUrl, headers, "inbox:write")
+                      inboxUrl, headers)
         if not postResult:
             if debug:
                 print('DEBUG: Failed to upload image')
@@ -1869,7 +1844,7 @@ def sendPostViaServer(projectVersion: str,
     }
     postResult = \
         postJsonString(session, json.dumps(postJsonObject), [],
-                       inboxUrl, headers, "inbox:write", debug)
+                       inboxUrl, headers, debug)
     if not postResult:
         if debug:
             print('DEBUG: POST failed for c2s to '+inboxUrl)
@@ -2000,25 +1975,19 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     else:
         postToBox = 'outbox'
 
-    # get the actor inbox/outbox/capabilities for the To handle
-    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl,
-     capabilityAcquisition, avatarUrl,
+    # get the actor inbox/outbox for the To handle
+    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix,
                                  nickname, domain, postToBox)
 
-    if nickname == 'capabilities':
-        inboxUrl = capabilityAcquisition
-        if not capabilityAcquisition:
-            return 2
-    else:
-        print("inboxUrl: " + str(inboxUrl))
-        print("toPersonId: " + str(toPersonId))
-        print("sharedInboxUrl: " + str(sharedInboxUrl))
-        if inboxUrl:
-            if inboxUrl.endswith('/actor/inbox'):
-                inboxUrl = sharedInboxUrl
+    print("inboxUrl: " + str(inboxUrl))
+    print("toPersonId: " + str(toPersonId))
+    print("sharedInboxUrl: " + str(sharedInboxUrl))
+    if inboxUrl:
+        if inboxUrl.endswith('/actor/inbox'):
+            inboxUrl = sharedInboxUrl
 
     if not inboxUrl:
         if debug:
@@ -2036,7 +2005,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         if debug:
             print('DEBUG: missing personId')
         return 5
-    # sharedInbox and capabilities are optional
+    # sharedInbox is optional
 
     # get the senders private key
     privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private', debug)
@@ -2470,75 +2439,69 @@ def sendToFollowersThread(session, baseDir: str,
 def createInbox(recentPostsCache: {},
                 session, baseDir: str, nickname: str, domain: str, port: int,
                 httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                ocapAlways: bool, pageNumber=None) -> {}:
+                pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'inbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
                             port: int, httpPrefix: str, itemsPerPage: int,
-                            headerOnly: bool, ocapAlways: bool,
-                            pageNumber=None) -> {}:
+                            headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, ocapAlways, pageNumber)
+                            True, pageNumber)
 
 
 def createEventsTimeline(recentPostsCache: {},
                          session, baseDir: str, nickname: str, domain: str,
                          port: int, httpPrefix: str, itemsPerPage: int,
-                         headerOnly: bool, ocapAlways: bool,
-                         pageNumber=None) -> {}:
+                         headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, ocapAlways, pageNumber)
+                            True, pageNumber)
 
 
 def createDMTimeline(recentPostsCache: {},
                      session, baseDir: str, nickname: str, domain: str,
                      port: int, httpPrefix: str, itemsPerPage: int,
-                     headerOnly: bool, ocapAlways: bool,
-                     pageNumber=None) -> {}:
+                     headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'dm', nickname,
                             domain, port, httpPrefix, itemsPerPage,
-                            headerOnly, True, ocapAlways, pageNumber)
+                            headerOnly, True, pageNumber)
 
 
 def createRepliesTimeline(recentPostsCache: {},
                           session, baseDir: str, nickname: str, domain: str,
                           port: int, httpPrefix: str, itemsPerPage: int,
-                          headerOnly: bool, ocapAlways: bool,
-                          pageNumber=None) -> {}:
+                          headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, ocapAlways: bool,
-                        pageNumber=None) -> {}:
+                        headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
-                        headerOnly: bool, ocapAlways: bool,
-                        pageNumber=None) -> {}:
+                        headerOnly: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            ocapAlways, pageNumber)
+                            pageNumber)
 
 
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
@@ -2548,12 +2511,12 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'outbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, authorized,
-                            False, pageNumber)
+                            pageNumber)
 
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, itemsPerPage: int, headerOnly: bool,
-                     ocapAlways: bool, pageNumber=None) -> {}:
+                     pageNumber=None) -> {}:
     boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
     boxname = 'moderation'
 
@@ -2751,8 +2714,7 @@ def createBoxIndex(boxDir: str, postsInBoxDict: {}) -> int:
 
 def createSharedInboxIndex(baseDir: str, sharedBoxDir: str,
                            postsInBoxDict: {}, postsCtr: int,
-                           nickname: str, domain: str,
-                           ocapAlways: bool) -> int:
+                           nickname: str, domain: str) -> int:
     """ Creates an index for the given shared inbox
     """
     handle = nickname + '@' + domain
@@ -2788,32 +2750,8 @@ def createSharedInboxIndex(baseDir: str, sharedBoxDir: str,
         if actorNickname + '@' + actorDomain not in followingHandles:
             continue
 
-        if ocapAlways:
-            capsList = None
-            # Note: should this be in the Create or the object of a post?
-            if postJsonObject.get('capability'):
-                if isinstance(postJsonObject['capability'], list):
-                    capsList = postJsonObject['capability']
-
-            # Have capabilities been granted for the sender?
-            ocapFilename = \
-                baseDir + '/accounts/' + handle + '/ocap/granted/' + \
-                postJsonObject['actor'].replace('/', '#') + '.json'
-            if not os.path.isfile(ocapFilename):
-                continue
-
-            # read the capabilities id
-            ocapJson = loadJson(ocapFilename, 0)
-            if not ocapJson:
-                print('WARN: json load exception createSharedInboxIndex')
-            else:
-                if ocapJson.get('id'):
-                    if ocapJson['id'] in capsList:
-                        postsInBoxDict[statusNumber] = sharedInboxFilename
-                        postsCtr += 1
-        else:
-            postsInBoxDict[statusNumber] = sharedInboxFilename
-            postsCtr += 1
+        postsInBoxDict[statusNumber] = sharedInboxFilename
+        postsCtr += 1
     return postsCtr
 
 
@@ -2866,7 +2804,7 @@ def createBoxIndexed(recentPostsCache: {},
                      session, baseDir: str, boxname: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      itemsPerPage: int, headerOnly: bool, authorized: bool,
-                     ocapAlways: bool, pageNumber=None) -> {}:
+                     pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -3004,10 +2942,6 @@ def createBoxIndexed(recentPostsCache: {},
             p = json.loads(postStr)
         except BaseException:
             continue
-
-        # remove any capability so that it's not displayed
-        if p.get('capability'):
-            del p['capability']
 
         # Don't show likes, replies or shares (announces) to
         # unauthorized viewers
@@ -3226,7 +3160,6 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 
     (personUrl, pubKeyId, pubKey,
      personId, shaedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -3240,13 +3173,14 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
              projectVersion, httpPrefix, domain)
 
 
-def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
+def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
                          domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts
     """
-    session = createSession(proxyType)
+    if not session:
+        session = createSession(proxyType)
     if not session:
         return domainList
     personCache = {}
@@ -3270,8 +3204,7 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
         return domainList
 
     (personUrl, pubKeyId, pubKey,
-     personId, shaedInbox,
-     capabilityAcquisition,
+     personId, sharedInbox,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
@@ -3288,43 +3221,125 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
     return postDomains
 
 
-def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,
-                           nickname: str, domain: str, port: int,
-                           followerUrl, updateCaps: [],
-                           sendThreads: [], postLog: [],
-                           cachedWebfingers: {}, personCache: {},
-                           federationList: [], debug: bool,
-                           projectVersion: str) -> int:
-    """When the capabilities for a follower are changed this
-    sends out an update. followerUrl is the actor of the follower.
+def getPublicPostDomainsBlocked(session, baseDir: str,
+                                nickname: str, domain: str,
+                                proxyType: str, port: int, httpPrefix: str,
+                                debug: bool, projectVersion: str,
+                                domainList=[]) -> []:
+    """ Returns a list of domains referenced within public posts which
+    are globally blocked on this instance
     """
-    updateJson = \
-        capabilitiesUpdate(baseDir, httpPrefix,
-                           nickname, domain, port,
-                           followerUrl, updateCaps)
+    postDomains = \
+        getPublicPostDomains(session, baseDir, nickname, domain,
+                             proxyType, port, httpPrefix,
+                             debug, projectVersion,
+                             domainList)
+    if not postDomains:
+        return []
 
-    if not updateJson:
-        return 1
+    blockingFilename = baseDir + '/accounts/blocking.txt'
+    if not os.path.isfile(blockingFilename):
+        return []
 
-    if debug:
-        pprint(updateJson)
-        print('DEBUG: sending capabilities update from ' +
-              nickname + '@' + domain + ' port ' + str(port) +
-              ' to ' + followerUrl)
+    # read the blocked domains as a single string
+    blockedStr = ''
+    with open(blockingFilename, 'r') as fp:
+        blockedStr = fp.read()
 
-    clientToServer = False
-    followerNickname = getNicknameFromActor(followerUrl)
-    if not followerNickname:
-        print('WARN: unable to find nickname in ' + followerUrl)
-        return 1
-    followerDomain, followerPort = getDomainFromActor(followerUrl)
-    return sendSignedJson(updateJson, session, baseDir,
-                          nickname, domain, port,
-                          followerNickname, followerDomain, followerPort, '',
-                          httpPrefix, True, clientToServer,
-                          federationList,
-                          sendThreads, postLog, cachedWebfingers,
-                          personCache, debug, projectVersion)
+    blockedDomains = []
+    for domainName in postDomains:
+        if '@' not in domainName:
+            continue
+        # get the domain after the @
+        domainName = domainName.split('@')[1].strip()
+        if isEvil(domainName):
+            blockedDomains.append(domainName)
+            continue
+        if domainName in blockedStr:
+            blockedDomains.append(domainName)
+
+    return blockedDomains
+
+
+def getNonMutualsOfPerson(baseDir: str,
+                          nickname: str, domain: str) -> []:
+    """Returns the followers who are not mutuals of a person
+    i.e. accounts which follow you but you don't follow them
+    """
+    followers = \
+        getFollowersList(baseDir, nickname, domain, 'followers.txt')
+    following = \
+        getFollowersList(baseDir, nickname, domain, 'following.txt')
+    nonMutuals = []
+    for handle in followers:
+        if handle not in following:
+            nonMutuals.append(handle)
+    return nonMutuals
+
+
+def checkDomains(session, baseDir: str,
+                 nickname: str, domain: str,
+                 proxyType: str, port: int, httpPrefix: str,
+                 debug: bool, projectVersion: str,
+                 maxBlockedDomains: int, singleCheck: bool):
+    """Checks follower accounts for references to globally blocked domains
+    """
+    nonMutuals = getNonMutualsOfPerson(baseDir, nickname, domain)
+    if not nonMutuals:
+        print('No non-mutual followers were found')
+        return
+    followerWarningFilename = baseDir + '/accounts/followerWarnings.txt'
+    updateFollowerWarnings = False
+    followerWarningStr = ''
+    if os.path.isfile(followerWarningFilename):
+        with open(followerWarningFilename, 'r') as fp:
+            followerWarningStr = fp.read()
+
+    if singleCheck:
+        # checks a single random non-mutual
+        index = random.randrange(0, len(nonMutuals))
+        handle = nonMutuals[index]
+        if '@' in handle:
+            nonMutualNickname = handle.split('@')[0]
+            nonMutualDomain = handle.split('@')[1].strip()
+            blockedDomains = \
+                getPublicPostDomainsBlocked(session, baseDir,
+                                            nonMutualNickname,
+                                            nonMutualDomain,
+                                            proxyType, port, httpPrefix,
+                                            debug, projectVersion, [])
+            if blockedDomains:
+                if len(blockedDomains) > maxBlockedDomains:
+                    followerWarningStr += handle + '\n'
+                    updateFollowerWarnings = True
+    else:
+        # checks all non-mutuals
+        for handle in nonMutuals:
+            if '@' not in handle:
+                continue
+            if handle in followerWarningStr:
+                continue
+            nonMutualNickname = handle.split('@')[0]
+            nonMutualDomain = handle.split('@')[1].strip()
+            blockedDomains = \
+                getPublicPostDomainsBlocked(session, baseDir,
+                                            nonMutualNickname,
+                                            nonMutualDomain,
+                                            proxyType, port, httpPrefix,
+                                            debug, projectVersion, [])
+            if blockedDomains:
+                print(handle)
+                for d in blockedDomains:
+                    print('  ' + d)
+                if len(blockedDomains) > maxBlockedDomains:
+                    followerWarningStr += handle + '\n'
+                    updateFollowerWarnings = True
+
+    if updateFollowerWarnings and followerWarningStr:
+        with open(followerWarningFilename, 'w+') as fp:
+            fp.write(followerWarningStr)
+        if not singleCheck:
+            print(followerWarningStr)
 
 
 def populateRepliesJson(baseDir: str, nickname: str, domain: str,
@@ -3692,8 +3707,7 @@ def sendBlockViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix, fromNickname,
@@ -3715,8 +3729,7 @@ def sendBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newBlockJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: Unable to post block')
 
@@ -3781,8 +3794,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
 
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
-     fromPersonId, sharedInbox,
-     capabilityAcquisition, avatarUrl,
+     fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
                                  fromDomain, postToBox)
@@ -3803,8 +3815,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl,
-                          headers, "inbox:write")
+    postResult = postJson(session, newBlockJson, [], inboxUrl, headers)
     if not postResult:
         print('WARN: Unable to post block')
 

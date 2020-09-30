@@ -8,7 +8,7 @@ Add issues on https://gitlab.com/bashrc2/epicyon/-/issues
 
 Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions and perimeter defense against adversaries. It contains *no javascript* and uses HTML+CSS with a Python backend.
 
-[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Object Capabilities](ocaps.md) - [Code of Conduct](code-of-conduct.md)
+[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Code of Conduct](code-of-conduct.md)
 
 Matrix room: **#epicyon:matrix.freedombone.net**
 

@@ -40,9 +40,6 @@ from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
 from acceptreject import receiveAcceptReject
-from capabilities import getOcapFilename
-from capabilities import CapablePost
-from capabilities import capabilitiesReceiveUpdate
 from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
@@ -268,7 +265,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     if domain in actor:
         return True
 
-    if not urlPermitted(actor, federationList, "inbox:write"):
+    if not urlPermitted(actor, federationList):
         return False
 
     alwaysAllowedTypes = ('Follow', 'Like', 'Delete', 'Announce')
@@ -281,7 +278,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
             inReplyTo = messageJson['object']['inReplyTo']
             if not isinstance(inReplyTo, str):
                 return False
-            if not urlPermitted(inReplyTo, federationList, "inbox:write"):
+            if not urlPermitted(inReplyTo, federationList):
                 return False
 
     return True
@@ -437,81 +434,12 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
     return filename
 
 
-def inboxCheckCapabilities(baseDir: str, nickname: str, domain: str,
-                           actor: str, queueFilename: str, queue: [],
-                           queueJson: {}, capabilityId: str,
-                           debug: bool) -> bool:
-    if nickname == 'inbox':
-        return True
-
-    ocapFilename = \
-        getOcapFilename(baseDir,
-                        queueJson['nickname'], queueJson['domain'],
-                        actor, 'accept')
-    if not ocapFilename:
-        return False
-    if not os.path.isfile(ocapFilename):
-        if debug:
-            print('DEBUG: capabilities for ' +
-                  actor + ' do not exist')
-        if os.path.isfile(queueFilename):
-            os.remove(queueFilename)
-        if len(queue) > 0:
-            queue.pop(0)
-        return False
-
-    oc = loadJson(ocapFilename)
-    if not oc:
-        return False
-
-    if not oc.get('id'):
-        if debug:
-            print('DEBUG: capabilities for ' + actor + ' do not contain an id')
-        if os.path.isfile(queueFilename):
-            os.remove(queueFilename)
-        if len(queue) > 0:
-            queue.pop(0)
-        return False
-
-    if oc['id'] != capabilityId:
-        if debug:
-            print('DEBUG: capability id mismatch')
-        if os.path.isfile(queueFilename):
-            os.remove(queueFilename)
-        if len(queue) > 0:
-            queue.pop(0)
-        return False
-
-    if not oc.get('capability'):
-        if debug:
-            print('DEBUG: missing capability list')
-        if os.path.isfile(queueFilename):
-            os.remove(queueFilename)
-        if len(queue) > 0:
-            queue.pop(0)
-        return False
-
-    if not CapablePost(queueJson['post'], oc['capability'], debug):
-        if debug:
-            print('DEBUG: insufficient capabilities to write to inbox from ' +
-                  actor)
-        if os.path.isfile(queueFilename):
-            os.remove(queueFilename)
-        if len(queue) > 0:
-            queue.pop(0)
-        return False
-
-    if debug:
-        print('DEBUG: object capabilities check success')
-    return True
-
-
 def inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
                            recipientsDict: {},
                            domainMatch: str, domain: str,
                            actor: str, debug: bool) -> bool:
     """Given a list of post recipients (toList) from 'to' or 'cc' parameters
-    populate a recipientsDict with the handle and capabilities id for each
+    populate a recipientsDict with the handle for each
     """
     followerRecipients = False
     for recipient in toList:
@@ -523,24 +451,7 @@ def inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
             nickname = recipient.split(domainMatch)[1]
             handle = nickname+'@'+domain
             if os.path.isdir(baseDir + '/accounts/' + handle):
-                # are capabilities granted for this account to the
-                # sender (actor) of the post?
-                ocapFilename = \
-                    baseDir + '/accounts/' + handle + \
-                    '/ocap/accept/' + actor.replace('/', '#') + '.json'
-                if os.path.isfile(ocapFilename):
-                    # read the granted capabilities and obtain the id
-                    ocapJson = loadJson(ocapFilename)
-                    if ocapJson:
-                        if ocapJson.get('id'):
-                            # append with the capabilities id
-                            recipientsDict[handle] = ocapJson['id']
-                        else:
-                            recipientsDict[handle] = None
-                else:
-                    if debug:
-                        print('DEBUG: ' + ocapFilename + ' not found')
-                    recipientsDict[handle] = None
+                recipientsDict[handle] = None
             else:
                 if debug:
                     print('DEBUG: ' + baseDir + '/accounts/' +
@@ -741,8 +652,7 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
                 port: int, sendThreads: [], postLog: [],
                 cachedWebfingers: {}, personCache: {},
                 messageJson: {}, federationList: [],
-                debug: bool,
-                acceptedCaps=["inbox:write", "objects:read"]) -> bool:
+                debug: bool) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Undo'):
@@ -1005,24 +915,6 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
                         print('DEBUG: Profile update was received for ' +
                               messageJson['object']['url'])
                         return True
-
-    if messageJson['object'].get('capability') and \
-       messageJson['object'].get('scope'):
-        nickname = getNicknameFromActor(messageJson['object']['scope'])
-        if nickname:
-            domain, tempPort = \
-                getDomainFromActor(messageJson['object']['scope'])
-
-            if messageJson['object']['type'] == 'Capability':
-                capability = messageJson['object']['capability']
-                if capabilitiesReceiveUpdate(baseDir, nickname, domain, port,
-                                             messageJson['actor'],
-                                             messageJson['object']['id'],
-                                             capability,
-                                             debug):
-                    if debug:
-                        print('DEBUG: An update was received')
-                    return True
     return False
 
 
@@ -2124,20 +2016,19 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
     return False
 
 
-def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
-                           session, keyId: str, handle: str, messageJson: {},
-                           baseDir: str, httpPrefix: str, sendThreads: [],
-                           postLog: [], cachedWebfingers: {}, personCache: {},
-                           queue: [], domain: str,
-                           onionDomain: str, i2pDomain: str,
-                           port: int, proxyType: str,
-                           federationList: [], ocapAlways: bool, debug: bool,
-                           acceptedCaps: [],
-                           queueFilename: str, destinationFilename: str,
-                           maxReplies: int, allowDeletion: bool,
-                           maxMentions: int, maxEmoji: int, translate: {},
-                           unitTest: bool, YTReplacementDomain: str) -> bool:
-    """ Anything which needs to be done after capabilities checks have passed
+def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
+                      session, keyId: str, handle: str, messageJson: {},
+                      baseDir: str, httpPrefix: str, sendThreads: [],
+                      postLog: [], cachedWebfingers: {}, personCache: {},
+                      queue: [], domain: str,
+                      onionDomain: str, i2pDomain: str,
+                      port: int, proxyType: str,
+                      federationList: [], debug: bool,
+                      queueFilename: str, destinationFilename: str,
+                      maxReplies: int, allowDeletion: bool,
+                      maxMentions: int, maxEmoji: int, translate: {},
+                      unitTest: bool, YTReplacementDomain: str) -> bool:
+    """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
     if '#' in actor:
@@ -2247,7 +2138,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
         return False
 
     if debug:
-        print('DEBUG: object capabilities passed')
+        print('DEBUG: initial checks passed')
         print('copy queue file from ' + queueFilename +
               ' to ' + destinationFilename)
 
@@ -2526,13 +2417,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   cachedWebfingers: {}, personCache: {}, queue: [],
                   domain: str,
                   onionDomain: str, i2pDomain: str, port: int, proxyType: str,
-                  federationList: [],
-                  ocapAlways: bool, maxReplies: int,
+                  federationList: [], maxReplies: int,
                   domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, maxMentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
-                  YTReplacementDomain: str,
-                  acceptedCaps=["inbox:write", "objects:read"]) -> None:
+                  YTReplacementDomain: str) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2801,8 +2690,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                        personCache,
                        queueJson['post'],
                        federationList,
-                       debug,
-                       acceptedCaps=["inbox:write", "objects:read"]):
+                       debug):
             print('Queue: Undo accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
@@ -2819,9 +2707,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 personCache,
                                 queueJson['post'],
                                 federationList,
-                                debug, projectVersion,
-                                acceptedCaps=["inbox:write",
-                                              "objects:read"]):
+                                debug, projectVersion):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -2917,22 +2803,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             pprint(recipientsDictFollowers)
             print('*************************************')
 
-        if queueJson['post'].get('capability'):
-            if not isinstance(queueJson['post']['capability'], list):
-                print('Queue: capability on post should be a list')
-                if os.path.isfile(queueFilename):
-                    os.remove(queueFilename)
-                if len(queue) > 0:
-                    queue.pop(0)
-                continue
-
         # Copy any posts addressed to followers into the shared inbox
         # this avoid copying file multiple times to potentially many
         # individual inboxes
-        # This obviously bypasses object capabilities and so
-        # any checking will needs to be handled at the time when inbox
-        # GET happens on individual accounts.
-        # See posts.py/createBoxBase
         if len(recipientsDictFollowers) > 0:
             sharedInboxPostFilename = \
                 queueJson['destination'].replace(inboxHandle, inboxHandle)
@@ -2943,61 +2816,26 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         for handle, capsId in recipientsDict.items():
             destination = \
                 queueJson['destination'].replace(inboxHandle, handle)
-            # check that capabilities are accepted
-            if queueJson['post'].get('capability'):
-                capabilityIdList = queueJson['post']['capability']
-                # does the capability id list within the post
-                # contain the id of the recipient with this handle?
-                # Here the capability id begins with the handle,
-                # so this could also be matched separately, but it's
-                # probably not necessary
-                if capsId in capabilityIdList:
-                    inboxAfterCapabilities(recentPostsCache,
-                                           maxRecentPosts,
-                                           session, keyId, handle,
-                                           queueJson['post'],
-                                           baseDir, httpPrefix,
-                                           sendThreads, postLog,
-                                           cachedWebfingers,
-                                           personCache, queue,
-                                           domain,
-                                           onionDomain, i2pDomain,
-                                           port, proxyType,
-                                           federationList, ocapAlways,
-                                           debug, acceptedCaps,
-                                           queueFilename, destination,
-                                           maxReplies, allowDeletion,
-                                           maxMentions, maxEmoji,
-                                           translate, unitTest,
-                                           YTReplacementDomain)
-                else:
-                    print('Queue: object capabilities check has failed')
-                    if debug:
-                        pprint(queueJson['post'])
-            else:
-                if not ocapAlways:
-                    inboxAfterCapabilities(recentPostsCache,
-                                           maxRecentPosts,
-                                           session, keyId, handle,
-                                           queueJson['post'],
-                                           baseDir, httpPrefix,
-                                           sendThreads, postLog,
-                                           cachedWebfingers,
-                                           personCache, queue,
-                                           domain,
-                                           onionDomain, i2pDomain,
-                                           port, proxyType,
-                                           federationList, ocapAlways,
-                                           debug, acceptedCaps,
-                                           queueFilename, destination,
-                                           maxReplies, allowDeletion,
-                                           maxMentions, maxEmoji,
-                                           translate, unitTest,
-                                           YTReplacementDomain)
-                if debug:
-                    pprint(queueJson['post'])
-                    print('No capability list within post')
-                    print('ocapAlways: ' + str(ocapAlways))
+            inboxAfterInitial(recentPostsCache,
+                              maxRecentPosts,
+                              session, keyId, handle,
+                              queueJson['post'],
+                              baseDir, httpPrefix,
+                              sendThreads, postLog,
+                              cachedWebfingers,
+                              personCache, queue,
+                              domain,
+                              onionDomain, i2pDomain,
+                              port, proxyType,
+                              federationList,
+                              debug,
+                              queueFilename, destination,
+                              maxReplies, allowDeletion,
+                              maxMentions, maxEmoji,
+                              translate, unitTest,
+                              YTReplacementDomain)
+            if debug:
+                pprint(queueJson['post'])
 
             print('Queue: Queue post accepted')
         if os.path.isfile(queueFilename):

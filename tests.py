@@ -42,10 +42,10 @@ from utils import copytree
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
+from utils import getFollowersOfPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
-from follow import getFollowersOfPerson
 from follow import sendFollowRequest
 from person import createPerson
 from person import setDisplayNickname
@@ -239,7 +239,7 @@ def testThreads():
 def createServerAlice(path: str, domain: str, port: int,
                       bobAddress: str, federationList: [],
                       hasFollows: bool, hasPosts: bool,
-                      ocapAlways: bool, sendThreads: []):
+                      sendThreads: []):
     print('Creating test server: Alice on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -249,11 +249,6 @@ def createServerAlice(path: str, domain: str, port: int,
     httpPrefix = 'http'
     proxyType = None
     password = 'alicepass'
-    noreply = False
-    nolike = False
-    nopics = False
-    noannounce = False
-    cw = False
     useBlurhash = True
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -296,7 +291,6 @@ def createServerAlice(path: str, domain: str, port: int,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
-              noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads, False,
@@ -306,7 +300,7 @@ def createServerAlice(path: str, domain: str, port: int,
 def createServerBob(path: str, domain: str, port: int,
                     aliceAddress: str, federationList: [],
                     hasFollows: bool, hasPosts: bool,
-                    ocapAlways: bool, sendThreads: []):
+                    sendThreads: []):
     print('Creating test server: Bob on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -317,11 +311,6 @@ def createServerBob(path: str, domain: str, port: int,
     proxyType = None
     clientToServer = False
     password = 'bobpass'
-    noreply = False
-    nolike = False
-    nopics = False
-    noannounce = False
-    cw = False
     useBlurhash = False
     maxReplies = 64
     domainMaxPostsPerDay = 1000
@@ -364,7 +353,6 @@ def createServerBob(path: str, domain: str, port: int,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
-              noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads, False,
@@ -373,7 +361,7 @@ def createServerBob(path: str, domain: str, port: int,
 
 def createServerEve(path: str, domain: str, port: int, federationList: [],
                     hasFollows: bool, hasPosts: bool,
-                    ocapAlways: bool, sendThreads: []):
+                    sendThreads: []):
     print('Creating test server: Eve on port ' + str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -383,11 +371,6 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     httpPrefix = 'http'
     proxyType = None
     password = 'evepass'
-    noreply = False
-    nolike = False
-    nopics = False
-    noannounce = False
-    cw = False
     maxReplies = 64
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
@@ -406,7 +389,6 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
-              noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies, allowDeletion, True, True, False,
               sendThreads, False, False)
 
@@ -426,8 +408,6 @@ def testPostMessageBetweenServers():
     if os.path.isdir(baseDir + '/.tests'):
         shutil.rmtree(baseDir + '/.tests')
     os.mkdir(baseDir + '/.tests')
-
-    ocapAlways = False
 
     # create the servers
     aliceDir = baseDir + '/.tests/alice'
@@ -454,7 +434,7 @@ def testPostMessageBetweenServers():
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
                               federationList, False, False,
-                              ocapAlways, aliceSendThreads),
+                              aliceSendThreads),
                         daemon=True)
 
     global thrBob
@@ -468,7 +448,7 @@ def testPostMessageBetweenServers():
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
                               federationList, False, False,
-                              ocapAlways, bobSendThreads),
+                              bobSendThreads),
                         daemon=True)
 
     thrAlice.start()
@@ -687,8 +667,6 @@ def testFollowBetweenServers():
         shutil.rmtree(baseDir + '/.tests')
     os.mkdir(baseDir + '/.tests')
 
-    ocapAlways = False
-
     # create the servers
     aliceDir = baseDir + '/.tests/alice'
     aliceDomain = '127.0.0.47'
@@ -713,7 +691,7 @@ def testFollowBetweenServers():
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
                               federationList, False, False,
-                              ocapAlways, aliceSendThreads),
+                              aliceSendThreads),
                         daemon=True)
 
     global thrBob
@@ -727,7 +705,7 @@ def testFollowBetweenServers():
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
                               federationList, False, False,
-                              ocapAlways, bobSendThreads),
+                              bobSendThreads),
                         daemon=True)
 
     thrAlice.start()
@@ -1246,8 +1224,6 @@ def testClientToServer():
         shutil.rmtree(baseDir + '/.tests')
     os.mkdir(baseDir + '/.tests')
 
-    ocapAlways = False
-
     # create the servers
     aliceDir = baseDir + '/.tests/alice'
     aliceDomain = '127.0.0.42'
@@ -1272,7 +1248,7 @@ def testClientToServer():
         threadWithTrace(target=createServerAlice,
                         args=(aliceDir, aliceDomain, alicePort, bobAddress,
                               federationList, False, False,
-                              ocapAlways, aliceSendThreads),
+                              aliceSendThreads),
                         daemon=True)
 
     global thrBob
@@ -1286,7 +1262,7 @@ def testClientToServer():
         threadWithTrace(target=createServerBob,
                         args=(bobDir, bobDomain, bobPort, aliceAddress,
                               federationList, False, False,
-                              ocapAlways, bobSendThreads),
+                              bobSendThreads),
                         daemon=True)
 
     thrAlice.start()

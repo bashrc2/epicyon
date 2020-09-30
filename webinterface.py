@@ -766,6 +766,14 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
         hashtagSearchForm += '<center>\n' + \
             '<h1>#' + hashtag + '</h1>\n' + '</center>\n'
 
+    # RSS link for hashtag feed
+    hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
+    hashtagSearchForm += \
+        '<img style="width:3%;min-width:50px" ' + \
+        'loading="lazy" alt="RSS 2.0" ' + \
+        'title="RSS 2.0" src="/' + \
+        iconsDir + '/rss.png" /></a></center>'
+
     if startIndex > 0:
         # previous page link
         hashtagSearchForm += \
@@ -787,7 +795,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
         else:
             postFields = postId.split('  ')
             if len(postFields) != 3:
-                index = +1
+                index += 1
                 continue
             nickname = postFields[1]
             postId = postFields[2]
@@ -831,6 +839,133 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
             '" alt="' + translate['Page down'] + '"></a></center>'
     hashtagSearchForm += htmlFooter()
     return hashtagSearchForm
+
+
+def rss2TagHeader(hashtag: str, httpPrefix: str, domainFull: str) -> str:
+    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+    rssStr += "<rss version=\"2.0\">"
+    rssStr += '<channel>'
+    rssStr += '    <title>#' + hashtag + '</title>'
+    rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+        '/tags/rss2/' + hashtag + '</link>'
+    return rssStr
+
+
+def rss2TagFooter() -> str:
+    rssStr = '</channel>'
+    rssStr += '</rss>'
+    return rssStr
+
+
+def rssHashtagSearch(nickname: str, domain: str, port: int,
+                     recentPostsCache: {}, maxRecentPosts: int,
+                     translate: {},
+                     baseDir: str, hashtag: str,
+                     postsPerPage: int,
+                     session, wfRequest: {}, personCache: {},
+                     httpPrefix: str, projectVersion: str,
+                     YTReplacementDomain: str) -> str:
+    """Show an rss feed for a hashtag
+    """
+    if hashtag.startswith('#'):
+        hashtag = hashtag[1:]
+    hashtag = urllib.parse.unquote(hashtag)
+    hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagIndexFile):
+        if hashtag != hashtag.lower():
+            hashtag = hashtag.lower()
+            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagIndexFile):
+        print('WARN: hashtag file not found ' + hashtagIndexFile)
+        return None
+
+    # check that the directory for the nickname exists
+    if nickname:
+        if not os.path.isdir(baseDir + '/accounts/' +
+                             nickname + '@' + domain):
+            nickname = None
+
+    # read the index
+    lines = []
+    with open(hashtagIndexFile, "r") as f:
+        lines = f.readlines()
+    if not lines:
+        return None
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    maxFeedLength = 10
+    hashtagFeed = \
+        rss2TagHeader(hashtag, httpPrefix, domainFull)
+    for index in range(len(lines)):
+        postId = lines[index].strip('\n').strip('\r')
+        if '  ' not in postId:
+            nickname = getNicknameFromActor(postId)
+            if not nickname:
+                index += 1
+                if index >= maxFeedLength:
+                    break
+                continue
+        else:
+            postFields = postId.split('  ')
+            if len(postFields) != 3:
+                index += 1
+                if index >= maxFeedLength:
+                    break
+                continue
+            nickname = postFields[1]
+            postId = postFields[2]
+        postFilename = locatePost(baseDir, nickname, domain, postId)
+        if not postFilename:
+            index += 1
+            if index >= maxFeedLength:
+                break
+            continue
+        postJsonObject = loadJson(postFilename)
+        if postJsonObject:
+            if not isPublicPost(postJsonObject):
+                index += 1
+                if index >= maxFeedLength:
+                    break
+                continue
+            # add to feed
+            if postJsonObject['object'].get('content') and \
+               postJsonObject['object'].get('attributedTo') and \
+               postJsonObject['object'].get('published'):
+                published = postJsonObject['object']['published']
+                pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                hashtagFeed += '     <item>'
+                hashtagFeed += \
+                    '         <author>' + \
+                    postJsonObject['object']['attributedTo'] + \
+                    '</author>'
+                if postJsonObject['object'].get('summary'):
+                    hashtagFeed += \
+                        '         <title>' + \
+                        postJsonObject['object']['summary'] + \
+                        '</title>'
+                hashtagFeed += \
+                    '         <description><![CDATA[' + \
+                    postJsonObject['object']['content'] + \
+                    ']]></description>'
+                hashtagFeed += \
+                    '         <pubDate>' + rssDateStr + '</pubDate>'
+                if postJsonObject['object'].get('attachment'):
+                    for attach in postJsonObject['object']['attachment']:
+                        if not attach.get('url'):
+                            continue
+                        hashtagFeed += \
+                            '         <link>' + attach['url'] + '</link>'
+                hashtagFeed += '     </item>'
+        index += 1
+        if index >= maxFeedLength:
+            break
+
+    return hashtagFeed + rss2TagFooter()
 
 
 def htmlSkillsSearch(translate: {}, baseDir: str,
@@ -1849,7 +1984,7 @@ def htmlAbout(baseDir: str, httpPrefix: str,
     return aboutForm
 
 
-def htmlHashtagBlocked(baseDir: str) -> str:
+def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''
@@ -1860,9 +1995,12 @@ def htmlHashtagBlocked(baseDir: str) -> str:
         blockedHashtagCSS = cssFile.read()
         blockedHashtagForm = htmlHeader(cssFilename, blockedHashtagCSS)
         blockedHashtagForm += '<div><center>\n'
-        blockedHashtagForm += '  <p class="screentitle">Hashtag Blocked</p>\n'
         blockedHashtagForm += \
-            '  <p>See <a href="/terms">Terms of Service</a></p>\n'
+            '  <p class="screentitle">' + \
+            translate['Hashtag Blocked'] + '</p>\n'
+        blockedHashtagForm += \
+            '  <p>See <a href="/terms">' + \
+            translate['Terms of Service'] + '</a></p>\n'
         blockedHashtagForm += '</center></div>\n'
         blockedHashtagForm += htmlFooter()
     return blockedHashtagForm
@@ -2515,7 +2653,7 @@ def htmlFooter() -> str:
 def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                      translate: {},
                      baseDir: str, httpPrefix: str,
-                     authorized: bool, ocapAlways: bool,
+                     authorized: bool,
                      nickname: str, domain: str, port: int,
                      session, wfRequest: {}, personCache: {},
                      projectVersion: str,
@@ -2536,8 +2674,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                           str(currPage),
                           httpPrefix,
                           10, 'outbox',
-                          authorized,
-                          ocapAlways)
+                          authorized)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:
@@ -2565,7 +2702,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
 
 
 def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
-                         authorized: bool, ocapAlways: bool,
+                         authorized: bool,
                          nickname: str, domain: str, port: int,
                          session, wfRequest: {}, personCache: {},
                          followingJson: {}, projectVersion: str,
@@ -2795,7 +2932,7 @@ def htmlProfile(defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
                 baseDir: str, httpPrefix: str, authorized: bool,
-                ocapAlways: bool, profileJson: {}, selected: str,
+                profileJson: {}, selected: str,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 extraJson=None,
@@ -3055,14 +3192,14 @@ def htmlProfile(defaultTimeline: str,
                 htmlProfilePosts(recentPostsCache, maxRecentPosts,
                                  translate,
                                  baseDir, httpPrefix, authorized,
-                                 ocapAlways, nickname, domain, port,
+                                 nickname, domain, port,
                                  session, wfRequest, personCache,
                                  projectVersion,
                                  YTReplacementDomain) + licenseStr
         if selected == 'following':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, ocapAlways, nickname,
+                                     authorized, nickname,
                                      domain, port, session,
                                      wfRequest, personCache, extraJson,
                                      projectVersion, ["unfollow"], selected,
@@ -3070,7 +3207,7 @@ def htmlProfile(defaultTimeline: str,
         if selected == 'followers':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, ocapAlways, nickname,
+                                     authorized, nickname,
                                      domain, port, session,
                                      wfRequest, personCache, extraJson,
                                      projectVersion, ["block"],
@@ -3112,7 +3249,6 @@ def individualFollowAsHtml(translate: {},
     if domain not in followUrl:
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
-         capabilityAcquisition,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache, projectVersion,
                                                  httpPrefix, nickname,
@@ -3966,7 +4102,6 @@ def individualPostAsHtml(allowDownloads: bool,
     if fullDomain not in postActor:
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
-         capabilityAcquisition,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache,
                                                  projectVersion, httpPrefix,

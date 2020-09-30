@@ -123,7 +123,6 @@ def sendAvailabilityViaServer(baseDir: str, session,
     # get the actor inbox for the To handle
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,
-     capabilityAcquisition,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, nickname,
@@ -146,7 +145,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newAvailabilityJson, [],
-                          inboxUrl, headers, "inbox:write")
+                          inboxUrl, headers)
     if not postResult:
         print('WARN: failed to post availability')
 
