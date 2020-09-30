@@ -5331,6 +5331,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '<div class="row">\n'
     tlStr += '  <div class="column-left">\n'
     tlStr += '  </div>\n'
+    tlStr += '  <div class="column-center">\n'
     
     # first button
     if defaultTimeline == 'tlmedia':
@@ -5624,6 +5625,7 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    tlStr += '  </div>\n'
     tlStr += '  <div class="column-right">\n'
     tlStr += '  </div>\n'
     tlStr += '</div>'

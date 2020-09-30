@@ -62,6 +62,7 @@
     --quote-font-size: 120%;
     --line-spacing: 130%;
     --column-left-width: 0%;
+    --column-center-width: 100%;
     --column-right-width: 0%;
 }
 
@@ -926,12 +927,16 @@ aside .toggle-inside li {
 
 @media screen and (min-width: 400px) {
     .column-left {
-	float: left;
-	width: var(--column-left-width);
+        float: left;
+        width: var(--column-left-width);
+    } 
+    .column-center {
+        display: inline-block;
+        width: var(--column-center-width);
     } 
     .column-right {
-	float: right;
-	width: var(--column-right-width);
+        float: right;
+        width: var(--column-right-width);
     } 
     .likesCount {
         font-size: var(--font-size-likes);
@@ -1383,12 +1388,16 @@ aside .toggle-inside li {
 
 @media screen and (max-width: 1000px) {
     .column-left {
-	float: left;
-	width: var(--column-left-width);
+        float: left;
+        width: var(--column-left-width);
+    } 
+    .column-center {
+        display: inline-block;
+        width: var(--column-center-width);
     } 
     .column-right {
-	float: right;
-	width: var(--column-right-width);
+        float: right;
+        width: var(--column-right-width);
     } 
     .likesCount {
         font-size: var(--font-size-likes-mobile);
