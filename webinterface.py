@@ -5362,7 +5362,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '    <col span="1" class="column-center">\n'
     tlStr += '    <col span="1" class="column-right">\n'
     tlStr += '  </colgroup>\n'
-    tlStr += '  <tr>\n'
+    tlStr += '  <tbody><tr>\n'
     # left column
     tlStr += '  <td class="column-left"></td>\n'
     # center column containing posts
@@ -5668,8 +5668,8 @@ def htmlTimeline(defaultTimeline: str,
     # end of column-center
     tlStr += '  </td>\n'
     tlStr += '  <td class="column-right"></td>\n'
-    tlStr += '  </table>\n'
-    tlStr += '</div>'
+    tlStr += '  </tbody>\n'
+    tlStr += '</table>\n'
 
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)

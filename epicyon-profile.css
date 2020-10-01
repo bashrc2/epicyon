@@ -61,9 +61,9 @@
     --quote-font-weight: normal;
     --quote-font-size: 120%;
     --line-spacing: 130%;
-    --column-left-width: 10%;
-    --column-center-width: 80%;
-    --column-right-width: 10%;
+    --column-left-width: 10vw;
+    --column-center-width: 80vw;
+    --column-right-width: 10vw;
 }
 
 @font-face {
@@ -934,13 +934,12 @@ aside .toggle-inside li {
         font-family: Arial, Helvetica, sans-serif;
         max-width: var(--column-center-width);
         min-width: 950px;
-        margin-left: var(--column-left-width);
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
     .timeline {
 	border: 0;
-        width: 120%;
+        width: 100vw;
     }
     .column-left {
         float: left;
@@ -1417,7 +1416,7 @@ aside .toggle-inside li {
     }
     .timeline {
 	border: 0;
-        width: 100%;
+        width: 100vw;
     }
     .column-left {
         float: left;
