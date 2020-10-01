@@ -933,14 +933,6 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
-    .pageup {
-        margin-left: 47%;
-        width: 100%;
-    }
-    .pagedown {
-        margin-left: 47%;
-        width: 100%;
-    }
     .timeline {
         border: 0;
         width: 100vw;
@@ -1425,14 +1417,6 @@ aside .toggle-inside li {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
-    }
-    .pageup {
-        margin-left: 43%;
-        width: 100%;
-    }
-    .pagedown {
-        margin-left: 45%;
-        width: 100vw;
     }
     .timeline {
         border: 0;
