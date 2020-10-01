@@ -1432,6 +1432,7 @@ aside .toggle-inside li {
     .col-left {
         float: left;
         width: 0%;
+	display: none;
     }
     .col-center {
         width: 100vw;
@@ -1439,6 +1440,7 @@ aside .toggle-inside li {
     .col-right {
         float: right;
         width: 0%;
+	display: none;
     }
     .column-right {
         width: 0%;
