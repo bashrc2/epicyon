@@ -5365,9 +5365,9 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  </colgroup>\n'
     tlStr += '  <tbody><tr>\n'
     # left column
-    tlStr += '  <td class="column-left"></td>\n'
+    tlStr += '  <td class="col-left">Test left</td>\n'
     # center column containing posts
-    tlStr += '  <td class="column-center">\n'
+    tlStr += '  <td class="col-center">\n'
 
     # start of the button header with inbox, outbox, etc
     tlStr += '    <div class="container">\n'
@@ -5668,7 +5668,7 @@ def htmlTimeline(defaultTimeline: str,
 
     # end of column-center
     tlStr += '  </td>\n'
-    tlStr += '  <td class="column-right"></td>\n'
+    tlStr += '  <td class="col-right">Test right</td>\n'
     tlStr += '  </tbody>\n'
     tlStr += '</table>\n'
 
