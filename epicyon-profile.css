@@ -94,7 +94,10 @@ body, html {
 }
 
 .pageupdown {
-    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
 }
 
 blockquote {
@@ -941,7 +944,7 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .timeline {
-	border: 0;
+        border: 0;
         width: 100vw;
     }
     .column-left {
@@ -1427,7 +1430,7 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .timeline {
-	border: 0;
+        border: 0;
         width: 100vw;
     }
     .column-left {
@@ -1436,7 +1439,7 @@ aside .toggle-inside li {
     .col-left {
         float: left;
         width: 0%;
-	display: none;
+        display: none;
     }
     .col-center {
         width: 100vw;
@@ -1444,7 +1447,7 @@ aside .toggle-inside li {
     .col-right {
         float: right;
         width: 0%;
-	display: none;
+        display: none;
     }
     .column-right {
         width: 0%;
