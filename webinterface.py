@@ -5152,17 +5152,19 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsDir: str) -> str:
+                         iconsDir: str, moderator: bool) -> str:
     """Returns html content for the left column
     """
-    htmlStr = \
-        '      <center>\n' + \
-        '        <a href="' + \
-        httpPrefix + '://' + domainFull + \
-        '/users/' + nickname + '/editlinks' + '">' + \
-        '<img loading="lazy" alt="" title="" src="/' + \
-        iconsDir + '/edit.png"/></a>\n' + \
-        '      </center>\n'
+    htmlStr = ''
+    if moderator:
+        htmlStr += \
+            '      <center>\n' + \
+            '        <a href="' + \
+            httpPrefix + '://' + domainFull + \
+            '/users/' + nickname + '/editlinks' + '">' + \
+            '<img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/edit.png"/></a>\n' + \
+            '      </center>\n'
 
     return htmlStr
 
@@ -5484,7 +5486,8 @@ def htmlTimeline(defaultTimeline: str,
     # left column
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
-                             httpPrefix, translate, iconsDir)
+                             httpPrefix, translate, iconsDir,
+                             moderator)
     tlStr += '  <td class="col-left">' + leftColumnStr + '</td>\n'
     # center column containing posts
     tlStr += '  <td class="col-center">\n'
