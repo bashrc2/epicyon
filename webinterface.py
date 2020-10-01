@@ -581,7 +581,8 @@ def htmlSearchSharedItems(translate: {},
                                     'name="searchtext" value="' + \
                                     searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
-                                    '  <center><a href="' + actor + \
+                                    '  <div class="pageupdown">\n' + \
+                                    '    <a href="' + actor + \
                                     '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
@@ -590,7 +591,7 @@ def htmlSearchSharedItems(translate: {},
                                     translate['Page up'] + \
                                     '" alt="' + translate['Page up'] + \
                                     '"/></a>\n'
-                                sharedItemsForm += '  </center>\n'
+                                sharedItemsForm += '  </div>\n'
                                 sharedItemsForm += '</form>\n'
                                 resultsExist = True
                         ctr += 1
@@ -614,7 +615,8 @@ def htmlSearchSharedItems(translate: {},
                                     'name="searchtext" value="' + \
                                     searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
-                                    '  <center><a href="' + actor + \
+                                    '  <div class="pageupdown">\n' + \
+                                    '    <a href="' + actor + \
                                     '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
@@ -623,7 +625,7 @@ def htmlSearchSharedItems(translate: {},
                                     translate['Page down'] + \
                                     '" alt="' + translate['Page down'] + \
                                     '"/></a>\n'
-                                sharedItemsForm += '  </center>\n'
+                                sharedItemsForm += '  </div>\n'
                                 sharedItemsForm += '</form>\n'
                                 break
                             ctr = 0
@@ -777,13 +779,14 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     if startIndex > 0:
         # previous page link
         hashtagSearchForm += \
-            '<center><a href="/tags/' + hashtag + '?page=' + \
+            '  <div class="pageupdown">\n' + \
+            '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
-            '"></a></center>\n'
+            '"></a>\n  </div>\n'
     index = startIndex
     while index <= endIndex:
         postId = lines[index].strip('\n').strip('\r')
@@ -832,11 +835,13 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     if endIndex < noOfLines - 1:
         # next page link
         hashtagSearchForm += \
-            '<center><a href="/tags/' + hashtag + \
+            '  <div class="pageupdown">\n' + \
+            '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + iconsDir + \
             '/pagedown.png" title="' + translate['Page down'] + \
-            '" alt="' + translate['Page down'] + '"></a></center>'
+            '" alt="' + translate['Page down'] + '"></a>' + \
+            '  </div>'
     hashtagSearchForm += htmlFooter()
     return hashtagSearchForm
 
@@ -2736,12 +2741,14 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if authorized and pageNumber > 1:
             # page up arrow
             profileStr += \
-                '<center>\n<a href="' + actor + '/' + feedName + \
+                '  <div class="pageupdown">\n' + \
+                '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber - 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsDir + '/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
-                translate['Page up'] + '"></a>\n</center>\n'
+                translate['Page up'] + '"></a>\n' + \
+                '  </div>\n'
 
     for item in followingJson['orderedItems']:
         profileStr += \
@@ -2754,12 +2761,14 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
             # page down arrow
             profileStr += \
-                '<center>\n<a href="' + actor + '/' + feedName + \
+                '  <div class="pageupdown">\n' + \
+                '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber + 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsDir + '/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
-                translate['Page down'] + '"></a>\n</center>\n'
+                translate['Page down'] + '"></a>\n' + \
+                '  </div>\n'
     return profileStr
 
 
@@ -2916,11 +2925,13 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if pageNumber > 1:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '<center>\n<a href="' + actor + '/tlshares?page=' + \
+            '  <div class="pageupdown">\n' + \
+            '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + translate['Page up'] + \
-            '" alt="' + translate['Page up'] + '"></a>\n</center>\n'
+            '" alt="' + translate['Page up'] + '"></a>\n' + \
+            '  </div>\n'
 
     for published, item in sharesJson.items():
         showContactButton = False
@@ -2936,11 +2947,13 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if not lastPage:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '<center>\n<a href="' + actor + '/tlshares?page=' + \
+            '  <div class="pageupdown">\n' + \
+            '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + translate['Page down'] + \
-            '" alt="' + translate['Page down'] + '"></a>\n</center>\n'
+            '" alt="' + translate['Page down'] + '"></a>\n' + \
+            '  </div>\n'
 
     return timelineStr
 
@@ -5577,12 +5590,14 @@ def htmlTimeline(defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += \
-            '<center>\n<a href="' + usersPath + '/' + boxName + \
+            '  <div class="pageupdown">\n' + \
+            '    <a href="' + usersPath + '/' + boxName + \
             '?page=' + str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
-            translate['Page up'] + '"></a>\n</center>\n'
+            translate['Page up'] + '"></a>\n' + \
+            '  </div>\n'
 
     # show the posts
     itemCtr = 0
@@ -5680,12 +5695,14 @@ def htmlTimeline(defaultTimeline: str,
     # page down arrow
     if itemCtr > 2:
         tlStr += \
-            '<center>\n<a href="' + usersPath + '/' + boxName + '?page=' + \
+            '  <div class="pageupdown">\n' + \
+            '    <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
-            translate['Page down'] + '"></a>\n</center>\n'
+            translate['Page down'] + '"></a>\n' + \
+            '  </div>\n'
     tlStr += htmlFooter()
     return tlStr
 

@@ -93,6 +93,10 @@ body, html {
     line-height: var(--line-spacing);
 }
 
+.pageupdown {
+    text-align: center;
+}
+
 blockquote {
   border-left: 10px;
   margin: 1.5em 10px;
