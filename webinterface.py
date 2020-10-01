@@ -5696,14 +5696,14 @@ def htmlTimeline(defaultTimeline: str,
             '  <tr>\n' + \
             '    <td class="col-left"></td>\n' + \
             '    <td class="col-center">\n' + \
-            '      <div class="pagedown">\n' + \
+            '      <center>\n' + \
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
-            '      </div>\n' + \
+            '      </center>\n' + \
             '    </td>\n' + \
             '    <td class="col-right"></td>\n' + \
             '  </tr>\n'
