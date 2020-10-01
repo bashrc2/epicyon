@@ -935,10 +935,14 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
-    .pageupdown {
-	margin-left: 60%;
-	width: 100vw;
-    }    
+    .pageup {
+        margin-left: 50%;
+        width: 100%;
+    }
+    .pagedown {
+        margin-left: 60%;
+        width: 100vw;
+    }
     .timeline {
         border: 0;
         width: 100vw;
@@ -1425,10 +1429,14 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
-    .pageupdown {
-	margin-left: 45%;
-	width: 100vw;
-    }    
+    .pageup {
+        margin-left: 50%;
+        width: 100%;
+    }
+    .pagedown {
+        margin-left: 45%;
+        width: 100vw;
+    }
     .timeline {
         border: 0;
         width: 100vw;

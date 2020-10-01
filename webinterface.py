@@ -581,7 +581,7 @@ def htmlSearchSharedItems(translate: {},
                                     'name="searchtext" value="' + \
                                     searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
-                                    '  <div class="pageupdown">\n' + \
+                                    '  <div class="pageup">\n' + \
                                     '    <a href="' + actor + \
                                     '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
@@ -615,7 +615,7 @@ def htmlSearchSharedItems(translate: {},
                                     'name="searchtext" value="' + \
                                     searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
-                                    '  <div class="pageupdown">\n' + \
+                                    '  <div class="pagedown">\n' + \
                                     '    <a href="' + actor + \
                                     '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
@@ -779,7 +779,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     if startIndex > 0:
         # previous page link
         hashtagSearchForm += \
-            '  <div class="pageupdown">\n' + \
+            '  <div class="pageup">\n' + \
             '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
@@ -835,7 +835,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     if endIndex < noOfLines - 1:
         # next page link
         hashtagSearchForm += \
-            '  <div class="pageupdown">\n' + \
+            '  <div class="pagedown">\n' + \
             '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + iconsDir + \
@@ -2741,7 +2741,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if authorized and pageNumber > 1:
             # page up arrow
             profileStr += \
-                '  <div class="pageupdown">\n' + \
+                '  <div class="pageup">\n' + \
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber - 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
@@ -2761,7 +2761,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
             # page down arrow
             profileStr += \
-                '  <div class="pageupdown">\n' + \
+                '  <div class="pagedown">\n' + \
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber + 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
@@ -2925,7 +2925,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if pageNumber > 1:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '  <div class="pageupdown">\n' + \
+            '  <div class="pageup">\n' + \
             '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
@@ -2947,7 +2947,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if not lastPage:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '  <div class="pageupdown">\n' + \
+            '  <div class="pagedown">\n' + \
             '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
@@ -5590,7 +5590,7 @@ def htmlTimeline(defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += \
-            '  <div class="pageupdown">\n' + \
+            '  <div class="pageup">\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
             '?page=' + str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
@@ -5695,7 +5695,7 @@ def htmlTimeline(defaultTimeline: str,
     # page down arrow
     if itemCtr > 2:
         tlStr += \
-            '  <div class="pageupdown">\n' + \
+            '  <div class="pagedown">\n' + \
             '    <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
