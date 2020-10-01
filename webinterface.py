@@ -5154,11 +5154,11 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if moderator:
         htmlStr += \
             '      <center>\n' + \
-            '        <a href="' + \
+            '        <a class="editLinksIcon" href="' + \
             httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editlinks' + '">' + \
             '<img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/edit.png" class="editLinksIcon" /></a>\n' + \
+            iconsDir + '/edit.png" /></a>\n' + \
             '      </center>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
@@ -5191,8 +5191,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             lineStr = lineStr[:len(lineStr)-1]
                         # add link to the returned html
                         htmlStr += \
-                            '      <br><a href="' + linkStr + '">' + \
-                            lineStr + '</a>\n'
+                            '      <p><a href="' + linkStr + '">' + \
+                            lineStr + '</a></p>\n'
     return htmlStr
 
 
