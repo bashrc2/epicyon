@@ -1258,11 +1258,12 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
         with open(linksFilename, 'r') as fp:
             linksStr = fp.read()
 
-    editLinksForm = \
+    editLinksForm += \
         '<div class="container">'
     editLinksForm += \
         '  ' + \
-        translate['One link per line. Description followed by the link.']
+        translate['One link per line. Description followed by the link.'] + \
+        '<br>'
     editLinksForm += \
         '  <textarea id="message" name="editedLinks" style="height:500px">' + \
         linksStr + '</textarea>'
