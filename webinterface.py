@@ -5003,9 +5003,9 @@ def individualPostAsHtml(allowDownloads: bool,
         postHtml = '    <div id="' + timelinePostBookmark + \
             '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
-        postHtml += '      <p class="post-title">\n' + \
+        postHtml += '      <div class="post-title">\n' + \
             '        ' + titleStr + \
-            replyAvatarImageInPost + '      </p>\n'
+            replyAvatarImageInPost + '      </div>\n'
         postHtml += contentStr + footerStr + '\n'
         postHtml += '    </div>\n'
     else:
