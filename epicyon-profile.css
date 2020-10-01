@@ -2,6 +2,7 @@
 
 :root {
     --main-bg-color: #282c37;
+    --column-left-color: #282c37;
     --link-bg-color: #282c37;
     --dropdown-fg-color: #dddddd;
     --dropdown-bg-color: #111;
@@ -21,7 +22,7 @@
     --font-size-header-mobile: 32px;
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
-    --font-size-links: 20px;
+    --font-size-links: 18px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -938,7 +939,11 @@ aside .toggle-inside li {
         border: 0;
         width: 100vw;
     }
-    .column-left {
+    .column-left a:link {
+	background: var(--column-left-color);
+    }
+    .column-left {	
+	background-color: var(--column-left-color);
         width: var(--column-left-width);
     }
     .col-left {
@@ -947,7 +952,9 @@ aside .toggle-inside li {
         width: var(--column-left-width);
     }
     .col-left img {
-	width: 20%;
+	background: var(--column-left-color);
+        margin: 40px 0;
+        width: 20%;
     }
     .col-center {
         width: var(--column-center-width);
