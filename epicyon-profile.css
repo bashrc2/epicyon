@@ -942,11 +942,11 @@ aside .toggle-inside li {
     }
     .col-left a:link {
         background: var(--column-left-color);
-        col: var(--column-left-fg-color);
+        color: var(--column-left-fg-color);
     }
     .col-left a:visited {
         background: var(--column-left-color);
-        col: var(--column-left-fg-color);
+        color: var(--column-left-fg-color);
     }
     .column-left {
         background-color: var(--column-left-color);
