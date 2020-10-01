@@ -5154,10 +5154,12 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if moderator:
         htmlStr += \
             '      <center>\n' + \
-            '        <a class="editLinksIcon" href="' + \
+            '        <a href="' + \
             httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editlinks' + '">' + \
-            '<img loading="lazy" alt="" title="" src="/' + \
+            '<img loading="lazy" alt="' + \
+            translate['Edit Links'] + '" title="' + \
+            translate['Edit Links'] + '" src="/' + \
             iconsDir + '/edit.png" /></a>\n' + \
             '      </center>\n'
 
