@@ -165,6 +165,7 @@ a:focus {
 .timeline-banner {
     background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
     height: 15%;
+    background-position: center;
     background-repeat: no-repeat;
     background-size: 100vw;
     position: relative;
