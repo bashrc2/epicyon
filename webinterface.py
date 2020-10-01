@@ -5157,7 +5157,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     """
     htmlStr = \
         '      <center>\n' + \
-        '      <a href="' + \
+        '        <a href="' + \
         httpPrefix + '://' + domainFull + \
         '/users/' + nickname + '/editlinks' + '">' + \
         '<img loading="lazy" alt="" title="" src="/' + \
