@@ -13,6 +13,7 @@
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
+    --column-left-fg-color: #dddddd;
     --main-link-color: #999;
     --main-link-color-hover: #bbb;
     --main-visited-color: #888;
@@ -939,11 +940,13 @@ aside .toggle-inside li {
         border: 0;
         width: 100vw;
     }
-    .column-left a:link {
+    .col-left a:link {
         background: var(--column-left-color);
+        col: var(--column-left-fg-color);
     }
-    .column-left a:visited {
+    .col-left a:visited {
         background: var(--column-left-color);
+        col: var(--column-left-fg-color);
     }
     .column-left {
         background-color: var(--column-left-color);
