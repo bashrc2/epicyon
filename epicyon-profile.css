@@ -89,7 +89,6 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
     max-width: var(--column-center-width);
     min-width: 950px;
-    margin-left: var(--column-left-width);
     font-size: var(--font-size);
     line-height: var(--line-spacing);
 }
