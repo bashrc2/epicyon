@@ -5201,7 +5201,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     if lineStr.startswith('#') or lineStr.startswith('*'):
                         lineStr = lineStr[1:].strip()
                         htmlStr += \
-                            '      <h5>' + lineStr + '</h5>\n'
+                            '      <h3>' + lineStr + '</h3>\n'
                     else:
                         htmlStr += \
                             '      <p>' + lineStr + '</p>\n'
