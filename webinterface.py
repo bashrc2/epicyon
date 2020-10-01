@@ -5157,7 +5157,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editlinks' + '">' + \
             '<img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/edit.png"/></a>\n' + \
+            iconsDir + '/edit.png" class="editLinksIcon" /></a>\n' + \
             '      </center>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
