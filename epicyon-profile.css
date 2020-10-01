@@ -87,17 +87,9 @@ body, html {
 
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
-    max-width: var(--column-center-width);
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
-}
-
-.pageupdown {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
 }
 
 blockquote {
@@ -943,6 +935,10 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .pageupdown {
+	margin-left: 60%;
+	width: 100vw;
+    }    
     .timeline {
         border: 0;
         width: 100vw;
@@ -1429,6 +1425,10 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .pageupdown {
+	margin-left: 45%;
+	width: 100vw;
+    }    
     .timeline {
         border: 0;
         width: 100vw;
