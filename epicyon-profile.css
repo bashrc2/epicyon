@@ -940,10 +940,13 @@ aside .toggle-inside li {
         width: 100vw;
     }
     .column-left a:link {
-	background: var(--column-left-color);
+        background: var(--column-left-color);
     }
-    .column-left {	
-	background-color: var(--column-left-color);
+    .column-left a:visited {
+        background: var(--column-left-color);
+    }
+    .column-left {
+        background-color: var(--column-left-color);
         width: var(--column-left-width);
     }
     .col-left {
@@ -952,7 +955,7 @@ aside .toggle-inside li {
         width: var(--column-left-width);
     }
     .col-left img {
-	background: var(--column-left-color);
+        background: var(--column-left-color);
         margin: 40px 0;
         width: 20%;
     }
