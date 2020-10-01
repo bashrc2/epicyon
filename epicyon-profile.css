@@ -94,6 +94,10 @@ body, html {
     line-height: var(--line-spacing);
 }
 
+.timeline {
+    width: 100%;
+}
+
 blockquote {
   border-left: 10px;
   margin: 1.5em 10px;

@@ -5355,7 +5355,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '<div class="timeline-banner">'
     tlStr += '</div>\n</a>\n'
 
-    tlStr += '<div class="row">\n'
+    tlStr += '<div class="timeline">\n'
     tlStr += '  <div class="column-left">\n'
     tlStr += '  </div>\n'
     tlStr += '  <div class="column-center">\n'
