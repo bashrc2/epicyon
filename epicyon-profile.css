@@ -946,6 +946,9 @@ aside .toggle-inside li {
     .col-left {
         float: left;
     }
+    .col-center {
+        width: 100%;
+    }
     .column-right {
         width: var(--column-right-width);
     }
@@ -1426,6 +1429,9 @@ aside .toggle-inside li {
     }
     .col-left {
         float: left;
+    }
+    .col-center {
+        width: 100%;
     }
     .column-right {
         width: 0%;
