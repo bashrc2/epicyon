@@ -5166,6 +5166,38 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             iconsDir + '/edit.png"/></a>\n' + \
             '      </center>\n'
 
+    linksFilename = baseDir + '/accounts/links.txt'
+    if os.path.isfile(linksFilename):
+        linksList = None
+        with open(linksFilename, "r") as f:
+            linksList = f.readlines()
+        if linksList:
+            for lineStr in linksList:
+                if ' ' not in lineStr:
+                    continue
+                if '://' not in lineStr and '.html' not in lineStr:
+                    continue
+                lineStr = lineStr.strip()
+                if lineStr.startswith('#'):
+                    continue
+                words = lineStr.split(' ')
+                # get the link
+                linkStr = None
+                for word in words:
+                    if '://' in word or word.endswith('.html'):
+                        linkStr = word
+                        break
+                if linkStr:
+                    lineStr = lineStr.replace(linkStr, '').strip()
+                    # avoid any dubious scripts being added
+                    if '<' not in lineStr:
+                        # remove trailing comma if present
+                        if lineStr.endswith(','):
+                            lineStr = lineStr[:len(lineStr)-1]
+                        # add link to the returned html
+                        htmlStr += \
+                            '      <br><a href="' + linkStr + '">' + \
+                            lineStr + '</a>\n'
     return htmlStr
 
 
