@@ -131,6 +131,23 @@ a, u {
     color: var(--main-fg-color);
 }
 
+.editLinksBtn {
+    border-radius: var(--button-corner-radius);
+    background-color: var(--button-background);
+    border: none;
+    color: var(--button-text);
+    text-align: center;
+    font-size: var(--font-size-header);
+    font-family: Arial, Helvetica, sans-serif;
+    padding: var(--button-height-padding);
+    width: 90%;
+    max-width: 200px;
+    min-width: 10ch;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);

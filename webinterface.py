@@ -1206,6 +1206,79 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
     return False
 
 
+def htmlEditLinks(translate: {}, baseDir: str, path: str,
+                  domain: str, port: int, httpPrefix: str) -> str:
+    """Shows the edit links screen
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+    path = path.replace('/inbox', '').replace('/outbox', '')
+    path = path.replace('/shares', '')
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            if ':' not in domain:
+                domainFull = domain + ':' + str(port)
+
+    # is the user a moderator?
+    if not isModerator(baseDir, nickname):
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+    with open(cssFilename, 'r') as cssFile:
+        editCSS = cssFile.read()
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editLinksForm = htmlHeader(cssFilename, editCSS)
+    editLinksForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/linksdata">\n'
+    editLinksForm += \
+        '  <div class="vertical-center">\n'
+    editLinksForm += \
+        '    <p class="new-post-text">' + translate['Edit Links'] + '</p>'
+    editLinksForm += \
+        '    <div class="container">\n'
+    editLinksForm += \
+        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+        translate['Go Back'] + '</button></a>\n'
+    editLinksForm += \
+        '      <input type="submit" name="submitLinks" value="' + \
+        translate['Submit'] + '">\n'
+    editLinksForm += \
+        '    </div>\n'
+
+    linksFilename = baseDir + '/accounts/links.txt'
+    linksStr = ''
+    if os.path.isfile(linksFilename):
+        with open(linksFilename, 'r') as fp:
+            linksStr = fp.read()
+
+    editLinksForm = \
+        '<div class="container">'
+    editLinksForm += \
+        '  ' + \
+        translate['One link per line. Description followed by the link.']
+    editLinksForm += \
+        '  <textarea id="message" name="editedLinks" style="height:500px">' + \
+        linksStr + '</textarea>'
+    editLinksForm += \
+        '</div>'
+
+    editLinksForm += htmlFooter()
+    return editLinksForm
+
+
 def htmlEditProfile(translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit profile screen
@@ -5077,15 +5150,23 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     return '*' + label + '*'
 
 
-def getLeftColumContent(baseDir: str, nickname: str, domain: str) -> str:
+def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
+                         httpPrefix: str, translate: {}) -> str:
     """Returns html content for the left column
     """
-    htmlStr = ''
-    # TODO
+    htmlStr = \
+        '      <center>\n' + \
+        '      <a href="' + \
+        httpPrefix + '://' + domainFull + \
+        '/users/' + nickname + '/editlinks' + '">' + \
+        '<button class="editLinksBtn">' + \
+        translate['Edit Links'] + '</button></a>\n' + \
+        '      </center>\n'
+
     return htmlStr
 
 
-def getRightColumContent(baseDir: str, nickname: str, domain: str) -> str:
+def getRightColumnContent(baseDir: str, nickname: str, domain: str) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5393,8 +5474,16 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '    <col span="1" class="column-right">\n'
     tlStr += '  </colgroup>\n'
     tlStr += '  <tbody><tr>\n'
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
     # left column
-    leftColumnStr = getLeftColumContent(baseDir, nickname, domain)
+    leftColumnStr = \
+        getLeftColumnContent(baseDir, nickname, domainFull,
+                             httpPrefix, translate)
     tlStr += '  <td class="col-left">' + leftColumnStr + '</td>\n'
     # center column containing posts
     tlStr += '  <td class="col-center">\n'
@@ -5702,7 +5791,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  </td>\n'
 
     # right column
-    rightColumnStr = getRightColumContent(baseDir, nickname, domain)
+    rightColumnStr = getRightColumnContent(baseDir, nickname, domain)
     tlStr += '  <td class="col-right">' + rightColumnStr + '</td>\n'
 
     # benchmark 9
