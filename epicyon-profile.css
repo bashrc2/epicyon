@@ -953,7 +953,7 @@ aside .toggle-inside li {
         width: var(--column-left-width);
     }
     .col-left {
-	padding: 10px 10px;
+        padding: 10px 10px;
         font-size: var(--font-size-links);
         float: left;
         width: var(--column-left-width);
@@ -1442,6 +1442,7 @@ aside .toggle-inside li {
         width: 100vw;
     }
     .column-left {
+        display: none;
         width: 0%;
     }
     .col-left {
