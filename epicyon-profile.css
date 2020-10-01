@@ -162,10 +162,8 @@ a:focus {
 .timeline-banner {
     background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
     height: 15%;
-    width: 100vw;
-    background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: 100vw;
     position: relative;
 }
 
@@ -931,7 +929,6 @@ aside .toggle-inside li {
 
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
-        max-width: var(--column-center-width);
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
