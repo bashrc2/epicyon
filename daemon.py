@@ -2689,6 +2689,105 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _linksUpdate(self, callingDomain: str, cookie: str,
+                     authorized: bool, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str,
+                     onionDomain: str, i2pDomain: str, debug: bool,
+                     defaultTimeline: str):
+        """Updates the left links column of the timeline
+        """
+        usersPath = path.replace('/linksdata', '')
+        usersPath = usersPath.replace('/editlinks', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            if not nickname:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('WARN: nickname not found in ' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum links data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            linksFilename = baseDir + '/accounts/links.txt'
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            if fields.get('editedLinks'):
+                linksStr = fields['editedLinks']
+                linksFile = open(linksFilename, "w+")
+                if linksFile:
+                    linksFile.write(linksStr)
+                    linksFile.close()
+            else:
+                if os.path.isfile(linksFilename):
+                    os.remove(linksFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
@@ -2834,8 +2933,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # extract all of the text fields into a dict
             fields = \
-                extractTextFieldsInPOST(postBytes, boundary,
-                                        debug)
+                extractTextFieldsInPOST(postBytes, boundary, debug)
             if debug:
                 if fields:
                     print('DEBUG: profile update text ' +
@@ -10055,6 +10153,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.onionDomain,
                                 self.server.i2pDomain, self.server.debug)
+            return
+
+        if authorized and self.path.endswith('/linksdata'):
+            self._linksUpdate(callingDomain, cookie, authorized, self.path,
+                              self.server.baseDir, self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.domainFull,
+                              self.server.onionDomain,
+                              self.server.i2pDomain, self.server.debug,
+                              self.server.defaultTimeline)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)

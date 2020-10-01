@@ -1220,12 +1220,6 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
     if not nickname:
         return ''
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
-
     # is the user a moderator?
     if not isModerator(baseDir, nickname):
         return ''
