@@ -5171,12 +5171,18 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if linksList:
             for lineStr in linksList:
                 if ' ' not in lineStr:
-                    continue
+                    if '#' not in lineStr:
+                        if '*' not in lineStr:
+                            continue
                 lineStr = lineStr.strip()
                 words = lineStr.split(' ')
                 # get the link
                 linkStr = None
                 for word in words:
+                    if word == '#':
+                        continue
+                    if word == '*':
+                        continue
                     if '://' in word or word.endswith('.html'):
                         linkStr = word
                         break
