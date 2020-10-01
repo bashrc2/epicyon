@@ -21,6 +21,7 @@
     --font-size-header-mobile: 32px;
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
+    --font-size-links: 20px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -941,6 +942,7 @@ aside .toggle-inside li {
         width: var(--column-left-width);
     }
     .col-left {
+        font-size: var(--font-size-links);
         float: left;
         width: var(--column-left-width);
     }
