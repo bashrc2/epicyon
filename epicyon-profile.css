@@ -939,6 +939,7 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .timeline {
+	border: 0;
         width: 120%;
     }
     .column-left {
@@ -1415,6 +1416,7 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .timeline {
+	border: 0;
         width: 100%;
     }
     .column-left {

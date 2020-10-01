@@ -5355,10 +5355,18 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '<div class="timeline-banner">'
     tlStr += '</div>\n</a>\n'
 
-    tlStr += '<div class="timeline">\n'
-    tlStr += '  <div class="column-left">\n'
-    tlStr += '  </div>\n'
-    tlStr += '  <div class="column-center">\n'
+    # start the timeline
+    tlStr += '<table class="timeline">\n'
+    tlStr += '  <colgroup>\n'
+    tlStr += '    <col span="1" class="column-left">\n'
+    tlStr += '    <col span="1" class="column-center">\n'
+    tlStr += '    <col span="1" class="column-right">\n'
+    tlStr += '  </colgroup>\n'
+    tlStr += '  <tr>\n'
+    # left column
+    tlStr += '  <td class="column-left"></td>\n'
+    # center column containing posts
+    tlStr += '  <td class="column-center">\n'
 
     # start of the button header with inbox, outbox, etc
     tlStr += '    <div class="container">\n'
@@ -5658,9 +5666,9 @@ def htmlTimeline(defaultTimeline: str,
             tlStr += '</div>\n'
 
     # end of column-center
-    tlStr += '  </div>\n'
-    tlStr += '  <div class="column-right">\n'
-    tlStr += '  </div>\n'
+    tlStr += '  </td>\n'
+    tlStr += '  <td class="column-right"></td>\n'
+    tlStr += '  </table>\n'
     tlStr += '</div>'
 
     # benchmark 9
