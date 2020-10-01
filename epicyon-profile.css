@@ -94,10 +94,6 @@ body, html {
     line-height: var(--line-spacing);
 }
 
-.timeline {
-    width: 100%;
-}
-
 blockquote {
   border-left: 10px;
   margin: 1.5em 10px;
@@ -942,18 +938,21 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .timeline {
+        width: 120%;
+    }
     .column-left {
         float: left;
         width: var(--column-left-width);
-    } 
+    }
     .column-right {
         float: right;
         width: var(--column-right-width);
-    } 
+    }
     .column-center {
         display: inline-block;
         width: var(--column-center-width);
-    } 
+    }
     .likesCount {
         font-size: var(--font-size-likes);
         font-family: Arial, Helvetica, sans-serif;
@@ -1415,18 +1414,21 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .timeline {
+        width: 100%;
+    }
     .column-left {
         float: left;
         width: 0%;
-    } 
+    }
     .column-right {
         float: right;
         width: 0%;
-    } 
+    }
     .column-center {
         display: inline-block;
         width: 100%;
-    } 
+    }
     .likesCount {
         font-size: var(--font-size-likes-mobile);
         font-family: Arial, Helvetica, sans-serif;
