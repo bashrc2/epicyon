@@ -144,6 +144,7 @@ from webinterface import htmlSearchEmojiTextEntry
 from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
+from webinterface import htmlEditLinks
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
@@ -7413,6 +7414,28 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _editLinks(self, callingDomain: str, path: str,
+                   translate: {}, baseDir: str,
+                   httpPrefix: str, domain: str, port: int,
+                   cookie: str) -> bool:
+        """Show the links from the left column
+        """
+        if '/users/' in path and path.endswith('/editlinks'):
+            msg = htmlEditLinks(translate,
+                                baseDir,
+                                path, domain,
+                                port,
+                                httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def _editEvent(self, callingDomain: str, path: str,
                    httpPrefix: str, domain: str, domainFull: str,
                    baseDir: str, translate: {},
@@ -8705,6 +8728,16 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.port,
                                  cookie):
+                return
+
+            # edit links from the left column of the timeline in web interface
+            if self._editLinks(callingDomain, self.path,
+                               self.server.translate,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.port,
+                               cookie):
                 return
 
             if self._showNewPost(callingDomain, self.path,
