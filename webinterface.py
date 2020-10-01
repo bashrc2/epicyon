@@ -5077,6 +5077,22 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     return '*' + label + '*'
 
 
+def getLeftColumContent(baseDir: str, nickname: str, domain: str) -> str:
+    """Returns html content for the left column
+    """
+    htmlStr = ''
+    # TODO
+    return htmlStr
+
+
+def getRightColumContent(baseDir: str, nickname: str, domain: str) -> str:
+    """Returns html content for the right column
+    """
+    htmlStr = ''
+    # TODO
+    return htmlStr
+
+
 def htmlTimeline(defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -5378,7 +5394,8 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  </colgroup>\n'
     tlStr += '  <tbody><tr>\n'
     # left column
-    tlStr += '  <td class="col-left">Test left</td>\n'
+    leftColumnStr = getLeftColumContent(baseDir, nickname, domain)
+    tlStr += '  <td class="col-left">' + leftColumnStr + '</td>\n'
     # center column containing posts
     tlStr += '  <td class="col-center">\n'
 
@@ -5683,7 +5700,10 @@ def htmlTimeline(defaultTimeline: str,
 
     # end of column-center
     tlStr += '  </td>\n'
-    tlStr += '  <td class="col-right">Test right</td>\n'
+
+    # right column
+    rightColumnStr = getRightColumContent(baseDir, nickname, domain)
+    tlStr += '  <td class="col-right">' + rightColumnStr + '</td>\n'
 
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)
