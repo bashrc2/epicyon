@@ -5537,7 +5537,8 @@ def htmlTimeline(defaultTimeline: str,
 
             # happening today button
             tlStr += \
-                '<center>\n<a href="' + usersPath + '/calendar?year=' + \
+                '    <center>\n' + \
+                '    <a href="' + usersPath + '/calendar?year=' + \
                 str(now.year) + '?month=' + str(now.month) + \
                 '?day=' + str(now.day) + '"><button class="buttonevent">' + \
                 translate['Happening Today'] + '</button></a>\n'
@@ -5545,18 +5546,19 @@ def htmlTimeline(defaultTimeline: str,
             # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 tlStr += \
-                    '<a href="' + usersPath + \
+                    '    <a href="' + usersPath + \
                     '/calendar"><button class="buttonevent">' + \
                     translate['Happening This Week'] + '</button></a>\n'
-            tlStr += '</center>\n'
+            tlStr += '    </center>\n'
         else:
             # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 tlStr += \
-                    '<center>\n<a href="' + usersPath + \
+                    '    <center>\n' + \
+                    '    <a href="' + usersPath + \
                     '/calendar"><button class="buttonevent">' + \
                     translate['Happening This Week'] + '</button></a>\n' + \
-                    '</center>\n'
+                    '    </center>\n'
 
     # benchmark 8
     timeDiff = int((time.time() - timelineStartTime) * 1000)
