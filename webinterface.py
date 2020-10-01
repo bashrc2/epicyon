@@ -5684,8 +5684,6 @@ def htmlTimeline(defaultTimeline: str,
     # end of column-center
     tlStr += '  </td>\n'
     tlStr += '  <td class="col-right">Test right</td>\n'
-    tlStr += '  </tbody>\n'
-    tlStr += '</table>\n'
 
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)
@@ -5695,14 +5693,23 @@ def htmlTimeline(defaultTimeline: str,
     # page down arrow
     if itemCtr > 2:
         tlStr += \
-            '  <div class="pagedown">\n' + \
-            '    <a href="' + usersPath + '/' + boxName + '?page=' + \
+            '  <tr>\n' + \
+            '    <td class="col-left"></td>\n' + \
+            '    <td class="col-center">\n' + \
+            '      <div class="pagedown">\n' + \
+            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
-            '  </div>\n'
+            '      </div>\n' + \
+            '    </td>\n' + \
+            '    <td class="col-right"></td>\n' + \
+            '  </tr>\n'
+
+    tlStr += '  </tbody>\n'
+    tlStr += '</table>\n'
     tlStr += htmlFooter()
     return tlStr
 

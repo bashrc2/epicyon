@@ -1421,7 +1421,6 @@ aside .toggle-inside li {
 
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
-        max-width: var(--column-center-width);
         min-width: 950px;
         margin-left: 0;
         font-size: var(--font-size);
