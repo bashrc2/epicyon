@@ -5172,11 +5172,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             for lineStr in linksList:
                 if ' ' not in lineStr:
                     continue
-                if '://' not in lineStr and '.html' not in lineStr:
-                    continue
                 lineStr = lineStr.strip()
-                if lineStr.startswith('#'):
-                    continue
                 words = lineStr.split(' ')
                 # get the link
                 linkStr = None
@@ -5197,7 +5193,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             lineStr + '</a></p>\n'
                 else:
                     if lineStr:
-                        if lineStr.startswith('#'):
+                        if lineStr.startswith('#') or lineStr.startswith('*'):
                             linestr = lineStr[1:].strip()
                             htmlStr += \
                                 '      <h5>' + lineStr + '</h5>\n'
