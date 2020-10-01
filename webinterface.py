@@ -2655,6 +2655,7 @@ def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     htmlStr += '    <style>\n' + css + '</style>\n'
     htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
     htmlStr += '    <meta name="theme-color" content="grey">\n'
+    htmlStr += '    <title>Epicyon</title>\n'
     htmlStr += '  </head>\n'
     htmlStr += '  <body>\n'
     return htmlStr
