@@ -945,15 +945,17 @@ aside .toggle-inside li {
     }
     .col-left {
         float: left;
+        width: var(--column-left-width);
     }
     .col-center {
-        width: 100%;
+        width: var(--column-center-width);
     }
     .column-right {
         width: var(--column-right-width);
     }
     .col-right {
         float: right;
+        width: var(--column-right-width);
     }
     .column-center {
         display: inline-block;
@@ -1429,15 +1431,17 @@ aside .toggle-inside li {
     }
     .col-left {
         float: left;
+        width: 0%;
     }
     .col-center {
-        width: 100%;
-    }
-    .column-right {
-        width: 0%;
+        width: 100vw;
     }
     .col-right {
         float: right;
+        width: 0%;
+    }
+    .column-right {
+        width: 0%;
     }
     .column-center {
         display: inline-block;
