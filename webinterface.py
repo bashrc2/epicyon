@@ -5151,7 +5151,8 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
-                         httpPrefix: str, translate: {}) -> str:
+                         httpPrefix: str, translate: {},
+                         iconsDir: str) -> str:
     """Returns html content for the left column
     """
     htmlStr = \
@@ -5159,8 +5160,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '      <a href="' + \
         httpPrefix + '://' + domainFull + \
         '/users/' + nickname + '/editlinks' + '">' + \
-        '<button class="editLinksBtn">' + \
-        translate['Edit Links'] + '</button></a>\n' + \
+        '<img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/edit.png"/></a>\n' + \
         '      </center>\n'
 
     return htmlStr
@@ -5483,7 +5484,7 @@ def htmlTimeline(defaultTimeline: str,
     # left column
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
-                             httpPrefix, translate)
+                             httpPrefix, translate, iconsDir)
     tlStr += '  <td class="col-left">' + leftColumnStr + '</td>\n'
     # center column containing posts
     tlStr += '  <td class="col-center">\n'
