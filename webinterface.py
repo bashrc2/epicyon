@@ -5198,14 +5198,13 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p><a href="' + linkStr + '">' + \
                             lineStr + '</a></p>\n'
                 else:
-                    if lineStr:
-                        if lineStr.startswith('#') or lineStr.startswith('*'):
-                            linestr = lineStr[1:].strip()
-                            htmlStr += \
-                                '      <h5>' + lineStr + '</h5>\n'
-                        else:
-                            htmlStr += \
-                                '      <p>' + lineStr + '</p>\n'
+                    if lineStr.startswith('#') or lineStr.startswith('*'):
+                        lineStr = lineStr[1:].strip()
+                        htmlStr += \
+                            '      <h5>' + lineStr + '</h5>\n'
+                    else:
+                        htmlStr += \
+                            '      <p>' + lineStr + '</p>\n'
 
     return htmlStr
 
