@@ -5272,7 +5272,54 @@ def getRightColumnContent(baseDir: str, nickname: str, domain: str) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
-    # TODO
+
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')
+
+    rightColumnImageFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/right_col_image.png'
+    if not os.path.isfile(rightColumnImageFilename):
+        theme = getConfigParam(baseDir, 'theme').lower()
+        if theme == 'default':
+            theme = ''
+        else:
+            theme = '_' + theme
+        themeRightColumnImageFilename = \
+            baseDir + '/img/right_col_image' + theme + '.png'
+        if os.path.isfile(themeRightColumnImageFilename):
+            copyfile(themeRightColumnImageFilename, rightColumnImageFilename)
+
+    # show the image at the top of the column
+    editImageClass = 'rightColEdit'
+    if os.path.isfile(rightColumnImageFilename):
+        editImageClass = 'rightColEditImage'
+        htmlStr += \
+            '      <center>\n' + \
+            '        <img class="rightColImg" loading="lazy" src="/users/' + nickname + \
+            '/right_col_image.png" />\n' + \
+            '      </center>\n'
+
+    if editImageClass == 'rightColEdit':
+        htmlStr += '      <center>\n'
+
+    if moderator:
+        # show the edit icon
+        htmlStr += \
+            '      <a href="' + \
+            httpPrefix + '://' + domainFull + \
+            '/users/' + nickname + '/editnewswire">' + \
+            '<img class="' + editImageClass + \
+            '" loading="lazy" alt="' + \
+            translate['Edit Links'] + '" title="' + \
+            translate['Edit Links'] + '" src="/' + \
+            iconsDir + '/edit.png" /></a>\n'
+
+    if editImageClass == 'rightColEdit':
+        htmlStr += '      <center>\n'
+    else:
+        htmlStr += '      <br>\n'
     return htmlStr
 
 
