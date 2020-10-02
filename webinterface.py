@@ -5183,7 +5183,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                         continue
                     if word == '*':
                         continue
-                    if '://' in word or word.endswith('.html'):
+                    if '://' in word:
                         linkStr = word
                         break
                 if linkStr:
