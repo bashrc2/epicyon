@@ -941,12 +941,12 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .timeline-banner {
-	background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
-	height: 15%;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 100vw;
-	position: relative;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
+        height: 15%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 100vw;
+        position: relative;
     }
     .timeline {
         border: 0;
@@ -977,16 +977,21 @@ aside .toggle-inside li {
     .col-left img.leftColEditImage {
         background: var(--column-left-color);
         width: 20%;
-	float: right;
+        float: right;
     }
     .col-left img.leftColImg {
         background: var(--column-left-color);
         width: 100%;
-	margin: 0 0;
-	padding: 0 0;
+        margin: 0 0;
+        padding: 0 0;
+    }
+    .column-center {
+        display: inline-block;
+        width: var(--column-center-width);
     }
     .col-center {
         width: var(--column-center-width);
+	background-color: var(--main-bg-color);
     }
     .col-right a:link {
         background: var(--column-left-color);
@@ -1013,17 +1018,13 @@ aside .toggle-inside li {
     .col-right img.rightColEditImage {
         background: var(--column-left-color);
         width: 20%;
-	float: right;
+        float: right;
     }
     .col-right img.rightColImg {
         background: var(--column-left-color);
         width: 100%;
-	margin: 0 0;
-	padding: 0 0;
-    }
-    .column-center {
-        display: inline-block;
-        width: var(--column-center-width);
+        margin: 0 0;
+        padding: 0 0;
     }
     .likesCount {
         font-size: var(--font-size-likes);
@@ -1486,12 +1487,12 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .timeline-banner {
-	background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
-	height: 6%;
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 145vw;
-	position: relative;
+        background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
+        height: 6%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 145vw;
+        position: relative;
     }
     .timeline {
         border: 0;
