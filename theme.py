@@ -266,7 +266,7 @@ def setThemeIndymedia(baseDir: str):
         "main-bg-color": "black",
         "column-left-header-color": "#fff",
         "column-left-header-background": "#555",
-        "column-left-header-size": "10px",
+        "column-left-header-size": "20px",
         "column-left-color": "#003366",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "black",
