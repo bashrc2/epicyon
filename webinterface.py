@@ -5207,6 +5207,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             iconsDir + '/edit.png" /></a>\n'
         if editImageClass == 'leftColEdit':
             htmlStr += '      <center>\n'
+        else:
+            htmlStr += '      <br>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
     if os.path.isfile(linksFilename):
