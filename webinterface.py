@@ -5188,8 +5188,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         editImageClass = 'leftColEditImage'
         htmlStr += \
             '      <center>\n' + \
-            '        <img class="leftColImg" loading="lazy" src="/users/' + nickname + \
-            '/left_col_image.png" />\n' + \
+            '        <img class="leftColImg" loading="lazy" src="/users/' + \
+            nickname + '/left_col_image.png" />\n' + \
             '      </center>\n'
 
     if editImageClass == 'leftColEdit':
@@ -5299,8 +5299,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         editImageClass = 'rightColEditImage'
         htmlStr += \
             '      <center>\n' + \
-            '        <img class="rightColImg" loading="lazy" src="/users/' + nickname + \
-            '/right_col_image.png" />\n' + \
+            '        <img class="rightColImg" loading="lazy" src="/users/' + \
+            nickname + '/right_col_image.png" />\n' + \
             '      </center>\n'
 
     if editImageClass == 'rightColEdit':
