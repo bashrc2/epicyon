@@ -5185,7 +5185,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if os.path.isfile(leftColumnImageFilename):
         htmlStr += \
             '      <center>\n' + \
-            '        <img loading="lazy" src="/users/' + nickname + \
+            '        <img class="leftColImg" loading="lazy" src="/users/' + nickname + \
             '/left_col_image.png" />\n' + \
             '      </center>\n'
 

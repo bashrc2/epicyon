@@ -975,6 +975,10 @@ aside .toggle-inside li {
         margin: 40px 0;
         width: 20%;
     }
+    .col-left img.leftColImg {
+        background: var(--column-left-color);
+        width: 90%;
+    }
     .col-center {
         width: var(--column-center-width);
     }
