@@ -7161,6 +7161,9 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows an image at the top of the left/right column
         """
         nickname = getNicknameFromActor(path)
+        if not nickname:
+            self._404()
+            return True
         bannerFilename = \
             baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + side + '_col_image.png'
@@ -8142,21 +8145,21 @@ class PubServer(BaseHTTPRequestHandler):
                                             GETstartTime, GETtimings):
                     return
 
-        if self.path.endswith('/left_col_image.png'):
-            if self._columImage('left', callingDomain, self.path,
-                                self.server.baseDir,
-                                self.server.domain,
-                                self.server.port,
-                                GETstartTime, GETtimings):
-                return
+            if self.path.endswith('/left_col_image.png'):
+                if self._columImage('left', callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.domain,
+                                    self.server.port,
+                                    GETstartTime, GETtimings):
+                    return
 
-        if self.path.endswith('/right_col_image.png'):
-            if self._columImage('right', callingDomain, self.path,
-                                self.server.baseDir,
-                                self.server.domain,
-                                self.server.port,
-                                GETstartTime, GETtimings):
-                return
+            if self.path.endswith('/right_col_image.png'):
+                if self._columImage('right', callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.domain,
+                                    self.server.port,
+                                    GETstartTime, GETtimings):
+                    return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'account qrcode done',
