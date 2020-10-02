@@ -978,6 +978,7 @@ aside .toggle-inside li {
     .col-left img.leftColEditImage {
         background: var(--column-left-color);
         width: 20%;
+	float: right;
     }
     .col-left img.leftColImg {
         background: var(--column-left-color);

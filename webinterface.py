@@ -5193,18 +5193,20 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '      </center>\n'
 
     if moderator:
+        if editImageClass == 'leftColEdit':
+            htmlStr += '      <center>\n'
         # show the edit icon
         htmlStr += \
-            '      <center>\n' + \
-            '        <a href="' + \
+            '      <a href="' + \
             httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editlinks' + '">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
-            iconsDir + '/edit.png" /></a>\n' + \
-            '      </center>\n'
+            iconsDir + '/edit.png" /></a>\n'
+        if editImageClass == 'leftColEdit':
+            htmlStr += '      <center>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
     if os.path.isfile(linksFilename):
