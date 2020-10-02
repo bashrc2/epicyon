@@ -5187,13 +5187,13 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if os.path.isfile(leftColumnImageFilename):
         editImageClass = 'leftColEditImage'
         htmlStr += \
-            '      <center>\n' + \
+            '\n      <center>\n' + \
             '        <img class="leftColImg" loading="lazy" src="/users/' + \
             nickname + '/left_col_image.png" />\n' + \
             '      </center>\n'
 
     if editImageClass == 'leftColEdit':
-        htmlStr += '      <center>\n'
+        htmlStr += '\n      <center>\n'
 
     if moderator:
         # show the edit icon
@@ -5217,7 +5217,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         iconsDir + '/rss.png" /></a>\n'
 
     if editImageClass == 'leftColEdit':
-        htmlStr += '      <center>\n'
+        htmlStr += '      </center>\n'
     else:
         htmlStr += '      <br>\n'
 
@@ -5298,13 +5298,13 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if os.path.isfile(rightColumnImageFilename):
         editImageClass = 'rightColEditImage'
         htmlStr += \
-            '      <center>\n' + \
+            '\n      <center>\n' + \
             '        <img class="rightColImg" loading="lazy" src="/users/' + \
             nickname + '/right_col_image.png" />\n' + \
             '      </center>\n'
 
     if editImageClass == 'rightColEdit':
-        htmlStr += '      <center>\n'
+        htmlStr += '\n      <center>\n'
 
     if moderator:
         # show the edit icon
@@ -5319,7 +5319,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             iconsDir + '/edit.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
-        htmlStr += '      <center>\n'
+        htmlStr += '      </center>\n'
     else:
         htmlStr += '      <br>\n'
     return htmlStr
