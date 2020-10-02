@@ -5669,6 +5669,32 @@ def htmlTimeline(defaultTimeline: str,
         sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
         moderationButtonStr + newPostButtonStr
 
+    # show todays events buttons on the first inbox page
+    if boxName == 'inbox' and pageNumber == 1:
+        if todaysEventsCheck(baseDir, nickname, domain):
+            now = datetime.now()
+
+            # happening today button
+            tlStr += \
+                '    <a href="' + usersPath + '/calendar?year=' + \
+                str(now.year) + '?month=' + str(now.month) + \
+                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
+                translate['Happening Today'] + '</button></a>\n'
+
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                tlStr += \
+                    '    <a href="' + usersPath + \
+                    '/calendar"><button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>\n'
+        else:
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                tlStr += \
+                    '    <a href="' + usersPath + \
+                    '/calendar"><button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>\n'
+    
     # the search button
     tlStr += \
         '        <a class="imageAnchor" href="' + usersPath + \
@@ -5760,36 +5786,6 @@ def htmlTimeline(defaultTimeline: str,
     timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 7 = ' + str(timeDiff))
-
-    # show todays events buttons on the first inbox page
-    if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
-            # happening today button
-            tlStr += \
-                '    <center>\n' + \
-                '    <a href="' + usersPath + '/calendar?year=' + \
-                str(now.year) + '?month=' + str(now.month) + \
-                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
-                translate['Happening Today'] + '</button></a>\n'
-
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '    <a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n'
-            tlStr += '    </center>\n'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '    <center>\n' + \
-                    '    <a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n' + \
-                    '    </center>\n'
 
     # benchmark 8
     timeDiff = int((time.time() - timelineStartTime) * 1000)
