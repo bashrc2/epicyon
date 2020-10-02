@@ -5182,7 +5182,10 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if os.path.isfile(themeLeftColumnImageFilename):
             copyfile(themeLeftColumnImageFilename, leftColumnImageFilename)
 
+    # show the image at the top of the column
+    editImageClass = 'leftColEdit'
     if os.path.isfile(leftColumnImageFilename):
+        editImageClass = 'leftColEditImage'
         htmlStr += \
             '      <center>\n' + \
             '        <img class="leftColImg" loading="lazy" src="/users/' + nickname + \
@@ -5190,12 +5193,14 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '      </center>\n'
 
     if moderator:
+        # show the edit icon
         htmlStr += \
             '      <center>\n' + \
             '        <a href="' + \
             httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editlinks' + '">' + \
-            '<img loading="lazy" alt="' + \
+            '<img class="' + editImageClass + \
+            '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
             iconsDir + '/edit.png" /></a>\n' + \
