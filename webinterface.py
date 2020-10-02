@@ -5299,7 +5299,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         editImageClass = 'rightColEditImage'
         htmlStr += \
             '\n      <center>\n' + \
-            '        <img class="rightColImg" loading="lazy" src="/users/' + \
+            '          <img class="rightColImg" loading="lazy" src="/users/' + \
             nickname + '/right_col_image.png" />\n' + \
             '      </center>\n'
 
@@ -5309,7 +5309,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if moderator:
         # show the edit icon
         htmlStr += \
-            '      <a href="' + \
+            '        <a href="' + \
             httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editnewswire">' + \
             '<img class="' + editImageClass + \
@@ -5636,7 +5636,7 @@ def htmlTimeline(defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
                              moderator)
-    tlStr += '  <td class="col-left">' + leftColumnStr + '</td>\n'
+    tlStr += '  <td class="col-left">' + leftColumnStr + '  </td>\n'
     # center column containing posts
     tlStr += '  <td class="col-center">\n'
 
@@ -5942,7 +5942,7 @@ def htmlTimeline(defaultTimeline: str,
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
                                            httpPrefix, translate, iconsDir,
                                            moderator)
-    tlStr += '  <td class="col-right">' + rightColumnStr + '</td>\n'
+    tlStr += '  <td class="col-right">' + rightColumnStr + '  </td>\n'
 
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)
