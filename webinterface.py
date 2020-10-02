@@ -5192,23 +5192,34 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '/left_col_image.png" />\n' + \
             '      </center>\n'
 
+    if editImageClass == 'leftColEdit':
+        htmlStr += '      <center>\n'
+
     if moderator:
-        if editImageClass == 'leftColEdit':
-            htmlStr += '      <center>\n'
         # show the edit icon
         htmlStr += \
             '      <a href="' + \
             httpPrefix + '://' + domainFull + \
-            '/users/' + nickname + '/editlinks' + '">' + \
+            '/users/' + nickname + '/editlinks">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
             iconsDir + '/edit.png" /></a>\n'
-        if editImageClass == 'leftColEdit':
-            htmlStr += '      <center>\n'
-        else:
-            htmlStr += '      <br>\n'
+
+    # RSS icon
+    htmlStr += \
+        '      <a href="' + \
+        httpPrefix + '://' + domainFull + \
+        '/blog/' + nickname + '/rss.xml">' + \
+        '<img class="' + editImageClass + \
+        '" loading="lazy" alt="RSS" title="RSS" src="/' + \
+        iconsDir + '/rss.png" /></a>\n'
+
+    if editImageClass == 'leftColEdit':
+        htmlStr += '      <center>\n'
+    else:
+        htmlStr += '      <br>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
     if os.path.isfile(linksFilename):
