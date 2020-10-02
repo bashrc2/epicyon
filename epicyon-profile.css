@@ -174,15 +174,6 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
-.timeline-banner {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
-    height: 15%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100vw;
-    position: relative;
-}
-
 .hero-image {
     background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("image.png");
     height: 50%;
@@ -949,6 +940,14 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .timeline-banner {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
+	height: 15%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100vw;
+	position: relative;
+    }
     .timeline {
         border: 0;
         width: 100vw;
@@ -1459,6 +1458,14 @@ aside .toggle-inside li {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    .timeline-banner {
+	background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
+	height: 6%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100vw;
+	position: relative;
     }
     .timeline {
         border: 0;
