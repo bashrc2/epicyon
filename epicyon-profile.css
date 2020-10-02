@@ -1004,6 +1004,7 @@ aside .toggle-inside li {
         width: var(--column-right-width);
     }
     .col-right {
+        background-color: var(--column-left-color);
         color: var(--column-left-fg-color);
         padding: 10px 10px;
         font-size: var(--font-size-links);
