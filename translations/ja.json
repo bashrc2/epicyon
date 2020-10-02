@@ -290,5 +290,7 @@
     "Hashtag Blocked": "ハッシュタグがブロックされました",
     "This is a blogging instance": "これはブログのインスタンスです",
     "Edit Links": "リンクの編集",
-    "One link per line. Description followed by the link.": "1行に1つのリンク。 説明の後にリンクが続きます。"
+    "One link per line. Description followed by the link.": "1行に1つのリンク。 説明の後にリンクが続きます。",
+    "Left column image": "",
+    "Right column image": ""
 }

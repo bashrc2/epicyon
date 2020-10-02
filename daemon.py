@@ -2865,7 +2865,8 @@ class PubServer(BaseHTTPRequestHandler):
             actorChanged = True
             profileMediaTypes = ('avatar', 'image',
                                  'banner', 'search_banner',
-                                 'instanceLogo')
+                                 'instanceLogo',
+                                 'left_col_image', 'right_col_image')
             profileMediaTypesUploaded = {}
             for mType in profileMediaTypes:
                 if debug:
@@ -7154,6 +7155,44 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _columImage(self, side: str, callingDomain: str, path: str,
+                    baseDir: str, domain: str, port: int,
+                    GETstartTime, GETtimings: {}) -> bool:
+        """Shows an image at the top of the left/right column
+        """
+        nickname = getNicknameFromActor(path)
+        bannerFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + side + '_col_image.png'
+        if os.path.isfile(bannerFilename):
+            if self._etag_exists(bannerFilename):
+                # The file has not changed
+                self._304()
+                return True
+
+            tries = 0
+            mediaBinary = None
+            while tries < 5:
+                try:
+                    with open(bannerFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            if mediaBinary:
+                self._set_headers_etag(bannerFilename, 'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'account qrcode done',
+                                          side + ' col image')
+                return True
+        self._404()
+        return True
+
     def _showBackgroundImage(self, callingDomain: str, path: str,
                              baseDir: str,
                              GETstartTime, GETtimings: {}) -> bool:
@@ -8094,13 +8133,29 @@ class PubServer(BaseHTTPRequestHandler):
                                   'account qrcode done')
 
         # search screen banner image
-        if '/users/' in self.path and \
-           self.path.endswith('/search_banner.png'):
-            if self._searchScreenBanner(callingDomain, self.path,
-                                        self.server.baseDir,
-                                        self.server.domain,
-                                        self.server.port,
-                                        GETstartTime, GETtimings):
+        if '/users/' in self.path:
+            if self.path.endswith('/search_banner.png'):
+                if self._searchScreenBanner(callingDomain, self.path,
+                                            self.server.baseDir,
+                                            self.server.domain,
+                                            self.server.port,
+                                            GETstartTime, GETtimings):
+                    return
+
+        if self.path.endswith('/left_col_image.png'):
+            if self._columImage('left', callingDomain, self.path,
+                                self.server.baseDir,
+                                self.server.domain,
+                                self.server.port,
+                                GETstartTime, GETtimings):
+                return
+
+        if self.path.endswith('/right_col_image.png'):
+            if self._columImage('right', callingDomain, self.path,
+                                self.server.baseDir,
+                                self.server.domain,
+                                self.server.port,
+                                GETstartTime, GETtimings):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,

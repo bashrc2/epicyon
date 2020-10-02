@@ -290,5 +290,7 @@
     "Hashtag Blocked": "Hashtag bloqué",
     "This is a blogging instance": "Ceci est une instance de blog",
     "Edit Links": "Modifier les liens",
-    "One link per line. Description followed by the link.": "Un lien par ligne. Description suivie du lien."
+    "One link per line. Description followed by the link.": "Un lien par ligne. Description suivie du lien.",
+    "Left column image": "",
+    "Right column image": ""
 }

@@ -1675,6 +1675,18 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += 'name="search_banner"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
+    editProfileForm += '      <br><label class="labels">' + \
+        translate['Left column image'] + '</label>\n'
+    editProfileForm += '      <input type="file" id="left_col_image" '
+    editProfileForm += 'name="left_col_image"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
+
+    editProfileForm += '      <br><label class="labels">' + \
+        translate['Right column image'] + '</label>\n'
+    editProfileForm += '      <input type="file" id="right_col_image" '
+    editProfileForm += 'name="right_col_image"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
+
     editProfileForm += '    </div>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
@@ -5151,6 +5163,31 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     """Returns html content for the left column
     """
     htmlStr = ''
+
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')
+
+    leftColumnImageFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/left_col_image.png'
+    if not os.path.isfile(leftColumnImageFilename):
+        theme = getConfigParam(baseDir, 'theme').lower()
+        if theme == 'default':
+            theme = ''
+        else:
+            theme = '_' + theme
+        themeLeftColumnImageFilename = \
+            baseDir + '/img/left_col_image' + theme + '.png'
+        if os.path.isfile(themeLeftColumnImageFilename):
+            copyfile(themeLeftColumnImageFilename, leftColumnImageFilename)
+
+    if os.path.isfile(leftColumnImageFilename):
+        htmlStr += \
+            '      <center>\n' + \
+            '        <img loading="lazy" src="/left_col_image.png" />\n' + \
+            '      </center>\n'
+
     if moderator:
         htmlStr += \
             '      <center>\n' + \
