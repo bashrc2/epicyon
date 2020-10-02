@@ -5268,7 +5268,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def getRightColumnContent(baseDir: str, nickname: str, domain: str) -> str:
+def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
+                          httpPrefix: str, translate: {},
+                          iconsDir: str, moderator: bool) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5741,7 +5743,7 @@ def htmlTimeline(defaultTimeline: str,
                     '    <a href="' + usersPath + \
                     '/calendar"><button class="buttonevent">' + \
                     translate['Happening This Week'] + '</button></a>\n'
-    
+
     # the search button
     tlStr += \
         '        <a class="imageAnchor" href="' + usersPath + \
@@ -5937,7 +5939,9 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '  </td>\n'
 
     # right column
-    rightColumnStr = getRightColumnContent(baseDir, nickname, domain)
+    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
+                                           httpPrefix, translate, iconsDir,
+                                           moderator)
     tlStr += '  <td class="col-right">' + rightColumnStr + '</td>\n'
 
     # benchmark 9
