@@ -291,6 +291,6 @@
     "This is a blogging instance": "هذا مثال على المدونات",
     "Edit Links": "تحرير الارتباطات",
     "One link per line. Description followed by the link.": "رابط واحد في كل سطر. الوصف متبوع بالرابط.",
-    "Left column image": "",
-    "Right column image": ""
+    "Left column image": "صورة العمود الأيسر",
+    "Right column image": "صورة العمود الأيمن"
 }

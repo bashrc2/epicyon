@@ -291,6 +291,6 @@
     "This is a blogging instance": "Ceci est une instance de blog",
     "Edit Links": "Modifier les liens",
     "One link per line. Description followed by the link.": "Un lien par ligne. Description suivie du lien.",
-    "Left column image": "",
-    "Right column image": ""
+    "Left column image": "Image de la colonne de gauche",
+    "Right column image": "Image de la colonne de droite"
 }
