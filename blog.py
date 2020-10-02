@@ -405,7 +405,7 @@ def htmlBlogPage(authorized: bool, session,
         timelineJson = createBlogsTimeline(session, baseDir,
                                            nickname, domain, port,
                                            httpPrefix,
-                                           noOfItems, False, False,
+                                           noOfItems, False,
                                            pageNumber)
 
         if not timelineJson:
@@ -515,7 +515,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
                                        httpPrefix,
-                                       noOfItems, False, False,
+                                       noOfItems, False,
                                        pageNumber)
 
     if not timelineJson:
@@ -561,7 +561,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
                                        httpPrefix,
-                                       noOfItems, False, False,
+                                       noOfItems, False,
                                        pageNumber)
 
     if not timelineJson:
