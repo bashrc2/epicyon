@@ -972,6 +972,11 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     if os.path.isfile(leftColImageFilename):
                         copyfile(leftColImageFilename,
                                  accountDir + '/left_col_image.png')
+                    else:
+                        if os.path.isfile(accountDir +
+                                          '/left_col_image.png'):
+                            os.remove(accountDir + '/left_col_image.png')
+
                 except BaseException:
                     pass
 
@@ -979,6 +984,10 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     if os.path.isfile(rightColImageFilename):
                         copyfile(rightColImageFilename,
                                  accountDir + '/right_col_image.png')
+                    else:
+                        if os.path.isfile(accountDir +
+                                          '/right_col_image.png'):
+                            os.remove(accountDir + '/right_col_image.png')
                 except BaseException:
                     pass
 
