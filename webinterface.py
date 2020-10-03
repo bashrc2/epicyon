@@ -5945,7 +5945,8 @@ def htmlTimeline(defaultTimeline: str,
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
                                            httpPrefix, translate, iconsDir,
                                            moderator)
-    tlStr += '  <td class="col-right">' + rightColumnStr + '  </td>\n'
+    tlStr += '  <td valign="top" class="col-right">' + \
+        rightColumnStr + '  </td>\n'
 
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)
