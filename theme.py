@@ -887,6 +887,10 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/banner.png'
         searchBannerFilename = \
             baseDir + '/img/search_banner.png'
+        leftColImageFilename = \
+            baseDir + '/img/left_col_image.png'
+        rightColImageFilename = \
+            baseDir + '/img/right_col_image.png'
     else:
         profileImageFilename = \
             baseDir + '/img/image_' + themeNameLower + '.png'
@@ -894,6 +898,10 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/banner_' + themeNameLower + '.png'
         searchBannerFilename = \
             baseDir + '/img/search_banner_' + themeNameLower + '.png'
+        leftColImageFilename = \
+            baseDir + '/img/left_col_image_' + themeNameLower + '.png'
+        rightColImageFilename = \
+            baseDir + '/img/right_col_image_' + themeNameLower + '.png'
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
@@ -957,6 +965,20 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     if os.path.isfile(searchBannerFilename):
                         copyfile(searchBannerFilename,
                                  accountDir + '/search_banner.png')
+                except BaseException:
+                    pass
+
+                try:
+                    if os.path.isfile(leftColImageFilename):
+                        copyfile(leftColImageFilename,
+                                 accountDir + '/left_col_image.png')
+                except BaseException:
+                    pass
+
+                try:
+                    if os.path.isfile(rightColImageFilename):
+                        copyfile(rightColImageFilename,
+                                 accountDir + '/right_col_image.png')
                 except BaseException:
                     pass
 

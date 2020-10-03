@@ -5301,7 +5301,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         editImageClass = 'rightColEditImage'
         htmlStr += \
             '\n      <center>\n' + \
-            '          <img class="rightColImg" loading="lazy" src="/users/' + \
+            '          <img class="rightColImg" ' + \
+            'loading="lazy" src="/users/' + \
             nickname + '/right_col_image.png" />\n' + \
             '      </center>\n'
 
