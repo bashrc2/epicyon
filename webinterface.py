@@ -5639,9 +5639,10 @@ def htmlTimeline(defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
                              moderator)
-    tlStr += '  <td class="col-left">' + leftColumnStr + '  </td>\n'
+    tlStr += '  <td valign="top" class="col-left">' + \
+        leftColumnStr + '  </td>\n'
     # center column containing posts
-    tlStr += '  <td class="col-center">\n'
+    tlStr += '  <td valign="top" class="col-center">\n'
 
     # start of the button header with inbox, outbox, etc
     tlStr += '    <div class="container">\n'
