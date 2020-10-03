@@ -5213,8 +5213,10 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         httpPrefix + '://' + domainFull + \
         '/blog/' + nickname + '/rss.xml">' + \
         '<img class="' + editImageClass + \
-        '" loading="lazy" alt="RSS" title="RSS" src="/' + \
-        iconsDir + '/rss.png" /></a>\n'
+        '" loading="lazy" alt="' + \
+        translate['RSS feed for this site'] + \
+        '" title="' + translate['RSS feed for this site'] + \
+        '" src="/' + iconsDir + '/rss.png" /></a>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
