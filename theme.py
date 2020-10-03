@@ -297,6 +297,10 @@ def setThemeIndymedia(baseDir: str):
         "title-text": "white",
         "title-background": "#003366",
         "quote-right-margin": "0.1em",
+        "column-left-width": "10vw",
+        "column-center-width": "70vw",
+        "column-right-width": "20vw",
+        "column-right-icon-size": "11%"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 

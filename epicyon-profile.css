@@ -64,12 +64,14 @@
     --quote-font-weight: normal;
     --quote-font-size: 120%;
     --line-spacing: 130%;
-    --column-left-width: 9vw;
+    --column-left-width: 10vw;
     --column-center-width: 80vw;
-    --column-right-width: 9vw;
+    --column-right-width: 10vw;
     --column-left-header-background: #555;
     --column-left-header-color: #fff;
     --column-left-header-size: 20px;
+    --column-left-icon-size: 20%;
+    --column-right-icon-size: 20%;
 }
 
 @font-face {
@@ -972,11 +974,11 @@ aside .toggle-inside li {
     .col-left img.leftColEdit {
         background: var(--column-left-color);
         margin: 40px 0;
-        width: 20%;
+        width: var(--column-left-icon-size);
     }
     .col-left img.leftColEditImage {
         background: var(--column-left-color);
-        width: 20%;
+        width: var(--column-left-icon-size);
         float: right;
     }
     .col-left img.leftColImg {
@@ -1012,11 +1014,11 @@ aside .toggle-inside li {
     .col-right img.rightColEdit {
         background: var(--column-left-color);
         margin: 40px 0;
-        width: 20%;
+        width: var(--column-right-icon-size);
     }
     .col-right img.rightColEditImage {
         background: var(--column-left-color);
-        width: 20%;
+        width: var(--column-right-icon-size);
         float: left;
     }
     .col-right img.rightColImg {
