@@ -28,6 +28,7 @@ from posts import getUserUrl
 from posts import checkDomains
 from session import createSession
 from session import getJson
+from session import getRSS
 from filters import addFilter
 from filters import removeFilter
 import os
@@ -176,6 +177,8 @@ parser.add_argument('--postsraw', dest='postsraw', type=str,
                     help='Show raw json of posts for the given handle')
 parser.add_argument('--json', dest='json', type=str, default=None,
                     help='Show the json for a given activitypub url')
+parser.add_argument('--rss', dest='rss', type=str, default=None,
+                    help='Show an rss feed for a given url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
 parser.add_argument("--repliesEnabled", "--commentsEnabled",
@@ -593,6 +596,12 @@ if args.json:
     testJson = getJson(session, args.json, asHeader, None,
                        __version__, httpPrefix, None)
     pprint(testJson)
+    sys.exit()
+
+if args.rss:
+    session = createSession(None)
+    testRSS = getRSS(session, args.rss)
+    pprint(testRSS)
     sys.exit()
 
 # create cache for actors
