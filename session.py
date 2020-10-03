@@ -13,6 +13,7 @@ import json
 from socket import error as SocketError
 import errno
 from datetime import datetime
+from collections import OrderedDict
 
 baseDirectory = None
 
@@ -131,7 +132,7 @@ def xml2StrToDict(xmlStr: str) -> {}:
             try:
                 publishedDate = \
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                result[str(publishedDate)] = [title, link]
+                result[str(publishedDate) + '+00:00'] = [title, link]
                 parsed = True
             except BaseException:
                 print('WARN: unrecognized RSS date format: ' + pubDate)
@@ -186,6 +187,22 @@ def getRSS(session, url: str) -> {}:
             print('WARN: connection was reset during getRSS')
         print(e)
     return None
+
+
+def getRSSFromSubscriptions(session, subscriptionsFilename: str) -> {}:
+    """Gets rss feeds as a dictionary from a list of feeds stored in a file
+    """
+    if not os.path.isfile(subscriptionsFilename):
+        return {}
+
+    rssFeed = []
+    with open(subscriptionsFilename, 'r') as fp:
+        rssFeed = fp.readlines()
+    result = {}
+    for url in rssFeed:
+        result = dict(result.items() + getRSS(session, url).items())
+    sortedResult = OrderedDict(sorted(result.items(), reverse=False))
+    return sortedResult
 
 
 def postJson(session, postJsonObject: {}, federationList: [],
