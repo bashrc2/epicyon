@@ -5626,7 +5626,8 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += '    <col span="1" class="column-center">\n'
     tlStr += '    <col span="1" class="column-right">\n'
     tlStr += '  </colgroup>\n'
-    tlStr += '  <tbody><tr>\n'
+    tlStr += '  <tbody>\n'
+    tlStr += '    <tr>\n'
 
     domainFull = domain
     if port:
