@@ -986,7 +986,6 @@ aside .toggle-inside li {
         padding: 0 0;
     }
     .column-center {
-        display: inline-block;
         width: var(--column-center-width);
     }
     .col-center {
@@ -1521,7 +1520,6 @@ aside .toggle-inside li {
         width: 0%;
     }
     .column-center {
-        display: inline-block;
         width: 100%;
     }
     .likesCount {
