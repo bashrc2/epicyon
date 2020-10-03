@@ -1007,7 +1007,6 @@ aside .toggle-inside li {
         color: var(--column-left-fg-color);
         padding: 10px 10px;
         font-size: var(--font-size-links);
-        float: left;
         width: var(--column-right-width);
     }
     .col-right img.rightColEdit {
