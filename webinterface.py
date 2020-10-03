@@ -5305,7 +5305,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             nickname + '/right_col_image.png" />\n' + \
             '      </center>\n'
 
-    htmlStr += '\n      <center>\n'
+    if editImageClass == 'rightColEdit':
+        htmlStr += '\n      <center>\n'
 
     if moderator:
         # show the edit icon
@@ -5318,7 +5319,10 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             translate['Edit newswire'] + '" src="/' + \
             iconsDir + '/edit.png" /></a>\n'
 
-    htmlStr += '      </center>\n'
+    if editImageClass == 'rightColEdit':
+        htmlStr += '      </center>\n'
+    else:
+        htmlStr += '      <br>\n'
 
     return htmlStr
 
