@@ -200,6 +200,11 @@ def getRSSFromSubscriptions(session, subscriptionsFilename: str) -> {}:
         rssFeed = fp.readlines()
     result = {}
     for url in rssFeed:
+        url = url.strip()
+        if '://' not in url:
+            continue
+        if url.startswith('#'):
+            continue
         result = dict(result.items() + getRSS(session, url).items())
     sortedResult = OrderedDict(sorted(result.items(), reverse=False))
     return sortedResult
