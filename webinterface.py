@@ -3111,9 +3111,9 @@ def htmlProfile(defaultTimeline: str,
         donateSection += '  <center>\n'
         if donateUrl:
             donateSection += \
-                '    <p><a class="donateButton" href="' + donateUrl + \
-                '">' + translate['Donate'] + \
-                '</a></p>\n'
+                '    <p><a href="' + donateUrl + \
+                '"><button class="donateButton">' + translate['Donate'] + \
+                '</button></a></p>\n'
         if emailAddress:
             donateSection += \
                 '<p>' + translate['Email'] + ': <a href="mailto:' + \
@@ -5189,7 +5189,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += \
             '\n      <center>\n' + \
             '        <img class="leftColImg" loading="lazy" src="/users/' + \
-            nickname + '/left_col_image.png" alt="" />\n' + \
+            nickname + '/left_col_image.png" />\n' + \
             '      </center>\n'
 
     if editImageClass == 'leftColEdit':
@@ -5300,7 +5300,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += \
             '\n      <center>\n' + \
             '          <img class="rightColImg" loading="lazy" src="/users/' + \
-            nickname + '/right_col_image.png" alt="" />\n' + \
+            nickname + '/right_col_image.png" />\n' + \
             '      </center>\n'
 
     if editImageClass == 'rightColEdit':
@@ -5612,7 +5612,8 @@ def htmlTimeline(defaultTimeline: str,
     # banner and row of buttons
     tlStr += \
         '<a href="/users/' + nickname + '" title="' + \
-        translate['Switch to profile view'] + '" >\n'
+        translate['Switch to profile view'] + '" alt="' + \
+        translate['Switch to profile view'] + '">\n'
     tlStr += '<div class="timeline-banner">'
     tlStr += '</div>\n</a>\n'
 
