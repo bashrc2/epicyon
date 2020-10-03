@@ -3254,29 +3254,29 @@ def htmlProfile(defaultTimeline: str,
     profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
     profileStr += \
-        '    <a class="' + postsButton + \
-        '" href="' + usersPath + '#buttonheader">' + \
-        '<span>' + translate['Posts'] + ' </span></a>'
+        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+        postsButton + '"><span>' + translate['Posts'] + \
+        ' </span></button></a>'
     profileStr += \
-        '    <a class="' + followingButton + \
-        '" href="' + usersPath + '/following#buttonheader">' + \
-        '<span>' + translate['Following'] + ' </span></a>'
+        '    <a href="' + usersPath + '/following#buttonheader">' + \
+        '<button class="' + followingButton + '"><span>' + \
+        translate['Following'] + ' </span></button></a>'
     profileStr += \
-        '    <a class="' + followersButton + \
-        '" href="' + usersPath + '/followers#buttonheader">' + \
-        '<span>' + translate['Followers'] + ' </span></a>'
+        '    <a href="' + usersPath + '/followers#buttonheader">' + \
+        '<button class="' + followersButton + \
+        '"><span>' + translate['Followers'] + ' </span></button></a>'
     profileStr += \
-        '    <a class="' + rolesButton + \
-        '" href="' + usersPath + '/roles#buttonheader">' + \
-        '<span>' + translate['Roles'] + ' </span></a>'
+        '    <a href="' + usersPath + '/roles#buttonheader">' + \
+        '<button class="' + rolesButton + '"><span>' + translate['Roles'] + \
+        ' </span></button></a>'
     profileStr += \
         '    <a href="' + usersPath + '/skills#buttonheader">' + \
         '<button class="' + skillsButton + '"><span>' + \
         translate['Skills'] + ' </span></button></a>'
     profileStr += \
-        '    <a class="' + sharesButton + \
-        '" href="' + usersPath + '/shares#buttonheader">' + \
-        '<span>' + translate['Shares'] + ' </span></a>'
+        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+        '<button class="' + sharesButton + '"><span>' + \
+        translate['Shares'] + ' </span></button></a>'
     profileStr += editProfileStr + logoutStr
     profileStr += '  </center>'
     profileStr += '</div>'
