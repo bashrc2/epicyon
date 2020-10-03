@@ -5199,7 +5199,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         # show the edit icon
         htmlStr += \
             '      <a href="' + \
-            httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editlinks">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
@@ -5313,12 +5312,11 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         # show the edit icon
         htmlStr += \
             '        <a href="' + \
-            httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/editnewswire">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
-            translate['Edit Links'] + '" title="' + \
-            translate['Edit Links'] + '" src="/' + \
+            translate['Edit newswire'] + '" title="' + \
+            translate['Edit newswire'] + '" src="/' + \
             iconsDir + '/edit.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
