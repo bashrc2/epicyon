@@ -5295,6 +5295,9 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         if os.path.isfile(themeRightColumnImageFilename):
             copyfile(themeRightColumnImageFilename, rightColumnImageFilename)
 
+    htmlStr += \
+        '\n      <div class="container">\n'
+
     # show the image at the top of the column
     editImageClass = 'rightColEdit'
     if os.path.isfile(rightColumnImageFilename):
@@ -5325,6 +5328,9 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += '      </center>\n'
     else:
         htmlStr += '      <br>\n'
+
+    htmlStr += \
+        '      </div>\n'
     return htmlStr
 
 
