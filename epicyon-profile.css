@@ -99,30 +99,30 @@ body, html {
 }
 
 blockquote {
-  border-left: 10px;
-  margin: 1.5em 10px;
-  padding: 0.5em 10px;
-  font-weight: var(--quote-font-weight);
-  font-style: italic;
-  font-size: var(--quote-font-size);
-  quotes: "\201C""\201D""\2018""\2019";
+    border-left: 10px;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    font-weight: var(--quote-font-weight);
+    font-style: italic;
+    font-size: var(--quote-font-size);
+    quotes: "\201C""\201D""\2018""\2019";
 }
 blockquote:before {
-  content: open-quote;
-  font-size: 2em;
-  line-height: 0.1em;
-  margin-right: 0.25em;
-  vertical-align: -0.4em;
+    content: open-quote;
+    font-size: 2em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
 }
 blockquote:after {
-  content: close-quote;
-  font-size: 2em;
-  line-height: 0.1em;
-  margin-left: var(--quote-right-margin);
-  vertical-align: -0.4em;
+    content: close-quote;
+    font-size: 2em;
+    line-height: 0.1em;
+    margin-left: var(--quote-right-margin);
+    vertical-align: -0.4em;
 }
 blockquote p {
-  display: inline;
+    display: inline;
 }
 
 .imageAnchor:focus img{

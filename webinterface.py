@@ -5606,8 +5606,8 @@ def htmlTimeline(defaultTimeline: str,
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
-        '<a href="/users/' + nickname + '"><label class="transparent">' + \
-        translate['Switch to profile view'] + '</label></a>\n'
+        '<label class="transparent"><a href="/users/' + nickname + '">' + \
+        translate['Switch to profile view'] + '</a></label>\n'
 
     # banner and row of buttons
     tlStr += \
