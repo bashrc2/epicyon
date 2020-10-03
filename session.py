@@ -119,12 +119,23 @@ def xml2StrToDict(xmlStr: str) -> {}:
         link = link.split('</link>')[0]
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
+        parsed = False
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
             result[str(publishedDate)] = [title, link]
+            parsed = True
         except BaseException:
             pass
+        if not parsed:
+            try:
+                publishedDate = \
+                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
+                result[str(publishedDate)] = [title, link]
+                parsed = True
+            except BaseException:
+                print('WARN: unrecognized RSS date format: ' + pubDate)
+                pass
     return result
 
 
