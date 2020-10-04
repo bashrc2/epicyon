@@ -109,9 +109,10 @@ def getRSS(session, url: str) -> {}:
     return None
 
 
-def getRSSFromSubscriptions(session, subscriptionsFilename: str) -> {}:
-    """Gets rss feeds as a dictionary from a list of feeds stored in a file
+def getRSSFromNewswire(session, baseDir: str) -> {}:
+    """Gets rss feeds as a dictionary from newswire file
     """
+    subscriptionsFilename = baseDir + '/accounts/newswire.txt'
     if not os.path.isfile(subscriptionsFilename):
         return {}
 
