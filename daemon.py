@@ -204,6 +204,8 @@ from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
 from newswire import getRSSfromDict
+from newswire import runNewswireWatchdog
+from newswire import runNewswireDaemon
 import os
 
 
@@ -11251,10 +11253,16 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                               allowDeletion, debug, maxMentions, maxEmoji,
                               httpd.translate, unitTest,
                               httpd.YTReplacementDomain), daemon=True)
+
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
         threadWithTrace(target=runPostSchedule,
                         args=(baseDir, httpd, 20), daemon=True)
+
+    print('Creating newswire thread')
+    httpd.thrNewswireDaemon = \
+        threadWithTrace(target=runNewswireDaemon,
+                        args=(baseDir, httpd), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
@@ -11272,6 +11280,12 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
             threadWithTrace(target=runPostScheduleWatchdog,
                             args=(projectVersion, httpd), daemon=True)
         httpd.thrWatchdogSchedule.start()
+
+        print('Creating newswire watchdog')
+        httpd.thrNewswireWatchdog = \
+            threadWithTrace(target=runNewswireWatchdog,
+                            args=(projectVersion, httpd), daemon=True)
+        httpd.thrNewswireWatchdog.start()
     else:
         httpd.thrInboxQueue.start()
         httpd.thrPostSchedule.start()

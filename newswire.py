@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import time
 import requests
 from socket import error as SocketError
 import errno
@@ -175,3 +176,51 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
         result = dict(result.items() + getRSS(session, url).items())
     sortedResult = OrderedDict(sorted(result.items(), reverse=False))
     return sortedResult
+
+
+def runNewswireDaemon(baseDir: str, httpd):
+    """Periodically updates RSS feeds
+    """
+    # initial sleep to allow the system to start up
+    time.sleep(100)
+    while True:
+        # has the session been created yet?
+        if not httpd.session:
+            print('Newswire daemon waiting for session')
+            time.sleep(60)
+            continue
+
+        # try to update the feeds
+        newNewswire = None
+        loaded = False
+        try:
+            newNewswire = getDictFromNewswire(httpd.session, baseDir)
+            loaded = True
+        except BaseException:
+            print('WARN: unable to update newswire')
+            pass
+
+        if loaded:
+            httpd.newswire = newNewswire
+            print('Newswire updated')
+            # wait a while before the next feeds update
+            time.sleep(1200)
+        else:
+            time.sleep(120)
+
+
+def runNewswireWatchdog(projectVersion: str, httpd) -> None:
+    """This tries to keep the newswire update thread running even if it dies
+    """
+    print('Starting newswire watchdog')
+    newswireOriginal = \
+        httpd.thrPostSchedule.clone(runNewswireDaemon)
+    httpd.thrNewswireDaemon.start()
+    while True:
+        time.sleep(50)
+        if not httpd.thrNewswireDaemon.isAlive():
+            httpd.thrNewswireDaemon.kill()
+            httpd.thrNewswireDaemon = \
+                newswireOriginal.clone(runNewswireDaemon)
+            httpd.thrNewswireDaemon.start()
+            print('Restarting newswire daemon...')
