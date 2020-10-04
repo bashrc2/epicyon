@@ -203,6 +203,7 @@ from followingCalendar import removePersonFromCalendar
 from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
+from newswire import getRSSfromDict
 import os
 
 
@@ -3951,6 +3952,42 @@ class PubServer(BaseHTTPRequestHandler):
                     return
         if debug:
             print('Failed to get rss2 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
+    def _getNewswireFeed(self, authorized: bool,
+                         callingDomain: str, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, port: int, proxyType: str,
+                         GETstartTime, GETtimings: {},
+                         debug: bool):
+        """Returns the newswire feed
+        """
+        if not self.server.session:
+            print('Starting new session during RSS request')
+            self.server.session = \
+                createSession(proxyType)
+        if not self.server.session:
+            print('ERROR: GET failed to create session ' +
+                  'during RSS request')
+            self._404()
+            return
+
+        msg = getRSSfromDict(self.server.baseDir, self.server.newswire,
+                             self.server.httpPrefix,
+                             self.server.domainFull,
+                             'Newswire', self.server.translate)
+        if msg:
+            msg = msg.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if debug:
+                print('Sent rss2 newswire feed: ' +
+                      path + ' ' + callingDomain)
+            return
+        if debug:
+            print('Failed to get rss2 newswire feed: ' +
                   path + ' ' + callingDomain)
         self._404()
 
@@ -7813,6 +7850,18 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'fonts', 'sharedInbox enabled')
 
+        if self.path == '/newswire.xml':
+            self._getNewswireFeed(authorized,
+                                  callingDomain, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  self.server.proxyType,
+                                  GETstartTime, GETtimings,
+                                  self.server.debug)
+            return
+
         # RSS 2.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
@@ -11021,6 +11070,9 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
 
     httpd.unitTest = unitTest
     httpd.YTReplacementDomain = YTReplacementDomain
+
+    # newswire storing rss feeds
+    httpd.newswire = {}
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance

@@ -14,6 +14,31 @@ from datetime import datetime
 from collections import OrderedDict
 
 
+def rss2Header(httpPrefix: str,
+               nickname: str, domainFull: str,
+               title: str, translate: {}) -> str:
+    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+    rssStr += "<rss version=\"2.0\">"
+    rssStr += '<channel>'
+    if title.startswith('News'):
+        rssStr += '    <title>Newswire</title>'
+    else:
+        rssStr += '    <title>' + translate[title] + '</title>'
+    if title.startswith('News'):
+        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+            '/newswire.xml' + '</link>'
+    else:
+        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+            '/users/' + nickname + '/rss.xml' + '</link>'
+    return rssStr
+
+
+def rss2Footer() -> str:
+    rssStr = '</channel>'
+    rssStr += '</rss>'
+    return rssStr
+
+
 def xml2StrToDict(xmlStr: str) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
@@ -109,7 +134,28 @@ def getRSS(session, url: str) -> {}:
     return None
 
 
-def getRSSFromNewswire(session, baseDir: str) -> {}:
+def getRSSfromDict(baseDir: str, newswire: {},
+                   httpPrefix: str, domainFull: str,
+                   title: str, translate: {}) -> str:
+    """Returns an rss feed from the current newswire dict.
+    This allows other instances to subscribe to the same newswire
+    """
+    rssStr = rss2Header(httpPrefix,
+                        None, domainFull,
+                        'Newswire', translate)
+    for published, fields in newswire.items():
+        rssStr += '<item>\n'
+        rssStr += '  <title>' + fields[0] + '</title>\n'
+        rssStr += '  <link>' + fields[1] + '</link>\n'
+        pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+        rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+        rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
+        rssStr += '</item>\n'
+    rssStr += rss2Footer()
+    return rssStr
+
+
+def getDictFromNewswire(session, baseDir: str) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'

@@ -5387,6 +5387,14 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             translate['Edit newswire'] + '" src="/' + \
             iconsDir + '/edit.png" /></a>\n'
 
+    htmlStr += \
+        '        <a href="/newswire.xml">' + \
+        '<img class="' + editImageClass + \
+        '" loading="lazy" alt="' + \
+        translate['Newswire RSS Feed'] + '" title="' + \
+        translate['Newswire RSS Feed'] + '" src="/' + \
+        iconsDir + '/rss.png" /></a>\n'
+
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
     else:

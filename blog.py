@@ -20,6 +20,8 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from posts import createBlogsTimeline
+from newswire import rss2Header
+from newswire import rss2Footer
 
 
 def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
@@ -473,23 +475,6 @@ def htmlBlogPage(authorized: bool, session,
     return None
 
 
-def rss2Header(httpPrefix: str,
-               nickname: str, domainFull: str, translate: {}) -> str:
-    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-    rssStr += "<rss version=\"2.0\">"
-    rssStr += '<channel>'
-    rssStr += '    <title>' + translate['Blog'] + '</title>'
-    rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
-        '/users/' + nickname + '/rss.xml' + '</link>'
-    return rssStr
-
-
-def rss2Footer() -> str:
-    rssStr = '</channel>'
-    rssStr += '</rss>'
-    return rssStr
-
-
 def htmlBlogPageRSS2(authorized: bool, session,
                      baseDir: str, httpPrefix: str, translate: {},
                      nickname: str, domain: str, port: int,
@@ -505,7 +490,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, translate)
+    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, 'Blog', translate)
 
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
