@@ -1019,7 +1019,7 @@ aside .toggle-inside li {
     .col-right img.rightColEditImage {
         background: var(--column-left-color);
         width: var(--column-right-icon-size);
-	float: right;
+        float: right;
     }
     .col-right img.rightColImg {
         background: var(--column-left-color);
