@@ -5902,7 +5902,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         httpPrefix,
                                         projectVersion,
                                         self._isMinimal(nickname),
-                                        YTReplacementDomain)
+                                        YTReplacementDomain,
+                                        self.server.newswire)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6008,7 +6009,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          httpPrefix,
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
-                                         self.server.YTReplacementDomain)
+                                         self.server.YTReplacementDomain,
+                                         self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6108,7 +6110,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          httpPrefix,
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
-                                         self.server.YTReplacementDomain)
+                                         self.server.YTReplacementDomain,
+                                         self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6208,7 +6211,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        httpPrefix,
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6308,7 +6312,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        httpPrefix,
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6383,7 +6388,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    httpPrefix,
                                    self.server.projectVersion,
-                                   self.server.YTReplacementDomain)
+                                   self.server.YTReplacementDomain,
+                                   self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6467,7 +6473,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           httpPrefix,
                                           self.server.projectVersion,
                                           self._isMinimal(nickname),
-                                          self.server.YTReplacementDomain)
+                                          self.server.YTReplacementDomain,
+                                          self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6570,7 +6577,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        httpPrefix,
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6663,7 +6671,8 @@ class PubServer(BaseHTTPRequestHandler):
                                httpPrefix,
                                self.server.projectVersion,
                                self._isMinimal(nickname),
-                               self.server.YTReplacementDomain)
+                               self.server.YTReplacementDomain,
+                               self.server.newswire)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -6748,7 +6757,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            True,
                                            httpPrefix,
                                            self.server.projectVersion,
-                                           self.server.YTReplacementDomain)
+                                           self.server.YTReplacementDomain,
+                                           self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
