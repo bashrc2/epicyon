@@ -5345,7 +5345,7 @@ def htmlNewswire(newswire: str) -> str:
         htmlStr += '<p class="newswireItem">' + \
             '<a href="' + item[1] + '">' + item[0] + '</a><br>'
         htmlStr += '<label class="newswireDate">'
-        htmlStr += dateStr.replace('+00:00', ' UT') + '</label></p>'
+        htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
     return htmlStr
 
 
