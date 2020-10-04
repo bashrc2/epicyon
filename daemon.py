@@ -61,6 +61,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
 from posts import createQuestionPost
@@ -144,6 +145,8 @@ from webinterface import htmlSearchEmojiTextEntry
 from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
+from webinterface import htmlEditLinks
+from webinterface import htmlEditNewswire
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
@@ -200,6 +203,7 @@ from followingCalendar import removePersonFromCalendar
 from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
+from newswire import getRSSfromDict
 import os
 
 
@@ -2689,6 +2693,216 @@ class PubServer(BaseHTTPRequestHandler):
                                    cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _linksUpdate(self, callingDomain: str, cookie: str,
+                     authorized: bool, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domain: str, domainFull: str,
+                     onionDomain: str, i2pDomain: str, debug: bool,
+                     defaultTimeline: str):
+        """Updates the left links column of the timeline
+        """
+        usersPath = path.replace('/linksdata', '')
+        usersPath = usersPath.replace('/editlinks', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            moderator = None
+            if nickname:
+                moderator = isModerator(baseDir, nickname)
+            if not nickname or not moderator:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not a moderator' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum links data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            linksFilename = baseDir + '/accounts/links.txt'
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            if fields.get('editedLinks'):
+                linksStr = fields['editedLinks']
+                linksFile = open(linksFilename, "w+")
+                if linksFile:
+                    linksFile.write(linksStr)
+                    linksFile.close()
+            else:
+                if os.path.isfile(linksFilename):
+                    os.remove(linksFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _newswireUpdate(self, callingDomain: str, cookie: str,
+                        authorized: bool, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str,
+                        onionDomain: str, i2pDomain: str, debug: bool,
+                        defaultTimeline: str):
+        """Updates the right newswire column of the timeline
+        """
+        usersPath = path.replace('/newswiredata', '')
+        usersPath = usersPath.replace('/editnewswire', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            moderator = None
+            if nickname:
+                moderator = isModerator(baseDir, nickname)
+            if not nickname or not moderator:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not a moderator' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum newswire data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            newswireFilename = baseDir + '/accounts/newswire.txt'
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            if fields.get('editedNewswire'):
+                newswireStr = fields['editedNewswire']
+                newswireFile = open(newswireFilename, "w+")
+                if newswireFile:
+                    newswireFile.write(newswireStr)
+                    newswireFile.close()
+            else:
+                if os.path.isfile(newswireFilename):
+                    os.remove(newswireFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _profileUpdate(self, callingDomain: str, cookie: str,
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
@@ -2765,7 +2979,8 @@ class PubServer(BaseHTTPRequestHandler):
             actorChanged = True
             profileMediaTypes = ('avatar', 'image',
                                  'banner', 'search_banner',
-                                 'instanceLogo')
+                                 'instanceLogo',
+                                 'left_col_image', 'right_col_image')
             profileMediaTypesUploaded = {}
             for mType in profileMediaTypes:
                 if debug:
@@ -2834,8 +3049,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # extract all of the text fields into a dict
             fields = \
-                extractTextFieldsInPOST(postBytes, boundary,
-                                        debug)
+                extractTextFieldsInPOST(postBytes, boundary, debug)
             if debug:
                 if fields:
                     print('DEBUG: profile update text ' +
@@ -3205,10 +3419,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.defaultTimeline = 'inbox'
                         if fields['mediaInstance'] == 'on':
                             self.server.mediaInstance = True
+                            self.server.blogsInstance = False
                             self.server.defaultTimeline = 'tlmedia'
                         setConfigParam(baseDir,
                                        "mediaInstance",
                                        self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
                     else:
                         if self.server.mediaInstance:
                             self.server.mediaInstance = False
@@ -3223,10 +3441,14 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.defaultTimeline = 'inbox'
                         if fields['blogsInstance'] == 'on':
                             self.server.blogsInstance = True
+                            self.server.mediaInstance = False
                             self.server.defaultTimeline = 'tlblogs'
                         setConfigParam(baseDir,
                                        "blogsInstance",
                                        self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
                     else:
                         if self.server.blogsInstance:
                             self.server.blogsInstance = False
@@ -3730,6 +3952,42 @@ class PubServer(BaseHTTPRequestHandler):
                     return
         if debug:
             print('Failed to get rss2 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
+    def _getNewswireFeed(self, authorized: bool,
+                         callingDomain: str, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, port: int, proxyType: str,
+                         GETstartTime, GETtimings: {},
+                         debug: bool):
+        """Returns the newswire feed
+        """
+        if not self.server.session:
+            print('Starting new session during RSS request')
+            self.server.session = \
+                createSession(proxyType)
+        if not self.server.session:
+            print('ERROR: GET failed to create session ' +
+                  'during RSS request')
+            self._404()
+            return
+
+        msg = getRSSfromDict(self.server.baseDir, self.server.newswire,
+                             self.server.httpPrefix,
+                             self.server.domainFull,
+                             'Newswire', self.server.translate)
+        if msg:
+            msg = msg.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if debug:
+                print('Sent rss2 newswire feed: ' +
+                      path + ' ' + callingDomain)
+            return
+        if debug:
+            print('Failed to get rss2 newswire feed: ' +
                   path + ' ' + callingDomain)
         self._404()
 
@@ -7047,6 +7305,47 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
+    def _columImage(self, side: str, callingDomain: str, path: str,
+                    baseDir: str, domain: str, port: int,
+                    GETstartTime, GETtimings: {}) -> bool:
+        """Shows an image at the top of the left/right column
+        """
+        nickname = getNicknameFromActor(path)
+        if not nickname:
+            self._404()
+            return True
+        bannerFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + side + '_col_image.png'
+        if os.path.isfile(bannerFilename):
+            if self._etag_exists(bannerFilename):
+                # The file has not changed
+                self._304()
+                return True
+
+            tries = 0
+            mediaBinary = None
+            while tries < 5:
+                try:
+                    with open(bannerFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries += 1
+            if mediaBinary:
+                self._set_headers_etag(bannerFilename, 'image/png',
+                                       mediaBinary, None,
+                                       callingDomain)
+                self._write(mediaBinary)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'account qrcode done',
+                                          side + ' col image')
+                return True
+        self._404()
+        return True
+
     def _showBackgroundImage(self, callingDomain: str, path: str,
                              baseDir: str,
                              GETstartTime, GETtimings: {}) -> bool:
@@ -7307,6 +7606,50 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _editLinks(self, callingDomain: str, path: str,
+                   translate: {}, baseDir: str,
+                   httpPrefix: str, domain: str, port: int,
+                   cookie: str) -> bool:
+        """Show the links from the left column
+        """
+        if '/users/' in path and path.endswith('/editlinks'):
+            msg = htmlEditLinks(translate,
+                                baseDir,
+                                path, domain,
+                                port,
+                                httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _editNewswire(self, callingDomain: str, path: str,
+                      translate: {}, baseDir: str,
+                      httpPrefix: str, domain: str, port: int,
+                      cookie: str) -> bool:
+        """Show the newswire from the right column
+        """
+        if '/users/' in path and path.endswith('/editnewswire'):
+            msg = htmlEditNewswire(translate,
+                                   baseDir,
+                                   path, domain,
+                                   port,
+                                   httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def _editEvent(self, callingDomain: str, path: str,
                    httpPrefix: str, domain: str, domainFull: str,
                    baseDir: str, translate: {},
@@ -7506,6 +7849,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'fonts', 'sharedInbox enabled')
+
+        if self.path == '/newswire.xml':
+            self._getNewswireFeed(authorized,
+                                  callingDomain, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  self.server.proxyType,
+                                  GETstartTime, GETtimings,
+                                  self.server.debug)
+            return
 
         # RSS 2.0
         if self.path.startswith('/blog/') and \
@@ -7965,14 +8320,30 @@ class PubServer(BaseHTTPRequestHandler):
                                   'account qrcode done')
 
         # search screen banner image
-        if '/users/' in self.path and \
-           self.path.endswith('/search_banner.png'):
-            if self._searchScreenBanner(callingDomain, self.path,
-                                        self.server.baseDir,
-                                        self.server.domain,
-                                        self.server.port,
-                                        GETstartTime, GETtimings):
-                return
+        if '/users/' in self.path:
+            if self.path.endswith('/search_banner.png'):
+                if self._searchScreenBanner(callingDomain, self.path,
+                                            self.server.baseDir,
+                                            self.server.domain,
+                                            self.server.port,
+                                            GETstartTime, GETtimings):
+                    return
+
+            if self.path.endswith('/left_col_image.png'):
+                if self._columImage('left', callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.domain,
+                                    self.server.port,
+                                    GETstartTime, GETtimings):
+                    return
+
+            if self.path.endswith('/right_col_image.png'):
+                if self._columImage('right', callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.domain,
+                                    self.server.port,
+                                    GETstartTime, GETtimings):
+                    return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'account qrcode done',
@@ -8599,6 +8970,26 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.port,
                                  cookie):
+                return
+
+            # edit links from the left column of the timeline in web interface
+            if self._editLinks(callingDomain, self.path,
+                               self.server.translate,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.port,
+                               cookie):
+                return
+
+            # edit newswire from the right column of the timeline
+            if self._editNewswire(callingDomain, self.path,
+                                  self.server.translate,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  cookie):
                 return
 
             if self._showNewPost(callingDomain, self.path,
@@ -10049,6 +10440,26 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.i2pDomain, self.server.debug)
             return
 
+        if authorized and self.path.endswith('/linksdata'):
+            self._linksUpdate(callingDomain, cookie, authorized, self.path,
+                              self.server.baseDir, self.server.httpPrefix,
+                              self.server.domain,
+                              self.server.domainFull,
+                              self.server.onionDomain,
+                              self.server.i2pDomain, self.server.debug,
+                              self.server.defaultTimeline)
+            return
+
+        if authorized and self.path.endswith('/newswiredata'):
+            self._newswireUpdate(callingDomain, cookie, authorized, self.path,
+                                 self.server.baseDir, self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain, self.server.debug,
+                                 self.server.defaultTimeline)
+            return
+
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)
 
         # moderator action buttons
@@ -10659,6 +11070,9 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
 
     httpd.unitTest = unitTest
     httpd.YTReplacementDomain = YTReplacementDomain
+
+    # newswire storing rss feeds
+    httpd.newswire = {}
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance

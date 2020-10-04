@@ -101,10 +101,10 @@ def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
     """
-    return '<details><summary><b>' + \
+    return '       <details><summary><b>' + \
         translate['SHOW MORE'] + '</b></summary>' + \
         '<div id="' + postID + '">' + content + \
-        '</div></details>'
+        '</div></details>\n'
 
 
 def getBlogAddress(actorJson: {}) -> str:
@@ -581,7 +581,8 @@ def htmlSearchSharedItems(translate: {},
                                     'name="searchtext" value="' + \
                                     searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
-                                    '  <center><a href="' + actor + \
+                                    '  <center>\n' + \
+                                    '    <a href="' + actor + \
                                     '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
@@ -614,7 +615,8 @@ def htmlSearchSharedItems(translate: {},
                                     'name="searchtext" value="' + \
                                     searchStrLower + '"><br>\n'
                                 sharedItemsForm += \
-                                    '  <center><a href="' + actor + \
+                                    '  <center>\n' + \
+                                    '    <a href="' + actor + \
                                     '" type="submit" name="submitSearch">\n'
                                 sharedItemsForm += \
                                     '    <img loading="lazy" ' + \
@@ -777,13 +779,14 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     if startIndex > 0:
         # previous page link
         hashtagSearchForm += \
-            '<center><a href="/tags/' + hashtag + '?page=' + \
+            '  <center>\n' + \
+            '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
-            '"></a></center>\n'
+            '"></a>\n  </center>\n'
     index = startIndex
     while index <= endIndex:
         postId = lines[index].strip('\n').strip('\r')
@@ -832,11 +835,13 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     if endIndex < noOfLines - 1:
         # next page link
         hashtagSearchForm += \
-            '<center><a href="/tags/' + hashtag + \
+            '  <center>\n' + \
+            '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + iconsDir + \
             '/pagedown.png" title="' + translate['Page down'] + \
-            '" alt="' + translate['Page down'] + '"></a></center>'
+            '" alt="' + translate['Page down'] + '"></a>' + \
+            '  </center>'
     hashtagSearchForm += htmlFooter()
     return hashtagSearchForm
 
@@ -1201,6 +1206,142 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
     return False
 
 
+def htmlEditLinks(translate: {}, baseDir: str, path: str,
+                  domain: str, port: int, httpPrefix: str) -> str:
+    """Shows the edit links screen
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+    path = path.replace('/inbox', '').replace('/outbox', '')
+    path = path.replace('/shares', '')
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    # is the user a moderator?
+    if not isModerator(baseDir, nickname):
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+    with open(cssFilename, 'r') as cssFile:
+        editCSS = cssFile.read()
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editLinksForm = htmlHeader(cssFilename, editCSS)
+    editLinksForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/linksdata">\n'
+    editLinksForm += \
+        '  <div class="vertical-center">\n'
+    editLinksForm += \
+        '    <p class="new-post-text">' + translate['Edit Links'] + '</p>'
+    editLinksForm += \
+        '    <div class="container">\n'
+    editLinksForm += \
+        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+        translate['Go Back'] + '</button></a>\n'
+    editLinksForm += \
+        '      <input type="submit" name="submitLinks" value="' + \
+        translate['Submit'] + '">\n'
+    editLinksForm += \
+        '    </div>\n'
+
+    linksFilename = baseDir + '/accounts/links.txt'
+    linksStr = ''
+    if os.path.isfile(linksFilename):
+        with open(linksFilename, 'r') as fp:
+            linksStr = fp.read()
+
+    editLinksForm += \
+        '<div class="container">'
+    editLinksForm += \
+        '  ' + \
+        translate['One link per line. Description followed by the link.'] + \
+        '<br>'
+    editLinksForm += \
+        '  <textarea id="message" name="editedLinks" style="height:500px">' + \
+        linksStr + '</textarea>'
+    editLinksForm += \
+        '</div>'
+
+    editLinksForm += htmlFooter()
+    return editLinksForm
+
+
+def htmlEditNewswire(translate: {}, baseDir: str, path: str,
+                     domain: str, port: int, httpPrefix: str) -> str:
+    """Shows the edit newswire screen
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+    path = path.replace('/inbox', '').replace('/outbox', '')
+    path = path.replace('/shares', '')
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    # is the user a moderator?
+    if not isModerator(baseDir, nickname):
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+    with open(cssFilename, 'r') as cssFile:
+        editCSS = cssFile.read()
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editNewswireForm = htmlHeader(cssFilename, editCSS)
+    editNewswireForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/newswiredata">\n'
+    editNewswireForm += \
+        '  <div class="vertical-center">\n'
+    editNewswireForm += \
+        '    <p class="new-post-text">' + translate['Edit newswire'] + '</p>'
+    editNewswireForm += \
+        '    <div class="container">\n'
+    editNewswireForm += \
+        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+        translate['Go Back'] + '</button></a>\n'
+    editNewswireForm += \
+        '      <input type="submit" name="submitNewswire" value="' + \
+        translate['Submit'] + '">\n'
+    editNewswireForm += \
+        '    </div>\n'
+
+    newswireFilename = baseDir + '/accounts/newswire.txt'
+    newswireStr = ''
+    if os.path.isfile(newswireFilename):
+        with open(newswireFilename, 'r') as fp:
+            newswireStr = fp.read()
+
+    editNewswireForm += \
+        '<div class="container">'
+    editNewswireForm += \
+        '  ' + \
+        translate['Add RSS feed links below.'] + \
+        '<br>'
+    editNewswireForm += \
+        '  <textarea id="message" name="editedNewswire" ' + \
+        'style="height:500px">' + newswireStr + '</textarea>'
+    editNewswireForm += \
+        '</div>'
+
+    editNewswireForm += htmlFooter()
+    return editNewswireForm
+
+
 def htmlEditProfile(translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit profile screen
@@ -1230,6 +1371,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     notifyLikes = ''
     hideLikeButton = ''
     mediaInstanceStr = ''
+    blogsInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
     donateUrl = ''
@@ -1287,6 +1429,13 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     if mediaInstance:
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
+            blogsInstanceStr = ''
+
+    blogsInstance = getConfigParam(baseDir, "blogsInstance")
+    if blogsInstance:
+        if blogsInstance is True:
+            blogsInstanceStr = 'checked'
+            mediaInstanceStr = ''
 
     filterStr = ''
     filterFilename = \
@@ -1594,6 +1743,18 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += 'name="search_banner"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
+    editProfileForm += '      <br><label class="labels">' + \
+        translate['Left column image'] + '</label>\n'
+    editProfileForm += '      <input type="file" id="left_col_image" '
+    editProfileForm += 'name="left_col_image"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
+
+    editProfileForm += '      <br><label class="labels">' + \
+        translate['Right column image'] + '</label>\n'
+    editProfileForm += '      <input type="file" id="right_col_image" '
+    editProfileForm += 'name="right_col_image"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
+
     editProfileForm += '    </div>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
@@ -1607,6 +1768,19 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="passwordconfirm" value="">\n'
     editProfileForm += '    </div>\n'
+
+    if path.startswith('/users/' + adminNickname + '/'):
+        editProfileForm += '    <div class="container">\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
+            translate['This is a media instance'] + '<br>\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
+            translate['This is a blogging instance'] + '<br>\n'
+        editProfileForm += '    </div>\n'
+
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
@@ -1628,11 +1802,6 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="removeTwitter" ' + removeTwitter + '> ' + \
         translate['Remove Twitter posts'] + '<br>\n'
-    if path.startswith('/users/' + adminNickname + '/'):
-        editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-            translate['This is a media instance'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="notifyLikes" ' + notifyLikes + '> ' + \
@@ -2639,6 +2808,7 @@ def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     htmlStr += '    <style>\n' + css + '</style>\n'
     htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
     htmlStr += '    <meta name="theme-color" content="grey">\n'
+    htmlStr += '    <title>Epicyon</title>\n'
     htmlStr += '  </head>\n'
     htmlStr += '  <body>\n'
     return htmlStr
@@ -2719,12 +2889,14 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if authorized and pageNumber > 1:
             # page up arrow
             profileStr += \
-                '<center>\n<a href="' + actor + '/' + feedName + \
+                '  <center>\n' + \
+                '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber - 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsDir + '/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
-                translate['Page up'] + '"></a>\n</center>\n'
+                translate['Page up'] + '"></a>\n' + \
+                '  </center>\n'
 
     for item in followingJson['orderedItems']:
         profileStr += \
@@ -2737,12 +2909,14 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
             # page down arrow
             profileStr += \
-                '<center>\n<a href="' + actor + '/' + feedName + \
+                '  <center>\n' + \
+                '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber + 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsDir + '/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
-                translate['Page down'] + '"></a>\n</center>\n'
+                translate['Page down'] + '"></a>\n' + \
+                '  </center>\n'
     return profileStr
 
 
@@ -2899,11 +3073,13 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if pageNumber > 1:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '<center>\n<a href="' + actor + '/tlshares?page=' + \
+            '  <center>\n' + \
+            '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + translate['Page up'] + \
-            '" alt="' + translate['Page up'] + '"></a>\n</center>\n'
+            '" alt="' + translate['Page up'] + '"></a>\n' + \
+            '  </center>\n'
 
     for published, item in sharesJson.items():
         showContactButton = False
@@ -2919,11 +3095,13 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if not lastPage:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '<center>\n<a href="' + actor + '/tlshares?page=' + \
+            '  <center>\n' + \
+            '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + translate['Page down'] + \
-            '" alt="' + translate['Page down'] + '"></a>\n</center>\n'
+            '" alt="' + translate['Page down'] + '"></a>\n' + \
+            '  </center>\n'
 
     return timelineStr
 
@@ -4127,23 +4305,23 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
-    avatarLink = '    <a class="imageAnchor" href="' + postActor + '">'
+    avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
     avatarLink += \
         '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
-        translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>'
+        translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>\n'
 
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
         avatarLink = \
-            '    <a class="imageAnchor" href="/users/' + \
+            '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
         avatarLink += \
-            '    <img loading="lazy" title="' + \
+            '        <img loading="lazy" title="' + \
             translate['Show options for this person'] + \
             '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
     avatarImageInPost = \
-        '  <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
+        '      <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -4214,7 +4392,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
-            '<a class="imageAnchor" href="/users/' + \
+            '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">' + displayName + '</a>\n'
@@ -4229,7 +4407,7 @@ def individualPostAsHtml(allowDownloads: bool,
             # pprint(postJsonObject)
             print('ERROR: no actorDomain')
         titleStr += \
-            '<a class="imageAnchor" href="/users/' + \
+            '        <a class="imageAnchor" href="/users/' + \
             nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
@@ -4273,25 +4451,28 @@ def individualPostAsHtml(allowDownloads: bool,
         replyStr = ''
         if isPublicRepeat:
             replyStr += \
-                '<a class="imageAnchor" href="/users/' + \
+                '        <a class="imageAnchor" href="/users/' + \
                 nickname + '?replyto=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
                 '" title="' + translate['Reply to this post'] + '">\n'
         else:
             if isDM(postJsonObject):
                 replyStr += \
+                    '        ' + \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replydm=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
             else:
                 replyStr += \
+                    '        ' + \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replyfollowers=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
 
         replyStr += \
+            '        ' + \
             '<img loading="lazy" title="' + \
             translate['Reply to this post'] + '" alt="' + \
             translate['Reply to this post'] + \
@@ -4317,6 +4498,7 @@ def individualPostAsHtml(allowDownloads: bool,
             if isBlogPost(postJsonObject):
                 blogPostId = postJsonObject['object']['id']
                 editStr += \
+                    '        ' + \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
                     blogPostId.split('/statuses/')[1] + \
@@ -4329,6 +4511,7 @@ def individualPostAsHtml(allowDownloads: bool,
             elif isEvent:
                 eventPostId = postJsonObject['object']['id']
                 editStr += \
+                    '        ' + \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editeventpost=' + \
                     eventPostId.split('/statuses/')[1] + \
@@ -4353,13 +4536,14 @@ def individualPostAsHtml(allowDownloads: bool,
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
         announceStr = \
-            '<a class="imageAnchor" href="/users/' + \
+            '        <a class="imageAnchor" href="/users/' + \
             nickname + '?' + announceLink + \
             '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
             '?tl=' + boxName + '" title="' + announceTitle + '">\n'
         announceStr += \
+            '          ' + \
             '<img loading="lazy" title="' + translate['Repeat this post'] + \
             '" alt="' + translate['Repeat this post'] + \
             ' |" src="/' + iconsDir + '/' + announceIcon + '"/></a>\n'
@@ -4417,7 +4601,7 @@ def individualPostAsHtml(allowDownloads: bool,
             likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
             likeStr += '</label>\n'
         likeStr += \
-            '<a class="imageAnchor" href="/users/' + nickname + '?' + \
+            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -4425,6 +4609,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '?tl=' + boxName + '" title="' + \
             likeTitle + likeCountStr + '">\n'
         likeStr += \
+            '          ' + \
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
@@ -4450,13 +4635,14 @@ def individualPostAsHtml(allowDownloads: bool,
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
         bookmarkStr = \
-            '<a class="imageAnchor" href="/users/' + nickname + '?' + \
+            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
             '?tl=' + boxName + '" title="' + bookmarkTitle + '">\n'
         bookmarkStr += \
+            '        ' + \
             '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
             bookmarkTitle + ' |" src="/' + iconsDir + \
             '/' + bookmarkIcon + '"/></a>\n'
@@ -4482,33 +4668,36 @@ def individualPostAsHtml(allowDownloads: bool,
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             deleteStr = \
-                '<a class="imageAnchor" href="/users/' + nickname + \
+                '        <a class="imageAnchor" href="/users/' + nickname + \
                 '?delete=' + messageId + pageNumberParam + \
                 '" title="' + translate['Delete this post'] + '">\n'
             deleteStr += \
+                '          ' + \
                 '<img loading="lazy" alt="' + translate['Delete this post'] + \
                 ' |" title="' + translate['Delete this post'] + \
                 '" src="/' + iconsDir + '/delete.png"/></a>\n'
     else:
         if not isMuted:
             muteStr = \
-                '<a class="imageAnchor" href="/users/' + nickname + \
+                '        <a class="imageAnchor" href="/users/' + nickname + \
                 '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
                 '?bm=' + timelinePostBookmark + \
                 '" title="' + translate['Mute this post'] + '">\n'
             muteStr += \
+                '          ' + \
                 '<img loading="lazy" alt="' + \
                 translate['Mute this post'] + \
                 ' |" title="' + translate['Mute this post'] + \
                 '" src="/' + iconsDir + '/mute.png"/></a>\n'
         else:
             muteStr = \
-                '<a class="imageAnchor" href="/users/' + \
+                '        <a class="imageAnchor" href="/users/' + \
                 nickname + '?unmute=' + messageId + \
                 pageNumberParam + '?tl=' + boxName + '?bm=' + \
                 timelinePostBookmark + '" title="' + \
                 translate['Undo mute'] + '">\n'
             muteStr += \
+                '          ' + \
                 '<img loading="lazy" alt="' + translate['Undo mute'] + \
                 ' |" title="' + translate['Undo mute'] + \
                 '" src="/' + iconsDir+'/unmute.png"/></a>\n'
@@ -4528,7 +4717,7 @@ def individualPostAsHtml(allowDownloads: bool,
                     attributedTo = postJsonObject['object']['attributedTo']
                 if attributedTo.startswith(postActor):
                     titleStr += \
-                        ' <img loading="lazy" title="' + \
+                        '        <img loading="lazy" title="' + \
                         translate['announces'] + \
                         '" alt="' + translate['announces'] + \
                         '" src="/' + iconsDir + \
@@ -4574,11 +4763,13 @@ def individualPostAsHtml(allowDownloads: bool,
                                           ' 13.3.1 = ' + str(timeDiff))
 
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '          ' + \
+                                '<img loading="lazy" title="' + \
                                 translate['announces'] + '" alt="' + \
                                 translate['announces'] + '" src="/' + \
                                 iconsDir + '/repeat_inactive.png" ' + \
-                                'class="announceOrReply"/> <a href="' + \
+                                'class="announceOrReply"/>\n' + \
+                                '        <a href="' + \
                                 postJsonObject['object']['id'] + '">' + \
                                 announceDisplayName + '</a>\n'
                             # show avatar of person replied to
@@ -4599,8 +4790,9 @@ def individualPostAsHtml(allowDownloads: bool,
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
+                                    '        ' \
                                     '<div class="timeline-avatar-reply">\n' \
-                                    '<a class="imageAnchor" ' + \
+                                    '            <a class="imageAnchor" ' + \
                                     'href="/users/' + nickname + \
                                     '?options=' + \
                                     announceActor + ';' + str(pageNumber) + \
@@ -4610,34 +4802,38 @@ def individualPostAsHtml(allowDownloads: bool,
                                     announceAvatarUrl + '" ' \
                                     'title="' + translate[idx] + \
                                     '" alt=" "' + avatarPosition + \
-                                    '/></a>\n</div>\n'
+                                    '/></a>\n    </div>\n'
                         else:
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '    <img loading="lazy" title="' + \
                                 translate['announces'] + \
                                 '" alt="' + translate['announces'] + \
                                 '" src="/' + iconsDir + \
                                 '/repeat_inactive.png" ' + \
-                                'class="announceOrReply"/> <a href="' + \
+                                'class="announceOrReply"/>\n' + \
+                                '      <a href="' + \
                                 postJsonObject['object']['id'] + '">@' + \
                                 announceNickname + '@' + \
                                 announceDomain + '</a>\n'
                     else:
                         titleStr += \
-                            ' <img loading="lazy" title="' + \
+                            '    <img loading="lazy" title="' + \
                             translate['announces'] + '" alt="' + \
                             translate['announces'] + '" src="/' + iconsDir + \
                             '/repeat_inactive.png" ' + \
-                            'class="announceOrReply"/> <a href="' + \
+                            'class="announceOrReply"/>\n' + \
+                            '      <a href="' + \
                             postJsonObject['object']['id'] + \
                             '">@unattributed</a>\n'
             else:
                 titleStr += \
-                    ' <img loading="lazy" title="' + translate['announces'] + \
+                    '    ' + \
+                    '<img loading="lazy" title="' + translate['announces'] + \
                     '" alt="' + translate['announces'] + \
                     '" src="/' + iconsDir + \
                     '/repeat_inactive.png" ' + \
-                    'class="announceOrReply"/> <a href="' + \
+                    'class="announceOrReply"/>\n' + \
+                    '      <a href="' + \
                     postJsonObject['object']['id'] + '">@unattributed</a>\n'
         else:
             if postJsonObject['object'].get('inReplyTo'):
@@ -4645,7 +4841,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 containerClass = 'container darker'
                 if postJsonObject['object']['inReplyTo'].startswith(postActor):
                     titleStr += \
-                        ' <img loading="lazy" title="' + \
+                        '    <img loading="lazy" title="' + \
                         translate['replying to themselves'] + \
                         '" alt="' + translate['replying to themselves'] + \
                         '" src="/' + iconsDir + \
@@ -4694,13 +4890,15 @@ def individualPostAsHtml(allowDownloads: bool,
                                                       boxName + ' 13.6 = ' +
                                                       str(timeDiff))
                                     titleStr += \
-                                        ' <img loading="lazy" title="' + \
+                                        '        ' + \
+                                        '<img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
                                         '" src="/' + \
                                         iconsDir + '/reply.png" ' + \
-                                        'class="announceOrReply"/> ' + \
+                                        'class="announceOrReply"/>\n' + \
+                                        '        ' + \
                                         '<a href="' + inReplyTo + \
                                         '">' + replyDisplayName + '</a>\n'
 
@@ -4729,9 +4927,10 @@ def individualPostAsHtml(allowDownloads: bool,
 
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost = \
-                                            '<div class=' + \
+                                            '        <div class=' + \
                                             '"timeline-avatar-reply">\n'
                                         replyAvatarImageInPost += \
+                                            '          ' + \
                                             '<a class="imageAnchor" ' + \
                                             'href="/users/' + nickname + \
                                             '?options=' + replyActor + \
@@ -4739,6 +4938,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                             replyAvatarUrl + \
                                             messageIdStr + '">\n'
                                         replyAvatarImageInPost += \
+                                            '          ' + \
                                             '<img loading="lazy" src="' + \
                                             replyAvatarUrl + '" '
                                         replyAvatarImageInPost += \
@@ -4746,32 +4946,34 @@ def individualPostAsHtml(allowDownloads: bool,
                                             translate['Show profile']
                                         replyAvatarImageInPost += \
                                             '" alt=" "' + \
-                                            avatarPosition + '/></a>\n</div>\n'
+                                            avatarPosition + '/></a>\n' + \
+                                            '        </div>\n'
                                 else:
                                     inReplyTo = \
                                         postJsonObject['object']['inReplyTo']
                                     titleStr += \
-                                        ' <img loading="lazy" title="' + \
+                                        '        ' + \
+                                        '<img loading="lazy" title="' + \
                                         translate['replying to'] + \
                                         '" alt="' + \
                                         translate['replying to'] + \
                                         '" src="/' + \
                                         iconsDir + '/reply.png" ' + \
-                                        'class="announceOrReply"/> ' + \
-                                        '<a href="' + \
+                                        'class="announceOrReply"/>\n' + \
+                                        '        <a href="' + \
                                         inReplyTo + '">@' + \
                                         replyNickname + '@' + \
                                         replyDomain + '</a>\n'
                         else:
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '        <img loading="lazy" title="' + \
                                 translate['replying to'] + \
                                 '" alt="' + \
                                 translate['replying to'] + \
                                 '" src="/' + \
                                 iconsDir + \
-                                '/reply.png" class="announceOrReply"/> ' + \
-                                '<a href="' + \
+                                '/reply.png" class="announceOrReply"/>\n' + \
+                                '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">@unknown</a>\n'
                     else:
@@ -4784,12 +4986,13 @@ def individualPostAsHtml(allowDownloads: bool,
                             postDomain = postDomain.split('/', 1)[0]
                         if postDomain:
                             titleStr += \
-                                ' <img loading="lazy" title="' + \
+                                '        <img loading="lazy" title="' + \
                                 translate['replying to'] + \
                                 '" alt="' + translate['replying to'] + \
                                 '" src="/' + \
                                 iconsDir + '/reply.png" ' + \
-                                'class="announceOrReply"/> <a href="' + \
+                                'class="announceOrReply"/>\n' + \
+                                '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
                                 '">' + postDomain + '</a>\n'
 
@@ -4849,12 +5052,12 @@ def individualPostAsHtml(allowDownloads: bool,
         containerClass = 'container dm'
 
     if showIcons:
-        footerStr = '<div class="' + containerClassIcons + '">'
+        footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
-        footerStr += '<a href="' + publishedLink + '" class="' + \
+        footerStr += '        <a href="' + publishedLink + '" class="' + \
             timeClass + '">' + publishedStr + '</a>\n'
-        footerStr += '</div>'
+        footerStr += '      </div>\n'
 
     postIsSensitive = False
     if postJsonObject['object'].get('sensitive'):
@@ -4948,7 +5151,9 @@ def individualPostAsHtml(allowDownloads: bool,
         contentStr = ''
     else:
         if not isPatch:
-            contentStr = '<div class="message">' + contentStr + '</div>\n'
+            contentStr = '      <div class="message">' + \
+                contentStr + \
+                '      </div>\n'
         else:
             contentStr = \
                 '<div class="gitpatch"><pre><code>' + contentStr + \
@@ -4956,13 +5161,14 @@ def individualPostAsHtml(allowDownloads: bool,
 
     postHtml = ''
     if boxName != 'tlmedia':
-        postHtml = '<div id="' + timelinePostBookmark + \
+        postHtml = '    <div id="' + timelinePostBookmark + \
             '" class="' + containerClass + '">\n'
         postHtml += avatarImageInPost
-        postHtml += '<p class="post-title">' + titleStr + \
-            replyAvatarImageInPost + '</p>\n'
+        postHtml += '      <div class="post-title">\n' + \
+            '        ' + titleStr + \
+            replyAvatarImageInPost + '      </div>\n'
         postHtml += contentStr + footerStr + '\n'
-        postHtml += '</div>\n'
+        postHtml += '    </div>\n'
     else:
         postHtml = galleryStr
 
@@ -5017,6 +5223,184 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     if not highlight:
         return label
     return '*' + label + '*'
+
+
+def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
+                         httpPrefix: str, translate: {},
+                         iconsDir: str, moderator: bool) -> str:
+    """Returns html content for the left column
+    """
+    htmlStr = ''
+
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')
+
+    leftColumnImageFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/left_col_image.png'
+    if not os.path.isfile(leftColumnImageFilename):
+        theme = getConfigParam(baseDir, 'theme').lower()
+        if theme == 'default':
+            theme = ''
+        else:
+            theme = '_' + theme
+        themeLeftColumnImageFilename = \
+            baseDir + '/img/left_col_image' + theme + '.png'
+        if os.path.isfile(themeLeftColumnImageFilename):
+            copyfile(themeLeftColumnImageFilename, leftColumnImageFilename)
+
+    # show the image at the top of the column
+    editImageClass = 'leftColEdit'
+    if os.path.isfile(leftColumnImageFilename):
+        editImageClass = 'leftColEditImage'
+        htmlStr += \
+            '\n      <center>\n' + \
+            '        <img class="leftColImg" loading="lazy" src="/users/' + \
+            nickname + '/left_col_image.png" />\n' + \
+            '      </center>\n'
+
+    if editImageClass == 'leftColEdit':
+        htmlStr += '\n      <center>\n'
+
+    if moderator:
+        # show the edit icon
+        htmlStr += \
+            '      <a href="' + \
+            '/users/' + nickname + '/editlinks">' + \
+            '<img class="' + editImageClass + \
+            '" loading="lazy" alt="' + \
+            translate['Edit Links'] + '" title="' + \
+            translate['Edit Links'] + '" src="/' + \
+            iconsDir + '/edit.png" /></a>\n'
+
+    # RSS icon
+    htmlStr += \
+        '      <a href="' + \
+        httpPrefix + '://' + domainFull + \
+        '/blog/' + nickname + '/rss.xml">' + \
+        '<img class="' + editImageClass + \
+        '" loading="lazy" alt="' + \
+        translate['RSS feed for this site'] + \
+        '" title="' + translate['RSS feed for this site'] + \
+        '" src="/' + iconsDir + '/rss.png" /></a>\n'
+
+    if editImageClass == 'leftColEdit':
+        htmlStr += '      </center>\n'
+    else:
+        htmlStr += '      <br>\n'
+
+    linksFilename = baseDir + '/accounts/links.txt'
+    if os.path.isfile(linksFilename):
+        linksList = None
+        with open(linksFilename, "r") as f:
+            linksList = f.readlines()
+        if linksList:
+            for lineStr in linksList:
+                if ' ' not in lineStr:
+                    if '#' not in lineStr:
+                        if '*' not in lineStr:
+                            continue
+                lineStr = lineStr.strip()
+                words = lineStr.split(' ')
+                # get the link
+                linkStr = None
+                for word in words:
+                    if word == '#':
+                        continue
+                    if word == '*':
+                        continue
+                    if '://' in word:
+                        linkStr = word
+                        break
+                if linkStr:
+                    lineStr = lineStr.replace(linkStr, '').strip()
+                    # avoid any dubious scripts being added
+                    if '<' not in lineStr:
+                        # remove trailing comma if present
+                        if lineStr.endswith(','):
+                            lineStr = lineStr[:len(lineStr)-1]
+                        # add link to the returned html
+                        htmlStr += \
+                            '      <p><a href="' + linkStr + '">' + \
+                            lineStr + '</a></p>\n'
+                else:
+                    if lineStr.startswith('#') or lineStr.startswith('*'):
+                        lineStr = lineStr[1:].strip()
+                        htmlStr += \
+                            '      <h3 class="linksHeader">' + \
+                            lineStr + '</h3>\n'
+                    else:
+                        htmlStr += \
+                            '      <p>' + lineStr + '</p>\n'
+
+    return htmlStr
+
+
+def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
+                          httpPrefix: str, translate: {},
+                          iconsDir: str, moderator: bool) -> str:
+    """Returns html content for the right column
+    """
+    htmlStr = ''
+
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')
+
+    rightColumnImageFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/right_col_image.png'
+    if not os.path.isfile(rightColumnImageFilename):
+        theme = getConfigParam(baseDir, 'theme').lower()
+        if theme == 'default':
+            theme = ''
+        else:
+            theme = '_' + theme
+        themeRightColumnImageFilename = \
+            baseDir + '/img/right_col_image' + theme + '.png'
+        if os.path.isfile(themeRightColumnImageFilename):
+            copyfile(themeRightColumnImageFilename, rightColumnImageFilename)
+
+    # show the image at the top of the column
+    editImageClass = 'rightColEdit'
+    if os.path.isfile(rightColumnImageFilename):
+        editImageClass = 'rightColEditImage'
+        htmlStr += \
+            '\n      <center>\n' + \
+            '          <img class="rightColImg" ' + \
+            'loading="lazy" src="/users/' + \
+            nickname + '/right_col_image.png" />\n' + \
+            '      </center>\n'
+
+    if editImageClass == 'rightColEdit':
+        htmlStr += '\n      <center>\n'
+
+    if moderator:
+        # show the edit icon
+        htmlStr += \
+            '        <a href="' + \
+            '/users/' + nickname + '/editnewswire">' + \
+            '<img class="' + editImageClass + \
+            '" loading="lazy" alt="' + \
+            translate['Edit newswire'] + '" title="' + \
+            translate['Edit newswire'] + '" src="/' + \
+            iconsDir + '/edit.png" /></a>\n'
+
+    htmlStr += \
+        '        <a href="/newswire.xml">' + \
+        '<img class="' + editImageClass + \
+        '" loading="lazy" alt="' + \
+        translate['Newswire RSS Feed'] + '" title="' + \
+        translate['Newswire RSS Feed'] + '" src="/' + \
+        iconsDir + '/rss.png" /></a>\n'
+
+    if editImageClass == 'rightColEdit':
+        htmlStr += '      </center>\n'
+    else:
+        htmlStr += '      <br>\n'
+
+    return htmlStr
 
 
 def htmlTimeline(defaultTimeline: str,
@@ -5257,7 +5641,7 @@ def htmlTimeline(defaultTimeline: str,
     # what screen to go to when a new post is created
     if boxName == 'dm':
         newPostButtonStr = \
-            '<a class="imageAnchor" href="' + usersPath + \
+            '      <a class="imageAnchor" href="' + usersPath + \
             '/newdm"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new DM'] + \
@@ -5265,7 +5649,7 @@ def htmlTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     elif boxName == 'tlblogs':
         newPostButtonStr = \
-            '<a class="imageAnchor" href="' + usersPath + \
+            '        <a class="imageAnchor" href="' + usersPath + \
             '/newblog"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new post'] + '" alt="| ' + \
@@ -5273,7 +5657,7 @@ def htmlTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     elif boxName == 'tlevents':
         newPostButtonStr = \
-            '<a class="imageAnchor" href="' + usersPath + \
+            '        <a class="imageAnchor" href="' + usersPath + \
             '/newevent"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new event'] + '" alt="| ' + \
@@ -5282,7 +5666,7 @@ def htmlTimeline(defaultTimeline: str,
     else:
         if not manuallyApproveFollowers:
             newPostButtonStr = \
-                '<a class="imageAnchor" href="' + usersPath + \
+                '        <a class="imageAnchor" href="' + usersPath + \
                 '/newpost"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -5290,7 +5674,7 @@ def htmlTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr = \
-                '<a class="imageAnchor" href="' + usersPath + \
+                '        <a class="imageAnchor" href="' + usersPath + \
                 '/newfollowers"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + \
@@ -5300,8 +5684,8 @@ def htmlTimeline(defaultTimeline: str,
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
-        '<a href="/users/' + nickname + '"><label class="transparent">' + \
-        translate['Switch to profile view'] + '</label></a>\n'
+        '<label class="transparent"><a href="/users/' + nickname + '">' + \
+        translate['Switch to profile view'] + '</a></label>\n'
 
     # banner and row of buttons
     tlStr += \
@@ -5310,35 +5694,61 @@ def htmlTimeline(defaultTimeline: str,
         translate['Switch to profile view'] + '">\n'
     tlStr += '<div class="timeline-banner">'
     tlStr += '</div>\n</a>\n'
-    tlStr += '<div class="container">\n'
 
+    # start the timeline
+    tlStr += '<table class="timeline">\n'
+    tlStr += '  <colgroup>\n'
+    tlStr += '    <col span="1" class="column-left">\n'
+    tlStr += '    <col span="1" class="column-center">\n'
+    tlStr += '    <col span="1" class="column-right">\n'
+    tlStr += '  </colgroup>\n'
+    tlStr += '  <tbody>\n'
+    tlStr += '    <tr>\n'
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    # left column
+    leftColumnStr = \
+        getLeftColumnContent(baseDir, nickname, domainFull,
+                             httpPrefix, translate, iconsDir,
+                             moderator)
+    tlStr += '  <td valign="top" class="col-left">' + \
+        leftColumnStr + '  </td>\n'
+    # center column containing posts
+    tlStr += '  <td valign="top" class="col-center">\n'
+
+    # start of the button header with inbox, outbox, etc
+    tlStr += '    <div class="container">\n'
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
-            '    <a href="' + usersPath + \
+            '      <a href="' + usersPath + \
             '/tlmedia"><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>\n'
     elif defaultTimeline == 'tlblogs':
         tlStr += \
-            '    <a href="' + usersPath + \
+            '      <a href="' + usersPath + \
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>\n'
     else:
         tlStr += \
-            '    <a href="' + usersPath + \
+            '      <a href="' + usersPath + \
             '/inbox"><button class="' + \
             inboxButton + '"><span>' + \
             translate['Inbox'] + '</span></button></a>\n'
 
     tlStr += \
-        '    <a href="' + usersPath + '/dm"><button class="' + dmButton + \
+        '      <a href="' + usersPath + '/dm"><button class="' + dmButton + \
         '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
         '</span></button></a>\n'
 
     tlStr += \
-        '    <a href="' + usersPath + '/tlreplies"><button class="' + \
+        '      <a href="' + usersPath + '/tlreplies"><button class="' + \
         repliesButton + '"><span>' + \
         htmlHighlightLabel(translate['Replies'], newReply) + \
         '</span></button></a>\n'
@@ -5347,14 +5757,14 @@ def htmlTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlmedia':
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/tlmedia"><button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>\n'
     else:
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton+'"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
@@ -5364,21 +5774,21 @@ def htmlTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlblogs':
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/tlblogs"><button class="' + \
                 blogsButton + '"><span>' + translate['Blogs'] + \
                 '</span></button></a>\n'
     else:
         if not minimal:
             tlStr += \
-                '    <a href="' + usersPath + \
+                '      <a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
 
     # button for the outbox
     tlStr += \
-        '    <a href="' + usersPath + \
+        '      <a href="' + usersPath + \
         '/outbox"><button class="' + \
         sentButton+'"><span>' + translate['Outbox'] + \
         '</span></button></a>\n'
@@ -5388,9 +5798,35 @@ def htmlTimeline(defaultTimeline: str,
         sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
         moderationButtonStr + newPostButtonStr
 
+    # show todays events buttons on the first inbox page
+    if boxName == 'inbox' and pageNumber == 1:
+        if todaysEventsCheck(baseDir, nickname, domain):
+            now = datetime.now()
+
+            # happening today button
+            tlStr += \
+                '    <a href="' + usersPath + '/calendar?year=' + \
+                str(now.year) + '?month=' + str(now.month) + \
+                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
+                translate['Happening Today'] + '</button></a>\n'
+
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                tlStr += \
+                    '    <a href="' + usersPath + \
+                    '/calendar"><button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>\n'
+        else:
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                tlStr += \
+                    '    <a href="' + usersPath + \
+                    '/calendar"><button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>\n'
+
     # the search button
     tlStr += \
-        '    <a class="imageAnchor" href="' + usersPath + \
+        '        <a class="imageAnchor" href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
         iconsDir + '/search.png" title="' + \
         translate['Search and follow'] + '" alt="| ' + \
@@ -5407,20 +5843,21 @@ def htmlTimeline(defaultTimeline: str,
         # indicate that the calendar icon is highlighted
         calendarAltText = '*' + calendarAltText + '*'
     tlStr += \
-        '    <a class="imageAnchor" href="' + usersPath + calendarPath + \
+        '        <a class="imageAnchor" href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
         calendarImage + '" title="' + translate['Calendar'] + \
         '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
 
     # the show/hide button, for a simpler header appearance
     tlStr += \
-        '    <a class="imageAnchor" href="' + usersPath + '/minimal' + \
+        '        <a class="imageAnchor" href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>\n'
     tlStr += followApprovals
-    tlStr += '</div>'
+    # end of the button header with inbox, outbox, etc
+    tlStr += '    </div>\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
@@ -5479,34 +5916,6 @@ def htmlTimeline(defaultTimeline: str,
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 7 = ' + str(timeDiff))
 
-    # show todays events buttons on the first inbox page
-    if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
-            # happening today button
-            tlStr += \
-                '<center>\n<a href="' + usersPath + '/calendar?year=' + \
-                str(now.year) + '?month=' + str(now.month) + \
-                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
-                translate['Happening Today'] + '</button></a>\n'
-
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '<a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n'
-            tlStr += '</center>\n'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '<center>\n<a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n' + \
-                    '</center>\n'
-
     # benchmark 8
     timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
@@ -5515,12 +5924,14 @@ def htmlTimeline(defaultTimeline: str,
     # page up arrow
     if pageNumber > 1:
         tlStr += \
-            '<center>\n<a href="' + usersPath + '/' + boxName + \
+            '  <center>\n' + \
+            '    <a href="' + usersPath + '/' + boxName + \
             '?page=' + str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
-            translate['Page up'] + '"></a>\n</center>\n'
+            translate['Page up'] + '"></a>\n' + \
+            '  </center>\n'
 
     # show the posts
     itemCtr = 0
@@ -5604,6 +6015,17 @@ def htmlTimeline(defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    # end of column-center
+    tlStr += '  </td>\n'
+
+    # right column
+    rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
+                                           httpPrefix, translate, iconsDir,
+                                           moderator)
+    tlStr += '  <td valign="top" class="col-right">' + \
+        rightColumnStr + '  </td>\n'
+    tlStr += '  </tr>\n'
+
     # benchmark 9
     timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
@@ -5612,12 +6034,23 @@ def htmlTimeline(defaultTimeline: str,
     # page down arrow
     if itemCtr > 2:
         tlStr += \
-            '<center>\n<a href="' + usersPath + '/' + boxName + '?page=' + \
+            '  <tr>\n' + \
+            '    <td class="col-left"></td>\n' + \
+            '    <td class="col-center">\n' + \
+            '      <center>\n' + \
+            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
-            translate['Page down'] + '"></a>\n</center>\n'
+            translate['Page down'] + '"></a>\n' + \
+            '      </center>\n' + \
+            '    </td>\n' + \
+            '    <td class="col-right"></td>\n' + \
+            '  </tr>\n'
+
+    tlStr += '  </tbody>\n'
+    tlStr += '</table>\n'
     tlStr += htmlFooter()
     return tlStr
 

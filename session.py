@@ -54,7 +54,7 @@ def createSession(proxyType: str):
 
 
 def getJson(session, url: str, headers: {}, params: {},
-            version='1.0.0', httpPrefix='https',
+            version='1.1.0', httpPrefix='https',
             domain='testdomain') -> {}:
     if not isinstance(url, str):
         print('url: ' + str(url))

@@ -15,7 +15,7 @@ from shutil import copyfile
 def getThemeFiles() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
-            'options.css', 'search.css')
+            'options.css', 'search.css', 'links.css')
 
 
 def getThemesList() -> []:
@@ -264,12 +264,17 @@ def setThemeIndymedia(baseDir: str):
         "font-size4": "24px",
         "font-size5": "22px",
         "main-bg-color": "black",
+        "column-left-header-color": "#fff",
+        "column-left-header-background": "#555",
+        "column-left-header-size": "20px",
+        "column-left-color": "#003366",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "black",
         "main-link-color": "#ff9900",
         "main-link-color-hover": "#d09338",
         "main-visited-color": "#ffb900",
         "main-fg-color": "white",
+        "column-left-fg-color": "white",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#003366",
         "border-width": "0",
@@ -292,6 +297,10 @@ def setThemeIndymedia(baseDir: str):
         "title-text": "white",
         "title-background": "#003366",
         "quote-right-margin": "0.1em",
+        "column-left-width": "10vw",
+        "column-center-width": "70vw",
+        "column-right-width": "20vw",
+        "column-right-icon-size": "11%"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -311,6 +320,7 @@ def setThemeBlue(baseDir: str):
         "gallery-font-size": "35px",
         "gallery-font-size-mobile": "55px",
         "main-bg-color": "#002365",
+        "column-left-color": "#002365",
         "text-entry-background": "#002365",
         "link-bg-color": "#002365",
         "main-bg-color-reply": "#002365",
@@ -348,11 +358,13 @@ def setThemeNight(baseDir: str):
         "font-size4": "24px",
         "font-size5": "22px",
         "main-bg-color": "#0f0d10",
+        "column-left-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
         "main-link-color": "ff9900",
         "main-link-color-hover": "#d09338",
         "main-fg-color": "#a961ab",
+        "column-left-fg-color": "#a961ab",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#606984",
         "main-bg-color-reply": "#0f0d10",
@@ -398,6 +410,7 @@ def setThemeStarlight(baseDir: str):
         "font-size4": "24px",
         "font-size5": "22px",
         "main-bg-color": "#0f0d10",
+        "column-left-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
         "main-link-color": "#ffc4bc",
@@ -405,6 +418,7 @@ def setThemeStarlight(baseDir: str):
         "title-color": "#ffc4bc",
         "main-visited-color": "#e1c4bc",
         "main-fg-color": "#ffc4bc",
+        "column-left-fg-color": "#ffc4bc",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#69282c",
         "border-width": "3px",
@@ -457,6 +471,7 @@ def setThemeHenge(baseDir: str):
         "font-size4": "24px",
         "font-size5": "22px",
         "main-bg-color": "#383335",
+        "column-left-color": "#383335",
         "text-entry-background": "#383335",
         "link-bg-color": "#383335",
         "main-link-color": "white",
@@ -464,6 +479,7 @@ def setThemeHenge(baseDir: str):
         "title-color": "white",
         "main-visited-color": "#e1c4bc",
         "main-fg-color": "white",
+        "column-left-fg-color": "white",
         "main-bg-color-dm": "#343335",
         "border-color": "#222",
         "border-width": "5px",
@@ -506,6 +522,7 @@ def setThemeZen(baseDir: str):
     setThemeInConfig(baseDir, name)
     themeParams = {
         "main-bg-color": "#5c4e41",
+        "column-left-color": "#5c4e41",
         "text-entry-background": "#5c4e41",
         "link-bg-color": "#5c4e41",
         "main-bg-color-reply": "#5c4e41",
@@ -565,6 +582,7 @@ def setThemeLCD(baseDir: str):
     name = 'lcd'
     themeParams = {
         "main-bg-color": "#9fb42b",
+        "column-left-color": "#9fb42b",
         "link-bg-color": "#33390d",
         "text-entry-foreground": "#33390d",
         "text-entry-background": "#9fb42b",
@@ -573,6 +591,7 @@ def setThemeLCD(baseDir: str):
         "main-bg-color-dm": "#5fb42b",
         "main-header-color-roles": "#9fb42b",
         "main-fg-color": "#33390d",
+        "column-left-fg-color": "#33390d",
         "border-color": "#33390d",
         "border-width": "5px",
         "main-link-color": "#9fb42b",
@@ -641,11 +660,13 @@ def setThemePurple(baseDir: str):
         "font-size4": "24px",
         "font-size5": "22px",
         "main-bg-color": "#1f152d",
+        "column-left-color": "#1f152d",
         "link-bg-color": "#1f152d",
         "main-bg-color-reply": "#1a142d",
         "main-bg-color-report": "#12152d",
         "main-header-color-roles": "#1f192d",
         "main-fg-color": "#f98bb0",
+        "column-left-fg-color": "#f98bb0",
         "border-color": "#3f2145",
         "main-link-color": "#ff42a0",
         "main-link-color-hover": "white",
@@ -689,12 +710,14 @@ def setThemeHacker(baseDir: str):
     themeParams = {
         "focus-color": "green",
         "main-bg-color": "black",
+        "column-left-color": "black",
         "link-bg-color": "black",
         "main-bg-color-dm": "#0b0a0a",
         "main-bg-color-reply": "#030202",
         "main-bg-color-report": "#050202",
         "main-header-color-roles": "#1f192d",
         "main-fg-color": "#00ff00",
+        "column-left-fg-color": "#00ff00",
         "border-color": "#035103",
         "main-link-color": "#2fff2f",
         "main-link-color-hover": "#afff2f",
@@ -747,6 +770,7 @@ def setThemeLight(baseDir: str):
         "font-size4": "24px",
         "font-size5": "22px",
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
+        "column-left-color": "#e6ebf0",
         "main-bg-color": "#e6ebf0",
         "main-bg-color-dm": "#e3dbf0",
         "link-bg-color": "#e6ebf0",
@@ -754,6 +778,7 @@ def setThemeLight(baseDir: str):
         "main-bg-color-report": "#e3dbf0",
         "main-header-color-roles": "#ebebf0",
         "main-fg-color": "#2d2c37",
+        "column-left-fg-color": "#2d2c37",
         "border-color": "#c0cdd9",
         "main-link-color": "#2a2c37",
         "main-link-color-hover": "#aa2c37",
@@ -804,12 +829,14 @@ def setThemeSolidaric(baseDir: str):
         "font-size5": "22px",
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "main-bg-color": "white",
+        "column-left-color": "white",
         "main-bg-color-dm": "white",
         "link-bg-color": "white",
         "main-bg-color-reply": "white",
         "main-bg-color-report": "white",
         "main-header-color-roles": "#ebebf0",
         "main-fg-color": "#2d2c37",
+        "column-left-fg-color": "#2d2c37",
         "border-color": "#c0cdd9",
         "main-link-color": "#2a2c37",
         "main-link-color-hover": "#aa2c37",
@@ -864,6 +891,10 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/banner.png'
         searchBannerFilename = \
             baseDir + '/img/search_banner.png'
+        leftColImageFilename = \
+            baseDir + '/img/left_col_image.png'
+        rightColImageFilename = \
+            baseDir + '/img/right_col_image.png'
     else:
         profileImageFilename = \
             baseDir + '/img/image_' + themeNameLower + '.png'
@@ -871,6 +902,10 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/banner_' + themeNameLower + '.png'
         searchBannerFilename = \
             baseDir + '/img/search_banner_' + themeNameLower + '.png'
+        leftColImageFilename = \
+            baseDir + '/img/left_col_image_' + themeNameLower + '.png'
+        rightColImageFilename = \
+            baseDir + '/img/right_col_image_' + themeNameLower + '.png'
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
@@ -934,6 +969,29 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     if os.path.isfile(searchBannerFilename):
                         copyfile(searchBannerFilename,
                                  accountDir + '/search_banner.png')
+                except BaseException:
+                    pass
+
+                try:
+                    if os.path.isfile(leftColImageFilename):
+                        copyfile(leftColImageFilename,
+                                 accountDir + '/left_col_image.png')
+                    else:
+                        if os.path.isfile(accountDir +
+                                          '/left_col_image.png'):
+                            os.remove(accountDir + '/left_col_image.png')
+
+                except BaseException:
+                    pass
+
+                try:
+                    if os.path.isfile(rightColImageFilename):
+                        copyfile(rightColImageFilename,
+                                 accountDir + '/right_col_image.png')
+                    else:
+                        if os.path.isfile(accountDir +
+                                          '/right_col_image.png'):
+                            os.remove(accountDir + '/right_col_image.png')
                 except BaseException:
                     pass
 

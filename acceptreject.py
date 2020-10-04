@@ -66,7 +66,7 @@ def createReject(baseDir: str, federationList: [],
     return createAcceptReject(baseDir, federationList,
                               nickname, domain, port,
                               toUrl, ccUrl,
-                              httpPrefix, objectJson, None, 'Reject')
+                              httpPrefix, objectJson, 'Reject')
 
 
 def acceptFollow(baseDir: str, domain: str, messageJson: {},

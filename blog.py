@@ -20,6 +20,8 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from posts import createBlogsTimeline
+from newswire import rss2Header
+from newswire import rss2Footer
 
 
 def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
@@ -365,12 +367,12 @@ def htmlBlogPost(authorized: bool,
             'title="RSS 2.0" src="/' + \
             iconsDir + '/rss.png" /></a>'
 
-        blogStr += '<a href="' + httpPrefix + '://' + \
-            domainFull + '/blog/' + nickname + '/rss.txt">'
-        blogStr += '<img style="width:3%;min-width:50px" ' + \
-            'loading="lazy" alt="RSS 3.0" ' + \
-            'title="RSS 3.0" src="/' + \
-            iconsDir + '/rss3.png" /></a>'
+        # blogStr += '<a href="' + httpPrefix + '://' + \
+        #     domainFull + '/blog/' + nickname + '/rss.txt">'
+        # blogStr += '<img style="width:3%;min-width:50px" ' + \
+        #     'loading="lazy" alt="RSS 3.0" ' + \
+        #     'title="RSS 3.0" src="/' + \
+        #     iconsDir + '/rss3.png" /></a>'
 
         blogStr += '</p>'
 
@@ -405,7 +407,7 @@ def htmlBlogPage(authorized: bool, session,
         timelineJson = createBlogsTimeline(session, baseDir,
                                            nickname, domain, port,
                                            httpPrefix,
-                                           noOfItems, False, False,
+                                           noOfItems, False,
                                            pageNumber)
 
         if not timelineJson:
@@ -461,33 +463,16 @@ def htmlBlogPage(authorized: bool, session,
             'title="RSS 2.0" src="/' + \
             iconsDir + '/rss.png" /></a>'
 
-        blogStr += '<a href="' + httpPrefix + '://' + \
-            domainFull + '/blog/' + nickname + '/rss.txt">'
-        blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
-            'title="RSS 3.0" src="/' + \
-            iconsDir + '/rss3.png" /></a>'
+        # blogStr += '<a href="' + httpPrefix + '://' + \
+        #     domainFull + '/blog/' + nickname + '/rss.txt">'
+        # blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
+        #     'title="RSS 3.0" src="/' + \
+        #     iconsDir + '/rss3.png" /></a>'
 
         blogStr += '</p>'
 
         return blogStr + htmlFooter()
     return None
-
-
-def rss2Header(httpPrefix: str,
-               nickname: str, domainFull: str, translate: {}) -> str:
-    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
-    rssStr += "<rss version=\"2.0\">"
-    rssStr += '<channel>'
-    rssStr += '    <title>' + translate['Blog'] + '</title>'
-    rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
-        '/users/' + nickname + '/rss.xml' + '</link>'
-    return rssStr
-
-
-def rss2Footer() -> str:
-    rssStr = '</channel>'
-    rssStr += '</rss>'
-    return rssStr
 
 
 def htmlBlogPageRSS2(authorized: bool, session,
@@ -505,7 +490,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, translate)
+    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, 'Blog', translate)
 
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
@@ -515,7 +500,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
                                        httpPrefix,
-                                       noOfItems, False, False,
+                                       noOfItems, False,
                                        pageNumber)
 
     if not timelineJson:
@@ -561,7 +546,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
                                        httpPrefix,
-                                       noOfItems, False, False,
+                                       noOfItems, False,
                                        pageNumber)
 
     if not timelineJson:

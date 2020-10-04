@@ -14,6 +14,32 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def removeQuotesWithinQuotes(content: str) -> str:
+    """Removes any blockquote inside blockquote
+    """
+    if '<blockquote>' not in content:
+        return content
+    if '</blockquote>' not in content:
+        return content
+    ctr = 1
+    found = True
+    while found:
+        prefix = content.split('<blockquote>', ctr)[0] + '<blockquote>'
+        quotedStr = content.split('<blockquote>', ctr)[1]
+        if '</blockquote>' not in quotedStr:
+            found = False
+        else:
+            endStr = quotedStr.split('</blockquote>')[1]
+            quotedStr = quotedStr.split('</blockquote>')[0]
+            if '<blockquote>' not in endStr:
+                found = False
+            if '<blockquote>' in quotedStr:
+                quotedStr = quotedStr.replace('<blockquote>', '')
+                content = prefix + quotedStr + '</blockquote>' + endStr
+        ctr += 1
+    return content
+
+
 def htmlReplaceEmailQuote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
@@ -44,9 +70,12 @@ def htmlReplaceEmailQuote(content: str) -> str:
                 newContent += '<p>' + lineStr + '</p>'
         else:
             lineStr = lineStr.replace('>&gt; ', '><blockquote>')
-            lineStr = lineStr.replace('&gt;', '<br>')
+            if lineStr.startswith('&gt;'):
+                lineStr = lineStr.replace('&gt;', '<blockquote>', 1)
+            else:
+                lineStr = lineStr.replace('&gt;', '<br>')
             newContent += '<p>' + lineStr + '</blockquote></p>'
-    return newContent
+    return removeQuotesWithinQuotes(newContent)
 
 
 def htmlReplaceQuoteMarks(content: str) -> str:
