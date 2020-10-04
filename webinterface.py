@@ -5343,7 +5343,9 @@ def htmlNewswire(newswire: str) -> str:
     htmlStr = ''
     for dateStr, item in newswire.items():
         htmlStr += '<p class="newswireItem">' + \
-            '<a href="' + item[1] + '">' + item[0] + '</a></p>'
+            '<a href="' + item[1] + '">' + item[0] + '</a><br>'
+        htmlStr += '<label class="newswireDate">'
+        htmlStr += dateStr + '</label></p>'
     return htmlStr
 
 

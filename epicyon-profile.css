@@ -74,6 +74,7 @@
     --column-left-header-size: 20px;
     --column-left-icon-size: 20%;
     --column-right-icon-size: 20%;
+    --newswire-date-color: white;
 }
 
 @font-face {
@@ -226,6 +227,12 @@ a:focus {
 .newswireItem {
     font-size: var(--font-size-newswire);
     color: var(--column-right-fg-color);
+}
+
+.newswireDate {
+    font-size: var(--font-size-newswire);
+    color: var(--newswire-date-color);
+    float: right;
 }
 
 .new-post-text {
