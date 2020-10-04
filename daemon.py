@@ -61,6 +61,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
 from posts import createQuestionPost
@@ -145,6 +146,7 @@ from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlEditLinks
+from webinterface import htmlEditNewswire
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
@@ -2708,7 +2710,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             # get the nickname
             nickname = getNicknameFromActor(actorStr)
-            if not nickname:
+            moderator = None
+            if nickname:
+                moderator = isModerator(baseDir, nickname)
+            if not nickname or not moderator:
                 if callingDomain.endswith('.onion') and \
                    onionDomain:
                     actorStr = \
@@ -2717,7 +2722,10 @@ class PubServer(BaseHTTPRequestHandler):
                       i2pDomain):
                     actorStr = \
                         'http://' + i2pDomain + usersPath
-                print('WARN: nickname not found in ' + actorStr)
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not a moderator' + actorStr)
                 self._redirect_headers(actorStr, cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
@@ -2775,6 +2783,111 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if os.path.isfile(linksFilename):
                     os.remove(linksFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _newswireUpdate(self, callingDomain: str, cookie: str,
+                        authorized: bool, path: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str,
+                        onionDomain: str, i2pDomain: str, debug: bool,
+                        defaultTimeline: str):
+        """Updates the right newswire column of the timeline
+        """
+        usersPath = path.replace('/newswiredata', '')
+        usersPath = usersPath.replace('/editnewswire', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            moderator = None
+            if nickname:
+                moderator = isModerator(baseDir, nickname)
+            if not nickname or not moderator:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not a moderator' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum newswire data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            newswireFilename = baseDir + '/accounts/newswire.txt'
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            if fields.get('editedNewswire'):
+                newswireStr = fields['editedNewswire']
+                newswireFile = open(newswireFilename, "w+")
+                if newswireFile:
+                    newswireFile.write(newswireStr)
+                    newswireFile.close()
+            else:
+                if os.path.isfile(newswireFilename):
+                    os.remove(newswireFilename)
 
         # redirect back to the default timeline
         if callingDomain.endswith('.onion') and \
@@ -7478,6 +7591,28 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _editNewswire(self, callingDomain: str, path: str,
+                      translate: {}, baseDir: str,
+                      httpPrefix: str, domain: str, port: int,
+                      cookie: str) -> bool:
+        """Show the newswire from the right column
+        """
+        if '/users/' in path and path.endswith('/editnewswire'):
+            msg = htmlEditNewswire(translate,
+                                   baseDir,
+                                   path, domain,
+                                   port,
+                                   httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def _editEvent(self, callingDomain: str, path: str,
                    httpPrefix: str, domain: str, domainFull: str,
                    baseDir: str, translate: {},
@@ -8796,6 +8931,16 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.domain,
                                self.server.port,
                                cookie):
+                return
+
+            # edit newswire from the right column of the timeline
+            if self._editNewswire(callingDomain, self.path,
+                                  self.server.translate,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  cookie):
                 return
 
             if self._showNewPost(callingDomain, self.path,
@@ -10254,6 +10399,16 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.onionDomain,
                               self.server.i2pDomain, self.server.debug,
                               self.server.defaultTimeline)
+            return
+
+        if authorized and self.path.endswith('/newswiredata'):
+            self._newswireUpdate(callingDomain, cookie, authorized, self.path,
+                                 self.server.baseDir, self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain, self.server.debug,
+                                 self.server.defaultTimeline)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)

@@ -1274,6 +1274,74 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
     return editLinksForm
 
 
+def htmlEditNewswire(translate: {}, baseDir: str, path: str,
+                     domain: str, port: int, httpPrefix: str) -> str:
+    """Shows the edit newswire screen
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+    path = path.replace('/inbox', '').replace('/outbox', '')
+    path = path.replace('/shares', '')
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    # is the user a moderator?
+    if not isModerator(baseDir, nickname):
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+    with open(cssFilename, 'r') as cssFile:
+        editCSS = cssFile.read()
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editNewswireForm = htmlHeader(cssFilename, editCSS)
+    editNewswireForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/newswiredata">\n'
+    editNewswireForm += \
+        '  <div class="vertical-center">\n'
+    editNewswireForm += \
+        '    <p class="new-post-text">' + translate['Edit newswire'] + '</p>'
+    editNewswireForm += \
+        '    <div class="container">\n'
+    editNewswireForm += \
+        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+        translate['Go Back'] + '</button></a>\n'
+    editNewswireForm += \
+        '      <input type="submit" name="submitNewswire" value="' + \
+        translate['Submit'] + '">\n'
+    editNewswireForm += \
+        '    </div>\n'
+
+    newswireFilename = baseDir + '/accounts/newswire.txt'
+    newswireStr = ''
+    if os.path.isfile(newswireFilename):
+        with open(newswireFilename, 'r') as fp:
+            newswireStr = fp.read()
+
+    editNewswireForm += \
+        '<div class="container">'
+    editNewswireForm += \
+        '  ' + \
+        translate['Add RSS feed links below.'] + \
+        '<br>'
+    editNewswireForm += \
+        '  <textarea id="message" name="editedNewswire" ' + \
+        'style="height:500px">' + newswireStr + '</textarea>'
+    editNewswireForm += \
+        '</div>'
+
+    editNewswireForm += htmlFooter()
+    return editNewswireForm
+
+
 def htmlEditProfile(translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit profile screen
