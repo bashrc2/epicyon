@@ -28,7 +28,7 @@ from posts import getUserUrl
 from posts import checkDomains
 from session import createSession
 from session import getJson
-from session import getRSS
+from newswire import getRSS
 from filters import addFilter
 from filters import removeFilter
 import os
