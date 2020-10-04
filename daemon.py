@@ -1069,6 +1069,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico'):
+           self.path.startswith('/newswire.xml'):
             return False
 
         # token based authenticated used by the web interface

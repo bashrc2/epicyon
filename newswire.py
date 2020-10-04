@@ -182,7 +182,7 @@ def runNewswireDaemon(baseDir: str, httpd):
     """Periodically updates RSS feeds
     """
     # initial sleep to allow the system to start up
-    time.sleep(100)
+    time.sleep(70)
     while True:
         # has the session been created yet?
         if not httpd.session:
@@ -192,21 +192,17 @@ def runNewswireDaemon(baseDir: str, httpd):
 
         # try to update the feeds
         newNewswire = None
-        loaded = False
-        try:
-            newNewswire = getDictFromNewswire(httpd.session, baseDir)
-            loaded = True
-        except BaseException:
-            print('WARN: unable to update newswire')
-            pass
+        # try:
+        newNewswire = getDictFromNewswire(httpd.session, baseDir)
+        # except BaseException:
+        #     print('WARN: unable to update newswire')
+        #     time.sleep(120)
+        #     continue
 
-        if loaded:
-            httpd.newswire = newNewswire
-            print('Newswire updated')
-            # wait a while before the next feeds update
-            time.sleep(1200)
-        else:
-            time.sleep(120)
+        httpd.newswire = newNewswire
+        print('Newswire updated')
+        # wait a while before the next feeds update
+        time.sleep(1200)
 
 
 def runNewswireWatchdog(projectVersion: str, httpd) -> None:
