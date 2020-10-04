@@ -145,7 +145,8 @@ def getRSSfromDict(baseDir: str, newswire: {},
                         None, domainFull,
                         'Newswire', translate)
     for published, fields in newswire.items():
-        published = published.replace('+00:00', 'Z')
+        published = published.replace('+00:00', 'Z').strip()
+        published = published.replace(' ', 'T')
         try:
             pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
         except BaseException:
