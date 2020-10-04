@@ -5337,6 +5337,16 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
+def htmlNewswire(newswire: str) -> str:
+    """Converts a newswire dict into html
+    """
+    htmlStr = ''
+    for dateStr, item in newswire.items():
+        htmlStr += '<p class="newswireItem">' + \
+            '<a href="' + item[1] + '">' + item[0] + '</a></p>'
+    return htmlStr
+
+
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           iconsDir: str, moderator: bool,
@@ -5401,6 +5411,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         htmlStr += '      <br>\n'
 
+    htmlStr += htmlNewswire(newswire)
     return htmlStr
 
 

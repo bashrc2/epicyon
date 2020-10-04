@@ -14,11 +14,13 @@
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
     --column-left-fg-color: #dddddd;
+    --column-right-fg-color: #dddddd;
     --main-link-color: #999;
     --main-link-color-hover: #bbb;
     --main-visited-color: #888;
     --border-color: #505050;
     --border-width: 2px;
+    --font-size-newswire: 18px;
     --font-size-header: 18px;
     --font-size-header-mobile: 32px;
     --font-color-header: #ccc;
@@ -219,6 +221,11 @@ a:focus {
 
 .hero-image img {
     width: 50%;
+}
+
+.newswireItem {
+    font-size: var(--font-size-newswire);
+    color: var(--column-right-fg-color);
 }
 
 .new-post-text {
