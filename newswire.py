@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import time
 import requests
 from socket import error as SocketError
 import errno
@@ -144,10 +145,16 @@ def getRSSfromDict(baseDir: str, newswire: {},
                         None, domainFull,
                         'Newswire', translate)
     for published, fields in newswire.items():
+        published = published.replace('+00:00', 'Z').strip()
+        published = published.replace(' ', 'T')
+        try:
+            pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+        except BaseException:
+            continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
         rssStr += '  <link>' + fields[1] + '</link>\n'
-        pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
         rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
         rssStr += '</item>\n'
@@ -172,6 +179,52 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
             continue
         if url.startswith('#'):
             continue
-        result = dict(result.items() + getRSS(session, url).items())
-    sortedResult = OrderedDict(sorted(result.items(), reverse=False))
+        itemsList = getRSS(session, url)
+        for dateStr, item in itemsList.items():
+            result[dateStr] = item
+    sortedResult = OrderedDict(sorted(result.items(), reverse=True))
     return sortedResult
+
+
+def runNewswireDaemon(baseDir: str, httpd):
+    """Periodically updates RSS feeds
+    """
+    # initial sleep to allow the system to start up
+    time.sleep(70)
+    while True:
+        # has the session been created yet?
+        if not httpd.session:
+            print('Newswire daemon waiting for session')
+            time.sleep(60)
+            continue
+
+        # try to update the feeds
+        newNewswire = None
+        try:
+            newNewswire = getDictFromNewswire(httpd.session, baseDir)
+        except BaseException:
+            print('WARN: unable to update newswire')
+            time.sleep(120)
+            continue
+
+        httpd.newswire = newNewswire
+        print('Newswire updated')
+        # wait a while before the next feeds update
+        time.sleep(1200)
+
+
+def runNewswireWatchdog(projectVersion: str, httpd) -> None:
+    """This tries to keep the newswire update thread running even if it dies
+    """
+    print('Starting newswire watchdog')
+    newswireOriginal = \
+        httpd.thrPostSchedule.clone(runNewswireDaemon)
+    httpd.thrNewswireDaemon.start()
+    while True:
+        time.sleep(50)
+        if not httpd.thrNewswireDaemon.isAlive():
+            httpd.thrNewswireDaemon.kill()
+            httpd.thrNewswireDaemon = \
+                newswireOriginal.clone(runNewswireDaemon)
+            httpd.thrNewswireDaemon.start()
+            print('Restarting newswire daemon...')

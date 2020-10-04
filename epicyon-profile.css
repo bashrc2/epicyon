@@ -14,6 +14,7 @@
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
     --column-left-fg-color: #dddddd;
+    --column-right-fg-color: #dddddd;
     --main-link-color: #999;
     --main-link-color-hover: #bbb;
     --main-visited-color: #888;
@@ -24,6 +25,7 @@
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
     --font-size-links: 18px;
+    --font-size-newswire: 18px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -64,6 +66,7 @@
     --quote-font-weight: normal;
     --quote-font-size: 120%;
     --line-spacing: 130%;
+    --line-spacing-newswire: 100%;
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
@@ -72,6 +75,7 @@
     --column-left-header-size: 20px;
     --column-left-icon-size: 20%;
     --column-right-icon-size: 20%;
+    --newswire-date-color: white;
 }
 
 @font-face {
@@ -219,6 +223,18 @@ a:focus {
 
 .hero-image img {
     width: 50%;
+}
+
+.newswireItem {
+    font-size: var(--font-size-newswire);
+    color: var(--column-right-fg-color);
+    line-height: var(--line-spacing-newswire);
+}
+
+.newswireDate {
+    font-size: var(--font-size-newswire);
+    color: var(--newswire-date-color);
+    float: right;
 }
 
 .new-post-text {
@@ -1007,6 +1023,7 @@ aside .toggle-inside li {
     .col-right {
         background-color: var(--column-left-color);
         color: var(--column-left-fg-color);
+        padding-left: 10px;
         padding-right: 30px;
         font-size: var(--font-size-links);
         width: var(--column-right-width);

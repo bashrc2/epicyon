@@ -204,6 +204,8 @@ from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
 from newswire import getRSSfromDict
+from newswire import runNewswireWatchdog
+from newswire import runNewswireDaemon
 import os
 
 
@@ -1066,7 +1068,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
-           self.path.startswith('/favicon.ico'):
+           self.path.startswith('/favicon.ico') or \
+           self.path.startswith('/newswire.xml'):
             return False
 
         # token based authenticated used by the web interface
@@ -5900,7 +5903,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         httpPrefix,
                                         projectVersion,
                                         self._isMinimal(nickname),
-                                        YTReplacementDomain)
+                                        YTReplacementDomain,
+                                        self.server.newswire)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6006,7 +6010,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          httpPrefix,
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
-                                         self.server.YTReplacementDomain)
+                                         self.server.YTReplacementDomain,
+                                         self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6106,7 +6111,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          httpPrefix,
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
-                                         self.server.YTReplacementDomain)
+                                         self.server.YTReplacementDomain,
+                                         self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6206,7 +6212,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        httpPrefix,
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6306,7 +6313,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        httpPrefix,
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6381,7 +6389,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    httpPrefix,
                                    self.server.projectVersion,
-                                   self.server.YTReplacementDomain)
+                                   self.server.YTReplacementDomain,
+                                   self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6465,7 +6474,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           httpPrefix,
                                           self.server.projectVersion,
                                           self._isMinimal(nickname),
-                                          self.server.YTReplacementDomain)
+                                          self.server.YTReplacementDomain,
+                                          self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6568,7 +6578,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        httpPrefix,
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain)
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6661,7 +6672,8 @@ class PubServer(BaseHTTPRequestHandler):
                                httpPrefix,
                                self.server.projectVersion,
                                self._isMinimal(nickname),
-                               self.server.YTReplacementDomain)
+                               self.server.YTReplacementDomain,
+                               self.server.newswire)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -6746,7 +6758,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            True,
                                            httpPrefix,
                                            self.server.projectVersion,
-                                           self.server.YTReplacementDomain)
+                                           self.server.YTReplacementDomain,
+                                           self.server.newswire)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -11251,10 +11264,16 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                               allowDeletion, debug, maxMentions, maxEmoji,
                               httpd.translate, unitTest,
                               httpd.YTReplacementDomain), daemon=True)
+
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
         threadWithTrace(target=runPostSchedule,
                         args=(baseDir, httpd, 20), daemon=True)
+
+    print('Creating newswire thread')
+    httpd.thrNewswireDaemon = \
+        threadWithTrace(target=runNewswireDaemon,
+                        args=(baseDir, httpd), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
@@ -11272,6 +11291,12 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
             threadWithTrace(target=runPostScheduleWatchdog,
                             args=(projectVersion, httpd), daemon=True)
         httpd.thrWatchdogSchedule.start()
+
+        print('Creating newswire watchdog')
+        httpd.thrNewswireWatchdog = \
+            threadWithTrace(target=runNewswireWatchdog,
+                            args=(projectVersion, httpd), daemon=True)
+        httpd.thrNewswireWatchdog.start()
     else:
         httpd.thrInboxQueue.start()
         httpd.thrPostSchedule.start()
