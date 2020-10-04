@@ -176,7 +176,7 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
         itemsList = getRSS(session, url)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
-    sortedResult = OrderedDict(sorted(result.items(), reverse=False))
+    sortedResult = OrderedDict(sorted(result.items(), reverse=True))
     return sortedResult
 
 
