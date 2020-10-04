@@ -173,7 +173,9 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
             continue
         if url.startswith('#'):
             continue
-        result = dict(result.items() + getRSS(session, url).items())
+        itemsList = getRSS(session, url)
+        for dateStr, item in itemsList.items():
+            result[dateStr] = item
     sortedResult = OrderedDict(sorted(result.items(), reverse=False))
     return sortedResult
 
