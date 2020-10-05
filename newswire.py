@@ -13,6 +13,8 @@ from socket import error as SocketError
 import errno
 from datetime import datetime
 from collections import OrderedDict
+from utils import locatePost
+from utils import loadJson
 
 
 def rss2Header(httpPrefix: str,
@@ -162,6 +164,81 @@ def getRSSfromDict(baseDir: str, newswire: {},
     return rssStr
 
 
+def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
+                              newswire: {},
+                              maxBlogsPerAccount: int,
+                              indexFilename: str) -> None:
+    """Adds blogs for the given account to the newswire
+    """
+    if not os.path.isfile(indexFilename):
+        return
+    with open(indexFilename, 'r') as indexFile:
+        postFilename = 'start'
+        ctr = 0
+        while postFilename:
+            postFilename = indexFile.readline()
+            if postFilename:
+                # if this is a full path then remove the directories
+                if '/' in postFilename:
+                    postFilename = postFilename.split('/')[-1]
+
+                # filename of the post without any extension or path
+                # This should also correspond to any index entry in
+                # the posts cache
+                postUrl = \
+                    postFilename.replace('\n', '').replace('\r', '')
+                postUrl = postUrl.replace('.json', '').strip()
+
+                # read the post from file
+                fullPostFilename = \
+                    locatePost(baseDir, nickname,
+                               domain, postUrl, False)
+                isAPost = False
+                postJsonObject = None
+                if fullPostFilename:
+                    postJsonObject = loadJson(fullPostFilename)
+                    if postJsonObject:
+                        if postJsonObject.get('object'):
+                            if isinstance(postJsonObject['object'], dict):
+                                isAPost = True
+                if isAPost:
+                    if postJsonObject['object'].get('summary') and \
+                       postJsonObject['object'].get('url') and \
+                       postJsonObject['object'].get('published'):
+                        published = postJsonObject['object']['published']
+                        published = published.replace('T', ' ')
+                        published = published.replace('Z', '+00:00')
+                        newswire[published] = \
+                            [postJsonObject['object']['summary'],
+                             postJsonObject['object']['url']]
+
+            ctr += 1
+            if ctr >= maxBlogsPerAccount:
+                break
+
+
+def addLocalBlogsToNewswire(baseDir: str, newswire: {},
+                            maxBlogsPerAccount: int) -> None:
+    """Adds blogs from this instance into the newswire
+    """
+    # go through each account
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for handle in dirs:
+            if '@' not in handle:
+                continue
+            if 'inbox@' in handle:
+                continue
+            accountDir = os.path.join(baseDir + '/accounts', handle)
+            # is there a blogs timeline for this account?
+            blogsIndex = accountDir + '/tlblogs.index'
+            if os.path.isfile(blogsIndex):
+                nickname = handle.split('@')[0]
+                domain = handle.split('@')[1]
+                addAccountBlogsToNewswire(baseDir, nickname, domain,
+                                          newswire, maxBlogsPerAccount,
+                                          blogsIndex)
+
+
 def getDictFromNewswire(session, baseDir: str) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
@@ -169,6 +246,7 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
     if not os.path.isfile(subscriptionsFilename):
         return {}
 
+    # add rss feeds
     rssFeed = []
     with open(subscriptionsFilename, 'r') as fp:
         rssFeed = fp.readlines()
@@ -182,6 +260,11 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
         itemsList = getRSS(session, url)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
+
+    # add local content
+    addLocalBlogsToNewswire(baseDir, result, 5)
+
+    # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
     return sortedResult
 
