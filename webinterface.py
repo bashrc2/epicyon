@@ -687,7 +687,7 @@ def htmlModerationInfo(translate: {}, baseDir: str, httpPrefix: str) -> str:
                     translate[msgStr1]
                 infoForm += \
                     '  <textarea id="message" ' + \
-                    'name="blocked" style="height:400px">' + \
+                    'name="blocked" style="height:700px">' + \
                     blockedStr + '</textarea>'
                 infoForm += '</div>'
                 infoShown = True
@@ -1326,6 +1326,13 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         with open(newswireFilename, 'r') as fp:
             newswireStr = fp.read()
 
+    # get the list of handles who are trusted to post to the newswire
+    newswireTrusted = ''
+    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
+    if os.path.isfile(newswireTrustedFilename):
+        with open(newswireTrustedFilename, "r") as trustFile:
+            newswireTrusted = trustFile.read()
+
     editNewswireForm += \
         '<div class="container">'
     editNewswireForm += \
@@ -1335,6 +1342,15 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
         'style="height:500px">' + newswireStr + '</textarea>'
+
+    editNewswireForm += \
+        '  ' + \
+        translate['Nicknames whose blog entries appear on the newswire.'] + \
+        '<br>'
+    editNewswireForm += \
+        '  <textarea id="message" name="trustedNewswire" ' + \
+        'style="height:500px">' + newswireTrusted + '</textarea>'
+
     editNewswireForm += \
         '</div>'
 
@@ -5342,8 +5358,19 @@ def htmlNewswire(newswire: str) -> str:
     """
     htmlStr = ''
     for dateStr, item in newswire.items():
-        htmlStr += '<p class="newswireItem">' + \
-            '<a href="' + item[1] + '">' + item[0] + '</a>'
+        # if the item is to be moderated then show it in a different style
+        shown = False
+        if len(item) > 2:
+            if item[2].startswith('moderate'):
+                moderationUrl = '/moderate?' + item[1]
+                htmlStr += '<p class="newswireItemModerate">' + \
+                    '<a href="' + moderationUrl + '">' + item[0] + '</a>'
+                shown = True
+
+        if not shown:
+            # unmoderated item
+            htmlStr += '<p class="newswireItem">' + \
+                '<a href="' + item[1] + '">' + item[0] + '</a>'
         htmlStr += ' <label class="newswireDate">'
         htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
     return htmlStr

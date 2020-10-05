@@ -296,5 +296,6 @@
     "RSS feed for this site": "Feed RSS per a aquest lloc",
     "Edit newswire": "Editeu newswire",
     "Add RSS feed links below.": "Afegiu enllaços de canals RSS a continuació.",
-    "Newswire RSS Feed": "Feed RSS de Newswire"
+    "Newswire RSS Feed": "Feed RSS de Newswire",
+    "Nicknames whose blog entries appear on the newswire.": "Sobrenoms les entrades del bloc apareixen a newswire."
 }

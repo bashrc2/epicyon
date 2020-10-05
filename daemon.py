@@ -2893,6 +2893,19 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(newswireFilename):
                     os.remove(newswireFilename)
 
+            newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
+            if fields.get('trustedNewswire'):
+                newswireTrusted = fields['trustedNewswire']
+                if not newswireTrusted.endswith('\n'):
+                    newswireTrusted += '\n'
+                trustFile = open(newswireTrustedFilename, "w+")
+                if trustFile:
+                    trustFile.write(newswireTrusted)
+                    trustFile.close()
+            else:
+                if os.path.isfile(newswireTrustedFilename):
+                    os.remove(newswireTrustedFilename)
+
         # redirect back to the default timeline
         if callingDomain.endswith('.onion') and \
            onionDomain:
