@@ -2896,6 +2896,8 @@ class PubServer(BaseHTTPRequestHandler):
             newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
             if fields.get('trustedNewswire'):
                 newswireTrusted = fields['trustedNewswire']
+                if not newswireTrusted.endswith('\n'):
+                    newswireTrusted += '\n'
                 trustFile = open(newswireTrustedFilename, "w+")
                 if trustFile:
                     trustFile.write(newswireTrusted)
