@@ -225,7 +225,7 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
     newswireTrusted = ''
     newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
     if os.path.isfile(newswireTrustedFilename):
-        with open(newswireTrustedFilename, 'r+') as trustFile:
+        with open(newswireTrustedFilename, "r") as trustFile:
             newswireTrusted = trustFile.read()
 
     # file containing suspended account nicknames
