@@ -296,5 +296,6 @@
     "RSS feed for this site": "该站点的RSS feed",
     "Edit newswire": "编辑新闻专线",
     "Add RSS feed links below.": "在下面添加RSS feed链接。",
-    "Newswire RSS Feed": "Newswire RSS提要"
+    "Newswire RSS Feed": "Newswire RSS提要",
+    "Nicknames whose blog entries appear on the newswire.": ""
 }

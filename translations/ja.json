@@ -296,5 +296,6 @@
     "RSS feed for this site": "このサイトのRSSフィード",
     "Edit newswire": "ニュースワイヤーを編集",
     "Add RSS feed links below.": "以下にRSSフィードリンクを追加します。",
-    "Newswire RSS Feed": "NewswireRSSフィード"
+    "Newswire RSS Feed": "NewswireRSSフィード",
+    "Nicknames whose blog entries appear on the newswire.": ""
 }

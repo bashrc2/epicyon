@@ -296,5 +296,6 @@
     "RSS feed for this site": "RSS-канал для этого сайта",
     "Edit newswire": "Редактировать ленту новостей",
     "Add RSS feed links below.": "Добавьте ссылки на RSS-канал ниже.",
-    "Newswire RSS Feed": "Лента новостей RSS"
+    "Newswire RSS Feed": "Лента новостей RSS",
+    "Nicknames whose blog entries appear on the newswire.": ""
 }
