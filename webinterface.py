@@ -687,7 +687,7 @@ def htmlModerationInfo(translate: {}, baseDir: str, httpPrefix: str) -> str:
                     translate[msgStr1]
                 infoForm += \
                     '  <textarea id="message" ' + \
-                    'name="blocked" style="height:400px">' + \
+                    'name="blocked" style="height:700px">' + \
                     blockedStr + '</textarea>'
                 infoForm += '</div>'
                 infoShown = True
