@@ -239,7 +239,8 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
             if 'inbox@' in handle:
                 continue
             if handle not in newswireTrusted:
-                continue
+                if handle.split('@')[0] + '\n' not in newswireTrusted:
+                    continue
             accountDir = os.path.join(baseDir + '/accounts', handle)
 
             # has this account been suspended?
