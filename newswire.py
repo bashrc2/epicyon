@@ -221,13 +221,24 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
                             maxBlogsPerAccount: int) -> None:
     """Adds blogs from this instance into the newswire
     """
+    # get the list of handles who are trusted to post to the newswire
+    newswireTrusted = ''
+    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
+    if os.path.isfile(newswireTrustedFilename):
+        with open(newswireTrustedFilename, 'r+') as trustFile:
+            newswireTrusted = trustFile.read()
+
+    # file containing suspended account nicknames
     suspendedFilename = baseDir + '/accounts/suspended.txt'
+
     # go through each account
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
             if '@' not in handle:
                 continue
             if 'inbox@' in handle:
+                continue
+            if handle not in newswireTrusted:
                 continue
             accountDir = os.path.join(baseDir + '/accounts', handle)
 
@@ -243,10 +254,6 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
                             break
                     if foundSuspended:
                         continue
-
-            # has this account been blocked from posting to newswire?
-            if os.path.isfile(accountDir + '/.noblognewswire'):
-                continue
 
             # is there a blogs timeline for this account?
             blogsIndex = accountDir + '/tlblogs.index'
