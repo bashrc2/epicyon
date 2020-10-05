@@ -5346,8 +5346,9 @@ def htmlNewswire(newswire: str) -> str:
         shown = False
         if len(item) > 2:
             if item[2].startswith('moderate'):
+                moderationUrl = '/moderate?' + item[1]
                 htmlStr += '<p class="newswireItemModerate">' + \
-                    '<a href="' + item[1] + '">' + item[0] + '</a>'
+                    '<a href="' + moderationUrl + '">' + item[0] + '</a>'
                 shown = True
 
         if not shown:
