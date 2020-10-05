@@ -5342,16 +5342,18 @@ def htmlNewswire(newswire: str) -> str:
     """
     htmlStr = ''
     for dateStr, item in newswire.items():
-        if len(item) == 2:
-            htmlStr += '<p class="newswireItem">' + \
-                '<a href="' + item[1] + '">' + item[0] + '</a>'
-        elif len(item) > 2:
+        # if the item is to be moderated then show it in a different style
+        shown = False
+        if len(item) > 2:
             if item[2].startswith('moderate'):
                 htmlStr += '<p class="newswireItemModerate">' + \
                     '<a href="' + item[1] + '">' + item[0] + '</a>'
-            else:
-                htmlStr += '<p class="newswireItem">' + \
-                    '<a href="' + item[1] + '">' + item[0] + '</a>'
+                shown = True
+
+        if not shown:
+            # unmoderated item
+            htmlStr += '<p class="newswireItem">' + \
+                '<a href="' + item[1] + '">' + item[0] + '</a>'
         htmlStr += ' <label class="newswireDate">'
         htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
     return htmlStr
