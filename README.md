@@ -1,5 +1,7 @@
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
+<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/screenshot_indymedia.jpg?raw=true" width="80%"/>
+
 <img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/mobile.jpg?raw=true" width="30%"/>
 
 Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions and perimeter defense against adversaries. It contains *no javascript* and uses HTML+CSS with a Python backend.
