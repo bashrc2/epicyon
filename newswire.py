@@ -245,9 +245,6 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
                             maxBlogsPerAccount: int) -> None:
     """Adds blogs from this instance into the newswire
     """
-    # file containing suspended account nicknames
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
-
     # go through each account
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
