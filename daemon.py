@@ -54,7 +54,6 @@ from person import registerAccount
 from person import personLookup
 from person import personBoxJson
 from person import createSharedInbox
-from person import isSuspended
 from person import suspendAccount
 from person import unsuspendAccount
 from person import removeAccount
@@ -101,8 +100,6 @@ from blocking import removeGlobalBlock
 from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
-from config import setConfigParam
-from config import getConfigParam
 from roles import setRole
 from roles import clearModeratorStatus
 from blog import htmlBlogPageRSS2
@@ -159,6 +156,8 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import setConfigParam
+from utils import getConfigParam
 from utils import removeIdEnding
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
@@ -174,6 +173,7 @@ from utils import getStatusNumber
 from utils import urlPermitted
 from utils import loadJson
 from utils import saveJson
+from utils import isSuspended
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce

@@ -45,10 +45,10 @@ from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
 from tests import runAllTests
-from config import setConfigParam
-from config import getConfigParam
 from auth import storeBasicCredentials
 from auth import createPassword
+from utils import setConfigParam
+from utils import getConfigParam
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import followPerson

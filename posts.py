@@ -45,6 +45,7 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
+from utils import getConfigParam
 from media import attachMedia
 from media import replaceYouTube
 from content import removeHtml
@@ -53,7 +54,6 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeTextFormatting
 from auth import createBasicAuthHeader
-from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
 from git import convertPostToPatch

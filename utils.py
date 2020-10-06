@@ -19,6 +19,58 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def createConfig(baseDir: str) -> None:
+    """Creates a configuration file
+    """
+    configFilename = baseDir + '/config.json'
+    if os.path.isfile(configFilename):
+        return
+    configJson = {
+    }
+    saveJson(configJson, configFilename)
+
+
+def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
+    """Sets a configuration value
+    """
+    createConfig(baseDir)
+    configFilename = baseDir + '/config.json'
+    configJson = {}
+    if os.path.isfile(configFilename):
+        configJson = loadJson(configFilename)
+    configJson[variableName] = variableValue
+    saveJson(configJson, configFilename)
+
+
+def getConfigParam(baseDir: str, variableName: str):
+    """Gets a configuration value
+    """
+    createConfig(baseDir)
+    configFilename = baseDir + '/config.json'
+    configJson = loadJson(configFilename)
+    if configJson:
+        if configJson.get(variableName):
+            return configJson[variableName]
+    return None
+
+
+def isSuspended(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is suspended
+    """
+    adminNickname = getConfigParam(baseDir, 'admin')
+    if nickname == adminNickname:
+        return False
+
+    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    if os.path.isfile(suspendedFilename):
+        with open(suspendedFilename, "r") as f:
+            lines = f.readlines()
+        for suspended in lines:
+            if suspended.strip('\n').strip('\r') == nickname:
+                return True
+    return False
+
+
 def getFollowersList(baseDir: str,
                      nickname: str, domain: str,
                      followFile='following.txt') -> []:

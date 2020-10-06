@@ -41,6 +41,7 @@ from utils import getDisplayName
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import loadJson
+from utils import getConfigParam
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import isDM
@@ -67,7 +68,6 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeLongWords
 from content import removeHtml
-from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
 from cache import storePersonInCache

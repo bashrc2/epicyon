@@ -15,6 +15,7 @@ from datetime import datetime
 from collections import OrderedDict
 from utils import locatePost
 from utils import loadJson
+from utils import isSuspended
 
 
 def rss2Header(httpPrefix: str,
@@ -245,16 +246,8 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
 
             # has this account been suspended?
             nickname = handle.split('@')[0]
-            if os.path.isfile(suspendedFilename):
-                with open(suspendedFilename, "r") as f:
-                    lines = f.readlines()
-                    foundSuspended = False
-                    for nick in lines:
-                        if nick == nickname + '\n':
-                            foundSuspended = True
-                            break
-                    if foundSuspended:
-                        continue
+            if isSuspended(baseDir, nickname):
+                continue
 
             # is there a blogs timeline for this account?
             blogsIndex = accountDir + '/tlblogs.index'

@@ -37,8 +37,8 @@ from utils import validNickname
 from utils import noOfAccounts
 from utils import loadJson
 from utils import saveJson
-from config import setConfigParam
-from config import getConfigParam
+from utils import setConfigParam
+from utils import getConfigParam
 
 
 def generateRSAKey() -> (str, str):
@@ -752,23 +752,6 @@ def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
 
     saveJson(personJson, filename)
     return True
-
-
-def isSuspended(baseDir: str, nickname: str) -> bool:
-    """Returns true if the given nickname is suspended
-    """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if nickname == adminNickname:
-        return False
-
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
-    if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, "r") as f:
-            lines = f.readlines()
-        for suspended in lines:
-            if suspended.strip('\n').strip('\r') == nickname:
-                return True
-    return False
 
 
 def unsuspendAccount(baseDir: str, nickname: str) -> None:
