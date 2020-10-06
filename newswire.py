@@ -219,6 +219,12 @@ def updateNewswireModerationQueue(baseDir: str, handle: str,
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
+                if not fullPostFilename:
+                    print('Unable to locate post ' + postUrl)
+                    ctr += 1
+                    if ctr >= maxBlogsPerAccount:
+                        break
+
                 moderationStatusFilename = fullPostFilename + '.moderate'
                 moderationStatusStr = ''
                 if not os.path.isfile(moderationStatusFilename):
@@ -289,6 +295,12 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
+                if not fullPostFilename:
+                    print('Unable to locate post ' + postUrl)
+                    ctr += 1
+                    if ctr >= maxBlogsPerAccount:
+                        break
+
                 postJsonObject = None
                 if fullPostFilename:
                     postJsonObject = loadJson(fullPostFilename)
