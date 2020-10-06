@@ -1283,7 +1283,7 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
     # load the file containing newswire posts to be moderated
     newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
     moderateJson = loadJson(newswireModerationFilename)
-    if not newswireJson:
+    if not moderateJson:
         return ''
 
     # get the nickname and actor path of the moderator
@@ -1299,8 +1299,8 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
         # details of this post
         title = item[0]
         url = item[1]
-        nick = item[2]
-        status = item[3]
+        # nick = item[2]
+        # status = item[3]
         postFilename = item[4].replace('/', '#')
 
         # create the html for this post
