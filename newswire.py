@@ -21,6 +21,8 @@ from utils import isSuspended
 def rss2Header(httpPrefix: str,
                nickname: str, domainFull: str,
                title: str, translate: {}) -> str:
+    """Header for an RSS 2.0 feed
+    """
     rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
     rssStr += "<rss version=\"2.0\">"
     rssStr += '<channel>'
@@ -38,6 +40,8 @@ def rss2Header(httpPrefix: str,
 
 
 def rss2Footer() -> str:
+    """Footer for an RSS 2.0 feed
+    """
     rssStr = '</channel>'
     rssStr += '</rss>'
     return rssStr
