@@ -213,7 +213,8 @@ def updateNewswireModerationQueue(baseDir: str, handle: str,
                    open(moderationStatusFilename).read():
                     if moderationDict.get(nickname):
                         moderationDict[nickname] = []
-                    moderationDict[nickname].append(fullPostFilename)
+                    if fullPostFilename not in moderationDict[nickname]:
+                        moderationDict[nickname].append(fullPostFilename)
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
