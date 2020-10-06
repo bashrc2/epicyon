@@ -241,9 +241,9 @@ def isTrustedByNewswire(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def addLocalBlogsToNewswire(baseDir: str, newswire: {},
-                            maxBlogsPerAccount: int) -> None:
-    """Adds blogs from this instance into the newswire
+def addBlogsToNewswire(baseDir: str, newswire: {},
+                       maxBlogsPerAccount: int) -> None:
+    """Adds blogs from each user account into the newswire
     """
     # go through each account
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
@@ -292,8 +292,8 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 
-    # add local content
-    addLocalBlogsToNewswire(baseDir, result, 5)
+    # add blogs from each user account
+    addBlogsToNewswire(baseDir, result, 5)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
