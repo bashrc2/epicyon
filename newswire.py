@@ -255,13 +255,13 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
             nickname = handle.split('@')[0]
             if not isTrustedByNewswire(baseDir, nickname):
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', handle)
 
             # has this account been suspended?
             if isSuspended(baseDir, nickname):
                 continue
 
             # is there a blogs timeline for this account?
+            accountDir = os.path.join(baseDir + '/accounts', handle)
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 domain = handle.split('@')[1]
