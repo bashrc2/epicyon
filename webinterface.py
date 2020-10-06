@@ -1326,13 +1326,6 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         with open(newswireFilename, 'r') as fp:
             newswireStr = fp.read()
 
-    # get the list of handles who are trusted to post to the newswire
-    newswireTrusted = ''
-    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
-    if os.path.isfile(newswireTrustedFilename):
-        with open(newswireTrustedFilename, "r") as trustFile:
-            newswireTrusted = trustFile.read()
-
     editNewswireForm += \
         '<div class="container">'
 
@@ -1343,14 +1336,6 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
         'style="height:500px">' + newswireStr + '</textarea>'
-
-    editNewswireForm += \
-        '  ' + \
-        translate['Nicknames whose blog entries appear on the newswire.'] + \
-        '<br>'
-    editNewswireForm += \
-        '  <textarea id="message" name="trustedNewswire" ' + \
-        'style="height:500px">' + newswireTrusted + '</textarea>'
 
     editNewswireForm += \
         '</div>'
