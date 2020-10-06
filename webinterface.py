@@ -1316,7 +1316,7 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
             '/newswireapprove=' + postFilename + '">'
         resultStr += \
             '<button class="followApprove">' + \
-            translate['Approve'] + '</button></a><br><br>'
+            translate['Approve'] + '</button></a>'
 
         resultStr += \
             '<a href="' + basePath + \
