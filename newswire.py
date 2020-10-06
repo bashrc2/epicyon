@@ -15,6 +15,7 @@ from datetime import datetime
 from collections import OrderedDict
 from utils import locatePost
 from utils import loadJson
+from utils import saveJson
 from utils import isSuspended
 from utils import getConfigParam
 
@@ -170,6 +171,22 @@ def getRSSfromDict(baseDir: str, newswire: {},
     return rssStr
 
 
+def isaBlogPost(postJsonObject: {}) -> bool:
+    """Is the given object a blog post?
+    """
+    if not postJsonObject:
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object'].get('summary') and \
+       postJsonObject['object'].get('url') and \
+       postJsonObject['object'].get('published'):
+        return True
+    return False
+
+
 def updateNewswireModerationQueue(baseDir: str, handle: str,
                                   maxBlogsPerAccount: int,
                                   moderationDict: {}) -> None:
@@ -203,18 +220,34 @@ def updateNewswireModerationQueue(baseDir: str, handle: str,
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
                 moderationStatusFilename = fullPostFilename + '.moderate'
+                moderationStatusStr = ''
                 if not os.path.isfile(moderationStatusFilename):
                     statusFile = open(moderationStatusFilename, "w+")
                     if statusFile:
                         statusFile.write('[waiting]')
                         statusFile.close()
+                    moderationStatusStr = '[waiting]'
+                else:
+                    statusFile = open(moderationStatusFilename, "r")
+                    if statusFile:
+                        moderationStatusStr = statusFile.read()
+                        statusFile.close()
 
                 if '[accepted]' not in \
                    open(moderationStatusFilename).read():
-                    if moderationDict.get(nickname):
-                        moderationDict[nickname] = []
-                    if fullPostFilename not in moderationDict[nickname]:
-                        moderationDict[nickname].append(fullPostFilename)
+
+                    postJsonObject = None
+                    if fullPostFilename:
+                        postJsonObject = loadJson(fullPostFilename)
+                    if isaBlogPost(postJsonObject):
+                        published = postJsonObject['object']['published']
+                        published = published.replace('T', ' ')
+                        published = published.replace('Z', '+00:00')
+                        moderationDict[published] = \
+                            [postJsonObject['object']['summary'],
+                             postJsonObject['object']['url'],
+                             nickname, moderationStatusStr,
+                             fullPostFilename]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
@@ -250,24 +283,16 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
-                isAPost = False
                 postJsonObject = None
                 if fullPostFilename:
                     postJsonObject = loadJson(fullPostFilename)
-                    if postJsonObject:
-                        if postJsonObject.get('object'):
-                            if isinstance(postJsonObject['object'], dict):
-                                isAPost = True
-                if isAPost:
-                    if postJsonObject['object'].get('summary') and \
-                       postJsonObject['object'].get('url') and \
-                       postJsonObject['object'].get('published'):
-                        published = postJsonObject['object']['published']
-                        published = published.replace('T', ' ')
-                        published = published.replace('Z', '+00:00')
-                        newswire[published] = \
-                            [postJsonObject['object']['summary'],
-                             postJsonObject['object']['url']]
+                if isaBlogPost(postJsonObject):
+                    published = postJsonObject['object']['published']
+                    published = published.replace('T', ' ')
+                    published = published.replace('Z', '+00:00')
+                    newswire[published] = \
+                        [postJsonObject['object']['summary'],
+                         postJsonObject['object']['url']]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
@@ -326,6 +351,12 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
                 addAccountBlogsToNewswire(baseDir, nickname, domain,
                                           newswire, maxBlogsPerAccount,
                                           blogsIndex)
+
+    # sort the moderation dict into chronological order, latest first
+    sortedModerationDict = \
+        OrderedDict(sorted(moderationDict.items(), reverse=True))
+    newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
+    saveJson(sortedModerationDict, newswireModerationFilename)
 
 
 def getDictFromNewswire(session, baseDir: str) -> {}:
