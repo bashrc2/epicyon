@@ -1310,7 +1310,7 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
             '<a href="/users/' + nick + '">'
         resultStr += \
             '<span class="followRequestHandle">' + \
-            nick + '</span></a>: '
+            nick + '</span></a>:'
 
         resultStr += \
             '<a href="' + url + '">'
