@@ -1300,7 +1300,7 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
         title = item[0]
         url = item[1]
         nick = item[2]
-        # status = item[3]
+        status = item[3]
         postFilename = item[4].replace('/', '#')
 
         # create the html for this post
@@ -1321,16 +1321,26 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
         resultStr += \
             '<a href="' + basePath + \
             '/newswireapprove=' + postFilename + '">'
-        resultStr += \
-            '<button class="followApprove">' + \
-            translate['Approve'] + '</button></a>'
+        if '[vote:' + nickname + ':approve]' in status:
+            resultStr += \
+                '<button class="followApprove">' + \
+                translate['Approve'] + '</button></a>'
+        else:
+            resultStr += \
+                '<button class="followDeny">' + \
+                translate['Approve'] + '</button></a>'
 
         resultStr += \
             '<a href="' + basePath + \
             '/newswiredeny=' + postFilename + '">'
-        resultStr += \
-            '<button class="followDeny">' + \
-            translate['Deny'] + '</button></a>'
+        if '[vote:' + nickname + ':deny]' in status:
+            resultStr += \
+                '<button class="followApprove">' + \
+                translate['Deny'] + '</button></a>'
+        else:
+            resultStr += \
+                '<button class="followDeny">' + \
+                translate['Deny'] + '</button></a>'
 
         resultStr += \
             '<a href="' + basePath + \
