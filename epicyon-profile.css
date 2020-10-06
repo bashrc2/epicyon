@@ -67,7 +67,6 @@
     --quote-font-size: 120%;
     --line-spacing: 130%;
     --line-spacing-newswire: 100%;
-    --newswire-moderate-color: yellow;
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
@@ -229,13 +228,6 @@ a:focus {
 .newswireItem {
     font-size: var(--font-size-newswire);
     color: var(--column-right-fg-color);
-    line-height: var(--line-spacing-newswire);
-}
-
-.newswireItemModerate {
-    font-size: var(--font-size-newswire);
-    color: var(--newswire-moderate-color);
-    font-weight: bold;
     line-height: var(--line-spacing-newswire);
 }
 
