@@ -224,6 +224,7 @@ def updateNewswireModerationQueue(baseDir: str, handle: str,
                     ctr += 1
                     if ctr >= maxBlogsPerAccount:
                         break
+                    continue
 
                 moderationStatusFilename = fullPostFilename + '.moderate'
                 moderationStatusStr = ''
@@ -300,6 +301,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     ctr += 1
                     if ctr >= maxBlogsPerAccount:
                         break
+                    continue
 
                 postJsonObject = None
                 if fullPostFilename:
