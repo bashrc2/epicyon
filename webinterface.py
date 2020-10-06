@@ -1299,14 +1299,21 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
         # details of this post
         title = item[0]
         url = item[1]
-        # nick = item[2]
+        nick = item[2]
         # status = item[3]
         postFilename = item[4].replace('/', '#')
 
         # create the html for this post
         resultStr += '<div class="container">'
+
         resultStr += \
-            '<a href="/users/' + url + '">'
+            '<a href="/users/' + nick + '">'
+        resultStr += \
+            '<span class="followRequestHandle">' + \
+            nick + '</span></a>: '
+
+        resultStr += \
+            '<a href="' + url + '">'
         resultStr += \
             '<span class="followRequestHandle">' + \
             title + '</span></a>'
