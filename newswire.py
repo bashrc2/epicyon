@@ -79,7 +79,7 @@ def xml2StrToDict(xmlStr: str) -> {}:
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
-            result[str(publishedDate)] = [title, link, ['votes:0']]
+            result[str(publishedDate)] = [title, link, []]
             parsed = True
         except BaseException:
             pass
@@ -232,8 +232,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     published = published.replace('Z', '+00:00')
                     newswire[published] = \
                         [postJsonObject['object']['summary'],
-                         postJsonObject['object']['url'],
-                         ['votes:0']]
+                         postJsonObject['object']['url'], []]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
