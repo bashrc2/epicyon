@@ -1274,6 +1274,67 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
     return editLinksForm
 
 
+def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
+    """Get a list of newswire items to be moderated
+    """
+    if '/users/' not in path:
+        return ''
+
+    # load the file containing newswire posts to be moderated
+    newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
+    moderateJson = loadJson(newswireModerationFilename)
+    if not newswireJson:
+        return ''
+
+    # get the nickname and actor path of the moderator
+    nickname = path.split('/users/')[1]
+    if '/' in nickname:
+        nickname = nickname.split('/')[0]
+    basePath = path.split('/users/')[0] + '/users/' + nickname
+
+    resultStr = ''
+
+    # for each post to be moderated
+    for dateStr, item in moderateJson.items():
+        # details of this post
+        title = item[0]
+        url = item[1]
+        nick = item[2]
+        status = item[3]
+        postFilename = item[4].replace('/', '#')
+
+        # create the html for this post
+        resultStr += '<div class="container">'
+        resultStr += \
+            '<a href="/users/' + url + '">'
+        resultStr += \
+            '<span class="followRequestHandle">' + \
+            title + '</span></a>'
+
+        resultStr += \
+            '<a href="' + basePath + \
+            '/newswireapprove=' + postFilename + '">'
+        resultStr += \
+            '<button class="followApprove">' + \
+            translate['Approve'] + '</button></a><br><br>'
+
+        resultStr += \
+            '<a href="' + basePath + \
+            '/newswiredeny=' + postFilename + '">'
+        resultStr += \
+            '<button class="followDeny">' + \
+            translate['Deny'] + '</button></a>'
+
+        resultStr += \
+            '<a href="' + basePath + \
+            '/newswirediscuss=' + postFilename + '">'
+        resultStr += \
+            '<button class="followDeny">' + \
+            translate['Discuss'] + '</button></a>'
+        resultStr += '</div>'
+    return resultStr
+
+
 def htmlEditNewswire(translate: {}, baseDir: str, path: str,
                      domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit newswire screen
@@ -1335,6 +1396,15 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
 
     editNewswireForm += \
         '<div class="container">'
+
+    newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
+    if os.path.isfile(newswireModerationFilename):
+        editNewswireForm += \
+            '  ' + \
+            translate['Posts to be approved'] + ':<br>'
+        editNewswireForm += \
+            htmlNewswireModeration(baseDir, path, translate) + '<br>'
+
     editNewswireForm += \
         '  ' + \
         translate['Add RSS feed links below.'] + \
