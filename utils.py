@@ -718,7 +718,7 @@ def deletePost(baseDir: str, httpPrefix: str,
 
 
 def validNickname(domain: str, nickname: str) -> bool:
-    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@')
+    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#')
     for c in forbiddenChars:
         if c in nickname:
             return False
