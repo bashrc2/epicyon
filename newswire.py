@@ -16,6 +16,7 @@ from collections import OrderedDict
 from utils import locatePost
 from utils import loadJson
 from utils import isSuspended
+from utils import getConfigParam
 
 
 def rss2Header(httpPrefix: str,
@@ -222,17 +223,28 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 break
 
 
+def isTrustedByNewswire(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is trusted to post
+    blog entries to the newswire
+    """
+    adminNickname = getConfigParam(baseDir, 'admin')
+    if nickname == adminNickname:
+        return True
+
+    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
+    if os.path.isfile(newswireTrustedFilename):
+        with open(newswireTrustedFilename, "r") as f:
+            lines = f.readlines()
+        for trusted in lines:
+            if trusted.strip('\n').strip('\r') == nickname:
+                return True
+    return False
+
+
 def addLocalBlogsToNewswire(baseDir: str, newswire: {},
                             maxBlogsPerAccount: int) -> None:
     """Adds blogs from this instance into the newswire
     """
-    # get the list of handles who are trusted to post to the newswire
-    newswireTrusted = ''
-    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
-    if os.path.isfile(newswireTrustedFilename):
-        with open(newswireTrustedFilename, "r") as trustFile:
-            newswireTrusted = trustFile.read()
-
     # file containing suspended account nicknames
     suspendedFilename = baseDir + '/accounts/suspended.txt'
 
@@ -243,13 +255,12 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
                 continue
             if 'inbox@' in handle:
                 continue
-            if handle not in newswireTrusted:
-                if handle.split('@')[0] + '\n' not in newswireTrusted:
-                    continue
+            nickname = handle.split('@')[0]
+            if not isTrustedByNewswire(baseDir, nickname):
+                continue
             accountDir = os.path.join(baseDir + '/accounts', handle)
 
             # has this account been suspended?
-            nickname = handle.split('@')[0]
             if isSuspended(baseDir, nickname):
                 continue
 
