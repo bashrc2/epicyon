@@ -5349,10 +5349,11 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
                 '<a href="' + item[1] + '">' + item[0] + '</a>'
             if moderator:
                 htmlStr += \
-                    ' <label class="newswireDateApproved">' + \
+                    ' ' + \
                     '<a href="/users/' + nickname + \
-                    '/newswireunvote=' + dateStr + '">'
-                htmlStr += dateStr.replace('+00:00', '') + '</a></label></p>'
+                    '/newswireunvote=' + dateStr.replace(' ', 'T') + '">' + \
+                    '<label class="newswireDateApproved">'
+                htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
             else:
                 htmlStr += ' <label class="newswireDateApproved">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
@@ -5361,10 +5362,11 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
                 '<a href="' + item[1] + '">' + item[0] + '</a>'
             if moderator:
                 htmlStr += \
-                    ' <label class="newswireDate">' + \
+                    ' ' + \
                     '<a href="/users/' + nickname + \
-                    '/newswirevote=' + dateStr + '">'
-                htmlStr += dateStr.replace('+00:00', '') + '</a></label></p>'
+                    '/newswirevote=' + dateStr.replace(' ', 'T') + '">' + \
+                    '<label class="newswireDate">'
+                htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
             else:
                 htmlStr += ' <label class="newswireDate">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
