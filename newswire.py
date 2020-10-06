@@ -187,86 +187,6 @@ def isaBlogPost(postJsonObject: {}) -> bool:
     return False
 
 
-def updateNewswireModerationQueue(baseDir: str, handle: str,
-                                  maxBlogsPerAccount: int,
-                                  moderationDict: {}) -> None:
-    """Puts new blog posts by untrusted accounts into a moderation queue
-    """
-    accountDir = os.path.join(baseDir + '/accounts', handle)
-    indexFilename = accountDir + '/tlblogs.index'
-    if not os.path.isfile(indexFilename):
-        return
-    nickname = handle.split('@')[0]
-    domain = handle.split('@')[1]
-    with open(indexFilename, 'r') as indexFile:
-        postFilename = 'start'
-        ctr = 0
-        while postFilename:
-            postFilename = indexFile.readline()
-            if postFilename:
-                # if this is a full path then remove the directories
-                if '/' in postFilename:
-                    postFilename = postFilename.split('/')[-1]
-
-                # filename of the post without any extension or path
-                # This should also correspond to any index entry in
-                # the posts cache
-                postUrl = \
-                    postFilename.replace('\n', '').replace('\r', '')
-                postUrl = postUrl.replace('.json', '').strip()
-
-                # read the post from file
-                fullPostFilename = \
-                    locatePost(baseDir, nickname,
-                               domain, postUrl, False)
-                if not fullPostFilename:
-                    print('Unable to locate post ' + postUrl)
-                    ctr += 1
-                    if ctr >= maxBlogsPerAccount:
-                        break
-                    continue
-
-                moderationStatusFilename = fullPostFilename + '.moderate'
-                moderationStatusStr = ''
-                if not os.path.isfile(moderationStatusFilename):
-                    # create a file used to keep track of moderation status
-                    moderationStatusStr = '[waiting]'
-                    statusFile = open(moderationStatusFilename, "w+")
-                    if statusFile:
-                        statusFile.write(moderationStatusStr)
-                        statusFile.close()
-                else:
-                    # read the moderation status file
-                    statusFile = open(moderationStatusFilename, "r")
-                    if statusFile:
-                        moderationStatusStr = statusFile.read()
-                        statusFile.close()
-
-                # if the post is still in the moderation queue
-                if '[accepted]' not in \
-                   open(moderationStatusFilename).read():
-                    if '[rejected]' not in \
-                       open(moderationStatusFilename).read():
-                        # load the post and add its details to the
-                        # moderation queue
-                        postJsonObject = None
-                        if fullPostFilename:
-                            postJsonObject = loadJson(fullPostFilename)
-                        if isaBlogPost(postJsonObject):
-                            published = postJsonObject['object']['published']
-                            published = published.replace('T', ' ')
-                            published = published.replace('Z', '+00:00')
-                            moderationDict[published] = \
-                                [postJsonObject['object']['summary'],
-                                 postJsonObject['object']['url'],
-                                 nickname, moderationStatusStr,
-                                 fullPostFilename]
-
-            ctr += 1
-            if ctr >= maxBlogsPerAccount:
-                break
-
-
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                               newswire: {},
                               maxBlogsPerAccount: int,
@@ -359,8 +279,6 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
 
             # is this account trusted?
             if not isTrustedByNewswire(baseDir, nickname):
-                updateNewswireModerationQueue(baseDir, handle, 5,
-                                              moderationDict)
                 continue
 
             # is there a blogs timeline for this account?

@@ -8688,21 +8688,21 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show announce done',
                                   'unannounce done')
 
-        # send a follow request approval from the web interface
-        if authorized and '/followapprove=' in self.path and \
+        # send a newswire moderation approval from the web interface
+        if authorized and '/newswireapprove=' in self.path and \
            self.path.startswith('/users/'):
-            self._followApproveButton(callingDomain, self.path,
-                                      cookie,
-                                      self.server.baseDir,
-                                      self.server.httpPrefix,
-                                      self.server.domain,
-                                      self.server.domainFull,
-                                      self.server.port,
-                                      self.server.onionDomain,
-                                      self.server.i2pDomain,
-                                      GETstartTime, GETtimings,
-                                      self.server.proxyType,
-                                      self.server.debug)
+            self._moderationApproveButton(callingDomain, self.path,
+                                          cookie,
+                                          self.server.baseDir,
+                                          self.server.httpPrefix,
+                                          self.server.domain,
+                                          self.server.domainFull,
+                                          self.server.port,
+                                          self.server.onionDomain,
+                                          self.server.i2pDomain,
+                                          GETstartTime, GETtimings,
+                                          self.server.proxyType,
+                                          self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
