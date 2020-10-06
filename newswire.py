@@ -309,9 +309,9 @@ def isTrustedByNewswire(baseDir: str, nickname: str) -> bool:
     """Returns true if the given nickname is trusted to post
     blog entries to the newswire
     """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if nickname == adminNickname:
-        return True
+    # adminNickname = getConfigParam(baseDir, 'admin')
+    # if nickname == adminNickname:
+    #     return True
 
     newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
     if os.path.isfile(newswireTrustedFilename):
