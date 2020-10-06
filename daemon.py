@@ -4657,6 +4657,82 @@ class PubServer(BaseHTTPRequestHandler):
                                   'follow approve shown')
         self.server.GETbusy = False
 
+    def _newswireVote(self, callingDomain: str, path: str,
+                      cookie: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      GETstartTime, GETtimings: {},
+                      proxyType: str, debug: bool):
+        """Vote for a newswire item
+        """
+        originPathStr = path.split('/newswirevote=')[0]
+        dateStr = path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
+        nickname = originPathStr.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if self.newswire.get(dateStr):
+            if isModerator(baseDir, nickname):
+                if 'vote:' + nickname not in self.newswire[dateStr][2]:
+                    self.newswire[dateStr][2].append('vote:' + nickname)
+                    filename = self.newswire[dateStr][3]
+                    if filename:
+                        saveJson(self.newswire[dateStr][2],
+                                 filename + '.votes')
+
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'follow approve shown')
+        self.server.GETbusy = False
+
+    def _newswireUnvote(self, callingDomain: str, path: str,
+                        cookie: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, debug: bool):
+        """Remove vote for a newswire item
+        """
+        originPathStr = path.split('/newswirevote=')[0]
+        dateStr = path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
+        nickname = originPathStr.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if self.newswire.get(dateStr):
+            if isModerator(baseDir, nickname):
+                if 'vote:' + nickname in self.newswire[dateStr][2]:
+                    self.newswire[dateStr][2].remove('vote:' + nickname)
+                    filename = self.newswire[dateStr][3]
+                    if filename:
+                        saveJson(self.newswire[dateStr][2],
+                                 filename + '.votes')
+
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'follow approve shown')
+        self.server.GETbusy = False
+
     def _followDenyButton(self, callingDomain: str, path: str,
                           cookie: str,
                           baseDir: str, httpPrefix: str,
@@ -8688,21 +8764,55 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show announce done',
                                   'unannounce done')
 
-        # send a newswire moderation approval from the web interface
-        if authorized and '/newswireapprove=' in self.path and \
+        # send a newswire moderation vote from the web interface
+        if authorized and '/newswirevote=' in self.path and \
            self.path.startswith('/users/'):
-            self._moderationApproveButton(callingDomain, self.path,
-                                          cookie,
-                                          self.server.baseDir,
-                                          self.server.httpPrefix,
-                                          self.server.domain,
-                                          self.server.domainFull,
-                                          self.server.port,
-                                          self.server.onionDomain,
-                                          self.server.i2pDomain,
-                                          GETstartTime, GETtimings,
-                                          self.server.proxyType,
-                                          self.server.debug)
+            self._newswireVote(callingDomain, self.path,
+                               cookie,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType,
+                               self.server.debug)
+            return
+
+        # send a newswire moderation unvote from the web interface
+        if authorized and '/newswireunvote=' in self.path and \
+           self.path.startswith('/users/'):
+            self._newswireUnvote(callingDomain, self.path,
+                                 cookie,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 self.server.debug)
+            return
+
+        # send a follow request approval from the web interface
+        if authorized and '/followapprove=' in self.path and \
+           self.path.startswith('/users/'):
+            self._followApproveButton(callingDomain, self.path,
+                                      cookie,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,

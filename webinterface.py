@@ -5352,7 +5352,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
                 # count the total votes for this item
                 totalVotes = 0
                 for line in item[2]:
-                    if '[vote:' in line:
+                    if 'vote:' in line:
                         totalVotes += 1
                 if totalVotes > 0:
                     totalVotesStr = ' +' + str(totalVotes)
@@ -5376,7 +5376,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
                 # count the total votes for this item
                 totalVotes = 0
                 for line in item[2]:
-                    if '[vote:' in line:
+                    if 'vote:' in line:
                         totalVotes += 1
                 if totalVotes > 0:
                     totalVotesStr = ' +' + str(totalVotes)
