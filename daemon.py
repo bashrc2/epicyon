@@ -4683,7 +4683,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  filename + '.votes')
 
         originPathStrAbsolute = \
-            httpPrefix + '://' + domainFull + originPathStr
+            httpPrefix + '://' + domainFull + originPathStr + '/' + \
+            self.server.defaultTimeline
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
                 'http://' + onionDomain + originPathStr
@@ -4694,7 +4695,7 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'unannounce done',
-                                  'follow approve shown')
+                                  'vote for newswite item')
         self.server.GETbusy = False
 
     def _newswireUnvote(self, callingDomain: str, path: str,
@@ -4723,7 +4724,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  filename + '.votes')
 
         originPathStrAbsolute = \
-            httpPrefix + '://' + domainFull + originPathStr
+            httpPrefix + '://' + domainFull + originPathStr + '/' + \
+            self.server.defaultTimeline
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
                 'http://' + onionDomain + originPathStr
@@ -4734,7 +4736,7 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'unannounce done',
-                                  'follow approve shown')
+                                  'unvote for newswite item')
         self.server.GETbusy = False
 
     def _followDenyButton(self, callingDomain: str, path: str,
