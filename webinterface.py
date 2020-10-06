@@ -5406,15 +5406,26 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += '\n      <center>\n'
 
     if moderator:
-        # show the edit icon
-        htmlStr += \
-            '        <a href="' + \
-            '/users/' + nickname + '/editnewswire">' + \
-            '<img class="' + editImageClass + \
-            '" loading="lazy" alt="' + \
-            translate['Edit newswire'] + '" title="' + \
-            translate['Edit newswire'] + '" src="/' + \
-            iconsDir + '/edit.png" /></a>\n'
+        if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
+            # show the edit icon highlighted
+            htmlStr += \
+                '        <a href="' + \
+                '/users/' + nickname + '/editnewswire">' + \
+                '<img class="' + editImageClass + \
+                '" loading="lazy" alt="' + \
+                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + '" src="/' + \
+                iconsDir + '/edit_notify.png" /></a>\n'
+        else:
+            # show the edit icon
+            htmlStr += \
+                '        <a href="' + \
+                '/users/' + nickname + '/editnewswire">' + \
+                '<img class="' + editImageClass + \
+                '" loading="lazy" alt="' + \
+                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + '" src="/' + \
+                iconsDir + '/edit.png" /></a>\n'
 
     htmlStr += \
         '        <a href="/newswire.xml">' + \

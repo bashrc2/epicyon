@@ -377,7 +377,12 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
         OrderedDict(sorted(moderationDict.items(), reverse=True))
     # save the moderation queue details for later display
     newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
-    saveJson(sortedModerationDict, newswireModerationFilename)
+    if sortedModerationDict:
+        saveJson(sortedModerationDict, newswireModerationFilename)
+    else:
+        # remove the file if there is nothing to moderate
+        if os.path.isfile(newswireModerationFilename):
+            os.remove(newswireModerationFilename)
 
 
 def getDictFromNewswire(session, baseDir: str) -> {}:
