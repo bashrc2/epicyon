@@ -4668,7 +4668,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Vote for a newswire item
         """
         originPathStr = path.split('/newswirevote=')[0]
-        dateStr = path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
+        dateStr = \
+            path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
         nickname = originPathStr.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
@@ -4706,8 +4707,9 @@ class PubServer(BaseHTTPRequestHandler):
                         newswire: {}):
         """Remove vote for a newswire item
         """
-        originPathStr = path.split('/newswirevote=')[0]
-        dateStr = path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
+        originPathStr = path.split('/newswireunvote=')[0]
+        dateStr = \
+            path.split('/newswireunvote=')[1].replace('T', ' ') + '+00:00'
         nickname = originPathStr.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
