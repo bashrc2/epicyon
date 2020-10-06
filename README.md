@@ -1,8 +1,8 @@
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
-<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/screenshot_indymedia.jpg?raw=true" width="80%"/>
+<img src="https://epicyon.net/img/screenshot_indymedia.jpg" width="80%"/>
 
-<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/mobile.jpg?raw=true" width="30%"/>
+<img src="https://epicyon.net/img/mobile.jpg" width="30%"/>
 
 Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions and perimeter defense against adversaries. It contains *no javascript* and uses HTML+CSS with a Python backend.
 
@@ -12,7 +12,7 @@ Matrix room: **#epicyon:matrix.freedombone.net**
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0). Blob Cat Emoji and Meowmoji were made by Nitro Blob Hub, licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
-<img src="https://code.freedombone.net/bashrc/epicyon/raw/main/img/screenshot_light.jpg" width="80%"/>
+<img src="https://epicyon.net/img/screenshot_login.jpg" width="80%"/>
 
 ## Package Dependencies
 
