@@ -1301,7 +1301,8 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
         url = item[1]
         nick = item[2]
         status = item[3]
-        postFilename = item[4].replace('/', '#')
+        postFilename = item[4]
+        postLink = postFilename.replace(baseDir + '/accounts', '')
 
         # create the html for this post
         resultStr += '<div class="container">'
@@ -1320,7 +1321,7 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
 
         resultStr += \
             '<a href="' + basePath + \
-            '/newswireapprove=' + postFilename + '">'
+            '/newswireapprove=' + postLink + '">'
         if '[vote:' + nickname + ':approve]' in status:
             resultStr += \
                 '<button class="followApprove">' + \
@@ -1332,7 +1333,7 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
 
         resultStr += \
             '<a href="' + basePath + \
-            '/newswiredeny=' + postFilename + '">'
+            '/newswiredeny=' + postLink + '">'
         if '[vote:' + nickname + ':deny]' in status:
             resultStr += \
                 '<button class="followApprove">' + \
@@ -1344,10 +1345,15 @@ def htmlNewswireModeration(baseDir: str, path: str, translate: {}) -> str:
 
         resultStr += \
             '<a href="' + basePath + \
-            '/newswirediscuss=' + postFilename + '">'
-        resultStr += \
-            '<button class="followDeny">' + \
-            translate['Discuss'] + '</button></a>'
+            '/newswirediscuss=' + postLink + '">'
+        if os.path.isfile(postFilename + '.discuss'):
+            resultStr += \
+                '<button class="followApprove">' + \
+                translate['Discuss'] + '</button></a>'
+        else:
+            resultStr += \
+                '<button class="followDeny">' + \
+                translate['Discuss'] + '</button></a>'
         resultStr += '</div>'
     return resultStr
 
