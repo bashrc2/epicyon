@@ -5368,7 +5368,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">' + \
                     '<label class="newswireDateApproved">'
-                htmlStr += dateStr + '</label></a></p>'
+                htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
             else:
                 htmlStr += ' <label class="newswireDateApproved">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
