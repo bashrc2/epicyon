@@ -239,24 +239,6 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 break
 
 
-def isTrustedByNewswire(baseDir: str, nickname: str) -> bool:
-    """Returns true if the given nickname is trusted to post
-    blog entries to the newswire
-    """
-    # adminNickname = getConfigParam(baseDir, 'admin')
-    # if nickname == adminNickname:
-    #     return True
-
-    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
-    if os.path.isfile(newswireTrustedFilename):
-        with open(newswireTrustedFilename, "r") as f:
-            lines = f.readlines()
-        for trusted in lines:
-            if trusted.strip('\n').strip('\r') == nickname:
-                return True
-    return False
-
-
 def addBlogsToNewswire(baseDir: str, newswire: {},
                        maxBlogsPerAccount: int) -> None:
     """Adds blogs from each user account into the newswire
@@ -275,10 +257,6 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
 
             # has this account been suspended?
             if isSuspended(baseDir, nickname):
-                continue
-
-            # is this account trusted?
-            if not isTrustedByNewswire(baseDir, nickname):
                 continue
 
             # is there a blogs timeline for this account?
