@@ -238,20 +238,22 @@ def updateNewswireModerationQueue(baseDir: str, handle: str,
                 # if the post is still in the moderation queue
                 if '[accepted]' not in \
                    open(moderationStatusFilename).read():
-
-                    # load the post and add its details to the moderation queue
-                    postJsonObject = None
-                    if fullPostFilename:
-                        postJsonObject = loadJson(fullPostFilename)
-                    if isaBlogPost(postJsonObject):
-                        published = postJsonObject['object']['published']
-                        published = published.replace('T', ' ')
-                        published = published.replace('Z', '+00:00')
-                        moderationDict[published] = \
-                            [postJsonObject['object']['summary'],
-                             postJsonObject['object']['url'],
-                             nickname, moderationStatusStr,
-                             fullPostFilename]
+                    if '[rejected]' not in \
+                       open(moderationStatusFilename).read():
+                        # load the post and add its details to the
+                        # moderation queue
+                        postJsonObject = None
+                        if fullPostFilename:
+                            postJsonObject = loadJson(fullPostFilename)
+                        if isaBlogPost(postJsonObject):
+                            published = postJsonObject['object']['published']
+                            published = published.replace('T', ' ')
+                            published = published.replace('Z', '+00:00')
+                            moderationDict[published] = \
+                                [postJsonObject['object']['summary'],
+                                 postJsonObject['object']['url'],
+                                 nickname, moderationStatusStr,
+                                 fullPostFilename]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
