@@ -79,7 +79,7 @@ def xml2StrToDict(xmlStr: str) -> {}:
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
-            result[str(publishedDate)] = [title, link]
+            result[str(publishedDate)] = [title, link, ['votes:0']]
             parsed = True
         except BaseException:
             pass
