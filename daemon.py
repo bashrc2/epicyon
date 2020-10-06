@@ -4663,7 +4663,8 @@ class PubServer(BaseHTTPRequestHandler):
                       domain: str, domainFull: str, port: int,
                       onionDomain: str, i2pDomain: str,
                       GETstartTime, GETtimings: {},
-                      proxyType: str, debug: bool):
+                      proxyType: str, debug: bool,
+                      newswire: {}):
         """Vote for a newswire item
         """
         originPathStr = path.split('/newswirevote=')[0]
@@ -4671,13 +4672,13 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = originPathStr.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        if self.newswire.get(dateStr):
+        if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
-                if 'vote:' + nickname not in self.newswire[dateStr][2]:
-                    self.newswire[dateStr][2].append('vote:' + nickname)
-                    filename = self.newswire[dateStr][3]
+                if 'vote:' + nickname not in newswire[dateStr][2]:
+                    newswire[dateStr][2].append('vote:' + nickname)
+                    filename = newswire[dateStr][3]
                     if filename:
-                        saveJson(self.newswire[dateStr][2],
+                        saveJson(newswire[dateStr][2],
                                  filename + '.votes')
 
         originPathStrAbsolute = \
@@ -4701,7 +4702,8 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime, GETtimings: {},
-                        proxyType: str, debug: bool):
+                        proxyType: str, debug: bool,
+                        newswire: {}):
         """Remove vote for a newswire item
         """
         originPathStr = path.split('/newswirevote=')[0]
@@ -4709,13 +4711,13 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = originPathStr.split('/users/')[1]
         if '/' in nickname:
             nickname = nickname.split('/')[0]
-        if self.newswire.get(dateStr):
+        if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
-                if 'vote:' + nickname in self.newswire[dateStr][2]:
-                    self.newswire[dateStr][2].remove('vote:' + nickname)
-                    filename = self.newswire[dateStr][3]
+                if 'vote:' + nickname in newswire[dateStr][2]:
+                    newswire[dateStr][2].remove('vote:' + nickname)
+                    filename = newswire[dateStr][3]
                     if filename:
-                        saveJson(self.newswire[dateStr][2],
+                        saveJson(newswire[dateStr][2],
                                  filename + '.votes')
 
         originPathStrAbsolute = \
@@ -8778,7 +8780,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.i2pDomain,
                                GETstartTime, GETtimings,
                                self.server.proxyType,
-                               self.server.debug)
+                               self.server.debug,
+                               self.server.newswire)
             return
 
         # send a newswire moderation unvote from the web interface
@@ -8795,7 +8798,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.i2pDomain,
                                  GETstartTime, GETtimings,
                                  self.server.proxyType,
-                                 self.server.debug)
+                                 self.server.debug,
+                                 self.server.newswire)
             return
 
         # send a follow request approval from the web interface
