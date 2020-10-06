@@ -633,6 +633,11 @@ def deletePost(baseDir: str, httpPrefix: str,
         if os.path.isfile(muteFilename):
             os.remove(muteFilename)
 
+        # remove any moderation file
+        moderationFilename = postFilename + '.moderate'
+        if os.path.isfile(moderationFilename):
+            os.remove(moderationFilename)
+
         # remove cached html version of the post
         cachedPostFilename = \
             getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
