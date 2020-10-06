@@ -17,7 +17,6 @@ from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
-# from utils import getConfigParam
 
 
 def rss2Header(httpPrefix: str,
@@ -261,6 +260,10 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
 
             # has this account been suspended?
             if isSuspended(baseDir, nickname):
+                continue
+
+            if os.path.isfile(baseDir + '/accounts/' + handle +
+                              '/.nonewswire'):
                 continue
 
             # is there a blogs timeline for this account?

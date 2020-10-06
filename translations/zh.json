@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "博客条目出现在新闻专线上的昵称。",
     "Posts to be approved": "职位待批准",
     "Discuss": "讨论",
-    "Moderator Discussion": "主持人讨论"
+    "Moderator Discussion": "主持人讨论",
+    "Vote": "",
+    "Remove Vote": ""
 }

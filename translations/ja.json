@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "ブログエントリがニュースワイヤーに表示されるニックネーム。",
     "Posts to be approved": "承認される投稿",
     "Discuss": "議論する",
-    "Moderator Discussion": "モデレーターディスカッション"
+    "Moderator Discussion": "モデレーターディスカッション",
+    "Vote": "",
+    "Remove Vote": ""
 }

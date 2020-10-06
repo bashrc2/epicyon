@@ -5339,7 +5339,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
+def htmlNewswire(newswire: str, nickname: str, moderator: bool,
+                 translate: {}) -> str:
     """Converts a newswire dict into html
     """
     htmlStr = ''
@@ -5364,7 +5365,8 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
                 htmlStr += \
                     ' ' + \
                     '<a href="/users/' + nickname + \
-                    '/newswireunvote=' + dateStrLink + '">' + \
+                    '/newswireunvote=' + dateStrLink + '" ' + \
+                    'title="' + translate['Remove Vote'] + '">' + \
                     '<label class="newswireDateApproved">'
                 htmlStr += dateStr + '</label></a></p>'
             else:
@@ -5388,7 +5390,8 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
                 htmlStr += \
                     ' ' + \
                     '<a href="/users/' + nickname + \
-                    '/newswirevote=' + dateStrLink + '">' + \
+                    '/newswirevote=' + dateStrLink + '" ' + \
+                    'title="' + translate['Vote'] + '">' + \
                     '<label class="newswireDate">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
             else:
@@ -5472,7 +5475,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         htmlStr += '      <br>\n'
 
-    htmlStr += htmlNewswire(newswire, nickname, moderator)
+    htmlStr += htmlNewswire(newswire, nickname, moderator, translate)
     return htmlStr
 
 

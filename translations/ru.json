@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "Псевдонимы, чьи записи блога появляются в ленте новостей.",
     "Posts to be approved": "Посты на утверждение",
     "Discuss": "Обсудить",
-    "Moderator Discussion": "Обсуждение модератором"
+    "Moderator Discussion": "Обсуждение модератором",
+    "Vote": "",
+    "Remove Vote": ""
 }

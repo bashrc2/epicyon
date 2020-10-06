@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "Surnoms dont les entrées de blog apparaissent sur le fil de presse.",
     "Posts to be approved": "Postes à approuver",
     "Discuss": "Discuter",
-    "Moderator Discussion": "Discussion du modérateur"
+    "Moderator Discussion": "Discussion du modérateur",
+    "Vote": "",
+    "Remove Vote": ""
 }

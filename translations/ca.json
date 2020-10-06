@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "Sobrenoms les entrades del bloc apareixen a newswire.",
     "Posts to be approved": "Missatges per aprovar",
     "Discuss": "Discuteix",
-    "Moderator Discussion": "Discussió sobre moderadors"
+    "Moderator Discussion": "Discussió sobre moderadors",
+    "Vote": "",
+    "Remove Vote": ""
 }

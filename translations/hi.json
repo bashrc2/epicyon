@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "उपनाम जिनकी ब्लॉग प्रविष्टियाँ न्यूज़वायर पर दिखाई देती हैं।",
     "Posts to be approved": "स्वीकृत किए जाने वाले पद",
     "Discuss": "चर्चा करें",
-    "Moderator Discussion": "मॉडरेटर चर्चा"
+    "Moderator Discussion": "मॉडरेटर चर्चा",
+    "Vote": "",
+    "Remove Vote": ""
 }

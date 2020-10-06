@@ -300,5 +300,7 @@
     "Nicknames whose blog entries appear on the newswire.": "الألقاب التي تظهر إدخالات المدونة الخاصة بها على موقع الأخبار.",
     "Posts to be approved": "الوظائف المطلوب الموافقة عليها",
     "Discuss": "مناقشة",
-    "Moderator Discussion": "مناقشة المنسق"
+    "Moderator Discussion": "مناقشة المنسق",
+    "Vote": "",
+    "Remove Vote": ""
 }
