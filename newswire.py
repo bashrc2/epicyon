@@ -222,20 +222,24 @@ def updateNewswireModerationQueue(baseDir: str, handle: str,
                 moderationStatusFilename = fullPostFilename + '.moderate'
                 moderationStatusStr = ''
                 if not os.path.isfile(moderationStatusFilename):
+                    # create a file used to keep track of moderation status
+                    moderationStatusStr = '[waiting]'
                     statusFile = open(moderationStatusFilename, "w+")
                     if statusFile:
-                        statusFile.write('[waiting]')
+                        statusFile.write(moderationStatusStr)
                         statusFile.close()
-                    moderationStatusStr = '[waiting]'
                 else:
+                    # read the moderation status file
                     statusFile = open(moderationStatusFilename, "r")
                     if statusFile:
                         moderationStatusStr = statusFile.read()
                         statusFile.close()
 
+                # if the post is still in the moderation queue
                 if '[accepted]' not in \
                    open(moderationStatusFilename).read():
 
+                    # load the post and add its details to the moderation queue
                     postJsonObject = None
                     if fullPostFilename:
                         postJsonObject = loadJson(fullPostFilename)
@@ -355,6 +359,7 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
     # sort the moderation dict into chronological order, latest first
     sortedModerationDict = \
         OrderedDict(sorted(moderationDict.items(), reverse=True))
+    # save the moderation queue details for later display
     newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
     saveJson(sortedModerationDict, newswireModerationFilename)
 
