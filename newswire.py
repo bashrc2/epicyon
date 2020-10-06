@@ -232,7 +232,8 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     published = published.replace('Z', '+00:00')
                     newswire[published] = \
                         [postJsonObject['object']['summary'],
-                         postJsonObject['object']['url']]
+                         postJsonObject['object']['url'],
+                         ['votes:0']]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:

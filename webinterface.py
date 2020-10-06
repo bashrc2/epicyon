@@ -5339,15 +5339,35 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlNewswire(newswire: str) -> str:
+def htmlNewswire(newswire: str, nickname: str, moderator: bool) -> str:
     """Converts a newswire dict into html
     """
     htmlStr = ''
     for dateStr, item in newswire.items():
-        htmlStr += '<p class="newswireItem">' + \
-            '<a href="' + item[1] + '">' + item[0] + '</a>'
-        htmlStr += ' <label class="newswireDate">'
-        htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
+        if 'vote:' + nickname in item[2]:
+            htmlStr += '<p class="newswireItemApproved">' + \
+                '<a href="' + item[1] + '">' + item[0] + '</a>'
+            if moderator:
+                htmlStr += \
+                    ' <label class="newswireDateApproved">' + \
+                    '<a href="/users/' + nickname + \
+                    '/newswireunvote=' + dateStr + '">'
+                htmlStr += dateStr.replace('+00:00', '') + '</a></label></p>'
+            else:
+                htmlStr += ' <label class="newswireDateApproved">'
+                htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
+        else:
+            htmlStr += '<p class="newswireItem">' + \
+                '<a href="' + item[1] + '">' + item[0] + '</a>'
+            if moderator:
+                htmlStr += \
+                    ' <label class="newswireDate">' + \
+                    '<a href="/users/' + nickname + \
+                    '/newswirevote=' + dateStr + '">'
+                htmlStr += dateStr.replace('+00:00', '') + '</a></label></p>'
+            else:
+                htmlStr += ' <label class="newswireDate">'
+                htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
     return htmlStr
 
 
@@ -5426,7 +5446,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         htmlStr += '      <br>\n'
 
-    htmlStr += htmlNewswire(newswire)
+    htmlStr += htmlNewswire(newswire, nickname, moderator)
     return htmlStr
 
 

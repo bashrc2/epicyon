@@ -15,6 +15,7 @@
     --main-fg-color: #dddddd;
     --column-left-fg-color: #dddddd;
     --column-right-fg-color: #dddddd;
+    --column-right-fg-color-approved: yellow;
     --main-link-color: #999;
     --main-link-color-hover: #bbb;
     --main-visited-color: #888;
@@ -231,8 +232,22 @@ a:focus {
     line-height: var(--line-spacing-newswire);
 }
 
+.newswireItemApproved {
+    font-size: var(--font-size-newswire);
+    font-weight: bold;
+    color: var(--column-right-fg-color-approved);    
+    line-height: var(--line-spacing-newswire);
+}
+
 .newswireDate {
     font-size: var(--font-size-newswire);
+    color: var(--newswire-date-color);
+    float: right;
+}
+
+.newswireDateApproved {
+    font-size: var(--font-size-newswire);
+    font-weight: bold;
     color: var(--newswire-date-color);
     float: right;
 }
