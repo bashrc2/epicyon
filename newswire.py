@@ -17,7 +17,7 @@ from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
-from utils import getConfigParam
+# from utils import getConfigParam
 
 
 def rss2Header(httpPrefix: str,
@@ -408,7 +408,7 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
     return sortedResult
 
 
-def runNewswireDaemon(baseDir: str, httpd):
+def runNewswireDaemon(baseDir: str, httpd, unused: str):
     """Periodically updates RSS feeds
     """
     # initial sleep to allow the system to start up
