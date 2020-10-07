@@ -1206,6 +1206,7 @@ def createNewsPost(baseDir: str,
     eventDate = None
     eventTime = None
     location = None
+    print('RSS title 2: ' + str(subject))
     blog = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,

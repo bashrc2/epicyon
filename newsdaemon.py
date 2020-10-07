@@ -94,6 +94,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         followersOnly = False
         useBlurhash = False
+        print('RSS title 1: ' + str(rssTitle))
         blog = createNewsPost(baseDir,
                               'news', domain, port, httpPrefix,
                               rssDescription, followersOnly, False,
