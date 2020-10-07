@@ -21,16 +21,10 @@ def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
     indexFilename = basePath + '/outbox.index'
 
     if os.path.isfile(indexFilename):
-        if postId not in open(indexFilename).read():
-            try:
-                with open(indexFilename, 'r+') as feedsFile:
-                    content = feedsFile.read()
-                    feedsFile.seek(0, 0)
-                    feedsFile.write(postId + '\n' + content)
-                    print('DEBUG: feeds post added to index')
-            except Exception as e:
-                print('WARN: Failed to write entry to feeds posts index ' +
-                      indexFilename + ' ' + str(e))
+        feedsFile = open(indexFilename, 'a+')
+        if feedsFile:
+            feedsFile.write(postId + '\n')
+            feedsFile.close()
     else:
         feedsFile = open(indexFilename, 'w+')
         if feedsFile:
