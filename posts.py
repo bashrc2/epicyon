@@ -1182,11 +1182,12 @@ def createBlogPost(baseDir: str,
                    inReplyTo=None, inReplyToAtomUri=None, subject=None,
                    schedulePost=False,
                    eventDate=None, eventTime=None, location=None) -> {}:
+    commentsEnabled = True
     blog = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
-                         clientToServer,
+                         clientToServer, commentsEnabled,
                          attachImageFilename, mediaType,
                          imageDescription, useBlurhash,
                          inReplyTo, inReplyToAtomUri, subject,
@@ -1211,14 +1212,14 @@ def createNewsPost(baseDir: str,
     location = None
     blog = \
         createPublicPost(baseDir,
-                     'news', domain, port, httpPrefix,
-                     content, followersOnly, saveToFile,
-                     clientToServer, False,
-                     attachImageFilename, mediaType,
-                     imageDescription, useBlurhash,
-                     inReplyTo, inReplyToAtomUri, subject,
-                     schedulePost,
-                     eventDate, eventTime, location)
+                         'news', domain, port, httpPrefix,
+                         content, followersOnly, saveToFile,
+                         clientToServer, False,
+                         attachImageFilename, mediaType,
+                         imageDescription, useBlurhash,
+                         inReplyTo, inReplyToAtomUri, subject,
+                         schedulePost,
+                         eventDate, eventTime, location)
     blog['object']['type'] = 'Article'
     return blog
 
