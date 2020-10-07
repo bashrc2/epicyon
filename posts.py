@@ -722,9 +722,9 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    eventStatus=None, ticketUrl=None) -> {}:
     """Creates a message
     """
-    print("Subject 1: " + subject)
+    print("Subject 1: " + str(subject))
     subject = addAutoCW(baseDir, nickname, domain, subject, content)
-    print("Subject 2: " + subject)
+    print("Subject 2: " + str(subject))
 
     mentionedRecipients = \
         getMentionedPeople(baseDir, httpPrefix, content, domain, False)
@@ -768,7 +768,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     if subject:
         summary = validContentWarning(subject)
         sensitive = True
-    print("Subject 3: " + summary)
+    print("Subject 3: " + str(summary))
 
     toRecipients = []
     toCC = []
