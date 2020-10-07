@@ -94,14 +94,15 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         followersOnly = False
         useBlurhash = False
-        blog = createBlogPost(baseDir,
-                              'news', domain, port, httpPrefix,
-                              rssDescription, followersOnly, False,
-                              False,
-                              None, None, None, useBlurhash,
-                              None, None, rssTitle,
-                              False,
-                              None, None, None)
+        commentsEnabled = False
+        blog = createPublicPost(baseDir,
+                                'news', domain, port, httpPrefix,
+                                rssDescription, followersOnly, False,
+                                False, commentsEnabled,
+                                None, None, None, useBlurhash,
+                                None, None, rssTitle,
+                                False,
+                                None, None, None)
         if not blog:
             continue
 
