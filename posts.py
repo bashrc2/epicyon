@@ -657,7 +657,7 @@ def appendEventFields(newPost: {},
         newPost['sensitive'] = False
 
 
-def validContentWarnings(cw: str) -> str:
+def validContentWarning(cw: str) -> str:
     """Returns a validated content warning
     """
     cw = removeHtml(cw)
