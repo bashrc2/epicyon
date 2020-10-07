@@ -59,7 +59,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         rssTitle = item[0]
         url = item[1]
         rssDescription = ''
-        if len(item) >= 4:
+        if len(item) >= 5:
             rssDescription = item[4]
         if rssDescription:
             rssDescription += \
