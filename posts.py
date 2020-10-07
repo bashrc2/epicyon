@@ -2509,7 +2509,7 @@ def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
 def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
                        headerOnly: bool, pageNumber=None) -> {}:
-    return createBoxIndexed({}, session, baseDir, 'tlnews', nickname,
+    return createBoxIndexed({}, session, baseDir, 'outbox', 'news',
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
                             pageNumber)

@@ -6499,19 +6499,15 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' in path:
             if authorized:
-                currNickname = path.split('/users/')[1]
-                if '/' in currNickname:
-                    currNickname = currNickname.split('/')[0]
-                newsPath = path.replace('/' + currNickname + '/', '/news/')
                 inboxNewsFeed = \
                     personBoxJson(self.server.recentPostsCache,
                                   self.server.session,
                                   baseDir,
                                   domain,
                                   port,
-                                  newsPath,
+                                  path,
                                   httpPrefix,
-                                  maxPostsInNewsFeed, 'outbox',
+                                  maxPostsInNewsFeed, 'tlnews',
                                   True)
                 if not inboxNewsFeed:
                     inboxNewsFeed = []
@@ -6533,9 +6529,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           baseDir,
                                           domain,
                                           port,
-                                          newsPath + '?page=1',
+                                          path + '?page=1',
                                           httpPrefix,
-                                          maxPostsInBlogsFeed, 'outbox',
+                                          maxPostsInBlogsFeed, 'tlnews',
                                           True)
                     msg = \
                         htmlInboxBlogs(self.server.defaultTimeline,
