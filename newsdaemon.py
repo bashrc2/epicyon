@@ -50,7 +50,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         os.mkdir(basePath)
 
     newswireReverse = \
-        OrderedDict(sorted(newswire.items(), reverse=True))
+        OrderedDict(sorted(newswire.items(), reverse=False))
 
     for dateStr, item in newswireReverse.items():
         # convert the date to the format used by ActivityPub
