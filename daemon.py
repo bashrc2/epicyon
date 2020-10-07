@@ -205,8 +205,8 @@ from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
 from newswire import getRSSfromDict
-from newswire import runNewswireWatchdog
-from newswire import runNewswireDaemon
+from newsdaemon import runNewswireWatchdog
+from newsdaemon import runNewswireDaemon
 import os
 
 

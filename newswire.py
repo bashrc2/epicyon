@@ -70,6 +70,10 @@ def xml2StrToDict(xmlStr: str) -> {}:
             continue
         title = rssItem.split('<title>')[1]
         title = title.split('</title>')[0]
+        description = ''
+        if '<description>' in rssItem and '</description>' in rssItem:
+            description = rssItem.split('<description>')[1]
+            description = description.split('</description>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         pubDate = rssItem.split('<pubDate>')[1]
@@ -78,7 +82,7 @@ def xml2StrToDict(xmlStr: str) -> {}:
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
-            result[str(publishedDate)] = [title, link, [], '']
+            result[str(publishedDate)] = [title, link, [], '', description]
             parsed = True
         except BaseException:
             pass
@@ -316,47 +320,3 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
     return sortedResult
-
-
-def runNewswireDaemon(baseDir: str, httpd, unused: str):
-    """Periodically updates RSS feeds
-    """
-    # initial sleep to allow the system to start up
-    time.sleep(50)
-    while True:
-        # has the session been created yet?
-        if not httpd.session:
-            print('Newswire daemon waiting for session')
-            time.sleep(60)
-            continue
-
-        # try to update the feeds
-        newNewswire = None
-        try:
-            newNewswire = getDictFromNewswire(httpd.session, baseDir)
-        except Exception as e:
-            print('WARN: unable to update newswire ' + str(e))
-            time.sleep(120)
-            continue
-
-        httpd.newswire = newNewswire
-        print('Newswire updated')
-        # wait a while before the next feeds update
-        time.sleep(1200)
-
-
-def runNewswireWatchdog(projectVersion: str, httpd) -> None:
-    """This tries to keep the newswire update thread running even if it dies
-    """
-    print('Starting newswire watchdog')
-    newswireOriginal = \
-        httpd.thrPostSchedule.clone(runNewswireDaemon)
-    httpd.thrNewswireDaemon.start()
-    while True:
-        time.sleep(50)
-        if not httpd.thrNewswireDaemon.isAlive():
-            httpd.thrNewswireDaemon.kill()
-            httpd.thrNewswireDaemon = \
-                newswireOriginal.clone(runNewswireDaemon)
-            httpd.thrNewswireDaemon.start()
-            print('Restarting newswire daemon...')
