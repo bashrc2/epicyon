@@ -6539,6 +6539,7 @@ class PubServer(BaseHTTPRequestHandler):
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
+                    moderator = isModerator(baseDir, currNickname)
                     msg = \
                         htmlInboxNews(self.server.defaultTimeline,
                                       self.server.recentPostsCache,
@@ -6558,7 +6559,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.projectVersion,
                                       self._isMinimal(nickname),
                                       self.server.YTReplacementDomain,
-                                      self.server.newswire)
+                                      self.server.newswire, moderator)
                     msg = msg.replace('/news/', '/' + currNickname + '/')
                     msg = msg.replace('/banner.webp', '/banner.png')
                     msg = msg.encode('utf-8')

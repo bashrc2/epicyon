@@ -5504,7 +5504,7 @@ def htmlTimeline(defaultTimeline: str,
                  manuallyApproveFollowers: bool,
                  minimal: bool,
                  YTReplacementDomain: str,
-                 newswire: {}) -> str:
+                 newswire: {}, moderator: bool) -> str:
     """Show the timeline as html
     """
     timelineStartTime = time.time()
@@ -5600,7 +5600,8 @@ def htmlTimeline(defaultTimeline: str,
                                      httpPrefix + '://')
 
     # is the user a moderator?
-    moderator = isModerator(baseDir, nickname)
+    if not moderator:
+        moderator = isModerator(baseDir, nickname)
 
     # benchmark 2
     timeDiff = int((time.time() - timelineStartTime) * 1000)
@@ -6192,7 +6193,7 @@ def htmlShares(defaultTimeline: str,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        False, YTReplacementDomain, newswire)
+                        False, YTReplacementDomain, newswire, False)
 
 
 def htmlInbox(defaultTimeline: str,
@@ -6215,7 +6216,7 @@ def htmlInbox(defaultTimeline: str,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, False)
 
 
 def htmlBookmarks(defaultTimeline: str,
@@ -6238,7 +6239,7 @@ def htmlBookmarks(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, False)
 
 
 def htmlEvents(defaultTimeline: str,
@@ -6261,7 +6262,7 @@ def htmlEvents(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, False)
 
 
 def htmlInboxDMs(defaultTimeline: str,
@@ -6280,7 +6281,7 @@ def htmlInboxDMs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
-                        YTReplacementDomain, newswire)
+                        YTReplacementDomain, newswire, False)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -6299,7 +6300,7 @@ def htmlInboxReplies(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, False)
 
 
 def htmlInboxMedia(defaultTimeline: str,
@@ -6318,7 +6319,7 @@ def htmlInboxMedia(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, False)
 
 
 def htmlInboxBlogs(defaultTimeline: str,
@@ -6337,7 +6338,7 @@ def htmlInboxBlogs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, False)
 
 
 def htmlInboxNews(defaultTimeline: str,
@@ -6348,7 +6349,7 @@ def htmlInboxNews(defaultTimeline: str,
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
-                  newswire: {}) -> str:
+                  newswire: {}, moderator: bool) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6356,7 +6357,7 @@ def htmlInboxNews(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlnews',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain, newswire, moderator)
 
 
 def htmlModeration(defaultTimeline: str,
@@ -6375,7 +6376,7 @@ def htmlModeration(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
-                        YTReplacementDomain, newswire)
+                        YTReplacementDomain, newswire, False)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -6397,7 +6398,7 @@ def htmlOutbox(defaultTimeline: str,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,
                         manuallyApproveFollowers, minimal,
-                        YTReplacementDomain, newswire)
+                        YTReplacementDomain, newswire, False)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
