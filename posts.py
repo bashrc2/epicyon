@@ -1193,42 +1193,6 @@ def createBlogPost(baseDir: str,
     return blog
 
 
-def createNewsPost(baseDir: str,
-                   nickname: str, domain: str, port: int, httpPrefix: str,
-                   published: str, rssTitle: str, rssDescription: str,
-                   attachImageFilename: str, mediaType: str,
-                   imageDescription: str, useBlurhash: bool) -> {}:
-    """Converts title and description from an rss feed into a post
-    """
-    inReplyTo = None
-    inReplyToAtomUri = None
-    schedulePost = False
-    eventDate = None
-    eventTime = None
-    location = None
-    schedulePost = False
-    eventDate = None
-    eventTime = None
-    location = None
-    clientToServer = False
-    saveToFile = False
-    followersOnly = False
-
-    blog = \
-        createPublicPost(baseDir,
-                         nickname, domain, port, httpPrefix,
-                         rssDescription, followersOnly, saveToFile,
-                         clientToServer,
-                         attachImageFilename, mediaType,
-                         imageDescription, useBlurhash,
-                         inReplyTo, inReplyToAtomUri, rssTitle,
-                         schedulePost,
-                         eventDate, eventTime, location)
-    blog['object']['type'] = 'Article'
-    blog['object']['published'] = published
-    return blog
-
-
 def createQuestionPost(baseDir: str,
                        nickname: str, domain: str, port: int, httpPrefix: str,
                        content: str, qOptions: [],

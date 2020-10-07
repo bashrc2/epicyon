@@ -220,10 +220,14 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
     return jsonObject
 
 
-def getStatusNumber() -> (str, str):
+def getStatusNumber(publishedStr=None) -> (str, str):
     """Returns the status number and published date
     """
-    currTime = datetime.datetime.utcnow()
+    if not publishedStr:
+        currTime = datetime.datetime.utcnow()
+    else:
+        currTime = \
+            datetime.datetime.strptime(publishedStr, '%Y-%m-%dT%H:%M:%SZ')
     daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
     # status is the number of seconds since epoch
     statusNumber = \
