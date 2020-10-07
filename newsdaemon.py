@@ -10,7 +10,7 @@ import os
 import time
 from collections import OrderedDict
 from newswire import getDictFromNewswire
-from posts import createPublicPost
+from posts import createNewsPost
 from utils import saveJson
 from utils import getStatusNumber
 
@@ -94,15 +94,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         followersOnly = False
         useBlurhash = False
-        commentsEnabled = False
-        blog = createPublicPost(baseDir,
-                                'news', domain, port, httpPrefix,
-                                rssDescription, followersOnly, False,
-                                False, commentsEnabled,
-                                None, None, None, useBlurhash,
-                                None, None, rssTitle,
-                                False,
-                                None, None, None)
+        blog = createNewsPost(baseDir,
+                              'news', domain, port, httpPrefix,
+                              rssDescription, followersOnly, False,
+                              None, None, None, useBlurhash,
+                              rssTitle)
         if not blog:
             continue
 

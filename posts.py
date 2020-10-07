@@ -1193,6 +1193,33 @@ def createBlogPost(baseDir: str,
     return blog
 
 
+def createNewsPost(baseDir: str,
+                   nickname: str, domain: str, port: int, httpPrefix: str,
+                   content: str, followersOnly: bool, saveToFile: bool,
+                   attachImageFilename: str, mediaType: str,
+                   imageDescription: str, useBlurhash: bool,
+                   subject: str) -> {}:
+    clientToServer = False
+    inReplyTo = None
+    inReplyToAtomUri = None
+    schedulePost = False,
+    eventDate = None
+    eventTime = None
+    location = None
+    blog = \
+        createPublicPost(baseDir,
+                         nickname, domain, port, httpPrefix,
+                         content, followersOnly, saveToFile,
+                         clientToServer,
+                         attachImageFilename, mediaType,
+                         imageDescription, useBlurhash,
+                         inReplyTo, inReplyToAtomUri, subject,
+                         schedulePost,
+                         eventDate, eventTime, location)
+    blog['object']['type'] = 'Article'
+    return blog
+
+
 def createQuestionPost(baseDir: str,
                        nickname: str, domain: str, port: int, httpPrefix: str,
                        content: str, qOptions: [],
