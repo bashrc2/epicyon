@@ -5741,7 +5741,7 @@ def htmlTimeline(defaultTimeline: str,
             translate['Create a new DM'] + \
             '" alt="| ' + translate['Create a new DM'] + \
             '" class="timelineicon"/></a>\n'
-    elif boxName == 'tlblogs':
+    elif boxName == 'tlblogs' or boxName == 'tlnews':
         newPostButtonStr = \
             '        <a class="imageAnchor" href="' + usersPath + \
             '/newblog"><img loading="lazy" src="/' + \
