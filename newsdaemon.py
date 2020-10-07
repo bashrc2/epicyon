@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import time
+from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createBlogPost
 from utils import saveJson
@@ -21,10 +22,16 @@ def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
     indexFilename = basePath + '/outbox.index'
 
     if os.path.isfile(indexFilename):
-        feedsFile = open(indexFilename, 'a+')
-        if feedsFile:
-            feedsFile.write(postId + '\n')
-            feedsFile.close()
+        if postId not in open(indexFilename).read():
+            try:
+                with open(indexFilename, 'r+') as feedsFile:
+                    content = feedsFile.read()
+                    feedsFile.seek(0, 0)
+                    feedsFile.write(postId + '\n' + content)
+                    print('DEBUG: feeds post added to index')
+            except Exception as e:
+                print('WARN: Failed to write entry to feeds posts index ' +
+                      indexFilename + ' ' + str(e))
     else:
         feedsFile = open(indexFilename, 'w+')
         if feedsFile:
@@ -42,7 +49,10 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     if not os.path.isdir(basePath):
         os.mkdir(basePath)
 
-    for dateStr, item in newswire.items():
+    newswireReverse = \
+        OrderedDict(sorted(newswire.items(), reverse=True))
+
+    for dateStr, item in newswireReverse.items():
         # convert the date to the format used by ActivityPub
         dateStr = dateStr.replace(' ', 'T')
         dateStr = dateStr.replace('+00:00', 'Z')
