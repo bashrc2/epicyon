@@ -1202,7 +1202,7 @@ def createNewsPost(baseDir: str,
     clientToServer = False
     inReplyTo = None
     inReplyToAtomUri = None
-    schedulePost = False,
+    schedulePost = False
     eventDate = None
     eventTime = None
     location = None
