@@ -1374,6 +1374,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     hideLikeButton = ''
     mediaInstanceStr = ''
     blogsInstanceStr = ''
+    newsInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
     donateUrl = ''
@@ -1432,12 +1433,21 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
             blogsInstanceStr = ''
+            newsInstanceStr = ''
+
+    newsInstance = getConfigParam(baseDir, "newsInstance")
+    if newsInstance:
+        if newsInstance is True:
+            newsInstanceStr = 'checked'
+            blogsInstanceStr = ''
+            mediaInstanceStr = ''
 
     blogsInstance = getConfigParam(baseDir, "blogsInstance")
     if blogsInstance:
         if blogsInstance is True:
             blogsInstanceStr = 'checked'
             mediaInstanceStr = ''
+            newsInstanceStr = ''
 
     filterStr = ''
     filterFilename = \
@@ -1781,6 +1791,10 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
             translate['This is a blogging instance'] + '<br>\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="newsInstance" ' + newsInstanceStr + '> ' + \
+            translate['This is a news instance'] + '<br>\n'
         editProfileForm += '    </div>\n'
 
     editProfileForm += '    <div class="container">\n'
@@ -5596,6 +5610,7 @@ def htmlTimeline(defaultTimeline: str,
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
     blogsButton = 'button'
+    newsButton = 'button'
     dmButton = 'button'
     if newDM:
         dmButton = 'buttonhighlighted'
@@ -5616,6 +5631,8 @@ def htmlTimeline(defaultTimeline: str,
         inboxButton = 'buttonselected'
     elif boxName == 'tlblogs':
         blogsButton = 'buttonselected'
+    elif boxName == 'tlnews':
+        newsButton = 'buttonselected'
     elif boxName == 'dm':
         dmButton = 'buttonselected'
         if newDM:
@@ -5812,6 +5829,12 @@ def htmlTimeline(defaultTimeline: str,
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>\n'
+    elif defaultTimeline == 'tlnews':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
+            '</span></button></a>\n'
     else:
         tlStr += \
             '      <a href="' + usersPath + \
@@ -5854,6 +5877,23 @@ def htmlTimeline(defaultTimeline: str,
                 '      <a href="' + usersPath + \
                 '/tlblogs"><button class="' + \
                 blogsButton + '"><span>' + translate['Blogs'] + \
+                '</span></button></a>\n'
+    else:
+        if not minimal:
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/inbox"><button class="' + \
+                inboxButton + '"><span>' + translate['Inbox'] + \
+                '</span></button></a>\n'
+
+    # typically the news button
+    # but may change if this is a news oriented instance
+    if defaultTimeline != 'tlnews':
+        if not minimal:
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/tlnews"><button class="' + \
+                newsButton + '"><span>' + translate['News'] + \
                 '</span></button></a>\n'
     else:
         if not minimal:

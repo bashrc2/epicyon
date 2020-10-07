@@ -195,6 +195,9 @@ parser.add_argument("--mediainstance", type=str2bool, nargs='?',
 parser.add_argument("--blogsinstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Blogs Instance - favor blogs over microblogging")
+parser.add_argument("--newsinstance", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="News Instance - favor news over microblogging")
 parser.add_argument("--debug", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show debug messages")
@@ -626,6 +629,15 @@ if not args.mediainstance:
         args.mediainstance = mediaInstance
         if args.mediainstance:
             args.blogsinstance = False
+            args.newsinstance = False
+
+if not args.newsinstance:
+    newsInstance = getConfigParam(baseDir, 'newsInstance')
+    if newsInstance is not None:
+        args.newsinstance = newsInstance
+        if args.newsinstance:
+            args.blogsinstance = False
+            args.mediainstance = False
 
 if not args.blogsinstance:
     blogsInstance = getConfigParam(baseDir, 'blogsInstance')
@@ -633,6 +645,7 @@ if not args.blogsinstance:
         args.blogsinstance = blogsInstance
         if args.blogsinstance:
             args.mediainstance = False
+            args.newsinstance = False
 
 # set the instance title in config.json
 title = getConfigParam(baseDir, 'instanceTitle')
@@ -1898,7 +1911,8 @@ if setTheme(baseDir, themeName):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.blogsinstance, args.mediainstance,
+    runDaemon(args.newsinstance,
+              args.blogsinstance, args.mediainstance,
               args.maxRecentPosts,
               not args.nosharedinbox,
               registration, args.language, __version__,

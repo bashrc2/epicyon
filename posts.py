@@ -505,7 +505,8 @@ def deleteAllPosts(baseDir: str,
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
-       boxname != 'tlblogs' and boxname != 'tlevents':
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlevents':
         return
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     for deleteFilename in os.scandir(boxDir):
@@ -527,7 +528,8 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
     Returns the filename
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
-       boxname != 'tlblogs' and boxname != 'tlevents' and \
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlevents' and \
        boxname != 'scheduled':
         return None
     originalDomain = domain
@@ -2504,6 +2506,15 @@ def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                             pageNumber)
 
 
+def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
+                       port: int, httpPrefix: str, itemsPerPage: int,
+                       headerOnly: bool, pageNumber=None) -> {}:
+    return createBoxIndexed({}, session, baseDir, 'tlnews', nickname,
+                            domain, port, httpPrefix,
+                            itemsPerPage, headerOnly, True,
+                            pageNumber)
+
+
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
                  port: int, httpPrefix: str,
                  itemsPerPage: int, headerOnly: bool, authorized: bool,
@@ -2775,7 +2786,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
         elif boxname == 'tlreplies':
             if boxActor not in postStr:
                 return False
-        elif boxname == 'tlblogs':
+        elif boxname == 'tlblogs' or boxname == 'tlnews':
             if '"Create"' not in postStr:
                 return False
             if '"Article"' not in postStr:
@@ -2812,7 +2823,7 @@ def createBoxIndexed(recentPostsCache: {},
 
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
-       boxname != 'tlblogs' and \
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks' and \
        boxname != 'tlevents':

@@ -23,6 +23,7 @@ from webfinger import storeWebfingerEndpoint
 from posts import createDMTimeline
 from posts import createRepliesTimeline
 from posts import createMediaTimeline
+from posts import createNewsTimeline
 from posts import createBlogsTimeline
 from posts import createBookmarksTimeline
 from posts import createEventsTimeline
@@ -591,7 +592,7 @@ def personBoxJson(recentPostsCache: {},
     """
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
-       boxname != 'tlblogs' and \
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks' and \
        boxname != 'tlevents':
@@ -659,6 +660,10 @@ def personBoxJson(recentPostsCache: {},
         return createMediaTimeline(session, baseDir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,
                                    pageNumber)
+    elif boxname == 'tlnews':
+        return createNewsTimeline(session, baseDir, nickname, domain, port,
+                                  httpPrefix, noOfItems, headerOnly,
+                                  pageNumber)
     elif boxname == 'tlblogs':
         return createBlogsTimeline(session, baseDir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,

@@ -3436,6 +3436,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['mediaInstance'] == 'on':
                             self.server.mediaInstance = True
                             self.server.blogsInstance = False
+                            self.server.newsInstance = False
                             self.server.defaultTimeline = 'tlmedia'
                         setConfigParam(baseDir,
                                        "mediaInstance",
@@ -3443,12 +3444,41 @@ class PubServer(BaseHTTPRequestHandler):
                         setConfigParam(baseDir,
                                        "blogsInstance",
                                        self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
                     else:
                         if self.server.mediaInstance:
                             self.server.mediaInstance = False
                             self.server.defaultTimeline = 'inbox'
                             setConfigParam(baseDir,
                                            "mediaInstance",
+                                           self.server.mediaInstance)
+
+                    # change news instance status
+                    if fields.get('newsInstance'):
+                        self.server.newsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['mediaInstance'] == 'on':
+                            self.server.newsInstance = True
+                            self.server.blogsInstance = False
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'tlnews'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.newsInstance:
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "newsInstance",
                                            self.server.mediaInstance)
 
                     # change blog instance status
@@ -3458,6 +3488,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['blogsInstance'] == 'on':
                             self.server.blogsInstance = True
                             self.server.mediaInstance = False
+                            self.server.newsInstance = False
                             self.server.defaultTimeline = 'tlblogs'
                         setConfigParam(baseDir,
                                        "blogsInstance",
@@ -3465,6 +3496,9 @@ class PubServer(BaseHTTPRequestHandler):
                         setConfigParam(baseDir,
                                        "mediaInstance",
                                        self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
                     else:
                         if self.server.blogsInstance:
                             self.server.blogsInstance = False
@@ -8632,13 +8666,16 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
                 self._setMinimal(nickname, not self._isMinimal(nickname))
                 if not (self.server.mediaInstance or
-                        self.server.blogsInstance):
+                        self.server.blogsInstance or
+                        self.server.newsInstance):
                     self.path = '/users/' + nickname + '/inbox'
                 else:
                     if self.server.blogsInstance:
                         self.path = '/users/' + nickname + '/tlblogs'
-                    else:
+                    elif self.server.mediaInstance:
                         self.path = '/users/' + nickname + '/tlmedia'
+                    else:
+                        self.path = '/users/' + nickname + '/tlnews'
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
@@ -11166,7 +11203,9 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(blogsInstance: bool, mediaInstance: bool,
+def runDaemon(newsInstance: bool,
+              blogsInstance: bool,
+              mediaInstance: bool,
               maxRecentPosts: int,
               enableSharedInbox: bool, registration: bool,
               language: str, projectVersion: str,
@@ -11230,11 +11269,14 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.useBlurHash = useBlurHash
     httpd.mediaInstance = mediaInstance
     httpd.blogsInstance = blogsInstance
+    httpd.newsInstance = newsInstance
     httpd.defaultTimeline = 'inbox'
     if mediaInstance:
         httpd.defaultTimeline = 'tlmedia'
     if blogsInstance:
         httpd.defaultTimeline = 'tlblogs'
+    if newsInstance:
+        httpd.defaultTimeline = 'tlnews'
 
     # load translations dictionary
     httpd.translate = {}
