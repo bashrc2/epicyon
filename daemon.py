@@ -3468,7 +3468,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('newsInstance'):
                         self.server.newsInstance = False
                         self.server.defaultTimeline = 'inbox'
-                        if fields['mediaInstance'] == 'on':
+                        if fields['newsInstance'] == 'on':
                             self.server.newsInstance = True
                             self.server.blogsInstance = False
                             self.server.mediaInstance = False
