@@ -53,6 +53,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         OrderedDict(sorted(newswire.items(), reverse=False))
 
     for dateStr, item in newswireReverse.items():
+        originalDateStr = dateStr
         # convert the date to the format used by ActivityPub
         dateStr = dateStr.replace(' ', 'T')
         dateStr = dateStr.replace('+00:00', 'Z')
@@ -67,9 +68,12 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if os.path.isfile(filename):
             # if a local post exists as html then change the link
             # to the local one
-            htmlFilename = filename.replace('.json', '.html')
+            htmlFilename = \
+                baseDir + '/accounts/news@' + domain + \
+                '/postcache/' + newPostId.replace('/', '#') + '.html'
             if os.path.isfile(htmlFilename):
-                item[1] = '/users/news/statuses/' + statusNumber + '.html'
+                newswire[originalDateStr][1] = \
+                    '/users/news/statuses/' + statusNumber + '.html'
             # don't create the post if it already exists
             continue
 
