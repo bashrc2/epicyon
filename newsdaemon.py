@@ -49,28 +49,44 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     nickname = 'feeds'
 
     for dateStr, item in newswire.items():
+        # convert the date to the format used by ActivityPub
         dateStr = dateStr.replace(' ', 'T')
         dateStr = dateStr.replace('+00:00', 'Z')
 
+        # file where the post is stored
         filename = basePath + '/' + dateStr + '.json'
         if os.path.isfile(filename):
+            # if a local post exists as html then change the link
+            # to the local one
+            htmlFilename = basePath + '/' + dateStr + '.html'
+            if os.path.isfile(htmlFilename):
+                item[1] = '/feeds/' + dateStr + '.html'
+            # don't create the post if it already exists
             continue
 
         rssTitle = item[0]
         url = item[1]
         rssDescription = ''
+
+        # get the rss description if it exists
         if len(item) >= 5:
             rssDescription = item[4]
+
+        # add the off-site link to the description
         if rssDescription:
             rssDescription += \
                 '\n\n' + translate['Read more...'] + '\n' + url
         else:
             rssDescription = url
+
+        # create the activitypub post
         blog = createNewsPost(baseDir,
                               nickname, domain, port,
                               httpPrefix, dateStr,
                               rssTitle, rssDescription,
                               None, None, None, False)
+
+        # save the post and update the index
         if saveJson(blog, filename):
             updateFeedsIndex(baseDir, filename)
 
