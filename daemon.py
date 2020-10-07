@@ -119,6 +119,7 @@ from webinterface import htmlInboxDMs
 from webinterface import htmlInboxReplies
 from webinterface import htmlInboxMedia
 from webinterface import htmlInboxBlogs
+from webinterface import htmlInboxNews
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -6479,6 +6480,73 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showNewsTimeline(self, authorized: bool,
+                          callingDomain: str, path: str,
+                          baseDir: str, httpPrefix: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          GETstartTime, GETtimings: {},
+                          proxyType: str, cookie: str,
+                          debug: str) -> bool:
+        """Shows the news timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlnews', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    msg = \
+                        htmlInboxNews(self.server.defaultTimeline,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.translate,
+                                      pageNumber, maxPostsInBlogsFeed,
+                                      self.server.session,
+                                      baseDir,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      nickname,
+                                      domain,
+                                      port,
+                                      self.server.allowDeletion,
+                                      httpPrefix,
+                                      self.server.projectVersion,
+                                      self._isMinimal(nickname),
+                                      self.server.YTReplacementDomain,
+                                      self.server.newswire)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show news 2')
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlnews', '')
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlnews':
+            # not the news inbox
+            if debug:
+                print('DEBUG: GET access to news is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def _showSharesTimeline(self, authorized: bool,
                             callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -9398,6 +9466,26 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show media 2 done',
                                   'show blogs 2 done')
+
+        # get the news for a given person
+        if self.path.endswith('/tlnews') or '/tlnews?page=' in self.path:
+            if self._showNewsTimeline(authorized,
+                                      callingDomain, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      cookie, self.server.debug):
+                return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show blogs 2 done',
+                                  'show news 2 done')
 
         # get the shared items timeline for a given person
         if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
