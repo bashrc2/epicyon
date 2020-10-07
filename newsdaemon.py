@@ -10,7 +10,7 @@ import os
 import time
 from collections import OrderedDict
 from newswire import getDictFromNewswire
-from posts import createBlogPost
+from posts import createPublicPost
 from utils import saveJson
 from utils import getStatusNumber
 
