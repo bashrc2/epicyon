@@ -54,6 +54,7 @@ from person import registerAccount
 from person import personLookup
 from person import personBoxJson
 from person import createSharedInbox
+from person import createNewsInbox
 from person import suspendAccount
 from person import unsuspendAccount
 from person import removeAccount
@@ -1229,6 +1230,11 @@ class PubServer(BaseHTTPRequestHandler):
         loginNickname, loginPassword, register = \
             htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
         if loginNickname:
+            if loginNickname == 'news' or loginNickname == 'inbox':
+                print('Invalid username login: ' + loginNickname)
+                self._clearLoginDetails(loginNickname, callingDomain)
+                self.server.POSTbusy = False
+                return
             self.server.lastLoginTime = int(time.time())
             if register:
                 if not registerAccount(baseDir, httpPrefix, domain, port,
@@ -11454,6 +11460,10 @@ def runDaemon(newsInstance: bool,
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
         createSharedInbox(baseDir, 'inbox', domain, port, httpPrefix)
+
+    if not os.path.isdir(baseDir + '/accounts/news@' + domain):
+        print('Creating news inbox: news@' + domain)
+        createNewsInbox(baseDir, domain, port, httpPrefix)
 
     if not os.path.isdir(baseDir + '/cache'):
         os.mkdir(baseDir + '/cache')

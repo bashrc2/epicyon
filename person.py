@@ -504,6 +504,14 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
                             True, True, None)
 
 
+def createNewsInbox(baseDir: str, domain: str, port: int,
+                    httpPrefix: str) -> (str, str, {}, {}):
+    """Generates the news inbox
+    """
+    return createPersonBase(baseDir, 'news', domain, port, httpPrefix,
+                            True, True, None)
+
+
 def personUpgradeActor(baseDir: str, personJson: {},
                        handle: str, filename: str) -> None:
     """Alter the actor to add any new properties
