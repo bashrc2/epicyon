@@ -6533,6 +6533,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           httpPrefix,
                                           maxPostsInBlogsFeed, 'tlnews',
                                           True)
+                    currNickname = path.split('/users/')[1]
+                    if '/' in currNickname:
+                        currNickname = currNickname.split('/')[0]
                     msg = \
                         htmlInboxBlogs(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6553,6 +6556,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
                                        self.server.newswire)
+                    msg = msg.replace('/news/', '/' + currNickname + '/')
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
