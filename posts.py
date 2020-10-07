@@ -657,7 +657,7 @@ def appendEventFields(newPost: {},
         newPost['sensitive'] = False
 
 
-def validContentWarning(cw: str) -> str:
+def validContentWarnings(cw: str) -> str:
     """Returns a validated content warning
     """
     cw = removeHtml(cw)
@@ -722,7 +722,9 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                    eventStatus=None, ticketUrl=None) -> {}:
     """Creates a message
     """
+    print("Subject 1: " + subject)
     subject = addAutoCW(baseDir, nickname, domain, subject, content)
+    print("Subject 2: " + subject)
 
     mentionedRecipients = \
         getMentionedPeople(baseDir, httpPrefix, content, domain, False)
@@ -766,6 +768,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     if subject:
         summary = validContentWarning(subject)
         sensitive = True
+    print("Subject 3: " + summary)
 
     toRecipients = []
     toCC = []
@@ -1206,7 +1209,6 @@ def createNewsPost(baseDir: str,
     eventDate = None
     eventTime = None
     location = None
-    print('RSS title 2: ' + str(subject))
     blog = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
