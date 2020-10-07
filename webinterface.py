@@ -5134,7 +5134,7 @@ def individualPostAsHtml(allowDownloads: bool,
         contentStr = ''
         if postJsonObject['object'].get('summary'):
             contentStr += \
-                '<b>' + postJsonObject['object']['summary'] + '</b>\n '
+                '<b>' + str(postJsonObject['object']['summary']) + '</b>\n '
             if isModerationPost:
                 containerClass = 'container report'
         # get the content warning text
