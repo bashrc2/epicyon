@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-import time
 import requests
 from socket import error as SocketError
 import errno

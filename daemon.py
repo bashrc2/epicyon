@@ -11534,7 +11534,9 @@ def runDaemon(newsInstance: bool,
     print('Creating newswire thread')
     httpd.thrNewswireDaemon = \
         threadWithTrace(target=runNewswireDaemon,
-                        args=(baseDir, httpd, 'newswire'), daemon=True)
+                        args=(baseDir, httpd,
+                              httpPrefix, domain, port,
+                              httpd.translate), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False

@@ -1195,7 +1195,7 @@ def createBlogPost(baseDir: str,
 
 def createNewsPost(baseDir: str,
                    nickname: str, domain: str, port: int, httpPrefix: str,
-                   rssTitle: str, rssDescription: str,
+                   published: str, rssTitle: str, rssDescription: str,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, useBlurhash: bool) -> {}:
     """Converts title and description from an rss feed into a post
@@ -1225,6 +1225,7 @@ def createNewsPost(baseDir: str,
                          schedulePost,
                          eventDate, eventTime, location)
     blog['object']['type'] = 'Article'
+    blog['object']['published'] = published
     return blog
 
 
