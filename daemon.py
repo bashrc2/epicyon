@@ -120,7 +120,6 @@ from webinterface import htmlInboxDMs
 from webinterface import htmlInboxReplies
 from webinterface import htmlInboxMedia
 from webinterface import htmlInboxBlogs
-from webinterface import htmlInboxNews
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -219,6 +218,8 @@ maxPostsInMediaFeed = 6
 
 # Blogs can be longer, so don't show many per page
 maxPostsInBlogsFeed = 4
+
+maxPostsInNewsFeed = 10
 
 # Maximum number of entries in returned rss.xml
 maxPostsInRSSFeed = 10
@@ -6498,9 +6499,24 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if '/users/' in path:
             if authorized:
+                currNickname = path.split('/users/')[1]
+                if '/' in currNickname:
+                    currNickname = currNickname.split('/')[0]
+                newsPath = path.replace('/' + currNickname + '/', '/news/')
+                inboxNewsFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  newsPath,
+                                  httpPrefix,
+                                  maxPostsInNewsFeed, 'outbox',
+                                  True)
+                if not inboxNewsFeed:
+                    inboxNewsFeed = []
                 if self._requestHTTP():
-                    nickname = path.replace('/users/', '')
-                    nickname = nickname.replace('/tlnews', '')
+                    nickname = 'news'
                     pageNumber = 1
                     if '?page=' in nickname:
                         pageNumber = nickname.split('?page=')[1]
@@ -6509,25 +6525,38 @@ class PubServer(BaseHTTPRequestHandler):
                             pageNumber = int(pageNumber)
                         else:
                             pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxNewsFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          newsPath + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInBlogsFeed, 'outbox',
+                                          True)
                     msg = \
-                        htmlInboxNews(self.server.defaultTimeline,
-                                      self.server.recentPostsCache,
-                                      self.server.maxRecentPosts,
-                                      self.server.translate,
-                                      pageNumber, maxPostsInBlogsFeed,
-                                      self.server.session,
-                                      baseDir,
-                                      self.server.cachedWebfingers,
-                                      self.server.personCache,
-                                      nickname,
-                                      domain,
-                                      port,
-                                      self.server.allowDeletion,
-                                      httpPrefix,
-                                      self.server.projectVersion,
-                                      self._isMinimal(nickname),
-                                      self.server.YTReplacementDomain,
-                                      self.server.newswire)
+                        htmlInboxBlogs(self.server.defaultTimeline,
+                                       self.server.recentPostsCache,
+                                       self.server.maxRecentPosts,
+                                       self.server.translate,
+                                       pageNumber, maxPostsInNewsFeed,
+                                       self.server.session,
+                                       baseDir,
+                                       self.server.cachedWebfingers,
+                                       self.server.personCache,
+                                       nickname,
+                                       domain,
+                                       port,
+                                       inboxNewsFeed,
+                                       self.server.allowDeletion,
+                                       httpPrefix,
+                                       self.server.projectVersion,
+                                       self._isMinimal(nickname),
+                                       self.server.YTReplacementDomain,
+                                       self.server.newswire)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6535,12 +6564,21 @@ class PubServer(BaseHTTPRequestHandler):
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show blogs 2 done',
                                               'show news 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxNewsFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json',
+                                      len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
                 self.server.GETbusy = False
                 return True
             else:
                 if debug:
-                    nickname = path.replace('/users/', '')
-                    nickname = nickname.replace('/tlnews', '')
+                    nickname = 'news'
                     print('DEBUG: ' + nickname +
                           ' was not authorized to access ' + path)
         if path != '/tlnews':
