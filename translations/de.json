@@ -301,8 +301,8 @@
     "Posts to be approved": "Zu genehmigende Beiträge",
     "Discuss": "Diskutieren",
     "Moderator Discussion": "Moderatorendiskussion",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "Abstimmung",
+    "Remove Vote": "Abstimmung entfernen",
+    "This is a news instance": "Dies ist eine Nachrichteninstanz",
+    "News": "Nachrichten"
 }

@@ -301,8 +301,8 @@
     "Posts to be approved": "Postagens a serem aprovadas",
     "Discuss": "Discutir",
     "Moderator Discussion": "Discussão do moderador",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "Voto",
+    "Remove Vote": "Remover voto",
+    "This is a news instance": "Esta é uma instância de notícias",
+    "News": "Notícia"
 }

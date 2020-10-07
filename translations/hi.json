@@ -301,8 +301,8 @@
     "Posts to be approved": "स्वीकृत किए जाने वाले पद",
     "Discuss": "चर्चा करें",
     "Moderator Discussion": "मॉडरेटर चर्चा",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "वोट",
+    "Remove Vote": "वोट हटा दें",
+    "This is a news instance": "यह एक समाचार का उदाहरण है",
+    "News": "समाचार"
 }

@@ -301,8 +301,8 @@
     "Posts to be approved": "承認される投稿",
     "Discuss": "議論する",
     "Moderator Discussion": "モデレーターディスカッション",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "投票",
+    "Remove Vote": "投票を削除",
+    "This is a news instance": "これはニュースインスタンスです",
+    "News": "ニュース"
 }

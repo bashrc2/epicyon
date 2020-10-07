@@ -301,8 +301,8 @@
     "Posts to be approved": "职位待批准",
     "Discuss": "讨论",
     "Moderator Discussion": "主持人讨论",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "投票",
+    "Remove Vote": "删除投票",
+    "This is a news instance": "这是一个新闻实例",
+    "News": "新闻"
 }

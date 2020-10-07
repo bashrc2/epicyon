@@ -301,8 +301,8 @@
     "Posts to be approved": "Missatges per aprovar",
     "Discuss": "Discuteix",
     "Moderator Discussion": "Discussió sobre moderadors",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "Notícies",
+    "Remove Vote": "Elimina el vot",
+    "This is a news instance": "Aquesta és una instància de notícies",
+    "News": "Notícies"
 }

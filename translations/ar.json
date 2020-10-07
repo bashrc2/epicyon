@@ -301,8 +301,8 @@
     "Posts to be approved": "الوظائف المطلوب الموافقة عليها",
     "Discuss": "مناقشة",
     "Moderator Discussion": "مناقشة المنسق",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "تصويت",
+    "Remove Vote": "إزالة التصويت",
+    "This is a news instance": "هذا مثال أخبار",
+    "News": "أخبار"
 }

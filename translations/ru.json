@@ -301,8 +301,8 @@
     "Posts to be approved": "Посты на утверждение",
     "Discuss": "Обсудить",
     "Moderator Discussion": "Обсуждение модератором",
-    "Vote": "",
-    "Remove Vote": "",
-    "This is a news instance": "",
-    "News": ""
+    "Vote": "Голос",
+    "Remove Vote": "Удалить голос",
+    "This is a news instance": "Это новостной экземпляр",
+    "News": "Новости"
 }
