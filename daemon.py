@@ -6513,7 +6513,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if not inboxNewsFeed:
                     inboxNewsFeed = []
                 if self._requestHTTP():
-                    nickname = 'news'
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlnews', '')
                     pageNumber = 1
                     if '?page=' in nickname:
                         pageNumber = nickname.split('?page=')[1]
@@ -6522,6 +6523,7 @@ class PubServer(BaseHTTPRequestHandler):
                             pageNumber = int(pageNumber)
                         else:
                             pageNumber = 1
+                    nickname = 'news'
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxNewsFeed = \
