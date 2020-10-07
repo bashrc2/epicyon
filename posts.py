@@ -1197,7 +1197,7 @@ def createBlogPost(baseDir: str,
 
 
 def createNewsPost(baseDir: str,
-                   nickname: str, domain: str, port: int, httpPrefix: str,
+                   domain: str, port: int, httpPrefix: str,
                    content: str, followersOnly: bool, saveToFile: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, useBlurhash: bool,
@@ -1211,14 +1211,14 @@ def createNewsPost(baseDir: str,
     location = None
     blog = \
         createPublicPost(baseDir,
-                         nickname, domain, port, httpPrefix,
-                         content, followersOnly, saveToFile,
-                         clientToServer,
-                         attachImageFilename, mediaType,
-                         imageDescription, useBlurhash,
-                         inReplyTo, inReplyToAtomUri, subject,
-                         schedulePost,
-                         eventDate, eventTime, location)
+                     'news', domain, port, httpPrefix,
+                     content, followersOnly, saveToFile,
+                     clientToServer, False,
+                     attachImageFilename, mediaType,
+                     imageDescription, useBlurhash,
+                     inReplyTo, inReplyToAtomUri, subject,
+                     schedulePost,
+                     eventDate, eventTime, location)
     blog['object']['type'] = 'Article'
     return blog
 
