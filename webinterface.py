@@ -6340,6 +6340,25 @@ def htmlInboxBlogs(defaultTimeline: str,
                         minimal, YTReplacementDomain, newswire)
 
 
+def htmlInboxNews(defaultTimeline: str,
+                  recentPostsCache: {}, maxRecentPosts: int,
+                  translate: {}, pageNumber: int, itemsPerPage: int,
+                  session, baseDir: str, wfRequest: {}, personCache: {},
+                  nickname: str, domain: str, port: int, inboxJson: {},
+                  allowDeletion: bool,
+                  httpPrefix: str, projectVersion: str,
+                  minimal: bool, YTReplacementDomain: str,
+                  newswire: {}) -> str:
+    """Show the news timeline as html
+    """
+    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        nickname, domain, port, inboxJson, 'tlnews',
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal, YTReplacementDomain, newswire)
+
+
 def htmlModeration(defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,

@@ -120,6 +120,7 @@ from webinterface import htmlInboxDMs
 from webinterface import htmlInboxReplies
 from webinterface import htmlInboxMedia
 from webinterface import htmlInboxBlogs
+from webinterface import htmlInboxNews
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -6537,27 +6538,26 @@ class PubServer(BaseHTTPRequestHandler):
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
                     msg = \
-                        htmlInboxBlogs(self.server.defaultTimeline,
-                                       self.server.recentPostsCache,
-                                       self.server.maxRecentPosts,
-                                       self.server.translate,
-                                       pageNumber, maxPostsInNewsFeed,
-                                       self.server.session,
-                                       baseDir,
-                                       self.server.cachedWebfingers,
-                                       self.server.personCache,
-                                       nickname,
-                                       domain,
-                                       port,
-                                       inboxNewsFeed,
-                                       self.server.allowDeletion,
-                                       httpPrefix,
-                                       self.server.projectVersion,
-                                       self._isMinimal(nickname),
-                                       self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                        htmlInboxNews(self.server.defaultTimeline,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.translate,
+                                      pageNumber, maxPostsInNewsFeed,
+                                      self.server.session,
+                                      baseDir,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      nickname,
+                                      domain,
+                                      port,
+                                      inboxNewsFeed,
+                                      self.server.allowDeletion,
+                                      httpPrefix,
+                                      self.server.projectVersion,
+                                      self._isMinimal(nickname),
+                                      self.server.YTReplacementDomain,
+                                      self.server.newswire)
                     msg = msg.replace('/news/', '/' + currNickname + '/')
-                    msg = msg.replace('tlblogs', 'tlnews')
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
