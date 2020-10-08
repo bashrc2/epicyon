@@ -4686,15 +4686,18 @@ def individualPostAsHtml(allowDownloads: bool,
         ('/' + fullDomain + '/' in postActor and
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
-            deleteStr = \
-                '        <a class="imageAnchor" href="/users/' + nickname + \
-                '?delete=' + messageId + pageNumberParam + \
-                '" title="' + translate['Delete this post'] + '">\n'
-            deleteStr += \
-                '          ' + \
-                '<img loading="lazy" alt="' + translate['Delete this post'] + \
-                ' |" title="' + translate['Delete this post'] + \
-                '" src="/' + iconsDir + '/delete.png"/></a>\n'
+            if not isNewsPost(postJsonObject):
+                deleteStr = \
+                    '        <a class="imageAnchor" href="/users/' + \
+                    nickname + \
+                    '?delete=' + messageId + pageNumberParam + \
+                    '" title="' + translate['Delete this post'] + '">\n'
+                deleteStr += \
+                    '          ' + \
+                    '<img loading="lazy" alt="' + \
+                    translate['Delete this post'] + \
+                    ' |" title="' + translate['Delete this post'] + \
+                    '" src="/' + iconsDir + '/delete.png"/></a>\n'
     else:
         if not isMuted:
             muteStr = \
