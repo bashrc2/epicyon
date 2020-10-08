@@ -11,6 +11,7 @@ import time
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
+from inbox import inboxStorePostToHtmlCache
 from utils import saveJson
 from utils import getStatusNumber
 
@@ -42,7 +43,10 @@ def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             domain: str, port: int,
                             newswire: {},
-                            translate: {}) -> None:
+                            translate: {},
+                            recentPostsCache: {}, maxRecentPosts: int,
+                            session, cachedWebfingers: {},
+                            personCache: {}) -> None:
     """Converts rss items in a newswire into posts
     """
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
@@ -120,6 +124,12 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # save the post and update the index
         if saveJson(blog, filename):
             updateFeedsIndex(baseDir, domain, postId + '.json')
+            # convert json to html
+            inboxStorePostToHtmlCache(recentPostsCache, maxRecentPosts,
+                                      translate, baseDir, httpPrefix,
+                                      session, cachedWebfingers, personCache,
+                                      'news', domain, port,
+                                      blog, False, 'outbox')
             newswire[originalDateStr][1] = '/@news/' + statusNumber
 
 
@@ -151,7 +161,12 @@ def runNewswireDaemon(baseDir: str, httpd,
 
         convertRSStoActivityPub(baseDir,
                                 httpPrefix, domain, port,
-                                newNewswire, translate)
+                                newNewswire, translate,
+                                httpd.recentPostsCache,
+                                httpd.maxRecentPosts,
+                                httpd.session,
+                                httpd.cachedWebfingers,
+                                httpd.personCache)
         print('Newswire feed converted to ActivityPub')
 
         # wait a while before the next feeds update
