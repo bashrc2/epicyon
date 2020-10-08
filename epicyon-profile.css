@@ -253,7 +253,7 @@ a:focus {
 .newswireDateVotedOn {
     font-size: var(--font-size-newswire);
     font-weight: bold;
-    color: var(--newswire-date-color);
+    color: var(--column-right-fg-color-voted-on);    
     float: right;
 }
 
