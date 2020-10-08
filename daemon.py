@@ -11356,6 +11356,7 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
 
 
 def runDaemon(positiveVoting: bool,
+              newswireVotesThreshold: int,
               newsInstance: bool,
               blogsInstance: bool,
               mediaInstance: bool,
@@ -11466,6 +11467,9 @@ def runDaemon(positiveVoting: bool,
     # on the newswire, whether moderators vote positively for items
     # or against them (veto)
     httpd.positiveVoting = positiveVoting
+    # number of votes needed to remove a newswire item from the news timeline
+    # or if positive voting is anabled to add the item to the news timeline
+    httpd.newswireVotesThreshold = newswireVotesThreshold
 
     if registration == 'open':
         httpd.registration = True
