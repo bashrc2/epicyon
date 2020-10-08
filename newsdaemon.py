@@ -11,10 +11,10 @@ import time
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
-from inbox import inboxStorePostToHtmlCache
+from inbox import individualPostAsHtml
 from utils import saveJson
 from utils import getStatusNumber
-
+from webinterface import getIconsDir
 
 def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
     """Updates the index used for imported RSS feeds
@@ -125,11 +125,17 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if saveJson(blog, filename):
             updateFeedsIndex(baseDir, domain, postId + '.json')
             # convert json to html
-            inboxStorePostToHtmlCache(recentPostsCache, maxRecentPosts,
-                                      translate, baseDir, httpPrefix,
-                                      session, cachedWebfingers, personCache,
-                                      'news', domain, port,
-                                      blog, False, 'outbox')
+            iconsDir = getIconsDir(baseDir)
+            pageNumber = -999
+            avatarUrl = None
+            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                                 iconsDir, translate, pageNumber,
+                                 baseDir, session, cachedWebfingers,
+                                 personCache,
+                                 'news', domain, port, blog,
+                                 avatarUrl, True, False,
+                                 httpPrefix, __version__, 'outbox',
+                                 True, True, True, False, True)
             newswire[originalDateStr][1] = '/@news/' + statusNumber
 
 
