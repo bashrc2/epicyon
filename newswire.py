@@ -164,7 +164,10 @@ def getRSSfromDict(baseDir: str, newswire: {},
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
-        rssStr += '  <link>' + fields[1] + '</link>\n'
+        url = fields[1]
+        if domainFull not in url:
+            url = httpPrefix + '://' + domainFull + url
+        rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
         rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
