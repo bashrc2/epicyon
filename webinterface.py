@@ -5408,8 +5408,9 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     votesIndicator(totalVotes, positiveVoting)
 
             htmlStr += '<p class="newswireItemVotedOn">' + \
-                '<a href="' + item[1] + '">' + item[0] + '</a>' + \
-                totalVotesStr
+                '<a href="' + item[1] + '">' + \
+                '<label class="newswireItemVotedOn">' + item[0] + \
+                '</label></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
                     ' ' + \
