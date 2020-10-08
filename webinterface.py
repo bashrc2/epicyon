@@ -5069,7 +5069,8 @@ def individualPostAsHtml(allowDownloads: bool,
         footerStr = '<a href="' + publishedLink + \
             '" class="' + timeClass + '">' + publishedStr + '</a>\n'
     else:
-        footerStr = publishedStr + '\n'
+        footerStr = '        <label class="' + timeClass + '">' + \
+            publishedStr + '</label>\n'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
@@ -5084,7 +5085,8 @@ def individualPostAsHtml(allowDownloads: bool,
             footerStr += '        <a href="' + publishedLink + '" class="' + \
                 timeClass + '">' + publishedStr + '</a>\n'
         else:
-            footerStr += publishedStr + '\n'
+            footerStr += '        <label class="' + timeClass + '">' + \
+                publishedStr + '</label>\n'
         footerStr += '      </div>\n'
 
     postIsSensitive = False
