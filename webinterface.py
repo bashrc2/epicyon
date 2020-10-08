@@ -5384,7 +5384,12 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     if 'vote:' in line:
                         totalVotes += 1
                 if totalVotes > 0:
-                    totalVotesStr = ' +' + str(totalVotes)
+                    totalVotesStr = ' '
+                    for v in range(totalVotes):
+                        if positiveVoting:
+                            totalVotesStr += '✓'
+                        else:
+                            totalVotesStr += '✗'
 
             htmlStr += '<p class="newswireItemApproved">' + \
                 '<a href="' + item[1] + '">' + item[0] + '</a>' + \
