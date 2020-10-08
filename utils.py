@@ -523,6 +523,12 @@ def locatePost(baseDir: str, nickname: str, domain: str,
         if os.path.isfile(postFilename):
             return postFilename
 
+    # check news posts
+    accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
+    postFilename = accountDir + boxName + '/' + postUrl
+    if os.path.isfile(postFilename):
+        return postFilename
+
     # is it in the announce cache?
     postFilename = baseDir + '/cache/announce/' + nickname + '/' + postUrl
     if os.path.isfile(postFilename):
