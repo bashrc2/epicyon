@@ -142,7 +142,7 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          baseDir, session, cachedWebfingers, personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,
-                         httpPrefix, __version__, boxName,
+                         httpPrefix, __version__, boxname,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
