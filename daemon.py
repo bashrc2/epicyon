@@ -6543,7 +6543,6 @@ class PubServer(BaseHTTPRequestHandler):
                             pageNumber = int(pageNumber)
                         else:
                             pageNumber = 1
-                    nickname = 'news'
                     if 'page=' not in path:
                         # if no page was specified then show the first
                         inboxNewsFeed = \
@@ -6583,12 +6582,6 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.YTReplacementDomain,
                                       self.server.newswire, moderator,
                                       self.server.positiveVoting)
-                    msg = msg.replace('/news/', '/' + currNickname + '/')
-                    msg = msg.replace('/users/news"',
-                                      '/users/' + currNickname + '"')
-                    msg = msg.replace('/users/news?',
-                                      '/users/' + currNickname + '?')
-                    msg = msg.replace('/banner.webp', '/banner.png')
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
