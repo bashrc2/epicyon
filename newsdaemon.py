@@ -73,7 +73,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 '/postcache/' + newPostId.replace('/', '#') + '.html'
             if os.path.isfile(htmlFilename):
                 newswire[originalDateStr][1] = \
-                    '/users/news/statuses/' + statusNumber + '.html'
+                    '/users/news/statuses/' + statusNumber
             # don't create the post if it already exists
             continue
 
