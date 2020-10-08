@@ -4721,7 +4721,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'vote:' + nickname not in newswire[dateStr][2]:
                     newswire[dateStr][2].append('vote:' + nickname)
                     filename = newswire[dateStr][3]
-                    print('VOTE filename ' + str(filename))
                     if filename:
                         saveJson(newswire[dateStr][2],
                                  filename + '.votes')
@@ -6043,7 +6042,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         projectVersion,
                                         self._isMinimal(nickname),
                                         YTReplacementDomain,
-                                        self.server.newswire)
+                                        self.server.newswire,
+                                        self.server.positiveVoting)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6150,7 +6150,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
                                          self.server.YTReplacementDomain,
-                                         self.server.newswire)
+                                         self.server.newswire,
+                                         self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6251,7 +6252,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
                                          self.server.YTReplacementDomain,
-                                         self.server.newswire)
+                                         self.server.newswire,
+                                         self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6352,7 +6354,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                                       self.server.newswire,
+                                       self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6453,7 +6456,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                                       self.server.newswire,
+                                       self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6560,7 +6564,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.projectVersion,
                                       self._isMinimal(nickname),
                                       self.server.YTReplacementDomain,
-                                      self.server.newswire, moderator)
+                                      self.server.newswire, moderator,
+                                      self.server.positiveVoting)
                     msg = msg.replace('/news/', '/' + currNickname + '/')
                     msg = msg.replace('/users/news"',
                                       '/users/' + currNickname + '"')
@@ -6641,7 +6646,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    httpPrefix,
                                    self.server.projectVersion,
                                    self.server.YTReplacementDomain,
-                                   self.server.newswire)
+                                   self.server.newswire,
+                                   self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6726,7 +6732,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           self._isMinimal(nickname),
                                           self.server.YTReplacementDomain,
-                                          self.server.newswire)
+                                          self.server.newswire,
+                                          self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6830,7 +6837,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                                       self.server.newswire,
+                                       self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6924,7 +6932,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.projectVersion,
                                self._isMinimal(nickname),
                                self.server.YTReplacementDomain,
-                               self.server.newswire)
+                               self.server.newswire,
+                               self.server.positiveVoting)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7010,7 +7019,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            httpPrefix,
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
-                                           self.server.newswire)
+                                           self.server.newswire,
+                                           self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -11345,7 +11355,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(newsInstance: bool,
+def runDaemon(positiveVoting: bool,
+              newsInstance: bool,
               blogsInstance: bool,
               mediaInstance: bool,
               maxRecentPosts: int,
@@ -11451,6 +11462,10 @@ def runDaemon(newsInstance: bool,
         if not httpd.translate:
             print('ERROR: no translations loaded from ' + translationsFile)
             sys.exit()
+
+    # on the newswire, whether moderators vote positively for items
+    # or against them (veto)
+    httpd.positiveVoting = positiveVoting
 
     if registration == 'open':
         httpd.registration = True

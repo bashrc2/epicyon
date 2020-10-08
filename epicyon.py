@@ -198,6 +198,10 @@ parser.add_argument("--blogsinstance", type=str2bool, nargs='?',
 parser.add_argument("--newsinstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="News Instance - favor news over microblogging")
+parser.add_argument("--positivevoting", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="On newswire, whether moderators vote " +
+                    "positively for or veto against items")
 parser.add_argument("--debug", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show debug messages")
@@ -1911,7 +1915,8 @@ if setTheme(baseDir, themeName):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.newsinstance,
+    runDaemon(args.positivevoting,
+              args.newsinstance,
               args.blogsinstance, args.mediainstance,
               args.maxRecentPosts,
               not args.nosharedinbox,

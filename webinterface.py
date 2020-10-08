@@ -5368,7 +5368,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
 
 def htmlNewswire(newswire: str, nickname: str, moderator: bool,
-                 translate: {}) -> str:
+                 translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
     """
     htmlStr = ''
@@ -5408,8 +5408,15 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 for line in item[2]:
                     if 'vote:' in line:
                         totalVotes += 1
+                # show a number of ticks or crosses for how many
+                # votes for or against
                 if totalVotes > 0:
-                    totalVotesStr = ' +' + str(totalVotes)
+                    totalVotesStr = ' '
+                    for v in range(totalVotes):
+                        if positiveVoting:
+                            totalVotesStr += '✓'
+                        else:
+                            totalVotesStr += '✗'
 
             htmlStr += '<p class="newswireItem">' + \
                 '<a href="' + item[1] + '">' + item[0] + '</a>' + \
@@ -5431,7 +5438,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           iconsDir: str, moderator: bool,
-                          newswire: {}) -> str:
+                          newswire: {}, positiveVoting: bool) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5503,7 +5510,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         htmlStr += '      <br>\n'
 
-    htmlStr += htmlNewswire(newswire, nickname, moderator, translate)
+    htmlStr += htmlNewswire(newswire, nickname, moderator, translate,
+                            positiveVoting)
     return htmlStr
 
 
@@ -5518,7 +5526,8 @@ def htmlTimeline(defaultTimeline: str,
                  manuallyApproveFollowers: bool,
                  minimal: bool,
                  YTReplacementDomain: str,
-                 newswire: {}, moderator: bool) -> str:
+                 newswire: {}, moderator: bool,
+                 positiveVoting: bool) -> str:
     """Show the timeline as html
     """
     timelineStartTime = time.time()
@@ -6153,7 +6162,7 @@ def htmlTimeline(defaultTimeline: str,
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
                                            httpPrefix, translate, iconsDir,
-                                           moderator, newswire)
+                                           moderator, newswire, positiveVoting)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
@@ -6195,7 +6204,7 @@ def htmlShares(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                YTReplacementDomain: str,
-               newswire: {}) -> str:
+               newswire: {}, positiveVoting: bool) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -6207,7 +6216,8 @@ def htmlShares(defaultTimeline: str,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        False, YTReplacementDomain, newswire, False)
+                        False, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlInbox(defaultTimeline: str,
@@ -6218,7 +6228,7 @@ def htmlInbox(defaultTimeline: str,
               allowDeletion: bool,
               httpPrefix: str, projectVersion: str,
               minimal: bool, YTReplacementDomain: str,
-              newswire: {}) -> str:
+              newswire: {}, positiveVoting: bool) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -6230,7 +6240,8 @@ def htmlInbox(defaultTimeline: str,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire, False)
+                        minimal, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlBookmarks(defaultTimeline: str,
@@ -6241,7 +6252,7 @@ def htmlBookmarks(defaultTimeline: str,
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
-                  newswire: {}) -> str:
+                  newswire: {}, positiveVoting: bool) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -6253,7 +6264,8 @@ def htmlBookmarks(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire, False)
+                        minimal, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlEvents(defaultTimeline: str,
@@ -6264,7 +6276,7 @@ def htmlEvents(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                minimal: bool, YTReplacementDomain: str,
-               newswire: {}) -> str:
+               newswire: {}, positiveVoting: bool) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -6276,7 +6288,8 @@ def htmlEvents(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire, False)
+                        minimal, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlInboxDMs(defaultTimeline: str,
@@ -6287,7 +6300,7 @@ def htmlInboxDMs(defaultTimeline: str,
                  allowDeletion: bool,
                  httpPrefix: str, projectVersion: str,
                  minimal: bool, YTReplacementDomain: str,
-                 newswire: {}) -> str:
+                 newswire: {}, positiveVoting: bool) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6295,7 +6308,7 @@ def htmlInboxDMs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
-                        YTReplacementDomain, newswire, False)
+                        YTReplacementDomain, newswire, False, positiveVoting)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -6306,7 +6319,7 @@ def htmlInboxReplies(defaultTimeline: str,
                      allowDeletion: bool,
                      httpPrefix: str, projectVersion: str,
                      minimal: bool, YTReplacementDomain: str,
-                     newswire: {}) -> str:
+                     newswire: {}, positiveVoting: bool) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6314,7 +6327,8 @@ def htmlInboxReplies(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, False)
+                        minimal, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlInboxMedia(defaultTimeline: str,
@@ -6325,7 +6339,7 @@ def htmlInboxMedia(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    minimal: bool, YTReplacementDomain: str,
-                   newswire: {}) -> str:
+                   newswire: {}, positiveVoting: bool) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6333,7 +6347,8 @@ def htmlInboxMedia(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, False)
+                        minimal, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlInboxBlogs(defaultTimeline: str,
@@ -6344,7 +6359,7 @@ def htmlInboxBlogs(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    minimal: bool, YTReplacementDomain: str,
-                   newswire: {}) -> str:
+                   newswire: {}, positiveVoting: bool) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6352,7 +6367,8 @@ def htmlInboxBlogs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, False)
+                        minimal, YTReplacementDomain, newswire, False,
+                        positiveVoting)
 
 
 def htmlInboxNews(defaultTimeline: str,
@@ -6363,7 +6379,8 @@ def htmlInboxNews(defaultTimeline: str,
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
-                  newswire: {}, moderator: bool) -> str:
+                  newswire: {}, moderator: bool,
+                  positiveVoting: bool) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6371,7 +6388,8 @@ def htmlInboxNews(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlnews',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, moderator)
+                        minimal, YTReplacementDomain, newswire, moderator,
+                        positiveVoting)
 
 
 def htmlModeration(defaultTimeline: str,
@@ -6382,7 +6400,7 @@ def htmlModeration(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    YTReplacementDomain: str,
-                   newswire: {}) -> str:
+                   newswire: {}, positiveVoting: bool) -> str:
     """Show the moderation feed as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6390,7 +6408,7 @@ def htmlModeration(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
-                        YTReplacementDomain, newswire, False)
+                        YTReplacementDomain, newswire, False, positiveVoting)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -6401,7 +6419,7 @@ def htmlOutbox(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                minimal: bool, YTReplacementDomain: str,
-               newswire: {}) -> str:
+               newswire: {}, positiveVoting: bool) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -6412,7 +6430,7 @@ def htmlOutbox(defaultTimeline: str,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,
                         manuallyApproveFollowers, minimal,
-                        YTReplacementDomain, newswire, False)
+                        YTReplacementDomain, newswire, False, positiveVoting)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
