@@ -5053,7 +5053,10 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 15 = ' + str(timeDiff))
 
-    publishedLink = messageId
+    if '/users/news/' not in messageId:
+        publishedLink = messageId
+    else:
+        publishedLink = messageId.replace('/users/news/', '/users/news2/')
     # blog posts should have no /statuses/ in their link
     if isBlogPost(postJsonObject):
         # is this a post to the local domain?
