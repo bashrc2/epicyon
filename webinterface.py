@@ -5059,17 +5059,17 @@ def individualPostAsHtml(allowDownloads: bool,
         # is this a post to the local domain?
         if '://' + domain in messageId:
             publishedLink = messageId.replace('/statuses/', '/')
-        # this retains the news account reference for news posts
-        if '/users/news/' in publishedLink:
-            publishedLink = publishedLink.replace('/users/news/', '/users/news2/')
     # if this is a local link then make it relative so that it works
     # on clearnet or onion address
     if domain + '/users/' in publishedLink or \
        domain + ':' + str(port) + '/users/' in publishedLink:
         publishedLink = '/users/' + publishedLink.split('/users/')[1]
 
-    footerStr = '<a href="' + publishedLink + \
-        '" class="' + timeClass + '">' + publishedStr + '</a>\n'
+    if not isNewsPost(postJsonObject):
+        footerStr = '<a href="' + publishedLink + \
+            '" class="' + timeClass + '">' + publishedStr + '</a>\n'
+    else:
+        footerStr = publishedStr + '\n'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:

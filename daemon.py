@@ -6566,7 +6566,6 @@ class PubServer(BaseHTTPRequestHandler):
                     msg = msg.replace('/users/news?',
                                       '/users/' + currNickname + '?')
                     msg = msg.replace('/banner.webp', '/banner.png')
-                    msg = msg.replace('/news2/', '/news/')
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
