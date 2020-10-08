@@ -70,8 +70,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         filename = basePath + '/' + newPostId.replace('/', '#') + '.json'
         if os.path.isfile(filename):
             # don't create the post if it already exists
+            # set the url
             newswire[originalDateStr][1] = \
                 '/users/news/statuses/' + statusNumber
+            # set the filename
+            newswire[originalDateStr][3] = filename
             continue
 
         rssTitle = item[0]
@@ -118,8 +121,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # save the post and update the index
         if saveJson(blog, filename):
             updateFeedsIndex(baseDir, domain, postId + '.json')
+            # set the url
             newswire[originalDateStr][1] = \
                 '/users/news/statuses/' + statusNumber
+            # set the filename
+            newswire[originalDateStr][3] = filename
 
 
 def runNewswireDaemon(baseDir: str, httpd,
