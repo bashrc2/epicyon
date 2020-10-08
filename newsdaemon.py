@@ -16,6 +16,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from webinterface import getIconsDir
 
+
 def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
     """Updates the index used for imported RSS feeds
     """
