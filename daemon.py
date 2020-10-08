@@ -4721,6 +4721,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'vote:' + nickname not in newswire[dateStr][2]:
                     newswire[dateStr][2].append('vote:' + nickname)
                     filename = newswire[dateStr][3]
+                    print('VOTE filename ' + str(filename))
                     if filename:
                         saveJson(newswire[dateStr][2],
                                  filename + '.votes')
