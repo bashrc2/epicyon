@@ -15,7 +15,7 @@
     --main-fg-color: #dddddd;
     --column-left-fg-color: #dddddd;
     --column-right-fg-color: #dddddd;
-    --column-right-fg-color-approved: yellow;
+    --column-right-fg-color-voted-on: red;
     --main-link-color: #999;
     --main-link-color-hover: #bbb;
     --main-visited-color: #888;
@@ -240,7 +240,7 @@ a:focus {
 .newswireItemVotedOn {
     font-size: var(--font-size-newswire);
     font-weight: bold;
-    color: var(--column-right-fg-color-approved);    
+    color: var(--column-right-fg-color-voted-on);    
     line-height: var(--line-spacing-newswire);
 }
 
