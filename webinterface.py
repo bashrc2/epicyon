@@ -5053,15 +5053,15 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 15 = ' + str(timeDiff))
 
-    if '/users/news/' not in messageId:
-        publishedLink = messageId
-    else:
-        publishedLink = messageId.replace('/users/news/', '/users/news2/')
+    publishedLink = messageId
     # blog posts should have no /statuses/ in their link
     if isBlogPost(postJsonObject):
         # is this a post to the local domain?
         if '://' + domain in messageId:
             publishedLink = messageId.replace('/statuses/', '/')
+        # this retains the news account reference for news posts
+        if '/users/news/' in publishedLink:
+            publishedLink = publishedLink.replace('/users/news/', '/users/news2/')
     # if this is a local link then make it relative so that it works
     # on clearnet or onion address
     if domain + '/users/' in publishedLink or \
