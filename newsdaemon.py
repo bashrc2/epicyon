@@ -105,6 +105,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         idStr = \
             httpPrefix + '://' + domain + '/users/news' + \
             '/statuses/' + statusNumber + '/replies'
+        blog['news'] = True
         blog['object']['replies']['id'] = idStr
         blog['object']['replies']['first']['partOf'] = idStr
 

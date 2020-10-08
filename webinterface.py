@@ -30,6 +30,7 @@ from utils import getProtocolPrefixes
 from utils import searchBoxPosts
 from utils import isEventPost
 from utils import isBlogPost
+from utils import isNewsPost
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -4512,18 +4513,20 @@ def individualPostAsHtml(allowDownloads: bool,
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
         if '/statuses/' in postJsonObject['object']['id']:
             if isBlogPost(postJsonObject):
-                blogPostId = postJsonObject['object']['id']
-                editStr += \
-                    '        ' + \
-                    '<a class="imageAnchor" href="/users/' + nickname + \
-                    '/tlblogs?editblogpost=' + \
-                    blogPostId.split('/statuses/')[1] + \
-                    '?actor=' + actorNickname + \
-                    '" title="' + translate['Edit blog post'] + '">' + \
-                    '<img loading="lazy" title="' + \
-                    translate['Edit blog post'] + '" alt="' + \
-                    translate['Edit blog post'] + \
-                    ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                if not isNewsPost(postJsonObject):
+                    blogPostId = postJsonObject['object']['id']
+                    editStr += \
+                        '        ' + \
+                        '<a class="imageAnchor" href="/users/' + \
+                        nickname + \
+                        '/tlblogs?editblogpost=' + \
+                        blogPostId.split('/statuses/')[1] + \
+                        '?actor=' + actorNickname + \
+                        '" title="' + translate['Edit blog post'] + '">' + \
+                        '<img loading="lazy" title="' + \
+                        translate['Edit blog post'] + '" alt="' + \
+                        translate['Edit blog post'] + \
+                        ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
             elif isEvent:
                 eventPostId = postJsonObject['object']['id']
                 editStr += \

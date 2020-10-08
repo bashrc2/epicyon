@@ -979,6 +979,12 @@ def isBlogPost(postJsonObject: {}) -> bool:
     return True
 
 
+def isNewsPost(postJsonObject: {}) -> bool:
+    """Is the given post a blog post?
+    """
+    return postJsonObject.get('news')
+
+
 def searchBoxPosts(baseDir: str, nickname: str, domain: str,
                    searchStr: str, maxResults: int,
                    boxName='outbox') -> []:
