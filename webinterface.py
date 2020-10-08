@@ -5080,8 +5080,11 @@ def individualPostAsHtml(allowDownloads: bool,
         footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
-        footerStr += '        <a href="' + publishedLink + '" class="' + \
-            timeClass + '">' + publishedStr + '</a>\n'
+        if not isNewsPost(postJsonObject):
+            footerStr += '        <a href="' + publishedLink + '" class="' + \
+                timeClass + '">' + publishedStr + '</a>\n'
+        else:
+            footerStr += publishedStr + '\n'
         footerStr += '      </div>\n'
 
     postIsSensitive = False
