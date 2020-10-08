@@ -2927,7 +2927,7 @@ def createBoxIndexed(recentPostsCache: {},
                         votesJson = loadJson(votesFilename, 0, 2)
                         if votesJson:
                             if not positiveVoting:
-                                if votesOnNewswireItem >= \
+                                if votesOnNewswireItem(votesJson) >= \
                                    newswireVotesThreshold:
                                     # Too many veto votes.
                                     # Continue without incrementing the
