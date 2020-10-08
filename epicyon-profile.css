@@ -232,7 +232,7 @@ a:focus {
     line-height: var(--line-spacing-newswire);
 }
 
-.newswireItemApproved {
+.newswireItemVotedOn {
     font-size: var(--font-size-newswire);
     font-weight: bold;
     color: var(--column-right-fg-color-approved);    
@@ -245,7 +245,7 @@ a:focus {
     float: right;
 }
 
-.newswireDateApproved {
+.newswireDateVotedOn {
     font-size: var(--font-size-newswire);
     font-weight: bold;
     color: var(--newswire-date-color);

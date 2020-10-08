@@ -5407,7 +5407,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 totalVotesStr = \
                     votesIndicator(totalVotes, positiveVoting)
 
-            htmlStr += '<p class="newswireItemApproved">' + \
+            htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + item[1] + '">' + item[0] + '</a>' + \
                 totalVotesStr
             if moderator:
@@ -5416,10 +5416,10 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     '<a href="/users/' + nickname + \
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">' + \
-                    '<label class="newswireDateApproved">'
+                    '<label class="newswireDateVotedOn">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
             else:
-                htmlStr += ' <label class="newswireDateApproved">'
+                htmlStr += ' <label class="newswireDateVotedOn">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
         else:
             totalVotesStr = ''
