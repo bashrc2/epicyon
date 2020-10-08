@@ -500,6 +500,39 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     return True
 
 
+def votesOnNewswireItem(status: []) -> int:
+    """Returns the number of votes on a newswire item
+    """
+    totalVotes = 0
+    for line in status:
+        if 'vote:' in line:
+            totalVotes += 1
+    return totalVotes
+
+
+def locateNewsVotes(baseDir: str, domain: str,
+                    postUrl: str) -> str:
+    """Returns the votes filename for a news post
+    within the news user account
+    """
+    postUrl = \
+        postUrl.strip().replace('\n', '').replace('\r', '')
+
+    # if this post in the shared inbox?
+    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+
+    if postUrl.endswith('.json'):
+        postUrl = postUrl + '.votes'
+    else:
+        postUrl = postUrl + '.json.votes'
+
+    accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
+    postFilename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(postFilename):
+        return postFilename
+    return None
+
+
 def locatePost(baseDir: str, nickname: str, domain: str,
                postUrl: str, replies=False) -> str:
     """Returns the filename for the given status post url
@@ -525,7 +558,7 @@ def locatePost(baseDir: str, nickname: str, domain: str,
 
     # check news posts
     accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
-    postFilename = accountDir + boxName + '/' + postUrl
+    postFilename = accountDir + 'outbox/' + postUrl
     if os.path.isfile(postFilename):
         return postFilename
 

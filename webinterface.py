@@ -43,6 +43,7 @@ from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import loadJson
 from utils import getConfigParam
+from utils import votesOnNewswireItem
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import isDM
@@ -2861,7 +2862,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                           str(currPage),
                           httpPrefix,
                           10, 'outbox',
-                          authorized)
+                          authorized, 0, False)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:
@@ -5365,16 +5366,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p>' + lineStr + '</p>\n'
 
     return htmlStr
-
-
-def votesOnNewswireItem(status: []) -> int:
-    """Returns the number of votes on a newswire item
-    """
-    totalVotes = 0
-    for line in status:
-        if 'vote:' in line:
-            totalVotes += 1
-    return totalVotes
 
 
 def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:

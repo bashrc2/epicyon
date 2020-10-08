@@ -46,6 +46,8 @@ from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 from utils import getConfigParam
+from utils import locateNewsVotes
+from utils import votesOnNewswireItem
 from media import attachMedia
 from media import replaceYouTube
 from content import removeHtml
@@ -2477,7 +2479,7 @@ def createInbox(recentPostsCache: {},
                             session, baseDir, 'inbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, pageNumber)
 
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2486,7 +2488,7 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, pageNumber)
+                            True, 0, False, pageNumber)
 
 
 def createEventsTimeline(recentPostsCache: {},
@@ -2496,7 +2498,7 @@ def createEventsTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, pageNumber)
+                            True, 0, False, pageNumber)
 
 
 def createDMTimeline(recentPostsCache: {},
@@ -2506,7 +2508,7 @@ def createDMTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'dm', nickname,
                             domain, port, httpPrefix, itemsPerPage,
-                            headerOnly, True, pageNumber)
+                            headerOnly, True, 0, False, pageNumber)
 
 
 def createRepliesTimeline(recentPostsCache: {},
@@ -2516,7 +2518,7 @@ def createRepliesTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, pageNumber)
 
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2525,7 +2527,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, pageNumber)
 
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2534,15 +2536,17 @@ def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, pageNumber)
 
 
 def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
-                       headerOnly: bool, pageNumber=None) -> {}:
+                       headerOnly: bool, newswireVotesThreshold: int,
+                       positiveVoting: bool, pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'outbox', 'news',
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
+                            newswireVotesThreshold, positiveVoting,
                             pageNumber)
 
 
@@ -2553,7 +2557,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'outbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, authorized,
-                            pageNumber)
+                            0, False, pageNumber)
 
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
@@ -2846,6 +2850,7 @@ def createBoxIndexed(recentPostsCache: {},
                      session, baseDir: str, boxname: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      itemsPerPage: int, headerOnly: bool, authorized: bool,
+                     newswireVotesThreshold: int, positiveVoting: bool,
                      pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
@@ -2914,6 +2919,30 @@ def createBoxIndexed(recentPostsCache: {},
 
                 if not postFilename:
                     break
+
+                # apply votes within this timeline
+                if newswireVotesThreshold > 0:
+                    # if there a votes file for this post?
+                    votesFilename = \
+                        locateNewsVotes(baseDir, domain, postFilename)
+                    if votesFilename:
+                        # load the votes file and count the votes
+                        votesJson = loadJson(votesFilename, 0, 2)
+                        if votesJson:
+                            if not positiveVoting:
+                                if votesOnNewswireItem >= \
+                                   newswireVotesThreshold:
+                                    # Too many veto votes.
+                                    # Continue without incrementing the
+                                    # posts counter
+                                    continue
+                            else:
+                                if votesOnNewswireItem < \
+                                   newswireVotesThreshold:
+                                    # Not enough votes.
+                                    # Continue without incrementing the
+                                    # posts counter
+                                    continue
 
                 # Skip through any posts previous to the current page
                 if postsCtr < int((pageNumber - 1) * itemsPerPage):

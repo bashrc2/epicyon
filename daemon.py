@@ -5990,7 +5990,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'inbox',
-                                  authorized)
+                                  authorized,
+                                  0,
+                                  self.server.positiveVoting)
                 if inboxFeed:
                     if GETstartTime:
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -6018,7 +6020,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'inbox',
-                                              authorized)
+                                              authorized,
+                                              0,
+                                              self.server.positiveVoting)
                             if GETstartTime:
                                 self._benchmarkGETtimings(GETstartTime,
                                                           GETtimings,
@@ -6106,7 +6110,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'dm',
-                                  authorized)
+                                  authorized,
+                                  0, self.server.positiveVoting)
                 if inboxDMFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6130,7 +6135,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'dm',
-                                              authorized)
+                                              authorized,
+                                              0,
+                                              self.server.positiveVoting)
                         msg = \
                             htmlInboxDMs(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -6207,7 +6214,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlreplies',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting)
                 if not inboxRepliesFeed:
                     inboxRepliesFeed = []
                 if self._requestHTTP():
@@ -6232,7 +6240,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInFeed, 'tlreplies',
-                                          True)
+                                          True,
+                                          0, self.server.positiveVoting)
                     msg = \
                         htmlInboxReplies(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -6309,7 +6318,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInMediaFeed, 'tlmedia',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting)
                 if not inboxMediaFeed:
                     inboxMediaFeed = []
                 if self._requestHTTP():
@@ -6334,7 +6344,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInMediaFeed, 'tlmedia',
-                                          True)
+                                          True,
+                                          0, self.server.positiveVoting)
                     msg = \
                         htmlInboxMedia(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6411,7 +6422,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInBlogsFeed, 'tlblogs',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting)
                 if not inboxBlogsFeed:
                     inboxBlogsFeed = []
                 if self._requestHTTP():
@@ -6436,7 +6448,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInBlogsFeed, 'tlblogs',
-                                          True)
+                                          True,
+                                          0, self.server.positiveVoting)
                     msg = \
                         htmlInboxBlogs(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6514,7 +6527,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInNewsFeed, 'tlnews',
-                                  True)
+                                  True,
+                                  self.server.newswireVotesThreshold,
+                                  self.server.positiveVoting)
                 if not inboxNewsFeed:
                     inboxNewsFeed = []
                 if self._requestHTTP():
@@ -6540,7 +6555,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInBlogsFeed, 'tlnews',
-                                          True)
+                                          True,
+                                          self.server.newswireVotesThreshold,
+                                          self.server.positiveVoting)
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
@@ -6686,7 +6703,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlbookmarks',
-                                  authorized)
+                                  authorized,
+                                  0, self.server.positiveVoting)
                 if bookmarksFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6712,7 +6730,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed,
                                               'tlbookmarks',
-                                              authorized)
+                                              authorized,
+                                              0, self.server.positiveVoting)
                         msg = \
                             htmlBookmarks(self.server.defaultTimeline,
                                           self.server.recentPostsCache,
@@ -6791,7 +6810,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlevents',
-                                  authorized)
+                                  authorized,
+                                  0, self.server.positiveVoting)
                 print('eventsFeed: ' + str(eventsFeed))
                 if eventsFeed:
                     if self._requestHTTP():
@@ -6817,7 +6837,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed,
                                               'tlevents',
-                                              authorized)
+                                              authorized,
+                                              0, self.server.positiveVoting)
                         msg = \
                             htmlEvents(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6888,7 +6909,9 @@ class PubServer(BaseHTTPRequestHandler):
                           port, path,
                           httpPrefix,
                           maxPostsInFeed, 'outbox',
-                          authorized)
+                          authorized,
+                          self.server.newswireVotesThreshold,
+                          self.server.positiveVoting)
         if outboxFeed:
             if self._requestHTTP():
                 nickname = \
@@ -6912,7 +6935,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       path + '?page=1',
                                       httpPrefix,
                                       maxPostsInFeed, 'outbox',
-                                      authorized)
+                                      authorized,
+                                      self.server.newswireVotesThreshold,
+                                      self.server.positiveVoting)
                 msg = \
                     htmlOutbox(self.server.defaultTimeline,
                                self.server.recentPostsCache,
@@ -6976,7 +7001,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'moderation',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting)
                 if moderationFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -7000,7 +7026,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'moderation',
-                                              True)
+                                              True,
+                                              0, self.server.positiveVoting)
                         msg = \
                             htmlModeration(self.server.defaultTimeline,
                                            self.server.recentPostsCache,
