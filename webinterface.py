@@ -5367,6 +5367,30 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
+def votesOnNewswireItem(status: []) -> int:
+    """Returns the number of votes on a newswire item
+    """
+    totalVotes = 0
+    for line in status:
+        if 'vote:' in line:
+            totalVotes += 1
+    return totalVotes
+
+
+def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
+    """Returns an indicator of the number of votes on a newswire item
+    """
+    if totalVotes <= 0:
+        return ''
+    totalVotesStr = ' '
+    for v in range(totalVotes):
+        if positiveVoting:
+            totalVotesStr += '✓'
+        else:
+            totalVotesStr += '✗'
+    return totalVotesStr
+
+
 def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                  translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
@@ -5377,19 +5401,11 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
         dateStrLink = dateStrLink.replace('+00:00', '')
         if 'vote:' + nickname in item[2]:
             totalVotesStr = ''
+            totalVotes = 0
             if moderator:
-                # count the total votes for this item
-                totalVotes = 0
-                for line in item[2]:
-                    if 'vote:' in line:
-                        totalVotes += 1
-                if totalVotes > 0:
-                    totalVotesStr = ' '
-                    for v in range(totalVotes):
-                        if positiveVoting:
-                            totalVotesStr += '✓'
-                        else:
-                            totalVotesStr += '✗'
+                totalVotes = votesOnNewswireItem(item[2])
+                totalVotesStr = \
+                    votesIndicator(totalVotes, positiveVoting)
 
             htmlStr += '<p class="newswireItemApproved">' + \
                 '<a href="' + item[1] + '">' + item[0] + '</a>' + \
@@ -5407,21 +5423,13 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
         else:
             totalVotesStr = ''
+            totalVotes = 0
             if moderator:
-                # count the total votes for this item
-                totalVotes = 0
-                for line in item[2]:
-                    if 'vote:' in line:
-                        totalVotes += 1
+                totalVotes = votesOnNewswireItem(item[2])
                 # show a number of ticks or crosses for how many
                 # votes for or against
-                if totalVotes > 0:
-                    totalVotesStr = ' '
-                    for v in range(totalVotes):
-                        if positiveVoting:
-                            totalVotesStr += '✓'
-                        else:
-                            totalVotesStr += '✗'
+                totalVotesStr = \
+                    votesIndicator(totalVotes, positiveVoting)
 
             htmlStr += '<p class="newswireItem">' + \
                 '<a href="' + item[1] + '">' + item[0] + '</a>' + \
