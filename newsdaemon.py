@@ -11,10 +11,8 @@ import time
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
-from inbox import individualPostAsHtml
 from utils import saveJson
 from utils import getStatusNumber
-from webinterface import getIconsDir
 
 
 def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
@@ -71,15 +69,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # file where the post is stored
         filename = basePath + '/' + newPostId.replace('/', '#') + '.json'
         if os.path.isfile(filename):
-            # if a local post exists as html then change the link
-            # to the local one
-            #htmlFilename = \
-            #    baseDir + '/accounts/news@' + domain + \
-            #    '/postcache/' + newPostId.replace('/', '#') + '.html'
-            #if os.path.isfile(htmlFilename):
+            # don't create the post if it already exists
             newswire[originalDateStr][1] = \
                 '/users/news/statuses/' + statusNumber
-            # don't create the post if it already exists
             continue
 
         rssTitle = item[0]
@@ -126,17 +118,6 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # save the post and update the index
         if saveJson(blog, filename):
             updateFeedsIndex(baseDir, domain, postId + '.json')
-            # convert json to html
-            iconsDir = getIconsDir(baseDir)
-            pageNumber = -999
-            #individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-            #                     iconsDir, translate, pageNumber,
-            #                     baseDir, session, cachedWebfingers,
-            #                     personCache,
-            #                     'news', domain, port, blog,
-            #                     None, True, False,
-            #                     httpPrefix, __version__, 'outbox',
-            #                     True, True, True, False, True)
             newswire[originalDateStr][1] = \
                 '/users/news/statuses/' + statusNumber
 
