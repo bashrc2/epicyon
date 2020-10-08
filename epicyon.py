@@ -256,8 +256,8 @@ parser.add_argument('--archiveweeks', dest='archiveWeeks', type=str,
 parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,
                     default=None,
                     help='Maximum number of posts in in/outbox')
-parser.add_argument('--minimumVotes', dest='minimumVotes', type=str,
-                    default=None,
+parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
+                    default=1,
                     help='Minimum number of votes to remove or add' +
                     ' a newswire item')
 parser.add_argument('--message', dest='message', type=str,
@@ -1920,7 +1920,7 @@ if setTheme(baseDir, themeName):
 
 if __name__ == "__main__":
     runDaemon(args.positivevoting,
-              args.minimumVotes,
+              args.minimumvotes,
               args.newsinstance,
               args.blogsinstance, args.mediainstance,
               args.maxRecentPosts,
