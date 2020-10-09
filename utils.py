@@ -546,9 +546,9 @@ def locateNewsArrival(baseDir: str, domain: str,
     postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
 
     if postUrl.endswith('.json'):
-        postUrl = postUrl + '.arrival'
+        postUrl = postUrl + '.arrived'
     else:
-        postUrl = postUrl + '.json.arrival'
+        postUrl = postUrl + '.json.arrived'
 
     accountDir = baseDir + '/accounts/news@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
