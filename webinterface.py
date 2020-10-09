@@ -5386,6 +5386,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                  translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
     """
+    iconsDir = getIconsDir(baseDir)
     htmlStr = ''
     for dateStr, item in newswire.items():
         dateStrLink = dateStr.replace(' ', 'T')
@@ -5429,12 +5430,13 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + item[1] + '">' + \
                     item[0] + '</a>' + totalVotesStr
-                htmlStr += \
-                    ' ' + \
-                    '<a href="/users/' + nickname + \
+                htmlStr += ' ' + dateStr.replace('+00:00', '')
+                htmlStr += '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
-                htmlStr += dateStr.replace('+00:00', '') + '</a></p>'
+                htmlStr += '<img class="voteicon" src="' + \
+                    iconsDir + '/vote.png" /></a>'
+                htmlStr += '</p>'
             else:
                 htmlStr += '<p class="newswireItem">' + \
                     '<a href="' + item[1] + '">' + \

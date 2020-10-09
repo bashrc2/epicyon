@@ -135,6 +135,10 @@ blockquote p {
     display: inline;
 }
 
+.voteicon {
+    width: 3vw;
+}
+
 .imageAnchor:focus img{
     border: 2px solid var(--focus-color);
 }
