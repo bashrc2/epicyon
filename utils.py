@@ -526,10 +526,40 @@ def locateNewsVotes(baseDir: str, domain: str,
     else:
         postUrl = postUrl + '.json.votes'
 
-    accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
+    accountDir = baseDir + '/accounts/news@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
     if os.path.isfile(postFilename):
         return postFilename
+
+    return None
+
+
+def locateNewsArrival(baseDir: str, domain: str,
+                      postUrl: str) -> str:
+    """Returns the arrival time for a news post
+    within the news user account
+    """
+    postUrl = \
+        postUrl.strip().replace('\n', '').replace('\r', '')
+
+    # if this post in the shared inbox?
+    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+
+    if postUrl.endswith('.json'):
+        postUrl = postUrl + '.arrival'
+    else:
+        postUrl = postUrl + '.json.arrival'
+
+    accountDir = baseDir + '/accounts/news@' + domain + '/'
+    postFilename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(postFilename):
+        with open(postFilename, 'r') as arrivalFile:
+            arrival = arrivalFile.read()
+            if arrival:
+                arrivalDate = \
+                    datetime.strptime(arrival, "%Y-%m-%dT%H:%M:%SZ")
+                return arrivalDate
+
     return None
 
 

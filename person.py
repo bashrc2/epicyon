@@ -596,7 +596,8 @@ def personBoxJson(recentPostsCache: {},
                   session, baseDir: str, domain: str, port: int, path: str,
                   httpPrefix: str, noOfItems: int, boxname: str,
                   authorized: bool,
-                  newswireVotesThreshold: int, positiveVoting: bool) -> {}:
+                  newswireVotesThreshold: int, positiveVoting: bool,
+                  votingTimeMins: int) -> {}:
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname != 'inbox' and boxname != 'dm' and \
@@ -673,7 +674,7 @@ def personBoxJson(recentPostsCache: {},
         return createNewsTimeline(session, baseDir, nickname, domain, port,
                                   httpPrefix, noOfItems, headerOnly,
                                   newswireVotesThreshold, positiveVoting,
-                                  pageNumber)
+                                  votingTimeMins, pageNumber)
     elif boxname == 'tlblogs':
         return createBlogsTimeline(session, baseDir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,

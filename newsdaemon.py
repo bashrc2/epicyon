@@ -41,6 +41,15 @@ def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
             feedsFile.close()
 
 
+def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
+    """Saves the time when an rss post arrived to a file
+    """
+    arrivedFile = open(postFilename + '.arrived', 'w+')
+    if arrivedFile:
+        arrivedFile.write(arrived)
+        arrivedFile.close()
+
+
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             domain: str, port: int,
                             newswire: {},
@@ -87,8 +96,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         rssDescription = ''
 
         # get the rss description if it exists
-        if len(item) >= 5:
-            rssDescription = item[4]
+        rssDescription = item[4]
 
         # add the off-site link to the description
         if rssDescription:
@@ -132,9 +140,21 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         postId = newPostId.replace('/', '#')
 
+        moderated = item[5]
+
         # save the post and update the index
         if saveJson(blog, filename):
             updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
+
+            # Save a file containing the time when the post arrived
+            # this can then later be used to construct the news timeline
+            # excluding items during the voting period
+            if moderated:
+                saveArrivedTime(baseDir, filename, blog['object']['arrived'])
+            else:
+                if os.path.isfile(filename + '.arrived'):
+                    os.remove(filename + '.arrived')
+
             # set the url
             newswire[originalDateStr][1] = \
                 '/users/news/statuses/' + statusNumber

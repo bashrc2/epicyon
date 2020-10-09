@@ -260,6 +260,9 @@ parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                     default=1,
                     help='Minimum number of votes to remove or add' +
                     ' a newswire item')
+parser.add_argument('--votingtime', dest='votingtime', type=int,
+                    default=1440,
+                    help='Time to vote on newswire items in minutes')
 parser.add_argument('--message', dest='message', type=str,
                     default=None,
                     help='Message content')
@@ -1919,7 +1922,8 @@ if setTheme(baseDir, themeName):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.positivevoting,
+    runDaemon(args.votingtime,
+              args.positivevoting,
               args.minimumvotes,
               args.newsinstance,
               args.blogsinstance, args.mediainstance,

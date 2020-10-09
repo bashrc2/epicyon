@@ -47,6 +47,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getConfigParam
 from utils import locateNewsVotes
+from utils import locateNewsArrival
 from utils import votesOnNewswireItem
 from media import attachMedia
 from media import replaceYouTube
@@ -2476,7 +2477,7 @@ def createInbox(recentPostsCache: {},
                             session, baseDir, 'inbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            0, False, pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2485,7 +2486,7 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, 0, False, pageNumber)
+                            True, 0, False, 0, pageNumber)
 
 
 def createEventsTimeline(recentPostsCache: {},
@@ -2495,7 +2496,7 @@ def createEventsTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, 0, False, pageNumber)
+                            True, 0, False, 0, pageNumber)
 
 
 def createDMTimeline(recentPostsCache: {},
@@ -2505,7 +2506,7 @@ def createDMTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'dm', nickname,
                             domain, port, httpPrefix, itemsPerPage,
-                            headerOnly, True, 0, False, pageNumber)
+                            headerOnly, True, 0, False, 0, pageNumber)
 
 
 def createRepliesTimeline(recentPostsCache: {},
@@ -2515,7 +2516,7 @@ def createRepliesTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            0, False, pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2524,7 +2525,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            0, False, pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2533,18 +2534,19 @@ def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            0, False, pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
                        port: int, httpPrefix: str, itemsPerPage: int,
                        headerOnly: bool, newswireVotesThreshold: int,
-                       positiveVoting: bool, pageNumber=None) -> {}:
+                       positiveVoting: bool, votingTimeMins: int,
+                       pageNumber=None) -> {}:
     return createBoxIndexed({}, session, baseDir, 'outbox', 'news',
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
                             newswireVotesThreshold, positiveVoting,
-                            pageNumber)
+                            votingTimeMins, pageNumber)
 
 
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
@@ -2554,7 +2556,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'outbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, authorized,
-                            0, False, pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
@@ -2848,7 +2850,7 @@ def createBoxIndexed(recentPostsCache: {},
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      itemsPerPage: int, headerOnly: bool, authorized: bool,
                      newswireVotesThreshold: int, positiveVoting: bool,
-                     pageNumber=None) -> {}:
+                     votingTimeMins: int, pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -2919,27 +2921,38 @@ def createBoxIndexed(recentPostsCache: {},
 
                 # apply votes within this timeline
                 if newswireVotesThreshold > 0:
-                    # if there a votes file for this post?
-                    votesFilename = \
-                        locateNewsVotes(baseDir, domain, postFilename)
-                    if votesFilename:
-                        # load the votes file and count the votes
-                        votesJson = loadJson(votesFilename, 0, 2)
-                        if votesJson:
-                            if not positiveVoting:
-                                if votesOnNewswireItem(votesJson) >= \
-                                   newswireVotesThreshold:
-                                    # Too many veto votes.
-                                    # Continue without incrementing the
-                                    # posts counter
-                                    continue
-                            else:
-                                if votesOnNewswireItem < \
-                                   newswireVotesThreshold:
-                                    # Not enough votes.
-                                    # Continue without incrementing the
-                                    # posts counter
-                                    continue
+                    # note that the presence of an arrival file also indicates
+                    # that this post is moderated
+                    arrivalDate = \
+                        locateNewsArrival(baseDir, domain, postFilename)
+                    if arrivalDate:
+                        # how long has elapsed since this post arrived?
+                        currDate = datetime.datetime.now()
+                        timeDiffMins = \
+                            int((currDate - arrivalDate).total_seconds() / 60)
+                        # has the voting time elapsed?
+                        if timeDiffMins > votingTimeMins:
+                            # if there a votes file for this post?
+                            votesFilename = \
+                                locateNewsVotes(baseDir, domain, postFilename)
+                            if votesFilename:
+                                # load the votes file and count the votes
+                                votesJson = loadJson(votesFilename, 0, 2)
+                                if votesJson:
+                                    if not positiveVoting:
+                                        if votesOnNewswireItem(votesJson) >= \
+                                           newswireVotesThreshold:
+                                            # Too many veto votes.
+                                            # Continue without incrementing
+                                            # the posts counter
+                                            continue
+                                    else:
+                                        if votesOnNewswireItem < \
+                                           newswireVotesThreshold:
+                                            # Not enough votes.
+                                            # Continue without incrementing
+                                            # the posts counter
+                                            continue
 
                 # Skip through any posts previous to the current page
                 if postsCtr < int((pageNumber - 1) * itemsPerPage):

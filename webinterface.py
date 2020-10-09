@@ -2862,7 +2862,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                           str(currPage),
                           httpPrefix,
                           10, 'outbox',
-                          authorized, 0, False)
+                          authorized, 0, False, 0)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:
