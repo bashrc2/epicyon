@@ -2927,7 +2927,7 @@ def createBoxIndexed(recentPostsCache: {},
                         locateNewsArrival(baseDir, domain, postFilename)
                     if arrivalDate:
                         # how long has elapsed since this post arrived?
-                        currDate = datetime.datetime.now()
+                        currDate = datetime.datetime.utcnow()
                         timeDiffMins = \
                             int((currDate - arrivalDate).total_seconds() / 60)
                         # has the voting time elapsed?
