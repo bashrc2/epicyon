@@ -5253,9 +5253,7 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     """
     if not highlight:
         return label
-    if not isinstance(label, str):
-        return label        
-    return '*' + label + '*'
+    return '*' + str(label) + '*'
 
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
