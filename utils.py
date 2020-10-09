@@ -712,6 +712,11 @@ def deletePost(baseDir: str, httpPrefix: str,
         if os.path.isfile(votesFilename):
             os.remove(votesFilename)
 
+        # remove any arrived file
+        arrivedFilename = postFilename + '.arrived'
+        if os.path.isfile(arrivedFilename):
+            os.remove(arrivedFilename)
+
         # remove cached html version of the post
         cachedPostFilename = \
             getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
