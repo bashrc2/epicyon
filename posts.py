@@ -2935,28 +2935,31 @@ def createBoxIndexed(recentPostsCache: {},
                         print('Arrival: mins ' + \
                               str(timeDiffMins) + ' ' + str(votingTimeMins))
                         # has the voting time elapsed?
-                        if timeDiffMins > votingTimeMins:
-                            # if there a votes file for this post?
-                            votesFilename = \
-                                locateNewsVotes(baseDir, domain, postFilename)
-                            if votesFilename:
-                                # load the votes file and count the votes
-                                votesJson = loadJson(votesFilename, 0, 2)
-                                if votesJson:
-                                    if not positiveVoting:
-                                        if votesOnNewswireItem(votesJson) >= \
-                                           newswireVotesThreshold:
-                                            # Too many veto votes.
-                                            # Continue without incrementing
-                                            # the posts counter
-                                            continue
-                                    else:
-                                        if votesOnNewswireItem < \
-                                           newswireVotesThreshold:
-                                            # Not enough votes.
-                                            # Continue without incrementing
-                                            # the posts counter
-                                            continue
+                        if timeDiffMins < votingTimeMins:
+                            # voting is still happening, so don't add this
+                            # post to the timeline
+                            continue
+                        # if there a votes file for this post?
+                        votesFilename = \
+                            locateNewsVotes(baseDir, domain, postFilename)
+                        if votesFilename:
+                            # load the votes file and count the votes
+                            votesJson = loadJson(votesFilename, 0, 2)
+                            if votesJson:
+                                if not positiveVoting:
+                                    if votesOnNewswireItem(votesJson) >= \
+                                       newswireVotesThreshold:
+                                        # Too many veto votes.
+                                        # Continue without incrementing
+                                        # the posts counter
+                                        continue
+                                else:
+                                    if votesOnNewswireItem < \
+                                       newswireVotesThreshold:
+                                        # Not enough votes.
+                                        # Continue without incrementing
+                                        # the posts counter
+                                        continue
 
                 # Skip through any posts previous to the current page
                 if postsCtr < int((pageNumber - 1) * itemsPerPage):
