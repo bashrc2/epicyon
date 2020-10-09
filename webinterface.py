@@ -5441,8 +5441,8 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     '<a href="' + item[1] + '">' + \
                     item[0] + '</a>' + \
                     totalVotesStr
-                htmlStr += ' '
-                htmlStr += dateStr.replace('+00:00', '') + '</p>'
+                htmlStr += ' <span class="newswireDate">'
+                htmlStr += dateStr.replace('+00:00', '') + '</span></p>'
     return htmlStr
 
 

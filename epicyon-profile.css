@@ -68,8 +68,8 @@
     --quote-font-size: 120%;
     --line-spacing: 130%;
     --line-spacing-newswire: 100%;
-    --newswire-item-moderated-color: green;
-    --newswire-date-moderated-color: lightgreen;
+    --newswire-item-moderated-color: white;
+    --newswire-date-moderated-color: white;
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;

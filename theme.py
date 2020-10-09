@@ -256,8 +256,8 @@ def setThemeIndymedia(baseDir: str):
     themeParams = {
         "font-size-newswire": "18px",
         "line-spacing-newswire": "100%",
-        "newswire-item-moderated-color": "green",
-        "newswire-date-moderated-color": "lightgreen",
+        "newswire-item-moderated-color": "white",
+        "newswire-date-moderated-color": "white",
         "newswire-date-color": "white",
         "newswire-voted-background-color": "black",
         "column-right-fg-color": "#ff9900",
