@@ -146,7 +146,7 @@ def runNewswireDaemon(baseDir: str, httpd,
                       translate: {}) -> None:
     """Periodically updates RSS feeds
     """
-    newswireFilename = baseDir + '/accounts/.currentnewswire.json'
+    newswireStateFilename = baseDir + '/accounts/.newswirestate.json'
 
     # initial sleep to allow the system to start up
     time.sleep(50)
@@ -167,13 +167,13 @@ def runNewswireDaemon(baseDir: str, httpd,
             continue
 
         if not httpd.newswire:
-            if os.path.isfile(newswireFilename):
-                httpd.newswire = loadJson(newswireFilename)
+            if os.path.isfile(newswireStateFilename):
+                httpd.newswire = loadJson(newswireStateFilename)
 
         mergeWithPreviousNewswire(httpd.newswire, newNewswire)
 
         httpd.newswire = newNewswire
-        saveJson(httpd.newswire, newswireFilename)
+        saveJson(httpd.newswire, newswireStateFilename)
         print('Newswire updated')
 
         convertRSStoActivityPub(baseDir,

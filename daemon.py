@@ -4721,6 +4721,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'vote:' + nickname not in newswire[dateStr][2]:
                     newswire[dateStr][2].append('vote:' + nickname)
                     filename = newswire[dateStr][3]
+                    try:
+                        newswireStateFilename = \
+                            baseDir + '/accounts/.newswirestate.json'
+                        saveJson(newswire, newswireStateFilename)
+                    except Exception as e:
+                        print('ERROR saving newswire state, ' + str(e))
                     if filename:
                         saveJson(newswire[dateStr][2],
                                  filename + '.votes')
@@ -4762,6 +4768,12 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'vote:' + nickname in newswire[dateStr][2]:
                     newswire[dateStr][2].remove('vote:' + nickname)
                     filename = newswire[dateStr][3]
+                    try:
+                        newswireStateFilename = \
+                            baseDir + '/accounts/.newswirestate.json'
+                        saveJson(newswire, newswireStateFilename)
+                    except Exception as e:
+                        print('ERROR saving newswire state, ' + str(e))
                     if filename:
                         saveJson(newswire[dateStr][2],
                                  filename + '.votes')
