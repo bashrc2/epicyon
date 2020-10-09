@@ -2925,15 +2925,11 @@ def createBoxIndexed(recentPostsCache: {},
                     # that this post is moderated
                     arrivalDate = \
                         locateNewsArrival(baseDir, domain, postFilename)
-                    print('Arrival: ' + str(arrivalDate))
                     if arrivalDate:
-                        print('Arrival: date ' + str(arrivalDate))
                         # how long has elapsed since this post arrived?
                         currDate = datetime.datetime.utcnow()
                         timeDiffMins = \
                             int((currDate - arrivalDate).total_seconds() / 60)
-                        print('Arrival: mins ' + \
-                              str(timeDiffMins) + ' ' + str(votingTimeMins))
                         # has the voting time elapsed?
                         if timeDiffMins < votingTimeMins:
                             # voting is still happening, so don't add this

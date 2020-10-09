@@ -552,11 +552,9 @@ def locateNewsArrival(baseDir: str, domain: str,
 
     accountDir = baseDir + '/accounts/news@' + domain + '/'
     postFilename = accountDir + 'outbox/' + postUrl
-    print('Arrival: ' + str(postFilename))
     if os.path.isfile(postFilename):
         with open(postFilename, 'r') as arrivalFile:
             arrival = arrivalFile.read()
-            print('Arrival: content ' + str(arrival))
             if arrival:
                 arrivalDate = \
                     datetime.datetime.strptime(arrival,
