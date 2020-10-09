@@ -16,7 +16,7 @@ from utils import saveJson
 from utils import getStatusNumber
 
 
-def updateFeedsIndex(baseDir: str, domain: str, postId: str) -> None:
+def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
     """Updates the index used for imported RSS feeds
     """
     basePath = baseDir + '/accounts/news@' + domain
@@ -121,7 +121,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # save the post and update the index
         if saveJson(blog, filename):
-            updateFeedsIndex(baseDir, domain, postId + '.json')
+            updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
             # set the url
             newswire[originalDateStr][1] = \
                 '/users/news/statuses/' + statusNumber
