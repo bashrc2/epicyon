@@ -1004,7 +1004,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     pass
 
 
-def setTheme(baseDir: str, name: str) -> bool:
+def setTheme(baseDir: str, name: str, domain: str) -> bool:
     result = False
 
     prevThemeName = getTheme(baseDir)
@@ -1027,6 +1027,15 @@ def setTheme(baseDir: str, name: str) -> bool:
         result = True
 
     setCustomFont(baseDir)
+
+    # set the news avatar
+    newsAvatarThemeFilename = \
+        baseDir + '/img/icons/' + name + '/avatar_news.png'
+    if os.path.isfile(newsAvatarThemeFilename):
+        newsAvatarFilename = \
+            baseDir + '/accounts/news@' + domain + '/avatar.png'
+        copyfile(newsAvatarThemeFilename, newsAvatarFilename)
+
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
         enableGrayscale(baseDir)
