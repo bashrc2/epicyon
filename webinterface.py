@@ -5417,9 +5417,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
         else:
             totalVotesStr = ''
             totalVotes = 0
-            moderatedItem = False
             if moderator:
-                moderatedItem = item[5]
                 if moderatedItem:
                     totalVotes = votesOnNewswireItem(item[2])
                     # show a number of ticks or crosses for how many
