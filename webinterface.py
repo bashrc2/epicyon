@@ -5383,10 +5383,9 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
 
 
 def htmlNewswire(newswire: str, nickname: str, moderator: bool,
-                 translate: {}, positiveVoting: bool) -> str:
+                 translate: {}, positiveVoting: bool, iconsDir: str) -> str:
     """Converts a newswire dict into html
     """
-    iconsDir = getIconsDir(baseDir)
     htmlStr = ''
     for dateStr, item in newswire.items():
         dateStrLink = dateStr.replace(' ', 'T')
@@ -5523,7 +5522,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += '      <br>\n'
 
     htmlStr += htmlNewswire(newswire, nickname, moderator, translate,
-                            positiveVoting)
+                            positiveVoting, iconsDir)
     return htmlStr
 
 
