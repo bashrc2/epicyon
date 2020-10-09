@@ -95,7 +95,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             rssDescription += \
                 '\n\n' + translate['Read more...'] + '\n' + url
         else:
-            rssDescription = url
+            rssDescription = translate['Read more...'] + '\n' + url
 
         followersOnly = False
         useBlurhash = False

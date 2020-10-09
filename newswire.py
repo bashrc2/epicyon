@@ -47,7 +47,7 @@ def rss2Footer() -> str:
     return rssStr
 
 
-def xml2StrToDict(xmlStr: str) -> {}:
+def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
@@ -85,7 +85,7 @@ def xml2StrToDict(xmlStr: str) -> {}:
             votesStatus = []
             result[str(publishedDate)] = [title, link,
                                           votesStatus, postFilename,
-                                          description]
+                                          description, moderated]
             parsed = True
         except BaseException:
             pass
@@ -101,15 +101,15 @@ def xml2StrToDict(xmlStr: str) -> {}:
     return result
 
 
-def xmlStrToDict(xmlStr: str) -> {}:
+def xmlStrToDict(xmlStr: str, moderated: bool) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
-        return xml2StrToDict(xmlStr)
+        return xml2StrToDict(xmlStr, moderated)
     return {}
 
 
-def getRSS(session, url: str) -> {}:
+def getRSS(session, url: str, moderated: bool) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -132,7 +132,7 @@ def getRSS(session, url: str) -> {}:
         print('WARN: no session specified for getRSS')
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
-        return xmlStrToDict(result.text)
+        return xmlStrToDict(result.text, moderated)
     except requests.exceptions.RequestException as e:
         print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
@@ -204,6 +204,16 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
     """
     if not os.path.isfile(indexFilename):
         return
+    # local blog entries are unmoderated by default
+    moderated = False
+
+    # local blogs can potentially be moderated
+    moderatedFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/.newswiremoderated'
+    if os.path.isfile(moderatedFilename):
+        moderated = True
+
     with open(indexFilename, 'r') as indexFile:
         postFilename = 'start'
         ctr = 0
@@ -242,10 +252,11 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     votes = []
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
+                    description = ''
                     newswire[published] = \
                         [postJsonObject['object']['summary'],
                          postJsonObject['object']['url'], votes,
-                         fullPostFilename]
+                         fullPostFilename, description, moderated]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
@@ -312,11 +323,22 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
     result = {}
     for url in rssFeed:
         url = url.strip()
+
+        # Does this contain a url?
         if '://' not in url:
             continue
+
+        # is this a comment?
         if url.startswith('#'):
             continue
-        itemsList = getRSS(session, url)
+
+        # should this feed be moderated?
+        moderated = False
+        if '*' in url:
+            moderated = True
+            url = url.replace('*', '').strip()
+
+        itemsList = getRSS(session, url, moderated)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 
