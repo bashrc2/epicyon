@@ -99,6 +99,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         followersOnly = False
         useBlurhash = False
+        # NOTE: the id when the post is created will not be
+        # consistent (it's based on the current time, not the
+        # published time), so we change that later
         blog = createNewsPost(baseDir,
                               domain, port, httpPrefix,
                               rssDescription, followersOnly, False,
@@ -116,6 +119,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         currTime = datetime.datetime.utcnow()
         blog['object']['arrived'] = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        # change the id, based upon the published time
         blog['object']['replies']['id'] = idStr
         blog['object']['replies']['first']['partOf'] = idStr
 
