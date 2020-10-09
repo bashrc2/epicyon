@@ -254,6 +254,14 @@ def setThemeIndymedia(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "font-size-newswire": "18px",
+        "line-spacing-newswire": "100%",
+        "newswire-item-moderated-color": "green",
+        "newswire-date-moderated-color": "lightgreen",
+        "newswire-date-color": "white",
+        "newswire-voted-background-color": "black",
+        "column-right-fg-color": "#ff9900",
+        "column-right-fg-color-voted-on": "red",
         "button-corner-radius": "5px",
         "timeline-border-radius": "5px",
         "focus-color": "blue",
