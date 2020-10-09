@@ -559,7 +559,8 @@ def locateNewsArrival(baseDir: str, domain: str,
             print('Arrival: content ' + str(arrival))
             if arrival:
                 arrivalDate = \
-                    datetime.strptime(arrival, "%Y-%m-%dT%H:%M:%SZ")
+                    datetime.datetime.strptime(arrival,
+                                               "%Y-%m-%dT%H:%M:%SZ")
                 return arrivalDate
 
     return None
