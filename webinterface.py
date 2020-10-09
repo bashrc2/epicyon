@@ -5419,11 +5419,12 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
             moderatedItem = False
             if moderator:
                 moderatedItem = item[5]
-                totalVotes = votesOnNewswireItem(item[2])
-                # show a number of ticks or crosses for how many
-                # votes for or against
-                totalVotesStr = \
-                    votesIndicator(totalVotes, positiveVoting)
+                if moderatedItem:
+                    totalVotes = votesOnNewswireItem(item[2])
+                    # show a number of ticks or crosses for how many
+                    # votes for or against
+                    totalVotesStr = \
+                        votesIndicator(totalVotes, positiveVoting)
 
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
