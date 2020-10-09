@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import time
+import datetime
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
@@ -53,6 +54,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     if not os.path.isdir(basePath):
         os.mkdir(basePath)
 
+    # oldest items first
     newswireReverse = \
         OrderedDict(sorted(newswire.items(), reverse=False))
 
@@ -61,6 +63,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # convert the date to the format used by ActivityPub
         dateStr = dateStr.replace(' ', 'T')
         dateStr = dateStr.replace('+00:00', 'Z')
+
+        # pubDate = datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%SZ")
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
@@ -107,6 +111,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             httpPrefix + '://' + domain + '/users/news' + \
             '/statuses/' + statusNumber + '/replies'
         blog['news'] = True
+
+        # note the time of arrival
+        currTime = datetime.datetime.utcnow()
+        blog['object']['arrived'] = currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+
         blog['object']['replies']['id'] = idStr
         blog['object']['replies']['first']['partOf'] = idStr
 
