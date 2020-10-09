@@ -1918,7 +1918,7 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
-if setTheme(baseDir, themeName):
+if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":

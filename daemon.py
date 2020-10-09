@@ -3155,7 +3155,8 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
-                                 fields['themeDropdown'])
+                                 fields['themeDropdown'],
+                                 domain)
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actorJson)
@@ -3436,7 +3437,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
-                                setTheme(baseDir, currTheme)
+                                setTheme(baseDir, currTheme, domain)
 
                     # change media instance status
                     if fields.get('mediaInstance'):
