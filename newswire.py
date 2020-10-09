@@ -81,7 +81,11 @@ def xml2StrToDict(xmlStr: str) -> {}:
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
-            result[str(publishedDate)] = [title, link, [], '', description]
+            postFilename = ''
+            votesStatus = []
+            result[str(publishedDate)] = [title, link,
+                                          votesStatus, postFilename,
+                                          description]
             parsed = True
         except BaseException:
             pass
