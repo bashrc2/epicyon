@@ -5390,7 +5390,8 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
     for dateStr, item in newswire.items():
         dateStrLink = dateStr.replace(' ', 'T')
         dateStrLink = dateStrLink.replace('+00:00', '')
-        if 'vote:' + nickname in item[2]:
+        moderatedItem = item[5]
+        if moderatedItem and 'vote:' + nickname in item[2]:
             totalVotesStr = ''
             totalVotes = 0
             if moderator:
