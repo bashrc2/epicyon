@@ -5253,6 +5253,8 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     """
     if not highlight:
         return label
+    if not isinstance(label, str):
+        return label        
     return '*' + label + '*'
 
 
