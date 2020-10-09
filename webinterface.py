@@ -5400,19 +5400,19 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
 
             htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + item[1] + '">' + \
-                '<label class="newswireItemVotedOn">' + item[0] + \
-                '</label></a>' + totalVotesStr
+                '<span class="newswireItemVotedOn">' + item[0] + \
+                '</span></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
                     ' ' + \
                     '<a href="/users/' + nickname + \
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">' + \
-                    '<label class="newswireDateVotedOn">'
-                htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
+                    '<span class="newswireDateVotedOn">'
+                htmlStr += dateStr.replace('+00:00', '') + '</span></a></p>'
             else:
-                htmlStr += ' <label class="newswireDateVotedOn">'
-                htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
+                htmlStr += ' <span class="newswireDateVotedOn">'
+                htmlStr += dateStr.replace('+00:00', '') + '</span></p>'
         else:
             totalVotesStr = ''
             totalVotes = 0
@@ -5429,23 +5429,23 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + item[1] + '">' + \
-                    '<label class="newswireDateModerated">' + \
-                    item[0] + '</label></a>' + totalVotesStr
+                    '<span class="newswireDateModerated">' + \
+                    item[0] + '</span></a>' + totalVotesStr
                 htmlStr += \
                     ' ' + \
                     '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">' + \
-                    '<label class="newswireDateModerated">'
-                htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
+                    '<span class="newswireDateModerated">'
+                htmlStr += dateStr.replace('+00:00', '') + '</span></a></p>'
             else:
                 htmlStr += '<p class="newswireItem">' + \
                     '<a href="' + item[1] + '">' + \
-                    '<label class="newswireItem">' + \
-                    item[0] + '</label></a>' + \
+                    '<span class="newswireItem">' + \
+                    item[0] + '</span></a>' + \
                     totalVotesStr
-                htmlStr += ' <label class="newswireDate">'
-                htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
+                htmlStr += ' <span class="newswireDate">'
+                htmlStr += dateStr.replace('+00:00', '') + '</span></p>'
     return htmlStr
 
 
