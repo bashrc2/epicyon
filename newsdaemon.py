@@ -11,6 +11,7 @@ import time
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
+from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
 
@@ -128,11 +129,25 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
 
 
+def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
+    """Preserve any votes or generated activitypub post filename
+    as rss feeds are updated
+    """
+    for published, fields in oldNewswire.items():
+        if not newNewswire.get(published):
+            continue
+        newNewswire[published][1] = fields[1]
+        newNewswire[published][2] = fields[2]
+        newNewswire[published][3] = fields[3]
+
+
 def runNewswireDaemon(baseDir: str, httpd,
                       httpPrefix: str, domain: str, port: int,
                       translate: {}) -> None:
     """Periodically updates RSS feeds
     """
+    newswireFilename = baseDir + '/accounts/.currentnewswire.json'
+
     # initial sleep to allow the system to start up
     time.sleep(50)
     while True:
@@ -151,7 +166,14 @@ def runNewswireDaemon(baseDir: str, httpd,
             time.sleep(120)
             continue
 
+        if not httpd.newswire:
+            if os.path.isfile(newswireFilename):
+                httpd.newswire = loadJson(newswireFilename)
+
+        mergeWithPreviousNewswire(httpd.newswire, newNewswire)
+
         httpd.newswire = newNewswire
+        saveJson(httpd.newswire, newswireFilename)
         print('Newswire updated')
 
         convertRSStoActivityPub(baseDir,
