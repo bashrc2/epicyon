@@ -5406,12 +5406,12 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 '</span></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
-                    ' ' + \
+                    ' ' + dateStr.replace('+00:00', '') + \
                     '<a href="/users/' + nickname + \
                     '/newswireunvote=' + dateStrLink + '" ' + \
-                    'title="' + translate['Remove Vote'] + '">' + \
-                    '<span class="newswireDateVotedOn">'
-                htmlStr += dateStr.replace('+00:00', '') + '</span></a></p>'
+                    'title="' + translate['Remove Vote'] + '">'
+                htmlStr += '<img class="voteicon" src="' + \
+                    iconsDir + '/vote.png" /></a></p>'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
                 htmlStr += dateStr.replace('+00:00', '') + '</span></p>'
