@@ -5409,7 +5409,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     '<a href="/users/' + nickname + \
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
-                htmlStr += '<img class="voteicon" src="' + \
+                htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
                     iconsDir + '/vote.png" /></a></p>'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
@@ -5433,7 +5433,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 htmlStr += '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
-                htmlStr += '<img class="voteicon" src="' + \
+                htmlStr += '<img class="voteicon" src="/' + \
                     iconsDir + '/vote.png" /></a>'
                 htmlStr += '</p>'
             else:
