@@ -137,6 +137,7 @@ blockquote p {
 
 .voteicon {
     width: 1.1vw;
+    margin: -4px 5px;
 }
 
 .imageAnchor:focus img{
