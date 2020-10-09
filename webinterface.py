@@ -5924,19 +5924,17 @@ def htmlTimeline(defaultTimeline: str,
     # typically the news button
     # but may change if this is a news oriented instance
     if defaultTimeline != 'tlnews':
-        if not minimal:
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/tlnews"><button class="' + \
-                newsButton + '"><span>' + translate['News'] + \
-                '</span></button></a>\n'
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
+            '</span></button></a>\n'
     else:
-        if not minimal:
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/inbox"><button class="' + \
-                inboxButton + '"><span>' + translate['Inbox'] + \
-                '</span></button></a>\n'
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/inbox"><button class="' + \
+            inboxButton + '"><span>' + translate['Inbox'] + \
+            '</span></button></a>\n'
 
     # button for the outbox
     tlStr += \
