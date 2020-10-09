@@ -68,6 +68,8 @@
     --quote-font-size: 120%;
     --line-spacing: 130%;
     --line-spacing-newswire: 100%;
+    --newswire-item-moderated-color: green;
+    --newswire-date-moderated-color: lightgreen;
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
@@ -231,6 +233,19 @@ a:focus {
     font-size: var(--font-size-newswire);
     color: var(--column-right-fg-color);
     line-height: var(--line-spacing-newswire);
+}
+
+.newswireItemModerated {
+    font-size: var(--font-size-newswire);
+    color: var(--newswire-item-moderated-color);
+    line-height: var(--line-spacing-newswire);
+}
+
+.newswireDateModerated {
+    font-size: var(--font-size-newswire);
+    font-weight: bold;
+    color: var(--newswire-date-moderated-color);
+    float: right;
 }
 
 .newswireItemVotedOn a:link {

@@ -5416,25 +5416,30 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
         else:
             totalVotesStr = ''
             totalVotes = 0
+            moderatedItem = False
             if moderator:
+                moderatedItem = item[5]
                 totalVotes = votesOnNewswireItem(item[2])
                 # show a number of ticks or crosses for how many
                 # votes for or against
                 totalVotesStr = \
                     votesIndicator(totalVotes, positiveVoting)
 
-            htmlStr += '<p class="newswireItem">' + \
-                '<a href="' + item[1] + '">' + item[0] + '</a>' + \
-                totalVotesStr
-            if moderator:
+            if moderator and moderatedItem:
+                htmlStr += '<p class="newswireItemModerated">' + \
+                    '<a href="' + item[1] + '">' + item[0] + '</a>' + \
+                    totalVotesStr
                 htmlStr += \
                     ' ' + \
                     '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">' + \
-                    '<label class="newswireDate">'
+                    '<label class="newswireDateModerated">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></a></p>'
             else:
+                htmlStr += '<p class="newswireItem">' + \
+                    '<a href="' + item[1] + '">' + item[0] + '</a>' + \
+                    totalVotesStr
                 htmlStr += ' <label class="newswireDate">'
                 htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
     return htmlStr
