@@ -2925,8 +2925,9 @@ def createBoxIndexed(recentPostsCache: {},
                     # that this post is moderated
                     arrivalDate = \
                         locateNewsArrival(baseDir, domain, postFilename)
+                    print('Arrival: ' + str(arrivalDate))
                     if arrivalDate:
-                        print('Arrival: ' + str(arrivalDate))
+                        print('Arrival: date ' + str(arrivalDate))
                         # how long has elapsed since this post arrived?
                         currDate = datetime.datetime.utcnow()
                         timeDiffMins = \
