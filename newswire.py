@@ -135,8 +135,6 @@ def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
-            publishedDate = publishedDate.replace('Z', '')
-            publishedDate = publishedDate.replace('T', ' ') + '+00:00'
             postFilename = ''
             votesStatus = []
             result[str(publishedDate)] = [title, link,
