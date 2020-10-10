@@ -90,8 +90,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        rssTitle = urllib.parse.unquote_plus(item[0])
-        url = urllib.parse.unquote_plus(item[1])
+        rssTitle = urllib.parse.unquote_plus(item[0]).encode('utf-8')
+        url = urllib.parse.unquote_plus(item[1]).encode('utf-8')
         rssDescription = ''
 
         # get the rss description if it exists
