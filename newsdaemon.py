@@ -51,7 +51,8 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
 
 
 def removeControlCharacters(content: str) -> str:
-    return content.replace('&8211;', '-').replace('&#8211;', '-')
+    content = content.replace('&8211;', '-').replace('&#8211;', '-')
+    return content.replace('&8230;', '...').replace('&#8230;', '...')
 
 
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
