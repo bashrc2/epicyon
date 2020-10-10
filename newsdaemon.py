@@ -51,7 +51,7 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
 
 
 def removeControlCharacters(content: str) -> str:
-    return content.replace('&8211;', '-')
+    return content.replace('&8211;', '-').replace('&#8211;', '-')
 
 
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
@@ -102,13 +102,13 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # add the off-site link to the description
         if rssDescription:
-            rssDescription = '<br><br>' + rssDescription + \
-                '<br><br><a href="' + url + '">' + \
-                translate['Read more...'] + '</a><br>'
+            rssDescription += \
+                '\n\n<a href="' + url + '">' + \
+                translate['Read more...'] + '</a>'
         else:
-            rssDescription = '<br><br>' + \
+            rssDescription = \
                 '<a href="' + url + '">' + \
-                translate['Read more...'] + '</a><br>'
+                translate['Read more...'] + '</a>'
 
         followersOnly = False
         useBlurhash = False
@@ -142,7 +142,6 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['url'] = \
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
-        blog['object']['content'] = rssDescription
 
         postId = newPostId.replace('/', '#')
 
