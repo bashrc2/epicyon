@@ -4592,11 +4592,16 @@ def individualPostAsHtml(allowDownloads: bool,
             print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
 
     editStr = ''
+    print('EDIT TEST 1')
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
+        print('EDIT TEST 2')
         if '/statuses/' in postJsonObject['object']['id']:
+            print('EDIT TEST 3')
             if isBlogPost(postJsonObject):
+                print('EDIT TEST 4')
                 blogPostId = postJsonObject['object']['id']
                 if not isNewsPost(postJsonObject):
+                    print('EDIT TEST 5')
                     editStr += \
                         '        ' + \
                         '<a class="imageAnchor" href="/users/' + \
@@ -4610,6 +4615,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         translate['Edit blog post'] + \
                         ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
                 else:
+                    print('EDIT TEST 6')
                     editStr += \
                         '        ' + \
                         '<a class="imageAnchor" href="/users/' + \
