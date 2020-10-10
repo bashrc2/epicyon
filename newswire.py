@@ -101,11 +101,69 @@ def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
     return result
 
 
+def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
+    """Converts an atom feed string to a dictionary
+    """
+    if '<entry>' not in xmlStr:
+        return {}
+    result = {}
+    rssItems = xmlStr.split('<entry>')
+    for rssItem in rssItems:
+        if '<title>' not in rssItem:
+            continue
+        if '</title>' not in rssItem:
+            continue
+        if '<link>' not in rssItem:
+            continue
+        if '</link>' not in rssItem:
+            continue
+        if '<updated>' not in rssItem:
+            continue
+        if '</updated>' not in rssItem:
+            continue
+        title = rssItem.split('<title>')[1]
+        title = title.split('</title>')[0]
+        description = ''
+        if '<summary>' in rssItem and '</summary>' in rssItem:
+            description = rssItem.split('<summary>')[1]
+            description = description.split('</summary>')[0]
+        link = rssItem.split('<link>')[1]
+        link = link.split('</link>')[0]
+        pubDate = rssItem.split('<updated>')[1]
+        pubDate = pubDate.split('</updated>')[0]
+        parsed = False
+        try:
+            publishedDate = \
+                datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
+            publishedDate = publishedDate.replace('Z', '')
+            publishedDate = publishedDate.replace('T', ' ') + '+00:00'
+            postFilename = ''
+            votesStatus = []
+            result[str(publishedDate)] = [title, link,
+                                          votesStatus, postFilename,
+                                          description, moderated]
+            parsed = True
+        except BaseException:
+            pass
+        if not parsed:
+            try:
+                publishedDate = \
+                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
+                result[str(publishedDate) + '+00:00'] = [title, link]
+                parsed = True
+            except BaseException:
+                print('WARN: unrecognized atom feed date format: ' + pubDate)
+                pass
+    return result
+
+
 def xmlStrToDict(xmlStr: str, moderated: bool) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(xmlStr, moderated)
+    elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
+        return atomFeedToDict(xmlStr, moderated)
     return {}
 
 
