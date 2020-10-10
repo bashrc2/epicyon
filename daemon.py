@@ -3021,6 +3021,9 @@ class PubServer(BaseHTTPRequestHandler):
             if fields.get('editedNewsPost'):
                 newsPostContent = fields['editedNewsPost']
 
+            print('TEST newsPostUrl ' + str(newsPostUrl))
+            print('TEST newsPostTitle ' + str(newsPostTitle))
+            print('TEST newsPostUrl ' + str(newsPostUrl))
             if newsPostUrl and newsPostContent and newsPostTitle:
                 # load the post
                 postFilename = \
@@ -3033,13 +3036,12 @@ class PubServer(BaseHTTPRequestHandler):
                         newsPostTitle
                     postJsonObject['object']['content'] = \
                         newsPostContent
-                    postUrl = postJsonObject['object']['id']
-                    postUrl = postUrl.replace('/', '#')
                     # remove the html from post cache
                     cachedPost = \
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + \
-                        '/postcache/' + postUrl + '.html'
+                        '/postcache/' + newsPostUrl + '.html'
+                    print('TEST cachedPost ' + cachedPost)
                     if os.path.isfile(cachedPost):
                         os.remove(cachedPost)
                     # save the news post
