@@ -727,8 +727,11 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     """
     subject = addAutoCW(baseDir, nickname, domain, subject, content)
 
-    mentionedRecipients = \
-        getMentionedPeople(baseDir, httpPrefix, content, domain, False)
+    if nickname != 'news':
+        mentionedRecipients = \
+            getMentionedPeople(baseDir, httpPrefix, content, domain, False)
+    else:
+        mentionedRecipients = ''
 
     tags = []
     hashtagsDict = {}
@@ -739,18 +742,20 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 domain = domain + ':' + str(port)
 
     # add tags
-    content = \
-        addHtmlTags(baseDir, httpPrefix,
-                    nickname, domain, content,
-                    mentionedRecipients,
-                    hashtagsDict, True)
+    if nickname != 'news':
+        content = \
+            addHtmlTags(baseDir, httpPrefix,
+                        nickname, domain, content,
+                        mentionedRecipients,
+                        hashtagsDict, True)
 
     # replace emoji with unicode
     tags = []
     for tagName, tag in hashtagsDict.items():
         tags.append(tag)
     # get list of tags
-    content = replaceEmojiFromTags(content, tags, 'content')
+    if nickname != 'news':
+        content = replaceEmojiFromTags(content, tags, 'content')
     # remove replaced emoji
     hashtagsDictCopy = hashtagsDict.copy()
     for tagName, tag in hashtagsDictCopy.items():

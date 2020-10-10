@@ -146,8 +146,6 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['url'] = \
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
-        blog['object']['summary'] = rssTitle
-        blog['object']['content'] = rssDescription
 
         postId = newPostId.replace('/', '#')
 
