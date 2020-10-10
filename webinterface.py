@@ -4593,7 +4593,8 @@ def individualPostAsHtml(allowDownloads: bool,
 
     editStr = ''
     print('EDIT TEST 1')
-    if fullDomain + '/users/' + nickname in postJsonObject['actor']:
+    if postJsonObject['actor'].endswith(fullDomain + '/users/' + nickname) or \
+       postJsonObject['actor'].endswith(fullDomain + '/users/news'):
         print('EDIT TEST 2')
         if '/statuses/' in postJsonObject['object']['id']:
             print('EDIT TEST 3')
