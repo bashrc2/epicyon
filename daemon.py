@@ -12,6 +12,7 @@ import json
 import time
 import locale
 import urllib.parse
+import datetime
 from socket import error as SocketError
 import errno
 from functools import partial
@@ -3044,6 +3045,24 @@ class PubServer(BaseHTTPRequestHandler):
                     print('TEST cachedPost ' + cachedPost)
                     if os.path.isfile(cachedPost):
                         os.remove(cachedPost)
+                    # update newswire
+                    pubDate = postJsonObject['object']['published']
+                    publishedDate = \
+                        datetime.datetime.strptime(pubDate,
+                                                   "%Y-%m-%dT%H:%M:%SZ")
+                    if self.server.newswire.get(str(publishedDate)):
+                        self.server.newswire[publishedDate][0] = \
+                            newsPostTitle
+                        self.server.newswire[publishedDate][4] = \
+                            newsPostContent
+                        # save newswire
+                        newswireStateFilename = \
+                            baseDir + '/accounts/.newswirestate.json'
+                        try:
+                            saveJson(self.server.newswire,
+                                     newswireStateFilename)
+                        except Exception as e:
+                            print('ERROR saving newswire state, ' + str(e))
                     # save the news post
                     saveJson(postJsonObject, postFilename)
 
@@ -4852,9 +4871,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'vote:' + nickname not in newswire[dateStr][2]:
                     newswire[dateStr][2].append('vote:' + nickname)
                     filename = newswire[dateStr][3]
+                    newswireStateFilename = \
+                        baseDir + '/accounts/.newswirestate.json'
                     try:
-                        newswireStateFilename = \
-                            baseDir + '/accounts/.newswirestate.json'
                         saveJson(newswire, newswireStateFilename)
                     except Exception as e:
                         print('ERROR saving newswire state, ' + str(e))
@@ -4899,9 +4918,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'vote:' + nickname in newswire[dateStr][2]:
                     newswire[dateStr][2].remove('vote:' + nickname)
                     filename = newswire[dateStr][3]
+                    newswireStateFilename = \
+                        baseDir + '/accounts/.newswirestate.json'
                     try:
-                        newswireStateFilename = \
-                            baseDir + '/accounts/.newswirestate.json'
                         saveJson(newswire, newswireStateFilename)
                     except Exception as e:
                         print('ERROR saving newswire state, ' + str(e))
