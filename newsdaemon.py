@@ -94,11 +94,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             continue
 
         rssTitle = removeControlCharacters(item[0])
-        url = removeControlCharacters(item[1])
+        url = item[1]
         rssDescription = ''
 
         # get the rss description if it exists
-        rssDescription = item[4]
+        rssDescription = removeControlCharacters(item[4])
 
         # add the off-site link to the description
         if rssDescription:
