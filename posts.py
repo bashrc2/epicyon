@@ -74,14 +74,20 @@ def isModerator(baseDir: str, nickname: str) -> bool:
     moderatorsFile = baseDir + '/accounts/moderators.txt'
 
     if not os.path.isfile(moderatorsFile):
-        if getConfigParam(baseDir, 'admin') == nickname:
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
             return True
         return False
 
     with open(moderatorsFile, "r") as f:
         lines = f.readlines()
         if len(lines) == 0:
-            if getConfigParam(baseDir, 'admin') == nickname:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
                 return True
         for moderator in lines:
             moderator = moderator.strip('\n').strip('\r')

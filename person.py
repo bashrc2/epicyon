@@ -789,6 +789,8 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
     """
     # Don't suspend the admin
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return
     if nickname == adminNickname:
         return
 
@@ -843,6 +845,8 @@ def canRemovePost(baseDir: str, nickname: str,
 
     # is the post by the admin?
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return False
     if domainFull + '/users/' + adminNickname + '/' in postId:
         return False
 
@@ -899,6 +903,8 @@ def removeAccount(baseDir: str, nickname: str,
     """
     # Don't remove the admin
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return False
     if nickname == adminNickname:
         return False
 

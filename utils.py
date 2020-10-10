@@ -58,6 +58,8 @@ def isSuspended(baseDir: str, nickname: str) -> bool:
     """Returns true if the given nickname is suspended
     """
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return False
     if nickname == adminNickname:
         return False
 
