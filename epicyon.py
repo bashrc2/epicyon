@@ -1909,6 +1909,10 @@ registration = getConfigParam(baseDir, 'registration')
 if not registration:
     registration = False
 
+minimumvotes = getConfigParam(baseDir, 'minvotes')
+if minimumvotes:
+    args.minimumvotes = int(minimumvotes)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
