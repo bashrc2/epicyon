@@ -734,11 +734,12 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: mastodon api ' + self.path)
-        if self.path == '/api/v1/instance':
-            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+        adminNickname = getConfigParam(self.server.baseDir, 'admin')
+        if adminNickname and self.path == '/api/v1/instance':
             instanceDescriptionShort = \
                 getConfigParam(self.server.baseDir,
                                'instanceDescriptionShort')
+            instanceDescriptionShort = 'Yet another Epicyon Instance'
             instanceDescription = getConfigParam(self.server.baseDir,
                                                  'instanceDescription')
             instanceTitle = getConfigParam(self.server.baseDir,
@@ -3268,11 +3269,9 @@ class PubServer(BaseHTTPRequestHandler):
                     # change instance title
                     if fields.get('instanceTitle'):
                         currInstanceTitle = \
-                            getConfigParam(baseDir,
-                                           'instanceTitle')
+                            getConfigParam(baseDir, 'instanceTitle')
                         if fields['instanceTitle'] != currInstanceTitle:
-                            setConfigParam(baseDir,
-                                           'instanceTitle',
+                            setConfigParam(baseDir, 'instanceTitle',
                                            fields['instanceTitle'])
 
                     # change YouTube alternate domain
@@ -3311,8 +3310,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir,
                                            'instanceDescriptionShort', '')
                     currInstanceDescription = \
-                        getConfigParam(baseDir,
-                                       'instanceDescription')
+                        getConfigParam(baseDir, 'instanceDescription')
                     if fields.get('instanceDescription'):
                         if fields['instanceDescription'] != \
                            currInstanceDescription:
@@ -3348,60 +3346,61 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('moderators'):
                         adminNickname = \
                             getConfigParam(baseDir, 'admin')
-                        if path.startswith('/users/' +
-                                           adminNickname + '/'):
-                            moderatorsFile = \
-                                baseDir + \
-                                '/accounts/moderators.txt'
-                            clearModeratorStatus(baseDir)
-                            if ',' in fields['moderators']:
-                                # if the list was given as comma separated
-                                modFile = open(moderatorsFile, "w+")
-                                mods = fields['moderators'].split(',')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = baseDir + \
-                                        '/accounts/' + modNick + \
-                                        '@' + domain
-                                    if os.path.isdir(modDir):
-                                        modFile.write(modNick + '\n')
-                                modFile.close()
-                                mods = fields['moderators'].split(',')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = baseDir + \
-                                        '/accounts/' + modNick + \
-                                        '@' + domain
-                                    if os.path.isdir(modDir):
-                                        setRole(baseDir,
-                                                modNick, domain,
-                                                'instance', 'moderator')
-                            else:
-                                # nicknames on separate lines
-                                modFile = open(moderatorsFile, "w+")
-                                mods = fields['moderators'].split('\n')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = \
-                                        baseDir + \
-                                        '/accounts/' + modNick + \
-                                        '@' + domain
-                                    if os.path.isdir(modDir):
-                                        modFile.write(modNick + '\n')
-                                modFile.close()
-                                mods = fields['moderators'].split('\n')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = \
-                                        baseDir + \
-                                        '/accounts/' + \
-                                        modNick + '@' + \
-                                        domain
-                                    if os.path.isdir(modDir):
-                                        setRole(baseDir,
-                                                modNick, domain,
-                                                'instance',
-                                                'moderator')
+                        if adminNickname:
+                            if path.startswith('/users/' +
+                                               adminNickname + '/'):
+                                moderatorsFile = \
+                                    baseDir + \
+                                    '/accounts/moderators.txt'
+                                clearModeratorStatus(baseDir)
+                                if ',' in fields['moderators']:
+                                    # if the list was given as comma separated
+                                    modFile = open(moderatorsFile, "w+")
+                                    mods = fields['moderators'].split(',')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = baseDir + \
+                                            '/accounts/' + modNick + \
+                                            '@' + domain
+                                        if os.path.isdir(modDir):
+                                            modFile.write(modNick + '\n')
+                                    modFile.close()
+                                    mods = fields['moderators'].split(',')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = baseDir + \
+                                            '/accounts/' + modNick + \
+                                            '@' + domain
+                                        if os.path.isdir(modDir):
+                                            setRole(baseDir,
+                                                    modNick, domain,
+                                                    'instance', 'moderator')
+                                else:
+                                    # nicknames on separate lines
+                                    modFile = open(moderatorsFile, "w+")
+                                    mods = fields['moderators'].split('\n')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = \
+                                            baseDir + \
+                                            '/accounts/' + modNick + \
+                                            '@' + domain
+                                        if os.path.isdir(modDir):
+                                            modFile.write(modNick + '\n')
+                                    modFile.close()
+                                    mods = fields['moderators'].split('\n')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = \
+                                            baseDir + \
+                                            '/accounts/' + \
+                                            modNick + '@' + \
+                                            domain
+                                        if os.path.isdir(modDir):
+                                            setRole(baseDir,
+                                                    modNick, domain,
+                                                    'instance',
+                                                    'moderator')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):
