@@ -108,7 +108,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # add the off-site link to the description
         if rssDescription:
             rssDescription += \
-                '<br><br><a href="' + url + '">' + \
+                '<br><a href="' + url + '">' + \
                 translate['Read more...'] + '</a>'
         else:
             rssDescription = \
