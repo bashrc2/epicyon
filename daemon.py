@@ -8108,16 +8108,21 @@ class PubServer(BaseHTTPRequestHandler):
     def _editNewsPost(self, callingDomain: str, path: str,
                       translate: {}, baseDir: str,
                       httpPrefix: str, domain: str, port: int,
+                      domainFull: str,
                       cookie: str) -> bool:
         """Show the edit screen for a news post
         """
         if '/users/' in path and '/editnewspost=' in path:
-            postUrl = path.split('/editnewspost=')[1]
-            if '?' in postUrl:
-                postUrl = postUrl.split('?')[0]
+            postId = path.split('/editnewspost=')[1]
+            if '?' in postId:
+                postId = postId.split('?')[0]
+            postUrl = httpPrefix + '://' + domainFull + \
+                '/users/news/statuses' + postId
+            print('TEST postUrl: ' + postUrl)
             msg = htmlEditNewsPost(translate, baseDir,
                                    path, domain, port,
-                                   httpPrefix, postUrl).encode('utf-8')
+                                   httpPrefix,
+                                   postUrl).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -9516,6 +9521,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.httpPrefix,
                                   self.server.domain,
                                   self.server.port,
+                                  self.server.domainFull,
                                   cookie):
                 return
 

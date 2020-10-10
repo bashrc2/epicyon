@@ -1371,8 +1371,9 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
     if not isEditor(baseDir, nickname):
         return ''
 
+    postUrl = postUrl.replace('/', '#')
     postFilename = locatePost(baseDir, nickname, domain, postUrl)
-    print('TEST htmlEditNewsPost 5: ' + str(postFilename))
+    print('TEST htmlEditNewsPost 5: ' + str(postFilename) + ' ' + postUrl)
     if not postFilename:
         return ''
     postJsonObject = loadJson(postFilename)
@@ -4623,7 +4624,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         '        ' + \
                         '<a class="imageAnchor" href="/users/' + \
                         nickname + '/editnewspost=' + \
-                        blogPostId.replace('/', '#') + \
+                        blogPostId.split('/statuses/')[1] + \
                         '?actor=' + actorNickname + \
                         '" title="' + translate['Edit blog post'] + '">' + \
                         '<img loading="lazy" title="' + \
