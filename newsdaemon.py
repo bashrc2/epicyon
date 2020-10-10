@@ -99,11 +99,14 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # get the rss description if it exists
         rssDescription = removeControlCharacters(item[4])
+        if rssDescription.startswith('<![CDATA['):
+            rssDescription = rssDescription.replace('<![CDATA[', '')
+            rssDescription = rssDescription.replace(']]>', '')
 
         # add the off-site link to the description
         if rssDescription:
             rssDescription += \
-                '\n\n<a href="' + url + '">' + \
+                '<br><br><a href="' + url + '">' + \
                 translate['Read more...'] + '</a>'
         else:
             rssDescription = \
@@ -142,6 +145,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['url'] = \
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
+        blog['object']['content'] = rssDescription
 
         postId = newPostId.replace('/', '#')
 
