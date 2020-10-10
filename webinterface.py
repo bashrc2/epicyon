@@ -1352,27 +1352,34 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
                      httpPrefix: str, postUrl: str) -> str:
     """Edits a news post
     """
+    print('TEST htmlEditNewsPost 1: ' + path)
     if '/users/' not in path:
         return ''
+    print('TEST htmlEditNewsPost 2: ')
     pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     path = path.replace('/tlnews', '')
 
     nickname = getNicknameFromActor(path)
+    print('TEST htmlEditNewsPost 3: ' + str(nickname))
     if not nickname:
         return ''
 
     # is the user an editor?
+    print('TEST htmlEditNewsPost 4: ' + str(nickname))
     if not isEditor(baseDir, nickname):
         return ''
 
     postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    print('TEST htmlEditNewsPost 5: ' + str(postFilename))
     if not postFilename:
         return ''
     postJsonObject = loadJson(postFilename)
+    print('TEST htmlEditNewsPost 6: ' + str(postJsonObject))
     if not postJsonObject:
         return ''
+    print('TEST htmlEditNewsPost 7')
 
     cssFilename = baseDir + '/epicyon-links.css'
     if os.path.isfile(baseDir + '/links.css'):
