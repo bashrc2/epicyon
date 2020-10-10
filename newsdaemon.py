@@ -9,7 +9,7 @@ __status__ = "Production"
 import os
 import time
 import datetime
-import urllib.parse
+import unicodedata
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
@@ -51,6 +51,9 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
         arrivedFile.close()
 
 
+def removeControlCharacters(content: str):
+    return "".join(ch for ch in content if unicodedata.category(ch)[0]!="C")
+
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             domain: str, port: int,
                             newswire: {},
@@ -90,8 +93,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        rssTitle = urllib.parse.unquote_plus(item[0])
-        url = urllib.parse.unquote_plus(item[1])
+        rssTitle = removeControlCharacters(item[0])
+        url = removeControlCharacters(item[1])
         rssDescription = ''
 
         # get the rss description if it exists
