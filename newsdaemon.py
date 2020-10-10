@@ -102,6 +102,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
+        print('rssDescription: ' + rssDescription)
 
         # add the off-site link to the description
         if rssDescription:
