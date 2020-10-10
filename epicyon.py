@@ -1916,7 +1916,7 @@ if minimumvotes:
 votingtime = getConfigParam(baseDir, 'votingtime')
 if votingtime:
     args.votingtime = votingtime
-    
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:

@@ -1543,104 +1543,105 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     moderatorsStr = ''
     themesDropdown = ''
     adminNickname = getConfigParam(baseDir, 'admin')
-    if path.startswith('/users/' + adminNickname + '/'):
-        instanceDescription = \
-            getConfigParam(baseDir, 'instanceDescription')
-        instanceDescriptionShort = \
-            getConfigParam(baseDir, 'instanceDescriptionShort')
-        instanceTitle = \
-            getConfigParam(baseDir, 'instanceTitle')
-        instanceStr = '<div class="container">'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Title'] + '</label>'
-        if instanceTitle:
+    if adminNickname:
+        if path.startswith('/users/' + adminNickname + '/'):
+            instanceDescription = \
+                getConfigParam(baseDir, 'instanceDescription')
+            instanceDescriptionShort = \
+                getConfigParam(baseDir, 'instanceDescriptionShort')
+            instanceTitle = \
+                getConfigParam(baseDir, 'instanceTitle')
+            instanceStr = '<div class="container">'
             instanceStr += \
-                '  <input type="text" name="instanceTitle" value="' + \
-                instanceTitle + '"><br>'
-        else:
+                '  <label class="labels">' + \
+                translate['Instance Title'] + '</label>'
+            if instanceTitle:
+                instanceStr += \
+                    '  <input type="text" name="instanceTitle" value="' + \
+                    instanceTitle + '"><br>'
+            else:
+                instanceStr += \
+                    '  <input type="text" name="instanceTitle" value=""><br>'
             instanceStr += \
-                '  <input type="text" name="instanceTitle" value=""><br>'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Short Description'] + '</label>'
-        if instanceDescriptionShort:
+                '  <label class="labels">' + \
+                translate['Instance Short Description'] + '</label>'
+            if instanceDescriptionShort:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="instanceDescriptionShort" value="' + \
+                    instanceDescriptionShort + '"><br>'
+            else:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="instanceDescriptionShort" value=""><br>'
             instanceStr += \
-                '  <input type="text" ' + \
-                'name="instanceDescriptionShort" value="' + \
-                instanceDescriptionShort + '"><br>'
-        else:
+                '  <label class="labels">' + \
+                translate['Instance Description'] + '</label>'
+            if instanceDescription:
+                instanceStr += \
+                    '  <textarea id="message" name="instanceDescription" ' + \
+                    'style="height:200px">' + \
+                    instanceDescription + '</textarea>'
+            else:
+                instanceStr += \
+                    '  <textarea id="message" name="instanceDescription" ' + \
+                    'style="height:200px"></textarea>'
             instanceStr += \
-                '  <input type="text" ' + \
-                'name="instanceDescriptionShort" value=""><br>'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Description'] + '</label>'
-        if instanceDescription:
+                '  <label class="labels">' + \
+                translate['Instance Logo'] + '</label>'
             instanceStr += \
-                '  <textarea id="message" name="instanceDescription" ' + \
-                'style="height:200px">' + \
-                instanceDescription + '</textarea>'
-        else:
-            instanceStr += \
-                '  <textarea id="message" name="instanceDescription" ' + \
-                'style="height:200px"></textarea>'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Logo'] + '</label>'
-        instanceStr += \
-            '  <input type="file" id="instanceLogo" name="instanceLogo"'
-        instanceStr += '      accept="' + imageFormats + '">'
-        instanceStr += '</div>'
+                '  <input type="file" id="instanceLogo" name="instanceLogo"'
+            instanceStr += '      accept="' + imageFormats + '">'
+            instanceStr += '</div>'
 
-        moderators = ''
-        moderatorsFile = baseDir + '/accounts/moderators.txt'
-        if os.path.isfile(moderatorsFile):
-            with open(moderatorsFile, "r") as f:
-                moderators = f.read()
-        moderatorsStr = '<div class="container">'
-        moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
-        moderatorsStr += '  ' + \
-            translate['A list of moderator nicknames. One per line.']
-        moderatorsStr += \
-            '  <textarea id="message" name="moderators" placeholder="' + \
-            translate['List of moderator nicknames'] + \
-            '..." style="height:200px">' + moderators + '</textarea>'
-        moderatorsStr += '</div>'
+            moderators = ''
+            moderatorsFile = baseDir + '/accounts/moderators.txt'
+            if os.path.isfile(moderatorsFile):
+                with open(moderatorsFile, "r") as f:
+                    moderators = f.read()
+            moderatorsStr = '<div class="container">'
+            moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
+            moderatorsStr += '  ' + \
+                translate['A list of moderator nicknames. One per line.']
+            moderatorsStr += \
+                '  <textarea id="message" name="moderators" placeholder="' + \
+                translate['List of moderator nicknames'] + \
+                '..." style="height:200px">' + moderators + '</textarea>'
+            moderatorsStr += '</div>'
 
-        themes = getThemesList()
-        themesDropdown = '<div class="container">'
-        themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
-        grayscaleFilename = \
-            baseDir + '/accounts/.grayscale'
-        grayscale = ''
-        if os.path.isfile(grayscaleFilename):
-            grayscale = 'checked'
-        themesDropdown += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="grayscale" ' + grayscale + \
-            '> ' + translate['Grayscale'] + '<br>'
-        themesDropdown += '  <select id="themeDropdown" ' + \
-            'name="themeDropdown" class="theme">'
-        for themeName in themes:
-            themesDropdown += '    <option value="' + \
-                themeName.lower() + '">' + \
-                translate[themeName] + '</option>'
-        themesDropdown += '  </select><br>'
-        if os.path.isfile(baseDir + '/fonts/custom.woff') or \
-           os.path.isfile(baseDir + '/fonts/custom.woff2') or \
-           os.path.isfile(baseDir + '/fonts/custom.otf') or \
-           os.path.isfile(baseDir + '/fonts/custom.ttf'):
+            themes = getThemesList()
+            themesDropdown = '<div class="container">'
+            themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
+            grayscaleFilename = \
+                baseDir + '/accounts/.grayscale'
+            grayscale = ''
+            if os.path.isfile(grayscaleFilename):
+                grayscale = 'checked'
             themesDropdown += \
                 '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="removeCustomFont"> ' + \
-                translate['Remove the custom font'] + '<br>'
-        themesDropdown += '</div>'
-        themeName = getConfigParam(baseDir, 'theme')
-        themesDropdown = \
-            themesDropdown.replace('<option value="' + themeName + '">',
-                                   '<option value="' + themeName +
-                                   '" selected>')
+                'name="grayscale" ' + grayscale + \
+                '> ' + translate['Grayscale'] + '<br>'
+            themesDropdown += '  <select id="themeDropdown" ' + \
+                'name="themeDropdown" class="theme">'
+            for themeName in themes:
+                themesDropdown += '    <option value="' + \
+                    themeName.lower() + '">' + \
+                    translate[themeName] + '</option>'
+            themesDropdown += '  </select><br>'
+            if os.path.isfile(baseDir + '/fonts/custom.woff') or \
+               os.path.isfile(baseDir + '/fonts/custom.woff2') or \
+               os.path.isfile(baseDir + '/fonts/custom.otf') or \
+               os.path.isfile(baseDir + '/fonts/custom.ttf'):
+                themesDropdown += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="removeCustomFont"> ' + \
+                    translate['Remove the custom font'] + '<br>'
+            themesDropdown += '</div>'
+            themeName = getConfigParam(baseDir, 'theme')
+            themesDropdown = \
+                themesDropdown.replace('<option value="' + themeName + '">',
+                                       '<option value="' + themeName +
+                                       '" selected>')
 
     editProfileForm = htmlHeader(cssFilename, editProfileCSS)
     editProfileForm += \
