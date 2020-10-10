@@ -445,7 +445,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                                                       saveToFile,
                                                       manualFollowerApproval,
                                                       password)
-    if noOfAccounts(baseDir) == 1:
+    if not getConfigParam(baseDir, 'admin'):
         # print(nickname+' becomes the instance admin and a moderator')
         setConfigParam(baseDir, 'admin', nickname)
         setRole(baseDir, nickname, domain, 'instance', 'admin')
