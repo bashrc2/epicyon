@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 import time
 import datetime
-import unicodedata
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
@@ -51,8 +50,9 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
         arrivedFile.close()
 
 
-def removeControlCharacters(content: str):
-    return "".join(ch for ch in content if unicodedata.category(ch)[0]!="C")
+def removeControlCharacters(content: str) -> str:
+    return content.replace('&8211;', '-')
+
 
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             domain: str, port: int,
