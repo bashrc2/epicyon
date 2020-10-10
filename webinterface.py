@@ -1357,9 +1357,6 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
         return ''
     print('TEST htmlEditNewsPost 2: ')
     pathOriginal = path
-    path = path.replace('/inbox', '').replace('/outbox', '')
-    path = path.replace('/shares', '')
-    path = path.replace('/tlnews', '')
 
     nickname = getNicknameFromActor(path)
     print('TEST htmlEditNewsPost 3: ' + str(nickname))
