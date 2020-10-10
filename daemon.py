@@ -8117,7 +8117,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '?' in postId:
                 postId = postId.split('?')[0]
             postUrl = httpPrefix + '://' + domainFull + \
-                '/users/news/statuses' + postId
+                '/users/news/statuses/' + postId
+            print('TEST path: ' + path)
             print('TEST postUrl: ' + postUrl)
             msg = htmlEditNewsPost(translate, baseDir,
                                    path, domain, port,
