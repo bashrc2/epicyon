@@ -52,6 +52,7 @@ from posts import getUserUrl
 from posts import parseUserFeed
 from posts import populateRepliesJson
 from posts import isModerator
+from posts import isEditor
 from posts import downloadAnnounce
 from session import getJson
 from auth import createPassword
@@ -1344,6 +1345,85 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
 
     editNewswireForm += htmlFooter()
     return editNewswireForm
+
+
+def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
+                     domain: str, port: int,
+                     httpPrefix: str, postUrl: str) -> str:
+    """Edits a news post
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+    path = path.replace('/inbox', '').replace('/outbox', '')
+    path = path.replace('/shares', '')
+    path = path.replace('/tlnews', '')
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    # is the user an editor?
+    if not isEditor(baseDir, nickname):
+        return ''
+
+    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    if not postFilename:
+        return ''
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+    with open(cssFilename, 'r') as cssFile:
+        editCSS = cssFile.read()
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editNewsPostForm = htmlHeader(cssFilename, editCSS)
+    editNewsPostForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'
+    editNewsPostForm += \
+        '  <div class="vertical-center">\n'
+    editNewsPostForm += \
+        '    <p class="new-post-text">' + translate['Edit News Post'] + '</p>'
+    editNewsPostForm += \
+        '    <div class="container">\n'
+    editNewsPostForm += \
+        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+        translate['Go Back'] + '</button></a>\n'
+    editNewsPostForm += \
+        '      <input type="submit" name="submitEditedNewsPost" value="' + \
+        translate['Submit'] + '">\n'
+    editNewsPostForm += \
+        '    </div>\n'
+
+    editNewsPostForm += \
+        '<div class="container">'
+
+    editNewsPostForm += \
+        '  <input type="hidden" name="newsPostUrl" value="' + \
+        postUrl + '">\n'
+
+    newsPostTitle = postJsonObject['object']['summary']
+    editNewsPostForm += \
+        '  <input type="text" name="newsPostTitle" value="' + \
+        newsPostTitle + '"><br>\n'
+
+    newsPostContent = postJsonObject['object']['content']
+    editNewsPostForm += \
+        '  <textarea id="message" name="editedNewsPost" ' + \
+        'style="height:600px">' + newsPostContent + '</textarea>'
+
+    editNewsPostForm += \
+        '</div>'
+
+    editNewsPostForm += htmlFooter()
+    return editNewsPostForm
 
 
 def htmlEditProfile(translate: {}, baseDir: str, path: str,
@@ -4515,14 +4595,26 @@ def individualPostAsHtml(allowDownloads: bool,
     if fullDomain + '/users/' + nickname in postJsonObject['actor']:
         if '/statuses/' in postJsonObject['object']['id']:
             if isBlogPost(postJsonObject):
+                blogPostId = postJsonObject['object']['id']
                 if not isNewsPost(postJsonObject):
-                    blogPostId = postJsonObject['object']['id']
                     editStr += \
                         '        ' + \
                         '<a class="imageAnchor" href="/users/' + \
                         nickname + \
                         '/tlblogs?editblogpost=' + \
                         blogPostId.split('/statuses/')[1] + \
+                        '?actor=' + actorNickname + \
+                        '" title="' + translate['Edit blog post'] + '">' + \
+                        '<img loading="lazy" title="' + \
+                        translate['Edit blog post'] + '" alt="' + \
+                        translate['Edit blog post'] + \
+                        ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                else:
+                    editStr += \
+                        '        ' + \
+                        '<a class="imageAnchor" href="/users/' + \
+                        nickname + '/editnewspost=' + \
+                        blogPostId.replace('/', '#') + \
                         '?actor=' + actorNickname + \
                         '" title="' + translate['Edit blog post'] + '">' + \
                         '<img loading="lazy" title="' + \

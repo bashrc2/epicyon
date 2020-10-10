@@ -35,7 +35,6 @@ from auth import removePassword
 from roles import setRole
 from media import removeMetaData
 from utils import validNickname
-from utils import noOfAccounts
 from utils import loadJson
 from utils import saveJson
 from utils import setConfigParam
@@ -450,6 +449,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         setConfigParam(baseDir, 'admin', nickname)
         setRole(baseDir, nickname, domain, 'instance', 'admin')
         setRole(baseDir, nickname, domain, 'instance', 'moderator')
+        setRole(baseDir, nickname, domain, 'instance', 'editor')
         setRole(baseDir, nickname, domain, 'instance', 'delegator')
 
     if not os.path.isdir(baseDir + '/accounts'):

@@ -62,6 +62,7 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import isModerator
+from posts import isEditor
 from posts import mutePost
 from posts import unmutePost
 from posts import createQuestionPost
@@ -146,6 +147,7 @@ from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlEditLinks
 from webinterface import htmlEditNewswire
+from webinterface import htmlEditNewsPost
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
@@ -1096,7 +1098,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
                     elif '/' + nickname + '?' in self.path:
                         return True
-                    elif self.path.endswith('/'+nickname):
+                    elif self.path.endswith('/' + nickname):
                         return True
                     print('AUTH: nickname ' + nickname +
                           ' was not found in path ' + self.path)
@@ -2915,6 +2917,133 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if os.path.isfile(newswireTrustedFilename):
                     os.remove(newswireTrustedFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _newsPostEdit(self, callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str,
+                      onionDomain: str, i2pDomain: str, debug: bool,
+                      defaultTimeline: str):
+        """edits a news post
+        """
+        usersPath = path.replace('/newseditdata', '')
+        usersPath = usersPath.replace('/editnewspost', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            editorRole = None
+            if nickname:
+                editorRole = isEditor(baseDir, nickname)
+            if not nickname or not editorRole:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not an editor' + actorStr)
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum news data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            newsPostUrl = None
+            newsPostTitle = None
+            newsPostContent = None
+            if fields.get('newsPostUrl'):
+                newsPostUrl = fields['newsPostUrl']
+            if fields.get('newsPostTitle'):
+                newsPostTitle = fields['newsPostTitle']
+            if fields.get('editedNewsPost'):
+                newsPostContent = fields['editedNewsPost']
+
+            if newsPostUrl and newsPostContent and newsPostTitle:
+                # load the post
+                postFilename = \
+                    locatePost(baseDir, nickname, domain,
+                               newsPostUrl)
+                if postFilename:
+                    postJsonObject = loadJson(postFilename)
+                    # update the content and title
+                    postJsonObject['object']['summary'] = \
+                        newsPostTitle
+                    postJsonObject['object']['content'] = \
+                        newsPostContent
+                    postUrl = postJsonObject['object']['id']
+                    postUrl = postUrl.replace('/', '#')
+                    # remove the html from post cache
+                    cachedPost = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/postcache/' + postUrl + '.html'
+                    if os.path.isfile(cachedPost):
+                        os.remove(cachedPost)
+                    # save the news post
+                    saveJson(postJsonObject, postFilename)
 
         # redirect back to the default timeline
         if callingDomain.endswith('.onion') and \
@@ -7976,6 +8105,29 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _editNewsPost(self, callingDomain: str, path: str,
+                      translate: {}, baseDir: str,
+                      httpPrefix: str, domain: str, port: int,
+                      cookie: str) -> bool:
+        """Show the edit screen for a news post
+        """
+        if '/users/' in path and '/editnewspost=' in path:
+            postUrl = path.split('/editnewspost=')[1]
+            if '?' in postUrl:
+                postUrl = postUrl.split('?')[0]
+            msg = htmlEditNewsPost(translate, baseDir,
+                                   path, domain, port,
+                                   httpPrefix, postUrl).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def _editEvent(self, callingDomain: str, path: str,
                    httpPrefix: str, domain: str, domainFull: str,
                    baseDir: str, translate: {},
@@ -9349,6 +9501,16 @@ class PubServer(BaseHTTPRequestHandler):
 
             # edit newswire from the right column of the timeline
             if self._editNewswire(callingDomain, self.path,
+                                  self.server.translate,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  cookie):
+                return
+
+            # edit news post
+            if self._editNewsPost(callingDomain, self.path,
                                   self.server.translate,
                                   self.server.baseDir,
                                   self.server.httpPrefix,
@@ -10843,6 +11005,16 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain, self.server.debug,
                                  self.server.defaultTimeline)
+            return
+
+        if authorized and self.path.endswith('/newseditdata'):
+            self._newsPostEdit(callingDomain, cookie, authorized, self.path,
+                               self.server.baseDir, self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.onionDomain,
+                               self.server.i2pDomain, self.server.debug,
+                               self.server.defaultTimeline)
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)

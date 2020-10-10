@@ -96,6 +96,34 @@ def isModerator(baseDir: str, nickname: str) -> bool:
     return False
 
 
+def isEditor(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is an editor
+    """
+    editorsFile = baseDir + '/accounts/editors.txt'
+
+    if not os.path.isfile(editorsFile):
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
+            return True
+        return False
+
+    with open(editorsFile, "r") as f:
+        lines = f.readlines()
+        if len(lines) == 0:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
+                return True
+        for editor in lines:
+            editor = editor.strip('\n').strip('\r')
+            if editor == nickname:
+                return True
+    return False
+
+
 def noOfFollowersOnDomain(baseDir: str, handle: str,
                           domain: str, followFile='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
