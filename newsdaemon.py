@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import time
 import datetime
+import urllib.parse
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
@@ -73,8 +74,6 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         dateStr = dateStr.replace(' ', 'T')
         dateStr = dateStr.replace('+00:00', 'Z')
 
-        # pubDate = datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%SZ")
-
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
             httpPrefix + '://' + domain + \
@@ -91,8 +90,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        rssTitle = item[0]
-        url = item[1]
+        rssTitle = urllib.parse.unquote_plus(item[0])
+        url = urllib.parse.unquote_plus(item[1])
         rssDescription = ''
 
         # get the rss description if it exists
