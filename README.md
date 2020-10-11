@@ -27,7 +27,7 @@ sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
                imagemagick python-pillow python-requests \
 	       perl-image-exiftool python-numpy python-dateutil \
 	       certbot flake8 bandit
-sudo pip3 install pyLD pyqrcode pypng
+sudo pip3 install pyqrcode pypng
 ```
 
 Or on Debian:
@@ -39,7 +39,7 @@ sudo apt install -y \
     python3-crypto python3-pycryptodome \
     python3-dateutil python3-pil.imagetk
     python3-idna python3-requests \
-    python3-pyld python3-django-timezone-field \
+    python3-django-timezone-field \
     libimage-exiftool-perl python3-flake8 \
     python3-pyqrcode python3-png python3-bandit \
     certbot nginx

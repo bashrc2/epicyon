@@ -22,7 +22,7 @@ except ImportError:
     from Crypto.Hash import SHA256
     from Crypto.Signature import PKCS1_v1_5
 
-from pyld import jsonld
+from pyjsonld import normalize
 
 import base64
 import json
@@ -107,7 +107,7 @@ def jsonldNormalize(jldDocument: str):
         'algorithm': 'URDNA2015',
         'format': 'application/nquads'
     }
-    normalized = jsonld.normalize(jldDocument, options=options)
+    normalized = normalize(jldDocument, options=options)
     normalizedHash = SHA256.new(data=normalized.encode('utf-8')).digest()
     return normalizedHash
 
