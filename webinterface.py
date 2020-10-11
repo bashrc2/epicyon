@@ -6144,11 +6144,11 @@ def htmlTimeline(defaultTimeline: str,
 
     # the links button to show left column links
     tlStr += \
-        '        <a class="imageAnchorMobile" href="' + usersPath + '/links' + \
+        '        <a class="imageAnchor" href="' + usersPath + '/links' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/links.png" title="' + translate['Edit Links'] + \
         '" alt="| ' + translate['Edit Links'] + \
-        '" class="timelineIconMobile"/></a>\n'
+        '" class="timelineIcon"/></a>\n'
 
     tlStr += followApprovals
     # end of the button header with inbox, outbox, etc
