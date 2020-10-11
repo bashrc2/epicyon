@@ -998,9 +998,6 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
-    .timelineIconMobile {
-	display: none;
-    }
     .timeline-banner {
         background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
         height: 15%;
@@ -1546,9 +1543,6 @@ aside .toggle-inside li {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
-    }
-    .timelineIconMobile {
-	width: 10%;
     }
     .timeline-banner {
         background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
