@@ -12,6 +12,8 @@ import datetime
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
+from content import removeHtmlTag
+from content import dangerousMarkup
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
@@ -51,8 +53,21 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
 
 
 def removeControlCharacters(content: str) -> str:
-    content = content.replace('&8211;', '-').replace('&#8211;', '-')
-    return content.replace('&8230;', '...').replace('&#8230;', '...')
+    """TODO this is hacky and a better solution is needed
+    the unicode is messing up somehow
+    """
+    lookups = {
+        "8211": "-",
+        "8230": "...",
+        "8216": "'",
+        "8217": "'",
+        "8220": '"',
+        "8221": '"'
+    }
+    for code, ch in lookups.items():
+        content = content.replace('&' + code + ';', ch)
+        content = content.replace('&#' + code + ';', ch)
+    return content
 
 
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
@@ -96,6 +111,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         rssTitle = removeControlCharacters(item[0])
         url = item[1]
+        if dangerousMarkup(url) or dangerousMarkup(rssTitle):
+            continue
         rssDescription = ''
 
         # get the rss description if it exists
@@ -106,7 +123,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         rssDescription = '<p>' + rssDescription + '<p>'
 
         # add the off-site link to the description
-        if rssDescription:
+        if rssDescription and not dangerousMarkup(rssDescription):
             rssDescription += \
                 '<br><a href="' + url + '">' + \
                 translate['Read more...'] + '</a>'
@@ -114,6 +131,10 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             rssDescription = \
                 '<a href="' + url + '">' + \
                 translate['Read more...'] + '</a>'
+
+        # remove image dimensions
+        rssDescription = removeHtmlTag(rssDescription, 'width')
+        rssDescription = removeHtmlTag(rssDescription, 'height')
 
         followersOnly = False
         useBlurhash = False

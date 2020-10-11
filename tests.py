@@ -78,6 +78,7 @@ from content import addHtmlTags
 from content import removeLongWords
 from content import replaceContentDuplicates
 from content import removeTextFormatting
+from content import removeHtmlTag
 from theme import setCSSparam
 from jsonldsig import testSignJsonld
 from jsonldsig import jsonldVerify
@@ -2162,8 +2163,18 @@ def testReplaceEmailQuote():
     assert resultStr == expectedStr
 
 
+def testRemoveHtmlTag():
+    print('testRemoveHtmlTag')
+    testStr = "<p><img width=\"864\" height=\"486\" " + \
+        "src=\"https://somesiteorother.com/image.jpg\"></p>"
+    resultStr = removeHtmlTag(testStr, 'width')
+    assert resultStr == "<p><img height=\"486\" " + \
+        "src=\"https://somesiteorother.com/image.jpg\"></p>"
+
+
 def runAllTests():
     print('Running tests...')
+    testRemoveHtmlTag()
     testReplaceEmailQuote()
     testConstantTimeStringCheck()
     testTranslations()

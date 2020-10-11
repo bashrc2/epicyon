@@ -14,6 +14,23 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def removeHtmlTag(htmlStr: str, tag: str) -> str:
+    """Removes a given tag from a html string
+    """
+    tagFound = True
+    while tagFound:
+        matchStr = ' ' + tag + '="'
+        if matchStr not in htmlStr:
+            tagFound = False
+            break
+        sections = htmlStr.split(matchStr, 1)
+        if '"' not in sections[1]:
+            tagFound = False
+            break
+        htmlStr = sections[0] + sections[1].split('"', 1)[1]
+    return htmlStr
+
+
 def removeQuotesWithinQuotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """
