@@ -1399,7 +1399,7 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
     editNewsPostForm += \
         '    <div class="container">\n'
     editNewsPostForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+        '      <a href="' + pathOriginal + '/tlnews"><button class="cancelbtn">' + \
         translate['Go Back'] + '</button></a>\n'
     editNewsPostForm += \
         '      <input type="submit" name="submitEditedNewsPost" value="' + \

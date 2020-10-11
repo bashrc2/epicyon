@@ -2966,7 +2966,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not an editor' + actorStr)
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr + '/tlnews',
+                                       cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
 
@@ -2983,7 +2984,8 @@ class PubServer(BaseHTTPRequestHandler):
                     actorStr = \
                         'http://' + i2pDomain + usersPath
                 print('Maximum news data length exceeded ' + str(length))
-                self._redirect_headers(actorStr, cookie, callingDomain)
+                self._redirect_headers(actorStr + 'tlnews',
+                                       cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
 
@@ -3075,7 +3077,7 @@ class PubServer(BaseHTTPRequestHandler):
               i2pDomain):
             actorStr = \
                 'http://' + i2pDomain + usersPath
-        self._redirect_headers(actorStr + '/' + defaultTimeline,
+        self._redirect_headers(actorStr + '/tlnews',
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
