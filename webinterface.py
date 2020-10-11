@@ -5373,7 +5373,7 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsDir: str, moderator: bool) -> str:
+                         iconsDir: str, editor: bool) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -5409,7 +5409,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'leftColEdit':
         htmlStr += '\n      <center>\n'
 
-    if moderator:
+    if editor:
         # show the edit icon
         htmlStr += \
             '      <a href="' + \
@@ -5563,7 +5563,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
-                          iconsDir: str, moderator: bool,
+                          iconsDir: str, moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool) -> str:
     """Returns html content for the right column
     """
@@ -5601,7 +5601,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
 
-    if moderator:
+    if editor:
         if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
             # show the edit icon highlighted
             htmlStr += \
@@ -5654,6 +5654,7 @@ def htmlTimeline(defaultTimeline: str,
                  YTReplacementDomain: str,
                  showPublishedDateOnly: bool,
                  newswire: {}, moderator: bool,
+                 editor: bool,
                  positiveVoting: bool) -> str:
     """Show the timeline as html
     """
@@ -5752,6 +5753,10 @@ def htmlTimeline(defaultTimeline: str,
     # is the user a moderator?
     if not moderator:
         moderator = isModerator(baseDir, nickname)
+
+    # is the user a site editor?
+    if not editor:
+        editor = isEditor(baseDir, nickname)
 
     # benchmark 2
     timeDiff = int((time.time() - timelineStartTime) * 1000)
@@ -5959,7 +5964,7 @@ def htmlTimeline(defaultTimeline: str,
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
-                             moderator)
+                             editor)
     tlStr += '  <td valign="top" class="col-left">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
@@ -6288,7 +6293,8 @@ def htmlTimeline(defaultTimeline: str,
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
                                            httpPrefix, translate, iconsDir,
-                                           moderator, newswire, positiveVoting)
+                                           moderator, editor,
+                                           newswire, positiveVoting)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
@@ -6345,7 +6351,7 @@ def htmlShares(defaultTimeline: str,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         False, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6372,7 +6378,7 @@ def htmlInbox(defaultTimeline: str,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6399,7 +6405,7 @@ def htmlBookmarks(defaultTimeline: str,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6426,7 +6432,7 @@ def htmlEvents(defaultTimeline: str,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6448,7 +6454,7 @@ def htmlInboxDMs(defaultTimeline: str,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
                         YTReplacementDomain, showPublishedDateOnly,
-                        newswire, False, positiveVoting)
+                        newswire, False, False, positiveVoting)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -6470,7 +6476,7 @@ def htmlInboxReplies(defaultTimeline: str,
                         allowDeletion, httpPrefix, projectVersion, False,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6493,7 +6499,7 @@ def htmlInboxMedia(defaultTimeline: str,
                         allowDeletion, httpPrefix, projectVersion, False,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6516,7 +6522,7 @@ def htmlInboxBlogs(defaultTimeline: str,
                         allowDeletion, httpPrefix, projectVersion, False,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, False,
+                        newswire, False, False,
                         positiveVoting)
 
 
@@ -6529,7 +6535,7 @@ def htmlInboxNews(defaultTimeline: str,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
                   showPublishedDateOnly: bool,
-                  newswire: {}, moderator: bool,
+                  newswire: {}, moderator: bool, editor: bool,
                   positiveVoting: bool) -> str:
     """Show the news timeline as html
     """
@@ -6540,7 +6546,7 @@ def htmlInboxNews(defaultTimeline: str,
                         allowDeletion, httpPrefix, projectVersion, False,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
-                        newswire, moderator,
+                        newswire, moderator, editor,
                         positiveVoting)
 
 
@@ -6562,7 +6568,7 @@ def htmlModeration(defaultTimeline: str,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
                         YTReplacementDomain, showPublishedDateOnly,
-                        newswire, False, positiveVoting)
+                        newswire, False, False, positiveVoting)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -6586,7 +6592,7 @@ def htmlOutbox(defaultTimeline: str,
                         allowDeletion, httpPrefix, projectVersion,
                         manuallyApproveFollowers, minimal,
                         YTReplacementDomain, showPublishedDateOnly,
-                        newswire, False, positiveVoting)
+                        newswire, False, False, positiveVoting)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,

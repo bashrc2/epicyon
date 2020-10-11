@@ -6760,6 +6760,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
                     moderator = isModerator(baseDir, currNickname)
+                    editor = isEditor(baseDir, currNickname)
                     msg = \
                         htmlInboxNews(self.server.defaultTimeline,
                                       self.server.recentPostsCache,
@@ -6780,7 +6781,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self._isMinimal(nickname),
                                       self.server.YTReplacementDomain,
                                       self.server.showPublishedDateOnly,
-                                      self.server.newswire, moderator,
+                                      self.server.newswire,
+                                      moderator, editor,
                                       self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
