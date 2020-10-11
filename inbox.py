@@ -2238,7 +2238,7 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             if not os.path.isfile(followingFilename):
                                 print('No following.txt file exists for ' +
                                       nickname + '@' + domain +
-                                      'so not accepting DM from ' +
+                                      ' so not accepting DM from ' +
                                       sendingActorNickname + '@' +
                                       sendingActorDomain)
                                 return False
