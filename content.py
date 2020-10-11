@@ -264,8 +264,10 @@ def addMusicTag(content: str, tag: str) -> str:
     """If a music link is found then ensure that the post is
     tagged appropriately
     """
+    if '#podcast' in content or '#documentary' in content:
+        return content
     if '#' not in tag:
-        tag = '#'+tag
+        tag = '#' + tag
     if tag in content:
         return content
     musicSites = ('soundcloud.com', 'bandcamp.com')
