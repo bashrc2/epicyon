@@ -1792,7 +1792,7 @@ def testSaveLoadJson():
         "param1": 3,
         "param2": '"Crème brûlée यह एक परीक्षण ह"'
     }
-    testFilename = '/tmp/.epicyonTestSaveLoadJson.json'
+    testFilename = '.epicyon_tests_testSaveLoadJson.json'
     if os.path.isfile(testFilename):
         os.remove(testFilename)
     assert saveJson(testJson, testFilename)
