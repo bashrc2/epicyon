@@ -110,16 +110,14 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        # rssTitle = removeControlCharacters(item[0])
-        rssTitle = item[0]
+        rssTitle = removeControlCharacters(item[0])
         url = item[1]
         if dangerousMarkup(url) or dangerousMarkup(rssTitle):
             continue
         rssDescription = ''
 
         # get the rss description if it exists
-        # rssDescription = removeControlCharacters(item[4])
-        rssDescription = item[4]
+        rssDescription = removeControlCharacters(item[4])
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
@@ -147,10 +145,10 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # published time), so we change that later
         blog = createNewsPost(baseDir,
                               domain, port, httpPrefix,
-                              urllib.parse.quote(rssDescription),
+                              rssDescription,
                               followersOnly, False,
                               None, None, None, useBlurhash,
-                              urllib.parse.quote(rssTitle))
+                              rssTitle)
         if not blog:
             continue
 
