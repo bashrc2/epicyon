@@ -62,10 +62,6 @@ from filters import isFiltered
 from git import convertPostToPatch
 from jsonldsig import jsonldSign
 from petnames import resolvePetnames
-# try:
-#     from BeautifulSoup import BeautifulSoup
-# except ImportError:
-#     from bs4 import BeautifulSoup
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
