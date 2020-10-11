@@ -2227,10 +2227,6 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         followingFilename = \
                             baseDir + '/accounts/' + \
                             nickname + '@' + domain + '/following.txt'
-                        if not os.path.isfile(followingFilename):
-                            print('No following.txt file exists for ' +
-                                  nickname + '@' + domain)
-                            return False
                         if not postJsonObject.get('actor'):
                             return False
                         sendingActor = postJsonObject['actor']
@@ -2239,6 +2235,13 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         sendingActorDomain, sendingActorPort = \
                             getDomainFromActor(sendingActor)
                         if sendingActorNickname and sendingActorDomain:
+                            if not os.path.isfile(followingFilename):
+                                print('No following.txt file exists for ' +
+                                      nickname + '@' + domain +
+                                      'so not accepting DM from ' +
+                                      sendingActorNickname + '@' +
+                                      sendingActorDomain)
+                                return False
                             sendH = \
                                 sendingActorNickname + '@' + sendingActorDomain
                             if sendH != nickname + '@' + domain:
