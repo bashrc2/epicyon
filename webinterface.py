@@ -6141,6 +6141,15 @@ def htmlTimeline(defaultTimeline: str,
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>\n'
+
+    # the links button to show left column links
+    tlStr += \
+        '        <a class="imageAnchor" href="' + usersPath + '/links' + \
+        '"><img loading="lazy" src="/' + iconsDir + \
+        '/links.png" title="' + translate['Edit Links'] + \
+        '" alt="| ' + translate['Edit Links'] + \
+        '" class="timelineiconMobile"/></a>\n'
+
     tlStr += followApprovals
     # end of the button header with inbox, outbox, etc
     tlStr += '    </div>\n'
