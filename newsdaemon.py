@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import time
 import datetime
+import urllib.parse
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
@@ -109,14 +110,16 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        rssTitle = removeControlCharacters(item[0])
+        # rssTitle = removeControlCharacters(item[0])
+        rssTitle = item[0]
         url = item[1]
         if dangerousMarkup(url) or dangerousMarkup(rssTitle):
             continue
         rssDescription = ''
 
         # get the rss description if it exists
-        rssDescription = removeControlCharacters(item[4])
+        # rssDescription = removeControlCharacters(item[4])
+        rssDescription = item[4]
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
@@ -144,9 +147,10 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # published time), so we change that later
         blog = createNewsPost(baseDir,
                               domain, port, httpPrefix,
-                              rssDescription, followersOnly, False,
+                              urllib.parse.quote(rssDescription),
+                              followersOnly, False,
                               None, None, None, useBlurhash,
-                              rssTitle)
+                              urllib.parse.quote(rssTitle))
         if not blog:
             continue
 
