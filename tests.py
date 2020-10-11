@@ -1772,7 +1772,7 @@ def testGetStatusNumber():
 
 def testJsonString() -> None:
     print('testJsonString')
-    filename = '/tmp/test.json'
+    filename = '.epicyon_tests_testJsonString.json'
     messageStr = "Crème brûlée यह एक परीक्षण ह"
     testJson = {
         "content": messageStr
@@ -1783,6 +1783,7 @@ def testJsonString() -> None:
     assert receivedJson['content'] == messageStr
     encodedStr = json.dumps(testJson, ensure_ascii=False)
     assert messageStr in encodedStr
+    os.remove(filename)
 
 
 def testSaveLoadJson():
