@@ -1770,8 +1770,8 @@ def testGetStatusNumber():
         prevStatusNumber = int(statusNumber)
 
 
-def testCommentJson() -> None:
-    print('testCommentJson')
+def testJsonString() -> None:
+    print('testJsonString')
     filename = '/tmp/test.json'
     messageStr = "Crème brûlée यह एक परीक्षण ह"
     testJson = {
@@ -2191,7 +2191,7 @@ def runAllTests():
     testRecentPostsCache()
     testTheme()
     testSaveLoadJson()
-    testCommentJson()
+    testJsonString()
     testGetStatusNumber()
     testAddEmoji()
     testActorParsing()
