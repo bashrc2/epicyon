@@ -954,7 +954,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    self.server.proxyType, version,
                                    self.server.debug,
-                                   self.server.YTReplacementDomain)
+                                   self.server.YTReplacementDomain,
+                                   self.server.showPublishedDateOnly)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -2253,7 +2254,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.personCache,
                                       httpPrefix,
                                       self.server.projectVersion,
-                                      self.server.YTReplacementDomain)
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -2298,7 +2300,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
                                       port,
-                                      self.server.YTReplacementDomain)
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -2341,7 +2344,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.personCache,
                                            self.server.debug,
                                            self.server.projectVersion,
-                                           self.server.YTReplacementDomain)
+                                           self.server.YTReplacementDomain,
+                                           self.server.showPublishedDateOnly)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -4542,7 +4546,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.personCache,
                               httpPrefix,
                               self.server.projectVersion,
-                              self.server.YTReplacementDomain)
+                              self.server.YTReplacementDomain,
+                              self.server.showPublishedDateOnly)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             self._set_headers('text/html', len(msg),
@@ -5448,7 +5453,8 @@ class PubServer(BaseHTTPRequestHandler):
                                deleteUrl, httpPrefix,
                                __version__, self.server.cachedWebfingers,
                                self.server.personCache, callingDomain,
-                               self.server.TYReplacementDomain)
+                               self.server.YTReplacementDomain,
+                               self.server.showPublishedDateOnly)
             if deleteStr:
                 self._set_headers('text/html', len(deleteStr),
                                   cookie, callingDomain)
@@ -5647,7 +5653,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     repliesJson,
                                     httpPrefix,
                                     projectVersion,
-                                    ytDomain)
+                                    ytDomain,
+                                    self.server.showPublishedDateOnly)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -5727,7 +5734,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     repliesJson,
                                     httpPrefix,
                                     projectVersion,
-                                    ytDomain)
+                                    ytDomain,
+                                    self.server.showPublishedDateOnly)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -5802,6 +5810,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     cachedWebfingers,
                                     self.server.personCache,
                                     YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -5860,6 +5869,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers
                                 YTReplacementDomain = \
                                     self.server.YTReplacementDomain
+                                showPublishedDateOnly = \
+                                    self.server.showPublishedDateOnly
                                 msg = \
                                     htmlProfile(defaultTimeline,
                                                 recentPostsCache,
@@ -5872,6 +5883,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 cachedWebfingers,
                                                 self.server.personCache,
                                                 YTReplacementDomain,
+                                                showPublishedDateOnly,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -5972,6 +5984,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.projectVersion
                                 ytDomain = \
                                     self.server.YTReplacementDomain
+                                showPublishedDateOnly = \
+                                    self.server.showPublishedDateOnly
                                 msg = \
                                     htmlIndividualPost(recentPostsCache,
                                                        maxRecentPosts,
@@ -5987,7 +6001,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                        httpPrefix,
                                                        projectVersion,
                                                        likedBy,
-                                                       ytDomain)
+                                                       ytDomain,
+                                                       showPublishedDateOnly)
                                 msg = msg.encode('utf-8')
                                 self._set_headers('text/html', len(msg),
                                                   cookie, callingDomain)
@@ -6079,6 +6094,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.projectVersion
                     ytDomain = \
                         self.server.YTReplacementDomain
+                    showPublishedDateOnly = \
+                        self.server.showPublishedDateOnly
                     msg = \
                         htmlIndividualPost(recentPostsCache,
                                            maxRecentPosts,
@@ -6095,7 +6112,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            httpPrefix,
                                            projectVersion,
                                            likedBy,
-                                           ytDomain)
+                                           ytDomain,
+                                           showPublishedDateOnly)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6212,6 +6230,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         projectVersion,
                                         self._isMinimal(nickname),
                                         YTReplacementDomain,
+                                        self.server.showPublishedDateOnly,
                                         self.server.newswire,
                                         self.server.positiveVoting)
                         if GETstartTime:
@@ -6325,6 +6344,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
                                          self.server.YTReplacementDomain,
+                                         self.server.showPublishedDateOnly,
                                          self.server.newswire,
                                          self.server.positiveVoting)
                         msg = msg.encode('utf-8')
@@ -6431,6 +6451,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
                                          self.server.YTReplacementDomain,
+                                         self.server.showPublishedDateOnly,
                                          self.server.newswire,
                                          self.server.positiveVoting)
                     msg = msg.encode('utf-8')
@@ -6537,6 +6558,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
+                                       self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting)
                     msg = msg.encode('utf-8')
@@ -6643,6 +6665,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
+                                       self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting)
                     msg = msg.encode('utf-8')
@@ -6756,6 +6779,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.projectVersion,
                                       self._isMinimal(nickname),
                                       self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly,
                                       self.server.newswire, moderator,
                                       self.server.positiveVoting)
                     msg = msg.encode('utf-8')
@@ -6832,6 +6856,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    httpPrefix,
                                    self.server.projectVersion,
                                    self.server.YTReplacementDomain,
+                                   self.server.showPublishedDateOnly,
                                    self.server.newswire,
                                    self.server.positiveVoting)
                     msg = msg.encode('utf-8')
@@ -6922,6 +6947,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           self._isMinimal(nickname),
                                           self.server.YTReplacementDomain,
+                                          self.server.showPublishedDateOnly,
                                           self.server.newswire,
                                           self.server.positiveVoting)
                         msg = msg.encode('utf-8')
@@ -7031,6 +7057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
+                                       self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting)
                         msg = msg.encode('utf-8')
@@ -7132,6 +7159,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.projectVersion,
                                self._isMinimal(nickname),
                                self.server.YTReplacementDomain,
+                               self.server.showPublishedDateOnly,
                                self.server.newswire,
                                self.server.positiveVoting)
                 msg = msg.encode('utf-8')
@@ -7223,6 +7251,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            httpPrefix,
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
+                                           self.server.showPublishedDateOnly,
                                            self.server.newswire,
                                            self.server.positiveVoting)
                         msg = msg.encode('utf-8')
@@ -7314,6 +7343,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -7400,6 +7430,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7486,6 +7517,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7547,6 +7579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cachedWebfingers,
                                 self.server.personCache,
                                 self.server.YTReplacementDomain,
+                                self.server.showPublishedDateOnly,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -11610,7 +11643,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(votingTimeMins: int,
+def runDaemon(showPublishedDateOnly: bool,
+              votingTimeMins: int,
               positiveVoting: bool,
               newswireVotesThreshold: int,
               newsInstance: bool,
@@ -11729,6 +11763,9 @@ def runDaemon(votingTimeMins: int,
     # number of votes needed to remove a newswire item from the news timeline
     # or if positive voting is anabled to add the item to the news timeline
     httpd.newswireVotesThreshold = newswireVotesThreshold
+
+    # Show only the date at the bottom of posts, and not the time
+    httpd.showPublishedDateOnly = showPublishedDateOnly
 
     if registration == 'open':
         httpd.registration = True
@@ -11860,7 +11897,8 @@ def runDaemon(votingTimeMins: int,
                               domainMaxPostsPerDay, accountMaxPostsPerDay,
                               allowDeletion, debug, maxMentions, maxEmoji,
                               httpd.translate, unitTest,
-                              httpd.YTReplacementDomain), daemon=True)
+                              httpd.YTReplacementDomain,
+                              httpd.showPublishedDateOnly), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

@@ -129,7 +129,8 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                               session, cachedWebfingers: {}, personCache: {},
                               nickname: str, domain: str, port: int,
                               postJsonObject: {},
-                              allowDeletion: bool, boxname: str) -> None:
+                              allowDeletion: bool, boxname: str,
+                              showPublishedDateOnly: bool) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -142,7 +143,8 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          baseDir, session, cachedWebfingers, personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,
-                         httpPrefix, __version__, boxname,
+                         httpPrefix, __version__, boxname, None,
+                         showPublishedDateOnly,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -2027,7 +2029,8 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                       queueFilename: str, destinationFilename: str,
                       maxReplies: int, allowDeletion: bool,
                       maxMentions: int, maxEmoji: int, translate: {},
-                      unitTest: bool, YTReplacementDomain: str) -> bool:
+                      unitTest: bool, YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2337,7 +2340,8 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                   domain, port,
                                                   postJsonObject,
                                                   allowDeletion,
-                                                  boxname)
+                                                  boxname,
+                                                  showPublishedDateOnly)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2431,7 +2435,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, maxMentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
-                  YTReplacementDomain: str) -> None:
+                  YTReplacementDomain: str,
+                  showPublishedDateOnly: bool) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2843,7 +2848,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                               maxReplies, allowDeletion,
                               maxMentions, maxEmoji,
                               translate, unitTest,
-                              YTReplacementDomain)
+                              YTReplacementDomain,
+                              showPublishedDateOnly)
             if debug:
                 pprint(queueJson['post'])
 

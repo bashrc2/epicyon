@@ -710,7 +710,8 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                       postsPerPage: int,
                       session, wfRequest: {}, personCache: {},
                       httpPrefix: str, projectVersion: str,
-                      YTReplacementDomain: str) -> str:
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
     """Show a page containing search results for a hashtag
     """
     if hashtag.startswith('#'):
@@ -830,6 +831,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                                      httpPrefix, projectVersion,
                                      'search',
                                      YTReplacementDomain,
+                                     showPublishedDateOnly,
                                      showIndividualPostIcons,
                                      showIndividualPostIcons,
                                      False, False, False)
@@ -1116,7 +1118,8 @@ def htmlHistorySearch(translate: {}, baseDir: str,
                       wfRequest,
                       personCache: {},
                       port: int,
-                      YTReplacementDomain: str) -> str:
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith('!'):
@@ -1188,6 +1191,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
                                  httpPrefix, projectVersion,
                                  'search',
                                  YTReplacementDomain,
+                                 showPublishedDateOnly,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -2931,7 +2935,8 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                      nickname: str, domain: str, port: int,
                      session, wfRequest: {}, personCache: {},
                      projectVersion: str,
-                     YTReplacementDomain: str) -> str:
+                     YTReplacementDomain: str,
+                     showPublishedDateOnly: bool) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -2965,6 +2970,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         showPublishedDateOnly,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr
@@ -3217,6 +3223,7 @@ def htmlProfile(defaultTimeline: str,
                 profileJson: {}, selected: str,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
+                showPublishedDateOnly: bool,
                 extraJson=None,
                 pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -3477,7 +3484,8 @@ def htmlProfile(defaultTimeline: str,
                                  nickname, domain, port,
                                  session, wfRequest, personCache,
                                  projectVersion,
-                                 YTReplacementDomain) + licenseStr
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly) + licenseStr
         if selected == 'following':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -4262,6 +4270,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          allowDeletion: bool,
                          httpPrefix: str, projectVersion: str,
                          boxName: str, YTReplacementDomain: str,
+                         showPublishedDateOnly: bool,
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -5146,7 +5155,10 @@ def individualPostAsHtml(allowDownloads: bool,
             publishedStr = \
                 publishedStr.replace('T', ' ').split('.')[0]
             datetimeObject = parse(publishedStr)
-        publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+        if not showPublishedDateOnly:
+            publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+        else:
+            publishedStr = datetimeObject.strftime("%a %b %d")
 
     # benchmark 15
     if not allowDownloads:
@@ -5640,6 +5652,7 @@ def htmlTimeline(defaultTimeline: str,
                  manuallyApproveFollowers: bool,
                  minimal: bool,
                  YTReplacementDomain: str,
+                 showPublishedDateOnly: bool,
                  newswire: {}, moderator: bool,
                  positiveVoting: bool) -> str:
     """Show the timeline as html
@@ -6250,6 +6263,7 @@ def htmlTimeline(defaultTimeline: str,
                                              httpPrefix, projectVersion,
                                              boxName,
                                              YTReplacementDomain,
+                                             showPublishedDateOnly,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -6316,6 +6330,7 @@ def htmlShares(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                YTReplacementDomain: str,
+               showPublishedDateOnly: bool,
                newswire: {}, positiveVoting: bool) -> str:
     """Show the shares timeline as html
     """
@@ -6328,7 +6343,9 @@ def htmlShares(defaultTimeline: str,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        False, YTReplacementDomain, newswire, False,
+                        False, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6340,6 +6357,7 @@ def htmlInbox(defaultTimeline: str,
               allowDeletion: bool,
               httpPrefix: str, projectVersion: str,
               minimal: bool, YTReplacementDomain: str,
+              showPublishedDateOnly: bool,
               newswire: {}, positiveVoting: bool) -> str:
     """Show the inbox as html
     """
@@ -6352,7 +6370,9 @@ def htmlInbox(defaultTimeline: str,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6364,6 +6384,7 @@ def htmlBookmarks(defaultTimeline: str,
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
+                  showPublishedDateOnly: bool,
                   newswire: {}, positiveVoting: bool) -> str:
     """Show the bookmarks as html
     """
@@ -6376,7 +6397,9 @@ def htmlBookmarks(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6388,6 +6411,7 @@ def htmlEvents(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                minimal: bool, YTReplacementDomain: str,
+               showPublishedDateOnly: bool,
                newswire: {}, positiveVoting: bool) -> str:
     """Show the events as html
     """
@@ -6400,7 +6424,9 @@ def htmlEvents(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6412,6 +6438,7 @@ def htmlInboxDMs(defaultTimeline: str,
                  allowDeletion: bool,
                  httpPrefix: str, projectVersion: str,
                  minimal: bool, YTReplacementDomain: str,
+                 showPublishedDateOnly: bool,
                  newswire: {}, positiveVoting: bool) -> str:
     """Show the DM timeline as html
     """
@@ -6420,7 +6447,8 @@ def htmlInboxDMs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
-                        YTReplacementDomain, newswire, False, positiveVoting)
+                        YTReplacementDomain, showPublishedDateOnly,
+                        newswire, False, positiveVoting)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -6431,6 +6459,7 @@ def htmlInboxReplies(defaultTimeline: str,
                      allowDeletion: bool,
                      httpPrefix: str, projectVersion: str,
                      minimal: bool, YTReplacementDomain: str,
+                     showPublishedDateOnly: bool,
                      newswire: {}, positiveVoting: bool) -> str:
     """Show the replies timeline as html
     """
@@ -6439,7 +6468,9 @@ def htmlInboxReplies(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6451,6 +6482,7 @@ def htmlInboxMedia(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    minimal: bool, YTReplacementDomain: str,
+                   showPublishedDateOnly: bool,
                    newswire: {}, positiveVoting: bool) -> str:
     """Show the media timeline as html
     """
@@ -6459,7 +6491,9 @@ def htmlInboxMedia(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6471,6 +6505,7 @@ def htmlInboxBlogs(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    minimal: bool, YTReplacementDomain: str,
+                   showPublishedDateOnly: bool,
                    newswire: {}, positiveVoting: bool) -> str:
     """Show the blogs timeline as html
     """
@@ -6479,7 +6514,9 @@ def htmlInboxBlogs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False,
                         positiveVoting)
 
 
@@ -6491,6 +6528,7 @@ def htmlInboxNews(defaultTimeline: str,
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
+                  showPublishedDateOnly: bool,
                   newswire: {}, moderator: bool,
                   positiveVoting: bool) -> str:
     """Show the news timeline as html
@@ -6500,7 +6538,9 @@ def htmlInboxNews(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlnews',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire, moderator,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, moderator,
                         positiveVoting)
 
 
@@ -6512,6 +6552,7 @@ def htmlModeration(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    YTReplacementDomain: str,
+                   showPublishedDateOnly: bool,
                    newswire: {}, positiveVoting: bool) -> str:
     """Show the moderation feed as html
     """
@@ -6520,7 +6561,8 @@ def htmlModeration(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
-                        YTReplacementDomain, newswire, False, positiveVoting)
+                        YTReplacementDomain, showPublishedDateOnly,
+                        newswire, False, positiveVoting)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -6531,6 +6573,7 @@ def htmlOutbox(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                minimal: bool, YTReplacementDomain: str,
+               showPublishedDateOnly: bool,
                newswire: {}, positiveVoting: bool) -> str:
     """Show the Outbox as html
     """
@@ -6542,7 +6585,8 @@ def htmlOutbox(defaultTimeline: str,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,
                         manuallyApproveFollowers, minimal,
-                        YTReplacementDomain, newswire, False, positiveVoting)
+                        YTReplacementDomain, showPublishedDateOnly,
+                        newswire, False, positiveVoting)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
@@ -6551,7 +6595,8 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
-                       YTReplacementDomain: str) -> str:
+                       YTReplacementDomain: str,
+                       showPublishedDateOnly: bool) -> str:
     """Show an individual post as html
     """
     iconsDir = getIconsDir(baseDir)
@@ -6596,6 +6641,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                              None, True, False,
                              httpPrefix, projectVersion, 'inbox',
                              YTReplacementDomain,
+                             showPublishedDateOnly,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -6620,6 +6666,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         showPublishedDateOnly,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -6647,6 +6694,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         showPublishedDateOnly,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -6665,7 +6713,8 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
                     session, wfRequest: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     httpPrefix: str, projectVersion: str,
-                    YTReplacementDomain: str) -> str:
+                    YTReplacementDomain: str,
+                    showPublishedDateOnly: bool) -> str:
     """Show the replies to an individual post as html
     """
     iconsDir = getIconsDir(baseDir)
@@ -6681,6 +6730,7 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
                                      None, True, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     showPublishedDateOnly,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -6769,7 +6819,8 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                    httpPrefix: str, projectVersion: str,
                    wfRequest: {}, personCache: {},
                    callingDomain: str,
-                   YTReplacementDomain: str) -> str:
+                   YTReplacementDomain: str,
+                   showPublishedDateOnly: bool) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -6814,6 +6865,7 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                                  None, True, False,
                                  httpPrefix, projectVersion, 'outbox',
                                  YTReplacementDomain,
+                                 showPublishedDateOnly,
                                  False, False, False, False, False)
         deletePostStr += '<center>'
         deletePostStr += \
@@ -7788,7 +7840,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                            profileHandle: str,
                            session, cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
-                           YTReplacementDomain: str) -> str:
+                           YTReplacementDomain: str,
+                           showPublishedDateOnly: bool) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if '/users/' in profileHandle or \
@@ -7996,6 +8049,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                                      item, avatarUrl, False, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     showPublishedDateOnly,
                                      False, False, False, False, False)
             i += 1
             if i >= 20:

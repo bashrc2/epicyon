@@ -192,6 +192,9 @@ parser.add_argument("--noapproval", type=str2bool, nargs='?',
 parser.add_argument("--mediainstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Media Instance - favor media over text")
+parser.add_argument("--dateonly", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Only show the date at the bottom of posts")
 parser.add_argument("--blogsinstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Blogs Instance - favor blogs over microblogging")
@@ -1917,6 +1920,11 @@ votingtime = getConfigParam(baseDir, 'votingtime')
 if votingtime:
     args.votingtime = votingtime
 
+# only show the date at the bottom of posts
+dateonly = getConfigParam(baseDir, 'dateonly')
+if dateonly:
+    args.dateonly = dateonly
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -1930,7 +1938,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.votingtime,
+    runDaemon(args.dateonly,
+              args.votingtime,
               args.positivevoting,
               args.minimumvotes,
               args.newsinstance,
