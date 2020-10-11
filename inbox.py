@@ -2238,10 +2238,17 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             sendH = \
                                 sendingActorNickname + '@' + sendingActorDomain
                             if sendH != nickname + '@' + domain:
-                                if sendH not in open(followingFilename).read():
+                                if not os.path.isfile(followingFilename):
+                                    print('No following.txt file exists for ' +
+                                          nickname + '@' + domain)
+                                    return False
+                                if sendH not in \
+                                   open(followingFilename).read():
                                     print(nickname + '@' + domain +
-                                          ' cannot receive DM from ' + sendH +
-                                          ' because they do not follow them')
+                                          ' cannot receive DM from ' +
+                                          sendH +
+                                          ' because they do not ' +
+                                          'follow them')
                                     return False
                         else:
                             return False
