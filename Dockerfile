@@ -16,7 +16,6 @@ RUN apt-get update && \
     python3-idna \
     libimage-exiftool-perl \
     python3-flake8 \
-    python3-pyld \
     python3-django-timezone-field \
     tor
 RUN adduser --system --home=/opt/epicyon --group epicyon
