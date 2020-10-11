@@ -133,8 +133,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 translate['Read more...'] + '</a>'
 
         # remove image dimensions
-        rssDescription = removeHtmlTag(rssDescription, 'width')
-        rssDescription = removeHtmlTag(rssDescription, 'height')
+        if '<img' in rssDescription:
+            rssDescription = removeHtmlTag(rssDescription, 'width')
+            rssDescription = removeHtmlTag(rssDescription, 'height')
 
         followersOnly = False
         useBlurhash = False
