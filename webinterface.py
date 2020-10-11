@@ -6148,7 +6148,7 @@ def htmlTimeline(defaultTimeline: str,
         '"><img loading="lazy" src="/' + iconsDir + \
         '/links.png" title="' + translate['Edit Links'] + \
         '" alt="| ' + translate['Edit Links'] + \
-        '" class="timelineiconMobile"/></a>\n'
+        '" class="timelineIconMobile"/></a>\n'
 
     tlStr += followApprovals
     # end of the button header with inbox, outbox, etc
