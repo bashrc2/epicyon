@@ -2021,7 +2021,8 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         'teams with an appropriate combination of skills.'
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
-    editProfileForm += skillsStr + themesDropdown + moderatorsStr
+    editProfileForm += skillsStr + themesDropdown
+    editProfileForm += moderatorsStr + editorsStr
     editProfileForm += '    </div>\n' + instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
