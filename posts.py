@@ -1760,8 +1760,8 @@ def sendPost(projectVersion: str,
         try:
             signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
-        except BaseException:
-            print('WARN: failed to JSON-LD sign post')
+        except Exception as e:
+            print('WARN: failed to JSON-LD sign post, ' + str(e))
             pass
 
     # convert json to string so that there are no
@@ -2099,8 +2099,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         try:
             signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
-        except BaseException:
-            print('WARN: failed to JSON-LD sign post')
+        except Exception as e:
+            print('WARN: failed to JSON-LD sign post, ' + str(e))
             pass
 
     # convert json to string so that there are no
