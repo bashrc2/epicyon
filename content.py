@@ -31,20 +31,6 @@ def removeHtmlTag(htmlStr: str, tag: str) -> str:
     return htmlStr
 
 
-def setHtmlTag(htmlStr: str, tag: str, value: str) -> str:
-    """Sets the value of a given tag from a html string
-    """
-    matchStr = ' ' + tag + '="'
-    if matchStr not in htmlStr:
-        return htmlStr
-    sections = htmlStr.split(matchStr, 1)
-    if '"' not in sections[1]:
-        return htmlStr
-    htmlStr = sections[0] + matchStr + value + '"' + \
-        sections[1].split('"', 1)[1]
-    return htmlStr
-
-
 def removeQuotesWithinQuotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """

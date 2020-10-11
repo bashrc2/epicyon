@@ -12,7 +12,6 @@ import datetime
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
-from content import setHtmlTag
 from content import removeHtmlTag
 from content import dangerousMarkup
 from utils import loadJson
@@ -135,8 +134,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # remove image dimensions
         if '<img' in rssDescription:
-            # set the width of the image
-            rssDescription = setHtmlTag(rssDescription, 'width', '100px')
+            rssDescription = removeHtmlTag(rssDescription, 'width')
             rssDescription = removeHtmlTag(rssDescription, 'height')
 
         followersOnly = False
