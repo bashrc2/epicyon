@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 import time
 import datetime
-import urllib.parse
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 from posts import createNewsPost
