@@ -2227,6 +2227,10 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         followingFilename = \
                             baseDir + '/accounts/' + \
                             nickname + '@' + domain + '/following.txt'
+                        if not os.path.isfile(followingFilename):
+                            print('No following.txt file exists for ' +
+                                  nickname + '@' + domain)
+                            return False
                         if not postJsonObject.get('actor'):
                             return False
                         sendingActor = postJsonObject['actor']
@@ -2238,10 +2242,6 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             sendH = \
                                 sendingActorNickname + '@' + sendingActorDomain
                             if sendH != nickname + '@' + domain:
-                                if not os.path.isfile(followingFilename):
-                                    print('No following.txt file exists for ' +
-                                          nickname + '@' + domain)
-                                    return False
                                 if sendH not in \
                                    open(followingFilename).read():
                                     print(nickname + '@' + domain +
