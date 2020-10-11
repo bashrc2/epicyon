@@ -5166,8 +5166,13 @@ def individualPostAsHtml(allowDownloads: bool,
        domain + ':' + str(port) + '/users/' in publishedLink:
         publishedLink = '/users/' + publishedLink.split('/users/')[1]
 
-    footerStr = '<a href="' + publishedLink + \
-        '" class="' + timeClass + '">' + publishedStr + '</a>\n'
+    if not isNewsPost(postJsonObject):
+        footerStr = '<a href="' + publishedLink + \
+            '" class="' + timeClass + '">' + publishedStr + '</a>\n'
+    else:
+        footerStr = '<a href="' + \
+            publishedLink.replace('/news/', '/news/statuses/') + \
+            '" class="' + timeClass + '">' + publishedStr + '</a>\n'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
@@ -5178,8 +5183,14 @@ def individualPostAsHtml(allowDownloads: bool,
         footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
-        footerStr += '        <a href="' + publishedLink + '" class="' + \
-            timeClass + '">' + publishedStr + '</a>\n'
+        if not isNewsPost(postJsonObject):
+            footerStr += '        <a href="' + publishedLink + '" class="' + \
+                timeClass + '">' + publishedStr + '</a>\n'
+        else:
+            footerStr += '        <a href="' + \
+                publishedLink.replace('/news/', '/news/statuses/') + \
+                '" class="' + \
+                timeClass + '">' + publishedStr + '</a>\n'
         footerStr += '      </div>\n'
 
     postIsSensitive = False
