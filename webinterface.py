@@ -1224,7 +1224,7 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
         return ''
 
     # is the user a moderator?
-    if not isModerator(baseDir, nickname):
+    if not isEditor(baseDir, nickname):
         return ''
 
     cssFilename = baseDir + '/epicyon-links.css'
@@ -1399,8 +1399,8 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
     editNewsPostForm += \
         '    <div class="container">\n'
     editNewsPostForm += \
-        '      <a href="' + pathOriginal + '/tlnews"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
+        '      <a href="' + pathOriginal + '/tlnews">' + \
+        '<button class="cancelbtn">' + translate['Go Back'] + '</button></a>\n'
     editNewsPostForm += \
         '      <input type="submit" name="submitEditedNewsPost" value="' + \
         translate['Submit'] + '">\n'

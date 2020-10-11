@@ -2727,10 +2727,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             # get the nickname
             nickname = getNicknameFromActor(actorStr)
-            moderator = None
+            editor = None
             if nickname:
-                moderator = isModerator(baseDir, nickname)
-            if not nickname or not moderator:
+                editor = isEditor(baseDir, nickname)
+            if not nickname or not editor:
                 if callingDomain.endswith('.onion') and \
                    onionDomain:
                     actorStr = \
