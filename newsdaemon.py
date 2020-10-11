@@ -135,7 +135,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # remove image dimensions
         if '<img' in rssDescription:
-            rssDescription = setHtmlTag(rssDescription, 'width', '10vw')
+            # set the width of the image
+            rssDescription = setHtmlTag(rssDescription, 'width', '100px')
             rssDescription = removeHtmlTag(rssDescription, 'height')
 
         followersOnly = False

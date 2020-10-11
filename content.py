@@ -32,7 +32,7 @@ def removeHtmlTag(htmlStr: str, tag: str) -> str:
 
 
 def setHtmlTag(htmlStr: str, tag: str, value: str) -> str:
-    """Removes a given tag from a html string
+    """Sets the value of a given tag from a html string
     """
     matchStr = ' ' + tag + '="'
     if matchStr not in htmlStr:
