@@ -105,6 +105,7 @@ from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
 from roles import setRole
 from roles import clearModeratorStatus
+from roles import clearEditorStatus
 from blog import htmlBlogPageRSS2
 from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
@@ -3557,6 +3558,66 @@ class PubServer(BaseHTTPRequestHandler):
                                                     modNick, domain,
                                                     'instance',
                                                     'moderator')
+
+                    # change site editors list
+                    if fields.get('editors'):
+                        adminNickname = \
+                            getConfigParam(baseDir, 'admin')
+                        if adminNickname:
+                            if path.startswith('/users/' +
+                                               adminNickname + '/'):
+                                editorsFile = \
+                                    baseDir + \
+                                    '/accounts/editors.txt'
+                                clearEditorStatus(baseDir)
+                                if ',' in fields['editors']:
+                                    # if the list was given as comma separated
+                                    edFile = open(editorsFile, "w+")
+                                    eds = fields['editors'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['editors'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'instance', 'editor')
+                                else:
+                                    # nicknames on separate lines
+                                    edFile = open(editorsFile, "w+")
+                                    eds = fields['editors'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['editors'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + \
+                                            edNick + '@' + \
+                                            domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'instance',
+                                                    'editor')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):

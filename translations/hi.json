@@ -306,5 +306,7 @@
     "This is a news instance": "यह एक समाचार का उदाहरण है",
     "News": "समाचार",
     "Read more...": "अधिक पढ़ें...",
-    "Edit News Post": "समाचार पोस्ट संपादित करें"
+    "Edit News Post": "समाचार पोस्ट संपादित करें",
+    "A list of editor nicknames. One per line.": "संपादक उपनामों की एक सूची। प्रति पंक्ति एक।",
+    "Site Editors": "साइट संपादकों"
 }

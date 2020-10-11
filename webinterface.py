@@ -1698,6 +1698,20 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
                 '..." style="height:200px">' + moderators + '</textarea>'
             moderatorsStr += '</div>'
 
+            editors = ''
+            editorsFile = baseDir + '/accounts/editors.txt'
+            if os.path.isfile(editorsFile):
+                with open(editorsFile, "r") as f:
+                    editors = f.read()
+            editorsStr = '<div class="container">'
+            editorsStr += '  <b>' + translate['Site Editors'] + '</b><br>'
+            editorsStr += '  ' + \
+                translate['A list of editor nicknames. One per line.']
+            editorsStr += \
+                '  <textarea id="message" name="editors" placeholder="" ' + \
+                'style="height:200px">' + editors + '</textarea>'
+            editorsStr += '</div>'
+
             themes = getThemesList()
             themesDropdown = '<div class="container">'
             themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'

@@ -306,5 +306,7 @@
     "This is a news instance": "これはニュースインスタンスです",
     "News": "ニュース",
     "Read more...": "続きを読む...",
-    "Edit News Post": "ニュース投稿を編集する"
+    "Edit News Post": "ニュース投稿を編集する",
+    "A list of editor nicknames. One per line.": "編集者のニックネームのリスト。 1行に1つ。",
+    "Site Editors": "サイト編集者"
 }

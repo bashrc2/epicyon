@@ -306,5 +306,7 @@
     "This is a news instance": "هذا مثال أخبار",
     "News": "أخبار",
     "Read more...": "اقرأ أكثر...",
-    "Edit News Post": "تحرير منشور الأخبار"
+    "Edit News Post": "تحرير منشور الأخبار",
+    "A list of editor nicknames. One per line.": "قائمة بأسماء المحرر. واحد في كل سطر.",
+    "Site Editors": "محررو الموقع"
 }

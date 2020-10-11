@@ -306,5 +306,7 @@
     "This is a news instance": "Aquesta és una instància de notícies",
     "News": "Notícies",
     "Read more...": "Llegeix més...",
-    "Edit News Post": "Edita la publicació de notícies"
+    "Edit News Post": "Edita la publicació de notícies",
+    "A list of editor nicknames. One per line.": "Una llista de sobrenoms de l'editor. Un per línia.",
+    "Site Editors": "Editors de llocs"
 }

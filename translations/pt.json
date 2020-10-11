@@ -306,5 +306,7 @@
     "This is a news instance": "Esta é uma instância de notícias",
     "News": "Notícia",
     "Read more...": "Consulte Mais informação...",
-    "Edit News Post": "Editar Postagem de Notícias"
+    "Edit News Post": "Editar Postagem de Notícias",
+    "A list of editor nicknames. One per line.": "Uma lista de apelidos de editores. Um por linha.",
+    "Site Editors": "Editores do site"
 }

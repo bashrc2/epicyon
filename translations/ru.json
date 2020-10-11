@@ -306,5 +306,7 @@
     "This is a news instance": "Это новостной экземпляр",
     "News": "Новости",
     "Read more...": "Подробнее...",
-    "Edit News Post": "Редактировать новость"
+    "Edit News Post": "Редактировать новость",
+    "A list of editor nicknames. One per line.": "Список ников редакторов. По одному на строку.",
+    "Site Editors": "Редакторы сайта"
 }
