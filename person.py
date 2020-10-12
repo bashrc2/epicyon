@@ -23,6 +23,7 @@ from webfinger import storeWebfingerEndpoint
 from posts import createDMTimeline
 from posts import createRepliesTimeline
 from posts import createMediaTimeline
+from posts import createNewsTimeline
 from posts import createBlogsTimeline
 from posts import createBookmarksTimeline
 from posts import createEventsTimeline
@@ -34,11 +35,10 @@ from auth import removePassword
 from roles import setRole
 from media import removeMetaData
 from utils import validNickname
-from utils import noOfAccounts
 from utils import loadJson
 from utils import saveJson
-from config import setConfigParam
-from config import getConfigParam
+from utils import setConfigParam
+from utils import getConfigParam
 
 
 def generateRSAKey() -> (str, str):
@@ -444,12 +444,13 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                                                       saveToFile,
                                                       manualFollowerApproval,
                                                       password)
-    if noOfAccounts(baseDir) == 1:
+    if not getConfigParam(baseDir, 'admin'):
         # print(nickname+' becomes the instance admin and a moderator')
+        setConfigParam(baseDir, 'admin', nickname)
         setRole(baseDir, nickname, domain, 'instance', 'admin')
         setRole(baseDir, nickname, domain, 'instance', 'moderator')
+        setRole(baseDir, nickname, domain, 'instance', 'editor')
         setRole(baseDir, nickname, domain, 'instance', 'delegator')
-        setConfigParam(baseDir, 'admin', nickname)
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
@@ -500,6 +501,14 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
     """Generates the shared inbox
     """
     return createPersonBase(baseDir, nickname, domain, port, httpPrefix,
+                            True, True, None)
+
+
+def createNewsInbox(baseDir: str, domain: str, port: int,
+                    httpPrefix: str) -> (str, str, {}, {}):
+    """Generates the news inbox
+    """
+    return createPersonBase(baseDir, 'news', domain, port, httpPrefix,
                             True, True, None)
 
 
@@ -586,12 +595,14 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
 def personBoxJson(recentPostsCache: {},
                   session, baseDir: str, domain: str, port: int, path: str,
                   httpPrefix: str, noOfItems: int, boxname: str,
-                  authorized: bool) -> {}:
+                  authorized: bool,
+                  newswireVotesThreshold: int, positiveVoting: bool,
+                  votingTimeMins: int) -> {}:
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
-       boxname != 'tlblogs' and \
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks' and \
        boxname != 'tlevents':
@@ -659,6 +670,11 @@ def personBoxJson(recentPostsCache: {},
         return createMediaTimeline(session, baseDir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,
                                    pageNumber)
+    elif boxname == 'tlnews':
+        return createNewsTimeline(session, baseDir, nickname, domain, port,
+                                  httpPrefix, noOfItems, headerOnly,
+                                  newswireVotesThreshold, positiveVoting,
+                                  votingTimeMins, pageNumber)
     elif boxname == 'tlblogs':
         return createBlogsTimeline(session, baseDir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,
@@ -754,23 +770,6 @@ def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
     return True
 
 
-def isSuspended(baseDir: str, nickname: str) -> bool:
-    """Returns true if the given nickname is suspended
-    """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if nickname == adminNickname:
-        return False
-
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
-    if os.path.isfile(suspendedFilename):
-        with open(suspendedFilename, "r") as f:
-            lines = f.readlines()
-        for suspended in lines:
-            if suspended.strip('\n').strip('\r') == nickname:
-                return True
-    return False
-
-
 def unsuspendAccount(baseDir: str, nickname: str) -> None:
     """Removes an account suspention
     """
@@ -790,6 +789,8 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
     """
     # Don't suspend the admin
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return
     if nickname == adminNickname:
         return
 
@@ -844,6 +845,8 @@ def canRemovePost(baseDir: str, nickname: str,
 
     # is the post by the admin?
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return False
     if domainFull + '/users/' + adminNickname + '/' in postId:
         return False
 
@@ -900,6 +903,8 @@ def removeAccount(baseDir: str, nickname: str,
     """
     # Don't remove the admin
     adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return False
     if nickname == adminNickname:
         return False
 

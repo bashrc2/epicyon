@@ -12,6 +12,7 @@ import json
 import time
 import locale
 import urllib.parse
+import datetime
 from socket import error as SocketError
 import errno
 from functools import partial
@@ -54,7 +55,7 @@ from person import registerAccount
 from person import personLookup
 from person import personBoxJson
 from person import createSharedInbox
-from person import isSuspended
+from person import createNewsInbox
 from person import suspendAccount
 from person import unsuspendAccount
 from person import removeAccount
@@ -62,6 +63,7 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import isModerator
+from posts import isEditor
 from posts import mutePost
 from posts import unmutePost
 from posts import createQuestionPost
@@ -101,10 +103,9 @@ from blocking import removeGlobalBlock
 from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
-from config import setConfigParam
-from config import getConfigParam
 from roles import setRole
 from roles import clearModeratorStatus
+from roles import clearEditorStatus
 from blog import htmlBlogPageRSS2
 from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
@@ -122,6 +123,7 @@ from webinterface import htmlInboxDMs
 from webinterface import htmlInboxReplies
 from webinterface import htmlInboxMedia
 from webinterface import htmlInboxBlogs
+from webinterface import htmlInboxNews
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -140,6 +142,8 @@ from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
 from webinterface import htmlCalendar
 from webinterface import htmlSearch
+from webinterface import htmlNewswireMobile
+from webinterface import htmlLinksMobile
 from webinterface import htmlSearchEmoji
 from webinterface import htmlSearchEmojiTextEntry
 from webinterface import htmlUnfollowConfirm
@@ -147,6 +151,7 @@ from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlEditLinks
 from webinterface import htmlEditNewswire
+from webinterface import htmlEditNewsPost
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHistorySearch
@@ -159,6 +164,8 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import setConfigParam
+from utils import getConfigParam
 from utils import removeIdEnding
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
@@ -174,6 +181,7 @@ from utils import getStatusNumber
 from utils import urlPermitted
 from utils import loadJson
 from utils import saveJson
+from utils import isSuspended
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -204,8 +212,8 @@ from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
 from newswire import getRSSfromDict
-from newswire import runNewswireWatchdog
-from newswire import runNewswireDaemon
+from newsdaemon import runNewswireWatchdog
+from newsdaemon import runNewswireDaemon
 import os
 
 
@@ -217,6 +225,8 @@ maxPostsInMediaFeed = 6
 
 # Blogs can be longer, so don't show many per page
 maxPostsInBlogsFeed = 4
+
+maxPostsInNewsFeed = 10
 
 # Maximum number of entries in returned rss.xml
 maxPostsInRSSFeed = 10
@@ -730,11 +740,12 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: mastodon api ' + self.path)
-        if self.path == '/api/v1/instance':
-            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+        adminNickname = getConfigParam(self.server.baseDir, 'admin')
+        if adminNickname and self.path == '/api/v1/instance':
             instanceDescriptionShort = \
                 getConfigParam(self.server.baseDir,
                                'instanceDescriptionShort')
+            instanceDescriptionShort = 'Yet another Epicyon Instance'
             instanceDescription = getConfigParam(self.server.baseDir,
                                                  'instanceDescription')
             instanceTitle = getConfigParam(self.server.baseDir,
@@ -946,7 +957,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.allowDeletion,
                                    self.server.proxyType, version,
                                    self.server.debug,
-                                   self.server.YTReplacementDomain)
+                                   self.server.YTReplacementDomain,
+                                   self.server.showPublishedDateOnly)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -1091,7 +1103,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
                     elif '/' + nickname + '?' in self.path:
                         return True
-                    elif self.path.endswith('/'+nickname):
+                    elif self.path.endswith('/' + nickname):
                         return True
                     print('AUTH: nickname ' + nickname +
                           ' was not found in path ' + self.path)
@@ -1228,6 +1240,11 @@ class PubServer(BaseHTTPRequestHandler):
         loginNickname, loginPassword, register = \
             htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
         if loginNickname:
+            if loginNickname == 'news' or loginNickname == 'inbox':
+                print('Invalid username login: ' + loginNickname)
+                self._clearLoginDetails(loginNickname, callingDomain)
+                self.server.POSTbusy = False
+                return
             self.server.lastLoginTime = int(time.time())
             if register:
                 if not registerAccount(baseDir, httpPrefix, domain, port,
@@ -2240,7 +2257,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.personCache,
                                       httpPrefix,
                                       self.server.projectVersion,
-                                      self.server.YTReplacementDomain)
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -2285,7 +2303,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cachedWebfingers,
                                       self.server.personCache,
                                       port,
-                                      self.server.YTReplacementDomain)
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -2328,7 +2347,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.personCache,
                                            self.server.debug,
                                            self.server.projectVersion,
-                                           self.server.YTReplacementDomain)
+                                           self.server.YTReplacementDomain,
+                                           self.server.showPublishedDateOnly)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -2714,10 +2734,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             # get the nickname
             nickname = getNicknameFromActor(actorStr)
-            moderator = None
+            editor = None
             if nickname:
-                moderator = isModerator(baseDir, nickname)
-            if not nickname or not moderator:
+                editor = isEditor(baseDir, nickname)
+            if not nickname or not editor:
                 if callingDomain.endswith('.onion') and \
                    onionDomain:
                     actorStr = \
@@ -2916,6 +2936,151 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr = \
                 'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _newsPostEdit(self, callingDomain: str, cookie: str,
+                      authorized: bool, path: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str,
+                      onionDomain: str, i2pDomain: str, debug: bool,
+                      defaultTimeline: str):
+        """edits a news post
+        """
+        usersPath = path.replace('/newseditdata', '')
+        usersPath = usersPath.replace('/editnewspost', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            editorRole = None
+            if nickname:
+                editorRole = isEditor(baseDir, nickname)
+            if not nickname or not editorRole:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not an editor' + actorStr)
+                self._redirect_headers(actorStr + '/tlnews',
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum news data length exceeded ' + str(length))
+                self._redirect_headers(actorStr + 'tlnews',
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            newsPostUrl = None
+            newsPostTitle = None
+            newsPostContent = None
+            if fields.get('newsPostUrl'):
+                newsPostUrl = fields['newsPostUrl']
+            if fields.get('newsPostTitle'):
+                newsPostTitle = fields['newsPostTitle']
+            if fields.get('editedNewsPost'):
+                newsPostContent = fields['editedNewsPost']
+
+            if newsPostUrl and newsPostContent and newsPostTitle:
+                # load the post
+                postFilename = \
+                    locatePost(baseDir, nickname, domain,
+                               newsPostUrl)
+                if postFilename:
+                    postJsonObject = loadJson(postFilename)
+                    # update the content and title
+                    postJsonObject['object']['summary'] = \
+                        newsPostTitle
+                    postJsonObject['object']['content'] = \
+                        newsPostContent
+                    # remove the html from post cache
+                    cachedPost = \
+                        baseDir + '/accounts/' + \
+                        nickname + '@' + domain + \
+                        '/postcache/' + newsPostUrl + '.html'
+                    if os.path.isfile(cachedPost):
+                        os.remove(cachedPost)
+                    # update newswire
+                    pubDate = postJsonObject['object']['published']
+                    publishedDate = \
+                        datetime.datetime.strptime(pubDate,
+                                                   "%Y-%m-%dT%H:%M:%SZ")
+                    if self.server.newswire.get(str(publishedDate)):
+                        self.server.newswire[publishedDate][0] = \
+                            newsPostTitle
+                        self.server.newswire[publishedDate][4] = \
+                            newsPostContent
+                        # save newswire
+                        newswireStateFilename = \
+                            baseDir + '/accounts/.newswirestate.json'
+                        try:
+                            saveJson(self.server.newswire,
+                                     newswireStateFilename)
+                        except Exception as e:
+                            print('ERROR saving newswire state, ' + str(e))
+                    # save the news post
+                    saveJson(postJsonObject, postFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/tlnews',
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -3146,7 +3311,8 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
-                                 fields['themeDropdown'])
+                                 fields['themeDropdown'],
+                                 domain)
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actorJson)
@@ -3258,11 +3424,9 @@ class PubServer(BaseHTTPRequestHandler):
                     # change instance title
                     if fields.get('instanceTitle'):
                         currInstanceTitle = \
-                            getConfigParam(baseDir,
-                                           'instanceTitle')
+                            getConfigParam(baseDir, 'instanceTitle')
                         if fields['instanceTitle'] != currInstanceTitle:
-                            setConfigParam(baseDir,
-                                           'instanceTitle',
+                            setConfigParam(baseDir, 'instanceTitle',
                                            fields['instanceTitle'])
 
                     # change YouTube alternate domain
@@ -3301,8 +3465,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir,
                                            'instanceDescriptionShort', '')
                     currInstanceDescription = \
-                        getConfigParam(baseDir,
-                                       'instanceDescription')
+                        getConfigParam(baseDir, 'instanceDescription')
                     if fields.get('instanceDescription'):
                         if fields['instanceDescription'] != \
                            currInstanceDescription:
@@ -3338,60 +3501,121 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('moderators'):
                         adminNickname = \
                             getConfigParam(baseDir, 'admin')
-                        if path.startswith('/users/' +
-                                           adminNickname + '/'):
-                            moderatorsFile = \
-                                baseDir + \
-                                '/accounts/moderators.txt'
-                            clearModeratorStatus(baseDir)
-                            if ',' in fields['moderators']:
-                                # if the list was given as comma separated
-                                modFile = open(moderatorsFile, "w+")
-                                mods = fields['moderators'].split(',')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = baseDir + \
-                                        '/accounts/' + modNick + \
-                                        '@' + domain
-                                    if os.path.isdir(modDir):
-                                        modFile.write(modNick + '\n')
-                                modFile.close()
-                                mods = fields['moderators'].split(',')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = baseDir + \
-                                        '/accounts/' + modNick + \
-                                        '@' + domain
-                                    if os.path.isdir(modDir):
-                                        setRole(baseDir,
-                                                modNick, domain,
-                                                'instance', 'moderator')
-                            else:
-                                # nicknames on separate lines
-                                modFile = open(moderatorsFile, "w+")
-                                mods = fields['moderators'].split('\n')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = \
-                                        baseDir + \
-                                        '/accounts/' + modNick + \
-                                        '@' + domain
-                                    if os.path.isdir(modDir):
-                                        modFile.write(modNick + '\n')
-                                modFile.close()
-                                mods = fields['moderators'].split('\n')
-                                for modNick in mods:
-                                    modNick = modNick.strip()
-                                    modDir = \
-                                        baseDir + \
-                                        '/accounts/' + \
-                                        modNick + '@' + \
-                                        domain
-                                    if os.path.isdir(modDir):
-                                        setRole(baseDir,
-                                                modNick, domain,
-                                                'instance',
-                                                'moderator')
+                        if adminNickname:
+                            if path.startswith('/users/' +
+                                               adminNickname + '/'):
+                                moderatorsFile = \
+                                    baseDir + \
+                                    '/accounts/moderators.txt'
+                                clearModeratorStatus(baseDir)
+                                if ',' in fields['moderators']:
+                                    # if the list was given as comma separated
+                                    modFile = open(moderatorsFile, "w+")
+                                    mods = fields['moderators'].split(',')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = baseDir + \
+                                            '/accounts/' + modNick + \
+                                            '@' + domain
+                                        if os.path.isdir(modDir):
+                                            modFile.write(modNick + '\n')
+                                    modFile.close()
+                                    mods = fields['moderators'].split(',')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = baseDir + \
+                                            '/accounts/' + modNick + \
+                                            '@' + domain
+                                        if os.path.isdir(modDir):
+                                            setRole(baseDir,
+                                                    modNick, domain,
+                                                    'instance', 'moderator')
+                                else:
+                                    # nicknames on separate lines
+                                    modFile = open(moderatorsFile, "w+")
+                                    mods = fields['moderators'].split('\n')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = \
+                                            baseDir + \
+                                            '/accounts/' + modNick + \
+                                            '@' + domain
+                                        if os.path.isdir(modDir):
+                                            modFile.write(modNick + '\n')
+                                    modFile.close()
+                                    mods = fields['moderators'].split('\n')
+                                    for modNick in mods:
+                                        modNick = modNick.strip()
+                                        modDir = \
+                                            baseDir + \
+                                            '/accounts/' + \
+                                            modNick + '@' + \
+                                            domain
+                                        if os.path.isdir(modDir):
+                                            setRole(baseDir,
+                                                    modNick, domain,
+                                                    'instance',
+                                                    'moderator')
+
+                    # change site editors list
+                    if fields.get('editors'):
+                        adminNickname = \
+                            getConfigParam(baseDir, 'admin')
+                        if adminNickname:
+                            if path.startswith('/users/' +
+                                               adminNickname + '/'):
+                                editorsFile = \
+                                    baseDir + \
+                                    '/accounts/editors.txt'
+                                clearEditorStatus(baseDir)
+                                if ',' in fields['editors']:
+                                    # if the list was given as comma separated
+                                    edFile = open(editorsFile, "w+")
+                                    eds = fields['editors'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['editors'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'instance', 'editor')
+                                else:
+                                    # nicknames on separate lines
+                                    edFile = open(editorsFile, "w+")
+                                    eds = fields['editors'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['editors'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + \
+                                            edNick + '@' + \
+                                            domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'instance',
+                                                    'editor')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):
@@ -3427,7 +3651,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
-                                setTheme(baseDir, currTheme)
+                                setTheme(baseDir, currTheme, domain)
 
                     # change media instance status
                     if fields.get('mediaInstance'):
@@ -3436,6 +3660,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['mediaInstance'] == 'on':
                             self.server.mediaInstance = True
                             self.server.blogsInstance = False
+                            self.server.newsInstance = False
                             self.server.defaultTimeline = 'tlmedia'
                         setConfigParam(baseDir,
                                        "mediaInstance",
@@ -3443,12 +3668,41 @@ class PubServer(BaseHTTPRequestHandler):
                         setConfigParam(baseDir,
                                        "blogsInstance",
                                        self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
                     else:
                         if self.server.mediaInstance:
                             self.server.mediaInstance = False
                             self.server.defaultTimeline = 'inbox'
                             setConfigParam(baseDir,
                                            "mediaInstance",
+                                           self.server.mediaInstance)
+
+                    # change news instance status
+                    if fields.get('newsInstance'):
+                        self.server.newsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['newsInstance'] == 'on':
+                            self.server.newsInstance = True
+                            self.server.blogsInstance = False
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'tlnews'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.newsInstance:
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "newsInstance",
                                            self.server.mediaInstance)
 
                     # change blog instance status
@@ -3458,6 +3712,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['blogsInstance'] == 'on':
                             self.server.blogsInstance = True
                             self.server.mediaInstance = False
+                            self.server.newsInstance = False
                             self.server.defaultTimeline = 'tlblogs'
                         setConfigParam(baseDir,
                                        "blogsInstance",
@@ -3465,6 +3720,9 @@ class PubServer(BaseHTTPRequestHandler):
                         setConfigParam(baseDir,
                                        "mediaInstance",
                                        self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
                     else:
                         if self.server.blogsInstance:
                             self.server.blogsInstance = False
@@ -4347,7 +4605,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.personCache,
                               httpPrefix,
                               self.server.projectVersion,
-                              self.server.YTReplacementDomain)
+                              self.server.YTReplacementDomain,
+                              self.server.showPublishedDateOnly)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             self._set_headers('text/html', len(msg),
@@ -4655,6 +4914,100 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'unannounce done',
                                   'follow approve shown')
+        self.server.GETbusy = False
+
+    def _newswireVote(self, callingDomain: str, path: str,
+                      cookie: str,
+                      baseDir: str, httpPrefix: str,
+                      domain: str, domainFull: str, port: int,
+                      onionDomain: str, i2pDomain: str,
+                      GETstartTime, GETtimings: {},
+                      proxyType: str, debug: bool,
+                      newswire: {}):
+        """Vote for a newswire item
+        """
+        originPathStr = path.split('/newswirevote=')[0]
+        dateStr = \
+            path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
+        nickname = originPathStr.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if newswire.get(dateStr):
+            if isModerator(baseDir, nickname):
+                if 'vote:' + nickname not in newswire[dateStr][2]:
+                    newswire[dateStr][2].append('vote:' + nickname)
+                    filename = newswire[dateStr][3]
+                    newswireStateFilename = \
+                        baseDir + '/accounts/.newswirestate.json'
+                    try:
+                        saveJson(newswire, newswireStateFilename)
+                    except Exception as e:
+                        print('ERROR saving newswire state, ' + str(e))
+                    if filename:
+                        saveJson(newswire[dateStr][2],
+                                 filename + '.votes')
+
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr + '/' + \
+            self.server.defaultTimeline
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'vote for newswite item')
+        self.server.GETbusy = False
+
+    def _newswireUnvote(self, callingDomain: str, path: str,
+                        cookie: str,
+                        baseDir: str, httpPrefix: str,
+                        domain: str, domainFull: str, port: int,
+                        onionDomain: str, i2pDomain: str,
+                        GETstartTime, GETtimings: {},
+                        proxyType: str, debug: bool,
+                        newswire: {}):
+        """Remove vote for a newswire item
+        """
+        originPathStr = path.split('/newswireunvote=')[0]
+        dateStr = \
+            path.split('/newswireunvote=')[1].replace('T', ' ') + '+00:00'
+        nickname = originPathStr.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        if newswire.get(dateStr):
+            if isModerator(baseDir, nickname):
+                if 'vote:' + nickname in newswire[dateStr][2]:
+                    newswire[dateStr][2].remove('vote:' + nickname)
+                    filename = newswire[dateStr][3]
+                    newswireStateFilename = \
+                        baseDir + '/accounts/.newswirestate.json'
+                    try:
+                        saveJson(newswire, newswireStateFilename)
+                    except Exception as e:
+                        print('ERROR saving newswire state, ' + str(e))
+                    if filename:
+                        saveJson(newswire[dateStr][2],
+                                 filename + '.votes')
+
+        originPathStrAbsolute = \
+            httpPrefix + '://' + domainFull + originPathStr + '/' + \
+            self.server.defaultTimeline
+        if callingDomain.endswith('.onion') and onionDomain:
+            originPathStrAbsolute = \
+                'http://' + onionDomain + originPathStr
+        elif (callingDomain.endswith('.i2p') and i2pDomain):
+            originPathStrAbsolute = \
+                'http://' + i2pDomain + originPathStr
+        self._redirect_headers(originPathStrAbsolute,
+                               cookie, callingDomain)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'unannounce done',
+                                  'unvote for newswite item')
         self.server.GETbusy = False
 
     def _followDenyButton(self, callingDomain: str, path: str,
@@ -5159,7 +5512,8 @@ class PubServer(BaseHTTPRequestHandler):
                                deleteUrl, httpPrefix,
                                __version__, self.server.cachedWebfingers,
                                self.server.personCache, callingDomain,
-                               self.server.TYReplacementDomain)
+                               self.server.YTReplacementDomain,
+                               self.server.showPublishedDateOnly)
             if deleteStr:
                 self._set_headers('text/html', len(deleteStr),
                                   cookie, callingDomain)
@@ -5358,7 +5712,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     repliesJson,
                                     httpPrefix,
                                     projectVersion,
-                                    ytDomain)
+                                    ytDomain,
+                                    self.server.showPublishedDateOnly)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -5438,7 +5793,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     repliesJson,
                                     httpPrefix,
                                     projectVersion,
-                                    ytDomain)
+                                    ytDomain,
+                                    self.server.showPublishedDateOnly)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -5513,6 +5869,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     cachedWebfingers,
                                     self.server.personCache,
                                     YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -5571,6 +5928,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers
                                 YTReplacementDomain = \
                                     self.server.YTReplacementDomain
+                                showPublishedDateOnly = \
+                                    self.server.showPublishedDateOnly
                                 msg = \
                                     htmlProfile(defaultTimeline,
                                                 recentPostsCache,
@@ -5583,6 +5942,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 cachedWebfingers,
                                                 self.server.personCache,
                                                 YTReplacementDomain,
+                                                showPublishedDateOnly,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -5683,6 +6043,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.projectVersion
                                 ytDomain = \
                                     self.server.YTReplacementDomain
+                                showPublishedDateOnly = \
+                                    self.server.showPublishedDateOnly
                                 msg = \
                                     htmlIndividualPost(recentPostsCache,
                                                        maxRecentPosts,
@@ -5698,7 +6060,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                        httpPrefix,
                                                        projectVersion,
                                                        likedBy,
-                                                       ytDomain)
+                                                       ytDomain,
+                                                       showPublishedDateOnly)
                                 msg = msg.encode('utf-8')
                                 self._set_headers('text/html', len(msg),
                                                   cookie, callingDomain)
@@ -5790,6 +6153,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.projectVersion
                     ytDomain = \
                         self.server.YTReplacementDomain
+                    showPublishedDateOnly = \
+                        self.server.showPublishedDateOnly
                     msg = \
                         htmlIndividualPost(recentPostsCache,
                                            maxRecentPosts,
@@ -5806,7 +6171,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            httpPrefix,
                                            projectVersion,
                                            likedBy,
-                                           ytDomain)
+                                           ytDomain,
+                                           showPublishedDateOnly)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -5865,7 +6231,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'inbox',
-                                  authorized)
+                                  authorized,
+                                  0,
+                                  self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if inboxFeed:
                     if GETstartTime:
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5893,7 +6262,10 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'inbox',
-                                              authorized)
+                                              authorized,
+                                              0,
+                                              self.server.positiveVoting,
+                                              self.server.votingTimeMins)
                             if GETstartTime:
                                 self._benchmarkGETtimings(GETstartTime,
                                                           GETtimings,
@@ -5917,7 +6289,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         projectVersion,
                                         self._isMinimal(nickname),
                                         YTReplacementDomain,
-                                        self.server.newswire)
+                                        self.server.showPublishedDateOnly,
+                                        self.server.newswire,
+                                        self.server.positiveVoting)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -5980,7 +6354,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'dm',
-                                  authorized)
+                                  authorized,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if inboxDMFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6004,7 +6380,10 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'dm',
-                                              authorized)
+                                              authorized,
+                                              0,
+                                              self.server.positiveVoting,
+                                              self.server.votingTimeMins)
                         msg = \
                             htmlInboxDMs(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -6024,7 +6403,9 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
                                          self.server.YTReplacementDomain,
-                                         self.server.newswire)
+                                         self.server.showPublishedDateOnly,
+                                         self.server.newswire,
+                                         self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6080,7 +6461,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlreplies',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if not inboxRepliesFeed:
                     inboxRepliesFeed = []
                 if self._requestHTTP():
@@ -6105,7 +6488,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInFeed, 'tlreplies',
-                                          True)
+                                          True,
+                                          0, self.server.positiveVoting,
+                                          self.server.votingTimeMins)
                     msg = \
                         htmlInboxReplies(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -6125,7 +6510,9 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.projectVersion,
                                          self._isMinimal(nickname),
                                          self.server.YTReplacementDomain,
-                                         self.server.newswire)
+                                         self.server.showPublishedDateOnly,
+                                         self.server.newswire,
+                                         self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6181,7 +6568,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInMediaFeed, 'tlmedia',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if not inboxMediaFeed:
                     inboxMediaFeed = []
                 if self._requestHTTP():
@@ -6206,7 +6595,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInMediaFeed, 'tlmedia',
-                                          True)
+                                          True,
+                                          0, self.server.positiveVoting,
+                                          self.server.votingTimeMins)
                     msg = \
                         htmlInboxMedia(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6226,7 +6617,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                                       self.server.showPublishedDateOnly,
+                                       self.server.newswire,
+                                       self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6282,7 +6675,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInBlogsFeed, 'tlblogs',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if not inboxBlogsFeed:
                     inboxBlogsFeed = []
                 if self._requestHTTP():
@@ -6307,7 +6702,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           path + '?page=1',
                                           httpPrefix,
                                           maxPostsInBlogsFeed, 'tlblogs',
-                                          True)
+                                          True,
+                                          0, self.server.positiveVoting,
+                                          self.server.votingTimeMins)
                     msg = \
                         htmlInboxBlogs(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6327,7 +6724,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                                       self.server.showPublishedDateOnly,
+                                       self.server.newswire,
+                                       self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6357,6 +6756,121 @@ class PubServer(BaseHTTPRequestHandler):
             # not the blogs inbox
             if debug:
                 print('DEBUG: GET access to blogs is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showNewsTimeline(self, authorized: bool,
+                          callingDomain: str, path: str,
+                          baseDir: str, httpPrefix: str,
+                          domain: str, domainFull: str, port: int,
+                          onionDomain: str, i2pDomain: str,
+                          GETstartTime, GETtimings: {},
+                          proxyType: str, cookie: str,
+                          debug: str) -> bool:
+        """Shows the news timeline
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxNewsFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInNewsFeed, 'tlnews',
+                                  True,
+                                  self.server.newswireVotesThreshold,
+                                  self.server.positiveVoting,
+                                  self.server.votingTimeMins)
+                if not inboxNewsFeed:
+                    inboxNewsFeed = []
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlnews', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxNewsFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          path + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInBlogsFeed, 'tlnews',
+                                          True,
+                                          self.server.newswireVotesThreshold,
+                                          self.server.positiveVoting,
+                                          self.server.votingTimeMins)
+                    currNickname = path.split('/users/')[1]
+                    if '/' in currNickname:
+                        currNickname = currNickname.split('/')[0]
+                    moderator = isModerator(baseDir, currNickname)
+                    editor = isEditor(baseDir, currNickname)
+                    msg = \
+                        htmlInboxNews(self.server.defaultTimeline,
+                                      self.server.recentPostsCache,
+                                      self.server.maxRecentPosts,
+                                      self.server.translate,
+                                      pageNumber, maxPostsInNewsFeed,
+                                      self.server.session,
+                                      baseDir,
+                                      self.server.cachedWebfingers,
+                                      self.server.personCache,
+                                      nickname,
+                                      domain,
+                                      port,
+                                      inboxNewsFeed,
+                                      self.server.allowDeletion,
+                                      httpPrefix,
+                                      self.server.projectVersion,
+                                      self._isMinimal(nickname),
+                                      self.server.YTReplacementDomain,
+                                      self.server.showPublishedDateOnly,
+                                      self.server.newswire,
+                                      moderator, editor,
+                                      self.server.positiveVoting)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show news 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxNewsFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json',
+                                      len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = 'news'
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlnews':
+            # not the news inbox
+            if debug:
+                print('DEBUG: GET access to news is unauthorized')
             self.send_response(405)
             self.end_headers()
             self.server.GETbusy = False
@@ -6403,7 +6917,9 @@ class PubServer(BaseHTTPRequestHandler):
                                    httpPrefix,
                                    self.server.projectVersion,
                                    self.server.YTReplacementDomain,
-                                   self.server.newswire)
+                                   self.server.showPublishedDateOnly,
+                                   self.server.newswire,
+                                   self.server.positiveVoting)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6442,7 +6958,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlbookmarks',
-                                  authorized)
+                                  authorized,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if bookmarksFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6468,7 +6986,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed,
                                               'tlbookmarks',
-                                              authorized)
+                                              authorized,
+                                              0, self.server.positiveVoting,
+                                              self.server.votingTimeMins)
                         msg = \
                             htmlBookmarks(self.server.defaultTimeline,
                                           self.server.recentPostsCache,
@@ -6488,7 +7008,9 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion,
                                           self._isMinimal(nickname),
                                           self.server.YTReplacementDomain,
-                                          self.server.newswire)
+                                          self.server.showPublishedDateOnly,
+                                          self.server.newswire,
+                                          self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6546,7 +7068,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'tlevents',
-                                  authorized)
+                                  authorized,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 print('eventsFeed: ' + str(eventsFeed))
                 if eventsFeed:
                     if self._requestHTTP():
@@ -6572,7 +7096,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               httpPrefix,
                                               maxPostsInFeed,
                                               'tlevents',
-                                              authorized)
+                                              authorized,
+                                              0, self.server.positiveVoting,
+                                              self.server.votingTimeMins)
                         msg = \
                             htmlEvents(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6592,7 +7118,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.projectVersion,
                                        self._isMinimal(nickname),
                                        self.server.YTReplacementDomain,
-                                       self.server.newswire)
+                                       self.server.showPublishedDateOnly,
+                                       self.server.newswire,
+                                       self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6642,7 +7170,10 @@ class PubServer(BaseHTTPRequestHandler):
                           port, path,
                           httpPrefix,
                           maxPostsInFeed, 'outbox',
-                          authorized)
+                          authorized,
+                          self.server.newswireVotesThreshold,
+                          self.server.positiveVoting,
+                          self.server.votingTimeMins)
         if outboxFeed:
             if self._requestHTTP():
                 nickname = \
@@ -6666,7 +7197,10 @@ class PubServer(BaseHTTPRequestHandler):
                                       path + '?page=1',
                                       httpPrefix,
                                       maxPostsInFeed, 'outbox',
-                                      authorized)
+                                      authorized,
+                                      self.server.newswireVotesThreshold,
+                                      self.server.positiveVoting,
+                                      self.server.votingTimeMins)
                 msg = \
                     htmlOutbox(self.server.defaultTimeline,
                                self.server.recentPostsCache,
@@ -6686,7 +7220,9 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.projectVersion,
                                self._isMinimal(nickname),
                                self.server.YTReplacementDomain,
-                               self.server.newswire)
+                               self.server.showPublishedDateOnly,
+                               self.server.newswire,
+                               self.server.positiveVoting)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -6729,7 +7265,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   path,
                                   httpPrefix,
                                   maxPostsInFeed, 'moderation',
-                                  True)
+                                  True,
+                                  0, self.server.positiveVoting,
+                                  self.server.votingTimeMins)
                 if moderationFeed:
                     if self._requestHTTP():
                         nickname = path.replace('/users/', '')
@@ -6753,7 +7291,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               path + '?page=1',
                                               httpPrefix,
                                               maxPostsInFeed, 'moderation',
-                                              True)
+                                              True,
+                                              0, self.server.positiveVoting,
+                                              self.server.votingTimeMins)
                         msg = \
                             htmlModeration(self.server.defaultTimeline,
                                            self.server.recentPostsCache,
@@ -6772,7 +7312,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            httpPrefix,
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
-                                           self.server.newswire)
+                                           self.server.showPublishedDateOnly,
+                                           self.server.newswire,
+                                           self.server.positiveVoting)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6862,6 +7404,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -6948,6 +7491,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7034,6 +7578,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
+                                    self.server.showPublishedDateOnly,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7095,6 +7640,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cachedWebfingers,
                                 self.server.personCache,
                                 self.server.YTReplacementDomain,
+                                self.server.showPublishedDateOnly,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7666,6 +8212,34 @@ class PubServer(BaseHTTPRequestHandler):
                                    path, domain,
                                    port,
                                    httpPrefix).encode('utf-8')
+            if msg:
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _editNewsPost(self, callingDomain: str, path: str,
+                      translate: {}, baseDir: str,
+                      httpPrefix: str, domain: str, port: int,
+                      domainFull: str,
+                      cookie: str) -> bool:
+        """Show the edit screen for a news post
+        """
+        if '/users/' in path and '/editnewspost=' in path:
+            postId = path.split('/editnewspost=')[1]
+            if '?' in postId:
+                postId = postId.split('?')[0]
+            postUrl = httpPrefix + '://' + domainFull + \
+                '/users/news/statuses/' + postId
+            path = path.split('/editnewspost=')[0]
+            msg = htmlEditNewsPost(translate, baseDir,
+                                   path, domain, port,
+                                   httpPrefix,
+                                   postUrl).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -8510,6 +9084,48 @@ class PubServer(BaseHTTPRequestHandler):
                                   'permitted directory',
                                   'login shown done')
 
+        if authorized and htmlGET and '/users/' in self.path and \
+           self.path.endswith('/newswiremobile'):
+            nickname = getNicknameFromActor(self.path)
+            if not nickname:
+                self._404()
+                self.server.GETbusy = False
+                return
+            timelinePath = \
+                '/users/' + nickname + '/' + self.server.defaultTimeline
+            msg = htmlNewswireMobile(self.server.baseDir,
+                                     nickname,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.httpPrefix,
+                                     self.server.translate,
+                                     self.server.newswire,
+                                     self.server.positiveVoting,
+                                     timelinePath).encode('utf-8')
+            self._set_headers('text/html', len(msg), cookie, callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            return
+
+        if authorized and htmlGET and '/users/' in self.path and \
+           self.path.endswith('/linksmobile'):
+            nickname = getNicknameFromActor(self.path)
+            if not nickname:
+                self._404()
+                self.server.GETbusy = False
+                return
+            timelinePath = \
+                '/users/' + nickname + '/' + self.server.defaultTimeline
+            msg = htmlLinksMobile(self.server.baseDir, nickname,
+                                  self.server.domainFull,
+                                  self.server.httpPrefix,
+                                  self.server.translate,
+                                  timelinePath).encode('utf-8')
+            self._set_headers('text/html', len(msg), cookie, callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            return
+
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
@@ -8550,13 +9166,16 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
                 self._setMinimal(nickname, not self._isMinimal(nickname))
                 if not (self.server.mediaInstance or
-                        self.server.blogsInstance):
+                        self.server.blogsInstance or
+                        self.server.newsInstance):
                     self.path = '/users/' + nickname + '/inbox'
                 else:
                     if self.server.blogsInstance:
                         self.path = '/users/' + nickname + '/tlblogs'
-                    else:
+                    elif self.server.mediaInstance:
                         self.path = '/users/' + nickname + '/tlmedia'
+                    else:
+                        self.path = '/users/' + nickname + '/tlnews'
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
@@ -8687,6 +9306,42 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show announce done',
                                   'unannounce done')
+
+        # send a newswire moderation vote from the web interface
+        if authorized and '/newswirevote=' in self.path and \
+           self.path.startswith('/users/'):
+            self._newswireVote(callingDomain, self.path,
+                               cookie,
+                               self.server.baseDir,
+                               self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.port,
+                               self.server.onionDomain,
+                               self.server.i2pDomain,
+                               GETstartTime, GETtimings,
+                               self.server.proxyType,
+                               self.server.debug,
+                               self.server.newswire)
+            return
+
+        # send a newswire moderation unvote from the web interface
+        if authorized and '/newswireunvote=' in self.path and \
+           self.path.startswith('/users/'):
+            self._newswireUnvote(callingDomain, self.path,
+                                 cookie,
+                                 self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 self.server.domain,
+                                 self.server.domainFull,
+                                 self.server.port,
+                                 self.server.onionDomain,
+                                 self.server.i2pDomain,
+                                 GETstartTime, GETtimings,
+                                 self.server.proxyType,
+                                 self.server.debug,
+                                 self.server.newswire)
+            return
 
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and \
@@ -9018,6 +9673,17 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie):
                 return
 
+            # edit news post
+            if self._editNewsPost(callingDomain, self.path,
+                                  self.server.translate,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  self.server.domainFull,
+                                  cookie):
+                return
+
             if self._showNewPost(callingDomain, self.path,
                                  self.server.mediaInstance,
                                  self.server.translate,
@@ -9243,6 +9909,26 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show media 2 done',
                                   'show blogs 2 done')
+
+        # get the news for a given person
+        if self.path.endswith('/tlnews') or '/tlnews?page=' in self.path:
+            if self._showNewsTimeline(authorized,
+                                      callingDomain, self.path,
+                                      self.server.baseDir,
+                                      self.server.httpPrefix,
+                                      self.server.domain,
+                                      self.server.domainFull,
+                                      self.server.port,
+                                      self.server.onionDomain,
+                                      self.server.i2pDomain,
+                                      GETstartTime, GETtimings,
+                                      self.server.proxyType,
+                                      cookie, self.server.debug):
+                return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show blogs 2 done',
+                                  'show news 2 done')
 
         # get the shared items timeline for a given person
         if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
@@ -10486,6 +11172,16 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.defaultTimeline)
             return
 
+        if authorized and self.path.endswith('/newseditdata'):
+            self._newsPostEdit(callingDomain, cookie, authorized, self.path,
+                               self.server.baseDir, self.server.httpPrefix,
+                               self.server.domain,
+                               self.server.domainFull,
+                               self.server.onionDomain,
+                               self.server.i2pDomain, self.server.debug,
+                               self.server.defaultTimeline)
+            return
+
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)
 
         # moderator action buttons
@@ -11048,7 +11744,13 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(blogsInstance: bool, mediaInstance: bool,
+def runDaemon(showPublishedDateOnly: bool,
+              votingTimeMins: int,
+              positiveVoting: bool,
+              newswireVotesThreshold: int,
+              newsInstance: bool,
+              blogsInstance: bool,
+              mediaInstance: bool,
               maxRecentPosts: int,
               enableSharedInbox: bool, registration: bool,
               language: str, projectVersion: str,
@@ -11112,11 +11814,14 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.useBlurHash = useBlurHash
     httpd.mediaInstance = mediaInstance
     httpd.blogsInstance = blogsInstance
+    httpd.newsInstance = newsInstance
     httpd.defaultTimeline = 'inbox'
     if mediaInstance:
         httpd.defaultTimeline = 'tlmedia'
     if blogsInstance:
         httpd.defaultTimeline = 'tlblogs'
+    if newsInstance:
+        httpd.defaultTimeline = 'tlnews'
 
     # load translations dictionary
     httpd.translate = {}
@@ -11149,6 +11854,19 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         if not httpd.translate:
             print('ERROR: no translations loaded from ' + translationsFile)
             sys.exit()
+
+    # For moderated newswire feeds this is the amount of time allowed
+    # for voting after the post arrives
+    httpd.votingTimeMins = votingTimeMins
+    # on the newswire, whether moderators vote positively for items
+    # or against them (veto)
+    httpd.positiveVoting = positiveVoting
+    # number of votes needed to remove a newswire item from the news timeline
+    # or if positive voting is anabled to add the item to the news timeline
+    httpd.newswireVotesThreshold = newswireVotesThreshold
+
+    # Show only the date at the bottom of posts, and not the time
+    httpd.showPublishedDateOnly = showPublishedDateOnly
 
     if registration == 'open':
         httpd.registration = True
@@ -11206,6 +11924,10 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
         createSharedInbox(baseDir, 'inbox', domain, port, httpPrefix)
+
+    if not os.path.isdir(baseDir + '/accounts/news@' + domain):
+        print('Creating news inbox: news@' + domain)
+        createNewsInbox(baseDir, domain, port, httpPrefix)
 
     if not os.path.isdir(baseDir + '/cache'):
         os.mkdir(baseDir + '/cache')
@@ -11276,7 +11998,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                               domainMaxPostsPerDay, accountMaxPostsPerDay,
                               allowDeletion, debug, maxMentions, maxEmoji,
                               httpd.translate, unitTest,
-                              httpd.YTReplacementDomain), daemon=True)
+                              httpd.YTReplacementDomain,
+                              httpd.showPublishedDateOnly), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
@@ -11286,7 +12009,9 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     print('Creating newswire thread')
     httpd.thrNewswireDaemon = \
         threadWithTrace(target=runNewswireDaemon,
-                        args=(baseDir, httpd), daemon=True)
+                        args=(baseDir, httpd,
+                              httpPrefix, domain, port,
+                              httpd.translate), daemon=True)
 
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False

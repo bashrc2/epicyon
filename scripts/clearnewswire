@@ -1,0 +1,10 @@
+#!/bin/bash
+rm accounts/news@*/outbox/*
+rm accounts/news@*/postcache/*
+rm accounts/news@*/outbox.index
+if [ -f accounts/.newswirestate.json ]; then
+    rm accounts/.newswirestate.json
+fi
+if [ -f accounts/.currentnewswire.json ]; then
+    rm accounts/.currentnewswire.json
+fi

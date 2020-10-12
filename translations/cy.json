@@ -297,5 +297,16 @@
     "Edit newswire": "Golygu newyddion",
     "Add RSS feed links below.": "Ychwanegwch ddolenni porthiant RSS isod.",
     "Newswire RSS Feed": "Newswire RSS Feed",
-    "Nicknames whose blog entries appear on the newswire.": "Llysenwau y mae eu cofnodion blog yn ymddangos ar y we newyddion."
+    "Nicknames whose blog entries appear on the newswire.": "Llysenwau y mae eu cofnodion blog yn ymddangos ar y we newyddion.",
+    "Posts to be approved": "Swyddi i'w cymeradwyo",
+    "Discuss": "Trafodwch",
+    "Moderator Discussion": "Trafodaeth Cymedrolwr",
+    "Vote": "Newyddion",
+    "Remove Vote": "Tynnwch y Bleidlais",
+    "This is a news instance": "Dyma enghraifft newyddion",
+    "News": "Newyddion",
+    "Read more...": "Darllen mwy...",
+    "Edit News Post": "Golygu News News",
+    "A list of editor nicknames. One per line.": "Rhestr o lysenwau golygydd. Un i bob llinell.",
+    "Site Editors": "Golygyddion Safle"
 }

@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-import time
 import requests
 from socket import error as SocketError
 import errno
@@ -15,11 +14,15 @@ from datetime import datetime
 from collections import OrderedDict
 from utils import locatePost
 from utils import loadJson
+from utils import saveJson
+from utils import isSuspended
 
 
 def rss2Header(httpPrefix: str,
                nickname: str, domainFull: str,
                title: str, translate: {}) -> str:
+    """Header for an RSS 2.0 feed
+    """
     rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
     rssStr += "<rss version=\"2.0\">"
     rssStr += '<channel>'
@@ -37,12 +40,14 @@ def rss2Header(httpPrefix: str,
 
 
 def rss2Footer() -> str:
+    """Footer for an RSS 2.0 feed
+    """
     rssStr = '</channel>'
     rssStr += '</rss>'
     return rssStr
 
 
-def xml2StrToDict(xmlStr: str) -> {}:
+def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
@@ -64,6 +69,10 @@ def xml2StrToDict(xmlStr: str) -> {}:
             continue
         title = rssItem.split('<title>')[1]
         title = title.split('</title>')[0]
+        description = ''
+        if '<description>' in rssItem and '</description>' in rssItem:
+            description = rssItem.split('<description>')[1]
+            description = description.split('</description>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         pubDate = rssItem.split('<pubDate>')[1]
@@ -72,7 +81,11 @@ def xml2StrToDict(xmlStr: str) -> {}:
         try:
             publishedDate = \
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
-            result[str(publishedDate)] = [title, link]
+            postFilename = ''
+            votesStatus = []
+            result[str(publishedDate)] = [title, link,
+                                          votesStatus, postFilename,
+                                          description, moderated]
             parsed = True
         except BaseException:
             pass
@@ -88,15 +101,71 @@ def xml2StrToDict(xmlStr: str) -> {}:
     return result
 
 
-def xmlStrToDict(xmlStr: str) -> {}:
+def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
+    """Converts an atom feed string to a dictionary
+    """
+    if '<entry>' not in xmlStr:
+        return {}
+    result = {}
+    rssItems = xmlStr.split('<entry>')
+    for rssItem in rssItems:
+        if '<title>' not in rssItem:
+            continue
+        if '</title>' not in rssItem:
+            continue
+        if '<link>' not in rssItem:
+            continue
+        if '</link>' not in rssItem:
+            continue
+        if '<updated>' not in rssItem:
+            continue
+        if '</updated>' not in rssItem:
+            continue
+        title = rssItem.split('<title>')[1]
+        title = title.split('</title>')[0]
+        description = ''
+        if '<summary>' in rssItem and '</summary>' in rssItem:
+            description = rssItem.split('<summary>')[1]
+            description = description.split('</summary>')[0]
+        link = rssItem.split('<link>')[1]
+        link = link.split('</link>')[0]
+        pubDate = rssItem.split('<updated>')[1]
+        pubDate = pubDate.split('</updated>')[0]
+        parsed = False
+        try:
+            publishedDate = \
+                datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
+            postFilename = ''
+            votesStatus = []
+            result[str(publishedDate)] = [title, link,
+                                          votesStatus, postFilename,
+                                          description, moderated]
+            parsed = True
+        except BaseException:
+            pass
+        if not parsed:
+            try:
+                publishedDate = \
+                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
+                result[str(publishedDate) + '+00:00'] = [title, link]
+                parsed = True
+            except BaseException:
+                print('WARN: unrecognized atom feed date format: ' + pubDate)
+                pass
+    return result
+
+
+def xmlStrToDict(xmlStr: str, moderated: bool) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
-        return xml2StrToDict(xmlStr)
+        return xml2StrToDict(xmlStr, moderated)
+    elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
+        return atomFeedToDict(xmlStr, moderated)
     return {}
 
 
-def getRSS(session, url: str) -> {}:
+def getRSS(session, url: str, moderated: bool) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -119,7 +188,7 @@ def getRSS(session, url: str) -> {}:
         print('WARN: no session specified for getRSS')
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
-        return xmlStrToDict(result.text)
+        return xmlStrToDict(result.text, moderated)
     except requests.exceptions.RequestException as e:
         print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
@@ -155,13 +224,32 @@ def getRSSfromDict(baseDir: str, newswire: {},
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
-        rssStr += '  <link>' + fields[1] + '</link>\n'
+        url = fields[1]
+        if domainFull not in url:
+            url = httpPrefix + '://' + domainFull + url
+        rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
         rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
         rssStr += '</item>\n'
     rssStr += rss2Footer()
     return rssStr
+
+
+def isaBlogPost(postJsonObject: {}) -> bool:
+    """Is the given object a blog post?
+    """
+    if not postJsonObject:
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object'].get('summary') and \
+       postJsonObject['object'].get('url') and \
+       postJsonObject['object'].get('published'):
+        return True
+    return False
 
 
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
@@ -172,6 +260,16 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
     """
     if not os.path.isfile(indexFilename):
         return
+    # local blog entries are unmoderated by default
+    moderated = False
+
+    # local blogs can potentially be moderated
+    moderatedFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/.newswiremoderated'
+    if os.path.isfile(moderatedFilename):
+        moderated = True
+
     with open(indexFilename, 'r') as indexFile:
         postFilename = 'start'
         ctr = 0
@@ -193,43 +291,39 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
-                isAPost = False
+                if not fullPostFilename:
+                    print('Unable to locate post ' + postUrl)
+                    ctr += 1
+                    if ctr >= maxBlogsPerAccount:
+                        break
+                    continue
+
                 postJsonObject = None
                 if fullPostFilename:
                     postJsonObject = loadJson(fullPostFilename)
-                    if postJsonObject:
-                        if postJsonObject.get('object'):
-                            if isinstance(postJsonObject['object'], dict):
-                                isAPost = True
-                if isAPost:
-                    if postJsonObject['object'].get('summary') and \
-                       postJsonObject['object'].get('url') and \
-                       postJsonObject['object'].get('published'):
-                        published = postJsonObject['object']['published']
-                        published = published.replace('T', ' ')
-                        published = published.replace('Z', '+00:00')
-                        newswire[published] = \
-                            [postJsonObject['object']['summary'],
-                             postJsonObject['object']['url']]
+                if isaBlogPost(postJsonObject):
+                    published = postJsonObject['object']['published']
+                    published = published.replace('T', ' ')
+                    published = published.replace('Z', '+00:00')
+                    votes = []
+                    if os.path.isfile(fullPostFilename + '.votes'):
+                        votes = loadJson(fullPostFilename + '.votes')
+                    description = ''
+                    newswire[published] = \
+                        [postJsonObject['object']['summary'],
+                         postJsonObject['object']['url'], votes,
+                         fullPostFilename, description, moderated]
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
                 break
 
 
-def addLocalBlogsToNewswire(baseDir: str, newswire: {},
-                            maxBlogsPerAccount: int) -> None:
-    """Adds blogs from this instance into the newswire
+def addBlogsToNewswire(baseDir: str, newswire: {},
+                       maxBlogsPerAccount: int) -> None:
+    """Adds blogs from each user account into the newswire
     """
-    # get the list of handles who are trusted to post to the newswire
-    newswireTrusted = ''
-    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
-    if os.path.isfile(newswireTrustedFilename):
-        with open(newswireTrustedFilename, "r") as trustFile:
-            newswireTrusted = trustFile.read()
-
-    # file containing suspended account nicknames
-    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    moderationDict = {}
 
     # go through each account
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
@@ -238,31 +332,37 @@ def addLocalBlogsToNewswire(baseDir: str, newswire: {},
                 continue
             if 'inbox@' in handle:
                 continue
-            if handle not in newswireTrusted:
-                if handle.split('@')[0] + '\n' not in newswireTrusted:
-                    continue
-            accountDir = os.path.join(baseDir + '/accounts', handle)
+
+            nickname = handle.split('@')[0]
 
             # has this account been suspended?
-            nickname = handle.split('@')[0]
-            if os.path.isfile(suspendedFilename):
-                with open(suspendedFilename, "r") as f:
-                    lines = f.readlines()
-                    foundSuspended = False
-                    for nick in lines:
-                        if nick == nickname + '\n':
-                            foundSuspended = True
-                            break
-                    if foundSuspended:
-                        continue
+            if isSuspended(baseDir, nickname):
+                continue
+
+            if os.path.isfile(baseDir + '/accounts/' + handle +
+                              '/.nonewswire'):
+                continue
 
             # is there a blogs timeline for this account?
+            accountDir = os.path.join(baseDir + '/accounts', handle)
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 domain = handle.split('@')[1]
                 addAccountBlogsToNewswire(baseDir, nickname, domain,
                                           newswire, maxBlogsPerAccount,
                                           blogsIndex)
+
+    # sort the moderation dict into chronological order, latest first
+    sortedModerationDict = \
+        OrderedDict(sorted(moderationDict.items(), reverse=True))
+    # save the moderation queue details for later display
+    newswireModerationFilename = baseDir + '/accounts/newswiremoderation.txt'
+    if sortedModerationDict:
+        saveJson(sortedModerationDict, newswireModerationFilename)
+    else:
+        # remove the file if there is nothing to moderate
+        if os.path.isfile(newswireModerationFilename):
+            os.remove(newswireModerationFilename)
 
 
 def getDictFromNewswire(session, baseDir: str) -> {}:
@@ -279,61 +379,28 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
     result = {}
     for url in rssFeed:
         url = url.strip()
+
+        # Does this contain a url?
         if '://' not in url:
             continue
+
+        # is this a comment?
         if url.startswith('#'):
             continue
-        itemsList = getRSS(session, url)
+
+        # should this feed be moderated?
+        moderated = False
+        if '*' in url:
+            moderated = True
+            url = url.replace('*', '').strip()
+
+        itemsList = getRSS(session, url, moderated)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 
-    # add local content
-    addLocalBlogsToNewswire(baseDir, result, 5)
+    # add blogs from each user account
+    addBlogsToNewswire(baseDir, result, 5)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
     return sortedResult
-
-
-def runNewswireDaemon(baseDir: str, httpd):
-    """Periodically updates RSS feeds
-    """
-    # initial sleep to allow the system to start up
-    time.sleep(70)
-    while True:
-        # has the session been created yet?
-        if not httpd.session:
-            print('Newswire daemon waiting for session')
-            time.sleep(60)
-            continue
-
-        # try to update the feeds
-        newNewswire = None
-        try:
-            newNewswire = getDictFromNewswire(httpd.session, baseDir)
-        except BaseException:
-            print('WARN: unable to update newswire')
-            time.sleep(120)
-            continue
-
-        httpd.newswire = newNewswire
-        print('Newswire updated')
-        # wait a while before the next feeds update
-        time.sleep(1200)
-
-
-def runNewswireWatchdog(projectVersion: str, httpd) -> None:
-    """This tries to keep the newswire update thread running even if it dies
-    """
-    print('Starting newswire watchdog')
-    newswireOriginal = \
-        httpd.thrPostSchedule.clone(runNewswireDaemon)
-    httpd.thrNewswireDaemon.start()
-    while True:
-        time.sleep(50)
-        if not httpd.thrNewswireDaemon.isAlive():
-            httpd.thrNewswireDaemon.kill()
-            httpd.thrNewswireDaemon = \
-                newswireOriginal.clone(runNewswireDaemon)
-            httpd.thrNewswireDaemon.start()
-            print('Restarting newswire daemon...')

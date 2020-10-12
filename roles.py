@@ -37,6 +37,26 @@ def clearModeratorStatus(baseDir: str) -> None:
                             saveJson(actorJson, filename)
 
 
+def clearEditorStatus(baseDir: str) -> None:
+    """Removes editor status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when editors are appointed or removed
+    """
+    directory = os.fsencode(baseDir + '/accounts/')
+    for f in os.scandir(directory):
+        f = f.name
+        filename = os.fsdecode(f)
+        if filename.endswith(".json") and '@' in filename:
+            filename = os.path.join(baseDir + '/accounts/', filename)
+            if '"editor"' in open(filename).read():
+                actorJson = loadJson(filename)
+                if actorJson:
+                    if actorJson['roles'].get('instance'):
+                        if 'editor' in actorJson['roles']['instance']:
+                            actorJson['roles']['instance'].remove('editor')
+                            saveJson(actorJson, filename)
+
+
 def addModerator(baseDir: str, nickname: str, domain: str) -> None:
     """Adds a moderator nickname to the file
     """

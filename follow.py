@@ -574,6 +574,10 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request does not contain a ' +
                   'nickname for the account followed')
         return True
+    if nicknameToFollow == 'news' or nicknameToFollow == 'inbox':
+        if debug:
+            print('DEBUG: Cannot follow the news or inbox accounts')
+        return True
     handleToFollow = nicknameToFollow + '@' + domainToFollow
     if domainToFollow == domain:
         if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):

@@ -297,5 +297,16 @@
     "Edit newswire": "Editeu newswire",
     "Add RSS feed links below.": "Afegiu enllaços de canals RSS a continuació.",
     "Newswire RSS Feed": "Feed RSS de Newswire",
-    "Nicknames whose blog entries appear on the newswire.": "Sobrenoms les entrades del bloc apareixen a newswire."
+    "Nicknames whose blog entries appear on the newswire.": "Sobrenoms les entrades del bloc apareixen a newswire.",
+    "Posts to be approved": "Missatges per aprovar",
+    "Discuss": "Discuteix",
+    "Moderator Discussion": "Discussió sobre moderadors",
+    "Vote": "Notícies",
+    "Remove Vote": "Elimina el vot",
+    "This is a news instance": "Aquesta és una instància de notícies",
+    "News": "Notícies",
+    "Read more...": "Llegeix més...",
+    "Edit News Post": "Edita la publicació de notícies",
+    "A list of editor nicknames. One per line.": "Una llista de sobrenoms de l'editor. Un per línia.",
+    "Site Editors": "Editors de llocs"
 }

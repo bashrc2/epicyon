@@ -297,5 +297,16 @@
     "Edit newswire": "تحرير الأخبار",
     "Add RSS feed links below.": "إضافة روابط تغذية RSS أدناه.",
     "Newswire RSS Feed": "Newswire موجز RSS",
-    "Nicknames whose blog entries appear on the newswire.": "الألقاب التي تظهر إدخالات المدونة الخاصة بها على موقع الأخبار."
+    "Nicknames whose blog entries appear on the newswire.": "الألقاب التي تظهر إدخالات المدونة الخاصة بها على موقع الأخبار.",
+    "Posts to be approved": "الوظائف المطلوب الموافقة عليها",
+    "Discuss": "مناقشة",
+    "Moderator Discussion": "مناقشة المنسق",
+    "Vote": "تصويت",
+    "Remove Vote": "إزالة التصويت",
+    "This is a news instance": "هذا مثال أخبار",
+    "News": "أخبار",
+    "Read more...": "اقرأ أكثر...",
+    "Edit News Post": "تحرير منشور الأخبار",
+    "A list of editor nicknames. One per line.": "قائمة بأسماء المحرر. واحد في كل سطر.",
+    "Site Editors": "محررو الموقع"
 }

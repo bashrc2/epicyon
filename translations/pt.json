@@ -297,5 +297,16 @@
     "Edit newswire": "Editar notícias",
     "Add RSS feed links below.": "Adicione links de feed RSS abaixo.",
     "Newswire RSS Feed": "Feed RSS da Newswire",
-    "Nicknames whose blog entries appear on the newswire.": "Apelidos cujas entradas de blog aparecem nos jornais."
+    "Nicknames whose blog entries appear on the newswire.": "Apelidos cujas entradas de blog aparecem nos jornais.",
+    "Posts to be approved": "Postagens a serem aprovadas",
+    "Discuss": "Discutir",
+    "Moderator Discussion": "Discussão do moderador",
+    "Vote": "Voto",
+    "Remove Vote": "Remover voto",
+    "This is a news instance": "Esta é uma instância de notícias",
+    "News": "Notícia",
+    "Read more...": "Consulte Mais informação...",
+    "Edit News Post": "Editar Postagem de Notícias",
+    "A list of editor nicknames. One per line.": "Uma lista de apelidos de editores. Um por linha.",
+    "Site Editors": "Editores do site"
 }

@@ -78,6 +78,7 @@ from content import addHtmlTags
 from content import removeLongWords
 from content import replaceContentDuplicates
 from content import removeTextFormatting
+from content import removeHtmlTag
 from theme import setCSSparam
 from jsonldsig import testSignJsonld
 from jsonldsig import jsonldVerify
@@ -287,7 +288,8 @@ def createServerAlice(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     print('Server running: Alice')
-    runDaemon(False, False, 5, True, True, 'en', __version__,
+    runDaemon(False, 0, False, 1, False, False, False,
+              5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
@@ -349,7 +351,8 @@ def createServerBob(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     print('Server running: Bob')
-    runDaemon(False, False, 5, True, True, 'en', __version__,
+    runDaemon(False, 0, False, 1, False, False, False,
+              5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
@@ -385,7 +388,8 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     onionDomain = None
     i2pDomain = None
     print('Server running: Eve')
-    runDaemon(False, False, 5, True, True, 'en', __version__,
+    runDaemon(False, 0, False, 1, False, False, False,
+              5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
@@ -1766,9 +1770,9 @@ def testGetStatusNumber():
         prevStatusNumber = int(statusNumber)
 
 
-def testCommentJson() -> None:
-    print('testCommentJson')
-    filename = '/tmp/test.json'
+def testJsonString() -> None:
+    print('testJsonString')
+    filename = '.epicyon_tests_testJsonString.json'
     messageStr = "Crème brûlée यह एक परीक्षण ह"
     testJson = {
         "content": messageStr
@@ -1779,6 +1783,7 @@ def testCommentJson() -> None:
     assert receivedJson['content'] == messageStr
     encodedStr = json.dumps(testJson, ensure_ascii=False)
     assert messageStr in encodedStr
+    os.remove(filename)
 
 
 def testSaveLoadJson():
@@ -1787,7 +1792,7 @@ def testSaveLoadJson():
         "param1": 3,
         "param2": '"Crème brûlée यह एक परीक्षण ह"'
     }
-    testFilename = '/tmp/.epicyonTestSaveLoadJson.json'
+    testFilename = '.epicyon_tests_testSaveLoadJson.json'
     if os.path.isfile(testFilename):
         os.remove(testFilename)
     assert saveJson(testJson, testFilename)
@@ -2159,8 +2164,18 @@ def testReplaceEmailQuote():
     assert resultStr == expectedStr
 
 
+def testRemoveHtmlTag():
+    print('testRemoveHtmlTag')
+    testStr = "<p><img width=\"864\" height=\"486\" " + \
+        "src=\"https://somesiteorother.com/image.jpg\"></p>"
+    resultStr = removeHtmlTag(testStr, 'width')
+    assert resultStr == "<p><img height=\"486\" " + \
+        "src=\"https://somesiteorother.com/image.jpg\"></p>"
+
+
 def runAllTests():
     print('Running tests...')
+    testRemoveHtmlTag()
     testReplaceEmailQuote()
     testConstantTimeStringCheck()
     testTranslations()
@@ -2177,7 +2192,7 @@ def runAllTests():
     testRecentPostsCache()
     testTheme()
     testSaveLoadJson()
-    testCommentJson()
+    testJsonString()
     testGetStatusNumber()
     testAddEmoji()
     testActorParsing()

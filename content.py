@@ -14,6 +14,23 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def removeHtmlTag(htmlStr: str, tag: str) -> str:
+    """Removes a given tag from a html string
+    """
+    tagFound = True
+    while tagFound:
+        matchStr = ' ' + tag + '="'
+        if matchStr not in htmlStr:
+            tagFound = False
+            break
+        sections = htmlStr.split(matchStr, 1)
+        if '"' not in sections[1]:
+            tagFound = False
+            break
+        htmlStr = sections[0] + sections[1].split('"', 1)[1]
+    return htmlStr
+
+
 def removeQuotesWithinQuotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """
@@ -247,8 +264,10 @@ def addMusicTag(content: str, tag: str) -> str:
     """If a music link is found then ensure that the post is
     tagged appropriately
     """
+    if '#podcast' in content or '#documentary' in content:
+        return content
     if '#' not in tag:
-        tag = '#'+tag
+        tag = '#' + tag
     if tag in content:
         return content
     musicSites = ('soundcloud.com', 'bandcamp.com')

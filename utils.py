@@ -19,6 +19,60 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def createConfig(baseDir: str) -> None:
+    """Creates a configuration file
+    """
+    configFilename = baseDir + '/config.json'
+    if os.path.isfile(configFilename):
+        return
+    configJson = {
+    }
+    saveJson(configJson, configFilename)
+
+
+def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
+    """Sets a configuration value
+    """
+    createConfig(baseDir)
+    configFilename = baseDir + '/config.json'
+    configJson = {}
+    if os.path.isfile(configFilename):
+        configJson = loadJson(configFilename)
+    configJson[variableName] = variableValue
+    saveJson(configJson, configFilename)
+
+
+def getConfigParam(baseDir: str, variableName: str):
+    """Gets a configuration value
+    """
+    createConfig(baseDir)
+    configFilename = baseDir + '/config.json'
+    configJson = loadJson(configFilename)
+    if configJson:
+        if configJson.get(variableName):
+            return configJson[variableName]
+    return None
+
+
+def isSuspended(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is suspended
+    """
+    adminNickname = getConfigParam(baseDir, 'admin')
+    if not adminNickname:
+        return False
+    if nickname == adminNickname:
+        return False
+
+    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    if os.path.isfile(suspendedFilename):
+        with open(suspendedFilename, "r") as f:
+            lines = f.readlines()
+        for suspended in lines:
+            if suspended.strip('\n').strip('\r') == nickname:
+                return True
+    return False
+
+
 def getFollowersList(baseDir: str,
                      nickname: str, domain: str,
                      followFile='following.txt') -> []:
@@ -168,10 +222,14 @@ def loadJsonOnionify(filename: str, domain: str, onionDomain: str,
     return jsonObject
 
 
-def getStatusNumber() -> (str, str):
+def getStatusNumber(publishedStr=None) -> (str, str):
     """Returns the status number and published date
     """
-    currTime = datetime.datetime.utcnow()
+    if not publishedStr:
+        currTime = datetime.datetime.utcnow()
+    else:
+        currTime = \
+            datetime.datetime.strptime(publishedStr, '%Y-%m-%dT%H:%M:%SZ')
     daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
     # status is the number of seconds since epoch
     statusNumber = \
@@ -444,6 +502,70 @@ def followPerson(baseDir: str, nickname: str, domain: str,
     return True
 
 
+def votesOnNewswireItem(status: []) -> int:
+    """Returns the number of votes on a newswire item
+    """
+    totalVotes = 0
+    for line in status:
+        if 'vote:' in line:
+            totalVotes += 1
+    return totalVotes
+
+
+def locateNewsVotes(baseDir: str, domain: str,
+                    postUrl: str) -> str:
+    """Returns the votes filename for a news post
+    within the news user account
+    """
+    postUrl = \
+        postUrl.strip().replace('\n', '').replace('\r', '')
+
+    # if this post in the shared inbox?
+    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+
+    if postUrl.endswith('.json'):
+        postUrl = postUrl + '.votes'
+    else:
+        postUrl = postUrl + '.json.votes'
+
+    accountDir = baseDir + '/accounts/news@' + domain + '/'
+    postFilename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(postFilename):
+        return postFilename
+
+    return None
+
+
+def locateNewsArrival(baseDir: str, domain: str,
+                      postUrl: str) -> str:
+    """Returns the arrival time for a news post
+    within the news user account
+    """
+    postUrl = \
+        postUrl.strip().replace('\n', '').replace('\r', '')
+
+    # if this post in the shared inbox?
+    postUrl = removeIdEnding(postUrl.strip()).replace('/', '#')
+
+    if postUrl.endswith('.json'):
+        postUrl = postUrl + '.arrived'
+    else:
+        postUrl = postUrl + '.json.arrived'
+
+    accountDir = baseDir + '/accounts/news@' + domain + '/'
+    postFilename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(postFilename):
+        with open(postFilename, 'r') as arrivalFile:
+            arrival = arrivalFile.read()
+            if arrival:
+                arrivalDate = \
+                    datetime.datetime.strptime(arrival,
+                                               "%Y-%m-%dT%H:%M:%SZ")
+                return arrivalDate
+
+    return None
+
+
 def locatePost(baseDir: str, nickname: str, domain: str,
                postUrl: str, replies=False) -> str:
     """Returns the filename for the given status post url
@@ -466,6 +588,12 @@ def locatePost(baseDir: str, nickname: str, domain: str,
         postFilename = accountDir + boxName + '/' + postUrl
         if os.path.isfile(postFilename):
             return postFilename
+
+    # check news posts
+    accountDir = baseDir + '/accounts/news' + '@' + domain + '/'
+    postFilename = accountDir + 'outbox/' + postUrl
+    if os.path.isfile(postFilename):
+        return postFilename
 
     # is it in the announce cache?
     postFilename = baseDir + '/cache/announce/' + nickname + '/' + postUrl
@@ -581,6 +709,16 @@ def deletePost(baseDir: str, httpPrefix: str,
         if os.path.isfile(muteFilename):
             os.remove(muteFilename)
 
+        # remove any votes file
+        votesFilename = postFilename + '.votes'
+        if os.path.isfile(votesFilename):
+            os.remove(votesFilename)
+
+        # remove any arrived file
+        arrivedFilename = postFilename + '.arrived'
+        if os.path.isfile(arrivedFilename):
+            os.remove(arrivedFilename)
+
         # remove cached html version of the post
         cachedPostFilename = \
             getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
@@ -661,7 +799,7 @@ def deletePost(baseDir: str, httpPrefix: str,
 
 
 def validNickname(domain: str, nickname: str) -> bool:
-    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@')
+    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#')
     for c in forbiddenChars:
         if c in nickname:
             return False
@@ -671,7 +809,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'public', 'followers',
                      'channel', 'calendar',
                      'tlreplies', 'tlmedia', 'tlblogs',
-                     'tlevents',
+                     'tlevents', 'tlblogs',
                      'moderation', 'activity', 'undo',
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses',
@@ -916,6 +1054,12 @@ def isBlogPost(postJsonObject: {}) -> bool:
     if postJsonObject['object']['type'] != 'Article':
         return False
     return True
+
+
+def isNewsPost(postJsonObject: {}) -> bool:
+    """Is the given post a blog post?
+    """
+    return postJsonObject.get('news')
 
 
 def searchBoxPosts(baseDir: str, nickname: str, domain: str,

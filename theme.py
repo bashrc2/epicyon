@@ -254,6 +254,16 @@ def setThemeIndymedia(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "font-size-newswire": "18px",
+        "font-size-newswire-mobile": "48px",
+        "line-spacing-newswire": "100%",
+        "newswire-item-moderated-color": "white",
+        "newswire-date-moderated-color": "white",
+        "newswire-date-color": "white",
+        "newswire-voted-background-color": "black",
+        "column-left-image-width-mobile": "40vw",
+        "column-right-fg-color": "#ff9900",
+        "column-right-fg-color-voted-on": "red",
         "button-corner-radius": "5px",
         "timeline-border-radius": "5px",
         "focus-color": "blue",
@@ -996,7 +1006,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     pass
 
 
-def setTheme(baseDir: str, name: str) -> bool:
+def setTheme(baseDir: str, name: str, domain: str) -> bool:
     result = False
 
     prevThemeName = getTheme(baseDir)
@@ -1019,6 +1029,15 @@ def setTheme(baseDir: str, name: str) -> bool:
         result = True
 
     setCustomFont(baseDir)
+
+    # set the news avatar
+    newsAvatarThemeFilename = \
+        baseDir + '/img/icons/' + name + '/avatar_news.png'
+    if os.path.isfile(newsAvatarThemeFilename):
+        newsAvatarFilename = \
+            baseDir + '/accounts/news@' + domain + '/avatar.png'
+        copyfile(newsAvatarThemeFilename, newsAvatarFilename)
+
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
         enableGrayscale(baseDir)

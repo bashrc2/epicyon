@@ -297,5 +297,16 @@
     "Edit newswire": "编辑新闻专线",
     "Add RSS feed links below.": "在下面添加RSS feed链接。",
     "Newswire RSS Feed": "Newswire RSS提要",
-    "Nicknames whose blog entries appear on the newswire.": "博客条目出现在新闻专线上的昵称。"
+    "Nicknames whose blog entries appear on the newswire.": "博客条目出现在新闻专线上的昵称。",
+    "Posts to be approved": "职位待批准",
+    "Discuss": "讨论",
+    "Moderator Discussion": "主持人讨论",
+    "Vote": "投票",
+    "Remove Vote": "删除投票",
+    "This is a news instance": "这是一个新闻实例",
+    "News": "新闻",
+    "Read more...": "阅读更多...",
+    "Edit News Post": "编辑新闻帖子",
+    "A list of editor nicknames. One per line.": "编辑者昵称列表。 每行一个。",
+    "Site Editors": "网站编辑"
 }

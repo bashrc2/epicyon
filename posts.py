@@ -45,6 +45,10 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
+from utils import getConfigParam
+from utils import locateNewsVotes
+from utils import locateNewsArrival
+from utils import votesOnNewswireItem
 from media import attachMedia
 from media import replaceYouTube
 from content import removeHtml
@@ -53,16 +57,11 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeTextFormatting
 from auth import createBasicAuthHeader
-from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
 from git import convertPostToPatch
 from jsonldsig import jsonldSign
 from petnames import resolvePetnames
-# try:
-#     from BeautifulSoup import BeautifulSoup
-# except ImportError:
-#     from bs4 import BeautifulSoup
 
 
 def isModerator(baseDir: str, nickname: str) -> bool:
@@ -71,18 +70,52 @@ def isModerator(baseDir: str, nickname: str) -> bool:
     moderatorsFile = baseDir + '/accounts/moderators.txt'
 
     if not os.path.isfile(moderatorsFile):
-        if getConfigParam(baseDir, 'admin') == nickname:
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
             return True
         return False
 
     with open(moderatorsFile, "r") as f:
         lines = f.readlines()
         if len(lines) == 0:
-            if getConfigParam(baseDir, 'admin') == nickname:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
                 return True
         for moderator in lines:
             moderator = moderator.strip('\n').strip('\r')
             if moderator == nickname:
+                return True
+    return False
+
+
+def isEditor(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is an editor
+    """
+    editorsFile = baseDir + '/accounts/editors.txt'
+
+    if not os.path.isfile(editorsFile):
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
+            return True
+        return False
+
+    with open(editorsFile, "r") as f:
+        lines = f.readlines()
+        if len(lines) == 0:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
+                return True
+        for editor in lines:
+            editor = editor.strip('\n').strip('\r')
+            if editor == nickname:
                 return True
     return False
 
@@ -505,7 +538,8 @@ def deleteAllPosts(baseDir: str,
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
-       boxname != 'tlblogs' and boxname != 'tlevents':
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlevents':
         return
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     for deleteFilename in os.scandir(boxDir):
@@ -527,7 +561,8 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
     Returns the filename
     """
     if boxname != 'inbox' and boxname != 'outbox' and \
-       boxname != 'tlblogs' and boxname != 'tlevents' and \
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlevents' and \
        boxname != 'scheduled':
         return None
     originalDomain = domain
@@ -722,8 +757,11 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     """
     subject = addAutoCW(baseDir, nickname, domain, subject, content)
 
-    mentionedRecipients = \
-        getMentionedPeople(baseDir, httpPrefix, content, domain, False)
+    if nickname != 'news':
+        mentionedRecipients = \
+            getMentionedPeople(baseDir, httpPrefix, content, domain, False)
+    else:
+        mentionedRecipients = ''
 
     tags = []
     hashtagsDict = {}
@@ -734,18 +772,20 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 domain = domain + ':' + str(port)
 
     # add tags
-    content = \
-        addHtmlTags(baseDir, httpPrefix,
-                    nickname, domain, content,
-                    mentionedRecipients,
-                    hashtagsDict, True)
+    if nickname != 'news':
+        content = \
+            addHtmlTags(baseDir, httpPrefix,
+                        nickname, domain, content,
+                        mentionedRecipients,
+                        hashtagsDict, True)
 
     # replace emoji with unicode
     tags = []
     for tagName, tag in hashtagsDict.items():
         tags.append(tag)
     # get list of tags
-    content = replaceEmojiFromTags(content, tags, 'content')
+    if nickname != 'news':
+        content = replaceEmojiFromTags(content, tags, 'content')
     # remove replaced emoji
     hashtagsDictCopy = hashtagsDict.copy()
     for tagName, tag in hashtagsDictCopy.items():
@@ -1177,11 +1217,39 @@ def createBlogPost(baseDir: str,
                    inReplyTo=None, inReplyToAtomUri=None, subject=None,
                    schedulePost=False,
                    eventDate=None, eventTime=None, location=None) -> {}:
+    commentsEnabled = True
     blog = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
-                         clientToServer,
+                         clientToServer, commentsEnabled,
+                         attachImageFilename, mediaType,
+                         imageDescription, useBlurhash,
+                         inReplyTo, inReplyToAtomUri, subject,
+                         schedulePost,
+                         eventDate, eventTime, location)
+    blog['object']['type'] = 'Article'
+    return blog
+
+
+def createNewsPost(baseDir: str,
+                   domain: str, port: int, httpPrefix: str,
+                   content: str, followersOnly: bool, saveToFile: bool,
+                   attachImageFilename: str, mediaType: str,
+                   imageDescription: str, useBlurhash: bool,
+                   subject: str) -> {}:
+    clientToServer = False
+    inReplyTo = None
+    inReplyToAtomUri = None
+    schedulePost = False
+    eventDate = None
+    eventTime = None
+    location = None
+    blog = \
+        createPublicPost(baseDir,
+                         'news', domain, port, httpPrefix,
+                         content, followersOnly, saveToFile,
+                         clientToServer, False,
                          attachImageFilename, mediaType,
                          imageDescription, useBlurhash,
                          inReplyTo, inReplyToAtomUri, subject,
@@ -1688,8 +1756,8 @@ def sendPost(projectVersion: str,
         try:
             signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
-        except BaseException:
-            print('WARN: failed to JSON-LD sign post')
+        except Exception as e:
+            print('WARN: failed to JSON-LD sign post, ' + str(e))
             pass
 
     # convert json to string so that there are no
@@ -2027,8 +2095,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         try:
             signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
-        except BaseException:
-            print('WARN: failed to JSON-LD sign post')
+        except Exception as e:
+            print('WARN: failed to JSON-LD sign post, ' + str(e))
             pass
 
     # convert json to string so that there are no
@@ -2444,7 +2512,7 @@ def createInbox(recentPostsCache: {},
                             session, baseDir, 'inbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2453,7 +2521,7 @@ def createBookmarksTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlbookmarks',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, pageNumber)
+                            True, 0, False, 0, pageNumber)
 
 
 def createEventsTimeline(recentPostsCache: {},
@@ -2463,7 +2531,7 @@ def createEventsTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlevents',
                             nickname, domain,
                             port, httpPrefix, itemsPerPage, headerOnly,
-                            True, pageNumber)
+                            True, 0, False, 0, pageNumber)
 
 
 def createDMTimeline(recentPostsCache: {},
@@ -2473,7 +2541,7 @@ def createDMTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache,
                             session, baseDir, 'dm', nickname,
                             domain, port, httpPrefix, itemsPerPage,
-                            headerOnly, True, pageNumber)
+                            headerOnly, True, 0, False, 0, pageNumber)
 
 
 def createRepliesTimeline(recentPostsCache: {},
@@ -2483,7 +2551,7 @@ def createRepliesTimeline(recentPostsCache: {},
     return createBoxIndexed(recentPostsCache, session, baseDir, 'tlreplies',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2492,7 +2560,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlblogs', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
@@ -2501,7 +2569,19 @@ def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlmedia', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            pageNumber)
+                            0, False, 0, pageNumber)
+
+
+def createNewsTimeline(session, baseDir: str, nickname: str, domain: str,
+                       port: int, httpPrefix: str, itemsPerPage: int,
+                       headerOnly: bool, newswireVotesThreshold: int,
+                       positiveVoting: bool, votingTimeMins: int,
+                       pageNumber=None) -> {}:
+    return createBoxIndexed({}, session, baseDir, 'outbox', 'news',
+                            domain, port, httpPrefix,
+                            itemsPerPage, headerOnly, True,
+                            newswireVotesThreshold, positiveVoting,
+                            votingTimeMins, pageNumber)
 
 
 def createOutbox(session, baseDir: str, nickname: str, domain: str,
@@ -2511,7 +2591,7 @@ def createOutbox(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'outbox',
                             nickname, domain, port, httpPrefix,
                             itemsPerPage, headerOnly, authorized,
-                            pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createModeration(baseDir: str, nickname: str, domain: str, port: int,
@@ -2775,7 +2855,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
         elif boxname == 'tlreplies':
             if boxActor not in postStr:
                 return False
-        elif boxname == 'tlblogs':
+        elif boxname == 'tlblogs' or boxname == 'tlnews':
             if '"Create"' not in postStr:
                 return False
             if '"Article"' not in postStr:
@@ -2804,7 +2884,8 @@ def createBoxIndexed(recentPostsCache: {},
                      session, baseDir: str, boxname: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      itemsPerPage: int, headerOnly: bool, authorized: bool,
-                     pageNumber=None) -> {}:
+                     newswireVotesThreshold: int, positiveVoting: bool,
+                     votingTimeMins: int, pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if not authorized or not pageNumber:
@@ -2812,7 +2893,7 @@ def createBoxIndexed(recentPostsCache: {},
 
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
-       boxname != 'tlblogs' and \
+       boxname != 'tlblogs' and boxname != 'tlnews' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks' and \
        boxname != 'tlevents':
@@ -2872,6 +2953,44 @@ def createBoxIndexed(recentPostsCache: {},
 
                 if not postFilename:
                     break
+
+                # apply votes within this timeline
+                if newswireVotesThreshold > 0:
+                    # note that the presence of an arrival file also indicates
+                    # that this post is moderated
+                    arrivalDate = \
+                        locateNewsArrival(baseDir, domain, postFilename)
+                    if arrivalDate:
+                        # how long has elapsed since this post arrived?
+                        currDate = datetime.datetime.utcnow()
+                        timeDiffMins = \
+                            int((currDate - arrivalDate).total_seconds() / 60)
+                        # has the voting time elapsed?
+                        if timeDiffMins < votingTimeMins:
+                            # voting is still happening, so don't add this
+                            # post to the timeline
+                            continue
+                        # if there a votes file for this post?
+                        votesFilename = \
+                            locateNewsVotes(baseDir, domain, postFilename)
+                        if votesFilename:
+                            # load the votes file and count the votes
+                            votesJson = loadJson(votesFilename, 0, 2)
+                            if votesJson:
+                                if not positiveVoting:
+                                    if votesOnNewswireItem(votesJson) >= \
+                                       newswireVotesThreshold:
+                                        # Too many veto votes.
+                                        # Continue without incrementing
+                                        # the posts counter
+                                        continue
+                                else:
+                                    if votesOnNewswireItem < \
+                                       newswireVotesThreshold:
+                                        # Not enough votes.
+                                        # Continue without incrementing
+                                        # the posts counter
+                                        continue
 
                 # Skip through any posts previous to the current page
                 if postsCtr < int((pageNumber - 1) * itemsPerPage):

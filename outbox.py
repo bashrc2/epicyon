@@ -45,7 +45,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                         postLog: [], cachedWebfingers: {},
                         personCache: {}, allowDeletion: bool,
                         proxyType: str, version: str, debug: bool,
-                        YTReplacementDomain: str) -> bool:
+                        YTReplacementDomain: str,
+                        showPublishedDateOnly: bool) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery

@@ -297,5 +297,16 @@
     "Edit newswire": "नवांश संपादित करें",
     "Add RSS feed links below.": "नीचे आरएसएस फ़ीड लिंक जोड़ें।",
     "Newswire RSS Feed": "Newswire RSS फ़ीड",
-    "Nicknames whose blog entries appear on the newswire.": "उपनाम जिनकी ब्लॉग प्रविष्टियाँ न्यूज़वायर पर दिखाई देती हैं।"
+    "Nicknames whose blog entries appear on the newswire.": "उपनाम जिनकी ब्लॉग प्रविष्टियाँ न्यूज़वायर पर दिखाई देती हैं।",
+    "Posts to be approved": "स्वीकृत किए जाने वाले पद",
+    "Discuss": "चर्चा करें",
+    "Moderator Discussion": "मॉडरेटर चर्चा",
+    "Vote": "वोट",
+    "Remove Vote": "वोट हटा दें",
+    "This is a news instance": "यह एक समाचार का उदाहरण है",
+    "News": "समाचार",
+    "Read more...": "अधिक पढ़ें...",
+    "Edit News Post": "समाचार पोस्ट संपादित करें",
+    "A list of editor nicknames. One per line.": "संपादक उपनामों की एक सूची। प्रति पंक्ति एक।",
+    "Site Editors": "साइट संपादकों"
 }

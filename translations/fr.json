@@ -297,5 +297,16 @@
     "Edit newswire": "Modifier le fil d'actualité",
     "Add RSS feed links below.": "Ajoutez des liens de flux RSS ci-dessous.",
     "Newswire RSS Feed": "Flux RSS de Newswire",
-    "Nicknames whose blog entries appear on the newswire.": "Surnoms dont les entrées de blog apparaissent sur le fil de presse."
+    "Nicknames whose blog entries appear on the newswire.": "Surnoms dont les entrées de blog apparaissent sur le fil de presse.",
+    "Posts to be approved": "Postes à approuver",
+    "Discuss": "Discuter",
+    "Moderator Discussion": "Discussion du modérateur",
+    "Vote": "Voter",
+    "Remove Vote": "Supprimer le vote",
+    "This is a news instance": "Ceci est une instance d'actualité",
+    "News": "Nouvelles",
+    "Read more...": "Lire la suite...",
+    "Edit News Post": "Modifier l'article d'actualité",
+    "A list of editor nicknames. One per line.": "Une liste de surnoms d'éditeur. Un par ligne.",
+    "Site Editors": "Éditeurs du site"
 }

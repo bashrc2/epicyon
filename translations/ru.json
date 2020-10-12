@@ -297,5 +297,16 @@
     "Edit newswire": "Редактировать ленту новостей",
     "Add RSS feed links below.": "Добавьте ссылки на RSS-канал ниже.",
     "Newswire RSS Feed": "Лента новостей RSS",
-    "Nicknames whose blog entries appear on the newswire.": "Псевдонимы, чьи записи блога появляются в ленте новостей."
+    "Nicknames whose blog entries appear on the newswire.": "Псевдонимы, чьи записи блога появляются в ленте новостей.",
+    "Posts to be approved": "Посты на утверждение",
+    "Discuss": "Обсудить",
+    "Moderator Discussion": "Обсуждение модератором",
+    "Vote": "Голос",
+    "Remove Vote": "Удалить голос",
+    "This is a news instance": "Это новостной экземпляр",
+    "News": "Новости",
+    "Read more...": "Подробнее...",
+    "Edit News Post": "Редактировать новость",
+    "A list of editor nicknames. One per line.": "Список ников редакторов. По одному на строку.",
+    "Site Editors": "Редакторы сайта"
 }

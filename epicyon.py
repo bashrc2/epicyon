@@ -45,10 +45,10 @@ from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
 from tests import runAllTests
-from config import setConfigParam
-from config import getConfigParam
 from auth import storeBasicCredentials
 from auth import createPassword
+from utils import setConfigParam
+from utils import getConfigParam
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import followPerson
@@ -192,9 +192,19 @@ parser.add_argument("--noapproval", type=str2bool, nargs='?',
 parser.add_argument("--mediainstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Media Instance - favor media over text")
+parser.add_argument("--dateonly", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Only show the date at the bottom of posts")
 parser.add_argument("--blogsinstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Blogs Instance - favor blogs over microblogging")
+parser.add_argument("--newsinstance", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="News Instance - favor news over microblogging")
+parser.add_argument("--positivevoting", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="On newswire, whether moderators vote " +
+                    "positively for or veto against items")
 parser.add_argument("--debug", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show debug messages")
@@ -249,6 +259,13 @@ parser.add_argument('--archiveweeks', dest='archiveWeeks', type=str,
 parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,
                     default=None,
                     help='Maximum number of posts in in/outbox')
+parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
+                    default=1,
+                    help='Minimum number of votes to remove or add' +
+                    ' a newswire item')
+parser.add_argument('--votingtime', dest='votingtime', type=int,
+                    default=1440,
+                    help='Time to vote on newswire items in minutes')
 parser.add_argument('--message', dest='message', type=str,
                     default=None,
                     help='Message content')
@@ -626,6 +643,15 @@ if not args.mediainstance:
         args.mediainstance = mediaInstance
         if args.mediainstance:
             args.blogsinstance = False
+            args.newsinstance = False
+
+if not args.newsinstance:
+    newsInstance = getConfigParam(baseDir, 'newsInstance')
+    if newsInstance is not None:
+        args.newsinstance = newsInstance
+        if args.newsinstance:
+            args.blogsinstance = False
+            args.mediainstance = False
 
 if not args.blogsinstance:
     blogsInstance = getConfigParam(baseDir, 'blogsInstance')
@@ -633,6 +659,7 @@ if not args.blogsinstance:
         args.blogsinstance = blogsInstance
         if args.blogsinstance:
             args.mediainstance = False
+            args.newsinstance = False
 
 # set the instance title in config.json
 title = getConfigParam(baseDir, 'instanceTitle')
@@ -1885,6 +1912,19 @@ registration = getConfigParam(baseDir, 'registration')
 if not registration:
     registration = False
 
+minimumvotes = getConfigParam(baseDir, 'minvotes')
+if minimumvotes:
+    args.minimumvotes = int(minimumvotes)
+
+votingtime = getConfigParam(baseDir, 'votingtime')
+if votingtime:
+    args.votingtime = votingtime
+
+# only show the date at the bottom of posts
+dateonly = getConfigParam(baseDir, 'dateonly')
+if dateonly:
+    args.dateonly = dateonly
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -1894,11 +1934,16 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
-if setTheme(baseDir, themeName):
+if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.blogsinstance, args.mediainstance,
+    runDaemon(args.dateonly,
+              args.votingtime,
+              args.positivevoting,
+              args.minimumvotes,
+              args.newsinstance,
+              args.blogsinstance, args.mediainstance,
               args.maxRecentPosts,
               not args.nosharedinbox,
               registration, args.language, __version__,

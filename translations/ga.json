@@ -297,5 +297,16 @@
     "Edit newswire": "Cuir sreang nuachta in eagar",
     "Add RSS feed links below.": "Cuir naisc beatha RSS thíos.",
     "Newswire RSS Feed": "Newswire RSS Feed",
-    "Nicknames whose blog entries appear on the newswire.": "Leasainmneacha a bhfuil a n-iontrálacha blag le feiceáil ar an sreang nuachta."
+    "Nicknames whose blog entries appear on the newswire.": "Leasainmneacha a bhfuil a n-iontrálacha blag le feiceáil ar an sreang nuachta.",
+    "Posts to be approved": "Poist le ceadú",
+    "Discuss": "Pléigh",
+    "Moderator Discussion": "Plé Modhnóir",
+    "Vote": "Vóta",
+    "Remove Vote": "Bain Vóta",
+    "This is a news instance": "Is sampla nuachta é seo",
+    "News": "Nuacht",
+    "Read more...": "Leigh Nios mo...",
+    "Edit News Post": "Cuir News Post in eagar",
+    "A list of editor nicknames. One per line.": "Liosta leasainmneacha eagarthóra. Ceann in aghaidh na líne.",
+    "Site Editors": "Eagarthóirí Suímh"
 }

@@ -30,6 +30,7 @@ from utils import getProtocolPrefixes
 from utils import searchBoxPosts
 from utils import isEventPost
 from utils import isBlogPost
+from utils import isNewsPost
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -41,6 +42,8 @@ from utils import getDisplayName
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import loadJson
+from utils import getConfigParam
+from utils import votesOnNewswireItem
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import isDM
@@ -49,6 +52,7 @@ from posts import getUserUrl
 from posts import parseUserFeed
 from posts import populateRepliesJson
 from posts import isModerator
+from posts import isEditor
 from posts import downloadAnnounce
 from session import getJson
 from auth import createPassword
@@ -67,7 +71,6 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeLongWords
 from content import removeHtml
-from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
 from cache import storePersonInCache
@@ -707,7 +710,8 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                       postsPerPage: int,
                       session, wfRequest: {}, personCache: {},
                       httpPrefix: str, projectVersion: str,
-                      YTReplacementDomain: str) -> str:
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
     """Show a page containing search results for a hashtag
     """
     if hashtag.startswith('#'):
@@ -774,7 +778,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
-        iconsDir + '/rss.png" /></a></center>'
+        iconsDir + '/logorss.png" /></a></center>'
 
     if startIndex > 0:
         # previous page link
@@ -827,6 +831,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                                      httpPrefix, projectVersion,
                                      'search',
                                      YTReplacementDomain,
+                                     showPublishedDateOnly,
                                      showIndividualPostIcons,
                                      showIndividualPostIcons,
                                      False, False, False)
@@ -1113,7 +1118,8 @@ def htmlHistorySearch(translate: {}, baseDir: str,
                       wfRequest,
                       personCache: {},
                       port: int,
-                      YTReplacementDomain: str) -> str:
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith('!'):
@@ -1185,6 +1191,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
                                  httpPrefix, projectVersion,
                                  'search',
                                  YTReplacementDomain,
+                                 showPublishedDateOnly,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -1221,7 +1228,7 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
         return ''
 
     # is the user a moderator?
-    if not isModerator(baseDir, nickname):
+    if not isEditor(baseDir, nickname):
         return ''
 
     cssFilename = baseDir + '/epicyon-links.css'
@@ -1265,7 +1272,7 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     editLinksForm += \
-        '  <textarea id="message" name="editedLinks" style="height:500px">' + \
+        '  <textarea id="message" name="editedLinks" style="height:50vh">' + \
         linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
@@ -1326,15 +1333,9 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         with open(newswireFilename, 'r') as fp:
             newswireStr = fp.read()
 
-    # get the list of handles who are trusted to post to the newswire
-    newswireTrusted = ''
-    newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
-    if os.path.isfile(newswireTrustedFilename):
-        with open(newswireTrustedFilename, "r") as trustFile:
-            newswireTrusted = trustFile.read()
-
     editNewswireForm += \
         '<div class="container">'
+
     editNewswireForm += \
         '  ' + \
         translate['Add RSS feed links below.'] + \
@@ -1344,18 +1345,87 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         'style="height:500px">' + newswireStr + '</textarea>'
 
     editNewswireForm += \
-        '  ' + \
-        translate['Nicknames whose blog entries appear on the newswire.'] + \
-        '<br>'
-    editNewswireForm += \
-        '  <textarea id="message" name="trustedNewswire" ' + \
-        'style="height:500px">' + newswireTrusted + '</textarea>'
-
-    editNewswireForm += \
         '</div>'
 
     editNewswireForm += htmlFooter()
     return editNewswireForm
+
+
+def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
+                     domain: str, port: int,
+                     httpPrefix: str, postUrl: str) -> str:
+    """Edits a news post
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    # is the user an editor?
+    if not isEditor(baseDir, nickname):
+        return ''
+
+    postUrl = postUrl.replace('/', '#')
+    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    if not postFilename:
+        return ''
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+    with open(cssFilename, 'r') as cssFile:
+        editCSS = cssFile.read()
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editNewsPostForm = htmlHeader(cssFilename, editCSS)
+    editNewsPostForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'
+    editNewsPostForm += \
+        '  <div class="vertical-center">\n'
+    editNewsPostForm += \
+        '    <p class="new-post-text">' + translate['Edit News Post'] + '</p>'
+    editNewsPostForm += \
+        '    <div class="container">\n'
+    editNewsPostForm += \
+        '      <a href="' + pathOriginal + '/tlnews">' + \
+        '<button class="cancelbtn">' + translate['Go Back'] + '</button></a>\n'
+    editNewsPostForm += \
+        '      <input type="submit" name="submitEditedNewsPost" value="' + \
+        translate['Submit'] + '">\n'
+    editNewsPostForm += \
+        '    </div>\n'
+
+    editNewsPostForm += \
+        '<div class="container">'
+
+    editNewsPostForm += \
+        '  <input type="hidden" name="newsPostUrl" value="' + \
+        postUrl + '">\n'
+
+    newsPostTitle = postJsonObject['object']['summary']
+    editNewsPostForm += \
+        '  <input type="text" name="newsPostTitle" value="' + \
+        newsPostTitle + '"><br>\n'
+
+    newsPostContent = postJsonObject['object']['content']
+    editNewsPostForm += \
+        '  <textarea id="message" name="editedNewsPost" ' + \
+        'style="height:600px">' + newsPostContent + '</textarea>'
+
+    editNewsPostForm += \
+        '</div>'
+
+    editNewsPostForm += htmlFooter()
+    return editNewsPostForm
 
 
 def htmlEditProfile(translate: {}, baseDir: str, path: str,
@@ -1388,6 +1458,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     hideLikeButton = ''
     mediaInstanceStr = ''
     blogsInstanceStr = ''
+    newsInstanceStr = ''
     displayNickname = nickname
     bioStr = ''
     donateUrl = ''
@@ -1446,12 +1517,21 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         if mediaInstance is True:
             mediaInstanceStr = 'checked'
             blogsInstanceStr = ''
+            newsInstanceStr = ''
+
+    newsInstance = getConfigParam(baseDir, "newsInstance")
+    if newsInstance:
+        if newsInstance is True:
+            newsInstanceStr = 'checked'
+            blogsInstanceStr = ''
+            mediaInstanceStr = ''
 
     blogsInstance = getConfigParam(baseDir, "blogsInstance")
     if blogsInstance:
         if blogsInstance is True:
             blogsInstanceStr = 'checked'
             mediaInstanceStr = ''
+            newsInstanceStr = ''
 
     filterStr = ''
     filterFilename = \
@@ -1545,104 +1625,119 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     moderatorsStr = ''
     themesDropdown = ''
     adminNickname = getConfigParam(baseDir, 'admin')
-    if path.startswith('/users/' + adminNickname + '/'):
-        instanceDescription = \
-            getConfigParam(baseDir, 'instanceDescription')
-        instanceDescriptionShort = \
-            getConfigParam(baseDir, 'instanceDescriptionShort')
-        instanceTitle = \
-            getConfigParam(baseDir, 'instanceTitle')
-        instanceStr = '<div class="container">'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Title'] + '</label>'
-        if instanceTitle:
+    if adminNickname:
+        if path.startswith('/users/' + adminNickname + '/'):
+            instanceDescription = \
+                getConfigParam(baseDir, 'instanceDescription')
+            instanceDescriptionShort = \
+                getConfigParam(baseDir, 'instanceDescriptionShort')
+            instanceTitle = \
+                getConfigParam(baseDir, 'instanceTitle')
+            instanceStr = '<div class="container">'
             instanceStr += \
-                '  <input type="text" name="instanceTitle" value="' + \
-                instanceTitle + '"><br>'
-        else:
+                '  <label class="labels">' + \
+                translate['Instance Title'] + '</label>'
+            if instanceTitle:
+                instanceStr += \
+                    '  <input type="text" name="instanceTitle" value="' + \
+                    instanceTitle + '"><br>'
+            else:
+                instanceStr += \
+                    '  <input type="text" name="instanceTitle" value=""><br>'
             instanceStr += \
-                '  <input type="text" name="instanceTitle" value=""><br>'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Short Description'] + '</label>'
-        if instanceDescriptionShort:
+                '  <label class="labels">' + \
+                translate['Instance Short Description'] + '</label>'
+            if instanceDescriptionShort:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="instanceDescriptionShort" value="' + \
+                    instanceDescriptionShort + '"><br>'
+            else:
+                instanceStr += \
+                    '  <input type="text" ' + \
+                    'name="instanceDescriptionShort" value=""><br>'
             instanceStr += \
-                '  <input type="text" ' + \
-                'name="instanceDescriptionShort" value="' + \
-                instanceDescriptionShort + '"><br>'
-        else:
+                '  <label class="labels">' + \
+                translate['Instance Description'] + '</label>'
+            if instanceDescription:
+                instanceStr += \
+                    '  <textarea id="message" name="instanceDescription" ' + \
+                    'style="height:200px">' + \
+                    instanceDescription + '</textarea>'
+            else:
+                instanceStr += \
+                    '  <textarea id="message" name="instanceDescription" ' + \
+                    'style="height:200px"></textarea>'
             instanceStr += \
-                '  <input type="text" ' + \
-                'name="instanceDescriptionShort" value=""><br>'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Description'] + '</label>'
-        if instanceDescription:
+                '  <label class="labels">' + \
+                translate['Instance Logo'] + '</label>'
             instanceStr += \
-                '  <textarea id="message" name="instanceDescription" ' + \
-                'style="height:200px">' + \
-                instanceDescription + '</textarea>'
-        else:
-            instanceStr += \
-                '  <textarea id="message" name="instanceDescription" ' + \
-                'style="height:200px"></textarea>'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Instance Logo'] + '</label>'
-        instanceStr += \
-            '  <input type="file" id="instanceLogo" name="instanceLogo"'
-        instanceStr += '      accept="' + imageFormats + '">'
-        instanceStr += '</div>'
+                '  <input type="file" id="instanceLogo" name="instanceLogo"'
+            instanceStr += '      accept="' + imageFormats + '">'
+            instanceStr += '</div>'
 
-        moderators = ''
-        moderatorsFile = baseDir + '/accounts/moderators.txt'
-        if os.path.isfile(moderatorsFile):
-            with open(moderatorsFile, "r") as f:
-                moderators = f.read()
-        moderatorsStr = '<div class="container">'
-        moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
-        moderatorsStr += '  ' + \
-            translate['A list of moderator nicknames. One per line.']
-        moderatorsStr += \
-            '  <textarea id="message" name="moderators" placeholder="' + \
-            translate['List of moderator nicknames'] + \
-            '..." style="height:200px">' + moderators + '</textarea>'
-        moderatorsStr += '</div>'
+            moderators = ''
+            moderatorsFile = baseDir + '/accounts/moderators.txt'
+            if os.path.isfile(moderatorsFile):
+                with open(moderatorsFile, "r") as f:
+                    moderators = f.read()
+            moderatorsStr = '<div class="container">'
+            moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
+            moderatorsStr += '  ' + \
+                translate['A list of moderator nicknames. One per line.']
+            moderatorsStr += \
+                '  <textarea id="message" name="moderators" placeholder="' + \
+                translate['List of moderator nicknames'] + \
+                '..." style="height:200px">' + moderators + '</textarea>'
+            moderatorsStr += '</div>'
 
-        themes = getThemesList()
-        themesDropdown = '<div class="container">'
-        themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
-        grayscaleFilename = \
-            baseDir + '/accounts/.grayscale'
-        grayscale = ''
-        if os.path.isfile(grayscaleFilename):
-            grayscale = 'checked'
-        themesDropdown += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="grayscale" ' + grayscale + \
-            '> ' + translate['Grayscale'] + '<br>'
-        themesDropdown += '  <select id="themeDropdown" ' + \
-            'name="themeDropdown" class="theme">'
-        for themeName in themes:
-            themesDropdown += '    <option value="' + \
-                themeName.lower() + '">' + \
-                translate[themeName] + '</option>'
-        themesDropdown += '  </select><br>'
-        if os.path.isfile(baseDir + '/fonts/custom.woff') or \
-           os.path.isfile(baseDir + '/fonts/custom.woff2') or \
-           os.path.isfile(baseDir + '/fonts/custom.otf') or \
-           os.path.isfile(baseDir + '/fonts/custom.ttf'):
+            editors = ''
+            editorsFile = baseDir + '/accounts/editors.txt'
+            if os.path.isfile(editorsFile):
+                with open(editorsFile, "r") as f:
+                    editors = f.read()
+            editorsStr = '<div class="container">'
+            editorsStr += '  <b>' + translate['Site Editors'] + '</b><br>'
+            editorsStr += '  ' + \
+                translate['A list of editor nicknames. One per line.']
+            editorsStr += \
+                '  <textarea id="message" name="editors" placeholder="" ' + \
+                'style="height:200px">' + editors + '</textarea>'
+            editorsStr += '</div>'
+
+            themes = getThemesList()
+            themesDropdown = '<div class="container">'
+            themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
+            grayscaleFilename = \
+                baseDir + '/accounts/.grayscale'
+            grayscale = ''
+            if os.path.isfile(grayscaleFilename):
+                grayscale = 'checked'
             themesDropdown += \
                 '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="removeCustomFont"> ' + \
-                translate['Remove the custom font'] + '<br>'
-        themesDropdown += '</div>'
-        themeName = getConfigParam(baseDir, 'theme')
-        themesDropdown = \
-            themesDropdown.replace('<option value="' + themeName + '">',
-                                   '<option value="' + themeName +
-                                   '" selected>')
+                'name="grayscale" ' + grayscale + \
+                '> ' + translate['Grayscale'] + '<br>'
+            themesDropdown += '  <select id="themeDropdown" ' + \
+                'name="themeDropdown" class="theme">'
+            for themeName in themes:
+                themesDropdown += '    <option value="' + \
+                    themeName.lower() + '">' + \
+                    translate[themeName] + '</option>'
+            themesDropdown += '  </select><br>'
+            if os.path.isfile(baseDir + '/fonts/custom.woff') or \
+               os.path.isfile(baseDir + '/fonts/custom.woff2') or \
+               os.path.isfile(baseDir + '/fonts/custom.otf') or \
+               os.path.isfile(baseDir + '/fonts/custom.ttf'):
+                themesDropdown += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="removeCustomFont"> ' + \
+                    translate['Remove the custom font'] + '<br>'
+            themesDropdown += '</div>'
+            themeName = getConfigParam(baseDir, 'theme')
+            themesDropdown = \
+                themesDropdown.replace('<option value="' + themeName + '">',
+                                       '<option value="' + themeName +
+                                       '" selected>')
 
     editProfileForm = htmlHeader(cssFilename, editProfileCSS)
     editProfileForm += \
@@ -1795,6 +1890,10 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
             translate['This is a blogging instance'] + '<br>\n'
+        editProfileForm += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="newsInstance" ' + newsInstanceStr + '> ' + \
+            translate['This is a news instance'] + '<br>\n'
         editProfileForm += '    </div>\n'
 
     editProfileForm += '    <div class="container">\n'
@@ -1915,7 +2014,8 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         'teams with an appropriate combination of skills.'
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
-    editProfileForm += skillsStr + themesDropdown + moderatorsStr
+    editProfileForm += skillsStr + themesDropdown
+    editProfileForm += moderatorsStr + editorsStr
     editProfileForm += '    </div>\n' + instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
@@ -2843,7 +2943,8 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                      nickname: str, domain: str, port: int,
                      session, wfRequest: {}, personCache: {},
                      projectVersion: str,
-                     YTReplacementDomain: str) -> str:
+                     YTReplacementDomain: str,
+                     showPublishedDateOnly: bool) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -2860,7 +2961,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                           str(currPage),
                           httpPrefix,
                           10, 'outbox',
-                          authorized)
+                          authorized, 0, False, 0)
         if not outboxFeed:
             break
         if len(outboxFeed['orderedItems']) == 0:
@@ -2877,6 +2978,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         showPublishedDateOnly,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr
@@ -3129,6 +3231,7 @@ def htmlProfile(defaultTimeline: str,
                 profileJson: {}, selected: str,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
+                showPublishedDateOnly: bool,
                 extraJson=None,
                 pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -3389,7 +3492,8 @@ def htmlProfile(defaultTimeline: str,
                                  nickname, domain, port,
                                  session, wfRequest, personCache,
                                  projectVersion,
-                                 YTReplacementDomain) + licenseStr
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly) + licenseStr
         if selected == 'following':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -4174,6 +4278,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          allowDeletion: bool,
                          httpPrefix: str, projectVersion: str,
                          boxName: str, YTReplacementDomain: str,
+                         showPublishedDateOnly: bool,
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -4509,21 +4614,37 @@ def individualPostAsHtml(allowDownloads: bool,
             print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
 
     editStr = ''
-    if fullDomain + '/users/' + nickname in postJsonObject['actor']:
+    if (postJsonObject['actor'].endswith(fullDomain + '/users/' + nickname) or
+        (isEditor(baseDir, nickname) and
+         postJsonObject['actor'].endswith(fullDomain + '/users/news'))):
         if '/statuses/' in postJsonObject['object']['id']:
             if isBlogPost(postJsonObject):
                 blogPostId = postJsonObject['object']['id']
-                editStr += \
-                    '        ' + \
-                    '<a class="imageAnchor" href="/users/' + nickname + \
-                    '/tlblogs?editblogpost=' + \
-                    blogPostId.split('/statuses/')[1] + \
-                    '?actor=' + actorNickname + \
-                    '" title="' + translate['Edit blog post'] + '">' + \
-                    '<img loading="lazy" title="' + \
-                    translate['Edit blog post'] + '" alt="' + \
-                    translate['Edit blog post'] + \
-                    ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                if not isNewsPost(postJsonObject):
+                    editStr += \
+                        '        ' + \
+                        '<a class="imageAnchor" href="/users/' + \
+                        nickname + \
+                        '/tlblogs?editblogpost=' + \
+                        blogPostId.split('/statuses/')[1] + \
+                        '?actor=' + actorNickname + \
+                        '" title="' + translate['Edit blog post'] + '">' + \
+                        '<img loading="lazy" title="' + \
+                        translate['Edit blog post'] + '" alt="' + \
+                        translate['Edit blog post'] + \
+                        ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                else:
+                    editStr += \
+                        '        ' + \
+                        '<a class="imageAnchor" href="/users/' + \
+                        nickname + '/editnewspost=' + \
+                        blogPostId.split('/statuses/')[1] + \
+                        '?actor=' + actorNickname + \
+                        '" title="' + translate['Edit blog post'] + '">' + \
+                        '<img loading="lazy" title="' + \
+                        translate['Edit blog post'] + '" alt="' + \
+                        translate['Edit blog post'] + \
+                        ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
             elif isEvent:
                 eventPostId = postJsonObject['object']['id']
                 editStr += \
@@ -4683,15 +4804,18 @@ def individualPostAsHtml(allowDownloads: bool,
         ('/' + fullDomain + '/' in postActor and
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
-            deleteStr = \
-                '        <a class="imageAnchor" href="/users/' + nickname + \
-                '?delete=' + messageId + pageNumberParam + \
-                '" title="' + translate['Delete this post'] + '">\n'
-            deleteStr += \
-                '          ' + \
-                '<img loading="lazy" alt="' + translate['Delete this post'] + \
-                ' |" title="' + translate['Delete this post'] + \
-                '" src="/' + iconsDir + '/delete.png"/></a>\n'
+            if not isNewsPost(postJsonObject):
+                deleteStr = \
+                    '        <a class="imageAnchor" href="/users/' + \
+                    nickname + \
+                    '?delete=' + messageId + pageNumberParam + \
+                    '" title="' + translate['Delete this post'] + '">\n'
+                deleteStr += \
+                    '          ' + \
+                    '<img loading="lazy" alt="' + \
+                    translate['Delete this post'] + \
+                    ' |" title="' + translate['Delete this post'] + \
+                    '" src="/' + iconsDir + '/delete.png"/></a>\n'
     else:
         if not isMuted:
             muteStr = \
@@ -5039,7 +5163,10 @@ def individualPostAsHtml(allowDownloads: bool,
             publishedStr = \
                 publishedStr.replace('T', ' ').split('.')[0]
             datetimeObject = parse(publishedStr)
-        publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+        if not showPublishedDateOnly:
+            publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+        else:
+            publishedStr = datetimeObject.strftime("%a %b %d")
 
     # benchmark 15
     if not allowDownloads:
@@ -5059,8 +5186,13 @@ def individualPostAsHtml(allowDownloads: bool,
        domain + ':' + str(port) + '/users/' in publishedLink:
         publishedLink = '/users/' + publishedLink.split('/users/')[1]
 
-    footerStr = '<a href="' + publishedLink + \
-        '" class="' + timeClass + '">' + publishedStr + '</a>\n'
+    if not isNewsPost(postJsonObject):
+        footerStr = '<a href="' + publishedLink + \
+            '" class="' + timeClass + '">' + publishedStr + '</a>\n'
+    else:
+        footerStr = '<a href="' + \
+            publishedLink.replace('/news/', '/news/statuses/') + \
+            '" class="' + timeClass + '">' + publishedStr + '</a>\n'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
@@ -5071,8 +5203,14 @@ def individualPostAsHtml(allowDownloads: bool,
         footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
             deleteStr + muteStr + editStr
-        footerStr += '        <a href="' + publishedLink + '" class="' + \
-            timeClass + '">' + publishedStr + '</a>\n'
+        if not isNewsPost(postJsonObject):
+            footerStr += '        <a href="' + publishedLink + '" class="' + \
+                timeClass + '">' + publishedStr + '</a>\n'
+        else:
+            footerStr += '        <a href="' + \
+                publishedLink.replace('/news/', '/news/statuses/') + \
+                '" class="' + \
+                timeClass + '">' + publishedStr + '</a>\n'
         footerStr += '      </div>\n'
 
     postIsSensitive = False
@@ -5134,7 +5272,7 @@ def individualPostAsHtml(allowDownloads: bool,
         contentStr = ''
         if postJsonObject['object'].get('summary'):
             contentStr += \
-                '<b>' + postJsonObject['object']['summary'] + '</b>\n '
+                '<b>' + str(postJsonObject['object']['summary']) + '</b>\n '
             if isModerationPost:
                 containerClass = 'container report'
         # get the content warning text
@@ -5238,12 +5376,13 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     """
     if not highlight:
         return label
-    return '*' + label + '*'
+    return '*' + str(label) + '*'
 
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsDir: str, moderator: bool) -> str:
+                         iconsDir: str, editor: bool,
+                         showBackButton: bool, timelinePath: str) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -5276,10 +5415,17 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             nickname + '/left_col_image.png" />\n' + \
             '      </center>\n'
 
+    if showBackButton:
+        htmlStr += \
+            '      <div>' + \
+            '      <a href="' + timelinePath + '">' + \
+            '<button class="cancelbtn">' + \
+            translate['Go Back'] + '</button></a>\n'
+
     if editImageClass == 'leftColEdit':
         htmlStr += '\n      <center>\n'
 
-    if moderator:
+    if editor:
         # show the edit icon
         htmlStr += \
             '      <a href="' + \
@@ -5299,7 +5445,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['RSS feed for this site'] + \
         '" title="' + translate['RSS feed for this site'] + \
-        '" src="/' + iconsDir + '/rss.png" /></a>\n'
+        '" src="/' + iconsDir + '/logorss.png" /></a>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
@@ -5353,33 +5499,92 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlNewswire(newswire: str) -> str:
+def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
+    """Returns an indicator of the number of votes on a newswire item
+    """
+    if totalVotes <= 0:
+        return ''
+    totalVotesStr = ' '
+    for v in range(totalVotes):
+        if positiveVoting:
+            totalVotesStr += '✓'
+        else:
+            totalVotesStr += '✗'
+    return totalVotesStr
+
+
+def htmlNewswire(newswire: str, nickname: str, moderator: bool,
+                 translate: {}, positiveVoting: bool, iconsDir: str) -> str:
     """Converts a newswire dict into html
     """
     htmlStr = ''
     for dateStr, item in newswire.items():
-        # if the item is to be moderated then show it in a different style
-        shown = False
-        if len(item) > 2:
-            if item[2].startswith('moderate'):
-                moderationUrl = '/moderate?' + item[1]
-                htmlStr += '<p class="newswireItemModerate">' + \
-                    '<a href="' + moderationUrl + '">' + item[0] + '</a>'
-                shown = True
+        publishedDate = \
+            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S+00:00")
+        dateShown = publishedDate.strftime("%Y-%m-%d")
 
-        if not shown:
-            # unmoderated item
-            htmlStr += '<p class="newswireItem">' + \
-                '<a href="' + item[1] + '">' + item[0] + '</a>'
-        htmlStr += ' <label class="newswireDate">'
-        htmlStr += dateStr.replace('+00:00', '') + '</label></p>'
+        dateStrLink = dateStr.replace('T', ' ')
+        dateStrLink = dateStrLink.replace('Z', '')
+        moderatedItem = item[5]
+        if moderatedItem and 'vote:' + nickname in item[2]:
+            totalVotesStr = ''
+            totalVotes = 0
+            if moderator:
+                totalVotes = votesOnNewswireItem(item[2])
+                totalVotesStr = \
+                    votesIndicator(totalVotes, positiveVoting)
+
+            htmlStr += '<p class="newswireItemVotedOn">' + \
+                '<a href="' + item[1] + '">' + \
+                '<span class="newswireItemVotedOn">' + item[0] + \
+                '</span></a>' + totalVotesStr
+            if moderator:
+                htmlStr += \
+                    ' ' + dateShown + '<a href="/users/' + nickname + \
+                    '/newswireunvote=' + dateStrLink + '" ' + \
+                    'title="' + translate['Remove Vote'] + '">'
+                htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
+                    iconsDir + '/vote.png" /></a></p>'
+            else:
+                htmlStr += ' <span class="newswireDateVotedOn">'
+                htmlStr += dateShown + '</span></p>'
+        else:
+            totalVotesStr = ''
+            totalVotes = 0
+            if moderator:
+                if moderatedItem:
+                    totalVotes = votesOnNewswireItem(item[2])
+                    # show a number of ticks or crosses for how many
+                    # votes for or against
+                    totalVotesStr = \
+                        votesIndicator(totalVotes, positiveVoting)
+
+            if moderator and moderatedItem:
+                htmlStr += '<p class="newswireItemModerated">' + \
+                    '<a href="' + item[1] + '">' + \
+                    item[0] + '</a>' + totalVotesStr
+                htmlStr += ' ' + dateShown
+                htmlStr += '<a href="/users/' + nickname + \
+                    '/newswirevote=' + dateStrLink + '" ' + \
+                    'title="' + translate['Vote'] + '">'
+                htmlStr += '<img class="voteicon" src="/' + \
+                    iconsDir + '/vote.png" /></a>'
+                htmlStr += '</p>'
+            else:
+                htmlStr += '<p class="newswireItem">' + \
+                    '<a href="' + item[1] + '">' + \
+                    item[0] + '</a>' + \
+                    totalVotesStr
+                htmlStr += ' <span class="newswireDate">'
+                htmlStr += dateShown + '</span></p>'
     return htmlStr
 
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
-                          iconsDir: str, moderator: bool,
-                          newswire: {}) -> str:
+                          iconsDir: str, moderator: bool, editor: bool,
+                          newswire: {}, positiveVoting: bool,
+                          showBackButton: bool, timelinePath: str) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5416,16 +5621,33 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
 
-    if moderator:
-        # show the edit icon
+    if showBackButton:
         htmlStr += \
-            '        <a href="' + \
-            '/users/' + nickname + '/editnewswire">' + \
-            '<img class="' + editImageClass + \
-            '" loading="lazy" alt="' + \
-            translate['Edit newswire'] + '" title="' + \
-            translate['Edit newswire'] + '" src="/' + \
-            iconsDir + '/edit.png" /></a>\n'
+            '      <a href="' + timelinePath + '">' + \
+            '<button class="cancelbtn">' + \
+            translate['Go Back'] + '</button></a>\n'
+
+    if editor:
+        if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
+            # show the edit icon highlighted
+            htmlStr += \
+                '        <a href="' + \
+                '/users/' + nickname + '/editnewswire">' + \
+                '<img class="' + editImageClass + \
+                '" loading="lazy" alt="' + \
+                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + '" src="/' + \
+                iconsDir + '/edit_notify.png" /></a>\n'
+        else:
+            # show the edit icon
+            htmlStr += \
+                '        <a href="' + \
+                '/users/' + nickname + '/editnewswire">' + \
+                '<img class="' + editImageClass + \
+                '" loading="lazy" alt="' + \
+                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + '" src="/' + \
+                iconsDir + '/edit.png" /></a>\n'
 
     htmlStr += \
         '        <a href="/newswire.xml">' + \
@@ -5433,14 +5655,97 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
-        iconsDir + '/rss.png" /></a>\n'
+        iconsDir + '/logorss.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
     else:
         htmlStr += '      <br>\n'
 
-    htmlStr += htmlNewswire(newswire)
+    htmlStr += htmlNewswire(newswire, nickname, moderator, translate,
+                            positiveVoting, iconsDir)
+    return htmlStr
+
+
+def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
+                    httpPrefix: str, translate,
+                    timelinePath: str) -> str:
+    """Show the left column links within mobile view
+    """
+    htmlStr = ''
+
+    # the css filename
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    profileStyle = None
+    with open(cssFilename, 'r') as cssFile:
+        # load css
+        profileStyle = \
+            cssFile.read()
+        # replace any https within the css with whatever prefix is needed
+        if httpPrefix != 'https':
+            profileStyle = \
+                profileStyle.replace('https://', httpPrefix + '://')
+
+    iconsDir = getIconsDir(baseDir)
+
+    # is the user a site editor?
+    editor = isEditor(baseDir, nickname)
+
+    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr += \
+        getLeftColumnContent(baseDir, nickname, domainFull,
+                             httpPrefix, translate,
+                             iconsDir, editor,
+                             True, timelinePath)
+    htmlStr += '</div>\n' + htmlFooter()
+    return htmlStr
+
+
+def htmlNewswireMobile(baseDir: str, nickname: str,
+                       domain: str, domainFull: str,
+                       httpPrefix: str, translate: {},
+                       newswire: {},
+                       positiveVoting: bool,
+                       timelinePath: str) -> str:
+    """Shows the mobile version of the newswire right column
+    """
+    htmlStr = ''
+
+    # the css filename
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    profileStyle = None
+    with open(cssFilename, 'r') as cssFile:
+        # load css
+        profileStyle = \
+            cssFile.read()
+        # replace any https within the css with whatever prefix is needed
+        if httpPrefix != 'https':
+            profileStyle = \
+                profileStyle.replace('https://',
+                                     httpPrefix + '://')
+
+    iconsDir = getIconsDir(baseDir)
+
+    # is the user a moderator?
+    moderator = isModerator(baseDir, nickname)
+
+    # is the user a site editor?
+    editor = isEditor(baseDir, nickname)
+
+    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr += \
+        getRightColumnContent(baseDir, nickname, domainFull,
+                              httpPrefix, translate,
+                              iconsDir, moderator, editor,
+                              newswire, positiveVoting,
+                              True, timelinePath)
+    htmlStr += htmlFooter()
     return htmlStr
 
 
@@ -5455,7 +5760,10 @@ def htmlTimeline(defaultTimeline: str,
                  manuallyApproveFollowers: bool,
                  minimal: bool,
                  YTReplacementDomain: str,
-                 newswire: {}) -> str:
+                 showPublishedDateOnly: bool,
+                 newswire: {}, moderator: bool,
+                 editor: bool,
+                 positiveVoting: bool) -> str:
     """Show the timeline as html
     """
     timelineStartTime = time.time()
@@ -5551,7 +5859,12 @@ def htmlTimeline(defaultTimeline: str,
                                      httpPrefix + '://')
 
     # is the user a moderator?
-    moderator = isModerator(baseDir, nickname)
+    if not moderator:
+        moderator = isModerator(baseDir, nickname)
+
+    # is the user a site editor?
+    if not editor:
+        editor = isEditor(baseDir, nickname)
 
     # benchmark 2
     timeDiff = int((time.time() - timelineStartTime) * 1000)
@@ -5561,6 +5874,7 @@ def htmlTimeline(defaultTimeline: str,
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
     blogsButton = 'button'
+    newsButton = 'button'
     dmButton = 'button'
     if newDM:
         dmButton = 'buttonhighlighted'
@@ -5581,6 +5895,8 @@ def htmlTimeline(defaultTimeline: str,
         inboxButton = 'buttonselected'
     elif boxName == 'tlblogs':
         blogsButton = 'buttonselected'
+    elif boxName == 'tlnews':
+        newsButton = 'buttonselected'
     elif boxName == 'dm':
         dmButton = 'buttonselected'
         if newDM:
@@ -5689,7 +6005,7 @@ def htmlTimeline(defaultTimeline: str,
             translate['Create a new DM'] + \
             '" alt="| ' + translate['Create a new DM'] + \
             '" class="timelineicon"/></a>\n'
-    elif boxName == 'tlblogs':
+    elif boxName == 'tlblogs' or boxName == 'tlnews':
         newPostButtonStr = \
             '        <a class="imageAnchor" href="' + usersPath + \
             '/newblog"><img loading="lazy" src="/' + \
@@ -5756,7 +6072,7 @@ def htmlTimeline(defaultTimeline: str,
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
-                             moderator)
+                             editor, False, None)
     tlStr += '  <td valign="top" class="col-left">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
@@ -5776,6 +6092,12 @@ def htmlTimeline(defaultTimeline: str,
             '      <a href="' + usersPath + \
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
+            '</span></button></a>\n'
+    elif defaultTimeline == 'tlnews':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
             '</span></button></a>\n'
     else:
         tlStr += \
@@ -5827,6 +6149,21 @@ def htmlTimeline(defaultTimeline: str,
                 '/inbox"><button class="' + \
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
+
+    # typically the news button
+    # but may change if this is a news oriented instance
+    if defaultTimeline != 'tlnews':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
+            '</span></button></a>\n'
+    else:
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/inbox"><button class="' + \
+            inboxButton + '"><span>' + translate['Inbox'] + \
+            '</span></button></a>\n'
 
     # button for the outbox
     tlStr += \
@@ -5897,6 +6234,25 @@ def htmlTimeline(defaultTimeline: str,
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>\n'
+
+    # the newswire button to show right column links
+    tlStr += \
+        '        <a class="imageAnchorMobile" href="' + \
+        usersPath + '/newswiremobile">' + \
+        '<img loading="lazy" src="/' + iconsDir + \
+        '/newswire.png" title="' + translate['News'] + \
+        '" alt="| ' + translate['News'] + \
+        '" class="timelineicon"/></a>\n'
+
+    # the links button to show left column links
+    tlStr += \
+        '        <a class="imageAnchorMobile" href="' + \
+        usersPath + '/linksmobile">' + \
+        '<img loading="lazy" src="/' + iconsDir + \
+        '/links.png" title="' + translate['Edit Links'] + \
+        '" alt="| ' + translate['Edit Links'] + \
+        '" class="timelineicon"/></a>\n'
+
     tlStr += followApprovals
     # end of the button header with inbox, outbox, etc
     tlStr += '    </div>\n'
@@ -6039,6 +6395,7 @@ def htmlTimeline(defaultTimeline: str,
                                              httpPrefix, projectVersion,
                                              boxName,
                                              YTReplacementDomain,
+                                             showPublishedDateOnly,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -6063,7 +6420,9 @@ def htmlTimeline(defaultTimeline: str,
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
                                            httpPrefix, translate, iconsDir,
-                                           moderator, newswire)
+                                           moderator, editor,
+                                           newswire, positiveVoting,
+                                           False, None)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
@@ -6105,7 +6464,8 @@ def htmlShares(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                YTReplacementDomain: str,
-               newswire: {}) -> str:
+               showPublishedDateOnly: bool,
+               newswire: {}, positiveVoting: bool) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -6117,7 +6477,10 @@ def htmlShares(defaultTimeline: str,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        False, YTReplacementDomain, newswire)
+                        False, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
 
 
 def htmlInbox(defaultTimeline: str,
@@ -6128,7 +6491,8 @@ def htmlInbox(defaultTimeline: str,
               allowDeletion: bool,
               httpPrefix: str, projectVersion: str,
               minimal: bool, YTReplacementDomain: str,
-              newswire: {}) -> str:
+              showPublishedDateOnly: bool,
+              newswire: {}, positiveVoting: bool) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -6140,7 +6504,10 @@ def htmlInbox(defaultTimeline: str,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
 
 
 def htmlBookmarks(defaultTimeline: str,
@@ -6151,7 +6518,8 @@ def htmlBookmarks(defaultTimeline: str,
                   allowDeletion: bool,
                   httpPrefix: str, projectVersion: str,
                   minimal: bool, YTReplacementDomain: str,
-                  newswire: {}) -> str:
+                  showPublishedDateOnly: bool,
+                  newswire: {}, positiveVoting: bool) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -6163,7 +6531,10 @@ def htmlBookmarks(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
 
 
 def htmlEvents(defaultTimeline: str,
@@ -6174,7 +6545,8 @@ def htmlEvents(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                minimal: bool, YTReplacementDomain: str,
-               newswire: {}) -> str:
+               showPublishedDateOnly: bool,
+               newswire: {}, positiveVoting: bool) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -6186,7 +6558,10 @@ def htmlEvents(defaultTimeline: str,
                         nickname, domain, port, bookmarksJson,
                         'tlevents', allowDeletion,
                         httpPrefix, projectVersion, manuallyApproveFollowers,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
 
 
 def htmlInboxDMs(defaultTimeline: str,
@@ -6197,7 +6572,8 @@ def htmlInboxDMs(defaultTimeline: str,
                  allowDeletion: bool,
                  httpPrefix: str, projectVersion: str,
                  minimal: bool, YTReplacementDomain: str,
-                 newswire: {}) -> str:
+                 showPublishedDateOnly: bool,
+                 newswire: {}, positiveVoting: bool) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6205,7 +6581,8 @@ def htmlInboxDMs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
                         httpPrefix, projectVersion, False, minimal,
-                        YTReplacementDomain, newswire)
+                        YTReplacementDomain, showPublishedDateOnly,
+                        newswire, False, False, positiveVoting)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -6216,7 +6593,8 @@ def htmlInboxReplies(defaultTimeline: str,
                      allowDeletion: bool,
                      httpPrefix: str, projectVersion: str,
                      minimal: bool, YTReplacementDomain: str,
-                     newswire: {}) -> str:
+                     showPublishedDateOnly: bool,
+                     newswire: {}, positiveVoting: bool) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6224,7 +6602,10 @@ def htmlInboxReplies(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
 
 
 def htmlInboxMedia(defaultTimeline: str,
@@ -6235,7 +6616,8 @@ def htmlInboxMedia(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    minimal: bool, YTReplacementDomain: str,
-                   newswire: {}) -> str:
+                   showPublishedDateOnly: bool,
+                   newswire: {}, positiveVoting: bool) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6243,7 +6625,10 @@ def htmlInboxMedia(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
 
 
 def htmlInboxBlogs(defaultTimeline: str,
@@ -6254,7 +6639,8 @@ def htmlInboxBlogs(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    minimal: bool, YTReplacementDomain: str,
-                   newswire: {}) -> str:
+                   showPublishedDateOnly: bool,
+                   newswire: {}, positiveVoting: bool) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6262,7 +6648,34 @@ def htmlInboxBlogs(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
                         allowDeletion, httpPrefix, projectVersion, False,
-                        minimal, YTReplacementDomain, newswire)
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting)
+
+
+def htmlInboxNews(defaultTimeline: str,
+                  recentPostsCache: {}, maxRecentPosts: int,
+                  translate: {}, pageNumber: int, itemsPerPage: int,
+                  session, baseDir: str, wfRequest: {}, personCache: {},
+                  nickname: str, domain: str, port: int, inboxJson: {},
+                  allowDeletion: bool,
+                  httpPrefix: str, projectVersion: str,
+                  minimal: bool, YTReplacementDomain: str,
+                  showPublishedDateOnly: bool,
+                  newswire: {}, moderator: bool, editor: bool,
+                  positiveVoting: bool) -> str:
+    """Show the news timeline as html
+    """
+    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        nickname, domain, port, inboxJson, 'tlnews',
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, moderator, editor,
+                        positiveVoting)
 
 
 def htmlModeration(defaultTimeline: str,
@@ -6273,7 +6686,8 @@ def htmlModeration(defaultTimeline: str,
                    allowDeletion: bool,
                    httpPrefix: str, projectVersion: str,
                    YTReplacementDomain: str,
-                   newswire: {}) -> str:
+                   showPublishedDateOnly: bool,
+                   newswire: {}, positiveVoting: bool) -> str:
     """Show the moderation feed as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6281,7 +6695,8 @@ def htmlModeration(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
                         allowDeletion, httpPrefix, projectVersion, True, False,
-                        YTReplacementDomain, newswire)
+                        YTReplacementDomain, showPublishedDateOnly,
+                        newswire, False, False, positiveVoting)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -6292,7 +6707,8 @@ def htmlOutbox(defaultTimeline: str,
                allowDeletion: bool,
                httpPrefix: str, projectVersion: str,
                minimal: bool, YTReplacementDomain: str,
-               newswire: {}) -> str:
+               showPublishedDateOnly: bool,
+               newswire: {}, positiveVoting: bool) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -6303,7 +6719,8 @@ def htmlOutbox(defaultTimeline: str,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,
                         manuallyApproveFollowers, minimal,
-                        YTReplacementDomain, newswire)
+                        YTReplacementDomain, showPublishedDateOnly,
+                        newswire, False, False, positiveVoting)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
@@ -6312,7 +6729,8 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
-                       YTReplacementDomain: str) -> str:
+                       YTReplacementDomain: str,
+                       showPublishedDateOnly: bool) -> str:
     """Show an individual post as html
     """
     iconsDir = getIconsDir(baseDir)
@@ -6357,6 +6775,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                              None, True, False,
                              httpPrefix, projectVersion, 'inbox',
                              YTReplacementDomain,
+                             showPublishedDateOnly,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -6381,6 +6800,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         showPublishedDateOnly,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -6408,6 +6828,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                                          None, True, False,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
+                                         showPublishedDateOnly,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -6426,7 +6847,8 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
                     session, wfRequest: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     httpPrefix: str, projectVersion: str,
-                    YTReplacementDomain: str) -> str:
+                    YTReplacementDomain: str,
+                    showPublishedDateOnly: bool) -> str:
     """Show the replies to an individual post as html
     """
     iconsDir = getIconsDir(baseDir)
@@ -6442,6 +6864,7 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
                                      None, True, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     showPublishedDateOnly,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -6530,7 +6953,8 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                    httpPrefix: str, projectVersion: str,
                    wfRequest: {}, personCache: {},
                    callingDomain: str,
-                   YTReplacementDomain: str) -> str:
+                   YTReplacementDomain: str,
+                   showPublishedDateOnly: bool) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -6575,6 +6999,7 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                                  None, True, False,
                                  httpPrefix, projectVersion, 'outbox',
                                  YTReplacementDomain,
+                                 showPublishedDateOnly,
                                  False, False, False, False, False)
         deletePostStr += '<center>'
         deletePostStr += \
@@ -7549,7 +7974,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                            profileHandle: str,
                            session, cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
-                           YTReplacementDomain: str) -> str:
+                           YTReplacementDomain: str,
+                           showPublishedDateOnly: bool) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if '/users/' in profileHandle or \
@@ -7757,6 +8183,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                                      item, avatarUrl, False, False,
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
+                                     showPublishedDateOnly,
                                      False, False, False, False, False)
             i += 1
             if i >= 20:
