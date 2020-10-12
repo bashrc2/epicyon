@@ -1356,32 +1356,25 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
                      httpPrefix: str, postUrl: str) -> str:
     """Edits a news post
     """
-    print('TEST htmlEditNewsPost 1: ' + path)
     if '/users/' not in path:
         return ''
-    print('TEST htmlEditNewsPost 2: ')
     pathOriginal = path
 
     nickname = getNicknameFromActor(path)
-    print('TEST htmlEditNewsPost 3: ' + str(nickname))
     if not nickname:
         return ''
 
     # is the user an editor?
-    print('TEST htmlEditNewsPost 4: ' + str(nickname))
     if not isEditor(baseDir, nickname):
         return ''
 
     postUrl = postUrl.replace('/', '#')
     postFilename = locatePost(baseDir, nickname, domain, postUrl)
-    print('TEST htmlEditNewsPost 5: ' + str(postFilename) + ' ' + postUrl)
     if not postFilename:
         return ''
     postJsonObject = loadJson(postFilename)
-    print('TEST htmlEditNewsPost 6: ' + str(postJsonObject))
     if not postJsonObject:
         return ''
-    print('TEST htmlEditNewsPost 7')
 
     cssFilename = baseDir + '/epicyon-links.css'
     if os.path.isfile(baseDir + '/links.css'):
@@ -6140,6 +6133,14 @@ def htmlTimeline(defaultTimeline: str,
         '"><img loading="lazy" src="/' + iconsDir + \
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
+        '" class="timelineicon"/></a>\n'
+
+    # the newswire button to show right column links
+    tlStr += \
+        '        <a class="imageAnchorMobile" href="' + usersPath + '/newswire' + \
+        '"><img loading="lazy" src="/' + iconsDir + \
+        '/newswire.png" title="' + translate['News'] + \
+        '" alt="| ' + translate['News'] + \
         '" class="timelineicon"/></a>\n'
 
     # the links button to show left column links

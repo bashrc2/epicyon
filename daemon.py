@@ -3029,9 +3029,6 @@ class PubServer(BaseHTTPRequestHandler):
             if fields.get('editedNewsPost'):
                 newsPostContent = fields['editedNewsPost']
 
-            print('TEST newsPostUrl ' + str(newsPostUrl))
-            print('TEST newsPostTitle ' + str(newsPostTitle))
-            print('TEST newsPostUrl ' + str(newsPostUrl))
             if newsPostUrl and newsPostContent and newsPostTitle:
                 # load the post
                 postFilename = \
@@ -3049,7 +3046,6 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + \
                         '/postcache/' + newsPostUrl + '.html'
-                    print('TEST cachedPost ' + cachedPost)
                     if os.path.isfile(cachedPost):
                         os.remove(cachedPost)
                     # update newswire
@@ -8238,8 +8234,6 @@ class PubServer(BaseHTTPRequestHandler):
             postUrl = httpPrefix + '://' + domainFull + \
                 '/users/news/statuses/' + postId
             path = path.split('/editnewspost=')[0]
-            print('TEST path: ' + path)
-            print('TEST postUrl: ' + postUrl)
             msg = htmlEditNewsPost(translate, baseDir,
                                    path, domain, port,
                                    httpPrefix,
