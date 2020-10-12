@@ -6210,8 +6210,8 @@ def htmlTimeline(defaultTimeline: str,
     # the newswire button to show right column links
     tlStr += \
         '        <a class="imageAnchorMobile" href="' + \
-        usersPath + '/newswire' + \
-        '"><img loading="lazy" src="/' + iconsDir + \
+        usersPath + '/newswiremobile">' + \
+        '<img loading="lazy" src="/' + iconsDir + \
         '/newswire.png" title="' + translate['News'] + \
         '" alt="| ' + translate['News'] + \
         '" class="timelineicon"/></a>\n'
@@ -6219,8 +6219,8 @@ def htmlTimeline(defaultTimeline: str,
     # the links button to show left column links
     tlStr += \
         '        <a class="imageAnchorMobile" href="' + \
-        usersPath + '/links' + \
-        '"><img loading="lazy" src="/' + iconsDir + \
+        usersPath + '/links">' + \
+        '<img loading="lazy" src="/' + iconsDir + \
         '/links.png" title="' + translate['Edit Links'] + \
         '" alt="| ' + translate['Edit Links'] + \
         '" class="timelineicon"/></a>\n'

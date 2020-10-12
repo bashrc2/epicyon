@@ -9155,7 +9155,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if htmlGET and '/users/' in self.path:
             print('TEST1 ' + self.path)
-            if self.path.endswith('/newswire'):
+            if self.path.endswith('/newswiremobile'):
                 print('TEST2 ' + self.path)
                 nickname = getNicknameFromActor(self.path)
                 if not nickname:
