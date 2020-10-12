@@ -5417,6 +5417,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if showBackButton:
         htmlStr += \
+            '      <div>' + \
             '      <a href="' + timelinePath + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
@@ -5699,7 +5700,7 @@ def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
                              httpPrefix, translate,
                              iconsDir, editor,
                              True, timelinePath)
-    htmlStr += htmlFooter()
+    htmlStr += '</div>\n' + htmlFooter()
     return htmlStr
 
 
