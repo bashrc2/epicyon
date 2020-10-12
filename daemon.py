@@ -9104,7 +9104,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.translate,
                                      self.server.newswire,
                                      self.server.positiveVoting,
-                                     timelinePath)
+                                     timelinePath).encode('utf-8')
             self._set_headers('text/html', len(msg), cookie, callingDomain)
             self._write(msg)
             self.server.GETbusy = False
