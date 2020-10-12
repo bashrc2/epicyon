@@ -261,6 +261,7 @@ def setThemeIndymedia(baseDir: str):
         "newswire-date-moderated-color": "white",
         "newswire-date-color": "white",
         "newswire-voted-background-color": "black",
+        "column-left-image-width-mobile": "40vw",
         "column-right-fg-color": "#ff9900",
         "column-right-fg-color-voted-on": "red",
         "button-corner-radius": "5px",

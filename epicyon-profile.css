@@ -78,6 +78,8 @@
     --column-left-header-color: #fff;
     --column-left-header-size: 20px;
     --column-left-icon-size: 20%;
+    --column-left-icon-size-mobile: 10%;
+    --column-left-image-width-mobile: 40vw;
     --column-right-icon-size: 20%;
     --newswire-date-color: white;
     --newswire-voted-background-color: black;
@@ -1543,21 +1545,22 @@ aside .toggle-inside li {
     }
     .leftColEditImage {
         background: var(--main-bg-color);
-        width: var(--column-left-icon-size);
+        width: var(--column-left-icon-size-mobile);
         float: right;
         margin: 20px 0px;
+    }
+    .leftColImg {
+        background: var(--main-bg-color);
+        width: var(--column-left-image-width-mobile);
+        float: right;
+        margin: 0 0;
+        padding: 0 0;
     }
     .rightColEditImage {
         background: var(--main-bg-color);
         width: var(--column-right-icon-size);
         float: right;
         margin: 20px 0px;
-    }
-    .leftColImg {
-        background: var(--main-bg-color);
-        width: 100vw;
-        margin: 0 0;
-        padding: 0 0;
     }
     .rightColImg {
         background: var(--main-bg-color);
