@@ -143,6 +143,7 @@ from webinterface import htmlFollowConfirm
 from webinterface import htmlCalendar
 from webinterface import htmlSearch
 from webinterface import htmlNewswireMobile
+from webinterface import htmlLinksMobile
 from webinterface import htmlSearchEmoji
 from webinterface import htmlSearchEmojiTextEntry
 from webinterface import htmlUnfollowConfirm
@@ -9083,19 +9084,15 @@ class PubServer(BaseHTTPRequestHandler):
                                   'permitted directory',
                                   'login shown done')
 
-        print('TEST1 ' + self.path)
         if authorized and htmlGET and '/users/' in self.path and \
            self.path.endswith('/newswiremobile'):
-            print('TEST2 ' + self.path)
             nickname = getNicknameFromActor(self.path)
             if not nickname:
                 self._404()
                 self.server.GETbusy = False
                 return
-            print('TEST3 ' + nickname)
             timelinePath = \
                 '/users/' + nickname + '/' + self.server.defaultTimeline
-            print('TEST4 ' + timelinePath)
             msg = htmlNewswireMobile(self.server.baseDir,
                                      nickname,
                                      self.server.domain,
@@ -9105,6 +9102,25 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.newswire,
                                      self.server.positiveVoting,
                                      timelinePath).encode('utf-8')
+            self._set_headers('text/html', len(msg), cookie, callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            return
+
+        if authorized and htmlGET and '/users/' in self.path and \
+           self.path.endswith('/linksmobile'):
+            nickname = getNicknameFromActor(self.path)
+            if not nickname:
+                self._404()
+                self.server.GETbusy = False
+                return
+            timelinePath = \
+                '/users/' + nickname + '/' + self.server.defaultTimeline
+            msg = htmlLinksMobile(self.server.baseDir, nickname,
+                                  self.server.domainFull,
+                                  self.server.httpPrefix,
+                                  self.server.translate,
+                                  timelinePath).encode('utf-8')
             self._set_headers('text/html', len(msg), cookie, callingDomain)
             self._write(msg)
             self.server.GETbusy = False

@@ -5381,7 +5381,8 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsDir: str, editor: bool) -> str:
+                         iconsDir: str, editor: bool,
+                         showBackButton: bool, timelinePath: str) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -5413,6 +5414,12 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '        <img class="leftColImg" loading="lazy" src="/users/' + \
             nickname + '/left_col_image.png" />\n' + \
             '      </center>\n'
+
+    if showBackButton:
+        htmlStr += \
+            '      <a href="' + timelinePath + '">' + \
+            '<button class="cancelbtn">' + \
+            translate['Go Back'] + '</button></a>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '\n      <center>\n'
@@ -5659,6 +5666,43 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
+def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
+                    httpPrefix: str, translate,
+                    timelinePath: str) -> str:
+    """Show the left column links within mobile view
+    """
+    htmlStr = ''
+
+    # the css filename
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    profileStyle = None
+    with open(cssFilename, 'r') as cssFile:
+        # load css
+        profileStyle = \
+            cssFile.read()
+        # replace any https within the css with whatever prefix is needed
+        if httpPrefix != 'https':
+            profileStyle = \
+                profileStyle.replace('https://', httpPrefix + '://')
+
+    iconsDir = getIconsDir(baseDir)
+
+    # is the user a site editor?
+    editor = isEditor(baseDir, nickname)
+
+    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr += \
+        getLeftColumnContent(baseDir, nickname, domainFull,
+                             httpPrefix, translate,
+                             iconsDir, editor,
+                             True, timelinePath)
+    htmlStr += htmlFooter()
+    return htmlStr
+
+
 def htmlNewswireMobile(baseDir: str, nickname: str,
                        domain: str, domainFull: str,
                        httpPrefix: str, translate: {},
@@ -5674,31 +5718,11 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    # filename of the banner shown at the top
-    bannerFile = 'banner.png'
-    bannerFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.jpg'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.gif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.avif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.webp'
-
     profileStyle = None
     with open(cssFilename, 'r') as cssFile:
         # load css
         profileStyle = \
-            cssFile.read().replace('banner.png',
-                                   '/users/' + nickname + '/' + bannerFile)
+            cssFile.read()
         # replace any https within the css with whatever prefix is needed
         if httpPrefix != 'https':
             profileStyle = \
@@ -6047,7 +6071,7 @@ def htmlTimeline(defaultTimeline: str,
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
-                             editor)
+                             editor, False, None)
     tlStr += '  <td valign="top" class="col-left">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
@@ -6222,7 +6246,7 @@ def htmlTimeline(defaultTimeline: str,
     # the links button to show left column links
     tlStr += \
         '        <a class="imageAnchorMobile" href="' + \
-        usersPath + '/links">' + \
+        usersPath + '/linksmobile">' + \
         '<img loading="lazy" src="/' + iconsDir + \
         '/links.png" title="' + translate['Edit Links'] + \
         '" alt="| ' + translate['Edit Links'] + \

@@ -1541,11 +1541,23 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .leftColEditImage {
+        background: var(--main-bg-color);
+        width: var(--column-left-icon-size);
+        float: right;
+        margin: 20px 0px;
+    }
     .rightColEditImage {
         background: var(--main-bg-color);
         width: var(--column-right-icon-size);
         float: right;
         margin: 20px 0px;
+    }
+    .leftColImg {
+        background: var(--main-bg-color);
+        width: 100vw;
+        margin: 0 0;
+        padding: 0 0;
     }
     .rightColImg {
         background: var(--main-bg-color);
