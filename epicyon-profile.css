@@ -1547,7 +1547,7 @@ aside .toggle-inside li {
         float: right;
     }
     .rightColImg {
-        background: var(--column-left-color);
+        background: var(--main-bg-color);
         width: 100vw;
         margin: 0 0;
         padding: 0 0;
