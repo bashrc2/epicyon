@@ -5511,8 +5511,9 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
     """
     htmlStr = ''
     for dateStr, item in newswire.items():
-        dateStrLink = dateStr.replace(' ', 'T')
-        dateStrLink = dateStrLink.replace('+00:00', '')
+        publishedDate = \
+            datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%SZ")
+        dateStrLink = publishedDate.strftime("%Y-%m-%d")
         moderatedItem = item[5]
         if moderatedItem and 'vote:' + nickname in item[2]:
             totalVotesStr = ''
