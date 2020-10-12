@@ -5539,7 +5539,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     iconsDir + '/vote.png" /></a></p>'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
-                htmlStr += dateStr.replace('+00:00', '') + '</span></p>'
+                htmlStr += dateShown + '</span></p>'
         else:
             totalVotesStr = ''
             totalVotes = 0
@@ -5568,7 +5568,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                     item[0] + '</a>' + \
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
-                htmlStr += dateStr.replace('+00:00', '') + '</span></p>'
+                htmlStr += dateShown + '</span></p>'
     return htmlStr
 
 
