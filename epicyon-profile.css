@@ -77,6 +77,7 @@
     --column-left-header-background: #555;
     --column-left-header-color: #fff;
     --column-left-header-size: 20px;
+    --column-left-header-size-mobile: 50px;
     --column-left-icon-size: 20%;
     --column-left-icon-size-mobile: 10%;
     --column-left-image-width-mobile: 40vw;
@@ -149,15 +150,6 @@ blockquote p {
 
 h1 {
     color: var(--title-color);
-}
-
-h3.linksHeader {
-    background-color: var(--column-left-header-background);
-    color: var(--column-left-header-color);
-    font-size: var(--column-left-header-size);
-    text-transform: uppercase;
-    padding: 4px;
-    border: none;
 }
 
 a, u {
@@ -958,6 +950,14 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    h3.linksHeader {
+	background-color: var(--column-left-header-background);
+	color: var(--column-left-header-color);
+	font-size: var(--column-left-header-size);
+	text-transform: uppercase;
+	padding: 4px;
+	border: none;
+    }
     .newswireItem {
         font-size: var(--font-size-newswire);
         color: var(--column-right-fg-color);
@@ -1542,6 +1542,14 @@ aside .toggle-inside li {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    h3.linksHeader {
+	background-color: var(--column-left-header-background);
+	color: var(--column-left-header-color);
+	font-size: var(--column-left-header-size-mobile);
+	text-transform: uppercase;
+	padding: 4px;
+	border: none;
     }
     .leftColEditImage {
         background: var(--main-bg-color);
