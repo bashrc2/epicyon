@@ -5513,7 +5513,10 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
     for dateStr, item in newswire.items():
         publishedDate = \
             datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S+00:00")
-        dateStrLink = publishedDate.strftime("%Y-%m-%d")
+        dateShown = publishedDate.strftime("%Y-%m-%d")
+
+        dateStrLink = dateStr.replace('T', ' ')
+        dateStrLink = dateStrLink.replace('Z', '')
         moderatedItem = item[5]
         if moderatedItem and 'vote:' + nickname in item[2]:
             totalVotesStr = ''
@@ -5529,8 +5532,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 '</span></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
-                    ' ' + dateStr.replace('+00:00', '') + \
-                    '<a href="/users/' + nickname + \
+                    ' ' + dateShown + '<a href="/users/' + nickname + \
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
                 htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
@@ -5553,7 +5555,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + item[1] + '">' + \
                     item[0] + '</a>' + totalVotesStr
-                htmlStr += ' ' + dateStr.replace('+00:00', '')
+                htmlStr += ' ' + dateShown
                 htmlStr += '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
