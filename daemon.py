@@ -9083,6 +9083,33 @@ class PubServer(BaseHTTPRequestHandler):
                                   'permitted directory',
                                   'login shown done')
 
+        print('TEST1 ' + self.path)
+        if authorized and htmlGET and '/users/' in self.path and \
+           self.path.endswith('/newswiremobile'):
+            print('TEST2 ' + self.path)
+            nickname = getNicknameFromActor(self.path)
+            if not nickname:
+                self._404()
+                self.server.GETbusy = False
+                return
+            print('TEST3 ' + nickname)
+            timelinePath = \
+                '/users/' + nickname + '/' + self.server.defaultTimeline
+            print('TEST4 ' + timelinePath)
+            msg = htmlNewswireMobile(self.server.baseDir,
+                                     nickname,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.httpPrefix,
+                                     self.server.translate,
+                                     self.server.newswire,
+                                     self.server.positiveVoting,
+                                     timelinePath)
+            self._set_headers('text/html', len(msg), cookie, callingDomain)
+            self._write(msg)
+            self.server.GETbusy = False
+            return
+
         # hashtag search
         if self.path.startswith('/tags/') or \
            (authorized and '/tags/' in self.path):
@@ -9151,33 +9178,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'hashtag search done',
                                           'search screen shown')
-                return
-
-        if htmlGET and '/users/' in self.path:
-            print('TEST1 ' + self.path)
-            if self.path.endswith('/newswiremobile'):
-                print('TEST2 ' + self.path)
-                nickname = getNicknameFromActor(self.path)
-                if not nickname:
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-                print('TEST3 ' + nickname)
-                timelinePath = \
-                    '/users/' + nickname + '/' + self.server.defaultTimeline
-                print('TEST4 ' + timelinePath)
-                msg = htmlNewswireMobile(self.server.baseDir,
-                                         nickname,
-                                         self.server.domain,
-                                         self.server.domainFull,
-                                         self.server.httpPrefix,
-                                         self.server.translate,
-                                         self.server.newswire,
-                                         self.server.positiveVoting,
-                                         timelinePath)
-                self._set_headers('text/html', len(msg), cookie, callingDomain)
-                self._write(msg)
-                self.server.GETbusy = False
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
