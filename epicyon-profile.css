@@ -957,40 +957,40 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     .newswireItem {
-	font-size: var(--font-size-newswire);
-	color: var(--column-right-fg-color);
-	line-height: var(--line-spacing-newswire);
+        font-size: var(--font-size-newswire);
+        color: var(--column-right-fg-color);
+        line-height: var(--line-spacing-newswire);
     }
     .newswireItemModerated {
-	font-size: var(--font-size-newswire);
-	color: var(--newswire-item-moderated-color);
-	line-height: var(--line-spacing-newswire);
+        font-size: var(--font-size-newswire);
+        color: var(--newswire-item-moderated-color);
+        line-height: var(--line-spacing-newswire);
     }
     .newswireDateModerated {
-	font-size: var(--font-size-newswire);
-	font-weight: bold;
-	color: var(--newswire-date-moderated-color);
-	float: right;
+        font-size: var(--font-size-newswire);
+        font-weight: bold;
+        color: var(--newswire-date-moderated-color);
+        float: right;
     }
     .newswireItemVotedOn a:link {
-	background: var(--newswire-voted-background-color);
+        background: var(--newswire-voted-background-color);
     }
     .newswireItemVotedOn {
-	font-size: var(--font-size-newswire);
-	font-weight: bold;
-	color: var(--column-right-fg-color-voted-on);    
-	line-height: var(--line-spacing-newswire);
+        font-size: var(--font-size-newswire);
+        font-weight: bold;
+        color: var(--column-right-fg-color-voted-on);
+        line-height: var(--line-spacing-newswire);
     }
     .newswireDate {
-	font-size: var(--font-size-newswire);
-	color: var(--newswire-date-color);
-	float: right;
+        font-size: var(--font-size-newswire);
+        color: var(--newswire-date-color);
+        float: right;
     }
     .newswireDateVotedOn {
-	font-size: var(--font-size-newswire);
-	font-weight: bold;
-	color: var(--column-right-fg-color-voted-on);    
-	float: right;
+        font-size: var(--font-size-newswire);
+        font-weight: bold;
+        color: var(--column-right-fg-color-voted-on);
+        float: right;
     }
     .imageAnchorMobile img{
         display: none;
@@ -1545,6 +1545,7 @@ aside .toggle-inside li {
         background: var(--main-bg-color);
         width: var(--column-right-icon-size);
         float: right;
+        margin: 20px 0px;
     }
     .rightColImg {
         background: var(--main-bg-color);
@@ -1553,40 +1554,40 @@ aside .toggle-inside li {
         padding: 0 0;
     }
     .newswireItem {
-	font-size: var(--font-size-newswire-mobile);
-	color: var(--column-right-fg-color);
-	line-height: var(--line-spacing-newswire);
+        font-size: var(--font-size-newswire-mobile);
+        color: var(--column-right-fg-color);
+        line-height: var(--line-spacing-newswire);
     }
     .newswireItemModerated {
-	font-size: var(--font-size-newswire-mobile);
-	color: var(--newswire-item-moderated-color);
-	line-height: var(--line-spacing-newswire);
+        font-size: var(--font-size-newswire-mobile);
+        color: var(--newswire-item-moderated-color);
+        line-height: var(--line-spacing-newswire);
     }
     .newswireDateModerated {
-	font-size: var(--font-size-newswire-mobile);
-	font-weight: bold;
-	color: var(--newswire-date-moderated-color);
-	float: right;
+        font-size: var(--font-size-newswire-mobile);
+        font-weight: bold;
+        color: var(--newswire-date-moderated-color);
+        float: right;
     }
     .newswireItemVotedOn a:link {
-	background: var(--newswire-voted-background-color);
+        background: var(--newswire-voted-background-color);
     }
     .newswireItemVotedOn {
-	font-size: var(--font-size-newswire-mobile);
-	font-weight: bold;
-	color: var(--column-right-fg-color-voted-on);    
-	line-height: var(--line-spacing-newswire);
+        font-size: var(--font-size-newswire-mobile);
+        font-weight: bold;
+        color: var(--column-right-fg-color-voted-on);
+        line-height: var(--line-spacing-newswire);
     }
     .newswireDate {
-	font-size: var(--font-size-newswire-mobile);
-	color: var(--newswire-date-color);
-	float: right;
+        font-size: var(--font-size-newswire-mobile);
+        color: var(--newswire-date-color);
+        float: right;
     }
     .newswireDateVotedOn {
-	font-size: var(--font-size-newswire-mobile);
-	font-weight: bold;
-	color: var(--column-right-fg-color-voted-on);    
-	float: right;
+        font-size: var(--font-size-newswire-mobile);
+        font-weight: bold;
+        color: var(--column-right-fg-color-voted-on);
+        float: right;
     }
     .imageAnchorMobile img{
         display: inline;
