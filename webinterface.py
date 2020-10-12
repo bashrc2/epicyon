@@ -5512,7 +5512,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
     htmlStr = ''
     for dateStr, item in newswire.items():
         publishedDate = \
-            datetime.strptime(dateStr, "%Y-%m-%dT%H:%M:%SZ")
+            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S+00:00")
         dateStrLink = publishedDate.strftime("%Y-%m-%d")
         moderatedItem = item[5]
         if moderatedItem and 'vote:' + nickname in item[2]:
