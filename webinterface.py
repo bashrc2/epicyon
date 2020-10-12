@@ -1272,7 +1272,7 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     editLinksForm += \
-        '  <textarea id="message" name="editedLinks" style="height:50%">' + \
+        '  <textarea id="message" name="editedLinks" style="height:50vh">' + \
         linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
