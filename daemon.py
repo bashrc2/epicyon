@@ -9160,12 +9160,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._404()
                     self.server.GETbusy = False
                     return
-                boxname = self.path.replace('/users/' + nickname, '')
-                if not boxname:
-                    self._404()
-                    self.server.GETbusy = False
-                    return
-                timelinePath = '/users/' + nickname + '/' + boxname
+                timelinePath = \
+                    '/users/' + nickname + '/' + self.server.defaultTimeline
                 msg = htmlNewswireMobile(self.server.baseDir,
                                          nickname,
                                          self.server.domain,
