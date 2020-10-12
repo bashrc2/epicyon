@@ -5572,7 +5572,8 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           iconsDir: str, moderator: bool, editor: bool,
-                          newswire: {}, positiveVoting: bool) -> str:
+                          newswire: {}, positiveVoting: bool,
+                          showBackButton: bool, timelinePath: str) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5608,6 +5609,12 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
+
+    if showBackButton:
+        htmlStr += \
+            '      <a href="' + timelinePath + '">' + \
+            '<button class="cancelbtn">' + \
+            translate['Go Back'] + '</button></a>\n'
 
     if editor:
         if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
@@ -5646,6 +5653,71 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     htmlStr += htmlNewswire(newswire, nickname, moderator, translate,
                             positiveVoting, iconsDir)
+    return htmlStr
+
+
+def htmlNewswireMobile(baseDir: str, nickname: str,
+                       domain: str, domainFull: str,
+                       httpPrefix: str, translate: {},
+                       newswire: {},
+                       positiveVoting: bool,
+                       timelinePath: str) -> str:
+    """Shows the mobile version of the newswire right column
+    """
+    htmlStr = ''
+
+    # the css filename
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    # filename of the banner shown at the top
+    bannerFile = 'banner.png'
+    bannerFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.jpg'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.gif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.avif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.webp'
+
+    profileStyle = None
+    with open(cssFilename, 'r') as cssFile:
+        # load css
+        profileStyle = \
+            cssFile.read().replace('banner.png',
+                                   '/users/' + nickname + '/' + bannerFile)
+        # replace any https within the css with whatever prefix is needed
+        if httpPrefix != 'https':
+            profileStyle = \
+                profileStyle.replace('https://',
+                                     httpPrefix + '://')
+
+    iconsDir = getIconsDir(baseDir)
+
+    # is the user a moderator?
+    moderator = isModerator(baseDir, nickname)
+
+    # is the user a site editor?
+    editor = isEditor(baseDir, nickname)
+
+    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr += \
+        getRightColumnContent(baseDir, nickname, domainFull,
+                              httpPrefix, translate,
+                              iconsDir, moderator, editor,
+                              newswire, positiveVoting,
+                              True, timelinePath)
+    htmlStr += htmlFooter()
     return htmlStr
 
 
@@ -6137,7 +6209,8 @@ def htmlTimeline(defaultTimeline: str,
 
     # the newswire button to show right column links
     tlStr += \
-        '        <a class="imageAnchorMobile" href="' + usersPath + '/newswire' + \
+        '        <a class="imageAnchorMobile" href="' + \
+        usersPath + '/newswire' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/newswire.png" title="' + translate['News'] + \
         '" alt="| ' + translate['News'] + \
@@ -6145,7 +6218,8 @@ def htmlTimeline(defaultTimeline: str,
 
     # the links button to show left column links
     tlStr += \
-        '        <a class="imageAnchorMobile" href="' + usersPath + '/links' + \
+        '        <a class="imageAnchorMobile" href="' + \
+        usersPath + '/links' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/links.png" title="' + translate['Edit Links'] + \
         '" alt="| ' + translate['Edit Links'] + \
@@ -6319,7 +6393,8 @@ def htmlTimeline(defaultTimeline: str,
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
                                            httpPrefix, translate, iconsDir,
                                            moderator, editor,
-                                           newswire, positiveVoting)
+                                           newswire, positiveVoting,
+                                           False, None)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'

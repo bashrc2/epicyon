@@ -142,6 +142,7 @@ from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
 from webinterface import htmlCalendar
 from webinterface import htmlSearch
+from webinterface import htmlNewswireMobile
 from webinterface import htmlSearchEmoji
 from webinterface import htmlSearchEmojiTextEntry
 from webinterface import htmlUnfollowConfirm
@@ -9150,6 +9151,33 @@ class PubServer(BaseHTTPRequestHandler):
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'hashtag search done',
                                           'search screen shown')
+                return
+
+        if htmlGET and '/users/' in self.path:
+            if self.path.endswith('/newswire'):
+                nickname = getNicknameFromActor(self.path)
+                if not nickname:
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+                boxname = self.path.replace('/users/' + nickname, '')
+                if not boxname:
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+                timelinePath = '/users/' + nickname + '/' + boxname
+                msg = htmlNewswireMobile(self.server.baseDir,
+                                         nickname,
+                                         self.server.domain,
+                                         self.server.domainFull,
+                                         self.server.httpPrefix,
+                                         self.server.translate,
+                                         self.server.newswire,
+                                         self.server.positiveVoting,
+                                         timelinePath)
+                self._set_headers('text/html', len(msg), cookie, callingDomain)
+                self._write(msg)
+                self.server.GETbusy = False
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
