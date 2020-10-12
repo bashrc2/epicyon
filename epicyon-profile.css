@@ -1541,6 +1541,17 @@ aside .toggle-inside li {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .rightColEditImage {
+        background: var(--main-bg-color);
+        width: var(--column-right-icon-size);
+        float: right;
+    }
+    .rightColImg {
+        background: var(--column-left-color);
+        width: 100vw;
+        margin: 0 0;
+        padding: 0 0;
+    }
     .newswireItem {
 	font-size: var(--font-size-newswire-mobile);
 	color: var(--column-right-fg-color);
