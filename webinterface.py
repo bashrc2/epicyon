@@ -778,7 +778,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
-        iconsDir + '/rss.png" /></a></center>'
+        iconsDir + '/logorss.png" /></a></center>'
 
     if startIndex > 0:
         # previous page link
@@ -5437,7 +5437,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['RSS feed for this site'] + \
         '" title="' + translate['RSS feed for this site'] + \
-        '" src="/' + iconsDir + '/rss.png" /></a>\n'
+        '" src="/' + iconsDir + '/logorss.png" /></a>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
@@ -5644,7 +5644,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
-        iconsDir + '/rss.png" /></a>\n'
+        iconsDir + '/logorss.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
