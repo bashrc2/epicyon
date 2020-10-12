@@ -9154,14 +9154,18 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         if htmlGET and '/users/' in self.path:
+            print('TEST1 ' + self.path)
             if self.path.endswith('/newswire'):
+                print('TEST2 ' + self.path)
                 nickname = getNicknameFromActor(self.path)
                 if not nickname:
                     self._404()
                     self.server.GETbusy = False
                     return
+                print('TEST3 ' + nickname)
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
+                print('TEST4 ' + timelinePath)
                 msg = htmlNewswireMobile(self.server.baseDir,
                                          nickname,
                                          self.server.domain,
