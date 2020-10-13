@@ -3426,7 +3426,7 @@ def htmlProfile(defaultTimeline: str,
 
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
-        profileHeaderStr += '<div class="timeline-banner"></div>\n'
+        profileHeaderStr = '<div class="timeline-banner"></div>\n'
         profileHeaderStr += loginButton
     else:
         profileHeaderStr = '<div class="hero-image">\n'
