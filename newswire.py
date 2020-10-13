@@ -34,7 +34,7 @@ def rss2Header(httpPrefix: str,
     elif title.startswith('Site'):
         rssStr += '    <title>' + domainFull + '</title>'
         rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
-            '/blogs/rss.xml' + '</link>'
+            '/blog/rss.xml' + '</link>'
     else:
         rssStr += '    <title>' + translate[title] + '</title>'
         rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
