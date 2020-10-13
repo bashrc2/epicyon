@@ -365,7 +365,7 @@ def htmlBlogPost(authorized: bool,
         blogStr += '<img style="width:3%;min-width:50px" ' + \
             'loading="lazy" alt="RSS 2.0" ' + \
             'title="RSS 2.0" src="/' + \
-            iconsDir + '/rss.png" /></a>'
+            iconsDir + '/logorss.png" /></a>'
 
         # blogStr += '<a href="' + httpPrefix + '://' + \
         #     domainFull + '/blog/' + nickname + '/rss.txt">'
@@ -461,7 +461,7 @@ def htmlBlogPage(authorized: bool, session,
             domainFull + '/blog/' + nickname + '/rss.xml">'
         blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
             'title="RSS 2.0" src="/' + \
-            iconsDir + '/rss.png" /></a>'
+            iconsDir + '/logorss.png" /></a>'
 
         # blogStr += '<a href="' + httpPrefix + '://' + \
         #     domainFull + '/blog/' + nickname + '/rss.txt">'
