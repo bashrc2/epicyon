@@ -4426,10 +4426,17 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
-    avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
-    avatarLink += \
-        '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
-        translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>\n'
+    if '/users/news/' not in avatarUrl:
+        avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
+        avatarLink += \
+            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
+            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            '/></a>\n'
+    else:
+        avatarLink += \
+            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
+            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            '/>\n'
 
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
