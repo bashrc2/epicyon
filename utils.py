@@ -57,7 +57,7 @@ def getConfigParam(baseDir: str, variableName: str):
     configFilename = baseDir + '/config.json'
     configJson = loadJson(configFilename)
     if configJson:
-        if configJson.get(variableName):
+        if variableName in configJson:
             return configJson[variableName]
     return None
 
