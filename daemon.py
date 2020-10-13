@@ -7750,6 +7750,11 @@ class PubServer(BaseHTTPRequestHandler):
                         divertToLoginScreen = False
 
         if divertToLoginScreen and not authorized:
+            divertPath = '/login'
+            if self.server.newsInstance:
+                # for news instances if not logged in then show the
+                # front page
+                divertPath = '/users/news'
             if debug:
                 print('DEBUG: divertToLoginScreen=' +
                       str(divertToLoginScreen))
@@ -7757,16 +7762,16 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: path=' + path)
             if callingDomain.endswith('.onion') and onionDomain:
                 self._redirect_headers('http://' +
-                                       onionDomain + '/login',
+                                       onionDomain + divertPath,
                                        None, callingDomain)
             elif callingDomain.endswith('.i2p') and i2pDomain:
                 self._redirect_headers('http://' +
-                                       i2pDomain + '/login',
+                                       i2pDomain + divertPath,
                                        None, callingDomain)
             else:
                 self._redirect_headers(httpPrefix + '://' +
                                        domainFull +
-                                       '/login', None, callingDomain)
+                                       divertPath, None, callingDomain)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'robots txt',
                                       'show login screen')
