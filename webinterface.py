@@ -3449,11 +3449,11 @@ def htmlProfile(defaultTimeline: str,
         linkToTimelineEnd + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
-    profileStr += \
-        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
-        postsButton + '"><span>' + translate['Posts'] + \
-        ' </span></button></a>'
     if not isSystemAccount(nickname):
+        profileStr += \
+            '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+            postsButton + '"><span>' + translate['Posts'] + \
+            ' </span></button></a>'
         profileStr += \
             '    <a href="' + usersPath + '/following#buttonheader">' + \
             '<button class="' + followingButton + '"><span>' + \
