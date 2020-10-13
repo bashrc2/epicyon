@@ -8353,7 +8353,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.projectVersion,
                                 self.server.baseDir,
                                 self.server.httpPrefix, False,
-                                getPerson, 'roles',
+                                getPerson, '',
                                 self.server.session,
                                 self.server.cachedWebfingers,
                                 self.server.personCache,
