@@ -3488,6 +3488,8 @@ def htmlProfile(defaultTimeline: str,
             cssFile.read().replace('image.png',
                                    profileJson['image']['url'])
         if isSystemAccount(nickname):
+            bannerFile, bannerFilename = \
+                getBannerFile(baseDir, nickname, domain)
             profileStyle = \
                 profileStyle.replace('banner.png',
                                      '/users/' + nickname + '/' + bannerFile)
@@ -5781,6 +5783,31 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
     return htmlStr
 
 
+def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
+    """
+    returns the banner filename
+    """
+    # filename of the banner shown at the top
+    bannerFile = 'banner.png'
+    bannerFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.jpg'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.gif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.avif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.webp'
+    return bannerFile, bannerFilename
+
+
 def htmlTimeline(defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -5856,23 +5883,7 @@ def htmlTimeline(defaultTimeline: str,
         cssFilename = baseDir + '/epicyon.css'
 
     # filename of the banner shown at the top
-    bannerFile = 'banner.png'
-    bannerFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.jpg'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.gif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.avif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.webp'
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
     # benchmark 1
     timeDiff = int((time.time() - timelineStartTime) * 1000)
