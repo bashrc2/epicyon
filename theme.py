@@ -40,28 +40,6 @@ def setThemeInConfig(baseDir: str, name: str) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def setInstanceTypeInConfig(baseDir: str, name: str) -> bool:
-    configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
-        return False
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
-        return False
-
-    configJson['newsInstance'] = False
-    configJson['mediaInstance'] = False
-    configJson['blogsInstance'] = False
-
-    if 'news' in name:
-        configJson['newsInstance'] = True
-    if 'media' in name:
-        configJson['mediaInstance'] = True
-    if 'blog' in name:
-        configJson['blogsInstance'] = True
-
-    return saveJson(configJson, configFilename)
-
-
 def getTheme(baseDir: str) -> str:
     configFilename = baseDir + '/config.json'
     if os.path.isfile(configFilename):
@@ -337,7 +315,6 @@ def setThemeIndymedia(baseDir: str):
         "login-button-fg-color": "white"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setInstanceTypeInConfig(baseDir, 'news')
 
 
 def setThemeBlue(baseDir: str):
@@ -1034,7 +1011,6 @@ def setThemeImages(baseDir: str, name: str) -> None:
 def setTheme(baseDir: str, name: str, domain: str) -> bool:
     result = False
 
-    setInstanceTypeInConfig(baseDir, 'none')
     prevThemeName = getTheme(baseDir)
 
     themes = getThemesList()
