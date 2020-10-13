@@ -4433,14 +4433,21 @@ def individualPostAsHtml(allowDownloads: bool,
 
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
-        avatarLink = \
-            '        <a class="imageAnchor" href="/users/' + \
-            nickname + '?options=' + postActor + \
-            ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
-        avatarLink += \
-            '        <img loading="lazy" title="' + \
-            translate['Show options for this person'] + \
-            '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
+        if '/users/news/' not in avatarUrl:
+            avatarLink = \
+                '        <a class="imageAnchor" href="/users/' + \
+                nickname + '?options=' + postActor + \
+                ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
+            avatarLink += \
+                '        <img loading="lazy" title="' + \
+                translate['Show options for this person'] + \
+                '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
+        else:
+            # don't link to the person options for the news account
+            avatarLink += \
+                '        <img loading="lazy" title="' + \
+                translate['Show options for this person'] + \
+                '" src="' + avatarUrl + '" ' + avatarPosition + '/>\n'
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
 
@@ -4929,20 +4936,24 @@ def individualPostAsHtml(allowDownloads: bool,
 
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
-                                replyAvatarImageInPost = \
-                                    '        ' \
-                                    '<div class="timeline-avatar-reply">\n' \
-                                    '            <a class="imageAnchor" ' + \
-                                    'href="/users/' + nickname + \
-                                    '?options=' + \
-                                    announceActor + ';' + str(pageNumber) + \
-                                    ';' + announceAvatarUrl + \
-                                    messageIdStr + '">' \
-                                    '<img loading="lazy" src="' + \
-                                    announceAvatarUrl + '" ' \
-                                    'title="' + translate[idx] + \
-                                    '" alt=" "' + avatarPosition + \
-                                    '/></a>\n    </div>\n'
+                                if '/users/news/' not in announceAvatarUrl:
+                                    replyAvatarImageInPost = \
+                                        '        ' \
+                                        '<div class=' + \
+                                        '"timeline-avatar-reply">\n' \
+                                        '            ' + \
+                                        '<a class="imageAnchor" ' + \
+                                        'href="/users/' + nickname + \
+                                        '?options=' + \
+                                        announceActor + ';' + \
+                                        str(pageNumber) + \
+                                        ';' + announceAvatarUrl + \
+                                        messageIdStr + '">' \
+                                        '<img loading="lazy" src="' + \
+                                        announceAvatarUrl + '" ' \
+                                        'title="' + translate[idx] + \
+                                        '" alt=" "' + avatarPosition + \
+                                        '/></a>\n    </div>\n'
                         else:
                             titleStr += \
                                 '    <img loading="lazy" title="' + \
