@@ -40,6 +40,19 @@ def setThemeInConfig(baseDir: str, name: str) -> bool:
     return saveJson(configJson, configFilename)
 
 
+def setInstanceTypeInConfig(baseDir: str, name: str) -> bool:
+    configFilename = baseDir + '/config.json'
+    if not os.path.isfile(configFilename):
+        return False
+    configJson = loadJson(configFilename, 0)
+    if not configJson:
+        return False
+    configJson['newsInstance'] = ('news' in name)
+    configJson['mediaInstance'] = ('media' in name)
+    configJson['blogsInstance'] = ('blog' in name)
+    return saveJson(configJson, configFilename)
+
+
 def getTheme(baseDir: str) -> str:
     configFilename = baseDir + '/config.json'
     if os.path.isfile(configFilename):
@@ -51,6 +64,7 @@ def getTheme(baseDir: str) -> str:
 
 
 def removeTheme(baseDir: str):
+    setInstanceTypeInConfig(baseDir, 'none')
     themeFiles = getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
@@ -247,6 +261,7 @@ def setThemeIndymedia(baseDir: str):
     name = 'indymedia'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setInstanceTypeInConfig(baseDir, 'news')
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
