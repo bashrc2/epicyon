@@ -3233,7 +3233,7 @@ def htmlProfile(defaultTimeline: str,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 showPublishedDateOnly: bool,
-                extraJson=None,
+                newswire: {}, extraJson=None,
                 pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the profile page as html
     """
@@ -3562,7 +3562,13 @@ def htmlProfile(defaultTimeline: str,
         if isSystemAccount(nickname):
             profileFooterStr = '      </td>\n'
             profileFooterStr += '      <td valign="top" class="col-right">\n'
-            # TODO add newswire
+            iconsDir = getIconsDir(baseDir)
+            profileFooterStr += \
+                getRightColumnContent(baseDir, 'news', domainFull,
+                                      httpPrefix, translate,
+                                      iconsDir, False, False,
+                                      newswire, False,
+                                      False, None)
             profileFooterStr += '      </td>\n'
             profileFooterStr += '  </tr>\n'
             profileFooterStr += '  </tbody>\n'

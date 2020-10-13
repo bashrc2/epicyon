@@ -5887,6 +5887,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -5960,6 +5961,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.personCache,
                                                 YTReplacementDomain,
                                                 showPublishedDateOnly,
+                                                self.server.newswire,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -7422,6 +7424,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -7509,6 +7512,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7596,6 +7600,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7658,6 +7663,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.personCache,
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
+                                self.server.newswire,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
