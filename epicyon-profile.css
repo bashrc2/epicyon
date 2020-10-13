@@ -50,6 +50,7 @@
     --button-selected-highlighted: darkgreen;
     --button-approve: darkgreen;
     --button-deny: darkred;
+    --button-width-chars: 10ch;
     --button-height: 10px;
     --button-height-padding-mobile: 20px;
     --button-height-padding: 10px;
@@ -1225,7 +1226,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 200px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1241,7 +1242,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1257,7 +1258,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1273,7 +1274,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1792,7 +1793,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
@@ -1808,7 +1809,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
@@ -1824,7 +1825,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
@@ -1840,7 +1841,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
