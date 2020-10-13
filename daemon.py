@@ -8591,9 +8591,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   callingDomain, self.path,
                                   self.server.baseDir,
                                   self.server.httpPrefix,
-                                  self.server.domain,
+                                  self.server.domainFull,
                                   self.server.port,
                                   self.server.proxyType,
+                                  self.server.translate,
                                   GETstartTime, GETtimings,
                                   self.server.debug)
             return
