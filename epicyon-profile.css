@@ -81,6 +81,7 @@
     --column-left-icon-size: 20%;
     --column-left-icon-size-mobile: 10%;
     --column-left-image-width-mobile: 40vw;
+    --column-right-image-width-mobile: 100vw;
     --column-right-icon-size: 20%;
     --newswire-date-color: white;
     --newswire-voted-background-color: black;
@@ -1572,7 +1573,8 @@ aside .toggle-inside li {
     }
     .rightColImg {
         background: var(--main-bg-color);
-        width: 100vw;
+        width: var(--column-right-image-width-mobile);
+        float: right;
         margin: 0 0;
         padding: 0 0;
     }
