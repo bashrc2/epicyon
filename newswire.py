@@ -26,14 +26,17 @@ def rss2Header(httpPrefix: str,
     rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
     rssStr += "<rss version=\"2.0\">"
     rssStr += '<channel>'
+
     if title.startswith('News'):
         rssStr += '    <title>Newswire</title>'
-    else:
-        rssStr += '    <title>' + translate[title] + '</title>'
-    if title.startswith('News'):
         rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
             '/newswire.xml' + '</link>'
+    elif title.startswith('Site'):
+        rssStr += '    <title>' + domainFull + '</title>'
+        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+            '/blogs/rss.xml' + '</link>'
     else:
+        rssStr += '    <title>' + translate[title] + '</title>'
         rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/rss.xml' + '</link>'
     return rssStr

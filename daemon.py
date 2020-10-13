@@ -4291,7 +4291,7 @@ class PubServer(BaseHTTPRequestHandler):
         if msg:
             msg = rss2Header(httpPrefix,
                              'news', domainFull,
-                             'News', translate) + msg + rss2Footer()
+                             'Site', translate) + msg + rss2Footer()
 
             msg = msg.encode('utf-8')
             self._set_headers('text/xml', len(msg),
