@@ -47,9 +47,18 @@ def setInstanceTypeInConfig(baseDir: str, name: str) -> bool:
     configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['newsInstance'] = ('news' in name)
-    configJson['mediaInstance'] = ('media' in name)
-    configJson['blogsInstance'] = ('blog' in name)
+
+    configJson['newsInstance'] = False
+    configJson['mediaInstance'] = False
+    configJson['blogsInstance'] = False
+
+    if 'news' in name:
+        configJson['newsInstance'] = True
+    if 'media' in name:
+        configJson['mediaInstance'] = True
+    if 'blog' in name:
+        configJson['blogsInstance'] = True
+
     return saveJson(configJson, configFilename)
 
 
@@ -260,7 +269,6 @@ def setThemeIndymedia(baseDir: str):
     name = 'indymedia'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setInstanceTypeInConfig(baseDir, 'news')
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -329,6 +337,7 @@ def setThemeIndymedia(baseDir: str):
         "login-button-fg-color": "white"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setInstanceTypeInConfig(baseDir, 'news')
 
 
 def setThemeBlue(baseDir: str):
