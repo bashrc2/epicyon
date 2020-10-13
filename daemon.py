@@ -9109,8 +9109,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   'GET busy time',
                                   'permitted directory')
 
-        if self.path.startswith('/login') or \
-           (self.path == '/' and not authorized):
+        # show the login screen
+        if (self.path.startswith('/login') or
+            (self.path == '/' and
+             not authorized and
+             not self.server.newsInstance)):
             # request basic auth
             msg = htmlLogin(self.server.translate,
                             self.server.baseDir).encode('utf-8')
@@ -9120,6 +9123,33 @@ class PubServer(BaseHTTPRequestHandler):
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'permitted directory',
                                       'login shown')
+            return
+
+        # show the news front page
+        if self.path == '/' and \
+           not authorized and \
+           self.server.newsInstance:
+            if callingDomain.endswith('.onion') and \
+               self.server.onionDomain:
+                self._logout_redirect('http://' +
+                                      self.server.onionDomain +
+                                      '/users/news', None,
+                                      callingDomain)
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                self._logout_redirect('http://' +
+                                      self.server.i2pDomain +
+                                      '/users/news', None,
+                                      callingDomain)
+            else:
+                self._logout_redirect(self.server.httpPrefix +
+                                      '://' +
+                                      self.server.domainFull +
+                                      '/users/news',
+                                      None, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'permitted directory',
+                                      'news front page shown')
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
