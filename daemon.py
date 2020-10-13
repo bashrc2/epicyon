@@ -3328,6 +3328,34 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['displayNickname'] != actorJson['name']:
                             actorJson['name'] = fields['displayNickname']
                             actorChanged = True
+
+                    # change media instance status
+                    if fields.get('mediaInstance'):
+                        self.server.mediaInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['mediaInstance'] == 'on':
+                            self.server.mediaInstance = True
+                            self.server.blogsInstance = False
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'tlmedia'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.mediaInstance:
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "mediaInstance",
+                                           self.server.mediaInstance)
+
+                    # change theme
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
@@ -3671,32 +3699,6 @@ class PubServer(BaseHTTPRequestHandler):
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 setTheme(baseDir, currTheme, domain)
-
-                    # change media instance status
-                    if fields.get('mediaInstance'):
-                        self.server.mediaInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['mediaInstance'] == 'on':
-                            self.server.mediaInstance = True
-                            self.server.blogsInstance = False
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'tlmedia'
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.mediaInstance:
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
 
                     # change news instance status
                     if fields.get('newsInstance'):
