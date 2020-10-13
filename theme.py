@@ -1017,9 +1017,11 @@ def setNewsAvatar(baseDir: str, name: str,
     newFilename = baseDir + '/img/icons/' + name + '/avatar_news.png'
     if not os.path.isfile(newFilename):
         return
-    filename = baseDir + 'cache/avatars/' + \
-        httpPrefix + '://' + domainFull + '/users/' + nickname + \
-        '.png'
+    avatarFilename = \
+        httpPrefix + '://' + domainFull + '/users/' + nickname + '.png'
+    avatarFilename = avatarFilename.replace('/', '-')
+    filename = baseDir + 'cache/avatars/' + avatarFilename
+
     if os.path.isfile(filename):
         os.remove(filename)
     if os.path.isdir(baseDir + 'cache/avatars'):
