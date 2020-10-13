@@ -195,6 +195,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
 from theme import enableGrayscale
@@ -3412,6 +3413,11 @@ class PubServer(BaseHTTPRequestHandler):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
                                  domain)
+                        setNewsAvatar(baseDir,
+                                      fields['themeDropdown'],
+                                      httpPrefix,
+                                      domain,
+                                      domainFull)
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actorJson)

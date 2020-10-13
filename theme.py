@@ -1008,6 +1008,27 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     pass
 
 
+def setNewsAvatar(baseDir: str, name: str,
+                  httpPrefix: str,
+                  domain: str, domainFull: str) -> None:
+    """Sets the avatar for the news account
+    """
+    nickname = 'news'
+    newFilename = baseDir + '/img/icons/' + name + '/avatar_news.png'
+    if not os.path.isfile(newFilename):
+        return
+    filename = baseDir + 'cache/avatars/' + \
+        httpPrefix + '://' + domainFull + '/users/' + nickname + \
+        '.png'
+    if os.path.isfile(filename):
+        os.remove(filename)
+    if os.path.isdir(baseDir + 'cache/avatars'):
+        copyfile(newFilename, filename)
+    copyfile(newFilename,
+             baseDir + '/accounts/' +
+             nickname + '@' + domain + '/avatar.png')
+
+
 def setTheme(baseDir: str, name: str, domain: str) -> bool:
     result = False
 
