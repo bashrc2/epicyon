@@ -310,7 +310,9 @@ def setThemeIndymedia(baseDir: str):
         "column-left-width": "10vw",
         "column-center-width": "70vw",
         "column-right-width": "20vw",
-        "column-right-icon-size": "11%"
+        "column-right-icon-size": "11%",
+        "login-button-color": "red"
+        "login-button-fg-color": "white"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 

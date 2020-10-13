@@ -86,6 +86,8 @@
     --column-right-icon-size: 20%;
     --newswire-date-color: white;
     --newswire-voted-background-color: black;
+    --login-button-color: #2965;
+    --login-button-fg-color: black;
 }
 
 @font-face {
@@ -579,8 +581,8 @@ input[type=submit] {
 }
 
 .loginButton {
-    background-color: #2965;
-    color: #000;
+    background-color: var(--login-button-color);
+    color: var(--login-button-fg-color);
     float: none;
     margin: 0px 10px;
     padding: 12px 40px;
