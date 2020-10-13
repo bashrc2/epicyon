@@ -3423,14 +3423,14 @@ def htmlProfile(defaultTimeline: str,
         avatarDescription = profileJson['summary'].replace('<br>', '\n')
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
-    profileHeaderStr = '<div class="hero-image">\n'
-    profileHeaderStr += '  <div class="hero-text">\n'
 
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
         profileHeaderStr += '<div class="timeline-banner"></div>\n'
         profileHeaderStr += loginButton
     else:
+        profileHeaderStr = '<div class="hero-image">\n'
+        profileHeaderStr += '  <div class="hero-text">\n'
         profileHeaderStr += \
             '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
             '" title="' + avatarDescription + '" alt="' + \
