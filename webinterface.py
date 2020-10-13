@@ -3423,16 +3423,19 @@ def htmlProfile(defaultTimeline: str,
         avatarDescription = profileJson['summary'].replace('<br>', '\n')
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
-    profileHeaderStr = '<div class="hero-image">'
-    profileHeaderStr += '  <div class="hero-text">'
+    profileHeaderStr = '<div class="hero-image">\n'
+    profileHeaderStr += '  <div class="hero-text">\n'
 
-    # TODO maybe display an alternate system account banner
-    if not isSystemAccount(nickname):
+    # If this is the news account then show a different banner
+    if isSystemAccount(nickname):
+        profileHeaderStr += '<div class="timeline-banner"></div>\n'
+        profileHeaderStr += loginButton
+    else:
         profileHeaderStr += \
             '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
             '" title="' + avatarDescription + '" alt="' + \
-            avatarDescription + '" class="title">'
-        profileHeaderStr += '    <h1>' + displayName + '</h1>'
+            avatarDescription + '" class="title">\n'
+        profileHeaderStr += '    <h1>' + displayName + '</h1>\n'
         iconsDir = getIconsDir(baseDir)
         profileHeaderStr += \
             '<p><b>@' + nickname + '@' + domainFull + '</b><br>'
@@ -3440,11 +3443,12 @@ def htmlProfile(defaultTimeline: str,
             '<a href="/users/' + nickname + \
             '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
             translate['QR Code'] + '">' + \
-            '<img class="qrcode" src="/' + iconsDir + '/qrcode.png" /></a></p>'
-        profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>'
-    profileHeaderStr += loginButton
-    profileHeaderStr += '  </div>'
-    profileHeaderStr += '</div>'
+            '<img class="qrcode" src="/' + iconsDir + \
+            '/qrcode.png" /></a></p>\n'
+        profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>\n'
+        profileHeaderStr += loginButton
+        profileHeaderStr += '  </div>\n'
+        profileHeaderStr += '</div>\n'
 
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \
