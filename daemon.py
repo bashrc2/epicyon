@@ -164,6 +164,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import isSystemAccount
 from utils import setConfigParam
 from utils import getConfigParam
 from utils import removeIdEnding
@@ -1240,8 +1241,9 @@ class PubServer(BaseHTTPRequestHandler):
         loginNickname, loginPassword, register = \
             htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
         if loginNickname:
-            if loginNickname == 'news' or loginNickname == 'inbox':
-                print('Invalid username login: ' + loginNickname)
+            if isSystemAccount(loginNickname):
+                print('Invalid username login: ' + loginNickname +
+                      ' (system account)')
                 self._clearLoginDetails(loginNickname, callingDomain)
                 self.server.POSTbusy = False
                 return

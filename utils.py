@@ -19,6 +19,14 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def isSystemAccount(nickname: str) -> bool:
+    """Returns true if the given nickname is a system account
+    """
+    if nickname == 'news' or nickname == 'inbox':
+        return True
+    return False
+
+
 def createConfig(baseDir: str) -> None:
     """Creates a configuration file
     """

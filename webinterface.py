@@ -25,6 +25,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import isSystemAccount
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import searchBoxPosts
@@ -3222,14 +3223,6 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '  </center>\n'
 
     return timelineStr
-
-
-def isSystemAccount(nickname: str) -> bool:
-    """Returns true if the given nickname is a system account
-    """
-    if nickname == 'news' or nickname == 'inbox':
-        return True
-    return False
 
 
 def htmlProfile(defaultTimeline: str,
