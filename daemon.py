@@ -8335,9 +8335,32 @@ class PubServer(BaseHTTPRequestHandler):
                                   '_mastoApi(callingDomain)')
 
         if self.path == '/logout':
-            msg = \
-                htmlLogin(self.server.translate,
-                          self.server.baseDir, False).encode('utf-8')
+            if not self.server.newsInstance:
+                msg = \
+                    htmlLogin(self.server.translate,
+                              self.server.baseDir, False).encode('utf-8')
+            else:
+                # for news instances log out to the front page
+                getPerson = \
+                    personLookup(self.server.domain,
+                                 '/users/news',
+                                 self.server.baseDir)
+                msg = \
+                    htmlProfile(self.server.defaultTimeline,
+                                self.server.recentPostsCache,
+                                self.server.maxRecentPosts,
+                                self.server.translate,
+                                self.server.projectVersion,
+                                self.server.baseDir,
+                                self.server.httpPrefix, False,
+                                getPerson, 'roles',
+                                self.server.session,
+                                self.server.cachedWebfingers,
+                                self.server.personCache,
+                                self.server.YTReplacementDomain,
+                                self.server.showPublishedDateOnly,
+                                None, None, None)
+                msg = msg.encode('utf-8')
             self._logout_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
