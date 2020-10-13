@@ -499,7 +499,10 @@ def htmlBlogPageRSS2(authorized: bool, session,
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
-        return blogRSS2 + rss2Footer()
+        if includeHeader:
+            return blogRSS2 + rss2Footer()
+        else:
+            return blogRSS2
 
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
@@ -525,7 +528,10 @@ def htmlBlogPageRSS2(authorized: bool, session,
                                  domainFull, item,
                                  None, True)
 
-    return blogRSS2 + rss2Footer()
+    if includeHeader:
+        return blogRSS2 + rss2Footer()
+    else:
+        return blogRSS2
 
 
 def htmlBlogPageRSS3(authorized: bool, session,
