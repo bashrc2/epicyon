@@ -8340,29 +8340,24 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlLogin(self.server.translate,
                               self.server.baseDir, False).encode('utf-8')
             else:
-                # for news instances log out to the front page
-                getPerson = \
-                    personLookup(self.server.domain,
-                                 '/users/news',
-                                 self.server.baseDir)
-                msg = \
-                    htmlProfile(self.server.defaultTimeline,
-                                self.server.recentPostsCache,
-                                self.server.maxRecentPosts,
-                                self.server.translate,
-                                self.server.projectVersion,
-                                self.server.baseDir,
-                                self.server.httpPrefix, False,
-                                getPerson, '',
-                                self.server.session,
-                                self.server.cachedWebfingers,
-                                self.server.personCache,
-                                self.server.YTReplacementDomain,
-                                self.server.showPublishedDateOnly,
-                                {}, None, None)
-                msg = msg.encode('utf-8')
-            self._logout_headers('text/html', len(msg), callingDomain)
-            self._write(msg)
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    self._redirect_headers('http://' +
+                                           self.server.onionDomain +
+                                           '/users/news', None,
+                                           callingDomain)
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    self._redirect_headers('http://' +
+                                           self.server.i2pDomain +
+                                           '/users/news', None,
+                                           callingDomain)
+                else:
+                    self._redirect_headers(self.server.httpPrefix +
+                                           '://' +
+                                           self.server.domainFull +
+                                           '/users/news',
+                                           None, callingDomain)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       '_nodeinfo(callingDomain)',
                                       'logout')
