@@ -3224,6 +3224,14 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     return timelineStr
 
 
+def isSystemAccount(nickname: str) -> bool:
+    """Returns true if the given nickname is a system account
+    """
+    if nickname == 'news' or nickname == 'inbox':
+        return True
+    return False
+
+
 def htmlProfile(defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
@@ -3296,7 +3304,7 @@ def htmlProfile(defaultTimeline: str,
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
-        if donateUrl:
+        if donateUrl and not isSystemAccount(nickname):
             donateSection += \
                 '    <p><a href="' + donateUrl + \
                 '"><button class="donateButton">' + translate['Donate'] + \
@@ -3444,26 +3452,28 @@ def htmlProfile(defaultTimeline: str,
         '    <a href="' + usersPath + '#buttonheader"><button class="' + \
         postsButton + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/following#buttonheader">' + \
-        '<button class="' + followingButton + '"><span>' + \
-        translate['Following'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/followers#buttonheader">' + \
-        '<button class="' + followersButton + \
-        '"><span>' + translate['Followers'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/roles#buttonheader">' + \
-        '<button class="' + rolesButton + '"><span>' + translate['Roles'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/skills#buttonheader">' + \
-        '<button class="' + skillsButton + '"><span>' + \
-        translate['Skills'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/shares#buttonheader">' + \
-        '<button class="' + sharesButton + '"><span>' + \
-        translate['Shares'] + ' </span></button></a>'
+    if not isSystemAccount(nickname):
+        profileStr += \
+            '    <a href="' + usersPath + '/following#buttonheader">' + \
+            '<button class="' + followingButton + '"><span>' + \
+            translate['Following'] + ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/followers#buttonheader">' + \
+            '<button class="' + followersButton + \
+            '"><span>' + translate['Followers'] + ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/roles#buttonheader">' + \
+            '<button class="' + rolesButton + '"><span>' + \
+            translate['Roles'] + \
+            ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/skills#buttonheader">' + \
+            '<button class="' + skillsButton + '"><span>' + \
+            translate['Skills'] + ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/shares#buttonheader">' + \
+            '<button class="' + sharesButton + '"><span>' + \
+            translate['Shares'] + ' </span></button></a>'
     profileStr += editProfileStr + logoutStr
     profileStr += '  </center>'
     profileStr += '</div>'

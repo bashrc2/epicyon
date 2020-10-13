@@ -8288,11 +8288,6 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
-        # don't allow access to system actors
-        if self.path == '/users/news' or self.path == '/users/inbox':
-            self._400()
-            return
-
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
             callingDomain = self.headers['Host']
