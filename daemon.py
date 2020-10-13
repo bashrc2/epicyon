@@ -522,6 +522,21 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
 
+    def _logout_redirect(self, redirect: str, cookie: str,
+                         callingDomain: str) -> None:
+        if '://' not in redirect:
+            print('REDIRECT ERROR: redirect is not an absolute url ' +
+                  redirect)
+
+        self.send_response(303)
+        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
+        self.send_header('Location', redirect)
+        self.send_header('Host', callingDomain)
+        self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('Content-Length', '0')
+        self.send_header('X-Robots-Tag', 'noindex')
+        self.end_headers()
+
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
                           callingDomain: str) -> None:
         self.send_response(200)
@@ -8339,25 +8354,27 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlLogin(self.server.translate,
                               self.server.baseDir, False).encode('utf-8')
+                self._logout_headers('text/html', len(msg), callingDomain)
+                self._write(msg)
             else:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
-                    self._redirect_headers('http://' +
-                                           self.server.onionDomain +
-                                           '/users/news', None,
-                                           callingDomain)
+                    self._logout_redirect('http://' +
+                                          self.server.onionDomain +
+                                          '/users/news', None,
+                                          callingDomain)
                 elif (callingDomain.endswith('.i2p') and
                       self.server.i2pDomain):
-                    self._redirect_headers('http://' +
-                                           self.server.i2pDomain +
-                                           '/users/news', None,
-                                           callingDomain)
+                    self._logout_redirect('http://' +
+                                          self.server.i2pDomain +
+                                          '/users/news', None,
+                                          callingDomain)
                 else:
-                    self._redirect_headers(self.server.httpPrefix +
-                                           '://' +
-                                           self.server.domainFull +
-                                           '/users/news',
-                                           None, callingDomain)
+                    self._logout_redirect(self.server.httpPrefix +
+                                          '://' +
+                                          self.server.domainFull +
+                                          '/users/news',
+                                          None, callingDomain)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       '_nodeinfo(callingDomain)',
                                       'logout')
