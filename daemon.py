@@ -3360,6 +3360,15 @@ class PubServer(BaseHTTPRequestHandler):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
                                  domain)
+                        self.server.blogsInstance = \
+                            getConfigParam(baseDir,
+                                           "blogsInstance")
+                        self.server.mediaInstance = \
+                            getConfigParam(baseDir,
+                                           "mediaInstance")
+                        self.server.newsInstance = \
+                            getConfigParam(baseDir,
+                                           "newsInstance")
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actorJson)
