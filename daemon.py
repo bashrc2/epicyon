@@ -8359,7 +8359,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.personCache,
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
-                                None, None, None)
+                                {}, None, None)
                 msg = msg.encode('utf-8')
             self._logout_headers('text/html', len(msg), callingDomain)
             self._write(msg)
