@@ -3421,6 +3421,19 @@ def htmlProfile(defaultTimeline: str,
     if isSystemAccount(nickname):
         profileHeaderStr = '<div class="timeline-banner"></div>\n'
         profileHeaderStr += '<center>' + loginButton + '</center>\n'
+
+        profileHeaderStr += '<table class="timeline">\n'
+        profileHeaderStr += '  <colgroup>\n'
+        profileHeaderStr += '    <col span="1" class="column-left">\n'
+        profileHeaderStr += '    <col span="1" class="column-center">\n'
+        profileHeaderStr += '    <col span="1" class="column-right">\n'
+        profileHeaderStr += '  </colgroup>\n'
+        profileHeaderStr += '  <tbody>\n'
+        profileHeaderStr += '    <tr>\n'
+        profileHeaderStr += '      <td valign="top" class="col-left">\n'
+        # TODO add links
+        profileHeaderStr += '      </td>\n'
+        profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
         profileHeaderStr = '<div class="hero-image">\n'
         profileHeaderStr += '  <div class="hero-text">\n'
@@ -3538,8 +3551,21 @@ def htmlProfile(defaultTimeline: str,
                 htmlProfileShares(actor, translate,
                                   nickname, domainFull,
                                   extraJson) + licenseStr
+
+        # Footer which is only used for system accounts
+        profileFooterStr = ''
+        if isSystemAccount(nickname):
+            profileFooterStr = '      </td>\n'
+            profileFooterStr += '      <td valign="top" class="col-right">\n'
+            # TODO add newswire
+            profileFooterStr += '      </td>\n'
+            profileFooterStr += '  </tr>\n'
+            profileFooterStr += '  </tbody>\n'
+            profileFooterStr += '</table>\n'
+
         profileStr = \
-            htmlHeader(cssFilename, profileStyle) + profileStr + htmlFooter()
+            htmlHeader(cssFilename, profileStyle) + \
+            profileStr + profileFooterStr + htmlFooter()
     return profileStr
 
 
