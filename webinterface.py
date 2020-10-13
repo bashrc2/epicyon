@@ -3487,6 +3487,10 @@ def htmlProfile(defaultTimeline: str,
         profileStyle = \
             cssFile.read().replace('image.png',
                                    profileJson['image']['url'])
+        if isSystemAccount(nickname):
+            profileStyle = \
+                profileStyle.replace('banner.png',
+                                     '/users/' + nickname + '/' + bannerFile)
 
         licenseStr = \
             '<a href="https://gitlab.com/bashrc2/epicyon">' + \
