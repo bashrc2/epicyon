@@ -6216,7 +6216,7 @@ def htmlTimeline(defaultTimeline: str,
     # typically the blogs button
     # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
-        if not minimal:
+        if not minimal or defaultTimeline == 'tlnews':
             tlStr += \
                 '      <a href="' + usersPath + \
                 '/tlblogs"><button class="' + \
