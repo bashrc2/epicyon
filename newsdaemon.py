@@ -202,9 +202,8 @@ def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
     for published, fields in oldNewswire.items():
         if not newNewswire.get(published):
             continue
-        newNewswire[published][1] = fields[1]
-        newNewswire[published][2] = fields[2]
-        newNewswire[published][4] = fields[4]
+        for i in range(1, 5):
+            newNewswire[published][i] = fields[i]
 
 
 def runNewswireDaemon(baseDir: str, httpd,
