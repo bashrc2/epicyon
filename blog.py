@@ -478,7 +478,8 @@ def htmlBlogPage(authorized: bool, session,
 def htmlBlogPageRSS2(authorized: bool, session,
                      baseDir: str, httpPrefix: str, translate: {},
                      nickname: str, domain: str, port: int,
-                     noOfItems: int, pageNumber: int) -> str:
+                     noOfItems: int, pageNumber: int,
+                     includeHeader: bool) -> str:
     """Returns an RSS version 2 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -490,7 +491,10 @@ def htmlBlogPageRSS2(authorized: bool, session,
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, 'Blog', translate)
+    blogRSS2 = ''
+    if includeHeader:
+        blogRSS2 = rss2Header(httpPrefix, nickname, domainFull,
+                              'Blog', translate)
 
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
@@ -504,7 +508,10 @@ def htmlBlogPageRSS2(authorized: bool, session,
                                        pageNumber)
 
     if not timelineJson:
-        return blogRSS2 + rss2Footer()
+        if includeHeader:
+            return blogRSS2 + rss2Footer()
+        else:
+            return blogRSS2
 
     if pageNumber is not None:
         for item in timelineJson['orderedItems']:

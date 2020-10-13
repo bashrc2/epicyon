@@ -213,6 +213,8 @@ from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
 from newswire import getRSSfromDict
+from newswire import rss2Header
+from newswire import rss2Footer
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
 import os
@@ -4228,7 +4230,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      domain,
                                      port,
-                                     maxPostsInRSSFeed, 1)
+                                     maxPostsInRSSFeed, 1,
+                                     True)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     self._set_headers('text/xml', len(msg),
@@ -4241,6 +4244,66 @@ class PubServer(BaseHTTPRequestHandler):
                                               'sharedInbox enabled',
                                               'blog rss2')
                     return
+        if debug:
+            print('Failed to get rss2 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
+    def _getRSS2site(self, authorized: bool,
+                     callingDomain: str, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domainFull: str, port: int, proxyType: str,
+                     translate: {},
+                     GETstartTime, GETtimings: {},
+                     debug: bool):
+        """Returns an RSS2 feed for all blogs on this instance
+        """
+        if not self.server.session:
+            print('Starting new session during RSS request')
+            self.server.session = \
+                createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during RSS request')
+                self._404()
+                return
+
+        msg = ''
+        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+            for acct in dirs:
+                if '@' not in acct:
+                    continue
+                if 'inbox@' in acct or 'news@' in acct:
+                    continue
+                nickname = acct.split('@')[0]
+                domain = acct.split('@')[1]
+                msg += \
+                    htmlBlogPageRSS2(authorized,
+                                     self.server.session,
+                                     baseDir,
+                                     httpPrefix,
+                                     self.server.translate,
+                                     nickname,
+                                     domain,
+                                     port,
+                                     maxPostsInRSSFeed, 1,
+                                     False)
+        if msg:
+            msg = rss2Header(httpPrefix,
+                             'news', domainFull,
+                             'News', translate) + msg + rss2Footer()
+
+            msg = msg.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if debug:
+                print('Sent rss2 feed: ' +
+                      path + ' ' + callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'sharedInbox enabled',
+                                      'blog rss2')
+            return
         if debug:
             print('Failed to get rss2 feed: ' +
                   path + ' ' + callingDomain)
@@ -8513,15 +8576,26 @@ class PubServer(BaseHTTPRequestHandler):
         # RSS 2.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
-            self._getRSS2feed(authorized,
-                              callingDomain, self.path,
-                              self.server.baseDir,
-                              self.server.httpPrefix,
-                              self.server.domain,
-                              self.server.port,
-                              self.server.proxyType,
-                              GETstartTime, GETtimings,
-                              self.server.debug)
+            if not self.path == '/blog/rss.xml':
+                self._getRSS2feed(authorized,
+                                  callingDomain, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  self.server.proxyType,
+                                  GETstartTime, GETtimings,
+                                  self.server.debug)
+            else:
+                self._getRSS2site(authorized,
+                                  callingDomain, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  self.server.proxyType,
+                                  GETstartTime, GETtimings,
+                                  self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,

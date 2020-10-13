@@ -5508,10 +5508,15 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             iconsDir + '/edit.png" /></a>\n'
 
     # RSS icon
+    if nickname != 'news':
+        # rss feed for this account
+        rssUrl = httpPrefix + '://' + domainFull + \
+            '/blog/' + nickname + '/rss.xml'
+    else:
+        # rss feed for all accounts on the instance
+        rssUrl = httpPrefix + '://' + domainFull + '/blog/rss.xml'
     htmlStr += \
-        '      <a href="' + \
-        httpPrefix + '://' + domainFull + \
-        '/blog/' + nickname + '/rss.xml">' + \
+        '      <a href="' + rssUrl + '">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
         translate['RSS feed for this site'] + \
