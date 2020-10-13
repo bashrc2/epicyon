@@ -3431,7 +3431,12 @@ def htmlProfile(defaultTimeline: str,
         profileHeaderStr += '  <tbody>\n'
         profileHeaderStr += '    <tr>\n'
         profileHeaderStr += '      <td valign="top" class="col-left">\n'
-        # TODO add links
+        iconsDir = getIconsDir(baseDir)
+        profileHeaderStr += \
+            getLeftColumnContent(baseDir, 'news', domainFull,
+                                 httpPrefix, translate,
+                                 iconsDir, False,
+                                 False, None)
         profileHeaderStr += '      </td>\n'
         profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
