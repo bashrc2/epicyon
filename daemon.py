@@ -12090,6 +12090,16 @@ def runDaemon(showPublishedDateOnly: bool,
         print('Creating news inbox: news@' + domain)
         createNewsInbox(baseDir, domain, port, httpPrefix)
 
+    # set the avatar for the news account
+    themeName = getConfigParam(baseDir, 'theme')
+    if not themeName:
+        themeName = 'default'
+    setNewsAvatar(baseDir,
+                  themeName,
+                  httpPrefix,
+                  domain,
+                  httpd.domainFull)
+
     if not os.path.isdir(baseDir + '/cache'):
         os.mkdir(baseDir + '/cache')
     if not os.path.isdir(baseDir + '/cache/actors'):

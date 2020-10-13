@@ -69,7 +69,6 @@ from shares import sendShareViaServer
 from shares import sendUndoShareViaServer
 from shares import addShare
 from theme import setTheme
-from theme import setNewsAvatar
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 import argparse
@@ -1937,15 +1936,6 @@ if YTDomain:
 
 if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
-
-    domainFull = domain
-    if port != 80 and port != 443:
-        domainFull = domain + ':' + str(port)
-    setNewsAvatar(baseDir,
-                  themeName,
-                  httpPrefix,
-                  domain,
-                  domainFull)
 
 if __name__ == "__main__":
     runDaemon(args.dateonly,
