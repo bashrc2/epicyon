@@ -1026,7 +1026,7 @@ def setNewsAvatar(baseDir: str, name: str,
 
     if os.path.isfile(filename):
         os.remove(filename)
-    if os.path.isdir(baseDir + 'cache/avatars'):
+    if os.path.isdir(baseDir + '/cache/avatars'):
         copyfile(newFilename, filename)
     copyfile(newFilename,
              baseDir + '/accounts/' +
