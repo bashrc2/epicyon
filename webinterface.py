@@ -3339,10 +3339,9 @@ def htmlProfile(defaultTimeline: str,
         donateSection += '</div>\n'
 
     if not authorized:
-        if not isSystemAccount(nickname):
-            loginButton = \
-                '<br><a href="/login"><button class="loginButton">' + \
-                translate['Login'] + '</button></a>'
+        loginButton = \
+            '<br><a href="/login"><button class="loginButton">' + \
+            translate['Login'] + '</button></a>'
     else:
         editProfileStr = \
             '<a href="' + usersPath + \
@@ -3426,20 +3425,23 @@ def htmlProfile(defaultTimeline: str,
         avatarDescription = avatarDescription.replace('</p>', '')
     profileHeaderStr = '<div class="hero-image">'
     profileHeaderStr += '  <div class="hero-text">'
-    profileHeaderStr += \
-        '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
-        '" title="' + avatarDescription + '" alt="' + \
-        avatarDescription + '" class="title">'
-    profileHeaderStr += '    <h1>' + displayName + '</h1>'
-    iconsDir = getIconsDir(baseDir)
-    profileHeaderStr += \
-        '<p><b>@' + nickname + '@' + domainFull + '</b><br>'
-    profileHeaderStr += \
-        '<a href="/users/' + nickname + \
-        '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
-        translate['QR Code'] + '">' + \
-        '<img class="qrcode" src="/' + iconsDir + '/qrcode.png" /></a></p>'
-    profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>'
+
+    # TODO maybe display an alternate system account banner
+    if not isSystemAccount(nickname):
+        profileHeaderStr += \
+            '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
+            '" title="' + avatarDescription + '" alt="' + \
+            avatarDescription + '" class="title">'
+        profileHeaderStr += '    <h1>' + displayName + '</h1>'
+        iconsDir = getIconsDir(baseDir)
+        profileHeaderStr += \
+            '<p><b>@' + nickname + '@' + domainFull + '</b><br>'
+        profileHeaderStr += \
+            '<a href="/users/' + nickname + \
+            '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
+            translate['QR Code'] + '">' + \
+            '<img class="qrcode" src="/' + iconsDir + '/qrcode.png" /></a></p>'
+        profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>'
     profileHeaderStr += loginButton
     profileHeaderStr += '  </div>'
     profileHeaderStr += '</div>'
