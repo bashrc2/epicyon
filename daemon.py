@@ -3355,6 +3355,58 @@ class PubServer(BaseHTTPRequestHandler):
                                            "mediaInstance",
                                            self.server.mediaInstance)
 
+                    # change news instance status
+                    if fields.get('newsInstance'):
+                        self.server.newsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['newsInstance'] == 'on':
+                            self.server.newsInstance = True
+                            self.server.blogsInstance = False
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'tlnews'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.newsInstance:
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "newsInstance",
+                                           self.server.mediaInstance)
+
+                    # change blog instance status
+                    if fields.get('blogsInstance'):
+                        self.server.blogsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['blogsInstance'] == 'on':
+                            self.server.blogsInstance = True
+                            self.server.mediaInstance = False
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'tlblogs'
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.blogsInstance:
+                            self.server.blogsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "blogsInstance",
+                                           self.server.blogsInstance)
+
                     # change theme
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
@@ -3714,58 +3766,6 @@ class PubServer(BaseHTTPRequestHandler):
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 setTheme(baseDir, currTheme, domain)
-
-                    # change news instance status
-                    if fields.get('newsInstance'):
-                        self.server.newsInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['newsInstance'] == 'on':
-                            self.server.newsInstance = True
-                            self.server.blogsInstance = False
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'tlnews'
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.newsInstance:
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "newsInstance",
-                                           self.server.mediaInstance)
-
-                    # change blog instance status
-                    if fields.get('blogsInstance'):
-                        self.server.blogsInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['blogsInstance'] == 'on':
-                            self.server.blogsInstance = True
-                            self.server.mediaInstance = False
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'tlblogs'
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.blogsInstance:
-                            self.server.blogsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "blogsInstance",
-                                           self.server.blogsInstance)
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
