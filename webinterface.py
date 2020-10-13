@@ -3339,9 +3339,10 @@ def htmlProfile(defaultTimeline: str,
         donateSection += '</div>\n'
 
     if not authorized:
-        loginButton = \
-            '<br><a href="/login"><button class="loginButton">' + \
-            translate['Login'] + '</button></a>'
+        if not isSystemAccount(nickname):
+            loginButton = \
+                '<br><a href="/login"><button class="loginButton">' + \
+                translate['Login'] + '</button></a>'
     else:
         editProfileStr = \
             '<a href="' + usersPath + \
