@@ -64,7 +64,6 @@ def getTheme(baseDir: str) -> str:
 
 
 def removeTheme(baseDir: str):
-    setInstanceTypeInConfig(baseDir, 'none')
     themeFiles = getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
@@ -1026,6 +1025,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
 def setTheme(baseDir: str, name: str, domain: str) -> bool:
     result = False
 
+    setInstanceTypeInConfig(baseDir, 'none')
     prevThemeName = getTheme(baseDir)
 
     themes = getThemesList()
