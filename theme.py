@@ -1021,8 +1021,6 @@ def setNewsAvatar(baseDir: str, name: str,
         httpPrefix + '://' + domainFull + '/users/' + nickname + '.png'
     avatarFilename = avatarFilename.replace('/', '-')
     filename = baseDir + '/cache/avatars/' + avatarFilename
-    print('news avatar new filename ' + newFilename)
-    print('news avatar filename ' + filename)
 
     if os.path.isfile(filename):
         os.remove(filename)
