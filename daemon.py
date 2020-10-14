@@ -1646,6 +1646,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('You cannot perform an option action on yourself')
 
         # person options screen, view button
+        # See htmlPersonOptions
         if '&submitView=' in optionsConfirmParams:
             if debug:
                 print('Viewing ' + optionsActor)
@@ -1655,6 +1656,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # person options screen, petname submit button
+        # See htmlPersonOptions
         if '&submitPetname=' in optionsConfirmParams and petname:
             if debug:
                 print('Change petname to ' + petname)
@@ -1671,6 +1673,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # person options screen, person notes submit button
+        # See htmlPersonOptions
         if '&submitPersonNotes=' in optionsConfirmParams:
             if debug:
                 print('Change person notes')
@@ -1742,7 +1745,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # block person button on person option screen
+        # person options screen, block button
+        # See htmlPersonOptions
         if '&submitBlock=' in optionsConfirmParams:
             if debug:
                 print('Adding block by ' + chooserNickname +
@@ -1751,7 +1755,8 @@ class PubServer(BaseHTTPRequestHandler):
                      domain,
                      optionsNickname, optionsDomainFull)
 
-        # unblock button on person option screen
+        # person options screen, unblock button
+        # See htmlPersonOptions
         if '&submitUnblock=' in optionsConfirmParams:
             if debug:
                 print('Unblocking ' + optionsActor)
@@ -1767,7 +1772,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # follow button on person option screen
+        # person options screen, follow button
+        # See htmlPersonOptions
         if '&submitFollow=' in optionsConfirmParams:
             if debug:
                 print('Following ' + optionsActor)
@@ -1783,7 +1789,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # unfollow button on person option screen
+        # person options screen, unfollow button
+        # See htmlPersonOptions
         if '&submitUnfollow=' in optionsConfirmParams:
             if debug:
                 print('Unfollowing ' + optionsActor)
@@ -1799,7 +1806,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # DM button on person option screen
+        # person options screen, DM button
+        # See htmlPersonOptions
         if '&submitDM=' in optionsConfirmParams:
             if debug:
                 print('Sending DM to ' + optionsActor)
@@ -1819,7 +1827,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # snooze button on person option screen
+        # person options screen, snooze button
+        # See htmlPersonOptions
         if '&submitSnooze=' in optionsConfirmParams:
             usersPath = path.split('/personoptions')[0]
             thisActor = httpPrefix + '://' + domainFull + usersPath
@@ -1840,7 +1849,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        # unsnooze button on person option screen
+        # person options screen, unsnooze button
+        # See htmlPersonOptions
         if '&submitUnSnooze=' in optionsConfirmParams:
             usersPath = path.split('/personoptions')[0]
             thisActor = httpPrefix + '://' + domainFull + usersPath
@@ -1861,7 +1871,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        # report button on person option screen
+        # person options screen, report button
+        # See htmlPersonOptions
         if '&submitReport=' in optionsConfirmParams:
             if debug:
                 print('Reporting ' + optionsActor)
