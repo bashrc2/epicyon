@@ -1688,7 +1688,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # person on calendar checkbox on person option screen
+        # person options screen, on calendar checkbox
+        # See htmlPersonOptions
         if '&submitOnCalendar=' in optionsConfirmParams:
             onCalendar = None
             if 'onCalendar=' in optionsConfirmParams:
@@ -1707,6 +1708,32 @@ class PubServer(BaseHTTPRequestHandler):
                                          domain,
                                          optionsNickname,
                                          optionsDomainFull)
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, permission to post to newswire
+        # See htmlPersonOptions
+        if '&submitPostToNews=' in optionsConfirmParams:
+            postsToNews = None
+            if 'postsToNews=' in optionsConfirmParams:
+                postsToNews = optionsConfirmParams.split('postsToNews=')[1]
+                if '&' in postsToNews:
+                    postsToNews = postsToNews.split('&')[0]
+            newswireBlockedFilename = \
+                self.server.baseDir + '/accounts/' + \
+                optionsNickname + '@' + optionsDomain + '/.nonewswire'
+            if postsToNews == 'on':
+                if os.path.isfile(newswireBlockedFilename):
+                    os.remove(newswireBlockedFilename)
+            else:
+                noNewswireFile = open(newswireBlockedFilename, "w+")
+                if noNewswireFile:
+                    noNewswireFile.write('\n')
+                    noNewswireFile.close()
             self._redirect_headers(usersPath + '/' +
                                    self.server.defaultTimeline +
                                    '?page='+str(pageNumber), cookie,
@@ -4446,6 +4473,7 @@ class PubServer(BaseHTTPRequestHandler):
                 PGPfingerprint = getPGPfingerprint(actorJson)
             msg = htmlPersonOptions(self.server.translate,
                                     baseDir, domain,
+                                    domainFull,
                                     originPathStr,
                                     optionsActor,
                                     optionsProfileUrl,

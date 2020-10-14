@@ -3531,8 +3531,9 @@ def rejectAnnounce(announceFilename: str):
     """
     if not os.path.isfile(announceFilename + '.reject'):
         rejectAnnounceFile = open(announceFilename + '.reject', "w+")
-        rejectAnnounceFile.write('\n')
-        rejectAnnounceFile.close()
+        if rejectAnnounceFile:
+            rejectAnnounceFile.write('\n')
+            rejectAnnounceFile.close()
 
 
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,

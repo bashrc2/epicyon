@@ -7275,7 +7275,8 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
 
 
 def htmlPersonOptions(translate: {}, baseDir: str,
-                      domain: str, originPathStr: str,
+                      domain: str, domainFull: str,
+                      originPathStr: str,
                       optionsActor: str,
                       optionsProfileUrl: str,
                       optionsLink: str,
@@ -7413,24 +7414,37 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             'name="submitPetname">' + \
             translate['Submit'] + '</button><br>\n'
 
+    # checkbox for receiving calendar events
     if isFollowingActor(baseDir, nickname, domain, optionsActor):
-        if receivingCalendarEvents(baseDir, nickname, domain,
-                                   optionsNickname, optionsDomainFull):
-            optionsStr += \
+        checkboxStr = \
+            '    <input type="checkbox" ' + \
+            'class="profilecheckbox" name="onCalendar" checked> ' + \
+            translate['Receive calendar events from this account'] + \
+            '\n    <button type="submit" class="buttonsmall" ' + \
+            'name="submitOnCalendar">' + \
+            translate['Submit'] + '</button><br>\n'
+        if not receivingCalendarEvents(baseDir, nickname, domain,
+                                       optionsNickname, optionsDomainFull):
+            checkboxStr = checkboxStr.replace(' checked>', '>')
+        optionsStr += checkboxStr
+
+    # checkbox for permission to post to newswire
+    if optionsDomainFull == domainFull:
+        if isModerator(baseDir, nickname) and \
+           not isModerator(baseDir, optionsNickname):
+            newswireBlockedFilename = \
+                baseDir + '/accounts/' + \
+                optionsNickname + '@' + optionsDomain + '/.nonewswire'
+            checkboxStr = \
                 '    <input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar" checked> ' + \
-                translate['Receive calendar events from this account'] + \
+                'class="profilecheckbox" name="postsToNews" checked> ' + \
+                translate['Allow news posts'] + \
                 '\n    <button type="submit" class="buttonsmall" ' + \
-                'name="submitOnCalendar">' + \
+                'name="submitPostToNews">' + \
                 translate['Submit'] + '</button><br>\n'
-        else:
-            optionsStr += \
-                '    <input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar"> ' + \
-                translate['Receive calendar events from this account'] + \
-                '\n    <button type="submit" class="buttonsmall" ' + \
-                'name="submitOnCalendar">' + \
-                translate['Submit'] + '</button><br>\n'
+            if os.path.isfile(newswireBlockedFilename):
+                checkboxStr = checkboxStr.replace(' checked>', '>')
+            optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
     optionsStr += \
