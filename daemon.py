@@ -1645,7 +1645,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('You cannot perform an option action on yourself')
 
-        # view button on person option screen
+        # person options screen, view button
         if '&submitView=' in optionsConfirmParams:
             if debug:
                 print('Viewing ' + optionsActor)
@@ -1654,7 +1654,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # petname submit button on person option screen
+        # person options screen, petname submit button
         if '&submitPetname=' in optionsConfirmParams and petname:
             if debug:
                 print('Change petname to ' + petname)
@@ -1670,7 +1670,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # person notes submit button on person option screen
+        # person options screen, person notes submit button
         if '&submitPersonNotes=' in optionsConfirmParams:
             if debug:
                 print('Change person notes')
@@ -1718,22 +1718,23 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See htmlPersonOptions
         if '&submitPostToNews=' in optionsConfirmParams:
-            postsToNews = None
-            if 'postsToNews=' in optionsConfirmParams:
-                postsToNews = optionsConfirmParams.split('postsToNews=')[1]
-                if '&' in postsToNews:
-                    postsToNews = postsToNews.split('&')[0]
-            newswireBlockedFilename = \
-                self.server.baseDir + '/accounts/' + \
-                optionsNickname + '@' + optionsDomain + '/.nonewswire'
-            if postsToNews == 'on':
-                if os.path.isfile(newswireBlockedFilename):
-                    os.remove(newswireBlockedFilename)
-            else:
-                noNewswireFile = open(newswireBlockedFilename, "w+")
-                if noNewswireFile:
-                    noNewswireFile.write('\n')
-                    noNewswireFile.close()
+            if isModerator(self.server.baseDir, chooserNickname):
+                postsToNews = None
+                if 'postsToNews=' in optionsConfirmParams:
+                    postsToNews = optionsConfirmParams.split('postsToNews=')[1]
+                    if '&' in postsToNews:
+                        postsToNews = postsToNews.split('&')[0]
+                newswireBlockedFilename = \
+                    self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain + '/.nonewswire'
+                if postsToNews == 'on':
+                    if os.path.isfile(newswireBlockedFilename):
+                        os.remove(newswireBlockedFilename)
+                else:
+                    noNewswireFile = open(newswireBlockedFilename, "w+")
+                    if noNewswireFile:
+                        noNewswireFile.write('\n')
+                        noNewswireFile.close()
             self._redirect_headers(usersPath + '/' +
                                    self.server.defaultTimeline +
                                    '?page='+str(pageNumber), cookie,
