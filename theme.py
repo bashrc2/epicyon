@@ -414,6 +414,7 @@ def setThemeStarlight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
         "focus-color": "darkred",
         "font-size-button-mobile": "36px",
