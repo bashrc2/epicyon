@@ -597,6 +597,9 @@ def setThemeHighVis(baseDir: str):
 def setThemeLCD(baseDir: str):
     name = 'lcd'
     themeParams = {
+        "newswire-date-color": "#cfb42b",
+        "column-left-header-background": "#9fb42b",
+        "column-left-header-color": "#33390d",
         "main-bg-color": "#9fb42b",
         "column-left-color": "#33390d",
         "column-left-fg-color": "#9fb42b",
