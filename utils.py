@@ -273,6 +273,19 @@ def isEvil(domain: str) -> bool:
     return False
 
 
+def containsInvalidChars(jsonStr: str) -> bool:
+    """Does the given json string contain invalid characters?
+    e.g. dubious clacks/admin dogwhistles
+    """
+    invalidStrings = {
+        '卐', '卍', '࿕', '࿖', '࿗', '࿘'
+    }
+    for isInvalid in invalidStrings:
+        if isInvalid in jsonStr:
+            return True
+    return False
+
+
 def createPersonDir(nickname: str, domain: str, baseDir: str,
                     dirname: str) -> str:
     """Create a directory for a person

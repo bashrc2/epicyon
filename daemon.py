@@ -164,6 +164,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import containsInvalidChars
 from utils import isSystemAccount
 from utils import setConfigParam
 from utils import getConfigParam
@@ -11758,6 +11759,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 self.server.POSTbusy = False
                 return
+
+        if containsInvalidChars(messageBytes.decode("utf-8")):
+            self._400()
+            self.server.POSTbusy = False
+            return
 
         # convert the raw bytes to json
         messageJson = json.loads(messageBytes)
