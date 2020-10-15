@@ -598,7 +598,8 @@ def setThemeLCD(baseDir: str):
     name = 'lcd'
     themeParams = {
         "main-bg-color": "#9fb42b",
-        "column-left-color": "#9fb42b",
+        "column-left-color": "#33390d",
+        "column-left-fg-color": "#9fb42b",
         "link-bg-color": "#33390d",
         "text-entry-foreground": "#33390d",
         "text-entry-background": "#9fb42b",
@@ -607,7 +608,6 @@ def setThemeLCD(baseDir: str):
         "main-bg-color-dm": "#5fb42b",
         "main-header-color-roles": "#9fb42b",
         "main-fg-color": "#33390d",
-        "column-left-fg-color": "#33390d",
         "border-color": "#33390d",
         "border-width": "5px",
         "main-link-color": "#9fb42b",
