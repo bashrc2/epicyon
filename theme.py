@@ -1025,9 +1025,8 @@ def setNewsAvatar(baseDir: str, name: str,
     """Sets the avatar for the news account
     """
     nickname = 'news'
-    if name != 'default':
-        newFilename = baseDir + '/img/icons/' + name + '/avatar_news.png'
-    else:
+    newFilename = baseDir + '/img/icons/' + name + '/avatar_news.png'
+    if not os.path.isfile(newFilename):
         newFilename = baseDir + '/img/icons/avatar_news.png'
     if not os.path.isfile(newFilename):
         return
