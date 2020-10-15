@@ -322,6 +322,7 @@ def setThemeBlue(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "newswire-date-color": "blue",
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
         "font-size": "45px",
