@@ -840,6 +840,7 @@ def setThemeLight(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "newswire-date-color": "grey",
         "focus-color": "grey",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
