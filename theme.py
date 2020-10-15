@@ -478,6 +478,8 @@ def setThemeHenge(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "column-left-image-width-mobile": "40vw",
+        "column-right-image-width-mobile": "40vw",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
