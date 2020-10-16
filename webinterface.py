@@ -5597,7 +5597,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
     for dateStr, item in newswire.items():
         publishedDate = \
             datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S+00:00")
-        dateShown = publishedDate.strftime("%Y-%m-%d")
+        dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
