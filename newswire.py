@@ -19,6 +19,7 @@ from utils import isSuspended
 from utils import containsInvalidChars
 from blocking import isBlockedDomain
 
+
 def rss2Header(httpPrefix: str,
                nickname: str, domainFull: str,
                title: str, translate: {}) -> str:
@@ -51,7 +52,7 @@ def rss2Footer() -> str:
     return rssStr
 
 
-def xml2StrToDict(xmlStr: str, moderated: bool,
+def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                   maxPostsPerSource: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
@@ -125,7 +126,7 @@ def xml2StrToDict(xmlStr: str, moderated: bool,
     return result
 
 
-def atomFeedToDict(xmlStr: str, moderated: bool,
+def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                    maxPostsPerSource: int) -> {}:
     """Converts an atom feed string to a dictionary
     """
@@ -199,18 +200,18 @@ def atomFeedToDict(xmlStr: str, moderated: bool,
     return result
 
 
-def xmlStrToDict(xmlStr: str, moderated: bool,
+def xmlStrToDict(baseDir: str, xmlStr: str, moderated: bool,
                  maxPostsPerSource: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
-        return xml2StrToDict(xmlStr, moderated, maxPostsPerSource)
+        return xml2StrToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
-        return atomFeedToDict(xmlStr, moderated, maxPostsPerSource)
+        return atomFeedToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
     return {}
 
 
-def getRSS(session, url: str, moderated: bool,
+def getRSS(baseDir: str, session, url: str, moderated: bool,
            maxPostsPerSource: int,
            maxFeedSizeKb: int) -> {}:
     """Returns an RSS url as a dict
@@ -238,7 +239,8 @@ def getRSS(session, url: str, moderated: bool,
         if result:
             if int(len(result.text) / 1024) < maxFeedSizeKb and \
                not containsInvalidChars(result.text):
-                return xmlStrToDict(result.text, moderated, maxPostsPerSource)
+                return xmlStrToDict(baseDir, result.text, moderated,
+                                    maxPostsPerSource)
             else:
                 print('WARN: feed is too large: ' + url)
     except requests.exceptions.RequestException as e:
@@ -449,7 +451,7 @@ def getDictFromNewswire(session, baseDir: str,
             moderated = True
             url = url.replace('*', '').strip()
 
-        itemsList = getRSS(session, url, moderated,
+        itemsList = getRSS(baseDir, session, url, moderated,
                            maxPostsPerSource, maxFeedSizeKb)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
