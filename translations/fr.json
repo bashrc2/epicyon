@@ -309,5 +309,6 @@
     "Edit News Post": "Modifier l'article d'actualité",
     "A list of editor nicknames. One per line.": "Une liste de surnoms d'éditeur. Un par ligne.",
     "Site Editors": "Éditeurs du site",
-    "Allow news posts": "Autoriser les articles d'actualité"
+    "Allow news posts": "Autoriser les articles d'actualité",
+    "Publish": "Publier"
 }

@@ -3568,7 +3568,7 @@ def htmlProfile(defaultTimeline: str,
                                       httpPrefix, translate,
                                       iconsDir, False, False,
                                       newswire, False,
-                                      False, None)
+                                      False, None, False)
             profileFooterStr += '      </td>\n'
             profileFooterStr += '  </tr>\n'
             profileFooterStr += '  </tbody>\n'
@@ -5589,7 +5589,7 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
     return totalVotesStr
 
 
-def htmlNewswire(newswire: str, nickname: str, moderator: bool,
+def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
                  translate: {}, positiveVoting: bool, iconsDir: str) -> str:
     """Converts a newswire dict into html
     """
@@ -5660,7 +5660,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           iconsDir: str, moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
-                          showBackButton: bool, timelinePath: str) -> str:
+                          showBackButton: bool, timelinePath: str,
+                          showPublishButton: bool) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5702,6 +5703,13 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             '      <a href="' + timelinePath + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
+
+    if showPublishButton:
+        htmlStr += \
+            '        <a href="' + \
+            '/users/' + nickname + '/newblog">' + \
+            '<button class="button">' + \
+            translate['Publish'] + '</button></a>\n'
 
     if editor:
         if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
@@ -5820,7 +5828,7 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                               httpPrefix, translate,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
-                              True, timelinePath)
+                              True, timelinePath, True)
     htmlStr += htmlFooter()
     return htmlStr
 
@@ -6507,7 +6515,7 @@ def htmlTimeline(defaultTimeline: str,
                                            httpPrefix, translate, iconsDir,
                                            moderator, editor,
                                            newswire, positiveVoting,
-                                           False, None)
+                                           False, None, True)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'

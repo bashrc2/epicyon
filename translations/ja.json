@@ -309,5 +309,6 @@
     "Edit News Post": "ニュース投稿を編集する",
     "A list of editor nicknames. One per line.": "編集者のニックネームのリスト。 1行に1つ。",
     "Site Editors": "サイト編集者",
-    "Allow news posts": "ニュース投稿を許可する"
+    "Allow news posts": "ニュース投稿を許可する",
+    "Publish": "公開する"
 }
