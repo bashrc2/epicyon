@@ -41,7 +41,9 @@
     --font-size-tox2: 8px;
     --time-color: #aaa;
     --time-vertical-align: 4px;
+    --publish-button-text: #FFFFFF;
     --button-text: #FFFFFF;
+    --publish-button-background: #999;
     --button-background: #999;
     --button-background-hover: #777;
     --button-selected: #666;
@@ -1236,9 +1238,9 @@ aside .toggle-inside li {
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
-        background-color: var(--button-background);
+        background-color: var(--publish-button-background);
         border: none;
-        color: var(--button-text);
+        color: var(--publish-button-text);
         text-align: center;
         font-size: var(--font-size-header);
         font-family: Arial, Helvetica, sans-serif;
@@ -1819,9 +1821,9 @@ aside .toggle-inside li {
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
-        background-color: var(--button-background);
+        background-color: var(--publish-button-background);
         border: none;
-        color: var(--button-text);
+        color: var(--publish-button-text);
         text-align: center;
         font-size: var(--font-size-newswire-mobile);
         font-family: Arial, Helvetica, sans-serif;
