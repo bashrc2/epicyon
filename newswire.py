@@ -66,8 +66,9 @@ def getNewswireTags(text: str) -> []:
     tags = []
     for wrd in words:
         if wrd.startswith('#'):
-            if wrd not in tags:
-                tags.append(wrd)
+            if len(wrd) > 1:
+                if wrd not in tags:
+                    tags.append(wrd)
     return tags
 
 
