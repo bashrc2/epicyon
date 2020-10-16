@@ -1248,7 +1248,7 @@ aside .toggle-inside li {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 5px;
+        margin: -20px 5px;
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1823,7 +1823,7 @@ aside .toggle-inside li {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: var(--font-size-button-mobile);
+        font-size: var(--font-size-newswire-mobile);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
         width: 20%;
