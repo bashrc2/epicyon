@@ -236,8 +236,8 @@ def getRSS(session, url: str, moderated: bool,
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         if result:
-            if int(len(result) / 1024) < maxFeedSizeKb and \
-               not containsInvalidChars(result):
+            if int(len(result.text) / 1024) < maxFeedSizeKb and \
+               not containsInvalidChars(result.text):
                 return xmlStrToDict(result.text, moderated, maxPostsPerSource)
             else:
                 print('WARN: feed is too large: ' + url)
