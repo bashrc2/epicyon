@@ -5707,7 +5707,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if showPublishButton:
         htmlStr += \
             '        <a href="' + \
-            '/users/' + nickname + '/newblog">' + \
+            '/users/' + nickname + '/newblog" ' + \
+            'title="' + translate['Publish a news article'] + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
 

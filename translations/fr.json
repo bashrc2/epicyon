@@ -310,5 +310,6 @@
     "A list of editor nicknames. One per line.": "Une liste de surnoms d'éditeur. Un par ligne.",
     "Site Editors": "Éditeurs du site",
     "Allow news posts": "Autoriser les articles d'actualité",
-    "Publish": "Publier"
+    "Publish": "Publier",
+    "Publish a news article": "Publier un article de presse"
 }

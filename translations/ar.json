@@ -310,5 +310,6 @@
     "A list of editor nicknames. One per line.": "قائمة بأسماء المحرر. واحد في كل سطر.",
     "Site Editors": "محررو الموقع",
     "Allow news posts": "السماح بنشر الأخبار",
-    "Publish": "ينشر"
+    "Publish": "ينشر",
+    "Publish a news article": "انشر مقالة إخبارية"
 }
