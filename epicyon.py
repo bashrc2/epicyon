@@ -112,6 +112,10 @@ parser.add_argument('--i2pDomain', dest='i2pDomain', type=str,
 parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
+parser.add_argument('--postsPerSource',
+                    dest='maxNewswirePostsPerSource', type=int,
+                    default=5,
+                    help='Maximum newswire posts per feed or account')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -1938,7 +1942,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.dateonly,
+    runDaemon(args.maxNewswirePostsPerSource,
+              args.dateonly,
               args.votingtime,
               args.positivevoting,
               args.minimumvotes,

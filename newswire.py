@@ -396,7 +396,7 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
             os.remove(newswireModerationFilename)
 
 
-def getDictFromNewswire(session, baseDir: str) -> {}:
+def getDictFromNewswire(session, baseDir: str, maxPostsPerSource: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'

@@ -11951,7 +11951,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(showPublishedDateOnly: bool,
+def runDaemon(maxNewswirePostsPerSource: int,
+              showPublishedDateOnly: bool,
               votingTimeMins: int,
               positiveVoting: bool,
               newswireVotesThreshold: int,
@@ -12071,6 +12072,12 @@ def runDaemon(showPublishedDateOnly: bool,
     # number of votes needed to remove a newswire item from the news timeline
     # or if positive voting is anabled to add the item to the news timeline
     httpd.newswireVotesThreshold = newswireVotesThreshold
+
+    # For each newswire source (account or rss feed)
+    # this is the maximum number of posts to show for each.
+    # This avoids one or two sources from dominating the news,
+    # and also prevents big feeds from slowing down page load times
+    httpd.maxNewswirePostsPerSource = maxNewswirePostsPerSource
 
     # Show only the date at the bottom of posts, and not the time
     httpd.showPublishedDateOnly = showPublishedDateOnly
