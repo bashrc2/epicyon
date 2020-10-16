@@ -52,6 +52,17 @@ def rss2Footer() -> str:
     return rssStr
 
 
+def addNewswireDictEntry(newswire: {}, dateStr: str,
+                         title: str, link: str,
+                         votesStatus: str, postFilename: str,
+                         description: str, moderated: bool) -> None:
+    """Update the newswire dictionary
+    """
+    newswire[dateStr] = [title, link,
+                         votesStatus, postFilename,
+                         description, moderated]
+
+
 def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                   maxPostsPerSource: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
@@ -97,9 +108,10 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
             postFilename = ''
             votesStatus = []
-            result[str(publishedDate)] = [title, link,
-                                          votesStatus, postFilename,
-                                          description, moderated]
+            addNewswireDictEntry(result, str(publishedDate),
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
@@ -112,10 +124,10 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                result[str(publishedDate) + '+00:00'] = \
-                    [title, link,
-                     votesStatus, postFilename,
-                     description, moderated]
+                addNewswireDictEntry(result, str(publishedDate) + '+00:00',
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -171,9 +183,10 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
             postFilename = ''
             votesStatus = []
-            result[str(publishedDate)] = [title, link,
-                                          votesStatus, postFilename,
-                                          description, moderated]
+            addNewswireDictEntry(result, str(publishedDate),
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
@@ -186,10 +199,10 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                result[str(publishedDate) + '+00:00'] = \
-                    [title, link,
-                     votesStatus, postFilename,
-                     description, moderated]
+                addNewswireDictEntry(result, str(publishedDate) + '+00:00',
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -363,10 +376,11 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     description = ''
-                    newswire[published] = \
-                        [postJsonObject['object']['summary'],
-                         postJsonObject['object']['url'], votes,
-                         fullPostFilename, description, moderated]
+                    addNewswireDictEntry(newswire, published,
+                                         postJsonObject['object']['summary'],
+                                         postJsonObject['object']['url'],
+                                         votes, fullPostFilename,
+                                         description, moderated)
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
