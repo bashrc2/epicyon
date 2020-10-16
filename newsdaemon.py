@@ -11,6 +11,7 @@ import time
 import datetime
 from collections import OrderedDict
 from newswire import getDictFromNewswire
+# from posts import sendSignedJson
 from posts import createNewsPost
 from content import removeHtmlTag
 from content import dangerousMarkup
@@ -70,13 +71,38 @@ def removeControlCharacters(content: str) -> str:
     return content
 
 
+def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
+                              hashtags: str, httpPrefix: str,
+                              domain: str, port: int,
+                              personCache: {},
+                              cachedWebfingers: {},
+                              federationList: [],
+                              sendThreads: [], postLog: []) -> bool:
+    """Applies hashtag rules to a news post.
+    Returns true if the post should be saved to the news timeline
+    of this instance
+    """
+    # TODO
+    # If routing to another instance
+    # sendSignedJson(postJsonObject: {}, session, baseDir: str,
+    #                nickname: str, domain: str, port: int,
+    #                toNickname: str, toDomain: str, toPort: int, cc: str,
+    #                httpPrefix: str, False, False,
+    #                federationList: [],
+    #                sendThreads: [], postLog: [], cachedWebfingers: {},
+    #                personCache: {}, False, __version__) -> int:
+    return True
+
+
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             domain: str, port: int,
                             newswire: {},
                             translate: {},
                             recentPostsCache: {}, maxRecentPosts: int,
                             session, cachedWebfingers: {},
-                            personCache: {}) -> None:
+                            personCache: {},
+                            federationList: [],
+                            sendThreads: [], postLog: []) -> None:
     """Converts rss items in a newswire into posts
     """
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
@@ -175,24 +201,33 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         moderated = item[5]
 
+        hashtags = item[6]
+        savePost = newswireHashtagProcessing(session, baseDir, blog, hashtags,
+                                             httpPrefix, domain, port,
+                                             personCache, cachedWebfingers,
+                                             federationList,
+                                             sendThreads, postLog)
+
         # save the post and update the index
-        if saveJson(blog, filename):
-            updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
+        if savePost:
+            if saveJson(blog, filename):
+                updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
 
-            # Save a file containing the time when the post arrived
-            # this can then later be used to construct the news timeline
-            # excluding items during the voting period
-            if moderated:
-                saveArrivedTime(baseDir, filename, blog['object']['arrived'])
-            else:
-                if os.path.isfile(filename + '.arrived'):
-                    os.remove(filename + '.arrived')
+                # Save a file containing the time when the post arrived
+                # this can then later be used to construct the news timeline
+                # excluding items during the voting period
+                if moderated:
+                    saveArrivedTime(baseDir, filename,
+                                    blog['object']['arrived'])
+                else:
+                    if os.path.isfile(filename + '.arrived'):
+                        os.remove(filename + '.arrived')
 
-            # set the url
-            newswire[originalDateStr][1] = \
-                '/users/news/statuses/' + statusNumber
-            # set the filename
-            newswire[originalDateStr][3] = filename
+                # set the url
+                newswire[originalDateStr][1] = \
+                    '/users/news/statuses/' + statusNumber
+                # set the filename
+                newswire[originalDateStr][3] = filename
 
 
 def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
@@ -251,7 +286,10 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.maxRecentPosts,
                                 httpd.session,
                                 httpd.cachedWebfingers,
-                                httpd.personCache)
+                                httpd.personCache,
+                                httpd.federationList,
+                                httpd.sendThreads,
+                                httpd.postLog)
         print('Newswire feed converted to ActivityPub')
 
         # wait a while before the next feeds update
