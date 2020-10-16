@@ -1211,13 +1211,12 @@ def createPublicPost(baseDir: str,
 def createBlogPost(baseDir: str,
                    nickname: str, domain: str, port: int, httpPrefix: str,
                    content: str, followersOnly: bool, saveToFile: bool,
-                   clientToServer: bool,
+                   clientToServer: bool, commentsEnabled: bool,
                    attachImageFilename: str, mediaType: str,
                    imageDescription: str, useBlurhash: bool,
                    inReplyTo=None, inReplyToAtomUri=None, subject=None,
                    schedulePost=False,
                    eventDate=None, eventTime=None, location=None) -> {}:
-    commentsEnabled = True
     blog = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
@@ -3532,8 +3531,9 @@ def rejectAnnounce(announceFilename: str):
     """
     if not os.path.isfile(announceFilename + '.reject'):
         rejectAnnounceFile = open(announceFilename + '.reject', "w+")
-        rejectAnnounceFile.write('\n')
-        rejectAnnounceFile.close()
+        if rejectAnnounceFile:
+            rejectAnnounceFile.write('\n')
+            rejectAnnounceFile.close()
 
 
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,

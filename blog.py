@@ -365,7 +365,7 @@ def htmlBlogPost(authorized: bool,
         blogStr += '<img style="width:3%;min-width:50px" ' + \
             'loading="lazy" alt="RSS 2.0" ' + \
             'title="RSS 2.0" src="/' + \
-            iconsDir + '/rss.png" /></a>'
+            iconsDir + '/logorss.png" /></a>'
 
         # blogStr += '<a href="' + httpPrefix + '://' + \
         #     domainFull + '/blog/' + nickname + '/rss.txt">'
@@ -461,7 +461,7 @@ def htmlBlogPage(authorized: bool, session,
             domainFull + '/blog/' + nickname + '/rss.xml">'
         blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
             'title="RSS 2.0" src="/' + \
-            iconsDir + '/rss.png" /></a>'
+            iconsDir + '/logorss.png" /></a>'
 
         # blogStr += '<a href="' + httpPrefix + '://' + \
         #     domainFull + '/blog/' + nickname + '/rss.txt">'
@@ -478,7 +478,8 @@ def htmlBlogPage(authorized: bool, session,
 def htmlBlogPageRSS2(authorized: bool, session,
                      baseDir: str, httpPrefix: str, translate: {},
                      nickname: str, domain: str, port: int,
-                     noOfItems: int, pageNumber: int) -> str:
+                     noOfItems: int, pageNumber: int,
+                     includeHeader: bool) -> str:
     """Returns an RSS version 2 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -490,12 +491,18 @@ def htmlBlogPageRSS2(authorized: bool, session,
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, 'Blog', translate)
+    blogRSS2 = ''
+    if includeHeader:
+        blogRSS2 = rss2Header(httpPrefix, nickname, domainFull,
+                              'Blog', translate)
 
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
-        return blogRSS2 + rss2Footer()
+        if includeHeader:
+            return blogRSS2 + rss2Footer()
+        else:
+            return blogRSS2
 
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
@@ -504,7 +511,10 @@ def htmlBlogPageRSS2(authorized: bool, session,
                                        pageNumber)
 
     if not timelineJson:
-        return blogRSS2 + rss2Footer()
+        if includeHeader:
+            return blogRSS2 + rss2Footer()
+        else:
+            return blogRSS2
 
     if pageNumber is not None:
         for item in timelineJson['orderedItems']:
@@ -518,7 +528,10 @@ def htmlBlogPageRSS2(authorized: bool, session,
                                  domainFull, item,
                                  None, True)
 
-    return blogRSS2 + rss2Footer()
+    if includeHeader:
+        return blogRSS2 + rss2Footer()
+    else:
+        return blogRSS2
 
 
 def htmlBlogPageRSS3(authorized: bool, session,

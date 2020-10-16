@@ -25,6 +25,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import isSystemAccount
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
 from utils import searchBoxPosts
@@ -3232,7 +3233,7 @@ def htmlProfile(defaultTimeline: str,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 showPublishedDateOnly: bool,
-                extraJson=None,
+                newswire: {}, extraJson=None,
                 pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the profile page as html
     """
@@ -3296,7 +3297,7 @@ def htmlProfile(defaultTimeline: str,
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
-        if donateUrl:
+        if donateUrl and not isSystemAccount(nickname):
             donateSection += \
                 '    <p><a href="' + donateUrl + \
                 '"><button class="donateButton">' + translate['Donate'] + \
@@ -3415,55 +3416,82 @@ def htmlProfile(defaultTimeline: str,
         avatarDescription = profileJson['summary'].replace('<br>', '\n')
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
-    profileHeaderStr = '<div class="hero-image">'
-    profileHeaderStr += '  <div class="hero-text">'
-    profileHeaderStr += \
-        '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
-        '" title="' + avatarDescription + '" alt="' + \
-        avatarDescription + '" class="title">'
-    profileHeaderStr += '    <h1>' + displayName + '</h1>'
-    iconsDir = getIconsDir(baseDir)
-    profileHeaderStr += \
-        '<p><b>@' + nickname + '@' + domainFull + '</b><br>'
-    profileHeaderStr += \
-        '<a href="/users/' + nickname + \
-        '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
-        translate['QR Code'] + '">' + \
-        '<img class="qrcode" src="/' + iconsDir + '/qrcode.png" /></a></p>'
-    profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>'
-    profileHeaderStr += loginButton
-    profileHeaderStr += '  </div>'
-    profileHeaderStr += '</div>'
+
+    # If this is the news account then show a different banner
+    if isSystemAccount(nickname):
+        profileHeaderStr = '<div class="timeline-banner"></div>\n'
+        profileHeaderStr += '<center>' + loginButton + '</center>\n'
+
+        profileHeaderStr += '<table class="timeline">\n'
+        profileHeaderStr += '  <colgroup>\n'
+        profileHeaderStr += '    <col span="1" class="column-left">\n'
+        profileHeaderStr += '    <col span="1" class="column-center">\n'
+        profileHeaderStr += '    <col span="1" class="column-right">\n'
+        profileHeaderStr += '  </colgroup>\n'
+        profileHeaderStr += '  <tbody>\n'
+        profileHeaderStr += '    <tr>\n'
+        profileHeaderStr += '      <td valign="top" class="col-left">\n'
+        iconsDir = getIconsDir(baseDir)
+        profileHeaderStr += \
+            getLeftColumnContent(baseDir, 'news', domainFull,
+                                 httpPrefix, translate,
+                                 iconsDir, False,
+                                 False, None)
+        profileHeaderStr += '      </td>\n'
+        profileHeaderStr += '      <td valign="top" class="col-center">\n'
+    else:
+        profileHeaderStr = '<div class="hero-image">\n'
+        profileHeaderStr += '  <div class="hero-text">\n'
+        profileHeaderStr += \
+            '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
+            '" title="' + avatarDescription + '" alt="' + \
+            avatarDescription + '" class="title">\n'
+        profileHeaderStr += '    <h1>' + displayName + '</h1>\n'
+        iconsDir = getIconsDir(baseDir)
+        profileHeaderStr += \
+            '<p><b>@' + nickname + '@' + domainFull + '</b><br>'
+        profileHeaderStr += \
+            '<a href="/users/' + nickname + \
+            '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
+            translate['QR Code'] + '">' + \
+            '<img class="qrcode" src="/' + iconsDir + \
+            '/qrcode.png" /></a></p>\n'
+        profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>\n'
+        profileHeaderStr += loginButton
+        profileHeaderStr += '  </div>\n'
+        profileHeaderStr += '</div>\n'
 
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \
         linkToTimelineEnd + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
-    profileStr += \
-        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
-        postsButton + '"><span>' + translate['Posts'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/following#buttonheader">' + \
-        '<button class="' + followingButton + '"><span>' + \
-        translate['Following'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/followers#buttonheader">' + \
-        '<button class="' + followersButton + \
-        '"><span>' + translate['Followers'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/roles#buttonheader">' + \
-        '<button class="' + rolesButton + '"><span>' + translate['Roles'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/skills#buttonheader">' + \
-        '<button class="' + skillsButton + '"><span>' + \
-        translate['Skills'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/shares#buttonheader">' + \
-        '<button class="' + sharesButton + '"><span>' + \
-        translate['Shares'] + ' </span></button></a>'
+    if not isSystemAccount(nickname):
+        profileStr += \
+            '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+            postsButton + '"><span>' + translate['Posts'] + \
+            ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/following#buttonheader">' + \
+            '<button class="' + followingButton + '"><span>' + \
+            translate['Following'] + ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/followers#buttonheader">' + \
+            '<button class="' + followersButton + \
+            '"><span>' + translate['Followers'] + ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/roles#buttonheader">' + \
+            '<button class="' + rolesButton + '"><span>' + \
+            translate['Roles'] + \
+            ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/skills#buttonheader">' + \
+            '<button class="' + skillsButton + '"><span>' + \
+            translate['Skills'] + ' </span></button></a>'
+        profileStr += \
+            '    <a href="' + usersPath + '/shares#buttonheader">' + \
+            '<button class="' + sharesButton + '"><span>' + \
+            translate['Shares'] + ' </span></button></a>'
     profileStr += editProfileStr + logoutStr
     profileStr += '  </center>'
     profileStr += '</div>'
@@ -3477,6 +3505,12 @@ def htmlProfile(defaultTimeline: str,
         profileStyle = \
             cssFile.read().replace('image.png',
                                    profileJson['image']['url'])
+        if isSystemAccount(nickname):
+            bannerFile, bannerFilename = \
+                getBannerFile(baseDir, nickname, domain)
+            profileStyle = \
+                profileStyle.replace('banner.png',
+                                     '/users/' + nickname + '/' + bannerFile)
 
         licenseStr = \
             '<a href="https://gitlab.com/bashrc2/epicyon">' + \
@@ -3522,8 +3556,27 @@ def htmlProfile(defaultTimeline: str,
                 htmlProfileShares(actor, translate,
                                   nickname, domainFull,
                                   extraJson) + licenseStr
+
+        # Footer which is only used for system accounts
+        profileFooterStr = ''
+        if isSystemAccount(nickname):
+            profileFooterStr = '      </td>\n'
+            profileFooterStr += '      <td valign="top" class="col-right">\n'
+            iconsDir = getIconsDir(baseDir)
+            profileFooterStr += \
+                getRightColumnContent(baseDir, 'news', domainFull,
+                                      httpPrefix, translate,
+                                      iconsDir, False, False,
+                                      newswire, False,
+                                      False, None, False)
+            profileFooterStr += '      </td>\n'
+            profileFooterStr += '  </tr>\n'
+            profileFooterStr += '  </tbody>\n'
+            profileFooterStr += '</table>\n'
+
         profileStr = \
-            htmlHeader(cssFilename, profileStyle) + profileStr + htmlFooter()
+            htmlHeader(cssFilename, profileStyle) + \
+            profileStr + profileFooterStr + htmlFooter()
     return profileStr
 
 
@@ -4426,21 +4479,35 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
-    avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
-    avatarLink += \
-        '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
-        translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>\n'
+    if '/users/news/' not in avatarUrl:
+        avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
+        avatarLink += \
+            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
+            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            '/></a>\n'
+    else:
+        avatarLink += \
+            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
+            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            '/>\n'
 
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
-        avatarLink = \
-            '        <a class="imageAnchor" href="/users/' + \
-            nickname + '?options=' + postActor + \
-            ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
-        avatarLink += \
-            '        <img loading="lazy" title="' + \
-            translate['Show options for this person'] + \
-            '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
+        if '/users/news/' not in avatarUrl:
+            avatarLink = \
+                '        <a class="imageAnchor" href="/users/' + \
+                nickname + '?options=' + postActor + \
+                ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
+            avatarLink += \
+                '        <img loading="lazy" title="' + \
+                translate['Show options for this person'] + \
+                '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
+        else:
+            # don't link to the person options for the news account
+            avatarLink += \
+                '        <img loading="lazy" title="' + \
+                translate['Show options for this person'] + \
+                '" src="' + avatarUrl + '" ' + avatarPosition + '/>\n'
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
 
@@ -4929,20 +4996,24 @@ def individualPostAsHtml(allowDownloads: bool,
 
                             if announceAvatarUrl:
                                 idx = 'Show options for this person'
-                                replyAvatarImageInPost = \
-                                    '        ' \
-                                    '<div class="timeline-avatar-reply">\n' \
-                                    '            <a class="imageAnchor" ' + \
-                                    'href="/users/' + nickname + \
-                                    '?options=' + \
-                                    announceActor + ';' + str(pageNumber) + \
-                                    ';' + announceAvatarUrl + \
-                                    messageIdStr + '">' \
-                                    '<img loading="lazy" src="' + \
-                                    announceAvatarUrl + '" ' \
-                                    'title="' + translate[idx] + \
-                                    '" alt=" "' + avatarPosition + \
-                                    '/></a>\n    </div>\n'
+                                if '/users/news/' not in announceAvatarUrl:
+                                    replyAvatarImageInPost = \
+                                        '        ' \
+                                        '<div class=' + \
+                                        '"timeline-avatar-reply">\n' \
+                                        '            ' + \
+                                        '<a class="imageAnchor" ' + \
+                                        'href="/users/' + nickname + \
+                                        '?options=' + \
+                                        announceActor + ';' + \
+                                        str(pageNumber) + \
+                                        ';' + announceAvatarUrl + \
+                                        messageIdStr + '">' \
+                                        '<img loading="lazy" src="' + \
+                                        announceAvatarUrl + '" ' \
+                                        'title="' + translate[idx] + \
+                                        '" alt=" "' + avatarPosition + \
+                                        '/></a>\n    </div>\n'
                         else:
                             titleStr += \
                                 '    <img loading="lazy" title="' + \
@@ -5437,10 +5508,15 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             iconsDir + '/edit.png" /></a>\n'
 
     # RSS icon
+    if nickname != 'news':
+        # rss feed for this account
+        rssUrl = httpPrefix + '://' + domainFull + \
+            '/blog/' + nickname + '/rss.xml'
+    else:
+        # rss feed for all accounts on the instance
+        rssUrl = httpPrefix + '://' + domainFull + '/blog/rss.xml'
     htmlStr += \
-        '      <a href="' + \
-        httpPrefix + '://' + domainFull + \
-        '/blog/' + nickname + '/rss.xml">' + \
+        '      <a href="' + rssUrl + '">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
         translate['RSS feed for this site'] + \
@@ -5513,7 +5589,7 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
     return totalVotesStr
 
 
-def htmlNewswire(newswire: str, nickname: str, moderator: bool,
+def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
                  translate: {}, positiveVoting: bool, iconsDir: str) -> str:
     """Converts a newswire dict into html
     """
@@ -5521,7 +5597,7 @@ def htmlNewswire(newswire: str, nickname: str, moderator: bool,
     for dateStr, item in newswire.items():
         publishedDate = \
             datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S+00:00")
-        dateShown = publishedDate.strftime("%Y-%m-%d")
+        dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
@@ -5584,7 +5660,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           iconsDir: str, moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
-                          showBackButton: bool, timelinePath: str) -> str:
+                          showBackButton: bool, timelinePath: str,
+                          showPublishButton: bool) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5626,6 +5703,14 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             '      <a href="' + timelinePath + '">' + \
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
+
+    if showPublishButton:
+        htmlStr += \
+            '        <a href="' + \
+            '/users/' + nickname + '/newblog" ' + \
+            'title="' + translate['Publish a news article'] + '">' + \
+            '<button class="publishbtn">' + \
+            translate['Publish'] + '</button></a>\n'
 
     if editor:
         if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
@@ -5744,9 +5829,34 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                               httpPrefix, translate,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
-                              True, timelinePath)
+                              True, timelinePath, True)
     htmlStr += htmlFooter()
     return htmlStr
+
+
+def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
+    """
+    returns the banner filename
+    """
+    # filename of the banner shown at the top
+    bannerFile = 'banner.png'
+    bannerFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.jpg'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.gif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.avif'
+        bannerFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/' + bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile = 'banner.webp'
+    return bannerFile, bannerFilename
 
 
 def htmlTimeline(defaultTimeline: str,
@@ -5824,23 +5934,7 @@ def htmlTimeline(defaultTimeline: str,
         cssFilename = baseDir + '/epicyon.css'
 
     # filename of the banner shown at the top
-    bannerFile = 'banner.png'
-    bannerFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.jpg'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.gif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.avif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.webp'
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
     # benchmark 1
     timeDiff = int((time.time() - timelineStartTime) * 1000)
@@ -6136,7 +6230,7 @@ def htmlTimeline(defaultTimeline: str,
     # typically the blogs button
     # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
-        if not minimal:
+        if not minimal or defaultTimeline == 'tlnews':
             tlStr += \
                 '      <a href="' + usersPath + \
                 '/tlblogs"><button class="' + \
@@ -6422,7 +6516,7 @@ def htmlTimeline(defaultTimeline: str,
                                            httpPrefix, translate, iconsDir,
                                            moderator, editor,
                                            newswire, positiveVoting,
-                                           False, None)
+                                           False, None, True)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
@@ -7190,7 +7284,8 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
 
 
 def htmlPersonOptions(translate: {}, baseDir: str,
-                      domain: str, originPathStr: str,
+                      domain: str, domainFull: str,
+                      originPathStr: str,
                       optionsActor: str,
                       optionsProfileUrl: str,
                       optionsLink: str,
@@ -7328,24 +7423,37 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             'name="submitPetname">' + \
             translate['Submit'] + '</button><br>\n'
 
+    # checkbox for receiving calendar events
     if isFollowingActor(baseDir, nickname, domain, optionsActor):
-        if receivingCalendarEvents(baseDir, nickname, domain,
-                                   optionsNickname, optionsDomainFull):
-            optionsStr += \
+        checkboxStr = \
+            '    <input type="checkbox" ' + \
+            'class="profilecheckbox" name="onCalendar" checked> ' + \
+            translate['Receive calendar events from this account'] + \
+            '\n    <button type="submit" class="buttonsmall" ' + \
+            'name="submitOnCalendar">' + \
+            translate['Submit'] + '</button><br>\n'
+        if not receivingCalendarEvents(baseDir, nickname, domain,
+                                       optionsNickname, optionsDomainFull):
+            checkboxStr = checkboxStr.replace(' checked>', '>')
+        optionsStr += checkboxStr
+
+    # checkbox for permission to post to newswire
+    if optionsDomainFull == domainFull:
+        if isModerator(baseDir, nickname) and \
+           not isModerator(baseDir, optionsNickname):
+            newswireBlockedFilename = \
+                baseDir + '/accounts/' + \
+                optionsNickname + '@' + optionsDomain + '/.nonewswire'
+            checkboxStr = \
                 '    <input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar" checked> ' + \
-                translate['Receive calendar events from this account'] + \
+                'class="profilecheckbox" name="postsToNews" checked> ' + \
+                translate['Allow news posts'] + \
                 '\n    <button type="submit" class="buttonsmall" ' + \
-                'name="submitOnCalendar">' + \
+                'name="submitPostToNews">' + \
                 translate['Submit'] + '</button><br>\n'
-        else:
-            optionsStr += \
-                '    <input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar"> ' + \
-                translate['Receive calendar events from this account'] + \
-                '\n    <button type="submit" class="buttonsmall" ' + \
-                'name="submitOnCalendar">' + \
-                translate['Submit'] + '</button><br>\n'
+            if os.path.isfile(newswireBlockedFilename):
+                checkboxStr = checkboxStr.replace(' checked>', '>')
+            optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
     optionsStr += \

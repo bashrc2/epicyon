@@ -16,6 +16,8 @@ from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
+from utils import containsInvalidChars
+from blocking import isBlockedDomain
 
 
 def rss2Header(httpPrefix: str,
@@ -26,14 +28,17 @@ def rss2Header(httpPrefix: str,
     rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
     rssStr += "<rss version=\"2.0\">"
     rssStr += '<channel>'
+
     if title.startswith('News'):
         rssStr += '    <title>Newswire</title>'
-    else:
-        rssStr += '    <title>' + translate[title] + '</title>'
-    if title.startswith('News'):
         rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
             '/newswire.xml' + '</link>'
+    elif title.startswith('Site'):
+        rssStr += '    <title>' + domainFull + '</title>'
+        rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
+            '/blog/rss.xml' + '</link>'
     else:
+        rssStr += '    <title>' + translate[title] + '</title>'
         rssStr += '    <link>' + httpPrefix + '://' + domainFull + \
             '/users/' + nickname + '/rss.xml' + '</link>'
     return rssStr
@@ -47,13 +52,15 @@ def rss2Footer() -> str:
     return rssStr
 
 
-def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
+def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
+                  maxPostsPerSource: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
         return {}
     result = {}
     rssItems = xmlStr.split('<item>')
+    postCtr = 0
     for rssItem in rssItems:
         if '<title>' not in rssItem:
             continue
@@ -75,6 +82,13 @@ def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
             description = description.split('</description>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
+        if '://' not in link:
+            continue
+        domain = link.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if isBlockedDomain(baseDir, domain):
+            continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
         parsed = False
@@ -86,6 +100,9 @@ def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
             result[str(publishedDate)] = [title, link,
                                           votesStatus, postFilename,
                                           description, moderated]
+            postCtr += 1
+            if postCtr >= maxPostsPerSource:
+                break
             parsed = True
         except BaseException:
             pass
@@ -93,7 +110,15 @@ def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
             try:
                 publishedDate = \
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                result[str(publishedDate) + '+00:00'] = [title, link]
+                postFilename = ''
+                votesStatus = []
+                result[str(publishedDate) + '+00:00'] = \
+                    [title, link,
+                     votesStatus, postFilename,
+                     description, moderated]
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
                 parsed = True
             except BaseException:
                 print('WARN: unrecognized RSS date format: ' + pubDate)
@@ -101,13 +126,15 @@ def xml2StrToDict(xmlStr: str, moderated: bool) -> {}:
     return result
 
 
-def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
+def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
+                   maxPostsPerSource: int) -> {}:
     """Converts an atom feed string to a dictionary
     """
     if '<entry>' not in xmlStr:
         return {}
     result = {}
     rssItems = xmlStr.split('<entry>')
+    postCtr = 0
     for rssItem in rssItems:
         if '<title>' not in rssItem:
             continue
@@ -129,6 +156,13 @@ def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
             description = description.split('</summary>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
+        if '://' not in link:
+            continue
+        domain = link.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if isBlockedDomain(baseDir, domain):
+            continue
         pubDate = rssItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
         parsed = False
@@ -140,6 +174,9 @@ def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
             result[str(publishedDate)] = [title, link,
                                           votesStatus, postFilename,
                                           description, moderated]
+            postCtr += 1
+            if postCtr >= maxPostsPerSource:
+                break
             parsed = True
         except BaseException:
             pass
@@ -147,7 +184,15 @@ def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
             try:
                 publishedDate = \
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                result[str(publishedDate) + '+00:00'] = [title, link]
+                postFilename = ''
+                votesStatus = []
+                result[str(publishedDate) + '+00:00'] = \
+                    [title, link,
+                     votesStatus, postFilename,
+                     description, moderated]
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
                 parsed = True
             except BaseException:
                 print('WARN: unrecognized atom feed date format: ' + pubDate)
@@ -155,17 +200,20 @@ def atomFeedToDict(xmlStr: str, moderated: bool) -> {}:
     return result
 
 
-def xmlStrToDict(xmlStr: str, moderated: bool) -> {}:
+def xmlStrToDict(baseDir: str, xmlStr: str, moderated: bool,
+                 maxPostsPerSource: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
-        return xml2StrToDict(xmlStr, moderated)
+        return xml2StrToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
-        return atomFeedToDict(xmlStr, moderated)
+        return atomFeedToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
     return {}
 
 
-def getRSS(session, url: str, moderated: bool) -> {}:
+def getRSS(baseDir: str, session, url: str, moderated: bool,
+           maxPostsPerSource: int,
+           maxFeedSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -188,7 +236,13 @@ def getRSS(session, url: str, moderated: bool) -> {}:
         print('WARN: no session specified for getRSS')
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
-        return xmlStrToDict(result.text, moderated)
+        if result:
+            if int(len(result.text) / 1024) < maxFeedSizeKb and \
+               not containsInvalidChars(result.text):
+                return xmlStrToDict(baseDir, result.text, moderated,
+                                    maxPostsPerSource)
+            else:
+                print('WARN: feed is too large: ' + url)
     except requests.exceptions.RequestException as e:
         print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
@@ -365,12 +419,15 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
             os.remove(newswireModerationFilename)
 
 
-def getDictFromNewswire(session, baseDir: str) -> {}:
+def getDictFromNewswire(session, baseDir: str,
+                        maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
     if not os.path.isfile(subscriptionsFilename):
         return {}
+
+    maxPostsPerSource = 5
 
     # add rss feeds
     rssFeed = []
@@ -394,12 +451,13 @@ def getDictFromNewswire(session, baseDir: str) -> {}:
             moderated = True
             url = url.replace('*', '').strip()
 
-        itemsList = getRSS(session, url, moderated)
+        itemsList = getRSS(baseDir, session, url, moderated,
+                           maxPostsPerSource, maxFeedSizeKb)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 
     # add blogs from each user account
-    addBlogsToNewswire(baseDir, result, 5)
+    addBlogsToNewswire(baseDir, result, maxPostsPerSource)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))

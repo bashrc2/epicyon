@@ -41,7 +41,9 @@
     --font-size-tox2: 8px;
     --time-color: #aaa;
     --time-vertical-align: 4px;
+    --publish-button-text: #FFFFFF;
     --button-text: #FFFFFF;
+    --publish-button-background: #999;
     --button-background: #999;
     --button-background-hover: #777;
     --button-selected: #666;
@@ -50,6 +52,7 @@
     --button-selected-highlighted: darkgreen;
     --button-approve: darkgreen;
     --button-deny: darkred;
+    --button-width-chars: 10ch;
     --button-height: 10px;
     --button-height-padding-mobile: 20px;
     --button-height-padding: 10px;
@@ -68,7 +71,7 @@
     --quote-font-weight: normal;
     --quote-font-size: 120%;
     --line-spacing: 130%;
-    --line-spacing-newswire: 100%;
+    --line-spacing-newswire: 120%;
     --newswire-item-moderated-color: white;
     --newswire-date-moderated-color: white;
     --column-left-width: 10vw;
@@ -81,9 +84,13 @@
     --column-left-icon-size: 20%;
     --column-left-icon-size-mobile: 10%;
     --column-left-image-width-mobile: 40vw;
+    --column-right-image-width-mobile: 100vw;
     --column-right-icon-size: 20%;
+    --column-right-icon-size-mobile: 10%;
     --newswire-date-color: white;
     --newswire-voted-background-color: black;
+    --login-button-color: #2965;
+    --login-button-fg-color: black;
 }
 
 @font-face {
@@ -577,8 +584,8 @@ input[type=submit] {
 }
 
 .loginButton {
-    background-color: #2965;
-    color: #000;
+    background-color: var(--login-button-color);
+    color: var(--login-button-fg-color);
     float: none;
     margin: 0px 10px;
     padding: 12px 40px;
@@ -1224,10 +1231,26 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 200px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
+    }
+    .publishbtn {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--publish-button-background);
+        border: none;
+        color: var(--publish-button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 10%;
+        max-width: 200px;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: -20px 0px;
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1240,7 +1263,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1256,7 +1279,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1272,7 +1295,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
@@ -1566,13 +1589,14 @@ aside .toggle-inside li {
     }
     .rightColEditImage {
         background: var(--main-bg-color);
-        width: var(--column-right-icon-size);
+        width: var(--column-right-icon-size-mobile);
         float: right;
         margin: 20px 0px;
     }
     .rightColImg {
         background: var(--main-bg-color);
-        width: 100vw;
+        width: var(--column-right-image-width-mobile);
+        float: right;
         margin: 0 0;
         padding: 0 0;
     }
@@ -1790,7 +1814,23 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .publishbtn {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--publish-button-background);
+        border: none;
+        color: var(--publish-button-text);
+        text-align: center;
+        font-size: var(--font-size-newswire-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 400px;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
@@ -1806,7 +1846,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
@@ -1822,7 +1862,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
@@ -1838,7 +1878,7 @@ aside .toggle-inside li {
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
-        min-width: 10ch;
+        min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;

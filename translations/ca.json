@@ -308,5 +308,8 @@
     "Read more...": "Llegeix més...",
     "Edit News Post": "Edita la publicació de notícies",
     "A list of editor nicknames. One per line.": "Una llista de sobrenoms de l'editor. Un per línia.",
-    "Site Editors": "Editors de llocs"
+    "Site Editors": "Editors de llocs",
+    "Allow news posts": "Permet publicacions de notícies",
+    "Publish": "Publica",
+    "Publish a news article": "Publicar un article de notícies"
 }

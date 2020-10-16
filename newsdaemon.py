@@ -202,9 +202,8 @@ def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
     for published, fields in oldNewswire.items():
         if not newNewswire.get(published):
             continue
-        newNewswire[published][1] = fields[1]
-        newNewswire[published][2] = fields[2]
-        newNewswire[published][3] = fields[3]
+        for i in range(1, 5):
+            newNewswire[published][i] = fields[i]
 
 
 def runNewswireDaemon(baseDir: str, httpd,
@@ -226,7 +225,10 @@ def runNewswireDaemon(baseDir: str, httpd,
         # try to update the feeds
         newNewswire = None
         try:
-            newNewswire = getDictFromNewswire(httpd.session, baseDir)
+            newNewswire = \
+                getDictFromNewswire(httpd.session, baseDir,
+                                    httpd.maxNewswirePostsPerSource,
+                                    httpd.maxNewswireFeedSizeKb)
         except Exception as e:
             print('WARN: unable to update newswire ' + str(e))
             time.sleep(120)

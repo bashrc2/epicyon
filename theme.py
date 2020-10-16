@@ -293,6 +293,8 @@ def setThemeIndymedia(baseDir: str):
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
         "button-background-hover": "darkblue",
+        "publish-button-background": "#ff9900",
+        "publish-button-text": "#003366",
         "button-background": "#003366",
         "button-selected": "blue",
         "calendar-bg-color": "#0f0d10",
@@ -310,7 +312,9 @@ def setThemeIndymedia(baseDir: str):
         "column-left-width": "10vw",
         "column-center-width": "70vw",
         "column-right-width": "20vw",
-        "column-right-icon-size": "11%"
+        "column-right-icon-size": "11%",
+        "login-button-color": "red",
+        "login-button-fg-color": "white"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -320,6 +324,7 @@ def setThemeBlue(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "newswire-date-color": "blue",
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
         "font-size": "45px",
@@ -373,17 +378,18 @@ def setThemeNight(baseDir: str):
         "link-bg-color": "#0f0d10",
         "main-link-color": "ff9900",
         "main-link-color-hover": "#d09338",
-        "main-fg-color": "#a961ab",
-        "column-left-fg-color": "#a961ab",
+        "main-fg-color": "#0481f5",
+        "column-left-fg-color": "#0481f5",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#606984",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
-        "button-background-hover": "#6961ab",
-        "button-background": "#a961ab",
-        "button-selected": "#86579d",
+        "button-background-hover": "#0481f5",
+        "publish-button-background": "#07447c",
+        "button-background": "#07447c",
+        "button-selected": "#0481f5",
         "calendar-bg-color": "#0f0d10",
         "lines-color": "#a961ab",
         "day-number": "#a961ab",
@@ -412,6 +418,8 @@ def setThemeStarlight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "column-left-image-width-mobile": "40vw",
+        "line-spacing-newswire": "120%",
         "focus-color": "darkred",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -437,6 +445,7 @@ def setThemeStarlight(baseDir: str):
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
         "button-background-hover": "#a9282c",
+        "publish-button-background": "#69282c",
         "button-background": "#69282c",
         "button-small-background": "darkblue",
         "button-selected": "#a34046",
@@ -474,6 +483,8 @@ def setThemeHenge(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "column-left-image-width-mobile": "40vw",
+        "column-right-image-width-mobile": "40vw",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
@@ -498,6 +509,7 @@ def setThemeHenge(baseDir: str):
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
         "button-background-hover": "#444",
+        "publish-button-background": "#222",
         "button-background": "#222",
         "button-selected": "black",
         "dropdown-fg-color": "#dddddd",
@@ -545,6 +557,7 @@ def setThemeZen(baseDir: str):
         "title-color": "#dddddd",
         "main-visited-color": "#dddddd",
         "button-background-hover": "#a63b35",
+        "publish-button-background": "#463b35",
         "button-background": "#463b35",
         "button-selected": "#26201d",
         "main-bg-color-dm": "#5c4a40",
@@ -591,8 +604,12 @@ def setThemeHighVis(baseDir: str):
 def setThemeLCD(baseDir: str):
     name = 'lcd'
     themeParams = {
+        "newswire-date-color": "#cfb42b",
+        "column-left-header-background": "#9fb42b",
+        "column-left-header-color": "#33390d",
         "main-bg-color": "#9fb42b",
-        "column-left-color": "#9fb42b",
+        "column-left-color": "#33390d",
+        "column-left-fg-color": "#9fb42b",
         "link-bg-color": "#33390d",
         "text-entry-foreground": "#33390d",
         "text-entry-background": "#9fb42b",
@@ -601,7 +618,6 @@ def setThemeLCD(baseDir: str):
         "main-bg-color-dm": "#5fb42b",
         "main-header-color-roles": "#9fb42b",
         "main-fg-color": "#33390d",
-        "column-left-fg-color": "#33390d",
         "border-color": "#33390d",
         "border-width": "5px",
         "main-link-color": "#9fb42b",
@@ -611,9 +627,11 @@ def setThemeLCD(baseDir: str):
         "button-selected": "black",
         "button-highlighted": "green",
         "button-background-hover": "#a3390d",
+        "publish-button-background": "#33390d",
         "button-background": "#33390d",
         "button-small-background": "#33390d",
         "button-text": "#9fb42b",
+        "publish-button-text": "#9fb42b",
         "button-small-text": "#9fb42b",
         "color: #FFFFFE;": "color: #9fb42b;",
         "calendar-bg-color": "#eee",
@@ -684,9 +702,11 @@ def setThemePurple(baseDir: str):
         "main-visited-color": "#f93bb0",
         "button-selected": "#c042a0",
         "button-background-hover": "#af42a0",
+        "publish-button-background": "#ff42a0",
         "button-background": "#ff42a0",
         "button-small-background": "#ff42a0",
         "button-text": "white",
+        "publish-button-text": "white",
         "button-small-text": "white",
         "color: #FFFFFE;": "color: #1f152d;",
         "calendar-bg-color": "#eee",
@@ -735,9 +755,11 @@ def setThemeHacker(baseDir: str):
         "main-visited-color": "#3c8234",
         "button-selected": "#063200",
         "button-background-hover": "#a62200",
+        "publish-button-background": "#062200",
         "button-background": "#062200",
         "button-small-background": "#062200",
         "button-text": "#00ff00",
+        "publish-button-text": "#00ff00",
         "button-small-text": "#00ff00",
         "button-corner-radius": "4px",
         "timeline-border-radius": "4px",
@@ -830,6 +852,9 @@ def setThemeLight(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "button-highlighted": "darkred",
+        "button-selected-highlighted": "darkred",
+        "newswire-date-color": "grey",
         "focus-color": "grey",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -1004,6 +1029,31 @@ def setThemeImages(baseDir: str, name: str) -> None:
                             os.remove(accountDir + '/right_col_image.png')
                 except BaseException:
                     pass
+
+
+def setNewsAvatar(baseDir: str, name: str,
+                  httpPrefix: str,
+                  domain: str, domainFull: str) -> None:
+    """Sets the avatar for the news account
+    """
+    nickname = 'news'
+    newFilename = baseDir + '/img/icons/' + name + '/avatar_news.png'
+    if not os.path.isfile(newFilename):
+        newFilename = baseDir + '/img/icons/avatar_news.png'
+    if not os.path.isfile(newFilename):
+        return
+    avatarFilename = \
+        httpPrefix + '://' + domainFull + '/users/' + nickname + '.png'
+    avatarFilename = avatarFilename.replace('/', '-')
+    filename = baseDir + '/cache/avatars/' + avatarFilename
+
+    if os.path.isfile(filename):
+        os.remove(filename)
+    if os.path.isdir(baseDir + '/cache/avatars'):
+        copyfile(newFilename, filename)
+    copyfile(newFilename,
+             baseDir + '/accounts/' +
+             nickname + '@' + domain + '/avatar.png')
 
 
 def setTheme(baseDir: str, name: str, domain: str) -> bool:

@@ -19,6 +19,14 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def isSystemAccount(nickname: str) -> bool:
+    """Returns true if the given nickname is a system account
+    """
+    if nickname == 'news' or nickname == 'inbox':
+        return True
+    return False
+
+
 def createConfig(baseDir: str) -> None:
     """Creates a configuration file
     """
@@ -49,7 +57,7 @@ def getConfigParam(baseDir: str, variableName: str):
     configFilename = baseDir + '/config.json'
     configJson = loadJson(configFilename)
     if configJson:
-        if configJson.get(variableName):
+        if variableName in configJson:
             return configJson[variableName]
     return None
 
@@ -261,6 +269,19 @@ def isEvil(domain: str) -> bool:
     evilDomains = evilIncarnate()
     for concentratedEvil in evilDomains:
         if domain.endswith(concentratedEvil):
+            return True
+    return False
+
+
+def containsInvalidChars(jsonStr: str) -> bool:
+    """Does the given json string contain invalid characters?
+    e.g. dubious clacks/admin dogwhistles
+    """
+    invalidStrings = {
+        '卐', '卍', '࿕', '࿖', '࿗', '࿘'
+    }
+    for isInvalid in invalidStrings:
+        if isInvalid in jsonStr:
             return True
     return False
 

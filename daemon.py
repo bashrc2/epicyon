@@ -164,6 +164,8 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import containsInvalidChars
+from utils import isSystemAccount
 from utils import setConfigParam
 from utils import getConfigParam
 from utils import removeIdEnding
@@ -194,6 +196,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
 from theme import enableGrayscale
@@ -212,6 +215,8 @@ from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
 from devices import E2EEaddDevice
 from newswire import getRSSfromDict
+from newswire import rss2Header
+from newswire import rss2Footer
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
 import os
@@ -300,11 +305,11 @@ class PubServer(BaseHTTPRequestHandler):
         accountDir = self.server.baseDir + '/accounts/' + \
             nickname + '@' + self.server.domain
         if not os.path.isdir(accountDir):
-            return False
-        minimalFilename = accountDir + '/minimal'
-        if os.path.isfile(minimalFilename):
             return True
-        return False
+        minimalFilename = accountDir + '/.notminimal'
+        if os.path.isfile(minimalFilename):
+            return False
+        return True
 
     def _setMinimal(self, nickname: str, minimal: bool) -> None:
         """Sets whether an account should display minimal buttons
@@ -313,11 +318,11 @@ class PubServer(BaseHTTPRequestHandler):
             nickname + '@' + self.server.domain
         if not os.path.isdir(accountDir):
             return
-        minimalFilename = accountDir + '/minimal'
+        minimalFilename = accountDir + '/.notminimal'
         minimalFileExists = os.path.isfile(minimalFilename)
-        if not minimal and minimalFileExists:
+        if minimal and minimalFileExists:
             os.remove(minimalFilename)
-        elif minimal and not minimalFileExists:
+        elif not minimal and not minimalFileExists:
             with open(minimalFilename, 'w+') as fp:
                 fp.write('\n')
 
@@ -518,6 +523,21 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
+        self.send_header('X-Robots-Tag', 'noindex')
+        self.end_headers()
+
+    def _logout_redirect(self, redirect: str, cookie: str,
+                         callingDomain: str) -> None:
+        if '://' not in redirect:
+            print('REDIRECT ERROR: redirect is not an absolute url ' +
+                  redirect)
+
+        self.send_response(303)
+        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
+        self.send_header('Location', redirect)
+        self.send_header('Host', callingDomain)
+        self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
 
@@ -1240,8 +1260,9 @@ class PubServer(BaseHTTPRequestHandler):
         loginNickname, loginPassword, register = \
             htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
         if loginNickname:
-            if loginNickname == 'news' or loginNickname == 'inbox':
-                print('Invalid username login: ' + loginNickname)
+            if isSystemAccount(loginNickname):
+                print('Invalid username login: ' + loginNickname +
+                      ' (system account)')
                 self._clearLoginDetails(loginNickname, callingDomain)
                 self.server.POSTbusy = False
                 return
@@ -1625,7 +1646,8 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('You cannot perform an option action on yourself')
 
-        # view button on person option screen
+        # person options screen, view button
+        # See htmlPersonOptions
         if '&submitView=' in optionsConfirmParams:
             if debug:
                 print('Viewing ' + optionsActor)
@@ -1634,7 +1656,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # petname submit button on person option screen
+        # person options screen, petname submit button
+        # See htmlPersonOptions
         if '&submitPetname=' in optionsConfirmParams and petname:
             if debug:
                 print('Change petname to ' + petname)
@@ -1650,7 +1673,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # person notes submit button on person option screen
+        # person options screen, person notes submit button
+        # See htmlPersonOptions
         if '&submitPersonNotes=' in optionsConfirmParams:
             if debug:
                 print('Change person notes')
@@ -1668,7 +1692,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # person on calendar checkbox on person option screen
+        # person options screen, on calendar checkbox
+        # See htmlPersonOptions
         if '&submitOnCalendar=' in optionsConfirmParams:
             onCalendar = None
             if 'onCalendar=' in optionsConfirmParams:
@@ -1694,7 +1719,35 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # block person button on person option screen
+        # person options screen, permission to post to newswire
+        # See htmlPersonOptions
+        if '&submitPostToNews=' in optionsConfirmParams:
+            if isModerator(self.server.baseDir, chooserNickname):
+                postsToNews = None
+                if 'postsToNews=' in optionsConfirmParams:
+                    postsToNews = optionsConfirmParams.split('postsToNews=')[1]
+                    if '&' in postsToNews:
+                        postsToNews = postsToNews.split('&')[0]
+                newswireBlockedFilename = \
+                    self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain + '/.nonewswire'
+                if postsToNews == 'on':
+                    if os.path.isfile(newswireBlockedFilename):
+                        os.remove(newswireBlockedFilename)
+                else:
+                    noNewswireFile = open(newswireBlockedFilename, "w+")
+                    if noNewswireFile:
+                        noNewswireFile.write('\n')
+                        noNewswireFile.close()
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, block button
+        # See htmlPersonOptions
         if '&submitBlock=' in optionsConfirmParams:
             if debug:
                 print('Adding block by ' + chooserNickname +
@@ -1703,7 +1756,8 @@ class PubServer(BaseHTTPRequestHandler):
                      domain,
                      optionsNickname, optionsDomainFull)
 
-        # unblock button on person option screen
+        # person options screen, unblock button
+        # See htmlPersonOptions
         if '&submitUnblock=' in optionsConfirmParams:
             if debug:
                 print('Unblocking ' + optionsActor)
@@ -1719,7 +1773,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # follow button on person option screen
+        # person options screen, follow button
+        # See htmlPersonOptions
         if '&submitFollow=' in optionsConfirmParams:
             if debug:
                 print('Following ' + optionsActor)
@@ -1735,7 +1790,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # unfollow button on person option screen
+        # person options screen, unfollow button
+        # See htmlPersonOptions
         if '&submitUnfollow=' in optionsConfirmParams:
             if debug:
                 print('Unfollowing ' + optionsActor)
@@ -1751,7 +1807,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # DM button on person option screen
+        # person options screen, DM button
+        # See htmlPersonOptions
         if '&submitDM=' in optionsConfirmParams:
             if debug:
                 print('Sending DM to ' + optionsActor)
@@ -1771,7 +1828,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
-        # snooze button on person option screen
+        # person options screen, snooze button
+        # See htmlPersonOptions
         if '&submitSnooze=' in optionsConfirmParams:
             usersPath = path.split('/personoptions')[0]
             thisActor = httpPrefix + '://' + domainFull + usersPath
@@ -1792,7 +1850,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        # unsnooze button on person option screen
+        # person options screen, unsnooze button
+        # See htmlPersonOptions
         if '&submitUnSnooze=' in optionsConfirmParams:
             usersPath = path.split('/personoptions')[0]
             thisActor = httpPrefix + '://' + domainFull + usersPath
@@ -1813,7 +1872,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        # report button on person option screen
+        # person options screen, report button
+        # See htmlPersonOptions
         if '&submitReport=' in optionsConfirmParams:
             if debug:
                 print('Reporting ' + optionsActor)
@@ -3309,10 +3369,95 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields['displayNickname'] != actorJson['name']:
                             actorJson['name'] = fields['displayNickname']
                             actorChanged = True
+
+                    # change media instance status
+                    if fields.get('mediaInstance'):
+                        self.server.mediaInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['mediaInstance'] == 'on':
+                            self.server.mediaInstance = True
+                            self.server.blogsInstance = False
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'tlmedia'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.mediaInstance:
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "mediaInstance",
+                                           self.server.mediaInstance)
+
+                    # change news instance status
+                    if fields.get('newsInstance'):
+                        self.server.newsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['newsInstance'] == 'on':
+                            self.server.newsInstance = True
+                            self.server.blogsInstance = False
+                            self.server.mediaInstance = False
+                            self.server.defaultTimeline = 'tlnews'
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.newsInstance:
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "newsInstance",
+                                           self.server.mediaInstance)
+
+                    # change blog instance status
+                    if fields.get('blogsInstance'):
+                        self.server.blogsInstance = False
+                        self.server.defaultTimeline = 'inbox'
+                        if fields['blogsInstance'] == 'on':
+                            self.server.blogsInstance = True
+                            self.server.mediaInstance = False
+                            self.server.newsInstance = False
+                            self.server.defaultTimeline = 'tlblogs'
+                        setConfigParam(baseDir,
+                                       "blogsInstance",
+                                       self.server.blogsInstance)
+                        setConfigParam(baseDir,
+                                       "mediaInstance",
+                                       self.server.mediaInstance)
+                        setConfigParam(baseDir,
+                                       "newsInstance",
+                                       self.server.newsInstance)
+                    else:
+                        if self.server.blogsInstance:
+                            self.server.blogsInstance = False
+                            self.server.defaultTimeline = 'inbox'
+                            setConfigParam(baseDir,
+                                           "blogsInstance",
+                                           self.server.blogsInstance)
+
+                    # change theme
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
                                  domain)
+                        setNewsAvatar(baseDir,
+                                      fields['themeDropdown'],
+                                      httpPrefix,
+                                      domain,
+                                      domainFull)
 
                     # change email address
                     currentEmailAddress = getEmailAddress(actorJson)
@@ -3652,84 +3797,6 @@ class PubServer(BaseHTTPRequestHandler):
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 setTheme(baseDir, currTheme, domain)
-
-                    # change media instance status
-                    if fields.get('mediaInstance'):
-                        self.server.mediaInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['mediaInstance'] == 'on':
-                            self.server.mediaInstance = True
-                            self.server.blogsInstance = False
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'tlmedia'
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.mediaInstance:
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "mediaInstance",
-                                           self.server.mediaInstance)
-
-                    # change news instance status
-                    if fields.get('newsInstance'):
-                        self.server.newsInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['newsInstance'] == 'on':
-                            self.server.newsInstance = True
-                            self.server.blogsInstance = False
-                            self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'tlnews'
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.newsInstance:
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "newsInstance",
-                                           self.server.mediaInstance)
-
-                    # change blog instance status
-                    if fields.get('blogsInstance'):
-                        self.server.blogsInstance = False
-                        self.server.defaultTimeline = 'inbox'
-                        if fields['blogsInstance'] == 'on':
-                            self.server.blogsInstance = True
-                            self.server.mediaInstance = False
-                            self.server.newsInstance = False
-                            self.server.defaultTimeline = 'tlblogs'
-                        setConfigParam(baseDir,
-                                       "blogsInstance",
-                                       self.server.blogsInstance)
-                        setConfigParam(baseDir,
-                                       "mediaInstance",
-                                       self.server.mediaInstance)
-                        setConfigParam(baseDir,
-                                       "newsInstance",
-                                       self.server.newsInstance)
-                    else:
-                        if self.server.blogsInstance:
-                            self.server.blogsInstance = False
-                            self.server.defaultTimeline = 'inbox'
-                            setConfigParam(baseDir,
-                                           "blogsInstance",
-                                           self.server.blogsInstance)
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
@@ -4211,7 +4278,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      domain,
                                      port,
-                                     maxPostsInRSSFeed, 1)
+                                     maxPostsInRSSFeed, 1,
+                                     True)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     self._set_headers('text/xml', len(msg),
@@ -4224,6 +4292,66 @@ class PubServer(BaseHTTPRequestHandler):
                                               'sharedInbox enabled',
                                               'blog rss2')
                     return
+        if debug:
+            print('Failed to get rss2 feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
+    def _getRSS2site(self, authorized: bool,
+                     callingDomain: str, path: str,
+                     baseDir: str, httpPrefix: str,
+                     domainFull: str, port: int, proxyType: str,
+                     translate: {},
+                     GETstartTime, GETtimings: {},
+                     debug: bool):
+        """Returns an RSS2 feed for all blogs on this instance
+        """
+        if not self.server.session:
+            print('Starting new session during RSS request')
+            self.server.session = \
+                createSession(proxyType)
+            if not self.server.session:
+                print('ERROR: GET failed to create session ' +
+                      'during RSS request')
+                self._404()
+                return
+
+        msg = ''
+        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+            for acct in dirs:
+                if '@' not in acct:
+                    continue
+                if 'inbox@' in acct or 'news@' in acct:
+                    continue
+                nickname = acct.split('@')[0]
+                domain = acct.split('@')[1]
+                msg += \
+                    htmlBlogPageRSS2(authorized,
+                                     self.server.session,
+                                     baseDir,
+                                     httpPrefix,
+                                     self.server.translate,
+                                     nickname,
+                                     domain,
+                                     port,
+                                     maxPostsInRSSFeed, 1,
+                                     False)
+        if msg:
+            msg = rss2Header(httpPrefix,
+                             'news', domainFull,
+                             'Site', translate) + msg + rss2Footer()
+
+            msg = msg.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if debug:
+                print('Sent rss2 feed: ' +
+                      path + ' ' + callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'sharedInbox enabled',
+                                      'blog rss2')
+            return
         if debug:
             print('Failed to get rss2 feed: ' +
                   path + ' ' + callingDomain)
@@ -4358,6 +4486,7 @@ class PubServer(BaseHTTPRequestHandler):
                 PGPfingerprint = getPGPfingerprint(actorJson)
             msg = htmlPersonOptions(self.server.translate,
                                     baseDir, domain,
+                                    domainFull,
                                     originPathStr,
                                     optionsActor,
                                     optionsProfileUrl,
@@ -5870,6 +5999,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -5943,6 +6073,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.personCache,
                                                 YTReplacementDomain,
                                                 showPublishedDateOnly,
+                                                self.server.newswire,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -7405,6 +7536,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -7492,6 +7624,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7579,6 +7712,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache,
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
+                                    self.server.newswire,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -7641,6 +7775,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.personCache,
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
+                                self.server.newswire,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7748,23 +7883,28 @@ class PubServer(BaseHTTPRequestHandler):
                         divertToLoginScreen = False
 
         if divertToLoginScreen and not authorized:
-            if debug:
-                print('DEBUG: divertToLoginScreen=' +
-                      str(divertToLoginScreen))
-                print('DEBUG: authorized=' + str(authorized))
-                print('DEBUG: path=' + path)
+            divertPath = '/login'
+            if self.server.newsInstance:
+                # for news instances if not logged in then show the
+                # front page
+                divertPath = '/users/news'
+            # if debug:
+            print('DEBUG: divertToLoginScreen=' +
+                  str(divertToLoginScreen))
+            print('DEBUG: authorized=' + str(authorized))
+            print('DEBUG: path=' + path)
             if callingDomain.endswith('.onion') and onionDomain:
                 self._redirect_headers('http://' +
-                                       onionDomain + '/login',
+                                       onionDomain + divertPath,
                                        None, callingDomain)
             elif callingDomain.endswith('.i2p') and i2pDomain:
                 self._redirect_headers('http://' +
-                                       i2pDomain + '/login',
+                                       i2pDomain + divertPath,
                                        None, callingDomain)
             else:
                 self._redirect_headers(httpPrefix + '://' +
                                        domainFull +
-                                       '/login', None, callingDomain)
+                                       divertPath, None, callingDomain)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'robots txt',
                                       'show login screen')
@@ -8328,11 +8468,31 @@ class PubServer(BaseHTTPRequestHandler):
                                   '_mastoApi(callingDomain)')
 
         if self.path == '/logout':
-            msg = \
-                htmlLogin(self.server.translate,
-                          self.server.baseDir, False).encode('utf-8')
-            self._logout_headers('text/html', len(msg), callingDomain)
-            self._write(msg)
+            if not self.server.newsInstance:
+                msg = \
+                    htmlLogin(self.server.translate,
+                              self.server.baseDir, False).encode('utf-8')
+                self._logout_headers('text/html', len(msg), callingDomain)
+                self._write(msg)
+            else:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    self._logout_redirect('http://' +
+                                          self.server.onionDomain +
+                                          '/users/news', None,
+                                          callingDomain)
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    self._logout_redirect('http://' +
+                                          self.server.i2pDomain +
+                                          '/users/news', None,
+                                          callingDomain)
+                else:
+                    self._logout_redirect(self.server.httpPrefix +
+                                          '://' +
+                                          self.server.domainFull +
+                                          '/users/news',
+                                          None, callingDomain)
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       '_nodeinfo(callingDomain)',
                                       'logout')
@@ -8465,15 +8625,27 @@ class PubServer(BaseHTTPRequestHandler):
         # RSS 2.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
-            self._getRSS2feed(authorized,
-                              callingDomain, self.path,
-                              self.server.baseDir,
-                              self.server.httpPrefix,
-                              self.server.domain,
-                              self.server.port,
-                              self.server.proxyType,
-                              GETstartTime, GETtimings,
-                              self.server.debug)
+            if not self.path == '/blog/rss.xml':
+                self._getRSS2feed(authorized,
+                                  callingDomain, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.port,
+                                  self.server.proxyType,
+                                  GETstartTime, GETtimings,
+                                  self.server.debug)
+            else:
+                self._getRSS2site(authorized,
+                                  callingDomain, self.path,
+                                  self.server.baseDir,
+                                  self.server.httpPrefix,
+                                  self.server.domainFull,
+                                  self.server.port,
+                                  self.server.proxyType,
+                                  self.server.translate,
+                                  GETstartTime, GETtimings,
+                                  self.server.debug)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -9067,8 +9239,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   'GET busy time',
                                   'permitted directory')
 
-        if self.path.startswith('/login') or \
-           (self.path == '/' and not authorized):
+        # show the login screen
+        if (self.path.startswith('/login') or
+            (self.path == '/' and
+             not authorized and
+             not self.server.newsInstance)):
             # request basic auth
             msg = htmlLogin(self.server.translate,
                             self.server.baseDir).encode('utf-8')
@@ -9078,6 +9253,33 @@ class PubServer(BaseHTTPRequestHandler):
             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                       'permitted directory',
                                       'login shown')
+            return
+
+        # show the news front page
+        if self.path == '/' and \
+           not authorized and \
+           self.server.newsInstance:
+            if callingDomain.endswith('.onion') and \
+               self.server.onionDomain:
+                self._logout_redirect('http://' +
+                                      self.server.onionDomain +
+                                      '/users/news', None,
+                                      callingDomain)
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                self._logout_redirect('http://' +
+                                      self.server.i2pDomain +
+                                      '/users/news', None,
+                                      callingDomain)
+            else:
+                self._logout_redirect(self.server.httpPrefix +
+                                      '://' +
+                                      self.server.domainFull +
+                                      '/users/news',
+                                      None, callingDomain)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'permitted directory',
+                                      'news front page shown')
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -11558,6 +11760,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
+        if containsInvalidChars(messageBytes.decode("utf-8")):
+            self._400()
+            self.server.POSTbusy = False
+            return
+
         # convert the raw bytes to json
         messageJson = json.loads(messageBytes)
 
@@ -11744,7 +11951,9 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(showPublishedDateOnly: bool,
+def runDaemon(maxNewswireFeedSizeKb: int,
+              maxNewswirePostsPerSource: int,
+              showPublishedDateOnly: bool,
               votingTimeMins: int,
               positiveVoting: bool,
               newswireVotesThreshold: int,
@@ -11864,6 +12073,15 @@ def runDaemon(showPublishedDateOnly: bool,
     # number of votes needed to remove a newswire item from the news timeline
     # or if positive voting is anabled to add the item to the news timeline
     httpd.newswireVotesThreshold = newswireVotesThreshold
+    # maximum overall size of an rss/atom feed read by the newswire daemon
+    # If the feed is too large then this is probably a DoS attempt
+    httpd.maxNewswireFeedSizeKb = maxNewswireFeedSizeKb
+
+    # For each newswire source (account or rss feed)
+    # this is the maximum number of posts to show for each.
+    # This avoids one or two sources from dominating the news,
+    # and also prevents big feeds from slowing down page load times
+    httpd.maxNewswirePostsPerSource = maxNewswirePostsPerSource
 
     # Show only the date at the bottom of posts, and not the time
     httpd.showPublishedDateOnly = showPublishedDateOnly
@@ -11928,6 +12146,16 @@ def runDaemon(showPublishedDateOnly: bool,
     if not os.path.isdir(baseDir + '/accounts/news@' + domain):
         print('Creating news inbox: news@' + domain)
         createNewsInbox(baseDir, domain, port, httpPrefix)
+
+    # set the avatar for the news account
+    themeName = getConfigParam(baseDir, 'theme')
+    if not themeName:
+        themeName = 'default'
+    setNewsAvatar(baseDir,
+                  themeName,
+                  httpPrefix,
+                  domain,
+                  httpd.domainFull)
 
     if not os.path.isdir(baseDir + '/cache'):
         os.mkdir(baseDir + '/cache')
