@@ -75,13 +75,15 @@ def getNewswireTags(text: str) -> []:
 def addNewswireDictEntry(newswire: {}, dateStr: str,
                          title: str, link: str,
                          votesStatus: str, postFilename: str,
-                         description: str, moderated: bool) -> None:
+                         description: str, moderated: bool,
+                         tags=[]) -> None:
     """Update the newswire dictionary
     """
+    if not tags:
+        tags = getNewswireTags(title + ' ' + description)
     newswire[dateStr] = [title, link,
                          votesStatus, postFilename,
-                         description, moderated,
-                         getNewswireTags(title + ' ' + description)]
+                         description, moderated, tags]
 
 
 def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
@@ -340,6 +342,32 @@ def isaBlogPost(postJsonObject: {}) -> bool:
     return False
 
 
+def getHashtagsFromPost(postJsonObject: {}) -> []:
+    """Returns a list of any hashtags within a post
+    """
+    if not postJsonObject.get('object'):
+        return []
+    if not isinstance(postJsonObject['object'], dict):
+        return []
+    if not postJsonObject['object'].get('tag'):
+        return []
+    if not isinstance(postJsonObject['object']['tag'], dict):
+        return []
+    tags = []
+    for tg in postJsonObject['object']['tag'].items():
+        if not isinstance(tg, dict):
+            continue
+        if not tg.get('name'):
+            continue
+        if not tg.get('type'):
+            continue
+        if tg['type'] != 'Hashtag':
+            continue
+        if tg['name'] not in tags:
+            tags.append(tg['name'])
+    return tags
+
+
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                               newswire: {},
                               maxBlogsPerAccount: int,
@@ -401,7 +429,8 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                                          postJsonObject['object']['summary'],
                                          postJsonObject['object']['url'],
                                          votes, fullPostFilename,
-                                         description, moderated)
+                                         description, moderated,
+                                         getHashtagsFromPost(postJsonObject))
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:

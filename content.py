@@ -374,7 +374,7 @@ def addHashTags(wordStr: str, httpPrefix: str, domain: str,
     hashtagUrl = httpPrefix + "://" + domain + "/tags/" + hashtag
     postHashtags[hashtag] = {
         'href': hashtagUrl,
-        'name': '#'+hashtag,
+        'name': '#' + hashtag,
         'type': 'Hashtag'
     }
     replaceHashTags[wordStr] = "<a href=\"" + hashtagUrl + \
