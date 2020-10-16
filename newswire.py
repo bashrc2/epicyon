@@ -16,7 +16,8 @@ from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
-
+from utils import containsInvalidChars
+from blocking import isBlockedDomain
 
 def rss2Header(httpPrefix: str,
                nickname: str, domainFull: str,
@@ -80,6 +81,13 @@ def xml2StrToDict(xmlStr: str, moderated: bool,
             description = description.split('</description>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
+        if '://' not in link:
+            continue
+        domain = link.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if isBlockedDomain(baseDir, domain):
+            continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
         parsed = False
@@ -147,6 +155,13 @@ def atomFeedToDict(xmlStr: str, moderated: bool,
             description = description.split('</summary>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
+        if '://' not in link:
+            continue
+        domain = link.split('://')[1]
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        if isBlockedDomain(baseDir, domain):
+            continue
         pubDate = rssItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
         parsed = False
@@ -221,7 +236,8 @@ def getRSS(session, url: str, moderated: bool,
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         if result:
-            if int(len(result) / 1024) < maxFeedSizeKb:
+            if int(len(result) / 1024) < maxFeedSizeKb and \
+               not containsInvalidChars(result):
                 return xmlStrToDict(result.text, moderated, maxPostsPerSource)
             else:
                 print('WARN: feed is too large: ' + url)
