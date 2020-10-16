@@ -701,7 +701,12 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
     content = addMusicTag(content, 'nowplaying')
-    words = content.replace(',', ' ').replace(';', ' ').split(' ')
+    contentSimplified = \
+        content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    contentSimplified = contentSimplified.replace('. ', ' ').strip()
+    if contentSimplified.endswith('.'):
+        contentSimplified = contentSimplified[:len(contentSimplified)-1]
+    words = contentSimplified.split(' ')
 
     # remove . for words which are not mentions
     newWords = []

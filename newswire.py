@@ -52,6 +52,25 @@ def rss2Footer() -> str:
     return rssStr
 
 
+def getNewswireTags(text: str) -> []:
+    """Returns a list of hashtags found in the given text
+    """
+    if ' ' not in text:
+        return []
+    textSimplified = \
+        text.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    textSimplified = textSimplified.replace('. ', ' ').strip()
+    if textSimplified.endswith('.'):
+        textSimplified = textSimplified[:len(textSimplified)-1]
+    words = textSimplified.split(' ')
+    tags = []
+    for wrd in words:
+        if wrd.startswith('#'):
+            if wrd not in tags:
+                tags.append(wrd)
+    return tags
+
+
 def addNewswireDictEntry(newswire: {}, dateStr: str,
                          title: str, link: str,
                          votesStatus: str, postFilename: str,
@@ -60,7 +79,8 @@ def addNewswireDictEntry(newswire: {}, dateStr: str,
     """
     newswire[dateStr] = [title, link,
                          votesStatus, postFilename,
-                         description, moderated]
+                         description, moderated,
+                         getNewswireTags(title + ' ' + description)]
 
 
 def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
