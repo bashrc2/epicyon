@@ -1234,6 +1234,22 @@ aside .toggle-inside li {
         cursor: pointer;
         margin: 5px;
     }
+    .publishbtn {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 10%;
+        max-width: 200px;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-highlighted);
@@ -1786,6 +1802,22 @@ aside .toggle-inside li {
         margin: 15px;
     }
     .button {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 400px;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+    }
+    .publishbtn {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
         border: none;
