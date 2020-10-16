@@ -305,11 +305,11 @@ class PubServer(BaseHTTPRequestHandler):
         accountDir = self.server.baseDir + '/accounts/' + \
             nickname + '@' + self.server.domain
         if not os.path.isdir(accountDir):
-            return False
-        minimalFilename = accountDir + '/minimal'
-        if os.path.isfile(minimalFilename):
             return True
-        return False
+        minimalFilename = accountDir + '/.notminimal'
+        if os.path.isfile(minimalFilename):
+            return False
+        return True
 
     def _setMinimal(self, nickname: str, minimal: bool) -> None:
         """Sets whether an account should display minimal buttons
@@ -318,11 +318,11 @@ class PubServer(BaseHTTPRequestHandler):
             nickname + '@' + self.server.domain
         if not os.path.isdir(accountDir):
             return
-        minimalFilename = accountDir + '/minimal'
+        minimalFilename = accountDir + '/.notminimal'
         minimalFileExists = os.path.isfile(minimalFilename)
-        if not minimal and minimalFileExists:
+        if minimal and minimalFileExists:
             os.remove(minimalFilename)
-        elif minimal and not minimalFileExists:
+        elif not minimal and not minimalFileExists:
             with open(minimalFilename, 'w+') as fp:
                 fp.write('\n')
 
