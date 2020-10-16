@@ -11951,7 +11951,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(maxNewswirePostsPerSource: int,
+def runDaemon(maxNewswireFeedSizeKb: int,
+              maxNewswirePostsPerSource: int,
               showPublishedDateOnly: bool,
               votingTimeMins: int,
               positiveVoting: bool,
@@ -12072,6 +12073,9 @@ def runDaemon(maxNewswirePostsPerSource: int,
     # number of votes needed to remove a newswire item from the news timeline
     # or if positive voting is anabled to add the item to the news timeline
     httpd.newswireVotesThreshold = newswireVotesThreshold
+    # maximum overall size of an rss/atom feed read by the newswire daemon
+    # If the feed is too large then this is probably a DoS attempt
+    httpd.maxNewswireFeedSizeKb = maxNewswireFeedSizeKb
 
     # For each newswire source (account or rss feed)
     # this is the maximum number of posts to show for each.

@@ -196,7 +196,8 @@ def xmlStrToDict(xmlStr: str, moderated: bool,
 
 
 def getRSS(session, url: str, moderated: bool,
-           maxPostsPerSource: int) -> {}:
+           maxPostsPerSource: int,
+           maxFeedSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -219,7 +220,11 @@ def getRSS(session, url: str, moderated: bool,
         print('WARN: no session specified for getRSS')
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
-        return xmlStrToDict(result.text, moderated, maxPostsPerSource)
+        if result:
+            if int(len(result) / 1024) < maxFeedSizeKb:
+                return xmlStrToDict(result.text, moderated, maxPostsPerSource)
+            else:
+                print('WARN: feed is too large: ' + url)
     except requests.exceptions.RequestException as e:
         print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
@@ -396,7 +401,8 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
             os.remove(newswireModerationFilename)
 
 
-def getDictFromNewswire(session, baseDir: str, maxPostsPerSource: int) -> {}:
+def getDictFromNewswire(session, baseDir: str,
+                        maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -427,7 +433,8 @@ def getDictFromNewswire(session, baseDir: str, maxPostsPerSource: int) -> {}:
             moderated = True
             url = url.replace('*', '').strip()
 
-        itemsList = getRSS(session, url, moderated, maxPostsPerSource)
+        itemsList = getRSS(session, url, moderated,
+                           maxPostsPerSource, maxFeedSizeKb)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 

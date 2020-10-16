@@ -116,6 +116,10 @@ parser.add_argument('--postsPerSource',
                     dest='maxNewswirePostsPerSource', type=int,
                     default=5,
                     help='Maximum newswire posts per feed or account')
+parser.add_argument('--maxFeedSize',
+                    dest='maxNewswireFeedSizeKb', type=int,
+                    default=2048,
+                    help='Maximum newswire rss/atom feed size in K')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -1936,6 +1940,13 @@ if maxNewswirePostsPerSource:
     if maxNewswirePostsPerSource.isdigit():
         args.maxNewswirePostsPerSource = maxNewswirePostsPerSource
 
+# set the maximum size of a newswire rss/atom feed in Kilobytes
+maxNewswireFeedSizeKb = \
+    getConfigParam(baseDir, 'maxNewswireFeedSizeKb')
+if maxNewswireFeedSizeKb:
+    if maxNewswireFeedSizeKb.isdigit():
+        args.maxNewswireFeedSizeKb = maxNewswireFeedSizeKb
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -1949,7 +1960,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxNewswirePostsPerSource,
+    runDaemon(args.maxNewswireFeedSizeKb,
+              args.maxNewswirePostsPerSource,
               args.dateonly,
               args.votingtime,
               args.positivevoting,
