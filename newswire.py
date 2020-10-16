@@ -55,6 +55,8 @@ def rss2Footer() -> str:
 def getNewswireTags(text: str) -> []:
     """Returns a list of hashtags found in the given text
     """
+    if '#' not in text:
+        return []
     if ' ' not in text:
         return []
     textSimplified = \
