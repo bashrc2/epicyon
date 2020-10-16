@@ -1929,6 +1929,13 @@ dateonly = getConfigParam(baseDir, 'dateonly')
 if dateonly:
     args.dateonly = dateonly
 
+# set the maximum number of newswire posts per account or rss feed
+maxNewswirePostsPerSource = \
+    getConfigParam(baseDir, 'maxNewswirePostsPerSource')
+if maxNewswirePostsPerSource:
+    if maxNewswirePostsPerSource.isdigit():
+        args.maxNewswirePostsPerSource = maxNewswirePostsPerSource
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
