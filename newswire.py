@@ -140,10 +140,10 @@ def xml2StrToDict(baseDir: str, domain: str,
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        domain = link.split('://')[1]
-        if '/' in domain:
-            domain = domain.split('/')[0]
-        if isBlockedDomain(baseDir, domain):
+        itemDomain = link.split('://')[1]
+        if '/' in itemDomain:
+            itemDomain = itemDomain.split('/')[0]
+        if isBlockedDomain(baseDir, itemDomain):
             continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
@@ -219,10 +219,10 @@ def atomFeedToDict(baseDir: str, domain: str,
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        domain = link.split('://')[1]
-        if '/' in domain:
-            domain = domain.split('/')[0]
-        if isBlockedDomain(baseDir, domain):
+        itemDomain = link.split('://')[1]
+        if '/' in itemDomain:
+            itemDomain = itemDomain.split('/')[0]
+        if isBlockedDomain(baseDir, itemDomain):
             continue
         pubDate = rssItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
