@@ -18,6 +18,7 @@ from utils import saveJson
 from utils import isSuspended
 from utils import containsInvalidChars
 from blocking import isBlockedDomain
+from blocking import isBlockedHashtag
 
 
 def rss2Header(httpPrefix: str,
@@ -74,7 +75,7 @@ def getNewswireTags(text: str) -> []:
     return tags
 
 
-def addNewswireDictEntry(newswire: {}, dateStr: str,
+def addNewswireDictEntry(baseDir: str, newswire: {}, dateStr: str,
                          title: str, link: str,
                          votesStatus: str, postFilename: str,
                          description: str, moderated: bool,
@@ -83,9 +84,16 @@ def addNewswireDictEntry(newswire: {}, dateStr: str,
     """
     if not tags:
         tags = getNewswireTags(title + ' ' + description)
-    newswire[dateStr] = [title, link,
-                         votesStatus, postFilename,
-                         description, moderated, tags]
+    newswireItemBlocked = False
+    if tags:
+        for tag in tags:
+            if isBlockedHashtag(baseDir, tag):
+                newswireItemBlocked = True
+                break
+    if not newswireItemBlocked:
+        newswire[dateStr] = [title, link,
+                             votesStatus, postFilename,
+                             description, moderated, tags]
 
 
 def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
@@ -133,7 +141,7 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
             postFilename = ''
             votesStatus = []
-            addNewswireDictEntry(result, str(publishedDate),
+            addNewswireDictEntry(baseDir, result, str(publishedDate),
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated)
@@ -149,7 +157,8 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                addNewswireDictEntry(result, str(publishedDate) + '+00:00',
+                addNewswireDictEntry(baseDir, result,
+                                     str(publishedDate) + '+00:00',
                                      title, link,
                                      votesStatus, postFilename,
                                      description, moderated)
@@ -208,7 +217,7 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
             postFilename = ''
             votesStatus = []
-            addNewswireDictEntry(result, str(publishedDate),
+            addNewswireDictEntry(baseDir, result, str(publishedDate),
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated)
@@ -224,7 +233,8 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                addNewswireDictEntry(result, str(publishedDate) + '+00:00',
+                addNewswireDictEntry(baseDir, result,
+                                     str(publishedDate) + '+00:00',
                                      title, link,
                                      votesStatus, postFilename,
                                      description, moderated)
@@ -427,7 +437,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     description = ''
-                    addNewswireDictEntry(newswire, published,
+                    addNewswireDictEntry(baseDir, newswire, published,
                                          postJsonObject['object']['summary'],
                                          postJsonObject['object']['url'],
                                          votes, fullPostFilename,
