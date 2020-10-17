@@ -378,11 +378,33 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
 
+        domainFull = domain
+        if port:
+            if port != 80 and port != 443:
+                domainFull = domain + ':' + str(port)
+
+        hashtags = item[6]
+        for tagName in hashtags:
+            htId = tagName.replace('#', '')
+            hashtagUrl = \
+                httpPrefix + "://" + domainFull + "/tags/" + htId
+            blog['object']['tag'][htId] = {
+                'href': hashtagUrl,
+                'name': tagName,
+                'type': 'Hashtag'
+            }
+            if tagName in blog['object']['content']:
+                hashtagHtml = \
+                    "<a href=\"" + hashtagUrl + \
+                    "\" class=\"mention hashtag\" " + \
+                    "rel=\"tag\">#<span>" + \
+                    htId + "</span></a>"
+                blog['object']['content'].replace(tagName, hashtagHtml)
+
         postId = newPostId.replace('/', '#')
 
         moderated = item[5]
 
-        hashtags = item[6]
         savePost = newswireHashtagProcessing(session, baseDir, blog, hashtags,
                                              httpPrefix, domain, port,
                                              personCache, cachedWebfingers,
