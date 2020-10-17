@@ -19,6 +19,7 @@ from utils import isSuspended
 from utils import containsInvalidChars
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
+from filters import isFiltered
 
 
 def rss2Header(httpPrefix: str,
@@ -75,15 +76,19 @@ def getNewswireTags(text: str) -> []:
     return tags
 
 
-def addNewswireDictEntry(baseDir: str, newswire: {}, dateStr: str,
+def addNewswireDictEntry(baseDir: str, domain: str,
+                         newswire: {}, dateStr: str,
                          title: str, link: str,
                          votesStatus: str, postFilename: str,
                          description: str, moderated: bool,
                          tags=[]) -> None:
     """Update the newswire dictionary
     """
+    allText = title + ' ' + description
+    if isFiltered(baseDir, 'news', domain, allText):
+        return
     if not tags:
-        tags = getNewswireTags(title + ' ' + description)
+        tags = getNewswireTags(allText)
     newswireItemBlocked = False
     if tags:
         for tag in tags:
@@ -102,7 +107,8 @@ def addNewswireDictEntry(baseDir: str, newswire: {}, dateStr: str,
         ]
 
 
-def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
+def xml2StrToDict(baseDir: str, domain: str,
+                  xmlStr: str, moderated: bool,
                   maxPostsPerSource: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
@@ -147,7 +153,8 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
             postFilename = ''
             votesStatus = []
-            addNewswireDictEntry(baseDir, result, str(publishedDate),
+            addNewswireDictEntry(baseDir, domain,
+                                 result, str(publishedDate),
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated)
@@ -163,7 +170,8 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                addNewswireDictEntry(baseDir, result,
+                addNewswireDictEntry(baseDir, domain,
+                                     result,
                                      str(publishedDate) + '+00:00',
                                      title, link,
                                      votesStatus, postFilename,
@@ -178,7 +186,8 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
     return result
 
 
-def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
+def atomFeedToDict(baseDir: str, domain: str,
+                   xmlStr: str, moderated: bool,
                    maxPostsPerSource: int) -> {}:
     """Converts an atom feed string to a dictionary
     """
@@ -223,7 +232,8 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
             postFilename = ''
             votesStatus = []
-            addNewswireDictEntry(baseDir, result, str(publishedDate),
+            addNewswireDictEntry(baseDir, domain,
+                                 result, str(publishedDate),
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated)
@@ -239,7 +249,7 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                addNewswireDictEntry(baseDir, result,
+                addNewswireDictEntry(baseDir, domain, result,
                                      str(publishedDate) + '+00:00',
                                      title, link,
                                      votesStatus, postFilename,
@@ -254,18 +264,22 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
     return result
 
 
-def xmlStrToDict(baseDir: str, xmlStr: str, moderated: bool,
+def xmlStrToDict(baseDir: str, domain: str,
+                 xmlStr: str, moderated: bool,
                  maxPostsPerSource: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
-        return xml2StrToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
+        return xml2StrToDict(baseDir, domain,
+                             xmlStr, moderated, maxPostsPerSource)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
-        return atomFeedToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
+        return atomFeedToDict(baseDir, domain,
+                              xmlStr, moderated, maxPostsPerSource)
     return {}
 
 
-def getRSS(baseDir: str, session, url: str, moderated: bool,
+def getRSS(baseDir: str, domain: str,
+           session, url: str, moderated: bool,
            maxPostsPerSource: int,
            maxFeedSizeKb: int) -> {}:
     """Returns an RSS url as a dict
@@ -293,7 +307,8 @@ def getRSS(baseDir: str, session, url: str, moderated: bool,
         if result:
             if int(len(result.text) / 1024) < maxFeedSizeKb and \
                not containsInvalidChars(result.text):
-                return xmlStrToDict(baseDir, result.text, moderated,
+                return xmlStrToDict(baseDir, domain,
+                                    result.text, moderated,
                                     maxPostsPerSource)
             else:
                 print('WARN: feed is too large: ' + url)
@@ -443,7 +458,8 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     description = ''
-                    addNewswireDictEntry(baseDir, newswire, published,
+                    addNewswireDictEntry(baseDir, domain,
+                                         newswire, published,
                                          postJsonObject['object']['summary'],
                                          postJsonObject['object']['url'],
                                          votes, fullPostFilename,
@@ -455,7 +471,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 break
 
 
-def addBlogsToNewswire(baseDir: str, newswire: {},
+def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                        maxBlogsPerAccount: int) -> None:
     """Adds blogs from each user account into the newswire
     """
@@ -501,7 +517,7 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
             os.remove(newswireModerationFilename)
 
 
-def getDictFromNewswire(session, baseDir: str,
+def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
@@ -533,13 +549,14 @@ def getDictFromNewswire(session, baseDir: str,
             moderated = True
             url = url.replace('*', '').strip()
 
-        itemsList = getRSS(baseDir, session, url, moderated,
+        itemsList = getRSS(baseDir, domain,
+                           session, url, moderated,
                            maxPostsPerSource, maxFeedSizeKb)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 
     # add blogs from each user account
-    addBlogsToNewswire(baseDir, result, maxPostsPerSource)
+    addBlogsToNewswire(baseDir, domain, result, maxPostsPerSource)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))

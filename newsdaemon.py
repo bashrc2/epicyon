@@ -468,7 +468,7 @@ def runNewswireDaemon(baseDir: str, httpd,
         newNewswire = None
         try:
             newNewswire = \
-                getDictFromNewswire(httpd.session, baseDir,
+                getDictFromNewswire(httpd.session, baseDir, domain,
                                     httpd.maxNewswirePostsPerSource,
                                     httpd.maxNewswireFeedSizeKb)
         except Exception as e:
