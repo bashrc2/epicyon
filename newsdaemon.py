@@ -6,6 +6,11 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+# Example hashtag logic:
+#
+# if moderated and not #imcoxford then block
+# if #pol and contains "westminster" then add #britpol
+
 import os
 import time
 import datetime
