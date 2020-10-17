@@ -10,6 +10,7 @@ __status__ = "Production"
 #
 # if moderated and not #imcoxford then block
 # if #pol and contains "westminster" then add #britpol
+# if #unwantedtag then block
 
 import os
 import time
