@@ -187,7 +187,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    actionOccurred = False
+    # actionOccurred = False
     operators = ('not', 'and', 'or')
     for ruleStr in rules:
         if not ruleStr:
@@ -237,7 +237,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                             content += hashtagHtml
                         postJsonObject['object']['content'] = content
                         storeHashTags(baseDir, 'news', postJsonObject)
-                        actionOccurred = True
+                        # actionOccurred = True
 
         # remove a hashtag
         if actionStr.startswith('remove '):
@@ -259,7 +259,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                             content.replace(hashtagHtml, '').replace('  ', ' ')
                         postJsonObject['object']['content'] = content
                     del postJsonObject['object']['tag'][htId]
-                    actionOccurred = True
+                    # actionOccurred = True
 
     # TODO
     # If routing to another instance
