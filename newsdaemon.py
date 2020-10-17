@@ -19,6 +19,7 @@ from content import validHashTag
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
+from inbox import storeHashTags
 
 
 def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
@@ -235,6 +236,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                         else:
                             content += hashtagHtml
                         postJsonObject['object']['content'] = content
+                        storeHashTags(baseDir, 'news', postJsonObject)
                         actionOccurred = True
 
         # remove a hashtag
@@ -390,6 +392,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         # save the post and update the index
         if savePost:
             newswire[originalDateStr][6] = hashtags
+
+            storeHashTags(baseDir, 'news', blog)
+
             if saveJson(blog, filename):
                 updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
 
