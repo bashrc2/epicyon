@@ -223,7 +223,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                             'type': 'Hashtag'
                         }
                         hashtagHtml = \
-                            "<a href=\"" + hashtagUrl + \
+                            " <a href=\"" + hashtagUrl + \
                             "\" class=\"mention hashtag\" " + \
                             "rel=\"tag\">#<span>" + \
                             htId + "</span></a>"
@@ -253,8 +253,9 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                         htId + "</span></a>"
                     content = postJsonObject['object']['content']
                     if hashtagHtml in content:
-                        postJsonObject['object']['content'] = \
-                            content.replace(hashtagHtml, '')
+                        content = \
+                            content.replace(hashtagHtml, '').replace('  ', ' ')
+                        postJsonObject['object']['content'] = content
                     del postJsonObject['object']['tag'][htId]
                     actionOccurred = True
 
