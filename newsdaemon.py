@@ -73,7 +73,8 @@ def removeControlCharacters(content: str) -> str:
     return content
 
 
-def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool) -> bool:
+def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
+                       content: str) -> bool:
     """Returns whether the tree for a hashtag rule evaluates to true or false
     """
     if not tree:
@@ -84,7 +85,22 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool) -> bool:
             if isinstance(tree[1], str):
                 return tree[1] not in hashtags
             elif isinstance(tree[1], list):
-                return not hashtagRuleResolve(tree[1], hashtags, moderated)
+                return not hashtagRuleResolve(tree[1], hashtags, moderated,
+                                              content)
+    elif tree[0] == 'contains':
+        if len(tree) == 2:
+            if isinstance(tree[1], str):
+                matchStr = tree[1]
+                if matchStr.startswith('"') and matchStr.endswith('"'):
+                    matchStr = matchStr[1:]
+                    matchStr = matchStr[:len(matchStr) - 1]
+                return matchStr in content
+            elif isinstance(tree[1], list):
+                matchStr = tree[1][0]
+                if matchStr.startswith('"') and matchStr.endswith('"'):
+                    matchStr = matchStr[1:]
+                    matchStr = matchStr[:len(matchStr) - 1]
+                return matchStr in content
     elif tree[0] == 'and':
         if len(tree) == 3:
 
@@ -92,13 +108,15 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool) -> bool:
             if isinstance(tree[1], str):
                 firstArg = (tree[1] in hashtags)
             elif isinstance(tree[1], list):
-                firstArg = (hashtagRuleResolve(tree[1], hashtags, moderated))
+                firstArg = (hashtagRuleResolve(tree[1], hashtags, moderated,
+                                               content))
 
             secondArg = False
             if isinstance(tree[2], str):
                 secondArg = (tree[2] in hashtags)
             elif isinstance(tree[2], list):
-                secondArg = (hashtagRuleResolve(tree[2], hashtags, moderated))
+                secondArg = (hashtagRuleResolve(tree[2], hashtags, moderated,
+                                                content))
             return firstArg and secondArg
     elif tree[0] == 'or':
         if len(tree) == 3:
@@ -107,18 +125,22 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool) -> bool:
             if isinstance(tree[1], str):
                 firstArg = (tree[1] in hashtags)
             elif isinstance(tree[1], list):
-                firstArg = (hashtagRuleResolve(tree[1], hashtags, moderated))
+                firstArg = (hashtagRuleResolve(tree[1], hashtags, moderated,
+                                               content))
 
             secondArg = False
             if isinstance(tree[2], str):
                 secondArg = (tree[2] in hashtags)
             elif isinstance(tree[2], list):
-                secondArg = (hashtagRuleResolve(tree[2], hashtags, moderated))
+                secondArg = (hashtagRuleResolve(tree[2], hashtags, moderated,
+                                                content))
             return firstArg or secondArg
     elif tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
     elif tree[0].startswith('moderated'):
         return moderated
+    elif tree[0].startswith('"') and tree[0].endswith('"'):
+        return True
 
     return False
 
@@ -131,12 +153,15 @@ def hashtagRuleTree(operators: [],
     """
     if not operators and conditionsStr:
         conditionsStr = conditionsStr.strip()
-        if conditionsStr.startswith('#') or \
+        isStr = conditionsStr.startswith('"') and conditionsStr.endswith('"')
+        if conditionsStr.startswith('#') or isStr or \
            conditionsStr in operators or \
-           conditionsStr == 'moderated':
+           conditionsStr == 'moderated' or \
+           conditionsStr == 'contains':
             if conditionsStr.startswith('#'):
                 if conditionsStr not in tagsInConditions:
-                    if ' ' not in conditionsStr:
+                    if ' ' not in conditionsStr or \
+                       conditionsStr.startswith('"'):
                         tagsInConditions.append(conditionsStr)
             return [conditionsStr.strip()]
         else:
@@ -145,12 +170,15 @@ def hashtagRuleTree(operators: [],
         return None
     tree = None
     conditionsStr = conditionsStr.strip()
-    if conditionsStr.startswith('#') or \
+    isStr = conditionsStr.startswith('"') and conditionsStr.endswith('"')
+    if conditionsStr.startswith('#') or isStr or \
        conditionsStr in operators or \
-       conditionsStr == 'moderated':
+       conditionsStr == 'moderated' or \
+       conditionsStr == 'contains':
         if conditionsStr.startswith('#'):
             if conditionsStr not in tagsInConditions:
-                if ' ' not in conditionsStr:
+                if ' ' not in conditionsStr or \
+                   conditionsStr.startswith('"'):
                     tagsInConditions.append(conditionsStr)
         tree = [conditionsStr.strip()]
     ctr = 0
@@ -195,8 +223,15 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
+    # get the full text content of the post
+    content = ''
+    if postJsonObject['object'].get('content'):
+        content += postJsonObject['object']['content']
+    if postJsonObject['object'].get('summary'):
+        content += ' ' + postJsonObject['object']['summary']
+
     # actionOccurred = False
-    operators = ('not', 'and', 'or')
+    operators = ('not', 'and', 'or', 'contains')
     for ruleStr in rules:
         if not ruleStr:
             continue
@@ -212,7 +247,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         # does the rule contain any hashtags?
         if not tagsInConditions:
             continue
-        if not hashtagRuleResolve(tree, hashtags, moderated):
+        if not hashtagRuleResolve(tree, hashtags, moderated, content):
             continue
         # the condition matches, so do something
         actionStr = ruleStr.split(' then ')[1].strip()
