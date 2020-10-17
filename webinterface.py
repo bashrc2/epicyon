@@ -1345,6 +1345,22 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         '  <textarea id="message" name="editedNewswire" ' + \
         'style="height:500px">' + newswireStr + '</textarea>'
 
+    filterStr = ''
+    filterFilename = \
+        baseDir + '/accounts/news@' + domain + '/filters.txt'
+    if os.path.isfile(filterFilename):
+        with open(filterFilename, 'r') as filterfile:
+            filterStr = filterfile.read()
+
+    editNewswireForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Filtered words'] + '</label></b>\n'
+    editNewswireForm += '      <br><label class="labels">' + \
+        translate['One per line'] + '</label>\n'
+    editNewswireForm += '      <textarea id="message" ' + \
+        'name="filteredWordsNewswire" style="height:200px">' + \
+        filterStr + '</textarea>\n'
+
     editNewswireForm += \
         '</div>'
 

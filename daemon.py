@@ -2973,6 +2973,17 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(newswireFilename):
                     os.remove(newswireFilename)
 
+            # save filtered words list for the newswire
+            filterNewswireFilename = \
+                baseDir + '/accounts/' + \
+                'news@' + domain + '/filters.txt'
+            if fields.get('filteredWordsNewswire'):
+                with open(filterNewswireFilename, 'w+') as filterfile:
+                    filterfile.write(fields['filteredWordsNewswire'])
+            else:
+                if os.path.isfile(filterNewswireFilename):
+                    os.remove(filterNewswireFilename)
+
             newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
             if fields.get('trustedNewswire'):
                 newswireTrusted = fields['trustedNewswire']
