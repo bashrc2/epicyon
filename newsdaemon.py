@@ -270,8 +270,8 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     #                federationList: [],
     #                sendThreads: [], postLog: [], cachedWebfingers: {},
     #                personCache: {}, False, __version__) -> int:
-    if actionOccurred:
-        return True
+    # if actionOccurred:
+    #     return True
     return True
 
 
