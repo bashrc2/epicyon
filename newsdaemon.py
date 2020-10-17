@@ -99,13 +99,13 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 if matchStr.startswith('"') and matchStr.endswith('"'):
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
-                return matchStr in content
+                return matchStr.lower() in content
             elif isinstance(tree[1], list):
                 matchStr = tree[1][0]
                 if matchStr.startswith('"') and matchStr.endswith('"'):
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
-                return matchStr in content
+                return matchStr.lower() in content
     elif tree[0] == 'and':
         if len(tree) == 3:
 
@@ -234,6 +234,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         content += postJsonObject['object']['content']
     if postJsonObject['object'].get('summary'):
         content += ' ' + postJsonObject['object']['summary']
+    content = content.lower()
 
     # actionOccurred = False
     operators = ('not', 'and', 'or', 'contains')
