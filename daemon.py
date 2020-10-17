@@ -2984,6 +2984,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(filterNewswireFilename):
                     os.remove(filterNewswireFilename)
 
+            # save news tagging rules
+            hashtagRulesFilename = \
+                baseDir + '/accounts/hashtagrules.txt'
+            if fields.get('hashtagRulesList'):
+                with open(hashtagRulesFilename, 'w+') as rulesfile:
+                    rulesfile.write(fields['hashtagRulesList'])
+            else:
+                if os.path.isfile(hashtagRulesFilename):
+                    os.remove(hashtagRulesFilename)
+
             newswireTrustedFilename = baseDir + '/accounts/newswiretrusted.txt'
             if fields.get('trustedNewswire'):
                 newswireTrusted = fields['trustedNewswire']

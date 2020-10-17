@@ -1356,10 +1356,30 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         '      <br><b><label class="labels">' + \
         translate['Filtered words'] + '</label></b>\n'
     editNewswireForm += '      <br><label class="labels">' + \
-        translate['One per line'] + '</label>\n'
+        translate['One per line'] + '</label>'
     editNewswireForm += '      <textarea id="message" ' + \
         'name="filteredWordsNewswire" style="height:200px">' + \
         filterStr + '</textarea>\n'
+
+    hashtagRulesStr = ''
+    hashtagRulesFilename = \
+        baseDir + '/accounts/hashtagrules.txt'
+    if os.path.isfile(hashtagRulesFilename):
+        with open(hashtagRulesFilename, 'r') as rulesfile:
+            hashtagRulesStr = rulesfile.read()
+
+    editNewswireForm += \
+        '      <br><b><label class="labels">' + \
+        translate['News tagging rules'] + '</label></b>\n'
+    editNewswireForm += '      <br><label class="labels">' + \
+        translate['One per line'] + '.</label>\n'
+    editNewswireForm += \
+        '      <a href="' + \
+        'https://gitlab.com/bashrc2/epicyon/hashtagrules.txt' + \
+        '">' + translate['See instructions'] + '</a>\n'
+    editNewswireForm += '      <textarea id="message" ' + \
+        'name="hashtagRulesList" style="height:200px">' + \
+        hashtagRulesStr + '</textarea>\n'
 
     editNewswireForm += \
         '</div>'
