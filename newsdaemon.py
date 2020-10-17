@@ -261,6 +261,10 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                     del postJsonObject['object']['tag'][htId]
                     # actionOccurred = True
 
+        # Block this item
+        if actionStr.startswith('block') or actionStr.startswith('drop'):
+            return False
+
     # TODO
     # If routing to another instance
     # sendSignedJson(postJsonObject: {}, session, baseDir: str,
