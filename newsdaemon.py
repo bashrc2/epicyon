@@ -15,6 +15,7 @@ from newswire import getDictFromNewswire
 from posts import createNewsPost
 from content import removeHtmlTag
 from content import dangerousMarkup
+from content import validHashTag
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
@@ -71,6 +72,97 @@ def removeControlCharacters(content: str) -> str:
     return content
 
 
+def hasttagRuleResolve(tree: [], hashtags: []) -> bool:
+    """Returns whether the tree for a hashtag rule evaluates to true or false
+    """
+    if not tree:
+        return False
+
+    if tree[0] == 'not':
+        if len(tree) == 2:
+            if isinstance(tree[1], str):
+                return tree[1] not in hashtags
+            elif isinstance(tree[1], list):
+                return not hasttagRuleResolve(tree[1], hashtags)
+    elif tree[0] == 'and':
+        if len(tree) == 3:
+
+            firstArg = False
+            if isinstance(tree[1], str):
+                firstArg = (tree[1] in hashtags)
+            elif isinstance(tree[1], list):
+                firstArg = (hasttagRuleResolve(tree[1], hashtags))
+
+            secondArg = False
+            if isinstance(tree[2], str):
+                secondArg = (tree[2] in hashtags)
+            elif isinstance(tree[2], list):
+                secondArg = (hasttagRuleResolve(tree[2], hashtags))
+            return firstArg and secondArg
+    elif tree[0] == 'or':
+        if len(tree) == 3:
+
+            firstArg = False
+            if isinstance(tree[1], str):
+                firstArg = (tree[1] in hashtags)
+            elif isinstance(tree[1], list):
+                firstArg = (hasttagRuleResolve(tree[1], hashtags))
+
+            secondArg = False
+            if isinstance(tree[2], str):
+                secondArg = (tree[2] in hashtags)
+            elif isinstance(tree[2], list):
+                secondArg = (hasttagRuleResolve(tree[2], hashtags))
+            return firstArg or secondArg
+    elif tree[0].startswith('#') and len(tree) == 1:
+        return tree[0] in hashtags
+
+    return False
+
+
+def hashtagRuleTree(operators: [],
+                    conditionsStr: str,
+                    tagsInConditions: []) -> []:
+    """Walks the tree
+    """
+    if not operators and conditionsStr:
+        conditionsStr = conditionsStr.strip()
+        if conditionsStr.startswith('#') or conditionsStr in operators:
+            if conditionsStr.startswith('#'):
+                if conditionsStr not in tagsInConditions:
+                    if ' ' not in conditionsStr:
+                        tagsInConditions.append(conditionsStr)
+            return [conditionsStr.strip()]
+        else:
+            return None
+    if not operators or not conditionsStr:
+        return None
+    tree = None
+    conditionsStr = conditionsStr.strip()
+    if conditionsStr.startswith('#') or conditionsStr in operators:
+        if conditionsStr.startswith('#'):
+            if conditionsStr not in tagsInConditions:
+                if ' ' not in conditionsStr:
+                    tagsInConditions.append(conditionsStr)
+        tree = [conditionsStr.strip()]
+    ctr = 0
+    while ctr < len(operators):
+        op = operators[ctr]
+        if op not in conditionsStr:
+            ctr += 1
+            continue
+        else:
+            tree = [op]
+            sections = conditionsStr.split(op)
+            for subConditionStr in sections:
+                result = hashtagRuleTree(operators[ctr + 1:], subConditionStr,
+                                         tagsInConditions)
+                if result:
+                    tree.append(result)
+            break
+    return tree
+
+
 def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                               hashtags: str, httpPrefix: str,
                               domain: str, port: int,
@@ -82,6 +174,90 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     Returns true if the post should be saved to the news timeline
     of this instance
     """
+    rulesFilename = baseDir + '/accounts/hashtagrules.txt'
+    if not os.path.isfile(rulesFilename):
+        return True
+    rules = []
+    with open(rulesFilename, "r") as f:
+        rules = f.readlines()
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    actionOccurred = False
+    operators = ('not', 'and', 'or')
+    for ruleStr in rules:
+        if not ruleStr:
+            continue
+        if not ruleStr.startswith('if '):
+            continue
+        if ' then ' not in ruleStr:
+            continue
+        conditionsStr = ruleStr.split('if ', 1)[1]
+        conditionsStr = conditionsStr.split(' then ')[0]
+        tagsInConditions = []
+        tree = hashtagRuleTree(operators, conditionsStr, tagsInConditions)
+        # does the rule contain any hashtags?
+        if not tagsInConditions:
+            continue
+        if not hasttagRuleResolve(tree, hashtags):
+            continue
+        # the condition matches, so do something
+        actionStr = ruleStr.split(' then ')[1].strip()
+
+        # add a hashtag
+        if actionStr.startswith('add '):
+            addHashtag = actionStr.split('add ', 1)[1].strip()
+            if addHashtag.startswith('#'):
+                if addHashtag not in hashtags:
+                    hashtags.append(addHashtag)
+                    htId = addHashtag.replace('#', '')
+                    if validHashTag(htId):
+                        hashtagUrl = \
+                            httpPrefix + "://" + domainFull + "/tags/" + htId
+                        postJsonObject['object']['tag'][htId] = {
+                            'href': hashtagUrl,
+                            'name': addHashtag,
+                            'type': 'Hashtag'
+                        }
+                        hashtagHtml = \
+                            "<a href=\"" + hashtagUrl + \
+                            "\" class=\"mention hashtag\" " + \
+                            "rel=\"tag\">#<span>" + \
+                            htId + "</span></a>"
+                        content = postJsonObject['object']['content']
+                        if content.endswith('</p>'):
+                            content = \
+                                content[:len(content) - len('</p>')] + \
+                                hashtagHtml + '</p>'
+                        else:
+                            content += hashtagHtml
+                        postJsonObject['object']['content'] = content
+                        actionOccurred = True
+
+        # remove a hashtag
+        if actionStr.startswith('remove '):
+            rmHashtag = actionStr.split('remove ', 1)[1].strip()
+            if rmHashtag.startswith('#'):
+                if rmHashtag in hashtags:
+                    hashtags.remove(rmHashtag)
+                    htId = addHashtag.replace('#', '')
+                    hashtagUrl = \
+                        httpPrefix + "://" + domainFull + "/tags/" + htId
+                    hashtagHtml = \
+                        "<a href=\"" + hashtagUrl + \
+                        "\" class=\"mention hashtag\" " + \
+                        "rel=\"tag\">#<span>" + \
+                        htId + "</span></a>"
+                    content = postJsonObject['object']['content']
+                    if hashtagHtml in content:
+                        postJsonObject['object']['content'] = \
+                            content.replace(hashtagHtml, '')
+                    del postJsonObject['object']['tag'][htId]
+                    actionOccurred = True
+
     # TODO
     # If routing to another instance
     # sendSignedJson(postJsonObject: {}, session, baseDir: str,
@@ -91,6 +267,8 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     #                federationList: [],
     #                sendThreads: [], postLog: [], cachedWebfingers: {},
     #                personCache: {}, False, __version__) -> int:
+    if actionOccurred:
+        return True
     return True
 
 
@@ -210,6 +388,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # save the post and update the index
         if savePost:
+            newswire[originalDateStr][6] = hashtags
             if saveJson(blog, filename):
                 updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
 

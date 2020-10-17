@@ -82,6 +82,8 @@ from content import removeHtmlTag
 from theme import setCSSparam
 from jsonldsig import testSignJsonld
 from jsonldsig import jsonldVerify
+from newsdaemon import hashtagRuleTree
+from newsdaemon import hasttagRuleResolve
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -2173,8 +2175,64 @@ def testRemoveHtmlTag():
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
 
+def testHashtagRuleTree():
+    print('testHashtagRuleTree')
+    operators = ('not', 'and', 'or')
+
+    conditionsStr = '#foo or #bar'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr, tagsInConditions)
+    assert str(tree) == str(['or', ['#foo'], ['#bar']])
+    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    hashtags = ['#foo']
+    assert hasttagRuleResolve(tree, hashtags)
+    hashtags = ['#carrot', '#stick']
+    assert not hasttagRuleResolve(tree, hashtags)
+
+    conditionsStr = 'x'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr, tagsInConditions)
+    assert tree is None
+    assert tagsInConditions == []
+    hashtags = ['#foo']
+    assert not hasttagRuleResolve(tree, hashtags)
+
+    conditionsStr = '#x'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr, tagsInConditions)
+    assert str(tree) == str(['#x'])
+    assert str(tagsInConditions) == str(['#x'])
+    hashtags = ['#x']
+    assert hasttagRuleResolve(tree, hashtags)
+    hashtags = ['#y', '#z']
+    assert not hasttagRuleResolve(tree, hashtags)
+
+    conditionsStr = 'not #b'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr, tagsInConditions)
+    assert str(tree) == str(['not', ['#b']])
+    assert str(tagsInConditions) == str(['#b'])
+    hashtags = ['#y', '#z']
+    assert hasttagRuleResolve(tree, hashtags)
+    hashtags = ['#a', '#b', '#c']
+    assert not hasttagRuleResolve(tree, hashtags)
+
+    conditionsStr = '#foo or #bar and #a'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr, tagsInConditions)
+    assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
+    assert str(tagsInConditions) == str(['#foo', '#bar', '#a'])
+    hashtags = ['#bar', '#a']
+    assert hasttagRuleResolve(tree, hashtags)
+    hashtags = ['#foo', '#a']
+    assert hasttagRuleResolve(tree, hashtags)
+    hashtags = ['#x', '#a']
+    assert not hasttagRuleResolve(tree, hashtags)
+
+
 def runAllTests():
     print('Running tests...')
+    testHashtagRuleTree()
     testRemoveHtmlTag()
     testReplaceEmailQuote()
     testConstantTimeStringCheck()

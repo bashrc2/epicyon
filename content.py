@@ -353,6 +353,7 @@ def validHashTag(hashtag: str) -> bool:
     # long hashtags are not valid
     if len(hashtag) >= 32:
         return False
+    # TODO: this may need to be an international character set
     validChars = set('0123456789' +
                      'abcdefghijklmnopqrstuvwxyz' +
                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
