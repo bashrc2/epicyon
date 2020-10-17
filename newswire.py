@@ -91,9 +91,15 @@ def addNewswireDictEntry(baseDir: str, newswire: {}, dateStr: str,
                 newswireItemBlocked = True
                 break
     if not newswireItemBlocked:
-        newswire[dateStr] = [title, link,
-                             votesStatus, postFilename,
-                             description, moderated, tags]
+        newswire[dateStr] = [
+            title,
+            link,
+            votesStatus,
+            postFilename,
+            description,
+            moderated,
+            tags
+        ]
 
 
 def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
