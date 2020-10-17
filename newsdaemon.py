@@ -73,7 +73,7 @@ def removeControlCharacters(content: str) -> str:
     return content
 
 
-def hasttagRuleResolve(tree: [], hashtags: []) -> bool:
+def hashtagRuleResolve(tree: [], hashtags: []) -> bool:
     """Returns whether the tree for a hashtag rule evaluates to true or false
     """
     if not tree:
@@ -84,7 +84,7 @@ def hasttagRuleResolve(tree: [], hashtags: []) -> bool:
             if isinstance(tree[1], str):
                 return tree[1] not in hashtags
             elif isinstance(tree[1], list):
-                return not hasttagRuleResolve(tree[1], hashtags)
+                return not hashtagRuleResolve(tree[1], hashtags)
     elif tree[0] == 'and':
         if len(tree) == 3:
 
@@ -92,13 +92,13 @@ def hasttagRuleResolve(tree: [], hashtags: []) -> bool:
             if isinstance(tree[1], str):
                 firstArg = (tree[1] in hashtags)
             elif isinstance(tree[1], list):
-                firstArg = (hasttagRuleResolve(tree[1], hashtags))
+                firstArg = (hashtagRuleResolve(tree[1], hashtags))
 
             secondArg = False
             if isinstance(tree[2], str):
                 secondArg = (tree[2] in hashtags)
             elif isinstance(tree[2], list):
-                secondArg = (hasttagRuleResolve(tree[2], hashtags))
+                secondArg = (hashtagRuleResolve(tree[2], hashtags))
             return firstArg and secondArg
     elif tree[0] == 'or':
         if len(tree) == 3:
@@ -107,13 +107,13 @@ def hasttagRuleResolve(tree: [], hashtags: []) -> bool:
             if isinstance(tree[1], str):
                 firstArg = (tree[1] in hashtags)
             elif isinstance(tree[1], list):
-                firstArg = (hasttagRuleResolve(tree[1], hashtags))
+                firstArg = (hashtagRuleResolve(tree[1], hashtags))
 
             secondArg = False
             if isinstance(tree[2], str):
                 secondArg = (tree[2] in hashtags)
             elif isinstance(tree[2], list):
-                secondArg = (hasttagRuleResolve(tree[2], hashtags))
+                secondArg = (hashtagRuleResolve(tree[2], hashtags))
             return firstArg or secondArg
     elif tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
@@ -165,7 +165,7 @@ def hashtagRuleTree(operators: [],
 
 
 def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
-                              hashtags: str, httpPrefix: str,
+                              hashtags: [], httpPrefix: str,
                               domain: str, port: int,
                               personCache: {},
                               cachedWebfingers: {},
@@ -203,7 +203,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         # does the rule contain any hashtags?
         if not tagsInConditions:
             continue
-        if not hasttagRuleResolve(tree, hashtags):
+        if not hashtagRuleResolve(tree, hashtags):
             continue
         # the condition matches, so do something
         actionStr = ruleStr.split(' then ')[1].strip()
