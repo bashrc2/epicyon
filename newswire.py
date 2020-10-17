@@ -87,7 +87,7 @@ def addNewswireDictEntry(baseDir: str, newswire: {}, dateStr: str,
     newswireItemBlocked = False
     if tags:
         for tag in tags:
-            if isBlockedHashtag(baseDir, tag):
+            if isBlockedHashtag(baseDir, tag.replace('#', '')):
                 newswireItemBlocked = True
                 break
     if not newswireItemBlocked:
