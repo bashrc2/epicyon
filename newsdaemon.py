@@ -271,34 +271,34 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                         'name': addHashtag,
                         'type': 'Hashtag'
                     }
-                # does the tag already exist?
-                addTagObject = None
-                for t in postJsonObject['object']['tag']:
-                    if t.get('type') and t.get('name'):
-                        if t['type'] == 'Hashtag' and \
-                           t['name'] == addHashtag:
-                            addTagObject = t
-                            break
-                # append the tag if it wasn't found
-                if not addTagObject:
-                    postJsonObject['object']['tag'].append(newTag)
-                # add corresponding html to the post content
-                hashtagHtml = \
-                    " <a href=\"" + hashtagUrl + \
-                    "\" class=\"mention hashtag\" " + \
-                    "rel=\"tag\">#<span>" + \
-                    htId + "</span></a>"
-                content = postJsonObject['object']['content']
-                if hashtagHtml not in content:
-                    if content.endswith('</p>'):
-                        content = \
-                            content[:len(content) - len('</p>')] + \
-                            hashtagHtml + '</p>'
-                    else:
-                        content += hashtagHtml
-                    postJsonObject['object']['content'] = content
-                    storeHashTags(baseDir, 'news', postJsonObject)
-                    # actionOccurred = True
+                    # does the tag already exist?
+                    addTagObject = None
+                    for t in postJsonObject['object']['tag']:
+                        if t.get('type') and t.get('name'):
+                            if t['type'] == 'Hashtag' and \
+                               t['name'] == addHashtag:
+                                addTagObject = t
+                                break
+                    # append the tag if it wasn't found
+                    if not addTagObject:
+                        postJsonObject['object']['tag'].append(newTag)
+                    # add corresponding html to the post content
+                    hashtagHtml = \
+                        " <a href=\"" + hashtagUrl + \
+                        "\" class=\"mention hashtag\" " + \
+                        "rel=\"tag\">#<span>" + \
+                        htId + "</span></a>"
+                    content = postJsonObject['object']['content']
+                    if hashtagHtml not in content:
+                        if content.endswith('</p>'):
+                            content = \
+                                content[:len(content) - len('</p>')] + \
+                                hashtagHtml + '</p>'
+                        else:
+                            content += hashtagHtml
+                        postJsonObject['object']['content'] = content
+                        storeHashTags(baseDir, 'news', postJsonObject)
+                        # actionOccurred = True
 
         # remove a hashtag
         if actionStr.startswith('remove '):
