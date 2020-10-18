@@ -251,9 +251,6 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         tagsInConditions = []
         tree = hashtagRuleTree(operators, conditionsStr,
                                tagsInConditions, moderated)
-        # does the rule contain any hashtags?
-        if not tagsInConditions:
-            continue
         if not hashtagRuleResolve(tree, hashtags, moderated, content):
             continue
         # the condition matches, so do something
