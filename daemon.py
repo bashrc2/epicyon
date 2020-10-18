@@ -164,6 +164,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import clearFromPostCaches
 from utils import containsInvalidChars
 from utils import isSystemAccount
 from utils import setConfigParam
@@ -3124,13 +3125,6 @@ class PubServer(BaseHTTPRequestHandler):
                         newsPostTitle
                     postJsonObject['object']['content'] = \
                         newsPostContent
-                    # remove the html from post cache
-                    cachedPost = \
-                        baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
-                        '/postcache/' + newsPostUrl + '.html'
-                    if os.path.isfile(cachedPost):
-                        os.remove(cachedPost)
                     # update newswire
                     pubDate = postJsonObject['object']['published']
                     publishedDate = \
@@ -3149,6 +3143,12 @@ class PubServer(BaseHTTPRequestHandler):
                                      newswireStateFilename)
                         except Exception as e:
                             print('ERROR saving newswire state, ' + str(e))
+
+                    # remove any previous cached news posts
+                    newsId = \
+                        postJsonObject['object']['id'].replace('/', '#')
+                    clearFromPostCaches(baseDir, newsId)
+
                     # save the news post
                     saveJson(postJsonObject, postFilename)
 
