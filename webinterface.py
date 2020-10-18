@@ -1375,7 +1375,7 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
         translate['One per line'] + '.</label>\n'
     editNewswireForm += \
         '      <a href="' + \
-        'https://gitlab.com/bashrc2/epicyon/hashtagrules.txt' + \
+        'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
     editNewswireForm += '      <textarea id="message" ' + \
         'name="hashtagRulesList" style="height:200px">' + \
