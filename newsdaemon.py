@@ -464,11 +464,12 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             htId = tagName.replace('#', '')
             hashtagUrl = \
                 httpPrefix + "://" + domainFull + "/tags/" + htId
-            blog['object']['tag'][htId] = {
+            newTag = {
                 'href': hashtagUrl,
                 'name': tagName,
                 'type': 'Hashtag'
             }
+            blog['object']['tag'].append(newTag)
             if tagName in blog['object']['content']:
                 hashtagHtml = \
                     "<a href=\"" + hashtagUrl + \

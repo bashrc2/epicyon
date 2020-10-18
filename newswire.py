@@ -384,10 +384,10 @@ def getHashtagsFromPost(postJsonObject: {}) -> []:
         return []
     if not postJsonObject['object'].get('tag'):
         return []
-    if not isinstance(postJsonObject['object']['tag'], dict):
+    if not isinstance(postJsonObject['object']['tag'], list):
         return []
     tags = []
-    for tg in postJsonObject['object']['tag'].items():
+    for tg in postJsonObject['object']['tag']:
         if not isinstance(tg, dict):
             continue
         if not tg.get('name'):
