@@ -591,14 +591,14 @@ def clearFromPostCaches(baseDir: str, postId: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
     """
-    filename = postId + '.html'
+    filename = '/postcache/' + postId + '.html'
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if 'inbox@' in acct:
                 continue
-            cacheDir = os.path.join(baseDir + '/accounts/postcache', acct)
+            cacheDir = os.path.join(baseDir + '/accounts', acct)
             postFilename = cacheDir + filename
             print('clearFromPostCaches: ' + postFilename)
             if os.path.isfile(postFilename):
