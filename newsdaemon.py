@@ -296,9 +296,9 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                             hashtagHtml + '</p>'
                     else:
                         content += hashtagHtml
-                        postJsonObject['object']['content'] = content
-                        storeHashTags(baseDir, 'news', postJsonObject)
-                        # actionOccurred = True
+                    postJsonObject['object']['content'] = content
+                    storeHashTags(baseDir, 'news', postJsonObject)
+                    # actionOccurred = True
 
         # remove a hashtag
         if actionStr.startswith('remove '):
