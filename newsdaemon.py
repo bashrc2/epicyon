@@ -25,6 +25,7 @@ from content import validHashTag
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
+from utils import clearFromPostCaches
 from inbox import storeHashTags
 
 
@@ -490,6 +491,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
             storeHashTags(baseDir, 'news', blog)
 
+            clearFromPostCaches(baseDir, postId)
             if saveJson(blog, filename):
                 updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
 

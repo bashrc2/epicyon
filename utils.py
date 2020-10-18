@@ -587,6 +587,26 @@ def locateNewsArrival(baseDir: str, domain: str,
     return None
 
 
+def clearFromPostCaches(baseDir: str, postId: str) -> None:
+    """Clears cached html for the given post, so that edits
+    to news will appear
+    """
+    filename = postId + '.html'
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct:
+                continue
+            cacheDir = os.path.join(baseDir + '/accounts/postcache', acct)
+            postFilename = cacheDir + filename
+            if os.path.isfile(postFilename):
+                try:
+                    os.remove(postFilename)
+                except BaseException:
+                    pass
+
+
 def locatePost(baseDir: str, nickname: str, domain: str,
                postUrl: str, replies=False) -> str:
     """Returns the filename for the given status post url
