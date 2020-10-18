@@ -601,7 +601,6 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
                 continue
             cacheDir = os.path.join(baseDir + '/accounts', acct)
             postFilename = cacheDir + filename
-            print('clearFromPostCaches: ' + postFilename)
             if os.path.isfile(postFilename):
                 try:
                     os.remove(postFilename)
