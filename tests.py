@@ -2179,6 +2179,18 @@ def testHashtagRuleTree():
     print('testHashtagRuleTree')
     operators = ('not', 'and', 'or', 'contains')
 
+    moderated = True
+    conditionsStr = \
+        'contains "Cat" or contains "Corvid" or ' + \
+        'contains "Dormouse" or contains "Buzzard"'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['or', ['contains', ['"Cat"']],
+                             ['contains', ['"Corvid"']],
+                             ['contains', ['"Dormouse"']],
+                             ['contains', ['"Buzzard"']]])
+
     content = 'This is a test'
     moderated = True
     conditionsStr = '#foo or #bar'
@@ -2270,6 +2282,8 @@ def testHashtagRuleTree():
                            tagsInConditions, moderated)
     assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
     assert str(tagsInConditions) == str(['#foo', '#bar', '#a'])
+    hashtags = ['#foo', '#bar', '#a']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content)
     hashtags = ['#bar', '#a']
     assert hashtagRuleResolve(tree, hashtags, moderated, content)
     hashtags = ['#foo', '#a']

@@ -108,39 +108,31 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                     matchStr = matchStr[:len(matchStr) - 1]
                 return matchStr.lower() in content
     elif tree[0] == 'and':
-        if len(tree) == 3:
-
-            firstArg = False
-            if isinstance(tree[1], str):
-                firstArg = (tree[1] in hashtags)
-            elif isinstance(tree[1], list):
-                firstArg = (hashtagRuleResolve(tree[1], hashtags, moderated,
-                                               content))
-
-            secondArg = False
-            if isinstance(tree[2], str):
-                secondArg = (tree[2] in hashtags)
-            elif isinstance(tree[2], list):
-                secondArg = (hashtagRuleResolve(tree[2], hashtags, moderated,
-                                                content))
-            return firstArg and secondArg
+        if len(tree) >= 3:
+            for argIndex in range(1, len(tree)):
+                argValue = False
+                if isinstance(tree[argIndex], str):
+                    argValue = (tree[argIndex] in hashtags)
+                elif isinstance(tree[argIndex], list):
+                    argValue = hashtagRuleResolve(tree[argIndex],
+                                                  hashtags, moderated,
+                                                  content)
+                if not argValue:
+                    return False
+            return True
     elif tree[0] == 'or':
-        if len(tree) == 3:
-
-            firstArg = False
-            if isinstance(tree[1], str):
-                firstArg = (tree[1] in hashtags)
-            elif isinstance(tree[1], list):
-                firstArg = (hashtagRuleResolve(tree[1], hashtags, moderated,
-                                               content))
-
-            secondArg = False
-            if isinstance(tree[2], str):
-                secondArg = (tree[2] in hashtags)
-            elif isinstance(tree[2], list):
-                secondArg = (hashtagRuleResolve(tree[2], hashtags, moderated,
-                                                content))
-            return firstArg or secondArg
+        if len(tree) >= 3:
+            for argIndex in range(1, len(tree)):
+                argValue = False
+                if isinstance(tree[argIndex], str):
+                    argValue = (tree[argIndex] in hashtags)
+                elif isinstance(tree[argIndex], list):
+                    argValue = hashtagRuleResolve(tree[argIndex],
+                                                  hashtags, moderated,
+                                                  content)
+                if argValue:
+                    return True
+            return False
     elif tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
     elif tree[0].startswith('moderated'):
@@ -190,14 +182,20 @@ def hashtagRuleTree(operators: [],
     ctr = 0
     while ctr < len(operators):
         op = operators[ctr]
-        if op not in conditionsStr:
+        opMatch = ' ' + op + ' '
+        if opMatch not in conditionsStr and \
+           not conditionsStr.startswith(op + ' '):
             ctr += 1
             continue
         else:
             tree = [op]
-            sections = conditionsStr.split(op)
+            if opMatch in conditionsStr:
+                sections = conditionsStr.split(opMatch)
+            else:
+                sections = conditionsStr.split(op + ' ', 1)
             for subConditionStr in sections:
-                result = hashtagRuleTree(operators[ctr + 1:], subConditionStr,
+                result = hashtagRuleTree(operators[ctr + 1:],
+                                         subConditionStr,
                                          tagsInConditions, moderated)
                 if result:
                     tree.append(result)
