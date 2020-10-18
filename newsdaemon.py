@@ -269,11 +269,23 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                     if validHashTag(htId):
                         hashtagUrl = \
                             httpPrefix + "://" + domainFull + "/tags/" + htId
-                        postJsonObject['object']['tag'][htId] = {
+                        newTag = {
                             'href': hashtagUrl,
                             'name': addHashtag,
                             'type': 'Hashtag'
                         }
+                        # does the tag already exist?
+                        addTagObject = None
+                        for t in postJsonObject['object']['tag']:
+                            if t.get('type') and t.get('name'):
+                                if t['type'] == 'Hashtag' and \
+                                   t['name'] == addHashtag:
+                                    addTagObject = t
+                                    break
+                        # append the tag if it wasn't found
+                        if not addTagObject:
+                            postJsonObject['object']['tag'].append(newTag)
+                        # add corresponding html to the post content
                         hashtagHtml = \
                             " <a href=\"" + hashtagUrl + \
                             "\" class=\"mention hashtag\" " + \
@@ -296,9 +308,10 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
             if rmHashtag.startswith('#'):
                 if rmHashtag in hashtags:
                     hashtags.remove(rmHashtag)
-                    htId = addHashtag.replace('#', '')
+                    htId = rmHashtag.replace('#', '')
                     hashtagUrl = \
                         httpPrefix + "://" + domainFull + "/tags/" + htId
+                    # remove tag html from the post content
                     hashtagHtml = \
                         "<a href=\"" + hashtagUrl + \
                         "\" class=\"mention hashtag\" " + \
@@ -309,8 +322,16 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                         content = \
                             content.replace(hashtagHtml, '').replace('  ', ' ')
                         postJsonObject['object']['content'] = content
-                    del postJsonObject['object']['tag'][htId]
-                    # actionOccurred = True
+                    rmTagObject = None
+                    for t in postJsonObject['object']['tag']:
+                        if t.get('type') and t.get('name'):
+                            if t['type'] == 'Hashtag' and \
+                               t['name'] == rmHashtag:
+                                rmTagObject = t
+                                break
+                    if rmTagObject:
+                        postJsonObject['object']['tag'].remove(rmTagObject)
+                        # actionOccurred = True
 
         # Block this item
         if actionStr.startswith('block') or actionStr.startswith('drop'):
