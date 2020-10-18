@@ -491,7 +491,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
             storeHashTags(baseDir, 'news', blog)
 
-            clearFromPostCaches(baseDir, postId)
+            clearFromPostCaches(baseDir, recentPostsCache, postId)
             if saveJson(blog, filename):
                 updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
 

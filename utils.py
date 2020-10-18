@@ -587,7 +587,8 @@ def locateNewsArrival(baseDir: str, domain: str,
     return None
 
 
-def clearFromPostCaches(baseDir: str, postId: str) -> None:
+def clearFromPostCaches(baseDir: str, recentPostsCache: {},
+                        postId: str) -> None:
     """Clears cached html for the given post, so that edits
     to news will appear
     """
@@ -608,6 +609,16 @@ def clearFromPostCaches(baseDir: str, postId: str) -> None:
                     print('WARN: clearFromPostCaches file not removed ' +
                           postFilename)
                     pass
+            # if the post is in the recent posts cache then remove it
+            if recentPostsCache.get('index'):
+                if postId in recentPostsCache['index']:
+                    recentPostsCache['index'].remove(postId)
+            if recentPostsCache.get('json'):
+                if recentPostsCache['json'].get(postId):
+                    del recentPostsCache['json'][postId]
+            if recentPostsCache.get('html'):
+                if recentPostsCache['html'].get(postId):
+                    del recentPostsCache['html'][postId]
 
 
 def locatePost(baseDir: str, nickname: str, domain: str,
@@ -742,8 +753,12 @@ def deletePost(baseDir: str, httpPrefix: str,
             if recentPostsCache.get('index'):
                 if postId in recentPostsCache['index']:
                     recentPostsCache['index'].remove(postId)
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
+            if recentPostsCache.get('json'):
+                if recentPostsCache['json'].get(postId):
+                    del recentPostsCache['json'][postId]
+            if recentPostsCache.get('html'):
+                if recentPostsCache['html'].get(postId):
+                    del recentPostsCache['html'][postId]
 
         # remove any attachment
         removeAttachment(baseDir, httpPrefix, domain, postJsonObject)

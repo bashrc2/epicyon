@@ -3147,7 +3147,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove any previous cached news posts
                     newsId = \
                         postJsonObject['object']['id'].replace('/', '#')
-                    clearFromPostCaches(baseDir, newsId)
+                    clearFromPostCaches(baseDir, self.server.recentPostsCache,
+                                        newsId)
 
                     # save the news post
                     saveJson(postJsonObject, postFilename)
