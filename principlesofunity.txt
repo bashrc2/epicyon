@@ -20,4 +20,4 @@ PRINCIPLES OF UNITY
 
 9. All IMC's shall be committed to the use of free source code, whenever possible, in order to develop the digital infrastructure, and to increase the independence of the network by not relying on proprietary software.
 
-10. All IMC's shall be committed to the principle of human equality, and shall not discriminate, including discrimination based upon race, gender, age, class or sexual orientation. Recognizing the vast cultural traditions within the network, we are committed to building [diversity] within our localities.
+10. All IMC's shall be committed to the principle of human equality, and shall not discriminate, including discrimination based upon race, gender, age, class or sexual orientation. Recognizing the vast cultural traditions within the network, we are committed to building diversity within our localities.
