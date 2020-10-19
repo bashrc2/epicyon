@@ -267,7 +267,7 @@ def setThemeIndymedia(baseDir: str):
         "button-corner-radius": "5px",
         "timeline-border-radius": "5px",
         "focus-color": "blue",
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
@@ -366,7 +366,7 @@ def setThemeNight(baseDir: str):
         "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
         "focus-color": "blue",
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
@@ -421,7 +421,7 @@ def setThemeStarlight(baseDir: str):
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
         "focus-color": "darkred",
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
@@ -485,7 +485,7 @@ def setThemeHenge(baseDir: str):
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
@@ -681,7 +681,7 @@ def setThemePurple(baseDir: str):
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
@@ -795,7 +795,7 @@ def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
         "focus-color": "grey",
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
@@ -856,7 +856,7 @@ def setThemeSolidaric(baseDir: str):
         "button-selected-highlighted": "darkred",
         "newswire-date-color": "grey",
         "focus-color": "grey",
-        "font-size-button-mobile": "36px",
+        "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
         "font-size3": "40px",
