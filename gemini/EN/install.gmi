@@ -19,6 +19,12 @@ Create a user for the server to run as:
     adduser --system --home=/opt/epicyon --group epicyon
     chown -R epicyon:epicyon /opt/epicyon
 
+Link news mirrors:
+
+    mkdir /var/www/YOUR_DOMAIN
+    mkdir -p /opt/epicyon/accounts/newsmirror
+    ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror
+
 Create a daemon:
 
     nano /etc/systemd/system/epicyon.service
@@ -103,6 +109,11 @@ And paste the following:
         error_log /dev/null;
 
         index index.html;
+
+        location /newsmirror {
+          root /var/www/YOUR_DOMAIN;
+          try_files $uri =404;
+        }
 
         location / {
             proxy_http_version 1.1;

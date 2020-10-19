@@ -1263,7 +1263,7 @@
       <p class="intro">
         Want to read the news from an RSS feed, or run your own Independent Media Center producing news and federating it through the network? Both of those are possible. The newswire gives you the capability of collectively moderating news as it arrives, and publishing your own articles. The administrator can assign moderator and editor roles to other users on an instance. Organize your community to overcome the limitations of corporate media.
       </p>
-            
+
       <p id="install" class="siteheader">Install</p>
     </center>
     <p class="intro">You will need python version 3.7 or later.</p>
@@ -1291,6 +1291,15 @@
       <p>sudo su</p>
       <p>adduser --system --home=/opt/epicyon --group epicyon</p>
       <p>chown -R epicyon:epicyon /opt/epicyon</p>
+    </div>
+
+    <p class="intro">
+      Link news mirrors:
+    </p>
+    <div class="shell">
+      <p>mkdir /var/www/YOUR_DOMAIN</p>
+      <p>mkdir -p /opt/epicyon/accounts/newsmirror</p>
+      <p>ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror</p>
     </div>
 
     <p class="intro">
@@ -1388,6 +1397,11 @@
       error_log /dev/null;<br>
       <br>
       index index.html;<br>
+      <br>
+      location /newsmirror {<br>
+        root /var/www/YOUR_DOMAIN;<br>
+        try_files $uri =404;<br>
+      }<br>
       <br>
       location / {<br>
       proxy_http_version 1.1;<br>
