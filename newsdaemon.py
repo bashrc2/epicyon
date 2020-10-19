@@ -348,6 +348,17 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     return True
 
 
+def createNewsMirror(baseDir: str, url: str,
+                     maxMirroredArticles: int) -> bool:
+    """Creates a local mirror of a news article
+    """
+    mirrorDir = baseDir + '/accounts/newsmirror'
+    if not os.path.isdir(mirrorDir):
+        os.mkdir(mirrorDir)
+
+    return True
+
+
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             domain: str, port: int,
                             newswire: {},
@@ -356,7 +367,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             session, cachedWebfingers: {},
                             personCache: {},
                             federationList: [],
-                            sendThreads: [], postLog: []) -> None:
+                            sendThreads: [], postLog: [],
+                            maxMirroredArticles: int) -> None:
     """Converts rss items in a newswire into posts
     """
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
@@ -430,6 +442,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                               rssTitle)
         if not blog:
             continue
+
+        mirrored = item[7]
+        if mirrored:
+            if not createNewsMirror(baseDir, url, maxMirroredArticles):
+                continue
 
         idStr = \
             httpPrefix + '://' + domain + '/users/news' + \
@@ -571,7 +588,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.personCache,
                                 httpd.federationList,
                                 httpd.sendThreads,
-                                httpd.postLog)
+                                httpd.postLog,
+                                httpd.maxMirroredArticles)
         print('Newswire feed converted to ActivityPub')
 
         # wait a while before the next feeds update

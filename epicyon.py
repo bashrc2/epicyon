@@ -120,6 +120,11 @@ parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
                     default=2048,
                     help='Maximum newswire rss/atom feed size in K')
+parser.add_argument('--maxMirroredArticles',
+                    dest='maxMirroredArticles', type=int,
+                    default=100,
+                    help='Maximum number of news articles to mirror.' +
+                    ' Set to zero for indefinite mirroring.')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -1937,15 +1942,18 @@ if dateonly:
 maxNewswirePostsPerSource = \
     getConfigParam(baseDir, 'maxNewswirePostsPerSource')
 if maxNewswirePostsPerSource:
-    if maxNewswirePostsPerSource.isdigit():
-        args.maxNewswirePostsPerSource = maxNewswirePostsPerSource
+    args.maxNewswirePostsPerSource = int(maxNewswirePostsPerSource)
 
 # set the maximum size of a newswire rss/atom feed in Kilobytes
 maxNewswireFeedSizeKb = \
     getConfigParam(baseDir, 'maxNewswireFeedSizeKb')
 if maxNewswireFeedSizeKb:
-    if maxNewswireFeedSizeKb.isdigit():
-        args.maxNewswireFeedSizeKb = maxNewswireFeedSizeKb
+    args.maxNewswireFeedSizeKb = int(maxNewswireFeedSizeKb)
+
+maxMirroredArticles = \
+    getConfigParam(baseDir, 'maxMirroredArticles')
+if maxMirroredArticles is not None:
+    args.maxMirroredArticles = int(maxMirroredArticles)
 
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
@@ -1960,7 +1968,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxNewswireFeedSizeKb,
+    runDaemon(args.maxMirroredArticles,
+              args.maxNewswireFeedSizeKb,
               args.maxNewswirePostsPerSource,
               args.dateonly,
               args.votingtime,
