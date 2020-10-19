@@ -28,8 +28,9 @@ def addGlobalBlock(baseDir: str,
                 return False
         # block an account handle or domain
         blockFile = open(blockingFilename, "a+")
-        blockFile.write(blockHandle + '\n')
-        blockFile.close()
+        if blockFile:
+            blockFile.write(blockHandle + '\n')
+            blockFile.close()
     else:
         blockHashtag = blockNickname
         # is the hashtag already blocked?
@@ -38,8 +39,9 @@ def addGlobalBlock(baseDir: str,
                 return False
         # block a hashtag
         blockFile = open(blockingFilename, "a+")
-        blockFile.write(blockHashtag + '\n')
-        blockFile.close()
+        if blockFile:
+            blockFile.write(blockHashtag + '\n')
+            blockFile.close()
     return True
 
 

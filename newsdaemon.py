@@ -15,6 +15,8 @@ __status__ = "Production"
 import os
 import time
 import datetime
+from shutil import rmtree
+from subprocess import Popen
 from collections import OrderedDict
 from newswire import getDictFromNewswire
 # from posts import sendSignedJson
@@ -348,13 +350,85 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     return True
 
 
-def createNewsMirror(baseDir: str, url: str,
+def createNewsMirror(baseDir: str, postIdNumber: str, url: str,
                      maxMirroredArticles: int) -> bool:
     """Creates a local mirror of a news article
     """
+    if '|' in url or '>' in url:
+        return True
+
     mirrorDir = baseDir + '/accounts/newsmirror'
     if not os.path.isdir(mirrorDir):
         os.mkdir(mirrorDir)
+
+    # count the directories
+    noOfDirs = 0
+    for subdir, dirs, files in os.walk(mirrorDir):
+        noOfDirs = len(dirs)
+
+    mirrorIndexFilename = baseDir + '/accounts/newsmirror.txt'
+
+    if maxMirroredArticles > 0 and noOfDirs > maxMirroredArticles:
+        if not os.path.isfile(mirrorIndexFilename):
+            # no index for mirrors found
+            return True
+        removals = []
+        with open(mirrorIndexFilename, 'r') as indexFile:
+            # remove the oldest directories
+            ctr = 0
+            while noOfDirs > maxMirroredArticles:
+                ctr += 1
+                if ctr > 5000:
+                    # escape valve
+                    break
+
+                postId = indexFile.readline()
+                if not postId:
+                    continue
+                postId = postId.strip()
+                mirrorArticleDir = mirrorDir + '/' + postId
+                if os.path.isdir(mirrorArticleDir):
+                    rmtree(mirrorArticleDir)
+                    removals.append(postId)
+                    noOfDirs -= 1
+
+        # remove the corresponding index entries
+        if removals:
+            indexContent = ''
+            with open(mirrorIndexFilename, 'r') as indexFile:
+                indexContent = indexFile.read()
+                for removePostId in removals:
+                    indexContent = \
+                        indexContent.replace(removePostId + '\n', '')
+            with open(mirrorIndexFilename, "w+") as indexFile:
+                indexFile.write(indexContent)
+
+    mirrorArticleDir = mirrorDir + '/' + postIdNumber
+    if os.path.isdir(mirrorArticleDir):
+        # already mirrored
+        return True
+
+    # download the files
+    commandStr = \
+        '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
+        ' -P ' + mirrorArticleDir
+    p = Popen(commandStr, shell=True)
+    os.waitpid(p.pid, 0)
+
+    if not os.path.isdir(mirrorArticleDir):
+        return True
+
+    # append the post Id number to the index file
+    if os.path.isfile(mirrorIndexFilename):
+        indexFile = open(mirrorIndexFilename, "a+")
+        if indexFile:
+            indexFile.write(postIdNumber + '\n')
+            indexFile.close()
+    else:
+        indexFile = open(mirrorIndexFilename, "w+")
+        if indexFile:
+            indexFile.write(postIdNumber + '\n')
+            indexFile.close()
 
     return True
 
@@ -445,7 +519,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         mirrored = item[7]
         if mirrored:
-            if not createNewsMirror(baseDir, url, maxMirroredArticles):
+            if not createNewsMirror(baseDir, statusNumber,
+                                    url, maxMirroredArticles):
                 continue
 
         idStr = \
