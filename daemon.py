@@ -11456,7 +11456,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 7)
 
-        if authorized:
+        if not authorized:
+            if self.path.endswith('/rmpost'):
+                print('ERROR: attempt to remove post was not authorized. ' +
+                      self.path)
+                self._400()
+                self.server.POSTbusy = False
+                return
+        else:
             # a vote/question/poll is posted
             if self.path.endswith('/question') or \
                '/question?page=' in self.path:
@@ -11488,11 +11495,12 @@ class PubServer(BaseHTTPRequestHandler):
 
             # removes a post
             if self.path.endswith('/rmpost'):
-                print('ERROR: attempt to remove post was not authorized. ' +
-                      self.path)
-                self._400()
-                self.server.POSTbusy = False
-                return
+                if '/users/' not in self.path:
+                    print('ERROR: attempt to remove post was not authorized. ' +
+                          self.path)
+                    self._400()
+                    self.server.POSTbusy = False
+                    return
             if self.path.endswith('/rmpost'):
                 self._removePost(callingDomain, cookie,
                                  authorized, self.path,
