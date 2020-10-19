@@ -492,7 +492,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         postUrl = url
         if mirrored and '://' in url:
             postUrl = '/newsmirror/' + statusNumber + '/' + \
-                url.split('://')[1] + '/index.html'
+                url.split('://')[1]
+            if postUrl.endswith('/'):
+                postUrl += 'index.html'
+            else:
+                postUrl += '/index.html'
 
         # add the off-site link to the description
         if rssDescription and not dangerousMarkup(rssDescription):
