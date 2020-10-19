@@ -81,7 +81,7 @@ def addNewswireDictEntry(baseDir: str, domain: str,
                          title: str, link: str,
                          votesStatus: str, postFilename: str,
                          description: str, moderated: bool,
-                         tags=[]) -> None:
+                         mirrored: bool, tags=[]) -> None:
     """Update the newswire dictionary
     """
     allText = title + ' ' + description
@@ -103,12 +103,13 @@ def addNewswireDictEntry(baseDir: str, domain: str,
             postFilename,
             description,
             moderated,
-            tags
+            tags,
+            mirrored
         ]
 
 
-def xml2StrToDict(baseDir: str, domain: str,
-                  xmlStr: str, moderated: bool,
+def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
+                  moderated: bool, mirrored: bool,
                   maxPostsPerSource: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
@@ -157,7 +158,7 @@ def xml2StrToDict(baseDir: str, domain: str,
                                  result, str(publishedDate),
                                  title, link,
                                  votesStatus, postFilename,
-                                 description, moderated)
+                                 description, moderated, mirrored)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
@@ -175,7 +176,7 @@ def xml2StrToDict(baseDir: str, domain: str,
                                      str(publishedDate) + '+00:00',
                                      title, link,
                                      votesStatus, postFilename,
-                                     description, moderated)
+                                     description, moderated, mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -186,8 +187,8 @@ def xml2StrToDict(baseDir: str, domain: str,
     return result
 
 
-def atomFeedToDict(baseDir: str, domain: str,
-                   xmlStr: str, moderated: bool,
+def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
+                   moderated: bool, mirrored: bool,
                    maxPostsPerSource: int) -> {}:
     """Converts an atom feed string to a dictionary
     """
@@ -236,7 +237,7 @@ def atomFeedToDict(baseDir: str, domain: str,
                                  result, str(publishedDate),
                                  title, link,
                                  votesStatus, postFilename,
-                                 description, moderated)
+                                 description, moderated, mirrored)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
@@ -253,7 +254,7 @@ def atomFeedToDict(baseDir: str, domain: str,
                                      str(publishedDate) + '+00:00',
                                      title, link,
                                      votesStatus, postFilename,
-                                     description, moderated)
+                                     description, moderated, mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -264,24 +265,23 @@ def atomFeedToDict(baseDir: str, domain: str,
     return result
 
 
-def xmlStrToDict(baseDir: str, domain: str,
-                 xmlStr: str, moderated: bool,
+def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
+                 moderated: bool, mirrored: bool,
                  maxPostsPerSource: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(baseDir, domain,
-                             xmlStr, moderated, maxPostsPerSource)
+                             xmlStr, moderated, mirrored, maxPostsPerSource)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return atomFeedToDict(baseDir, domain,
-                              xmlStr, moderated, maxPostsPerSource)
+                              xmlStr, moderated, mirrored, maxPostsPerSource)
     return {}
 
 
-def getRSS(baseDir: str, domain: str,
-           session, url: str, moderated: bool,
-           maxPostsPerSource: int,
-           maxFeedSizeKb: int) -> {}:
+def getRSS(baseDir: str, domain: str, session, url: str,
+           moderated: bool, mirrored: bool,
+           maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -307,8 +307,8 @@ def getRSS(baseDir: str, domain: str,
         if result:
             if int(len(result.text) / 1024) < maxFeedSizeKb and \
                not containsInvalidChars(result.text):
-                return xmlStrToDict(baseDir, domain,
-                                    result.text, moderated,
+                return xmlStrToDict(baseDir, domain, result.text,
+                                    moderated, mirrored,
                                     maxPostsPerSource)
             else:
                 print('WARN: feed is too large: ' + url)
@@ -463,7 +463,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                                          postJsonObject['object']['summary'],
                                          postJsonObject['object']['url'],
                                          votes, fullPostFilename,
-                                         description, moderated,
+                                         description, moderated, False,
                                          getHashtagsFromPost(postJsonObject))
 
             ctr += 1
@@ -549,8 +549,14 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
             moderated = True
             url = url.replace('*', '').strip()
 
-        itemsList = getRSS(baseDir, domain,
-                           session, url, moderated,
+        # should this feed content be mirrored?
+        mirrored = False
+        if '!' in url:
+            mirrored = True
+            url = url.replace('!', '').strip()
+
+        itemsList = getRSS(baseDir, domain, session, url,
+                           moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb)
         for dateStr, item in itemsList.items():
             result[dateStr] = item

@@ -11496,8 +11496,8 @@ class PubServer(BaseHTTPRequestHandler):
             # removes a post
             if self.path.endswith('/rmpost'):
                 if '/users/' not in self.path:
-                    print('ERROR: attempt to remove post was not authorized. ' +
-                          self.path)
+                    print('ERROR: attempt to remove post ' +
+                          'was not authorized. ' + self.path)
                     self._400()
                     self.server.POSTbusy = False
                     return
