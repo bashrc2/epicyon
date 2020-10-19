@@ -295,7 +295,7 @@
     "Right column image": "Right column image",
     "RSS feed for this site": "RSS feed for this site",
     "Edit newswire": "Edit newswire",
-    "Add RSS feed links below.": "RSS feed links below. Add a * at the beginning or end to indicate that a feed should be moderated.",
+    "Add RSS feed links below.": "RSS feed links below. Add a * at the beginning or end to indicate that a feed should be moderated. Add a ! at the beginning or end to indicate that the feed content should be mirrored.",
     "Newswire RSS Feed": "Newswire RSS Feed",
     "Nicknames whose blog entries appear on the newswire.": "Nicknames whose blog entries appear on the newswire.",
     "Posts to be approved": "Posts to be approved",
