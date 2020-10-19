@@ -488,14 +488,19 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             rssDescription = rssDescription.replace(']]>', '')
         rssDescription = '<p>' + rssDescription + '<p>'
 
+        mirrored = item[7]
+        postUrl = url
+        if mirrored and '://' in url:
+            postUrl = '/newsmirror/' + url.split('://')[1]
+
         # add the off-site link to the description
         if rssDescription and not dangerousMarkup(rssDescription):
             rssDescription += \
-                '<br><a href="' + url + '">' + \
+                '<br><a href="' + postUrl + '">' + \
                 translate['Read more...'] + '</a>'
         else:
             rssDescription = \
-                '<a href="' + url + '">' + \
+                '<a href="' + postUrl + '">' + \
                 translate['Read more...'] + '</a>'
 
         # remove image dimensions
@@ -517,7 +522,6 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if not blog:
             continue
 
-        mirrored = item[7]
         if mirrored:
             if not createNewsMirror(baseDir, statusNumber,
                                     url, maxMirroredArticles):
