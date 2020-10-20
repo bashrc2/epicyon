@@ -350,7 +350,8 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     return True
 
 
-def createNewsMirror(baseDir: str, postIdNumber: str, url: str,
+def createNewsMirror(baseDir: str, domain: str,
+                     postIdNumber: str, url: str,
                      maxMirroredArticles: int) -> bool:
     """Creates a local mirror of a news article
     """
@@ -408,14 +409,20 @@ def createNewsMirror(baseDir: str, postIdNumber: str, url: str,
         # already mirrored
         return True
 
+    # for onion instances mirror via tor
+    prefixStr = ''
+    if domain.endswith('.onion'):
+        prefixStr = '/usr/bin/torsocks '
+
     # download the files
     commandStr = \
-        '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
+        prefixStr + '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
         ' -P ' + mirrorArticleDir
     p = Popen(commandStr, shell=True)
     os.waitpid(p.pid, 0)
 
     if not os.path.isdir(mirrorArticleDir):
+        print('WARN: failed to mirror ' + url)
         return True
 
     # append the post Id number to the index file
@@ -528,7 +535,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             continue
 
         if mirrored:
-            if not createNewsMirror(baseDir, statusNumber,
+            if not createNewsMirror(baseDir, domain, statusNumber,
                                     url, maxMirroredArticles):
                 continue
 
