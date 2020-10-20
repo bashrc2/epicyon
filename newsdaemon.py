@@ -15,6 +15,7 @@ __status__ = "Production"
 import os
 import time
 import datetime
+import html
 from shutil import rmtree
 from subprocess import Popen
 from collections import OrderedDict
@@ -65,20 +66,10 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
 
 
 def removeControlCharacters(content: str) -> str:
-    """TODO this is hacky and a better solution is needed
-    the unicode is messing up somehow
+    """Remove escaped html
     """
-    lookups = {
-        "8211": "-",
-        "8230": "...",
-        "8216": "'",
-        "8217": "'",
-        "8220": '"',
-        "8221": '"'
-    }
-    for code, ch in lookups.items():
-        content = content.replace('&' + code + ';', ch)
-        content = content.replace('&#' + code + ';', ch)
+    if '&' in content:
+        return html.unescape(content)
     return content
 
 
@@ -513,6 +504,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
+        if '&' in rssDescription:
+            rssDescription = html.unescape(rssDescription)
         rssDescription = '<p>' + rssDescription + '<p>'
 
         mirrored = item[7]
@@ -578,6 +571,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['url'] = \
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
+
         blog['object']['content'] = rssDescription
         blog['object']['contentMap']['en'] = rssDescription
 
