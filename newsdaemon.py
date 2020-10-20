@@ -74,7 +74,7 @@ def removeControlCharacters(content: str) -> str:
 
 
 def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
-                       content: str) -> bool:
+                       content: str, url: str) -> bool:
     """Returns whether the tree for a hashtag rule evaluates to true or false
     """
     if not tree:
@@ -86,7 +86,7 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 return tree[1] not in hashtags
             elif isinstance(tree[1], list):
                 return not hashtagRuleResolve(tree[1], hashtags, moderated,
-                                              content)
+                                              content, url)
     elif tree[0] == 'contains':
         if len(tree) == 2:
             if isinstance(tree[1], str):
@@ -101,6 +101,20 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
                 return matchStr.lower() in content
+    elif tree[0] == 'from':
+        if len(tree) == 2:
+            if isinstance(tree[1], str):
+                matchStr = tree[1]
+                if matchStr.startswith('"') and matchStr.endswith('"'):
+                    matchStr = matchStr[1:]
+                    matchStr = matchStr[:len(matchStr) - 1]
+                return matchStr.lower() in url
+            elif isinstance(tree[1], list):
+                matchStr = tree[1][0]
+                if matchStr.startswith('"') and matchStr.endswith('"'):
+                    matchStr = matchStr[1:]
+                    matchStr = matchStr[:len(matchStr) - 1]
+                return matchStr.lower() in url
     elif tree[0] == 'and':
         if len(tree) >= 3:
             for argIndex in range(1, len(tree)):
@@ -110,7 +124,7 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 elif isinstance(tree[argIndex], list):
                     argValue = hashtagRuleResolve(tree[argIndex],
                                                   hashtags, moderated,
-                                                  content)
+                                                  content, url)
                 if not argValue:
                     return False
             return True
@@ -123,7 +137,7 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 elif isinstance(tree[argIndex], list):
                     argValue = hashtagRuleResolve(tree[argIndex],
                                                   hashtags, moderated,
-                                                  content)
+                                                  content, url)
                 if argValue:
                     return True
             return False
@@ -137,7 +151,7 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 elif isinstance(tree[argIndex], list):
                     argValue = hashtagRuleResolve(tree[argIndex],
                                                   hashtags, moderated,
-                                                  content)
+                                                  content, url)
                 if argValue:
                     trueCtr += 1
             if trueCtr == 1:
@@ -219,7 +233,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                               cachedWebfingers: {},
                               federationList: [],
                               sendThreads: [], postLog: [],
-                              moderated: bool) -> bool:
+                              moderated: bool, url: str) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -245,7 +259,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     content = content.lower()
 
     # actionOccurred = False
-    operators = ('not', 'and', 'or', 'xor', 'contains')
+    operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
     for ruleStr in rules:
         if not ruleStr:
             continue
@@ -258,7 +272,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         tagsInConditions = []
         tree = hashtagRuleTree(operators, conditionsStr,
                                tagsInConditions, moderated)
-        if not hashtagRuleResolve(tree, hashtags, moderated, content):
+        if not hashtagRuleResolve(tree, hashtags, moderated, content, url):
             continue
         # the condition matches, so do something
         actionStr = ruleStr.split(' then ')[1].strip()
@@ -607,7 +621,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                                              httpPrefix, domain, port,
                                              personCache, cachedWebfingers,
                                              federationList,
-                                             sendThreads, postLog, moderated)
+                                             sendThreads, postLog,
+                                             moderated, url)
 
         # save the post and update the index
         if savePost:

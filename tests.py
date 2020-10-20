@@ -2177,8 +2177,9 @@ def testRemoveHtmlTag():
 
 def testHashtagRuleTree():
     print('testHashtagRuleTree')
-    operators = ('not', 'and', 'or', 'xor', 'contains')
+    operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
 
+    url = 'testsite.com'
     moderated = True
     conditionsStr = \
         'contains "Cat" or contains "Corvid" or ' + \
@@ -2200,9 +2201,24 @@ def testHashtagRuleTree():
     assert str(tree) == str(['or', ['#foo'], ['#bar']])
     assert str(tagsInConditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    content = 'This is a test'
+    url = 'https://testsite.com/something'
+    moderated = True
+    conditionsStr = '#foo and from "testsite.com"'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['and', ['#foo'], ['from', ['"testsite.com"']]])
+    assert str(tagsInConditions) == str(['#foo'])
+    hashtags = ['#foo']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content,
+                              'testsite.com')
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content,
+                                  'othersite.net')
 
     content = 'This is a test'
     moderated = True
@@ -2215,9 +2231,9 @@ def testHashtagRuleTree():
              ['or', ['#foo'], ['#bar']]])
     assert str(tagsInConditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
     moderated = False
     conditionsStr = 'not moderated and #foo or #bar'
@@ -2228,9 +2244,9 @@ def testHashtagRuleTree():
         str(['not', ['and', ['moderated'], ['or', ['#foo'], ['#bar']]]])
     assert str(tagsInConditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
     moderated = True
     conditionsStr = 'moderated and #foo or #bar'
@@ -2241,9 +2257,9 @@ def testHashtagRuleTree():
         str(['and', ['moderated'], ['or', ['#foo'], ['#bar']]])
     assert str(tagsInConditions) == str(['#foo', '#bar'])
     hashtags = ['#foo']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#carrot', '#stick']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
     conditionsStr = 'x'
     tagsInConditions = []
@@ -2252,7 +2268,7 @@ def testHashtagRuleTree():
     assert tree is None
     assert tagsInConditions == []
     hashtags = ['#foo']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
     conditionsStr = '#x'
     tagsInConditions = []
@@ -2261,9 +2277,9 @@ def testHashtagRuleTree():
     assert str(tree) == str(['#x'])
     assert str(tagsInConditions) == str(['#x'])
     hashtags = ['#x']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#y', '#z']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
     conditionsStr = 'not #b'
     tagsInConditions = []
@@ -2272,9 +2288,9 @@ def testHashtagRuleTree():
     assert str(tree) == str(['not', ['#b']])
     assert str(tagsInConditions) == str(['#b'])
     hashtags = ['#y', '#z']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#a', '#b', '#c']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
     conditionsStr = '#foo or #bar and #a'
     tagsInConditions = []
@@ -2283,13 +2299,13 @@ def testHashtagRuleTree():
     assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
     assert str(tagsInConditions) == str(['#foo', '#bar', '#a'])
     hashtags = ['#foo', '#bar', '#a']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#bar', '#a']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#foo', '#a']
-    assert hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
     hashtags = ['#x', '#a']
-    assert not hashtagRuleResolve(tree, hashtags, moderated, content)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
 
 def runAllTests():

@@ -15,7 +15,7 @@ Logical Operators
 
 The following operators are available:
 
-    not, and, or, xor, contains
+    not, and, or, xor, from, contains
 
 Examples
 --------
@@ -39,3 +39,7 @@ You can also remove hashtags.
     if #garden or #lawn then remove #gardening
 
 Which will remove #gardening if it exists as a hashtag within the news post.
+
+You can add tags based upon the RSS link, such as:
+
+    if from "mycatsite.com" then add #cats
