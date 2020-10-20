@@ -2177,7 +2177,7 @@ def testRemoveHtmlTag():
 
 def testHashtagRuleTree():
     print('testHashtagRuleTree')
-    operators = ('not', 'and', 'or', 'contains')
+    operators = ('not', 'and', 'or', 'xor', 'contains')
 
     moderated = True
     conditionsStr = \

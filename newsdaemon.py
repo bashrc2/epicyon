@@ -136,6 +136,21 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 if argValue:
                     return True
             return False
+    elif tree[0] == 'xor':
+        if len(tree) >= 3:
+            trueCtr = 0
+            for argIndex in range(1, len(tree)):
+                argValue = False
+                if isinstance(tree[argIndex], str):
+                    argValue = (tree[argIndex] in hashtags)
+                elif isinstance(tree[argIndex], list):
+                    argValue = hashtagRuleResolve(tree[argIndex],
+                                                  hashtags, moderated,
+                                                  content)
+                if argValue:
+                    trueCtr += 1
+            if trueCtr == 1:
+                return True
     elif tree[0].startswith('#') and len(tree) == 1:
         return tree[0] in hashtags
     elif tree[0].startswith('moderated'):
@@ -239,7 +254,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     content = content.lower()
 
     # actionOccurred = False
-    operators = ('not', 'and', 'or', 'contains')
+    operators = ('not', 'and', 'or', 'xor', 'contains')
     for ruleStr in rules:
         if not ruleStr:
             continue
