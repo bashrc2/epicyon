@@ -344,7 +344,7 @@ def getRSSfromDict(baseDir: str, newswire: {},
             published = published.replace(' ', 'T')
         else:
             publishedWithOffset = \
-                datetime.datetime.strptime(published, "%Y-%m-%d %H:%M:%S%z")
+                datetime.strptime(published, "%Y-%m-%d %H:%M:%S%z")
             published = publishedWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
             pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")

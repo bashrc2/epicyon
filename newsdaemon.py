@@ -478,8 +478,13 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     for dateStr, item in newswireReverse.items():
         originalDateStr = dateStr
         # convert the date to the format used by ActivityPub
-        dateStr = dateStr.replace(' ', 'T')
-        dateStr = dateStr.replace('+00:00', 'Z')
+        if '+00:00' in dateStr:
+            dateStr = dateStr.replace(' ', 'T')
+            dateStr = dateStr.replace('+00:00', 'Z')
+        else:
+            dateStrWithOffset = \
+                datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
