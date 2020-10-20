@@ -5631,10 +5631,8 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
     """
     htmlStr = ''
     for dateStr, item in newswire.items():
-        if '+00:00' not in dateStr:
-            continue
         publishedDate = \
-            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S+00:00")
+            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
         dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
         dateStrLink = dateStr.replace('T', ' ')
