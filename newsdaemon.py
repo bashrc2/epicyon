@@ -578,6 +578,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         blog['object']['url'] = \
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
+        blog['object']['content'] = rssDescription
+        blog['object']['contentMap']['en'] = rssDescription
 
         domainFull = domain
         if port:
