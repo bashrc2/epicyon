@@ -348,7 +348,8 @@ def getRSSfromDict(baseDir: str, newswire: {},
             published = publishedWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
             pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-        except BaseException:
+        except Exception as e:
+            print('WARN: Unable to convert date ' + published + ' ' + str(e))
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
