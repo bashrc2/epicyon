@@ -1960,6 +1960,11 @@ maxMirroredArticles = \
 if maxMirroredArticles is not None:
     args.maxMirroredArticles = int(maxMirroredArticles)
 
+maxNewsPosts = \
+    getConfigParam(baseDir, 'maxNewsPosts')
+if maxNewsPosts is not None:
+    args.maxNewsPosts = int(maxNewsPosts)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
