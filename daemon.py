@@ -11981,7 +11981,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(maxMirroredArticles: int,
+def runDaemon(maxNewsPosts: int,
+              maxMirroredArticles: int,
               maxNewswireFeedSizeKb: int,
               maxNewswirePostsPerSource: int,
               showPublishedDateOnly: bool,
@@ -12119,6 +12120,9 @@ def runDaemon(maxMirroredArticles: int,
 
     # maximum number of news articles to mirror
     httpd.maxMirroredArticles = maxMirroredArticles
+
+    # maximum number of posts in the news timeline/outbox
+    httpd.maxNewsPosts = maxNewsPosts
 
     if registration == 'open':
         httpd.registration = True

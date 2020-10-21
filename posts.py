@@ -3217,11 +3217,21 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
         if not os.path.isfile(filePath):
             continue
         if archiveDir:
-            repliesPath = filePath.replace('.json', '.replies')
             archivePath = os.path.join(archiveDir, postFilename)
             os.rename(filePath, archivePath)
-            if os.path.isfile(repliesPath):
-                os.rename(repliesPath, archivePath)
+
+            extensions = ('replies', 'votes', 'arrived', 'muted')
+            for ext in extensions:
+                extPath = filePath.replace('.json', '.' + ext)
+                if os.path.isfile(extPath):
+                    os.rename(extPath,
+                              archivePath.replace('.json', '.' + ext))
+                else:
+                    extPath = filePath.replace('.json',
+                                               '.json.' + ext)
+                    if os.path.isfile(extPath):
+                        os.rename(extPath,
+                                  archivePath.replace('.json', '.json.' + ext))
         else:
             deletePost(baseDir, httpPrefix, nickname, domain,
                        filePath, False, recentPostsCache)

@@ -22,6 +22,7 @@ from collections import OrderedDict
 from newswire import getDictFromNewswire
 # from posts import sendSignedJson
 from posts import createNewsPost
+from posts import archivePostsForPerson
 from content import removeHtmlTag
 from content import dangerousMarkup
 from content import validHashTag
@@ -713,6 +714,16 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.postLog,
                                 httpd.maxMirroredArticles)
         print('Newswire feed converted to ActivityPub')
+
+        if httpd.maxNewsPosts > 0:
+            archiveDir = baseDir + '/archive'
+            archiveSubdir = \
+                archiveDir + '/accounts/news@' + domain + '/outbox'
+            archivePostsForPerson(httpPrefix, 'news',
+                                  domain, baseDir, 'outbox',
+                                  archiveSubdir,
+                                  httpd.recentPostsCache,
+                                  httpd.maxNewsPosts)
 
         # wait a while before the next feeds update
         time.sleep(1200)

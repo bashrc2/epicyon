@@ -762,20 +762,11 @@ def deletePost(baseDir: str, httpPrefix: str,
         # remove any attachment
         removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
-        # remove any mute file
-        muteFilename = postFilename + '.muted'
-        if os.path.isfile(muteFilename):
-            os.remove(muteFilename)
-
-        # remove any votes file
-        votesFilename = postFilename + '.votes'
-        if os.path.isfile(votesFilename):
-            os.remove(votesFilename)
-
-        # remove any arrived file
-        arrivedFilename = postFilename + '.arrived'
-        if os.path.isfile(arrivedFilename):
-            os.remove(arrivedFilename)
+        extensions = ('votes', 'arrived', 'muted')
+        for ext in extensions:
+            extFilename = postFilename + '.' + ext
+            if os.path.isfile(extFilename):
+                os.remove(extFilename)
 
         # remove cached html version of the post
         cachedPostFilename = \

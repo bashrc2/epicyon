@@ -125,6 +125,11 @@ parser.add_argument('--maxMirroredArticles',
                     default=100,
                     help='Maximum number of news articles to mirror.' +
                     ' Set to zero for indefinite mirroring.')
+parser.add_argument('--maxNewsPosts',
+                    dest='maxNewsPosts', type=int,
+                    default=0,
+                    help='Maximum number of news timeline posts to keep. ' +
+                    'Zero for no expiry.')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -1968,7 +1973,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxMirroredArticles,
+    runDaemon(args.maxNewsPosts,
+              args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,
               args.maxNewswirePostsPerSource,
               args.dateonly,
