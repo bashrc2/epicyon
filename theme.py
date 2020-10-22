@@ -25,8 +25,9 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'Indymedia', 'LCD', 'Light', 'Night', 'Purple',
-            'Solidaric', 'Starlight', 'Zen')
+            'IndymediaClassic',
+            'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
+            'Starlight', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -243,7 +244,7 @@ def setThemeDefault(baseDir: str):
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
-def setThemeIndymedia(baseDir: str):
+def setThemeIndymediaClassic(baseDir: str):
     name = 'indymedia'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
