@@ -245,7 +245,7 @@ def setThemeDefault(baseDir: str):
 
 
 def setThemeIndymediaClassic(baseDir: str):
-    name = 'indymedia'
+    name = 'indymediaclassic'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     bgParams = {
