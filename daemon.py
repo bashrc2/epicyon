@@ -12124,6 +12124,10 @@ def runDaemon(maxNewsPosts: int,
     # maximum number of posts in the news timeline/outbox
     httpd.maxNewsPosts = maxNewsPosts
 
+    # The maximum number of tags per post which can be
+    # attached to RSS feeds pulled in via the newswire
+    httpd.maxTags = 32
+
     if registration == 'open':
         httpd.registration = True
     else:

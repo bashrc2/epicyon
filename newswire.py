@@ -54,7 +54,7 @@ def rss2Footer() -> str:
     return rssStr
 
 
-def getNewswireTags(text: str) -> []:
+def getNewswireTags(text: str, maxTags: int) -> []:
     """Returns a list of hashtags found in the given text
     """
     if '#' not in text:
@@ -73,6 +73,8 @@ def getNewswireTags(text: str) -> []:
             if len(wrd) > 1:
                 if wrd not in tags:
                     tags.append(wrd)
+                    if len(tags) >= maxTags:
+                        break
     return tags
 
 
@@ -81,14 +83,15 @@ def addNewswireDictEntry(baseDir: str, domain: str,
                          title: str, link: str,
                          votesStatus: str, postFilename: str,
                          description: str, moderated: bool,
-                         mirrored: bool, tags=[]) -> None:
+                         mirrored: bool,
+                         tags=[], maxTags=32) -> None:
     """Update the newswire dictionary
     """
     allText = title + ' ' + description
     if isFiltered(baseDir, 'news', domain, allText):
         return
     if not tags:
-        tags = getNewswireTags(allText)
+        tags = getNewswireTags(allText, maxTags)
     newswireItemBlocked = False
     if tags:
         for tag in tags:
@@ -410,7 +413,8 @@ def getHashtagsFromPost(postJsonObject: {}) -> []:
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                               newswire: {},
                               maxBlogsPerAccount: int,
-                              indexFilename: str) -> None:
+                              indexFilename: str,
+                              maxTags: int) -> None:
     """Adds blogs for the given account to the newswire
     """
     if not os.path.isfile(indexFilename):
@@ -470,7 +474,8 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                                          postJsonObject['object']['url'],
                                          votes, fullPostFilename,
                                          description, moderated, False,
-                                         getHashtagsFromPost(postJsonObject))
+                                         getHashtagsFromPost(postJsonObject),
+                                         maxTags)
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
@@ -478,7 +483,8 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
 
 
 def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
-                       maxBlogsPerAccount: int) -> None:
+                       maxBlogsPerAccount: int,
+                       maxTags: int) -> None:
     """Adds blogs from each user account into the newswire
     """
     moderationDict = {}
@@ -508,7 +514,7 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                 domain = handle.split('@')[1]
                 addAccountBlogsToNewswire(baseDir, nickname, domain,
                                           newswire, maxBlogsPerAccount,
-                                          blogsIndex)
+                                          blogsIndex, maxTags)
 
     # sort the moderation dict into chronological order, latest first
     sortedModerationDict = \
@@ -524,7 +530,8 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
 
 
 def getDictFromNewswire(session, baseDir: str, domain: str,
-                        maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
+                        maxPostsPerSource: int, maxFeedSizeKb: int,
+                        maxTags: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -568,7 +575,8 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
             result[dateStr] = item
 
     # add blogs from each user account
-    addBlogsToNewswire(baseDir, domain, result, maxPostsPerSource)
+    addBlogsToNewswire(baseDir, domain, result,
+                       maxPostsPerSource, maxTags)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
