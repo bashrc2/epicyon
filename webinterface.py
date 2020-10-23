@@ -3372,13 +3372,20 @@ def htmlProfile(defaultTimeline: str,
             '<br><a href="/login"><button class="loginButton">' + \
             translate['Login'] + '</button></a>'
     else:
+        iconsDir = getIconsDir(baseDir)
         editProfileStr = \
-            '<a href="' + usersPath + \
-            '/editprofile"><button class="button"><span>' + \
-            translate['Edit'] + ' </span></button></a>'
+            '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
+            '<img loading="lazy" src="/' + iconsDir + \
+            '/logout.png" title="' + translate['Edit'] + \
+            '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
+
         logoutStr = \
-            '<a href="/logout"><button class="button"><span>' + \
-            translate['Logout'] + ' </span></button></a>'
+            '<a class="imageAnchor" href="/logout">' + \
+            '<img loading="lazy" src="/' + iconsDir + \
+            '/logout.png" title="' + translate['Logout'] + \
+            '" alt="| ' + translate['Logout'] + \
+            '" class="timelineicon"/></a>\n'
+
         linkToTimelineStart = \
             '<a href="/users/' + nickname + '/' + defaultTimeline + \
             '"><label class="transparent">' + \
