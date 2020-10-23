@@ -29,9 +29,14 @@ from session import postJson
 
 def preApprovedFollower(baseDir: str,
                         nickname: str, domain: str,
-                        approveHandle: str) -> bool:
+                        approveHandle: str,
+                        allowNewsFollowers: bool) -> bool:
     """Is the given handle an already manually approved follower?
     """
+    # optionally allow the news account to be followed
+    if nickname == 'news' and allowNewsFollowers:
+        return True
+
     handle = nickname + '@' + domain
     accountDir = baseDir + '/accounts/' + handle
     approvedFilename = accountDir + '/approved.txt'
@@ -395,12 +400,13 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
 
 def followApprovalRequired(baseDir: str, nicknameToFollow: str,
                            domainToFollow: str, debug: bool,
-                           followRequestHandle: str) -> bool:
+                           followRequestHandle: str,
+                           allowNewsFollowers: bool) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
     if preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
-                           followRequestHandle):
+                           followRequestHandle, allowNewsFollowers):
         return False
 
     manuallyApproveFollows = False
@@ -602,7 +608,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     # what is the followers policy?
     approveHandle = nickname + '@' + domainFull
     if followApprovalRequired(baseDir, nicknameToFollow,
-                              domainToFollow, debug, approveHandle):
+                              domainToFollow, debug, approveHandle,
+                              allowNewsFollowers):
         print('Follow approval is required')
         if domain.endswith('.onion'):
             if noOfFollowRequests(baseDir,
