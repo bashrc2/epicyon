@@ -91,6 +91,9 @@
     --newswire-voted-background-color: black;
     --login-button-color: #2965;
     --login-button-fg-color: black;
+    --button-event-corner-radius: 30px;
+    --button-event-background-color: #2965;
+    --button-event-fg-color: white;
 }
 
 @font-face {
@@ -1208,10 +1211,10 @@ aside .toggle-inside li {
         transform: translateY(-10%);
     }
     .buttonevent {
-        border-radius: var(--button-corner-radius);
-        background-color: var(--button-highlighted);
+        border-radius: var(--button-event-corner-radius);
+        background-color: var(--button-event-background-color);
         border: none;
-        color: var(--button-fg-highlighted);
+        color: var(--button-event-fg-color);
         text-align: center;
         font-size: var(--font-size-header);
         font-family: Arial, Helvetica, sans-serif;
@@ -1791,10 +1794,10 @@ aside .toggle-inside li {
         transform: translateY(-10%);
     }
     .buttonevent {
-        border-radius: var(--button-corner-radius);
-        background-color: var(--button-highlighted);
+        border-radius: var(--button-event-corner-radius);
+        background-color: var(--button-event-background-color);
         border: none;
-        color: var(--button-fg-highlighted);
+        color: var(--button-event-fg-color);
         text-align: center;
         font-size: var(--font-size-button-mobile);
         font-family: Arial, Helvetica, sans-serif;
