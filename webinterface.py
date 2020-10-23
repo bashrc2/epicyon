@@ -3535,7 +3535,7 @@ def htmlProfile(defaultTimeline: str,
             '    <a href="' + usersPath + '/shares#buttonheader">' + \
             '<button class="' + sharesButton + '"><span>' + \
             translate['Shares'] + ' </span></button></a>'
-    profileStr += editProfileStr + logoutStr
+    profileStr += logoutStr + editProfileStr
     profileStr += '  </center>'
     profileStr += '</div>'
 
