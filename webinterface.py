@@ -5742,16 +5742,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             translate['Go Back'] + '</button></a>\n'
 
     if showPublishButton:
-        if showPublishAsIcon:
-            htmlStr += \
-                '        <a href="' + \
-                '/users/' + nickname + '/newblog">' + \
-                '<img class="' + editImageClass + \
-                '" loading="lazy" alt="' + \
-                translate['Publish a news article'] + '" title="' + \
-                translate['Publish a news article'] + '" src="/' + \
-                iconsDir + '/publish.png" /></a>\n'
-        else:
+        if not showPublishAsIcon:
             htmlStr += \
                 '        <a href="' + \
                 '/users/' + nickname + '/newblog" ' + \
@@ -5788,6 +5779,17 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         iconsDir + '/logorss.png" /></a>\n'
+
+    if showPublishButton:
+        if showPublishAsIcon:
+            htmlStr += \
+                '        <a href="' + \
+                '/users/' + nickname + '/newblog">' + \
+                '<img class="' + editImageClass + \
+                '" loading="lazy" alt="' + \
+                translate['Publish a news article'] + '" title="' + \
+                translate['Publish a news article'] + '" src="/' + \
+                iconsDir + '/publish.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
