@@ -3376,7 +3376,7 @@ def htmlProfile(defaultTimeline: str,
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
-            '/logout.png" title="' + translate['Edit'] + \
+            '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
         logoutStr = \
