@@ -253,13 +253,14 @@ def getNoOfFollows(baseDir: str, nickname: str, domain: str,
     with open(filename, "r") as f:
         lines = f.readlines()
         for line in lines:
-            if '#' not in line:
-                if '@' in line and \
-                   '.' in line and \
-                   not line.startswith('http'):
-                    ctr += 1
-                elif line.startswith('http') and '/users/' in line:
-                    ctr += 1
+            if '#' in line:
+                continue
+            if '@' in line and \
+               '.' in line and \
+               not line.startswith('http'):
+                ctr += 1
+            elif line.startswith('http') and '/users/' in line:
+                ctr += 1
     return ctr
 
 
@@ -521,7 +522,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
                          debug: bool, projectVersion: str,
-                         allowNewsFollowers: bool) -> bool:
+                         allowNewsFollowers: bool,
+                         maxFollowers: int) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -587,6 +589,13 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             if debug:
                 print('DEBUG: Cannot follow system account - ' +
                       nicknameToFollow)
+            return True
+    if maxFollowers > 0:
+        if getNoOfFollowers(baseDir,
+                            nicknameToFollow, domainToFollow,
+                            True) > maxFollowers:
+            print('WARN: ' + nicknameToFollow +
+                  ' has reached their maximum number of followers')
             return True
     handleToFollow = nicknameToFollow + '@' + domainToFollow
     if domainToFollow == domain:

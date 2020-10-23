@@ -130,6 +130,11 @@ parser.add_argument('--maxNewsPosts',
                     default=0,
                     help='Maximum number of news timeline posts to keep. ' +
                     'Zero for no expiry.')
+parser.add_argument('--maxFollowers',
+                    dest='maxFollowers', type=int,
+                    default=2000,
+                    help='Maximum number of followers per account. ' +
+                    'Zero for no limit.')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -1970,6 +1975,11 @@ maxNewsPosts = \
 if maxNewsPosts is not None:
     args.maxNewsPosts = int(maxNewsPosts)
 
+maxFollowers = \
+    getConfigParam(baseDir, 'maxFollowers')
+if maxFollowers is not None:
+    args.maxFollowers = int(maxFollowers)
+
 allowNewsFollowers = \
     getConfigParam(baseDir, 'allowNewsFollowers')
 if allowNewsFollowers is not None:
@@ -1988,7 +1998,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.allowNewsFollowers,
+    runDaemon(args.maxFollowers,
+              args.allowNewsFollowers,
               args.maxNewsPosts,
               args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,

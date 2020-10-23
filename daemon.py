@@ -11981,7 +11981,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(allowNewsFollowers: bool,
+def runDaemon(maxFollowers: int,
+              allowNewsFollowers: bool,
               maxNewsPosts: int,
               maxMirroredArticles: int,
               maxNewswireFeedSizeKb: int,
@@ -12132,6 +12133,9 @@ def runDaemon(allowNewsFollowers: bool,
     # attached to RSS feeds pulled in via the newswire
     httpd.maxTags = 32
 
+    # maximum number of followers per account
+    httpd.maxFollowers = maxFollowers
+
     if registration == 'open':
         httpd.registration = True
     else:
@@ -12274,7 +12278,8 @@ def runDaemon(allowNewsFollowers: bool,
                               httpd.translate, unitTest,
                               httpd.YTReplacementDomain,
                               httpd.showPublishedDateOnly,
-                              httpd.allowNewsFollowers), daemon=True)
+                              httpd.allowNewsFollowers,
+                              httpd.maxFollowers), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
