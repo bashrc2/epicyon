@@ -94,6 +94,7 @@
     --button-event-corner-radius: 60px;
     --button-event-background-color: green;
     --button-event-fg-color: white;
+    --hashtag-background-color: black;
 }
 
 @font-face {
@@ -372,6 +373,10 @@ a:focus {
 .message {
     margin-left: 7%;
     width: 90%;
+}
+
+.addedHashtag {
+    background-color: var(--hashtag-background-color);
 }
 
 .message:focus{

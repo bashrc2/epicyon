@@ -307,7 +307,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                     # add corresponding html to the post content
                     hashtagHtml = \
                         " <a href=\"" + hashtagUrl + \
-                        "\" class=\"mention hashtag\" " + \
+                        "\" class=\"addedHashtag\" " + \
                         "rel=\"tag\">#<span>" + \
                         htId + "</span></a>"
                     content = postJsonObject['object']['content']
@@ -334,7 +334,7 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
                 # remove tag html from the post content
                 hashtagHtml = \
                     "<a href=\"" + hashtagUrl + \
-                    "\" class=\"mention hashtag\" " + \
+                    "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"
                 content = postJsonObject['object']['content']
@@ -609,7 +609,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             if tagName in blog['object']['content']:
                 hashtagHtml = \
                     "<a href=\"" + hashtagUrl + \
-                    "\" class=\"mention hashtag\" " + \
+                    "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"
                 blog['object']['content'].replace(tagName, hashtagHtml)

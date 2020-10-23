@@ -255,6 +255,7 @@ def setThemeIndymediaClassic(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "hashtag-background-color": "darkred",
         "font-size-newswire": "18px",
         "font-size-newswire-mobile": "48px",
         "line-spacing-newswire": "100%",
@@ -795,6 +796,7 @@ def setThemeHacker(baseDir: str):
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
+        "hashtag-background-color": "lightblue",
         "focus-color": "grey",
         "font-size-button-mobile": "26px",
         "font-size": "32px",
@@ -853,6 +855,7 @@ def setThemeLight(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "hashtag-background-color": "lightred",
         "button-highlighted": "darkred",
         "button-selected-highlighted": "darkred",
         "newswire-date-color": "grey",
