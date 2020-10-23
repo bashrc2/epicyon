@@ -91,8 +91,8 @@
     --newswire-voted-background-color: black;
     --login-button-color: #2965;
     --login-button-fg-color: black;
-    --button-event-corner-radius: 30px;
-    --button-event-background-color: #2965;
+    --button-event-corner-radius: 60px;
+    --button-event-background-color: green;
     --button-event-fg-color: white;
 }
 
