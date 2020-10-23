@@ -375,7 +375,7 @@ a:focus {
     width: 90%;
 }
 
-.addedHashtag {
+.addedHashtag:link {
     background-color: var(--hashtag-background-color);
 }
 
