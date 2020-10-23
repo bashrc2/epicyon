@@ -5877,7 +5877,7 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
                               True, timelinePath, True,
-                              False)
+                              True)
     htmlStr += htmlFooter()
     return htmlStr
 
@@ -6564,7 +6564,7 @@ def htmlTimeline(defaultTimeline: str,
                                            httpPrefix, translate, iconsDir,
                                            moderator, editor,
                                            newswire, positiveVoting,
-                                           False, None, True, False)
+                                           False, None, True, True)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
