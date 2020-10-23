@@ -379,6 +379,10 @@ a:focus {
     background-color: var(--hashtag-background-color);
 }
 
+.addedHashtag:visited {
+    background-color: var(--hashtag-background-color);
+}
+
 .message:focus{
     border: 2px solid var(--focus-color);
 }
