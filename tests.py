@@ -758,7 +758,7 @@ def testFollowBetweenServers():
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
-                          True, __version__)
+                          True, __version__, False)
     print('sendResult: ' + str(sendResult))
 
     for t in range(10):

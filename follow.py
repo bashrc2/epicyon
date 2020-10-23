@@ -808,7 +808,7 @@ def sendFollowRequest(session, baseDir: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
                       personCache: {}, debug: bool,
-                      projectVersion: str) -> {}:
+                      projectVersion: str, allowNewsFollowers: bool) -> {}:
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain, federationList):
@@ -850,7 +850,8 @@ def sendFollowRequest(session, baseDir: str,
         'object': followedId
     }
 
-    if followApprovalRequired(baseDir, nickname, domain, debug, followHandle):
+    if followApprovalRequired(baseDir, nickname, domain, debug,
+                              followHandle, allowNewsFollowers):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected

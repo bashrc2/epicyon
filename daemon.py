@@ -2056,7 +2056,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.cachedWebfingers,
                                   self.server.personCache,
                                   debug,
-                                  self.server.projectVersion)
+                                  self.server.projectVersion,
+                                  self.server.allowNewsFollowers)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
