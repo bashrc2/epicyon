@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
+from utils import isSystemAccount
 from utils import getFollowersList
 from utils import validNickname
 from utils import domainPermitted
@@ -574,9 +575,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request does not contain a ' +
                   'nickname for the account followed')
         return True
-    if nicknameToFollow == 'news' or nicknameToFollow == 'inbox':
+    if isSystemAccount(nicknameToFollow):
         if debug:
-            print('DEBUG: Cannot follow the news or inbox accounts')
+            print('DEBUG: Cannot follow system account - ' + nicknameToFollow)
         return True
     handleToFollow = nicknameToFollow + '@' + domainToFollow
     if domainToFollow == domain:
