@@ -514,7 +514,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          port: int, sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
-                         debug: bool, projectVersion: str) -> bool:
+                         debug: bool, projectVersion: str,
+                         allowNewsFollowers: bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -576,9 +577,11 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                   'nickname for the account followed')
         return True
     if isSystemAccount(nicknameToFollow):
-        if debug:
-            print('DEBUG: Cannot follow system account - ' + nicknameToFollow)
-        return True
+        if not (nicknameToFollow == 'news' and allowNewsFollowers):
+            if debug:
+                print('DEBUG: Cannot follow system account - ' +
+                      nicknameToFollow)
+            return True
     handleToFollow = nicknameToFollow + '@' + domainToFollow
     if domainToFollow == domain:
         if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):

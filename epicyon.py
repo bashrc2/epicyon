@@ -204,6 +204,11 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
+parser.add_argument("--allowNewsFollowers",
+                    dest='allowNewsFollowers',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to allow the news account to be followed")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -1965,6 +1970,11 @@ maxNewsPosts = \
 if maxNewsPosts is not None:
     args.maxNewsPosts = int(maxNewsPosts)
 
+allowNewsFollowers = \
+    getConfigParam(baseDir, 'allowNewsFollowers')
+if allowNewsFollowers is not None:
+    args.allowNewsFollowers = bool(allowNewsFollowers)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -1978,7 +1988,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxNewsPosts,
+    runDaemon(args.allowNewsFollowers,
+              args.maxNewsPosts,
               args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,
               args.maxNewswirePostsPerSource,
