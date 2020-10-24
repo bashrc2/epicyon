@@ -215,6 +215,13 @@ parser.add_argument("--showPublishAsIcon",
                     const=True, default=True,
                     help="Whether to show newswire publish " +
                     "as an icon or a button")
+parser.add_argument("--fullWidthTimelineButtonHeader",
+                    dest='fullWidthTimelineButtonHeader',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to show the timeline " +
+                    "button header containing inbox and outbox " +
+                    "as the full width of the screen")
 parser.add_argument("--allowNewsFollowers",
                     dest='allowNewsFollowers',
                     type=str2bool, nargs='?',
@@ -1996,6 +2003,11 @@ showPublishAsIcon = \
 if showPublishAsIcon is not None:
     args.showPublishAsIcon = bool(showPublishAsIcon)
 
+fullWidthTimelineButtonHeader = \
+    getConfigParam(baseDir, 'fullWidthTimelineButtonHeader')
+if fullWidthTimelineButtonHeader is not None:
+    args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2009,7 +2021,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.showPublishAsIcon,
+    runDaemon(args.fullWidthTimelineButtonHeader,
+              args.showPublishAsIcon,
               args.maxFollowers,
               args.allowNewsFollowers,
               args.maxNewsPosts,

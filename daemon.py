@@ -6431,6 +6431,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                           GETtimings,
                                                           'show status done',
                                                           'show inbox page')
+                        fullWidthTimelineButtonHeader = \
+                            self.server.fullWidthTimelineButtonHeader
                         msg = htmlInbox(defaultTimeline,
                                         recentPostsCache,
                                         maxRecentPosts,
@@ -6452,7 +6454,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.showPublishedDateOnly,
                                         self.server.newswire,
                                         self.server.positiveVoting,
-                                        self.server.showPublishAsIcon)
+                                        self.server.showPublishAsIcon,
+                                        fullWidthTimelineButtonHeader)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6545,6 +6548,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               0,
                                               self.server.positiveVoting,
                                               self.server.votingTimeMins)
+                        fullWidthTimelineButtonHeader = \
+                            self.server.fullWidthTimelineButtonHeader
                         msg = \
                             htmlInboxDMs(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -6567,7 +6572,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
                                          self.server.positiveVoting,
-                                         self.server.showPublishAsIcon)
+                                         self.server.showPublishAsIcon,
+                                         fullWidthTimelineButtonHeader)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6653,6 +6659,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           0, self.server.positiveVoting,
                                           self.server.votingTimeMins)
+                    fullWidthTimelineButtonHeader = \
+                        self.server.fullWidthTimelineButtonHeader
                     msg = \
                         htmlInboxReplies(self.server.defaultTimeline,
                                          self.server.recentPostsCache,
@@ -6675,7 +6683,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
                                          self.server.positiveVoting,
-                                         self.server.showPublishAsIcon)
+                                         self.server.showPublishAsIcon,
+                                         fullWidthTimelineButtonHeader)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6761,6 +6770,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           0, self.server.positiveVoting,
                                           self.server.votingTimeMins)
+                    fullWidthTimelineButtonHeader = \
+                        self.server.fullWidthTimelineButtonHeader
                     msg = \
                         htmlInboxMedia(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6783,7 +6794,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting,
-                                       self.server.showPublishAsIcon)
+                                       self.server.showPublishAsIcon,
+                                       fullWidthTimelineButtonHeader)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6869,6 +6881,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           True,
                                           0, self.server.positiveVoting,
                                           self.server.votingTimeMins)
+                    fullWidthTimelineButtonHeader = \
+                        self.server.fullWidthTimelineButtonHeader
                     msg = \
                         htmlInboxBlogs(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -6891,7 +6905,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting,
-                                       self.server.showPublishAsIcon)
+                                       self.server.showPublishAsIcon,
+                                       fullWidthTimelineButtonHeader)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6985,6 +7000,8 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     moderator = isModerator(baseDir, currNickname)
                     editor = isEditor(baseDir, currNickname)
+                    fullWidthTimelineButtonHeader = \
+                        self.server.fullWidthTimelineButtonHeader
                     msg = \
                         htmlInboxNews(self.server.defaultTimeline,
                                       self.server.recentPostsCache,
@@ -7008,7 +7025,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.newswire,
                                       moderator, editor,
                                       self.server.positiveVoting,
-                                      self.server.showPublishAsIcon)
+                                      self.server.showPublishAsIcon,
+                                      fullWidthTimelineButtonHeader)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7086,7 +7104,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.showPublishedDateOnly,
                                    self.server.newswire,
                                    self.server.positiveVoting,
-                                   self.server.showPublishAsIcon)
+                                   self.server.showPublishAsIcon,
+                                   self.server.fullWidthTimelineButtonHeader)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7156,6 +7175,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               authorized,
                                               0, self.server.positiveVoting,
                                               self.server.votingTimeMins)
+                        fullWidthTimelineButtonHeader = \
+                            self.server.fullWidthTimelineButtonHeader
                         msg = \
                             htmlBookmarks(self.server.defaultTimeline,
                                           self.server.recentPostsCache,
@@ -7178,7 +7199,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
                                           self.server.positiveVoting,
-                                          self.server.showPublishAsIcon)
+                                          self.server.showPublishAsIcon,
+                                          fullWidthTimelineButtonHeader)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7267,6 +7289,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               authorized,
                                               0, self.server.positiveVoting,
                                               self.server.votingTimeMins)
+                        fullWidthTimelineButtonHeader = \
+                            self.server.fullWidthTimelineButtonHeader
                         msg = \
                             htmlEvents(self.server.defaultTimeline,
                                        self.server.recentPostsCache,
@@ -7289,7 +7313,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
                                        self.server.positiveVoting,
-                                       self.server.showPublishAsIcon)
+                                       self.server.showPublishAsIcon,
+                                       fullWidthTimelineButtonHeader)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7370,6 +7395,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.newswireVotesThreshold,
                                       self.server.positiveVoting,
                                       self.server.votingTimeMins)
+                fullWidthTimelineButtonHeader = \
+                    self.server.fullWidthTimelineButtonHeader
                 msg = \
                     htmlOutbox(self.server.defaultTimeline,
                                self.server.recentPostsCache,
@@ -7392,7 +7419,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.showPublishedDateOnly,
                                self.server.newswire,
                                self.server.positiveVoting,
-                               self.server.showPublishAsIcon)
+                               self.server.showPublishAsIcon,
+                               fullWidthTimelineButtonHeader)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7464,6 +7492,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               True,
                                               0, self.server.positiveVoting,
                                               self.server.votingTimeMins)
+                        fullWidthTimelineButtonHeader = \
+                            self.server.fullWidthTimelineButtonHeader
                         msg = \
                             htmlModeration(self.server.defaultTimeline,
                                            self.server.recentPostsCache,
@@ -7485,7 +7515,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.showPublishedDateOnly,
                                            self.server.newswire,
                                            self.server.positiveVoting,
-                                           self.server.showPublishAsIcon)
+                                           self.server.showPublishAsIcon,
+                                           fullWidthTimelineButtonHeader)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -12001,7 +12032,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(showPublishAsIcon: bool,
+def runDaemon(fullWidthTimelineButtonHeader: bool,
+              showPublishAsIcon: bool,
               maxFollowers: int,
               allowNewsFollowers: bool,
               maxNewsPosts: int,
@@ -12160,6 +12192,10 @@ def runDaemon(showPublishAsIcon: bool,
     # whether to show an icon for publish on the
     # newswire, or a 'Publish' button
     httpd.showPublishAsIcon = showPublishAsIcon
+
+    # Whether to show the timeline header containing inbox, outbox
+    # calendar, etc as the full width of the screen or not
+    httpd.fullWidthTimelineButtonHeader = fullWidthTimelineButtonHeader
 
     if registration == 'open':
         httpd.registration = True
