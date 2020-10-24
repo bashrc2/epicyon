@@ -155,7 +155,26 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(followersFile):
         return False
     handle = followerNickname + '@' + followerDomain
-    return handle in open(followersFile).read()
+
+    alreadyFollowing = False
+
+    followersStr = ''
+    with open(followersFile, 'r') as fpFollowers:
+        followersStr = fpFollowers.read()
+
+    if handle in followersStr:
+        alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/profile/' + followerNickname in followersStr:
+        alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/channel/' + followerNickname in followersStr:
+        alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/accounts/' + followerNickname in followersStr:
+        alreadyFollowing = True
+
+    return alreadyFollowing:
 
 
 def unfollowPerson(baseDir: str, nickname: str, domain: str,
