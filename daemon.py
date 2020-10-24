@@ -3476,6 +3476,9 @@ class PubServer(BaseHTTPRequestHandler):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
                                  domain)
+                        self.server.showPublishAsIcon = \
+                            getConfigParam(self.server.baseDir,
+                                           'showPublishAsIcon')
                         setNewsAvatar(baseDir,
                                       fields['themeDropdown'],
                                       httpPrefix,
@@ -3820,6 +3823,9 @@ class PubServer(BaseHTTPRequestHandler):
                             currTheme = getTheme(baseDir)
                             if currTheme:
                                 setTheme(baseDir, currTheme, domain)
+                                self.server.showPublishAsIcon = \
+                                    getConfigParam(self.server.baseDir,
+                                                   'showPublishAsIcon')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
