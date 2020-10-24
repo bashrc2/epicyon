@@ -209,6 +209,12 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
+parser.add_argument("--showPublishAsIcon",
+                    dest='showPublishAsIcon',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Whether to show newswire publish " +
+                    "as an icon or a button")
 parser.add_argument("--allowNewsFollowers",
                     dest='allowNewsFollowers',
                     type=str2bool, nargs='?',
@@ -1985,6 +1991,11 @@ allowNewsFollowers = \
 if allowNewsFollowers is not None:
     args.allowNewsFollowers = bool(allowNewsFollowers)
 
+showPublishAsIcon = \
+    getConfigParam(baseDir, 'showPublishAsIcon')
+if showPublishAsIcon is not None:
+    args.showPublishAsIcon = bool(showPublishAsIcon)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -1998,7 +2009,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxFollowers,
+    runDaemon(args.showPublishAsIcon,
+              args.maxFollowers,
               args.allowNewsFollowers,
               args.maxNewsPosts,
               args.maxMirroredArticles,

@@ -5850,7 +5850,8 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                        httpPrefix: str, translate: {},
                        newswire: {},
                        positiveVoting: bool,
-                       timelinePath: str) -> str:
+                       timelinePath: str,
+                       showPublishAsIcon: bool) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -5886,7 +5887,7 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
                               True, timelinePath, True,
-                              True)
+                              showPublishAsIcon)
     htmlStr += htmlFooter()
     return htmlStr
 

@@ -9318,6 +9318,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             timelinePath = \
                 '/users/' + nickname + '/' + self.server.defaultTimeline
+            showPublishAsIcon = self.server.showPublishAsIcon
             msg = htmlNewswireMobile(self.server.baseDir,
                                      nickname,
                                      self.server.domain,
@@ -9326,7 +9327,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.translate,
                                      self.server.newswire,
                                      self.server.positiveVoting,
-                                     timelinePath).encode('utf-8')
+                                     timelinePath,
+                                     showPublishAsIcon).encode('utf-8')
             self._set_headers('text/html', len(msg), cookie, callingDomain)
             self._write(msg)
             self.server.GETbusy = False
@@ -11982,7 +11984,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(maxFollowers: int,
+def runDaemon(showPublishAsIcon: bool,
+              maxFollowers: int,
               allowNewsFollowers: bool,
               maxNewsPosts: int,
               maxMirroredArticles: int,
@@ -12136,6 +12139,10 @@ def runDaemon(maxFollowers: int,
 
     # maximum number of followers per account
     httpd.maxFollowers = maxFollowers
+
+    # whether to show an icon for publish on the
+    # newswire, or a 'Publish' button
+    httpd.showPublishAsIcon = showPublishAsIcon
 
     if registration == 'open':
         httpd.registration = True

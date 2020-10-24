@@ -131,7 +131,7 @@ def manualApproveFollowRequest(session, baseDir: str,
     with open(approveFollowsFilename, 'r') as approvefile:
         for handleOfFollowRequester in approvefile:
             # is this the approved follow?
-            if handleOfFollowRequester.startswith(approveHandle):
+            if handleOfFollowRequester.startswith(approveHandleFull):
                 handleOfFollowRequester = \
                     handleOfFollowRequester.replace('\n', '').replace('\r', '')
                 port2 = port
