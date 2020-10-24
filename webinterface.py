@@ -5917,6 +5917,218 @@ def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
     return bannerFile, bannerFilename
 
 
+def getTimelineButtonHeader(defaultTimeline: str,
+                            boxName: str,
+                            pageNumber: int,
+                            translate: {},
+                            usersPath: str,
+                            mediaButton: str,
+                            blogsButton: str,
+                            newsButton: str,
+                            inboxButton: str,
+                            dmButton: str,
+                            newDM: str,
+                            repliesButton: str,
+                            newReply: str,
+                            minimal: bool,
+                            sentButton: str,
+                            sharesButtonStr: str,
+                            bookmarksButtonStr: str,
+                            eventsButtonStr: str,
+                            moderationButtonStr: str,
+                            newPostButtonStr: str,
+                            baseDir: str,
+                            nickname: str, domain: str,
+                            iconsDir: str,
+                            timelineStartTime,
+                            newCalendarEvent: bool,
+                            calendarPath: str,
+                            calendarImage: str,
+                            followApprovals: str) -> str:
+    """Returns the header at the top of the timeline, containing
+    buttons for inbox, outbox, search, calendar, etc
+    """
+    # start of the button header with inbox, outbox, etc
+    tlStr = '    <div class="container">\n'
+    # first button
+    if defaultTimeline == 'tlmedia':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlmedia"><button class="' + \
+            mediaButton + '"><span>' + translate['Media'] + \
+            '</span></button></a>\n'
+    elif defaultTimeline == 'tlblogs':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlblogs"><button class="' + \
+            blogsButton + '"><span>' + translate['Blogs'] + \
+            '</span></button></a>\n'
+    elif defaultTimeline == 'tlnews':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
+            '</span></button></a>\n'
+    else:
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/inbox"><button class="' + \
+            inboxButton + '"><span>' + \
+            translate['Inbox'] + '</span></button></a>\n'
+
+    tlStr += \
+        '      <a href="' + usersPath + '/dm"><button class="' + dmButton + \
+        '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
+        '</span></button></a>\n'
+
+    tlStr += \
+        '      <a href="' + usersPath + '/tlreplies"><button class="' + \
+        repliesButton + '"><span>' + \
+        htmlHighlightLabel(translate['Replies'], newReply) + \
+        '</span></button></a>\n'
+
+    # typically the media button
+    if defaultTimeline != 'tlmedia':
+        if not minimal:
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/tlmedia"><button class="' + \
+                mediaButton + '"><span>' + translate['Media'] + \
+                '</span></button></a>\n'
+    else:
+        if not minimal:
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/inbox"><button class="' + \
+                inboxButton+'"><span>' + translate['Inbox'] + \
+                '</span></button></a>\n'
+
+    # typically the blogs button
+    # but may change if this is a blogging oriented instance
+    if defaultTimeline != 'tlblogs':
+        if not minimal or defaultTimeline == 'tlnews':
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/tlblogs"><button class="' + \
+                blogsButton + '"><span>' + translate['Blogs'] + \
+                '</span></button></a>\n'
+    else:
+        if not minimal:
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/inbox"><button class="' + \
+                inboxButton + '"><span>' + translate['Inbox'] + \
+                '</span></button></a>\n'
+
+    # typically the news button
+    # but may change if this is a news oriented instance
+    if defaultTimeline != 'tlnews':
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
+            '</span></button></a>\n'
+    else:
+        tlStr += \
+            '      <a href="' + usersPath + \
+            '/inbox"><button class="' + \
+            inboxButton + '"><span>' + translate['Inbox'] + \
+            '</span></button></a>\n'
+
+    # button for the outbox
+    tlStr += \
+        '      <a href="' + usersPath + \
+        '/outbox"><button class="' + \
+        sentButton + '"><span>' + translate['Outbox'] + \
+        '</span></button></a>\n'
+
+    # add other buttons
+    tlStr += \
+        sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
+        moderationButtonStr + newPostButtonStr
+
+    # show todays events buttons on the first inbox page
+    if boxName == 'inbox' and pageNumber == 1:
+        if todaysEventsCheck(baseDir, nickname, domain):
+            now = datetime.now()
+
+            # happening today button
+            tlStr += \
+                '    <a href="' + usersPath + '/calendar?year=' + \
+                str(now.year) + '?month=' + str(now.month) + \
+                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
+                translate['Happening Today'] + '</button></a>\n'
+
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                tlStr += \
+                    '    <a href="' + usersPath + \
+                    '/calendar"><button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>\n'
+        else:
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                tlStr += \
+                    '    <a href="' + usersPath + \
+                    '/calendar"><button class="buttonevent">' + \
+                    translate['Happening This Week'] + '</button></a>\n'
+
+    # the search button
+    tlStr += \
+        '        <a class="imageAnchor" href="' + usersPath + \
+        '/search"><img loading="lazy" src="/' + \
+        iconsDir + '/search.png" title="' + \
+        translate['Search and follow'] + '" alt="| ' + \
+        translate['Search and follow'] + '" class="timelineicon"/></a>\n'
+
+    # benchmark 5
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
+
+    # the calendar button
+    calendarAltText = translate['Calendar']
+    if newCalendarEvent:
+        # indicate that the calendar icon is highlighted
+        calendarAltText = '*' + calendarAltText + '*'
+    tlStr += \
+        '        <a class="imageAnchor" href="' + usersPath + calendarPath + \
+        '"><img loading="lazy" src="/' + iconsDir + '/' + \
+        calendarImage + '" title="' + translate['Calendar'] + \
+        '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
+
+    # the show/hide button, for a simpler header appearance
+    tlStr += \
+        '        <a class="imageAnchor" href="' + usersPath + '/minimal' + \
+        '"><img loading="lazy" src="/' + iconsDir + \
+        '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
+        '" alt="| ' + translate['Show/Hide Buttons'] + \
+        '" class="timelineicon"/></a>\n'
+
+    # the newswire button to show right column links
+    tlStr += \
+        '        <a class="imageAnchorMobile" href="' + \
+        usersPath + '/newswiremobile">' + \
+        '<img loading="lazy" src="/' + iconsDir + \
+        '/newswire.png" title="' + translate['News'] + \
+        '" alt="| ' + translate['News'] + \
+        '" class="timelineicon"/></a>\n'
+
+    # the links button to show left column links
+    tlStr += \
+        '        <a class="imageAnchorMobile" href="' + \
+        usersPath + '/linksmobile">' + \
+        '<img loading="lazy" src="/' + iconsDir + \
+        '/links.png" title="' + translate['Edit Links'] + \
+        '" alt="| ' + translate['Edit Links'] + \
+        '" class="timelineicon"/></a>\n'
+
+    tlStr += followApprovals
+    # end of the button header with inbox, outbox, etc
+    tlStr += '    </div>\n'
+    return tlStr
+
+
 def htmlTimeline(defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -6231,184 +6443,18 @@ def htmlTimeline(defaultTimeline: str,
     # center column containing posts
     tlStr += '  <td valign="top" class="col-center">\n'
 
-    # start of the button header with inbox, outbox, etc
-    tlStr += '    <div class="container">\n'
-    # first button
-    if defaultTimeline == 'tlmedia':
-        tlStr += \
-            '      <a href="' + usersPath + \
-            '/tlmedia"><button class="' + \
-            mediaButton + '"><span>' + translate['Media'] + \
-            '</span></button></a>\n'
-    elif defaultTimeline == 'tlblogs':
-        tlStr += \
-            '      <a href="' + usersPath + \
-            '/tlblogs"><button class="' + \
-            blogsButton + '"><span>' + translate['Blogs'] + \
-            '</span></button></a>\n'
-    elif defaultTimeline == 'tlnews':
-        tlStr += \
-            '      <a href="' + usersPath + \
-            '/tlnews"><button class="' + \
-            newsButton + '"><span>' + translate['News'] + \
-            '</span></button></a>\n'
-    else:
-        tlStr += \
-            '      <a href="' + usersPath + \
-            '/inbox"><button class="' + \
-            inboxButton + '"><span>' + \
-            translate['Inbox'] + '</span></button></a>\n'
-
     tlStr += \
-        '      <a href="' + usersPath + '/dm"><button class="' + dmButton + \
-        '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
-        '</span></button></a>\n'
-
-    tlStr += \
-        '      <a href="' + usersPath + '/tlreplies"><button class="' + \
-        repliesButton + '"><span>' + \
-        htmlHighlightLabel(translate['Replies'], newReply) + \
-        '</span></button></a>\n'
-
-    # typically the media button
-    if defaultTimeline != 'tlmedia':
-        if not minimal:
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/tlmedia"><button class="' + \
-                mediaButton + '"><span>' + translate['Media'] + \
-                '</span></button></a>\n'
-    else:
-        if not minimal:
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/inbox"><button class="' + \
-                inboxButton+'"><span>' + translate['Inbox'] + \
-                '</span></button></a>\n'
-
-    # typically the blogs button
-    # but may change if this is a blogging oriented instance
-    if defaultTimeline != 'tlblogs':
-        if not minimal or defaultTimeline == 'tlnews':
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/tlblogs"><button class="' + \
-                blogsButton + '"><span>' + translate['Blogs'] + \
-                '</span></button></a>\n'
-    else:
-        if not minimal:
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/inbox"><button class="' + \
-                inboxButton + '"><span>' + translate['Inbox'] + \
-                '</span></button></a>\n'
-
-    # typically the news button
-    # but may change if this is a news oriented instance
-    if defaultTimeline != 'tlnews':
-        tlStr += \
-            '      <a href="' + usersPath + \
-            '/tlnews"><button class="' + \
-            newsButton + '"><span>' + translate['News'] + \
-            '</span></button></a>\n'
-    else:
-        tlStr += \
-            '      <a href="' + usersPath + \
-            '/inbox"><button class="' + \
-            inboxButton + '"><span>' + translate['Inbox'] + \
-            '</span></button></a>\n'
-
-    # button for the outbox
-    tlStr += \
-        '      <a href="' + usersPath + \
-        '/outbox"><button class="' + \
-        sentButton+'"><span>' + translate['Outbox'] + \
-        '</span></button></a>\n'
-
-    # add other buttons
-    tlStr += \
-        sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
-        moderationButtonStr + newPostButtonStr
-
-    # show todays events buttons on the first inbox page
-    if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
-            # happening today button
-            tlStr += \
-                '    <a href="' + usersPath + '/calendar?year=' + \
-                str(now.year) + '?month=' + str(now.month) + \
-                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
-                translate['Happening Today'] + '</button></a>\n'
-
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '    <a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '    <a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n'
-
-    # the search button
-    tlStr += \
-        '        <a class="imageAnchor" href="' + usersPath + \
-        '/search"><img loading="lazy" src="/' + \
-        iconsDir + '/search.png" title="' + \
-        translate['Search and follow'] + '" alt="| ' + \
-        translate['Search and follow'] + '" class="timelineicon"/></a>\n'
-
-    # benchmark 5
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
-
-    # the calendar button
-    calendarAltText = translate['Calendar']
-    if newCalendarEvent:
-        # indicate that the calendar icon is highlighted
-        calendarAltText = '*' + calendarAltText + '*'
-    tlStr += \
-        '        <a class="imageAnchor" href="' + usersPath + calendarPath + \
-        '"><img loading="lazy" src="/' + iconsDir + '/' + \
-        calendarImage + '" title="' + translate['Calendar'] + \
-        '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
-
-    # the show/hide button, for a simpler header appearance
-    tlStr += \
-        '        <a class="imageAnchor" href="' + usersPath + '/minimal' + \
-        '"><img loading="lazy" src="/' + iconsDir + \
-        '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
-        '" alt="| ' + translate['Show/Hide Buttons'] + \
-        '" class="timelineicon"/></a>\n'
-
-    # the newswire button to show right column links
-    tlStr += \
-        '        <a class="imageAnchorMobile" href="' + \
-        usersPath + '/newswiremobile">' + \
-        '<img loading="lazy" src="/' + iconsDir + \
-        '/newswire.png" title="' + translate['News'] + \
-        '" alt="| ' + translate['News'] + \
-        '" class="timelineicon"/></a>\n'
-
-    # the links button to show left column links
-    tlStr += \
-        '        <a class="imageAnchorMobile" href="' + \
-        usersPath + '/linksmobile">' + \
-        '<img loading="lazy" src="/' + iconsDir + \
-        '/links.png" title="' + translate['Edit Links'] + \
-        '" alt="| ' + translate['Edit Links'] + \
-        '" class="timelineicon"/></a>\n'
-
-    tlStr += followApprovals
-    # end of the button header with inbox, outbox, etc
-    tlStr += '    </div>\n'
+        getTimelineButtonHeader(defaultTimeline, boxName, pageNumber,
+                                translate, usersPath, mediaButton,
+                                blogsButton, newsButton, inboxButton,
+                                dmButton, newDM, repliesButton,
+                                newReply, minimal, sentButton,
+                                sharesButtonStr, bookmarksButtonStr,
+                                eventsButtonStr, moderationButtonStr,
+                                newPostButtonStr, baseDir, nickname,
+                                domain, iconsDir, timelineStartTime,
+                                newCalendarEvent, calendarPath,
+                                calendarImage, followApprovals)
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
