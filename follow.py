@@ -276,7 +276,8 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                      httpPrefix: str, authenticated: bool,
                      followsPerPage=12,
                      followFile='following') -> {}:
-    """Returns the following and followers feeds from GET requests
+    """Returns the following and followers feeds from GET requests.
+    This accesses the following.txt or followers.txt and builds a collection.
     """
     # Show a small number of follows to non-authenticated viewers
     if not authenticated:
@@ -367,6 +368,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
         for line in lines:
             if '#' not in line:
                 if '@' in line and not line.startswith('http'):
+                    # nickname@domain
                     pageCtr += 1
                     totalCtr += 1
                     if currPage == pageNumber:
@@ -378,7 +380,12 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                             line2.split('@')[0]
                         following['orderedItems'].append(url)
                 elif ((line.startswith('http') or
-                       line.startswith('dat')) and '/users/' in line):
+                       line.startswith('dat')) and
+                      ('/users/' in line or
+                       '/profile/' in line or
+                       '/accounts/' in line or
+                       '/channel/' in line)):
+                    # https://domain/users/nickname
                     pageCtr += 1
                     totalCtr += 1
                     if currPage == pageNumber:
