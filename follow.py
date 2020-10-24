@@ -278,7 +278,12 @@ def getNoOfFollows(baseDir: str, nickname: str, domain: str,
                '.' in line and \
                not line.startswith('http'):
                 ctr += 1
-            elif line.startswith('http') and '/users/' in line:
+            elif ((line.startswith('http') or
+                   line.startswith('dat')) and
+                  ('/users/' in line or
+                   '/profile/' in line or
+                   '/accounts/' in line or
+                   '/channel/' in line)):
                 ctr += 1
     return ctr
 
@@ -487,7 +492,7 @@ def storeFollowRequest(baseDir: str,
                        nicknameToFollow: str, domainToFollow: str, port: int,
                        nickname: str, domain: str, fromPort: int,
                        followJson: {},
-                       debug: bool) -> bool:
+                       debug: bool, personUrl: str) -> bool:
     """Stores the follow request for later use
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -539,17 +544,23 @@ def storeFollowRequest(baseDir: str,
 
     # add to a file which contains a list of requests
     approveFollowsFilename = accountsDir + '/followrequests.txt'
+
+    # store either nick@domain or the full person/actor url
+    approveHandleStored = approveHandle
+    if '/users/' not in personUrl:
+        approveHandleStored = personUrl
+
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
             with open(approveFollowsFilename, 'a+') as fp:
-                fp.write(approveHandle + '\n')
+                fp.write(approveHandleStored + '\n')
         else:
             if debug:
-                print('DEBUG: ' + approveHandle +
+                print('DEBUG: ' + approveHandleStored +
                       ' is already awaiting approval')
     else:
         with open(approveFollowsFilename, "w+") as fp:
-            fp.write(approveHandle + '\n')
+            fp.write(approveHandleStored + '\n')
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -690,7 +701,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         return storeFollowRequest(baseDir,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
-                                  messageJson, debug)
+                                  messageJson, debug, messageJson['actor'])
     else:
         print('Follow request does not require approval')
         # update the followers

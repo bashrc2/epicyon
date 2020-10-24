@@ -98,8 +98,29 @@ def manualApproveFollowRequest(session, baseDir: str,
         print('Manual follow accept: follow requests file ' +
               approveFollowsFilename + ' not found')
         return
+
     # is the handle in the requests file?
-    if approveHandle not in open(approveFollowsFilename).read():
+    approveFollowsStr = ''
+    with open(approveFollowsFilename, 'r') as fpFollowers:
+        approveFollowsStr = fpFollowers.read()
+    exists = True
+    approveHandleFull = approveHandle
+    if approveHandle not in approveFollowsStr:
+        exists = False
+    elif '@' in approveHandle:
+        reqNick = approveHandle.split('@')[0]
+        reqDomain = approveHandle.split('@')[1].strip()
+        reqPrefix = httpPrefix + '://' + reqDomain
+        if reqPrefix + '/profile/' + reqNick not in approveFollowsStr:
+            exists = False
+            approveHandleFull = reqPrefix + '/profile/' + reqNick
+        elif reqPrefix + '/channel/' + reqNick not in approveFollowsStr:
+            exists = False
+            approveHandleFull = reqPrefix + '/channel/' + reqNick
+        elif reqPrefix + '/accounts/' + reqNick not in approveFollowsStr:
+            exists = False
+            approveHandleFull = reqPrefix + '/accounts/' + reqNick
+    if not exists:
         print('Manual follow accept: ' + approveHandle +
               ' not in requests file ' + approveFollowsFilename)
         return
@@ -157,28 +178,28 @@ def manualApproveFollowRequest(session, baseDir: str,
         # update the followers
         print('Manual follow accept: updating ' + followersFilename)
         if os.path.isfile(followersFilename):
-            if approveHandle not in open(followersFilename).read():
+            if approveHandleFull not in open(followersFilename).read():
                 try:
                     with open(followersFilename, 'r+') as followersFile:
                         content = followersFile.read()
                         followersFile.seek(0, 0)
-                        followersFile.write(approveHandle + '\n' + content)
+                        followersFile.write(approveHandleFull + '\n' + content)
                 except Exception as e:
                     print('WARN: Manual follow accept. ' +
                           'Failed to write entry to followers file ' + str(e))
             else:
-                print('WARN: Manual follow accept: ' + approveHandle +
+                print('WARN: Manual follow accept: ' + approveHandleFull +
                       ' already exists in ' + followersFilename)
         else:
             print('Manual follow accept: first follower accepted for ' +
-                  handle + ' is ' + approveHandle)
+                  handle + ' is ' + approveHandleFull)
             followersFile = open(followersFilename, "w+")
-            followersFile.write(approveHandle + '\n')
+            followersFile.write(approveHandleFull + '\n')
             followersFile.close()
 
     # only update the follow requests file if the follow is confirmed to be
     # in followers.txt
-    if approveHandle in open(followersFilename).read():
+    if approveHandleFull in open(followersFilename).read():
         # mark this handle as approved for following
         approveFollowerHandle(accountDir, approveHandle)
         # update the follow requests with the handles not yet approved
