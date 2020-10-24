@@ -3611,7 +3611,7 @@ def htmlProfile(defaultTimeline: str,
                                       httpPrefix, translate,
                                       iconsDir, False, False,
                                       newswire, False,
-                                      False, None, False)
+                                      False, None, False, False)
             profileFooterStr += '      </td>\n'
             profileFooterStr += '  </tr>\n'
             profileFooterStr += '  </tbody>\n'
