@@ -174,7 +174,7 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
          '/accounts/' + followerNickname in followersStr:
         alreadyFollowing = True
 
-    return alreadyFollowing:
+    return alreadyFollowing
 
 
 def unfollowPerson(baseDir: str, nickname: str, domain: str,
