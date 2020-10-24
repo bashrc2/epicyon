@@ -54,6 +54,20 @@ def setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
+def setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
+    """Shows the timeline button header containing inbox, outbox,
+    calendar, etc as full width
+    """
+    configFilename = baseDir + '/config.json'
+    if not os.path.isfile(configFilename):
+        return False
+    configJson = loadJson(configFilename, 0)
+    if not configJson:
+        return False
+    configJson['fullWidthTimelineButtonHeader'] = fullWidth
+    return saveJson(configJson, configFilename)
+
+
 def getTheme(baseDir: str) -> str:
     configFilename = baseDir + '/config.json'
     if os.path.isfile(configFilename):
@@ -246,6 +260,7 @@ def setThemeDefault(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -263,6 +278,7 @@ def setThemeIndymediaClassic(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, False)
+    setFullWidthTimelineButtonHeader(baseDir, True)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -341,6 +357,7 @@ def setThemeBlue(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     themeParams = {
         "newswire-date-color": "blue",
         "font-size-header": "22px",
@@ -379,6 +396,7 @@ def setThemeNight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
     fontStrItalic = \
@@ -437,6 +455,7 @@ def setThemeStarlight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
@@ -503,6 +522,7 @@ def setThemeHenge(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
@@ -564,6 +584,7 @@ def setThemeZen(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     themeParams = {
         "main-bg-color": "#5c4e41",
         "column-left-color": "#5c4e41",
@@ -622,6 +643,7 @@ def setThemeHighVis(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
 
 
 def setThemeLCD(baseDir: str):
@@ -698,6 +720,7 @@ def setThemeLCD(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
 
 
 def setThemePurple(baseDir: str):
@@ -758,6 +781,7 @@ def setThemePurple(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
 
 
 def setThemeHacker(baseDir: str):
@@ -815,6 +839,7 @@ def setThemeHacker(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
 
 
 def setThemeLight(baseDir: str):
@@ -875,6 +900,7 @@ def setThemeLight(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
 
 
 def setThemeSolidaric(baseDir: str):
@@ -941,6 +967,7 @@ def setThemeSolidaric(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
 
 
 def setThemeImages(baseDir: str, name: str) -> None:
