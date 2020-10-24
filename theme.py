@@ -906,6 +906,9 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     themeParams = {
+        "column-left-width": "10vw",
+        "column-center-width": "70vw",
+        "column-right-width": "20vw",
         "column-right-fg-color": "#25408f",
         "column-right-fg-color-voted-on": "red",
         "newswire-item-moderated-color": "red",
