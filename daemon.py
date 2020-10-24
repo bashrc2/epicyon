@@ -6445,7 +6445,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         YTReplacementDomain,
                                         self.server.showPublishedDateOnly,
                                         self.server.newswire,
-                                        self.server.positiveVoting)
+                                        self.server.positiveVoting,
+                                        self.server.showPublishAsIcon)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6559,7 +6560,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.YTReplacementDomain,
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
-                                         self.server.positiveVoting)
+                                         self.server.positiveVoting,
+                                         self.server.showPublishAsIcon)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6666,7 +6668,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.YTReplacementDomain,
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
-                                         self.server.positiveVoting)
+                                         self.server.positiveVoting,
+                                         self.server.showPublishAsIcon)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6773,7 +6776,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.YTReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
-                                       self.server.positiveVoting)
+                                       self.server.positiveVoting,
+                                       self.server.showPublishAsIcon)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6880,7 +6884,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.YTReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
-                                       self.server.positiveVoting)
+                                       self.server.positiveVoting,
+                                       self.server.showPublishAsIcon)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6996,7 +7001,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishedDateOnly,
                                       self.server.newswire,
                                       moderator, editor,
-                                      self.server.positiveVoting)
+                                      self.server.positiveVoting,
+                                      self.server.showPublishAsIcon)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7073,7 +7079,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.YTReplacementDomain,
                                    self.server.showPublishedDateOnly,
                                    self.server.newswire,
-                                   self.server.positiveVoting)
+                                   self.server.positiveVoting,
+                                   self.server.showPublishAsIcon)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7164,7 +7171,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.YTReplacementDomain,
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
-                                          self.server.positiveVoting)
+                                          self.server.positiveVoting,
+                                          self.server.showPublishAsIcon)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7274,7 +7282,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.YTReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
-                                       self.server.positiveVoting)
+                                       self.server.positiveVoting,
+                                       self.server.showPublishAsIcon)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7376,7 +7385,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.YTReplacementDomain,
                                self.server.showPublishedDateOnly,
                                self.server.newswire,
-                               self.server.positiveVoting)
+                               self.server.positiveVoting,
+                               self.server.showPublishAsIcon)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7468,7 +7478,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.YTReplacementDomain,
                                            self.server.showPublishedDateOnly,
                                            self.server.newswire,
-                                           self.server.positiveVoting)
+                                           self.server.positiveVoting,
+                                           self.server.showPublishAsIcon)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
