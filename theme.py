@@ -25,7 +25,7 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'IndymediaClassic',
+            'IndymediaClassic', 'IndymediaModern',
             'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
             'Starlight', 'Zen')
 
@@ -901,6 +901,69 @@ def setThemeLight(baseDir: str):
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
+
+
+def setThemeIndymediaModern(baseDir: str):
+    name = 'indymediamodern'
+    themeParams = {
+        "publish-button-background": "#25408f",
+        "publish-button-text": "white",
+        "hashtag-background-color": "lightblue",
+        "focus-color": "grey",
+        "font-size-button-mobile": "26px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
+        "column-left-color": "#e6ebf0",
+        "main-bg-color": "#e6ebf0",
+        "main-bg-color-dm": "#e3dbf0",
+        "link-bg-color": "#e6ebf0",
+        "main-bg-color-reply": "#e0dbf0",
+        "main-bg-color-report": "#e3dbf0",
+        "main-header-color-roles": "#ebebf0",
+        "main-fg-color": "#2d2c37",
+        "column-left-fg-color": "#2d2c37",
+        "border-color": "#c0cdd9",
+        "main-link-color": "#2a2c37",
+        "main-link-color-hover": "#aa2c37",
+        "title-color": "#2a2c37",
+        "main-visited-color": "#232c37",
+        "text-entry-foreground": "#111",
+        "text-entry-background": "white",
+        "font-color-header": "black",
+        "dropdown-fg-color": "#222",
+        "dropdown-fg-color-hover": "#222",
+        "dropdown-bg-color": "white",
+        "dropdown-bg-color-hover": "lightgrey",
+        "color: #FFFFFE;": "color: black;",
+        "calendar-bg-color": "#e6ebf0",
+        "lines-color": "darkblue",
+        "day-number": "black",
+        "day-number2": "#282c37",
+        "place-color": "black",
+        "event-color": "#282c37",
+        "today-foreground": "white",
+        "today-circle": "red",
+        "event-background": "lightblue",
+        "event-foreground": "white",
+        "title-text": "#282c37",
+        "title-background": "#ccc",
+        "gallery-text-color": "black",
+        "*font-family": "'ElectrumADFExp-Regular'",
+        "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
+    }
+    bgParams = {
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, False)
+    setFullWidthTimelineButtonHeader(baseDir, True)
 
 
 def setThemeSolidaric(baseDir: str):
