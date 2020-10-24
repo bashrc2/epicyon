@@ -906,6 +906,8 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     themeParams = {
+        "button-corner-radius": "7px",
+        "timeline-border-radius": "0px",
         "publish-button-background": "#25408f",
         "publish-button-text": "white",
         "hashtag-background-color": "lightblue",
