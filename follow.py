@@ -545,7 +545,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor')
+            print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
     domain, tempPort = getDomainFromActor(messageJson['actor'])
     fromPort = port
@@ -573,7 +573,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
        '/channel/' not in messageJson['object'] and \
        '/profile/' not in messageJson['object']:
         if debug:
-            print('DEBUG: "users" or "profile" not found within object')
+            print('DEBUG: users/profile/channel/accounts ' +
+                  'not found within object')
         return False
     domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
     if not domainPermitted(domainToFollow, federationList):
@@ -662,6 +663,12 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             followersFilename = \
                 baseDir + '/accounts/' + \
                 nicknameToFollow + '@' + domainToFollow + '/followers.txt'
+
+            # for actors which don't follow the mastodon
+            # /users/ path convention store the full actor
+            if '/users/' not in messageJson['actor']:
+                approveHandle = messageJson['actor']
+
             print('Updating followers file: ' +
                   followersFilename + ' adding ' + approveHandle)
             if os.path.isfile(followersFilename):
