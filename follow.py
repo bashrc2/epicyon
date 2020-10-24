@@ -477,14 +477,31 @@ def storeFollowRequest(baseDir: str,
         return False
 
     approveHandle = nickname + '@' + domain
+    domainFull = domain
     if fromPort:
         if fromPort != 80 and fromPort != 443:
             if ':' not in domain:
                 approveHandle = nickname + '@' + domain + ':' + str(fromPort)
+                domainFull = domain + ':' + str(fromPort)
 
     followersFilename = accountsDir + '/followers.txt'
     if os.path.isfile(followersFilename):
-        if approveHandle in open(followersFilename).read():
+        alreadyFollowing = False
+
+        followersStr = ''
+        with open(followersFilename, 'r') as fpFollowers:
+            followersStr = fpFollowers.read()
+
+        if approveHandle in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/profile/' + nickname in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/channel/' + nickname in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/accounts/' + nickname in followersStr:
+            alreadyFollowing = True
+
+        if alreadyFollowing:
             if debug:
                 print('DEBUG: ' +
                       nicknameToFollow + '@' + domainToFollow +
