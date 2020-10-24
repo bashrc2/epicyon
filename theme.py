@@ -41,6 +41,19 @@ def setThemeInConfig(baseDir: str, name: str) -> bool:
     return saveJson(configJson, configFilename)
 
 
+def setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
+    """Shows the newswire publish action as an icon or a button
+    """
+    configFilename = baseDir + '/config.json'
+    if not os.path.isfile(configFilename):
+        return False
+    configJson = loadJson(configFilename, 0)
+    if not configJson:
+        return False
+    configJson['showPublishAsIcon'] = useIcon
+    return saveJson(configJson, configFilename)
+
+
 def getTheme(baseDir: str) -> str:
     configFilename = baseDir + '/config.json'
     if os.path.isfile(configFilename):
@@ -232,6 +245,7 @@ def setThemeDefault(baseDir: str):
     name = 'default'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, True)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -248,6 +262,7 @@ def setThemeIndymediaClassic(baseDir: str):
     name = 'indymediaclassic'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, False)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -325,6 +340,7 @@ def setThemeBlue(baseDir: str):
     name = 'blue'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, True)
     themeParams = {
         "newswire-date-color": "blue",
         "font-size-header": "22px",
@@ -362,6 +378,7 @@ def setThemeNight(baseDir: str):
     name = 'night'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, True)
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
     fontStrItalic = \
@@ -419,6 +436,7 @@ def setThemeStarlight(baseDir: str):
     name = 'starlight'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, True)
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
@@ -484,6 +502,7 @@ def setThemeHenge(baseDir: str):
     name = 'henge'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, True)
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
@@ -544,6 +563,7 @@ def setThemeZen(baseDir: str):
     name = 'zen'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
+    setNewswirePublishAsIcon(baseDir, True)
     themeParams = {
         "main-bg-color": "#5c4e41",
         "column-left-color": "#5c4e41",
@@ -601,6 +621,7 @@ def setThemeHighVis(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, True)
 
 
 def setThemeLCD(baseDir: str):
@@ -676,6 +697,7 @@ def setThemeLCD(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, True)
 
 
 def setThemePurple(baseDir: str):
@@ -735,6 +757,7 @@ def setThemePurple(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, True)
 
 
 def setThemeHacker(baseDir: str):
@@ -791,6 +814,7 @@ def setThemeHacker(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, True)
 
 
 def setThemeLight(baseDir: str):
@@ -850,6 +874,7 @@ def setThemeLight(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, True)
 
 
 def setThemeSolidaric(baseDir: str):
@@ -915,6 +940,7 @@ def setThemeSolidaric(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setNewswirePublishAsIcon(baseDir, True)
 
 
 def setThemeImages(baseDir: str, name: str) -> None:
