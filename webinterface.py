@@ -3462,7 +3462,7 @@ def htmlProfile(defaultTimeline: str,
 
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
-        profileHeaderStr = '<div class="timeline-banner"></div>\n'
+        profileHeaderStr = '<img class="timeline-banner" src="banner.png" />\n'
         profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
         profileHeaderStr += '<table class="timeline">\n'
@@ -6416,8 +6416,7 @@ def htmlTimeline(defaultTimeline: str,
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
-    tlStr += '<div class="timeline-banner">'
-    tlStr += '</div>\n</a>\n'
+    tlStr += '<img class="timeline-banner" src="banner.png" />\n'
 
     if fullWidthTimelineButtonHeader:
         tlStr += \
