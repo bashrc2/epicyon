@@ -921,7 +921,7 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     themeParams = {
-        "icon-brightness-change": "90%",
+        "icon-brightness-change": "70%",
         "border-width-header": "0px",
         "tab-border-width": "3px",
         "tab-border-color": "grey",
