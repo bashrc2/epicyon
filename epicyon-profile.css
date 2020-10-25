@@ -333,10 +333,12 @@ a:focus {
 
 .button:hover {
     background-color: var(--button-background-hover);
+    color: var(--button-text-hover);
 }
 
 .donateButton:hover {
     background-color: var(--button-background-hover);
+    color: var(--button-text-hover);
 }
 
 .buttonselected span {
@@ -359,6 +361,7 @@ a:focus {
 
 .buttonselected:hover {
     background-color: var(--button-background-hover);
+    color: var(--button-text-hover);
 }
 
 .container {
