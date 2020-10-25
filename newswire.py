@@ -88,27 +88,42 @@ def addNewswireDictEntry(baseDir: str, domain: str,
     """Update the newswire dictionary
     """
     allText = title + ' ' + description
+
+    # check that none of the text is filtered against
     if isFiltered(baseDir, 'news', domain, allText):
         return
-    if not tags:
-        tags = getNewswireTags(allText, maxTags)
+
+    if tags is None:
+        tags = []
+
+    # extract hashtags from the text of the feed post
+    postTags = getNewswireTags(allText, maxTags)
+
+    # combine the tags into a single list
+    for tag in postTags:
+        if tag not in tags:
+            tags.append(tag)
+
+    # check that no tags are blocked
     newswireItemBlocked = False
-    if tags:
-        for tag in tags:
-            if isBlockedHashtag(baseDir, tag.replace('#', '')):
-                newswireItemBlocked = True
-                break
-    if not newswireItemBlocked:
-        newswire[dateStr] = [
-            title,
-            link,
-            votesStatus,
-            postFilename,
-            description,
-            moderated,
-            tags,
-            mirrored
-        ]
+    for tag in tags:
+        if isBlockedHashtag(baseDir, tag.replace('#', '')):
+            newswireItemBlocked = True
+            break
+
+    if newswireItemBlocked:
+        return
+
+    newswire[dateStr] = [
+        title,
+        link,
+        votesStatus,
+        postFilename,
+        description,
+        moderated,
+        tags,
+        mirrored
+    ]
 
 
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
