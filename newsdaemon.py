@@ -610,6 +610,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # save the post and update the index
         if savePost:
+            # ensure that all hashtags are stored in the json
+            # and appended to the content
+            blog['object']['tag'] = []
             for tagName in hashtags:
                 htId = tagName.replace('#', '')
                 hashtagUrl = \
@@ -620,13 +623,24 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     'type': 'Hashtag'
                 }
                 blog['object']['tag'].append(newTag)
+                hashtagHtml = \
+                    "<a href=\"" + hashtagUrl + \
+                    "\" class=\"addedHashtag\" " + \
+                    "rel=\"tag\">#<span>" + \
+                    htId + "</span></a>"
                 if tagName in blog['object']['content']:
-                    hashtagHtml = \
-                        "<a href=\"" + hashtagUrl + \
-                        "\" class=\"addedHashtag\" " + \
-                        "rel=\"tag\">#<span>" + \
-                        htId + "</span></a>"
                     blog['object']['content'].replace(tagName, hashtagHtml)
+                else:
+                    content = blog['object']['content']
+                    if hashtagHtml not in content:
+                        if content.endswith('</p>'):
+                            content = \
+                                content[:len(content) - len('</p>')] + \
+                                hashtagHtml + '</p>'
+                        else:
+                            content += hashtagHtml
+                        blog['object']['content'] = content
+                storeHashTags(baseDir, 'news', blog)
 
             newswire[originalDateStr][6] = hashtags
 
