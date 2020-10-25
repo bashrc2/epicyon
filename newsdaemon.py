@@ -638,9 +638,12 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                         else:
                             content += hashtagHtml
                         blog['object']['content'] = content
-                storeHashTags(baseDir, 'news', blog)
 
-            newswire[originalDateStr][6] = hashtags
+            # update the newswire tags if new ones have been found by
+            # newswireHashtagProcessing
+            for tag in hashtags:
+                if tag not in newswire[originalDateStr][6]:
+                    newswire[originalDateStr][6].append(tag)
 
             storeHashTags(baseDir, 'news', blog)
 
