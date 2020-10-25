@@ -4529,11 +4529,6 @@ def individualPostAsHtml(allowDownloads: bool,
             '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
             translate['Show profile'] + '" alt=" "' + avatarPosition + \
             '/></a>\n'
-    else:
-        avatarLink += \
-            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
-            translate['Show profile'] + '" alt=" "' + avatarPosition + \
-            '/>\n'
 
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
