@@ -381,6 +381,9 @@ def getRSSfromDict(baseDir: str, newswire: {},
 
 def isNewswireBlogPost(postJsonObject: {}) -> bool:
     """Is the given object a blog post?
+    There isn't any difference between a blog post and a newswire blog post
+    but we may here need to check for different properties than
+    isBlogPost does
     """
     if not postJsonObject:
         return False
