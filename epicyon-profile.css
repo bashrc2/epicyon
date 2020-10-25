@@ -1251,7 +1251,8 @@ aside .toggle-inside li {
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
-	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-top: var(--tab-border-width) solid var(--tab-border-color);
+	border-bottom: none;
 	border-left: var(--tab-border-width) solid var(--tab-border-color);	
 	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
@@ -1301,6 +1302,7 @@ aside .toggle-inside li {
         cursor: pointer;
         margin: 5px;
 	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-bottom: none;
 	border-left: var(--tab-border-width) solid var(--tab-border-color);	
 	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
@@ -1837,6 +1839,7 @@ aside .toggle-inside li {
         cursor: pointer;
         margin: 15px;
 	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-bottom: none;
 	border-left: var(--tab-border-width) solid var(--tab-border-color);	
 	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
@@ -1886,6 +1889,7 @@ aside .toggle-inside li {
         cursor: pointer;
         margin: 15px;
 	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-bottom: none;
 	border-left: var(--tab-border-width) solid var(--tab-border-color);	
 	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }

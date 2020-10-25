@@ -927,7 +927,6 @@ def setThemeIndymediaModern(baseDir: str):
         "button-background-hover": "#567674",
         "button-selected": "white",
         "button-selected-text": "black",
-        "button-selected-text": "white",
         "button-text": "white",
         "hashtag-background-color": "#b2b2b2",
         "hashtag-fg-color": "white",
