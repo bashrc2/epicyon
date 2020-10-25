@@ -227,6 +227,11 @@ parser.add_argument("--allowNewsFollowers",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Whether to allow the news account to be followed")
+parser.add_argument("--iconsAsButtons",
+                    dest='iconsAsButtons',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Show header icons as buttons")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -2003,6 +2008,11 @@ showPublishAsIcon = \
 if showPublishAsIcon is not None:
     args.showPublishAsIcon = bool(showPublishAsIcon)
 
+iconsAsButtons = \
+    getConfigParam(baseDir, 'iconsAsButtons')
+if iconsAsButtons is not None:
+    args.iconsAsButtons = bool(iconsAsButtons)
+
 fullWidthTimelineButtonHeader = \
     getConfigParam(baseDir, 'fullWidthTimelineButtonHeader')
 if fullWidthTimelineButtonHeader is not None:
@@ -2021,7 +2031,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.fullWidthTimelineButtonHeader,
+    runDaemon(args.iconsAsButtons,
+              args.fullWidthTimelineButtonHeader,
               args.showPublishAsIcon,
               args.maxFollowers,
               args.allowNewsFollowers,
