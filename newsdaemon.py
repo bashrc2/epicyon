@@ -626,18 +626,15 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"
-                if tagName in blog['object']['content']:
-                    blog['object']['content'].replace(tagName, hashtagHtml)
-                else:
-                    content = blog['object']['content']
-                    if hashtagHtml not in content:
-                        if content.endswith('</p>'):
-                            content = \
-                                content[:len(content) - len('</p>')] + \
-                                hashtagHtml + '</p>'
-                        else:
-                            content += hashtagHtml
-                        blog['object']['content'] = content
+                content = blog['object']['content']
+                if hashtagHtml not in content:
+                    if content.endswith('</p>'):
+                        content = \
+                            content[:len(content) - len('</p>')] + \
+                            hashtagHtml + '</p>'
+                    else:
+                        content += hashtagHtml
+                    blog['object']['content'] = content
 
             # update the newswire tags if new ones have been found by
             # newswireHashtagProcessing
