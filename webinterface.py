@@ -6054,25 +6054,46 @@ def getTimelineButtonHeader(defaultTimeline: str,
             now = datetime.now()
 
             # happening today button
-            tlStr += \
-                '    <a href="' + usersPath + '/calendar?year=' + \
-                str(now.year) + '?month=' + str(now.month) + \
-                '?day=' + str(now.day) + '"><button class="buttonevent">' + \
-                translate['Happening Today'] + '</button></a>\n'
+            if not iconsAsButtons:
+                tlStr += \
+                    '    <a href="' + usersPath + '/calendar?year=' + \
+                    str(now.year) + '?month=' + str(now.month) + \
+                    '?day=' + str(now.day) + '">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening Today'] + '</button></a>\n'
+            else:
+                tlStr += \
+                    '    <a href="' + usersPath + '/calendar?year=' + \
+                    str(now.year) + '?month=' + str(now.month) + \
+                    '?day=' + str(now.day) + '">' + \
+                    '<button class="button">' + \
+                    translate['Happening Today'] + '</button></a>\n'
 
             # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '    <a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n'
+                if not iconsAsButtons:
+                    tlStr += \
+                        '    <a href="' + usersPath + \
+                        '/calendar"><button class="buttonevent">' + \
+                        translate['Happening This Week'] + '</button></a>\n'
+                else:
+                    tlStr += \
+                        '    <a href="' + usersPath + \
+                        '/calendar"><button class="button">' + \
+                        translate['Happening This Week'] + '</button></a>\n'
         else:
             # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
-                tlStr += \
-                    '    <a href="' + usersPath + \
-                    '/calendar"><button class="buttonevent">' + \
-                    translate['Happening This Week'] + '</button></a>\n'
+                if not iconsAsButtons:
+                    tlStr += \
+                        '    <a href="' + usersPath + \
+                        '/calendar"><button class="buttonevent">' + \
+                        translate['Happening This Week'] + '</button></a>\n'
+                else:
+                    tlStr += \
+                        '    <a href="' + usersPath + \
+                        '/calendar"><button class="button">' + \
+                        translate['Happening This Week'] + '</button></a>\n'
 
     if not iconsAsButtons:
         # the search button
