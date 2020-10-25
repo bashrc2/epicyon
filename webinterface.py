@@ -45,6 +45,7 @@ from utils import getCachedPostFilename
 from utils import loadJson
 from utils import getConfigParam
 from utils import votesOnNewswireItem
+from utils import removeHtml
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import isDM
@@ -71,7 +72,6 @@ from content import getMentionsFromHtml
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeLongWords
-from content import removeHtml
 from skills import getSkills
 from cache import getPersonFromCache
 from cache import storePersonInCache

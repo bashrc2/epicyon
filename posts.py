@@ -49,9 +49,9 @@ from utils import getConfigParam
 from utils import locateNewsVotes
 from utils import locateNewsArrival
 from utils import votesOnNewswireItem
+from utils import removeHtml
 from media import attachMedia
 from media import replaceYouTube
-from content import removeHtml
 from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags

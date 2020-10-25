@@ -18,6 +18,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
 from utils import containsInvalidChars
+from utils import removeHtml
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
@@ -88,7 +89,7 @@ def addNewswireDictEntry(baseDir: str, domain: str,
                          tags=[], maxTags=32) -> None:
     """Update the newswire dictionary
     """
-    allText = title + ' ' + description
+    allText = removeHtml(title + ' ' + description)
 
     # check that none of the text is filtered against
     if isFiltered(baseDir, 'news', domain, allText):
