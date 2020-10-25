@@ -104,14 +104,12 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 return matchStrLower in contentWithoutTags
     elif tree[0] == 'from':
         if len(tree) == 2:
+            matchStr = None
             if isinstance(tree[1], str):
                 matchStr = tree[1]
-                if matchStr.startswith('"') and matchStr.endswith('"'):
-                    matchStr = matchStr[1:]
-                    matchStr = matchStr[:len(matchStr) - 1]
-                return matchStr.lower() in url
             elif isinstance(tree[1], list):
                 matchStr = tree[1][0]
+            if matchStr:
                 if matchStr.startswith('"') and matchStr.endswith('"'):
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
