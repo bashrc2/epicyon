@@ -596,23 +596,6 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 domainFull = domain + ':' + str(port)
 
         hashtags = item[6]
-        for tagName in hashtags:
-            htId = tagName.replace('#', '')
-            hashtagUrl = \
-                httpPrefix + "://" + domainFull + "/tags/" + htId
-            newTag = {
-                'href': hashtagUrl,
-                'name': tagName,
-                'type': 'Hashtag'
-            }
-            blog['object']['tag'].append(newTag)
-            if tagName in blog['object']['content']:
-                hashtagHtml = \
-                    "<a href=\"" + hashtagUrl + \
-                    "\" class=\"addedHashtag\" " + \
-                    "rel=\"tag\">#<span>" + \
-                    htId + "</span></a>"
-                blog['object']['content'].replace(tagName, hashtagHtml)
 
         postId = newPostId.replace('/', '#')
 
@@ -627,6 +610,24 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         # save the post and update the index
         if savePost:
+            for tagName in hashtags:
+                htId = tagName.replace('#', '')
+                hashtagUrl = \
+                    httpPrefix + "://" + domainFull + "/tags/" + htId
+                newTag = {
+                    'href': hashtagUrl,
+                    'name': tagName,
+                    'type': 'Hashtag'
+                }
+                blog['object']['tag'].append(newTag)
+                if tagName in blog['object']['content']:
+                    hashtagHtml = \
+                        "<a href=\"" + hashtagUrl + \
+                        "\" class=\"addedHashtag\" " + \
+                        "rel=\"tag\">#<span>" + \
+                        htId + "</span></a>"
+                    blog['object']['content'].replace(tagName, hashtagHtml)
+
             newswire[originalDateStr][6] = hashtags
 
             storeHashTags(baseDir, 'news', blog)
