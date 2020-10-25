@@ -622,7 +622,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 }
                 blog['object']['tag'].append(newTag)
                 hashtagHtml = \
-                    "<a href=\"" + hashtagUrl + \
+                    " <a href=\"" + hashtagUrl + \
                     "\" class=\"addedHashtag\" " + \
                     "rel=\"tag\">#<span>" + \
                     htId + "</span></a>"

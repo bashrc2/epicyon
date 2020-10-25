@@ -102,12 +102,13 @@ def addNewswireDictEntry(baseDir: str, domain: str,
     postTags = getNewswireTags(allText, maxTags)
 
     # combine the tags into a single list
-    for tag in postTags:
-        if tag not in tags:
-            tags.append(tag)
+    for tag in tags:
+        if tag not in postTags:
+            if len(postTags) < maxTags:
+                postTags.append(tag)
 
     # check that no tags are blocked
-    for tag in tags:
+    for tag in postTags:
         if isBlockedHashtag(baseDir, tag.replace('#', '')):
             return
 
@@ -118,7 +119,7 @@ def addNewswireDictEntry(baseDir: str, domain: str,
         postFilename,
         description,
         moderated,
-        tags,
+        postTags,
         mirrored
     ]
 
