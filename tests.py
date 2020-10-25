@@ -2098,7 +2098,7 @@ def testConstantTimeStringCheck():
     avTime2 = ((end - start) * 1000000 / itterations)
     timeDiffMicroseconds = abs(avTime2 - avTime1)
     # time difference should be less than 10uS
-    assert timeDiffMicroseconds < 10
+    assert int(timeDiffMicroseconds) < 10
 
     # change multiple characters and observe timing difference
     start = time.time()
@@ -2109,7 +2109,7 @@ def testConstantTimeStringCheck():
     avTime2 = ((end - start) * 1000000 / itterations)
     timeDiffMicroseconds = abs(avTime2 - avTime1)
     # time difference should be less than 10uS
-    assert timeDiffMicroseconds < 10
+    assert int(timeDiffMicroseconds) < 10
 
 
 def testReplaceEmailQuote():
