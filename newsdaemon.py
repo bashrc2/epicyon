@@ -95,13 +95,17 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                 if matchStr.startswith('"') and matchStr.endswith('"'):
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
-                return matchStr.lower() in content
+                matchStrLower = matchStr.lower()
+                contentWithoutTags = content.replace('#' + matchStrLower, '')
+                return matchStrLower in contentWithoutTags
             elif isinstance(tree[1], list):
                 matchStr = tree[1][0]
                 if matchStr.startswith('"') and matchStr.endswith('"'):
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
-                return matchStr.lower() in content
+                matchStrLower = matchStr.lower()
+                contentWithoutTags = content.replace('#' + matchStrLower, '')
+                return matchStrLower in contentWithoutTags
     elif tree[0] == 'from':
         if len(tree) == 2:
             if isinstance(tree[1], str):
