@@ -6503,7 +6503,7 @@ def htmlTimeline(defaultTimeline: str,
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
     tlStr += '<img class="timeline-banner" src="' + \
-        usersPath + '/banner.png" />\n'
+        usersPath + '/banner.png" /></a>\n'
 
     if fullWidthTimelineButtonHeader:
         tlStr += \
