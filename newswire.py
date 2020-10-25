@@ -12,6 +12,7 @@ from socket import error as SocketError
 import errno
 from datetime import datetime
 from collections import OrderedDict
+from utils import isPublicPost
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
@@ -390,7 +391,7 @@ def isaBlogPost(postJsonObject: {}) -> bool:
     if postJsonObject['object'].get('summary') and \
        postJsonObject['object'].get('url') and \
        postJsonObject['object'].get('published'):
-        return True
+        return isPublicPost(postJsonObject)
     return False
 
 
