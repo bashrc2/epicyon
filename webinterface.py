@@ -6415,8 +6415,8 @@ def htmlTimeline(defaultTimeline: str,
         else:
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newdm">' + \
-                '<button class="button"><span>+' + \
-                ' </span></button></a>\n'
+                '<button class="button"><span>' + \
+                translate['Post'] + ' </span></button></a>\n'
     elif boxName == 'tlblogs' or boxName == 'tlnews':
         if not iconsAsButtons:
             newPostButtonStr = \
@@ -6429,8 +6429,8 @@ def htmlTimeline(defaultTimeline: str,
         else:
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newblog">' + \
-                '<button class="button"><span>+' + \
-                ' </span></button></a>\n'
+                '<button class="button"><span>' + \
+                translate['Post'] + ' </span></button></a>\n'
     elif boxName == 'tlevents':
         if not iconsAsButtons:
             newPostButtonStr = \
@@ -6443,8 +6443,8 @@ def htmlTimeline(defaultTimeline: str,
         else:
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newevent">' + \
-                '<button class="button"><span>+' + \
-                ' </span></button></a>\n'
+                '<button class="button"><span>' + \
+                translate['Post'] + ' </span></button></a>\n'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
@@ -6458,8 +6458,8 @@ def htmlTimeline(defaultTimeline: str,
             else:
                 newPostButtonStr = \
                     '<a href="' + usersPath + '/newpost">' + \
-                    '<button class="button"><span>+' + \
-                    ' </span></button></a>\n'
+                    '<button class="button"><span>' + \
+                    translate['Post'] + ' </span></button></a>\n'
         else:
             if not iconsAsButtons:
                 newPostButtonStr = \
@@ -6472,8 +6472,8 @@ def htmlTimeline(defaultTimeline: str,
             else:
                 newPostButtonStr = \
                     '<a href="' + usersPath + '/newfollowers">' + \
-                    '<button class="button"><span>+' + \
-                    ' </span></button></a>\n'
+                    '<button class="button"><span>' + \
+                    translate['Post'] + ' </span></button></a>\n'
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
