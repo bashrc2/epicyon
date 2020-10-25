@@ -2313,7 +2313,7 @@ def testHashtagRuleTree():
 
 def testGetNewswireTags():
     print('testGetNewswireTags')
-    rssDescription='<img src="https://somesite/someimage.jpg" ' + \
+    rssDescription = '<img src="https://somesite/someimage.jpg" ' + \
         'class="misc-stuff" alt="#ExcitingHashtag" ' + \
         'srcset="https://somesite/someimage.jpg" ' + \
         'sizes="(max-width: 864px) 100vw, 864px" />' + \
