@@ -379,7 +379,7 @@ def getRSSfromDict(baseDir: str, newswire: {},
     return rssStr
 
 
-def isaBlogPost(postJsonObject: {}) -> bool:
+def isNewswireBlogPost(postJsonObject: {}) -> bool:
     """Is the given object a blog post?
     """
     if not postJsonObject:
@@ -471,7 +471,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 postJsonObject = None
                 if fullPostFilename:
                     postJsonObject = loadJson(fullPostFilename)
-                if isaBlogPost(postJsonObject):
+                if isNewswireBlogPost(postJsonObject):
                     published = postJsonObject['object']['published']
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
