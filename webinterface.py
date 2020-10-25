@@ -6142,7 +6142,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     else:
         tlStr += \
             '        <a href="' + usersPath + '/newswiremobile' + \
-            '"><button class="button">' + \
+            '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
             '</span></button></a>\n'
 
@@ -6158,7 +6158,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     else:
         tlStr += \
             '        <a href="' + usersPath + '/linksmobile' + \
-            '"><button class="button">' + \
+            '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
             '</span></button></a>\n'
 
@@ -6404,47 +6404,76 @@ def htmlTimeline(defaultTimeline: str,
 
     # what screen to go to when a new post is created
     if boxName == 'dm':
-        newPostButtonStr = \
-            '      <a class="imageAnchor" href="' + usersPath + \
-            '/newdm"><img loading="lazy" src="/' + \
-            iconsDir + '/newpost.png" title="' + \
-            translate['Create a new DM'] + \
-            '" alt="| ' + translate['Create a new DM'] + \
-            '" class="timelineicon"/></a>\n'
+        if not iconsAsButtons:
+            newPostButtonStr = \
+                '      <a class="imageAnchor" href="' + usersPath + \
+                '/newdm"><img loading="lazy" src="/' + \
+                iconsDir + '/newpost.png" title="' + \
+                translate['Create a new DM'] + \
+                '" alt="| ' + translate['Create a new DM'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr = \
+                '<a href="' + usersPath + '/newdm">' + \
+                '<button class="button"><span>+' + \
+                ' </span></button></a>\n'
     elif boxName == 'tlblogs' or boxName == 'tlnews':
-        newPostButtonStr = \
-            '        <a class="imageAnchor" href="' + usersPath + \
-            '/newblog"><img loading="lazy" src="/' + \
-            iconsDir + '/newpost.png" title="' + \
-            translate['Create a new post'] + '" alt="| ' + \
-            translate['Create a new post'] + \
-            '" class="timelineicon"/></a>\n'
-    elif boxName == 'tlevents':
-        newPostButtonStr = \
-            '        <a class="imageAnchor" href="' + usersPath + \
-            '/newevent"><img loading="lazy" src="/' + \
-            iconsDir + '/newpost.png" title="' + \
-            translate['Create a new event'] + '" alt="| ' + \
-            translate['Create a new event'] + \
-            '" class="timelineicon"/></a>\n'
-    else:
-        if not manuallyApproveFollowers:
+        if not iconsAsButtons:
             newPostButtonStr = \
                 '        <a class="imageAnchor" href="' + usersPath + \
-                '/newpost"><img loading="lazy" src="/' + \
+                '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr = \
+                '<a href="' + usersPath + '/newblog">' + \
+                '<button class="button"><span>+' + \
+                ' </span></button></a>\n'
+    elif boxName == 'tlevents':
+        if not iconsAsButtons:
+            newPostButtonStr = \
                 '        <a class="imageAnchor" href="' + usersPath + \
-                '/newfollowers"><img loading="lazy" src="/' + \
+                '/newevent"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
-                translate['Create a new post'] + \
-                '" alt="| ' + translate['Create a new post'] + \
+                translate['Create a new event'] + '" alt="| ' + \
+                translate['Create a new event'] + \
                 '" class="timelineicon"/></a>\n'
-
+        else:
+            newPostButtonStr = \
+                '<a href="' + usersPath + '/newevent">' + \
+                '<button class="button"><span>+' + \
+                ' </span></button></a>\n'
+    else:
+        if not manuallyApproveFollowers:
+            if not iconsAsButtons:
+                newPostButtonStr = \
+                    '        <a class="imageAnchor" href="' + usersPath + \
+                    '/newpost"><img loading="lazy" src="/' + \
+                    iconsDir + '/newpost.png" title="' + \
+                    translate['Create a new post'] + '" alt="| ' + \
+                    translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr = \
+                    '<a href="' + usersPath + '/newpost">' + \
+                    '<button class="button"><span>+' + \
+                    ' </span></button></a>\n'
+        else:
+            if not iconsAsButtons:
+                newPostButtonStr = \
+                    '        <a class="imageAnchor" href="' + usersPath + \
+                    '/newfollowers"><img loading="lazy" src="/' + \
+                    iconsDir + '/newpost.png" title="' + \
+                    translate['Create a new post'] + \
+                    '" alt="| ' + translate['Create a new post'] + \
+                    '" class="timelineicon"/></a>\n'
+            else:
+                newPostButtonStr = \
+                    '<a href="' + usersPath + '/newfollowers">' + \
+                    '<button class="button"><span>+' + \
+                    ' </span></button></a>\n'
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \

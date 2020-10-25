@@ -1276,6 +1276,9 @@ aside .toggle-inside li {
         cursor: pointer;
         margin: 5px;
     }
+    .buttonMobile {
+        display: none;
+    }
     .button {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
@@ -1878,6 +1881,24 @@ aside .toggle-inside li {
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
+    }
+    .buttonMobile {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .button {
         border-radius: var(--button-corner-radius);
