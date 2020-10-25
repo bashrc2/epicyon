@@ -3482,6 +3482,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.fullWidthTimelineButtonHeader = \
                             getConfigParam(self.server.baseDir,
                                            'fullWidthTimelineButtonHeader')
+                        self.server.iconsAsButtons = \
+                            getConfigParam(self.server.baseDir,
+                                           'iconsAsButtons')
                         setNewsAvatar(baseDir,
                                       fields['themeDropdown'],
                                       httpPrefix,
@@ -3833,6 +3836,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     getConfigParam(self.server.baseDir,
                                                    'fullWidthTimeline' +
                                                    'ButtonHeader')
+                                self.server.iconsAsButtons = \
+                                    getConfigParam(self.server.baseDir,
+                                                   'iconsAsButtons')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
