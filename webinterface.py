@@ -3508,9 +3508,9 @@ def htmlProfile(defaultTimeline: str,
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \
         linkToTimelineEnd + donateSection
-    profileStr += '<div class="container" id="buttonheader">\n'
-    profileStr += '  <center>'
     if not isSystemAccount(nickname):
+        profileStr += '<div class="container" id="buttonheader">\n'
+        profileStr += '  <center>'
         profileStr += \
             '    <a href="' + usersPath + '#buttonheader"><button class="' + \
             postsButton + '"><span>' + translate['Posts'] + \
@@ -3536,9 +3536,9 @@ def htmlProfile(defaultTimeline: str,
             '    <a href="' + usersPath + '/shares#buttonheader">' + \
             '<button class="' + sharesButton + '"><span>' + \
             translate['Shares'] + ' </span></button></a>'
-    profileStr += logoutStr + editProfileStr
-    profileStr += '  </center>'
-    profileStr += '</div>'
+        profileStr += logoutStr + editProfileStr
+        profileStr += '  </center>'
+        profileStr += '</div>'
 
     profileStr += followApprovalsSection
 
