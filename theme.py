@@ -321,6 +321,7 @@ def setThemeIndymediaClassic(baseDir: str):
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#003366",
         "border-width": "0",
+        "border-width-header": "0",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
@@ -481,6 +482,7 @@ def setThemeStarlight(baseDir: str):
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#69282c",
         "border-width": "3px",
+        "border-width-header": "3px",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
@@ -548,6 +550,7 @@ def setThemeHenge(baseDir: str):
         "main-bg-color-dm": "#343335",
         "border-color": "#222",
         "border-width": "5px",
+        "border-width-header": "5px",
         "main-bg-color-reply": "#383335",
         "main-bg-color-report": "#383335",
         "hashtag-vertical-spacing3": "100px",
@@ -599,6 +602,7 @@ def setThemeZen(baseDir: str):
         "day-number2": "#5c4e41",
         "border-color": "#463b35",
         "border-width": "7px",
+        "border-width-header": "7px",
         "main-link-color": "#dddddd",
         "main-link-color-hover": "white",
         "title-color": "#dddddd",
@@ -669,6 +673,7 @@ def setThemeLCD(baseDir: str):
         "main-fg-color": "#33390d",
         "border-color": "#33390d",
         "border-width": "5px",
+        "border-width-header": "5px",
         "main-link-color": "#9fb42b",
         "main-link-color-hover": "#cfb42b",
         "title-color": "#9fb42b",
@@ -916,6 +921,7 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     themeParams = {
+        "border-width-header": "0px",
         "tab-border-width": "3px",
         "tab-border-color": "grey",
         "button-corner-radius": "0px",

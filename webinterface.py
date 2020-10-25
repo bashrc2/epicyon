@@ -5949,7 +5949,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     buttons for inbox, outbox, search, calendar, etc
     """
     # start of the button header with inbox, outbox, etc
-    tlStr = '    <div class="container">\n'
+    tlStr = '    <div class="containerHeader">\n'
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \

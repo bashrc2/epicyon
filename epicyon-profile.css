@@ -21,6 +21,7 @@
     --main-visited-color: #888;
     --border-color: #505050;
     --border-width: 2px;
+    --border-width-header: 2px;
     --font-size-header: 18px;
     --font-size-header-mobile: 32px;
     --font-color-header: #ccc;
@@ -366,6 +367,14 @@ a:focus {
 
 .container {
     border: var(--border-width) solid var(--border-color);
+    background-color: var(--main-bg-color);
+    border-radius: var(--timeline-border-radius);
+    padding: 20px;
+    margin: 10px;
+}
+
+.containerHeader {
+    border: var(--border-width-header) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
     padding: 20px;
