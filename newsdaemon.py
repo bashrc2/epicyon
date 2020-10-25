@@ -90,16 +90,12 @@ def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
                                               content, url)
     elif tree[0] == 'contains':
         if len(tree) == 2:
+            matchStr = None
             if isinstance(tree[1], str):
                 matchStr = tree[1]
-                if matchStr.startswith('"') and matchStr.endswith('"'):
-                    matchStr = matchStr[1:]
-                    matchStr = matchStr[:len(matchStr) - 1]
-                matchStrLower = matchStr.lower()
-                contentWithoutTags = content.replace('#' + matchStrLower, '')
-                return matchStrLower in contentWithoutTags
             elif isinstance(tree[1], list):
                 matchStr = tree[1][0]
+            if matchStr:
                 if matchStr.startswith('"') and matchStr.endswith('"'):
                     matchStr = matchStr[1:]
                     matchStr = matchStr[:len(matchStr) - 1]
