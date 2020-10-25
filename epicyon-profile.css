@@ -101,6 +101,7 @@
     --hashtag-fg-color: white;
     --tab-border-width: 0px;
     --tab-border-color: grey;
+    --icon-brightness-change: 150%;
 }
 
 @font-face {
@@ -302,7 +303,11 @@ a:focus {
 }
 
 .container img.timelineicon:hover {
-    filter: brightness(150%);
+    filter: brightness(var(--icon-brightness-change));
+}
+
+.containerHeader img.timelineicon:hover {
+    filter: brightness(var(--icon-brightness-change));
 }
 
 .buttonunfollow:hover {
@@ -505,6 +510,13 @@ a:focus {
     padding-bottom: 3%;
 }
 .container img.right {
+    float: var(--icons-side);
+    margin-left: 0px;
+    margin-right:0;
+    padding: 0 0;
+    margin: 0 0;
+}
+.containerHeader img.right {
     float: var(--icons-side);
     margin-left: 0px;
     margin-right:0;
@@ -1182,6 +1194,14 @@ aside .toggle-inside li {
         margin-right: 20px;
         border-radius: var(--image-corners);
     }
+    .containerHeader img {
+        float: left;
+        max-width: 400px;
+        width: 5%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: var(--image-corners);
+    }
     .container img.emojisearch {
         width: 15%;
         float: right;
@@ -1194,6 +1214,14 @@ aside .toggle-inside li {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
+        float: var(--icons-side);
+        margin-left: 0px;
+        margin-right:0;
+        padding: 0 0;
+        margin: 0 0;
+        width: 50px;
+    }
+    .containerHeader img.timelineicon {
         float: var(--icons-side);
         margin-left: 0px;
         margin-right:0;
@@ -1769,6 +1797,14 @@ aside .toggle-inside li {
         margin-right: 20px;
         border-radius: var(--image-corners);
     }
+    .containerHeader img {
+        float: left;
+        max-width: 400px;
+        width: 15%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: var(--image-corners);
+    }
     .container img.emojisearch {
         width: 25%;
         float: right;
@@ -1781,6 +1817,14 @@ aside .toggle-inside li {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
+        float: var(--icons-side);
+        margin-left: 0px;
+        margin-right:0;
+        padding: 0 0;
+        margin: 0 0;
+        width: 100px;
+    }
+    .containerHeader img.timelineicon {
         float: var(--icons-side);
         margin-left: 0px;
         margin-right:0;
