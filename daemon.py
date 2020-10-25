@@ -4492,7 +4492,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         optionsStr = path.split('?options=')[1]
         originPathStr = path.split('?options=')[0]
-        if ';' in optionsStr and '/users/news/' not in self.path:
+        if ';' in optionsStr and '/users/news/' not in path:
             pageNumber = 1
             optionsList = optionsStr.split(';')
             optionsActor = optionsList[0]
