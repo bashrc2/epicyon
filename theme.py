@@ -909,6 +909,9 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     themeParams = {
+        "tab-border-width": "3px",
+        "tab-border-color": "grey",
+        "button-corner-radius": "0px",
         "login-button-color": "#25408f",
         "login-button-fg-color": "white",
         "column-left-width": "10vw",
@@ -919,7 +922,6 @@ def setThemeIndymediaModern(baseDir: str):
         "newswire-item-moderated-color": "red",
         "newswire-date-moderated-color": "red",
         "newswire-date-color": "grey",
-        "button-corner-radius": "7px",
         "timeline-border-radius": "0px",
         "button-background": "#767674",
         "button-background-hover": "#567674",

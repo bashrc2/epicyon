@@ -97,6 +97,8 @@
     --button-event-fg-color: white;
     --hashtag-background-color: black;
     --hashtag-fg-color: white;
+    --tab-border-width: 0px;
+    --tab-border-color: grey;	
 }
 
 @font-face {
@@ -1239,18 +1241,19 @@ aside .toggle-inside li {
     .button {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
-        border: none;
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding);
         width: 10%;
-        max-width: 200px;
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
+	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-left: var(--tab-border-width) solid var(--tab-border-color);	
+	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1287,18 +1290,19 @@ aside .toggle-inside li {
     .buttonselected {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-selected);
-        border: none;
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-header);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding);
         width: 10%;
-        max-width: 100px;
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
+	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-left: var(--tab-border-width) solid var(--tab-border-color);	
+	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1822,18 +1826,19 @@ aside .toggle-inside li {
     .button {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
-        border: none;
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
         width: 20%;
-        max-width: 400px;
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
+	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-left: var(--tab-border-width) solid var(--tab-border-color);	
+	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1870,18 +1875,19 @@ aside .toggle-inside li {
     .buttonselected {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-selected);
-        border: none;
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
         width: 20%;
-        max-width: 400px;
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
+	border-top: var(--tab-border-width) solid var(--tab-border-color);	
+	border-left: var(--tab-border-width) solid var(--tab-border-color);	
+	border-right: var(--tab-border-width) solid var(--tab-border-color);	
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
