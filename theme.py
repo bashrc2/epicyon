@@ -949,6 +949,8 @@ def setThemeIndymediaModern(baseDir: str):
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
+        "container-button-padding": "0px",
+        "container-button-margin": "0px",
         "column-right-icon-size": "11%",
         "button-height-padding": "5px",
         "icon-brightness-change": "70%",

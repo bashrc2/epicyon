@@ -102,6 +102,8 @@
     --tab-border-width: 0px;
     --tab-border-color: grey;
     --icon-brightness-change: 150%;
+    --container-button-padding: 20px;
+    --container-button-margin: 10px;
 }
 
 @font-face {
@@ -382,8 +384,8 @@ a:focus {
     border: var(--border-width-header) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
-    padding: 20px;
-    margin: 10px;
+    padding: var(--container-button-padding);
+    margin: var(--container-button-margin);
 }
 
 .media {
@@ -1291,7 +1293,6 @@ aside .toggle-inside li {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 5px;
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
@@ -1341,7 +1342,6 @@ aside .toggle-inside li {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 5px;
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
@@ -1912,7 +1912,7 @@ aside .toggle-inside li {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 15px;
+        margin: 5px;
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
@@ -1962,7 +1962,7 @@ aside .toggle-inside li {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 15px;
+        margin: 5px;
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
