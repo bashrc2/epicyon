@@ -84,6 +84,7 @@ from jsonldsig import testSignJsonld
 from jsonldsig import jsonldVerify
 from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
+from newswire import getNewswireTags
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -2310,8 +2311,18 @@ def testHashtagRuleTree():
     assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
 
 
+def testGetNewswireTags():
+    print('testGetNewswireTags')
+    rssDescription='<img src="https://somesite/someimage.jpg" class="misc-stuff" alt="#ExcitingHashtag" srcset="https://somesite/someimage.jpg" sizes="(max-width: 864px) 100vw, 864px" />Compelling description with #ExcitingHashtag, which is being posted in #BoringForum'
+    tags = getNewswireTags(rssDescription, 10)
+    assert len(tags) == 2
+    assert '#BoringForum' in tags
+    assert '#ExcitingHashtag' in tags
+
+
 def runAllTests():
     print('Running tests...')
+    testGetNewswireTags()
     testHashtagRuleTree()
     testRemoveHtmlTag()
     testReplaceEmailQuote()
