@@ -4546,6 +4546,11 @@ class PubServer(BaseHTTPRequestHandler):
                                       'registered devices done',
                                       'person options')
             return
+
+        if '/users/news/' in path:
+            self._redirect_headers('/', cookie, callingDomain)
+            return
+
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStrAbsolute = \
                 'http://' + onionDomain + originPathStr
