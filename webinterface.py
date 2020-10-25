@@ -3463,7 +3463,7 @@ def htmlProfile(defaultTimeline: str,
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
         profileHeaderStr = \
-            '<img class="timeline-banner" src="banner.png" />\n'
+            '<img class="timeline-banner" src="/users/news/banner.png" />\n'
         profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
         profileHeaderStr += '<table class="timeline">\n'
