@@ -95,6 +95,7 @@
     --button-event-background-color: green;
     --button-event-fg-color: white;
     --hashtag-background-color: black;
+    --hashtag-fg-color: white;
 }
 
 @font-face {
@@ -377,10 +378,12 @@ a:focus {
 
 .addedHashtag:link {
     background-color: var(--hashtag-background-color);
+    color: var(--hashtag-fg-color);
 }
 
 .addedHashtag:visited {
     background-color: var(--hashtag-background-color);
+    color: var(--hashtag-fg-color);
 }
 
 .message:focus{
