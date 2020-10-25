@@ -98,7 +98,7 @@
     --hashtag-background-color: black;
     --hashtag-fg-color: white;
     --tab-border-width: 0px;
-    --tab-border-color: grey;	
+    --tab-border-color: grey;
 }
 
 @font-face {
@@ -976,12 +976,12 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     h3.linksHeader {
-	background-color: var(--column-left-header-background);
-	color: var(--column-left-header-color);
-	font-size: var(--column-left-header-size);
-	text-transform: uppercase;
-	padding: 4px;
-	border: none;
+        background-color: var(--column-left-header-background);
+        color: var(--column-left-header-color);
+        font-size: var(--column-left-header-size);
+        text-transform: uppercase;
+        padding: 4px;
+        border: none;
     }
     .newswireItem {
         font-size: var(--font-size-newswire);
@@ -1251,10 +1251,10 @@ aside .toggle-inside li {
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
-	border-top: var(--tab-border-width) solid var(--tab-border-color);
-	border-bottom: none;
-	border-left: var(--tab-border-width) solid var(--tab-border-color);	
-	border-right: var(--tab-border-width) solid var(--tab-border-color);	
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1301,10 +1301,10 @@ aside .toggle-inside li {
         transition: all 0.5s;
         cursor: pointer;
         margin: 5px;
-	border-top: var(--tab-border-width) solid var(--tab-border-color);	
-	border-bottom: none;
-	border-left: var(--tab-border-width) solid var(--tab-border-color);	
-	border-right: var(--tab-border-width) solid var(--tab-border-color);	
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1589,12 +1589,12 @@ aside .toggle-inside li {
         line-height: var(--line-spacing);
     }
     h3.linksHeader {
-	background-color: var(--column-left-header-background);
-	color: var(--column-left-header-color);
-	font-size: var(--column-left-header-size-mobile);
-	text-transform: uppercase;
-	padding: 4px;
-	border: none;
+        background-color: var(--column-left-header-background);
+        color: var(--column-left-header-color);
+        font-size: var(--column-left-header-size-mobile);
+        text-transform: uppercase;
+        padding: 4px;
+        border: none;
     }
     .leftColEditImage {
         background: var(--main-bg-color);
@@ -1838,10 +1838,10 @@ aside .toggle-inside li {
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
-	border-top: var(--tab-border-width) solid var(--tab-border-color);	
-	border-bottom: none;
-	border-left: var(--tab-border-width) solid var(--tab-border-color);	
-	border-right: var(--tab-border-width) solid var(--tab-border-color);	
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1888,10 +1888,10 @@ aside .toggle-inside li {
         transition: all 0.5s;
         cursor: pointer;
         margin: 15px;
-	border-top: var(--tab-border-width) solid var(--tab-border-color);	
-	border-bottom: none;
-	border-left: var(--tab-border-width) solid var(--tab-border-color);	
-	border-right: var(--tab-border-width) solid var(--tab-border-color);	
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
