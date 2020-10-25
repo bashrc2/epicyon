@@ -47,6 +47,7 @@
     --publish-button-background: #999;
     --button-background: #999;
     --button-background-hover: #777;
+    --button-text-hover: white;
     --button-selected: #666;
     --button-highlighted: green;
     --button-fg-highlighted: #FFFFFF;
@@ -305,6 +306,7 @@ a:focus {
 
 .buttonunfollow:hover {
     background-color: var(--button-background-hover);
+    color: var(--button-text-hover);
 }
 
 .followRequestHandle {
