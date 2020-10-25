@@ -932,7 +932,7 @@ def setThemeIndymediaModern(baseDir: str):
         "timeline-border-radius": "0px",
         "button-background": "#767674",
         "button-background-hover": "#555",
-        "button-text-hover": "black",
+        "button-text-hover": "white",
         "button-selected": "white",
         "button-selected-text": "black",
         "button-text": "white",
