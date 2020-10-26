@@ -3613,7 +3613,7 @@ def htmlProfile(defaultTimeline: str,
                                       iconsDir, False, False,
                                       newswire, False,
                                       False, None, False, False,
-                                      False)
+                                      False, True)
             profileFooterStr += '      </td>\n'
             profileFooterStr += '  </tr>\n'
             profileFooterStr += '  </tbody>\n'
@@ -5711,7 +5711,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
                           showPublishAsIcon: bool,
-                          rssIconAtTop: bool) -> str:
+                          rssIconAtTop: bool,
+                          publishButtonAtTop: bool) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5719,6 +5720,16 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     domain = domainFull
     if ':' in domain:
         domain = domain.split(':')
+
+    publishButtonStr = \
+        '        <a href="' + \
+        '/users/' + nickname + '/newblog" ' + \
+        'title="' + translate['Publish a news article'] + '">' + \
+        '<button class="publishbtn">' + \
+        translate['Publish'] + '</button></a>\n'
+
+    if publishButtonAtTop:
+        htmlStr += '<center>' + publishButtonStr + '</center>'
 
     rightColumnImageFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + \
@@ -5754,14 +5765,9 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
-    if showPublishButton:
+    if showPublishButton and not publishButtonAtTop:
         if not showPublishAsIcon:
-            htmlStr += \
-                '        <a href="' + \
-                '/users/' + nickname + '/newblog" ' + \
-                'title="' + translate['Publish a news article'] + '">' + \
-                '<button class="publishbtn">' + \
-                translate['Publish'] + '</button></a>\n'
+            htmlStr += publishButtonStr
 
     if editor:
         if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
@@ -5900,7 +5906,7 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
                               True, timelinePath, True,
-                              showPublishAsIcon, True)
+                              showPublishAsIcon, True, False)
     htmlStr += htmlFooter()
     return htmlStr
 
@@ -6222,7 +6228,8 @@ def htmlTimeline(defaultTimeline: str,
                  showPublishAsIcon: bool,
                  fullWidthTimelineButtonHeader: bool,
                  iconsAsButtons: bool,
-                 rssIconAtTop: bool) -> str:
+                 rssIconAtTop: bool,
+                 publishButtonAtTop: bool) -> str:
     """Show the timeline as html
     """
     timelineStartTime = time.time()
@@ -6747,7 +6754,7 @@ def htmlTimeline(defaultTimeline: str,
                                            newswire, positiveVoting,
                                            False, None, True,
                                            showPublishAsIcon,
-                                           rssIconAtTop)
+                                           rssIconAtTop, publishButtonAtTop)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
@@ -6794,7 +6801,8 @@ def htmlShares(defaultTimeline: str,
                showPublishAsIcon: bool,
                fullWidthTimelineButtonHeader: bool,
                iconsAsButtons: bool,
-               rssIconAtTop: bool) -> str:
+               rssIconAtTop: bool,
+               publishButtonAtTop: bool) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -6811,7 +6819,7 @@ def htmlShares(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlInbox(defaultTimeline: str,
@@ -6827,7 +6835,8 @@ def htmlInbox(defaultTimeline: str,
               showPublishAsIcon: bool,
               fullWidthTimelineButtonHeader: bool,
               iconsAsButtons: bool,
-              rssIconAtTop: bool) -> str:
+              rssIconAtTop: bool,
+              publishButtonAtTop: bool) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -6844,7 +6853,7 @@ def htmlInbox(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlBookmarks(defaultTimeline: str,
@@ -6860,7 +6869,8 @@ def htmlBookmarks(defaultTimeline: str,
                   showPublishAsIcon: bool,
                   fullWidthTimelineButtonHeader: bool,
                   iconsAsButtons: bool,
-                  rssIconAtTop: bool) -> str:
+                  rssIconAtTop: bool,
+                  publishButtonAtTop: bool) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -6877,7 +6887,7 @@ def htmlBookmarks(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlEvents(defaultTimeline: str,
@@ -6893,7 +6903,8 @@ def htmlEvents(defaultTimeline: str,
                showPublishAsIcon: bool,
                fullWidthTimelineButtonHeader: bool,
                iconsAsButtons: bool,
-               rssIconAtTop: bool) -> str:
+               rssIconAtTop: bool,
+               publishButtonAtTop: bool) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -6910,7 +6921,7 @@ def htmlEvents(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlInboxDMs(defaultTimeline: str,
@@ -6926,7 +6937,8 @@ def htmlInboxDMs(defaultTimeline: str,
                  showPublishAsIcon: bool,
                  fullWidthTimelineButtonHeader: bool,
                  iconsAsButtons: bool,
-                 rssIconAtTop: bool) -> str:
+                 rssIconAtTop: bool,
+                 publishButtonAtTop: bool) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6938,7 +6950,7 @@ def htmlInboxDMs(defaultTimeline: str,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -6954,7 +6966,8 @@ def htmlInboxReplies(defaultTimeline: str,
                      showPublishAsIcon: bool,
                      fullWidthTimelineButtonHeader: bool,
                      iconsAsButtons: bool,
-                     rssIconAtTop: bool) -> str:
+                     rssIconAtTop: bool,
+                     publishButtonAtTop: bool) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6967,7 +6980,7 @@ def htmlInboxReplies(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlInboxMedia(defaultTimeline: str,
@@ -6983,7 +6996,8 @@ def htmlInboxMedia(defaultTimeline: str,
                    showPublishAsIcon: bool,
                    fullWidthTimelineButtonHeader: bool,
                    iconsAsButtons: bool,
-                   rssIconAtTop: bool) -> str:
+                   rssIconAtTop: bool,
+                   publishButtonAtTop: bool) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -6996,7 +7010,7 @@ def htmlInboxMedia(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlInboxBlogs(defaultTimeline: str,
@@ -7012,7 +7026,8 @@ def htmlInboxBlogs(defaultTimeline: str,
                    showPublishAsIcon: bool,
                    fullWidthTimelineButtonHeader: bool,
                    iconsAsButtons: bool,
-                   rssIconAtTop: bool) -> str:
+                   rssIconAtTop: bool,
+                   publishButtonAtTop: bool) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -7025,7 +7040,7 @@ def htmlInboxBlogs(defaultTimeline: str,
                         newswire, False, False,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlInboxNews(defaultTimeline: str,
@@ -7041,7 +7056,8 @@ def htmlInboxNews(defaultTimeline: str,
                   positiveVoting: bool, showPublishAsIcon: bool,
                   fullWidthTimelineButtonHeader: bool,
                   iconsAsButtons: bool,
-                  rssIconAtTop: bool) -> str:
+                  rssIconAtTop: bool,
+                  publishButtonAtTop: bool) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -7054,7 +7070,7 @@ def htmlInboxNews(defaultTimeline: str,
                         newswire, moderator, editor,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlModeration(defaultTimeline: str,
@@ -7070,7 +7086,8 @@ def htmlModeration(defaultTimeline: str,
                    showPublishAsIcon: bool,
                    fullWidthTimelineButtonHeader: bool,
                    iconsAsButtons: bool,
-                   rssIconAtTop: bool) -> str:
+                   rssIconAtTop: bool,
+                   publishButtonAtTop: bool) -> str:
     """Show the moderation feed as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
@@ -7081,7 +7098,7 @@ def htmlModeration(defaultTimeline: str,
                         YTReplacementDomain, showPublishedDateOnly,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -7097,7 +7114,8 @@ def htmlOutbox(defaultTimeline: str,
                showPublishAsIcon: bool,
                fullWidthTimelineButtonHeader: bool,
                iconsAsButtons: bool,
-               rssIconAtTop: bool) -> str:
+               rssIconAtTop: bool,
+               publishButtonAtTop: bool) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -7111,7 +7129,7 @@ def htmlOutbox(defaultTimeline: str,
                         YTReplacementDomain, showPublishedDateOnly,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop)
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,

@@ -3488,6 +3488,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.rssIconAtTop = \
                             getConfigParam(self.server.baseDir,
                                            'rssIconAtTop')
+                        self.server.publishButtonAtTop = \
+                            getConfigParam(self.server.baseDir,
+                                           'publishButtonAtTop')
                         setNewsAvatar(baseDir,
                                       fields['themeDropdown'],
                                       httpPrefix,
@@ -3845,6 +3848,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.rssIconAtTop = \
                                     getConfigParam(self.server.baseDir,
                                                    'rssIconAtTop')
+                                self.server.publishButtonAtTop = \
+                                    getConfigParam(self.server.baseDir,
+                                                   'publishButtonAtTop')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
@@ -6482,7 +6488,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.showPublishAsIcon,
                                         fullWidthTimelineButtonHeader,
                                         self.server.iconsAsButtons,
-                                        self.server.rssIconAtTop)
+                                        self.server.rssIconAtTop,
+                                        self.server.publishButtonAtTop)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6602,7 +6609,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.showPublishAsIcon,
                                          fullWidthTimelineButtonHeader,
                                          self.server.iconsAsButtons,
-                                         self.server.rssIconAtTop)
+                                         self.server.rssIconAtTop,
+                                         self.server.publishButtonAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6715,7 +6723,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.showPublishAsIcon,
                                          fullWidthTimelineButtonHeader,
                                          self.server.iconsAsButtons,
-                                         self.server.rssIconAtTop)
+                                         self.server.rssIconAtTop,
+                                         self.server.publishButtonAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6828,7 +6837,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
-                                       self.server.rssIconAtTop)
+                                       self.server.rssIconAtTop,
+                                       self.server.publishButtonAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6941,7 +6951,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
-                                       self.server.rssIconAtTop)
+                                       self.server.rssIconAtTop,
+                                       self.server.publishButtonAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7063,7 +7074,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.showPublishAsIcon,
                                       fullWidthTimelineButtonHeader,
                                       self.server.iconsAsButtons,
-                                      self.server.rssIconAtTop)
+                                      self.server.rssIconAtTop,
+                                      self.server.publishButtonAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7144,7 +7156,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.showPublishAsIcon,
                                    self.server.fullWidthTimelineButtonHeader,
                                    self.server.iconsAsButtons,
-                                   self.server.rssIconAtTop)
+                                   self.server.rssIconAtTop,
+                                   self.server.publishButtonAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7241,7 +7254,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.showPublishAsIcon,
                                           fullWidthTimelineButtonHeader,
                                           self.server.iconsAsButtons,
-                                          self.server.rssIconAtTop)
+                                          self.server.rssIconAtTop,
+                                          self.server.publishButtonAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7357,7 +7371,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
-                                       self.server.rssIconAtTop)
+                                       self.server.rssIconAtTop,
+                                       self.server.publishButtonAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7465,7 +7480,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.showPublishAsIcon,
                                fullWidthTimelineButtonHeader,
                                self.server.iconsAsButtons,
-                               self.server.rssIconAtTop)
+                               self.server.rssIconAtTop,
+                               self.server.publishButtonAtTop)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7563,7 +7579,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.showPublishAsIcon,
                                            fullWidthTimelineButtonHeader,
                                            self.server.iconsAsButtons,
-                                           self.server.rssIconAtTop)
+                                           self.server.rssIconAtTop,
+                                           self.server.publishButtonAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -12079,7 +12096,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(rssIconAtTop: bool,
+def runDaemon(publishButtonAtTop: bool,
+              rssIconAtTop: bool,
               iconsAsButtons: bool,
               fullWidthTimelineButtonHeader: bool,
               showPublishAsIcon: bool,
@@ -12251,6 +12269,10 @@ def runDaemon(rssIconAtTop: bool,
 
     # whether to show the RSS icon at the top or the bottom of the timeline
     httpd.rssIconAtTop = rssIconAtTop
+
+    # Whether to show the newswire publish button at the top,
+    # above the header image
+    httpd.publishButtonAtTop = publishButtonAtTop
 
     if registration == 'open':
         httpd.registration = True
