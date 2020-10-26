@@ -5807,7 +5807,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                             positiveVoting, iconsDir)
 
     if not rssIconAtTop:
-        htmlStr += rssIconStr
+        htmlStr += '<br>' + rssIconStr
     return htmlStr
 
 
