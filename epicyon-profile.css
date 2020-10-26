@@ -993,6 +993,10 @@ aside .toggle-inside li {
     display: none;
 }
 
+div {
+    overflow: auto;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         background-color: var(--main-bg-color);
