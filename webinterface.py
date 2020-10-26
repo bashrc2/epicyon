@@ -6118,7 +6118,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
         calendarAltText = '*' + calendarAltText + '*'
     if not iconsAsButtons:
         tlStr += \
-            '        <a class="imageAnchor" href="' + \
+            '      <a class="imageAnchor" href="' + \
             usersPath + calendarPath + \
             '"><img loading="lazy" src="/' + iconsDir + '/' + \
             calendarImage + '" title="' + translate['Calendar'] + \
@@ -6126,7 +6126,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '        <a href="' + usersPath + calendarPath + \
+            '      <a href="' + usersPath + calendarPath + \
             '"><button class="button">' + \
             '<span>' + translate['Calendar'] + \
             '</span></button></a>\n'
@@ -6134,7 +6134,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     # the show/hide button, for a simpler header appearance
     if not iconsAsButtons:
         tlStr += \
-            '        <a class="imageAnchor" href="' + \
+            '      <a class="imageAnchor" href="' + \
             usersPath + '/minimal' + \
             '"><img loading="lazy" src="/' + iconsDir + \
             '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
@@ -6142,7 +6142,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '        <a href="' + usersPath + '/minimal' + \
+            '      <a href="' + usersPath + '/minimal' + \
             '"><button class="button">' + \
             '<span>' + translate['Expand'] + \
             '</span></button></a>\n'
