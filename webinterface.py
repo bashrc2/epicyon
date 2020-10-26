@@ -6131,7 +6131,8 @@ def getTimelineButtonHeader(defaultTimeline: str,
                 '/search"><img loading="lazy" src="/' + \
                 iconsDir + '/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
-                translate['Search and follow'] + '" class="timelineicon"/></a>\n'
+                translate['Search and follow'] + \
+                '" class="timelineicon"/></a>\n'
         else:
             tlStr += \
                 '      <a href="' + usersPath + \
