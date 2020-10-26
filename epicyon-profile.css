@@ -1884,7 +1884,7 @@ aside .toggle-inside li {
         cursor: pointer;
         margin: 15px;
     }
-    .buttonMobile {
+    .button {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
         color: var(--button-text);
@@ -1902,7 +1902,7 @@ aside .toggle-inside li {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
-    .button {
+    .buttonMobile {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
         color: var(--button-text);

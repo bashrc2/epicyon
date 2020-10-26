@@ -6150,7 +6150,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     # the newswire button to show right column links
     if not iconsAsButtons:
         tlStr += \
-            '        <a class="imageAnchorMobile" href="' + \
+            '      <a class="imageAnchorMobile" href="' + \
             usersPath + '/newswiremobile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
             '/newswire.png" title="' + translate['News'] + \
@@ -6158,7 +6158,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '        <a class="buttonMobile" href="' + \
+            '      <a href="' + \
             usersPath + '/newswiremobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
@@ -6167,7 +6167,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     # the links button to show left column links
     if not iconsAsButtons:
         tlStr += \
-            '        <a class="imageAnchorMobile" href="' + \
+            '      <a class="imageAnchorMobile" href="' + \
             usersPath + '/linksmobile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
             '/links.png" title="' + translate['Edit Links'] + \
@@ -6175,7 +6175,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '        <a class="buttonMobile" href="' + \
+            '      <a href="' + \
             usersPath + '/linksmobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
