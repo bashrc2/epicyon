@@ -948,6 +948,8 @@ def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     fontStr = \
         "url('./fonts/NimbusSanL.otf') format('opentype')"
+    fontStrItalic = \
+        "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
         "container-button-padding": "0px",
         "container-button-margin": "0px",
@@ -1023,7 +1025,8 @@ def setThemeIndymediaModern(baseDir: str):
         "title-background": "#ccc",
         "gallery-text-color": "black",
         "*font-family": "'NimbusSanL'",
-        "*src": fontStr
+        "*src": fontStr,
+        "**src": fontStrItalic
     }
     bgParams = {
         "login": "jpg",
