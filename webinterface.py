@@ -5572,6 +5572,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += '      <br>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
+    linksFileContainsEntries = False
     if os.path.isfile(linksFilename):
         linksList = None
         with open(linksFilename, "r") as f:
@@ -5605,6 +5606,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                         htmlStr += \
                             '      <p><a href="' + linkStr + '">' + \
                             lineStr + '</a></p>\n'
+                        linksFileContainsEntries = True
                 else:
                     if lineStr.startswith('#') or lineStr.startswith('*'):
                         lineStr = lineStr[1:].strip()
@@ -5614,8 +5616,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     else:
                         htmlStr += \
                             '      <p>' + lineStr + '</p>\n'
+                    linksFileContainsEntries = True
 
-    if not rssIconAtTop:
+    if linksFileContainsEntries and not rssIconAtTop:
         htmlStr += '<br>' + rssIconStr
     return htmlStr
 
@@ -5808,10 +5811,12 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         htmlStr += '      <br>\n'
 
-    htmlStr += htmlNewswire(newswire, nickname, moderator, translate,
-                            positiveVoting, iconsDir)
+    newswireContentStr = \
+        htmlNewswire(newswire, nickname, moderator, translate,
+                     positiveVoting, iconsDir)
+    htmlStr += newswireContentStr
 
-    if not rssIconAtTop:
+    if newswireContentStr and not rssIconAtTop:
         htmlStr += '<br>' + rssIconStr
     return htmlStr
 
