@@ -947,7 +947,7 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     fontStr = \
-        "url('./fonts/NimbusSanL.otf') format('otf')"
+        "url('./fonts/NimbusSanL.otf') format('opentype')"
     themeParams = {
         "container-button-padding": "0px",
         "container-button-margin": "0px",
