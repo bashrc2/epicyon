@@ -1279,7 +1279,9 @@ aside .toggle-inside li {
         margin: 5px;
     }
     .buttonMobile {
-        display: none;
+        background: transparent;
+        border: none !important;
+        font-size:0;
     }
     .button {
         border-radius: var(--button-corner-radius);
