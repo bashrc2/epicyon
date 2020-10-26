@@ -80,8 +80,10 @@ def setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
     configJson['rssIconAtTop'] = atTop
     return saveJson(configJson, configFilename)
 
+
 def setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
-    """Whether to show the publish button above the title image in the newswire column
+    """Whether to show the publish button above the title image
+    in the newswire column
     """
     configFilename = baseDir + '/config.json'
     if not os.path.isfile(configFilename):
