@@ -6430,6 +6430,7 @@ def htmlTimeline(defaultTimeline: str,
     moderationButtonStr = ''
     if moderator and not minimal:
         moderationButtonStr = \
+            '      ' + \
             '<a href="' + usersPath + \
             '/moderation"><button class="' + \
             moderationButton + '"><span>' + \
@@ -6442,17 +6443,20 @@ def htmlTimeline(defaultTimeline: str,
     eventsButtonStr = ''
     if not minimal:
         sharesButtonStr = \
+            '      ' + \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
             sharesButton + '"><span>' + \
             htmlHighlightLabel(translate['Shares'], newShare) + \
             ' </span></button></a>\n'
 
         bookmarksButtonStr = \
+            '      ' + \
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
             ' </span></button></a>\n'
 
         eventsButtonStr = \
+            '      ' + \
             '<a href="' + usersPath + '/tlevents"><button class="' + \
             eventsButton + '"><span>' + translate['Events'] + \
             ' </span></button></a>\n'
