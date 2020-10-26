@@ -232,6 +232,12 @@ parser.add_argument("--iconsAsButtons",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show header icons as buttons")
+parser.add_argument("--rssIconAtTop",
+                    dest='rssIconAtTop',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Whether to show the rss icon at teh top or bottom" +
+                    "of the timeline")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -2013,6 +2019,11 @@ iconsAsButtons = \
 if iconsAsButtons is not None:
     args.iconsAsButtons = bool(iconsAsButtons)
 
+rssIconAtTop = \
+    getConfigParam(baseDir, 'rssIconAtTop')
+if rssIconAtTop is not None:
+    args.rssIconAtTop = bool(rssIconAtTop)
+
 fullWidthTimelineButtonHeader = \
     getConfigParam(baseDir, 'fullWidthTimelineButtonHeader')
 if fullWidthTimelineButtonHeader is not None:
@@ -2031,7 +2042,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.iconsAsButtons,
+    runDaemon(args.rssIconAtTop,
+              args.iconsAsButtons,
               args.fullWidthTimelineButtonHeader,
               args.showPublishAsIcon,
               args.maxFollowers,

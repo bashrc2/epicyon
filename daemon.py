@@ -6475,7 +6475,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.positiveVoting,
                                         self.server.showPublishAsIcon,
                                         fullWidthTimelineButtonHeader,
-                                        self.server.iconsAsButtons)
+                                        self.server.iconsAsButtons,
+                                        self.server.rssIconAtTop)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6594,7 +6595,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.positiveVoting,
                                          self.server.showPublishAsIcon,
                                          fullWidthTimelineButtonHeader,
-                                         self.server.iconsAsButtons)
+                                         self.server.iconsAsButtons,
+                                         self.server.rssIconAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6706,7 +6708,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.positiveVoting,
                                          self.server.showPublishAsIcon,
                                          fullWidthTimelineButtonHeader,
-                                         self.server.iconsAsButtons)
+                                         self.server.iconsAsButtons,
+                                         self.server.rssIconAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6818,7 +6821,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
-                                       self.server.iconsAsButtons)
+                                       self.server.iconsAsButtons,
+                                       self.server.rssIconAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6930,7 +6934,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
-                                       self.server.iconsAsButtons)
+                                       self.server.iconsAsButtons,
+                                       self.server.rssIconAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7051,7 +7056,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.positiveVoting,
                                       self.server.showPublishAsIcon,
                                       fullWidthTimelineButtonHeader,
-                                      self.server.iconsAsButtons)
+                                      self.server.iconsAsButtons,
+                                      self.server.rssIconAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7131,7 +7137,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.positiveVoting,
                                    self.server.showPublishAsIcon,
                                    self.server.fullWidthTimelineButtonHeader,
-                                   self.server.iconsAsButtons)
+                                   self.server.iconsAsButtons,
+                                   self.server.rssIconAtTop)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7227,7 +7234,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.positiveVoting,
                                           self.server.showPublishAsIcon,
                                           fullWidthTimelineButtonHeader,
-                                          self.server.iconsAsButtons)
+                                          self.server.iconsAsButtons,
+                                          self.server.rssIconAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7342,7 +7350,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.positiveVoting,
                                        self.server.showPublishAsIcon,
                                        fullWidthTimelineButtonHeader,
-                                       self.server.iconsAsButtons)
+                                       self.server.iconsAsButtons,
+                                       self.server.rssIconAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7449,7 +7458,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.positiveVoting,
                                self.server.showPublishAsIcon,
                                fullWidthTimelineButtonHeader,
-                               self.server.iconsAsButtons)
+                               self.server.iconsAsButtons,
+                               self.server.rssIconAtTop)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7546,7 +7556,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.positiveVoting,
                                            self.server.showPublishAsIcon,
                                            fullWidthTimelineButtonHeader,
-                                           self.server.iconsAsButtons)
+                                           self.server.iconsAsButtons,
+                                           self.server.rssIconAtTop)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -12062,7 +12073,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(iconsAsButtons: bool,
+def runDaemon(rssIconAtTop: bool,
+              iconsAsButtons: bool,
               fullWidthTimelineButtonHeader: bool,
               showPublishAsIcon: bool,
               maxFollowers: int,
@@ -12230,6 +12242,9 @@ def runDaemon(iconsAsButtons: bool,
 
     # whether to show icons in the header (eg calendar) as buttons
     httpd.iconsAsButtons = iconsAsButtons
+
+    # whether to show the RSS icon at the top or the bottom of the timeline
+    httpd.rssIconAtTop = rssIconAtTop
 
     if registration == 'open':
         httpd.registration = True

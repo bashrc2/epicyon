@@ -68,6 +68,19 @@ def setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
+def setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
+    """Whether to show RSS icon at the top of the timeline
+    """
+    configFilename = baseDir + '/config.json'
+    if not os.path.isfile(configFilename):
+        return False
+    configJson = loadJson(configFilename, 0)
+    if not configJson:
+        return False
+    configJson['rssIconAtTop'] = atTop
+    return saveJson(configJson, configFilename)
+
+
 def setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
     """Shows the timeline button header containing inbox, outbox,
     calendar, etc as full width
@@ -276,6 +289,7 @@ def setThemeDefault(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -295,6 +309,7 @@ def setThemeIndymediaClassic(baseDir: str):
     setNewswirePublishAsIcon(baseDir, False)
     setFullWidthTimelineButtonHeader(baseDir, True)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -377,6 +392,7 @@ def setThemeBlue(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     themeParams = {
         "newswire-date-color": "blue",
         "font-size-header": "22px",
@@ -417,6 +433,7 @@ def setThemeNight(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
     fontStrItalic = \
@@ -478,6 +495,7 @@ def setThemeStarlight(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
@@ -548,6 +566,7 @@ def setThemeHenge(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     themeParams = {
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
@@ -613,6 +632,7 @@ def setThemeZen(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
     themeParams = {
         "main-bg-color": "#5c4e41",
         "column-left-color": "#5c4e41",
@@ -674,6 +694,7 @@ def setThemeHighVis(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
 
 
 def setThemeLCD(baseDir: str):
@@ -755,6 +776,7 @@ def setThemeLCD(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
 
 
 def setThemePurple(baseDir: str):
@@ -819,6 +841,7 @@ def setThemePurple(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
 
 
 def setThemeHacker(baseDir: str):
@@ -880,6 +903,7 @@ def setThemeHacker(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
 
 
 def setThemeLight(baseDir: str):
@@ -942,6 +966,7 @@ def setThemeLight(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
 
 
 def setThemeIndymediaModern(baseDir: str):
@@ -1038,6 +1063,7 @@ def setThemeIndymediaModern(baseDir: str):
     setNewswirePublishAsIcon(baseDir, False)
     setFullWidthTimelineButtonHeader(baseDir, True)
     setIconsAsButtons(baseDir, True)
+    setRssIconAtTop(baseDir, False)
 
 
 def setThemeSolidaric(baseDir: str):
@@ -1106,6 +1132,7 @@ def setThemeSolidaric(baseDir: str):
     setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, False)
+    setRssIconAtTop(baseDir, True)
 
 
 def setThemeImages(baseDir: str, name: str) -> None:

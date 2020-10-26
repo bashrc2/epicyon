@@ -291,7 +291,8 @@ def createServerAlice(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     print('Server running: Alice')
-    runDaemon(False, False, True, 10, False, 0, 100, 1024, 5, False,
+    runDaemon(True, False, False, True, 10, False,
+              0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
@@ -355,7 +356,8 @@ def createServerBob(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     print('Server running: Bob')
-    runDaemon(False, False, True, 10, False, 0, 100, 1024, 5, False, 0,
+    runDaemon(True, False, False, True, 10, False,
+              0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
@@ -393,7 +395,8 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     onionDomain = None
     i2pDomain = None
     print('Server running: Eve')
-    runDaemon(False, False, True, 10, False, 0, 100, 1024, 5, False, 0,
+    runDaemon(True, False, False, True, 10, False,
+              0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
