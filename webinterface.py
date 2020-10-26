@@ -6034,12 +6034,11 @@ def getTimelineButtonHeader(defaultTimeline: str,
     # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
         if not minimal or defaultTimeline == 'tlnews':
-            if not newsHeader:
-                tlStr += \
-                    '      <a href="' + usersPath + \
-                    '/tlblogs"><button class="' + \
-                    blogsButton + '"><span>' + translate['Blogs'] + \
-                    '</span></button></a>\n'
+            tlStr += \
+                '      <a href="' + usersPath + \
+                '/tlblogs"><button class="' + \
+                blogsButton + '"><span>' + translate['Blogs'] + \
+                '</span></button></a>\n'
     else:
         if not minimal:
             tlStr += \
