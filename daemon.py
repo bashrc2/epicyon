@@ -9505,8 +9505,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
                 self._setMinimal(nickname, not self._isMinimal(nickname))
                 if not (self.server.mediaInstance or
-                        self.server.blogsInstance or
-                        self.server.newsInstance):
+                        self.server.blogsInstance):
                     self.path = '/users/' + nickname + '/inbox'
                 else:
                     if self.server.blogsInstance:
