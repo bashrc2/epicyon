@@ -27,6 +27,7 @@
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
     --font-size-links: 18px;
+    --font-size-publish-button: 26px;
     --font-size-newswire: 18px;
     --font-size-newswire-mobile: 48px;
     --font-size: 30px;
@@ -1307,7 +1308,7 @@ aside .toggle-inside li {
         border: none;
         color: var(--publish-button-text);
         text-align: center;
-        font-size: var(--font-size-header);
+        font-size: var(--font-size-publish-button);
         font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding);
         width: 10%;
