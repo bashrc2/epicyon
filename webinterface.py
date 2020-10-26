@@ -6158,7 +6158,8 @@ def getTimelineButtonHeader(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '        <a href="' + usersPath + '/newswiremobile' + \
+            '        <a class="buttonMobile" href="' + \
+            usersPath + '/newswiremobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
             '</span></button></a>\n'
@@ -6174,7 +6175,8 @@ def getTimelineButtonHeader(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '        <a href="' + usersPath + '/linksmobile' + \
+            '        <a class="buttonMobile" href="' + \
+            usersPath + '/linksmobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
             '</span></button></a>\n'
