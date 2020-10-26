@@ -947,7 +947,7 @@ def setThemeLight(baseDir: str):
 def setThemeIndymediaModern(baseDir: str):
     name = 'indymediamodern'
     fontStr = \
-        "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
+        "url('./fonts/NimbusSanL.otf') format('otf')"
     themeParams = {
         "container-button-padding": "0px",
         "container-button-margin": "0px",
@@ -1022,7 +1022,7 @@ def setThemeIndymediaModern(baseDir: str):
         "title-text": "#282c37",
         "title-background": "#ccc",
         "gallery-text-color": "black",
-        "*font-family": "'CheGuevaraTextSans-Regular'",
+        "*font-family": "'NimbusSanL'",
         "*src": fontStr
     }
     bgParams = {
