@@ -5660,10 +5660,10 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
                 htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
-                    iconsDir + '/vote.png" /></a></p>'
+                    iconsDir + '/vote.png" /></a></p>\n'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
-                htmlStr += dateShown + '</span></p>'
+                htmlStr += dateShown + '</span></p>\n'
         else:
             totalVotesStr = ''
             totalVotes = 0
@@ -5685,14 +5685,14 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
                     'title="' + translate['Vote'] + '">'
                 htmlStr += '<img class="voteicon" src="/' + \
                     iconsDir + '/vote.png" /></a>'
-                htmlStr += '</p>'
+                htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
                     '<a href="' + item[1] + '">' + \
                     item[0] + '</a>' + \
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
-                htmlStr += dateShown + '</span></p>'
+                htmlStr += dateShown + '</span></p>\n'
     return htmlStr
 
 
