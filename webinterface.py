@@ -6181,6 +6181,12 @@ def getTimelineButtonHeader(defaultTimeline: str,
                 '<span>' + translate['Expand'] + \
                 '</span></button></a>\n'
 
+    if newsHeader:
+        tlStr += \
+            '      <a href="' + usersPath + '/inbox' + \
+            '"><button class="button">' + \
+            '<span>' + translate['User'] + '</span></button></a>\n'
+
     # the newswire button to show right column links
     if not iconsAsButtons:
         tlStr += \
