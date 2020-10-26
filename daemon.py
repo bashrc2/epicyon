@@ -3485,6 +3485,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.iconsAsButtons = \
                             getConfigParam(self.server.baseDir,
                                            'iconsAsButtons')
+                        self.server.rssIconAtTop = \
+                            getConfigParam(self.server.baseDir,
+                                           'rssIconAtTop')
                         setNewsAvatar(baseDir,
                                       fields['themeDropdown'],
                                       httpPrefix,
@@ -3839,6 +3842,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.iconsAsButtons = \
                                     getConfigParam(self.server.baseDir,
                                                    'iconsAsButtons')
+                                self.server.rssIconAtTop = \
+                                    getConfigParam(self.server.baseDir,
+                                                   'rssIconAtTop')
 
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
