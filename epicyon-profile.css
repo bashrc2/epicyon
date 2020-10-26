@@ -993,7 +993,7 @@ aside .toggle-inside li {
     display: none;
 }
 
-div {
+div.containerHeader {
     overflow: auto;
 }
 
