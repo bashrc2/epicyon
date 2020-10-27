@@ -6045,7 +6045,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     # typically the blogs button
     # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
-        if not minimal or defaultTimeline == 'tlnews':
+        if not minimal:
             titleStr = translate['Blogs']
             if defaultTimeline == 'tlnews':
                 titleStr = translate['Article']
