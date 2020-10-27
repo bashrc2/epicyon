@@ -401,8 +401,9 @@ a:focus {
 }
 
 .message {
-    margin-left: 7%;
-    width: 90%;
+    margin-left: 0%;
+    margin-right: 0%;
+    width: 100%;
 }
 
 .addedHashtag:link {
