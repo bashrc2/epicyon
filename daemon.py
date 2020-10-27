@@ -9434,30 +9434,32 @@ class PubServer(BaseHTTPRequestHandler):
                                   'permitted directory',
                                   'login shown done')
 
-        if authorized and htmlGET and '/users/' in self.path and \
+        if htmlGET and '/users/' in self.path and \
            self.path.endswith('/newswiremobile'):
-            nickname = getNicknameFromActor(self.path)
-            if not nickname:
-                self._404()
+            if (authorized or (not authorized and '/users/news/' in self.path)):
+                nickname = getNicknameFromActor(self.path)
+                if not nickname:
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+                timelinePath = \
+                    '/users/' + nickname + '/' + self.server.defaultTimeline
+                showPublishAsIcon = self.server.showPublishAsIcon
+                msg = htmlNewswireMobile(self.server.baseDir,
+                                         nickname,
+                                         self.server.domain,
+                                         self.server.domainFull,
+                                         self.server.httpPrefix,
+                                         self.server.translate,
+                                         self.server.newswire,
+                                         self.server.positiveVoting,
+                                         timelinePath,
+                                         showPublishAsIcon).encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
                 self.server.GETbusy = False
                 return
-            timelinePath = \
-                '/users/' + nickname + '/' + self.server.defaultTimeline
-            showPublishAsIcon = self.server.showPublishAsIcon
-            msg = htmlNewswireMobile(self.server.baseDir,
-                                     nickname,
-                                     self.server.domain,
-                                     self.server.domainFull,
-                                     self.server.httpPrefix,
-                                     self.server.translate,
-                                     self.server.newswire,
-                                     self.server.positiveVoting,
-                                     timelinePath,
-                                     showPublishAsIcon).encode('utf-8')
-            self._set_headers('text/html', len(msg), cookie, callingDomain)
-            self._write(msg)
-            self.server.GETbusy = False
-            return
 
         if authorized and htmlGET and '/users/' in self.path and \
            self.path.endswith('/linksmobile'):
