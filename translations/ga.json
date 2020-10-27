@@ -321,5 +321,8 @@
     "Newswire": "Newswire",
     "Links": "Naisc",
     "Post": "Post",
-    "User": "Úsáideoir"
+    "User": "Úsáideoir",
+    "Features" : "Gnéithe",
+    "Article": "Airteagal",
+    "Create an article": "Cruthaigh alt"
 }

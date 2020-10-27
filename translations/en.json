@@ -321,5 +321,8 @@
     "Newswire": "Newswire",
     "Links": "Links",
     "Post": "Post",
-    "User": "User"
+    "User": "User",
+    "Features" : "Features",
+    "Article": "Article",
+    "Create an article": "Create an article"
 }
