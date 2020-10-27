@@ -2807,7 +2807,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 iconsDir + '/scope_public.png"/><b>' + \
                 translate['Public'] + '</b><br>' + \
                 translate['Visible to anyone'] + '</li></a>\n'
-            if defaultTimeline != 'tlnews':
+            if defaultTimeline == 'tlnews':
                 dropDownContent += "        " \
                     '<a href="' + pathBase + dropdownNewBlogSuffix + \
                     '"><li><img loading="lazy" alt="" title="" src="/' + \
