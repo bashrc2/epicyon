@@ -6043,7 +6043,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
                 '</span></button></a>\n'
 
     isFeaturesTimeline = \
-        defaultTimeline == 'tlnews' and boxName != 'tlnews'
+        defaultTimeline == 'tlnews' and boxName == 'tlnews'
 
     if not isFeaturesTimeline:
         # typically the blogs button
