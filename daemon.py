@@ -9434,9 +9434,12 @@ class PubServer(BaseHTTPRequestHandler):
                                   'permitted directory',
                                   'login shown done')
 
-        if htmlGET and '/users/' in self.path and \
+        if htmlGET and self.path.startswith('/users/') and \
            self.path.endswith('/newswiremobile'):
-            if (authorized or (not authorized and '/users/news/' in self.path)):
+            if (authorized or
+                (not authorized and
+                 self.path.startswith('/users/news/') and
+                 self.server.newsInstance)):
                 nickname = getNicknameFromActor(self.path)
                 if not nickname:
                     self._404()
