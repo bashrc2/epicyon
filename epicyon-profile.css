@@ -105,6 +105,10 @@
     --icon-brightness-change: 150%;
     --container-button-padding: 20px;
     --container-button-margin: 10px;
+    --container-padding: 20px;
+    --vertical-between-posts: 10px;
+    --containericons-horizontal-spacing: 1%;
+    --containericons-horizontal-spacing-mobile: 3%;
 }
 
 @font-face {
@@ -377,8 +381,8 @@ a:focus {
     border: var(--border-width) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
-    padding: 20px;
-    margin: 10px;
+    padding: var(--container-padding);
+    margin: var(--vertical-between-posts);
 }
 
 .containerHeader {
@@ -1245,7 +1249,7 @@ div.containerHeader {
         float: var(--icons-side);
         max-width: 200px;
         width: 3%;
-        margin: 0px 1%;
+        margin: 0px var(--containericons-horizontal-spacing);
         border-radius: 0%;
     }
     div.mediaicons img {
@@ -1867,7 +1871,7 @@ div.containerHeader {
         float: var(--icons-side);
         max-width: 200px;
         width: 7%;
-        margin: 1% 3%;
+        margin: 1% var(--containericons-horizontal-spacing-mobile);
         border-radius: 0%;
     }
     .timeline-avatar img {
