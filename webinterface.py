@@ -2352,7 +2352,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 mentions: [],
                 reportUrl: str, pageNumber: int,
                 nickname: str, domain: str,
-                domainFull: str) -> str:
+                domainFull: str,
+                defaultTimeline: str) -> str:
     """New post screen
     """
     iconsDir = getIconsDir(baseDir)
@@ -2490,7 +2491,10 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     if path.endswith('/newblog'):
         placeholderSubject = translate['Title']
         scopeIcon = 'scope_blog.png'
-        scopeDescription = translate['Blog']
+        if defaultTimeline != 'tlnews':
+            scopeDescription = translate['Blog']
+        else:
+            scopeDescription = translate['Article']
         endpoint = 'newblog'
     elif path.endswith('/newunlisted'):
         scopeIcon = 'scope_unlisted.png'
@@ -2803,12 +2807,20 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 iconsDir + '/scope_public.png"/><b>' + \
                 translate['Public'] + '</b><br>' + \
                 translate['Visible to anyone'] + '</li></a>\n'
-            dropDownContent += "        " \
-                '<a href="' + pathBase + dropdownNewBlogSuffix + \
-                '"><li><img loading="lazy" alt="" title="" src="/' + \
-                iconsDir + '/scope_blog.png"/><b>' + \
-                translate['Blog'] + '</b><br>' + \
-                translate['Publicly visible post'] + '</li></a>\n'
+            if defaultTimeline != 'tlnews':
+                dropDownContent += "        " \
+                    '<a href="' + pathBase + dropdownNewBlogSuffix + \
+                    '"><li><img loading="lazy" alt="" title="" src="/' + \
+                    iconsDir + '/scope_blog.png"/><b>' + \
+                    translate['Article'] + '</b><br>' + \
+                    translate['Create an article'] + '</li></a>\n'
+            else:
+                dropDownContent += "        " \
+                    '<a href="' + pathBase + dropdownNewBlogSuffix + \
+                    '"><li><img loading="lazy" alt="" title="" src="/' + \
+                    iconsDir + '/scope_blog.png"/><b>' + \
+                    translate['Blog'] + '</b><br>' + \
+                    translate['Publicly visible post'] + '</li></a>\n'
             dropDownContent += "        " \
                 '<a href="' + pathBase + dropdownUnlistedSuffix + \
                 '"><li><img loading="lazy" alt="" title="" src="/' + \
@@ -5987,7 +5999,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
         tlStr += \
             '      <a href="' + usersPath + \
             '/tlnews"><button class="' + \
-            newsButton + '"><span>' + translate['News'] + \
+            newsButton + '"><span>' + translate['Features'] + \
             '</span></button></a>\n'
     else:
         tlStr += \
@@ -6034,10 +6046,13 @@ def getTimelineButtonHeader(defaultTimeline: str,
     # but may change if this is a blogging oriented instance
     if defaultTimeline != 'tlblogs':
         if not minimal or defaultTimeline == 'tlnews':
+            titleStr = translate['Blogs']
+            if defaultTimeline == 'tlnews':
+                titleStr = translate['Article']
             tlStr += \
                 '      <a href="' + usersPath + \
                 '/tlblogs"><button class="' + \
-                blogsButton + '"><span>' + translate['Blogs'] + \
+                blogsButton + '"><span>' + titleStr + \
                 '</span></button></a>\n'
     else:
         if not minimal:
