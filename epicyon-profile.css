@@ -104,9 +104,9 @@
     --tab-border-color: grey;
     --icon-brightness-change: 150%;
     --container-button-padding: 20px;
-    --container-button-margin: 10px;
     --container-padding: 20px;
     --vertical-between-posts: 10px;
+    --vertical-between-posts-header: 10px;
     --containericons-horizontal-spacing: 1%;
     --containericons-horizontal-spacing-mobile: 3%;
 }
@@ -390,7 +390,7 @@ a:focus {
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
     padding: var(--container-button-padding);
-    margin: var(--container-button-margin);
+    margin: var(--vertical-between-posts-header);
 }
 
 .media {
