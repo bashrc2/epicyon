@@ -6042,25 +6042,29 @@ def getTimelineButtonHeader(defaultTimeline: str,
                 inboxButton+'"><span>' + translate['Inbox'] + \
                 '</span></button></a>\n'
 
-    # typically the blogs button
-    # but may change if this is a blogging oriented instance
-    if defaultTimeline != 'tlblogs':
-        if not minimal:
-            titleStr = translate['Blogs']
-            if defaultTimeline == 'tlnews':
-                titleStr = translate['Article']
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/tlblogs"><button class="' + \
-                blogsButton + '"><span>' + titleStr + \
-                '</span></button></a>\n'
-    else:
-        if not minimal:
-            tlStr += \
-                '      <a href="' + usersPath + \
-                '/inbox"><button class="' + \
-                inboxButton + '"><span>' + translate['Inbox'] + \
-                '</span></button></a>\n'
+    isFeaturesTimeline = \
+        defaultTimeline == 'tlnews' and boxName != 'tlnews'
+
+    if not isFeaturesTimeline:
+        # typically the blogs button
+        # but may change if this is a blogging oriented instance
+        if defaultTimeline != 'tlblogs':
+            if not minimal and not isFeaturesTimeline:
+                titleStr = translate['Blogs']
+                if defaultTimeline == 'tlnews':
+                    titleStr = translate['Article']
+                tlStr += \
+                    '      <a href="' + usersPath + \
+                    '/tlblogs"><button class="' + \
+                    blogsButton + '"><span>' + titleStr + \
+                    '</span></button></a>\n'
+        else:
+            if not minimal:
+                tlStr += \
+                    '      <a href="' + usersPath + \
+                    '/inbox"><button class="' + \
+                    inboxButton + '"><span>' + translate['Inbox'] + \
+                    '</span></button></a>\n'
 
     # typically the news button
     # but may change if this is a news oriented instance
@@ -6161,24 +6165,25 @@ def getTimelineButtonHeader(defaultTimeline: str,
         print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
 
     # the calendar button
-    calendarAltText = translate['Calendar']
-    if newCalendarEvent:
-        # indicate that the calendar icon is highlighted
-        calendarAltText = '*' + calendarAltText + '*'
-    if not iconsAsButtons:
-        tlStr += \
-            '      <a class="imageAnchor" href="' + \
-            usersPath + calendarPath + \
-            '"><img loading="lazy" src="/' + iconsDir + '/' + \
-            calendarImage + '" title="' + translate['Calendar'] + \
-            '" alt="| ' + calendarAltText + \
-            '" class="timelineicon"/></a>\n'
-    else:
-        tlStr += \
-            '      <a href="' + usersPath + calendarPath + \
-            '"><button class="button">' + \
-            '<span>' + translate['Calendar'] + \
-            '</span></button></a>\n'
+    if not isFeaturesTimeline:
+        calendarAltText = translate['Calendar']
+        if newCalendarEvent:
+            # indicate that the calendar icon is highlighted
+            calendarAltText = '*' + calendarAltText + '*'
+        if not iconsAsButtons:
+            tlStr += \
+                '      <a class="imageAnchor" href="' + \
+                usersPath + calendarPath + \
+                '"><img loading="lazy" src="/' + iconsDir + '/' + \
+                calendarImage + '" title="' + translate['Calendar'] + \
+                '" alt="| ' + calendarAltText + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            tlStr += \
+                '      <a href="' + usersPath + calendarPath + \
+                '"><button class="button">' + \
+                '<span>' + translate['Calendar'] + \
+                '</span></button></a>\n'
 
     if not newsHeader:
         # the show/hide button, for a simpler header appearance
