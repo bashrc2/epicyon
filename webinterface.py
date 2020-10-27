@@ -3386,14 +3386,14 @@ def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
         if not iconsAsButtons:
             loginButton += \
                 '      <a class="imageAnchorMobile" href="' + \
-                usersPath + '/newswiremobile">' + \
+                '/users/news/newswiremobile">' + \
                 '<img loading="lazy" src="/' + iconsDir + \
                 '/newswire.png" title="' + translate['News'] + \
                 '" alt="| ' + translate['News'] + \
                 '" class="timelineicon"/></a>\n'
             loginButton += \
                 '      <a class="imageAnchorMobile" href="' + \
-                usersPath + '/linksmobile">' + \
+                '/users/news/linksmobile">' + \
                 '<img loading="lazy" src="/' + iconsDir + \
                 '/links.png" title="' + translate['Edit Links'] + \
                 '" alt="| ' + translate['Edit Links'] + \
@@ -3404,13 +3404,13 @@ def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
         else:
             loginButton += \
                 '      <a href="' + \
-                usersPath + '/newswiremobile' + \
+                '/users/news/newswiremobile' + \
                 '"><button class="buttonMobile">' + \
                 '<span>' + translate['Newswire'] + \
                 '</span></button></a>\n'
             loginButton += \
                 '      <a href="' + \
-                usersPath + '/linksmobile' + \
+                '/users/news/linksmobile' + \
                 '"><button class="buttonMobile">' + \
                 '<span>' + translate['Links'] + \
                 '</span></button></a>\n'
@@ -5899,7 +5899,10 @@ def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
     iconsDir = getIconsDir(baseDir)
 
     # is the user a site editor?
-    editor = isEditor(baseDir, nickname)
+    if nickname == 'news':
+        editor = False
+    else:
+        editor = isEditor(baseDir, nickname)
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
@@ -5940,11 +5943,17 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
 
     iconsDir = getIconsDir(baseDir)
 
-    # is the user a moderator?
-    moderator = isModerator(baseDir, nickname)
+    if nickname == 'news':
+        editor = False
+        moderator = False
+    else:
+        # is the user a moderator?
+        moderator = isModerator(baseDir, nickname)
 
-    # is the user a site editor?
-    editor = isEditor(baseDir, nickname)
+        # is the user a site editor?
+        editor = isEditor(baseDir, nickname)
+
+    showPublishButton = editor
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
@@ -5952,7 +5961,7 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
                               httpPrefix, translate,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
-                              True, timelinePath, True,
+                              True, timelinePath, showPublishButton,
                               showPublishAsIcon, True, False)
     htmlStr += htmlFooter()
     return htmlStr
