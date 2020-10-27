@@ -6048,8 +6048,11 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.cachedWebfingers
                     YTReplacementDomain = \
                         self.server.YTReplacementDomain
+                    iconsAsButtons = \
+                        self.server.iconsAsButtons
                     msg = \
-                        htmlProfile(defaultTimeline,
+                        htmlProfile(iconsAsButtons,
+                                    defaultTimeline,
                                     recentPostsCache,
                                     self.server.maxRecentPosts,
                                     self.server.translate,
@@ -6122,8 +6125,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain
                                 showPublishedDateOnly = \
                                     self.server.showPublishedDateOnly
+                                iconsAsButtons = \
+                                    self.server.iconsAsButtons
                                 msg = \
-                                    htmlProfile(defaultTimeline,
+                                    htmlProfile(iconsAsButtons,
+                                                defaultTimeline,
                                                 recentPostsCache,
                                                 self.server.maxRecentPosts,
                                                 self.server.translate,
@@ -7660,7 +7666,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
                     msg = \
-                        htmlProfile(self.server.defaultTimeline,
+                        htmlProfile(self.server.iconsAsButtons,
+                                    self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
                                     self.server.translate,
@@ -7748,7 +7755,8 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
 
                     msg = \
-                        htmlProfile(self.server.defaultTimeline,
+                        htmlProfile(self.server.iconsAsButtons,
+                                    self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
                                     self.server.translate,
@@ -7835,7 +7843,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
                     msg = \
-                        htmlProfile(self.server.defaultTimeline,
+                        htmlProfile(self.server.iconsAsButtons,
+                                    self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
                                     self.server.translate,
@@ -7898,7 +7907,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return True
                 msg = \
-                    htmlProfile(self.server.defaultTimeline,
+                    htmlProfile(self.server.iconsAsButtons,
+                                self.server.defaultTimeline,
                                 self.server.recentPostsCache,
                                 self.server.maxRecentPosts,
                                 self.server.translate,

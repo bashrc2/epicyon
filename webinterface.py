@@ -3273,7 +3273,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     return timelineStr
 
 
-def htmlProfile(defaultTimeline: str,
+def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
                 baseDir: str, httpPrefix: str, authorized: bool,
@@ -3379,12 +3379,48 @@ def htmlProfile(defaultTimeline: str,
         donateSection += '  </center>\n'
         donateSection += '</div>\n'
 
+    iconsDir = getIconsDir(baseDir)
     if not authorized:
-        loginButton = \
-            '<br><a href="/login"><button class="loginButton">' + \
-            translate['Login'] + '</button></a>'
+        loginButton = '<br>'
+        # the links button to show left column links
+        if not iconsAsButtons:
+            loginButton += \
+                '      <a class="imageAnchorMobile" href="' + \
+                usersPath + '/newswiremobile">' + \
+                '<img loading="lazy" src="/' + iconsDir + \
+                '/newswire.png" title="' + translate['News'] + \
+                '" alt="| ' + translate['News'] + \
+                '" class="timelineicon"/></a>\n'
+            loginButton += \
+                '      <a class="imageAnchorMobile" href="' + \
+                usersPath + '/linksmobile">' + \
+                '<img loading="lazy" src="/' + iconsDir + \
+                '/links.png" title="' + translate['Edit Links'] + \
+                '" alt="| ' + translate['Edit Links'] + \
+                '" class="timelineicon"/></a>\n'
+            loginButton += \
+                '<a href="/login"><button class="loginButton">' + \
+                translate['Login'] + '</button></a>'
+        else:
+            loginButton += \
+                '      <a href="' + \
+                usersPath + '/newswiremobile' + \
+                '"><button class="buttonMobile">' + \
+                '<span>' + translate['Newswire'] + \
+                '</span></button></a>\n'
+            loginButton += \
+                '      <a href="' + \
+                usersPath + '/linksmobile' + \
+                '"><button class="buttonMobile">' + \
+                '<span>' + translate['Links'] + \
+                '</span></button></a>\n'
+            loginButton += \
+                '      <a href="' + \
+                usersPath + '/login' + \
+                '"><button class="button">' + \
+                '<span>' + translate['Login'] + \
+                '</span></button></a>\n'
     else:
-        iconsDir = getIconsDir(baseDir)
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
