@@ -1003,6 +1003,10 @@ div.containerHeader {
     overflow: auto;
 }
 
+div.container {
+    overflow: hidden;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         background-color: var(--main-bg-color);
@@ -1252,7 +1256,7 @@ div.containerHeader {
         max-width: 200px;
         width: 3%;
         margin: 0px var(--containericons-horizontal-spacing);
-	margin-right: 0px;
+        margin-right: 0px;
         border-radius: 0%;
     }
     div.mediaicons img {
@@ -1875,7 +1879,7 @@ div.containerHeader {
         max-width: 200px;
         width: 7%;
         margin: 1% var(--containericons-horizontal-spacing-mobile);
-	margin-right: 0px;
+        margin-right: 0px;
         border-radius: 0%;
     }
     .timeline-avatar img {
