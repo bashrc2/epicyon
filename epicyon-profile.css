@@ -117,7 +117,7 @@
     --likes-count-offset-mobile: 10px;
     --publish-button-vertical-offset: 10px;
     --banner-height: 15vh;
-    --banner-height-mobile: 15vh;
+    --banner-height-mobile: 10vh;
 }
 
 @font-face {

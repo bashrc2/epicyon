@@ -459,7 +459,7 @@ def setThemeNight(baseDir: str):
         "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
         "banner-height": "15vh",
-        "banner-height-mobile": "15vh",
+        "banner-height-mobile": "10vh",
         "focus-color": "blue",
         "font-size-button-mobile": "26px",
         "font-size": "32px",
