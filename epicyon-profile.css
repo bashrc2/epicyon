@@ -110,6 +110,8 @@
     --containericons-horizontal-spacing: 1%;
     --containericons-horizontal-spacing-mobile: 3%;
     --containericons-horizontal-offset: -1%;
+    --likes-count-offset: 5px;
+    --likes-count-offset-mobile: 10px;
 }
 
 @font-face {
@@ -1162,7 +1164,7 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         float: right;
         padding: 10px 0;
-        transform: translateX(5px);
+        transform: translateX(var(--likes-count-offset));
         font-weight: bold;
     }
     .container p.administeredby {
@@ -1773,7 +1775,7 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         float: right;
         padding: 32px 0;
-        transform: translateX(10px);
+        transform: translateX(var(--likes-count-offset-mobile));
         font-weight: bold;
     }
     .container p.administeredby {
