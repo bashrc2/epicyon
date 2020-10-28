@@ -1003,6 +1003,7 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "publish-button-vertical-offset": "10px",
         "container-button-padding": "0px",
         "container-button-margin": "0px",
         "column-right-icon-size": "11%",

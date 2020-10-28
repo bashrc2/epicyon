@@ -114,6 +114,7 @@
     --containericons-horizontal-offset: -1%;
     --likes-count-offset: 5px;
     --likes-count-offset-mobile: 10px;
+    --publish-button-vertical-offset: 10px;
 }
 
 @font-face {
@@ -1341,7 +1342,8 @@ div.container {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: -20px 0px;
+        margin: 0 0px;
+	margin-top: var(--publish-button-vertical-offset);
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
