@@ -440,12 +440,6 @@ a:focus {
     font-family: 'monospace';
 }
 
-.container::after {
-    content: "";
-    clear: both;
-    display: table;
-}
-
 .searchEmoji {
     vertical-align: middle;
     float: none;
