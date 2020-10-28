@@ -103,32 +103,28 @@ def manualApproveFollowRequest(session, baseDir: str,
     approveFollowsStr = ''
     with open(approveFollowsFilename, 'r') as fpFollowers:
         approveFollowsStr = fpFollowers.read()
-    exists = True
+    exists = False
     approveHandleFull = approveHandle
-    if approveHandle not in approveFollowsStr:
-        print('Manual follow accept: ' + approveHandle +
-              ' not in requests file ' + approveFollowsFilename +
-              '\n"' + approveFollowsStr.replace('\n', ' ') + '"')
-        exists = False
+    if approveHandle in approveFollowsStr:
+        exists = True
     elif '@' in approveHandle:
         reqNick = approveHandle.split('@')[0]
         reqDomain = approveHandle.split('@')[1].strip()
         reqPrefix = httpPrefix + '://' + reqDomain
-        if reqPrefix + '/profile/' + reqNick not in approveFollowsStr:
-            exists = False
+        if reqPrefix + '/profile/' + reqNick in approveFollowsStr:
+            exists = True
             approveHandleFull = reqPrefix + '/profile/' + reqNick
-        elif reqPrefix + '/channel/' + reqNick not in approveFollowsStr:
-            exists = False
+        elif reqPrefix + '/channel/' + reqNick in approveFollowsStr:
+            exists = True
             approveHandleFull = reqPrefix + '/channel/' + reqNick
-        elif reqPrefix + '/accounts/' + reqNick not in approveFollowsStr:
-            exists = False
+        elif reqPrefix + '/accounts/' + reqNick in approveFollowsStr:
+            exists = True
             approveHandleFull = reqPrefix + '/accounts/' + reqNick
-        if not exists:
-            print('Manual follow accept: ' + approveHandleFull +
-                  ' not in requests file "' +
-                  approveFollowsStr.replace('\n', ' ') +
-                  '" ' + approveFollowsFilename)
     if not exists:
+        print('Manual follow accept: ' + approveHandleFull +
+              ' not in requests file "' +
+              approveFollowsStr.replace('\n', ' ') +
+              '" ' + approveFollowsFilename)
         return
 
     approvefilenew = open(approveFollowsFilename + '.new', 'w+')
