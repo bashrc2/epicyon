@@ -597,10 +597,11 @@ input[type=number] {
 }
 
 .transparent {
-    color: rgba(0, 0, 0, 0.0);
+    color: transparent;
+    background: transparent;
     font-size: 0px;
-    font-family: Arial, Helvetica, sans-serif;
-    line-height: 0;
+    line-height: 0px;
+    height: 0px;
 }
 
 .labelsright {
