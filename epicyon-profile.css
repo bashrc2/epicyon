@@ -513,11 +513,13 @@ a:focus {
 }
 
 .container img.attachment {
-    max-width: 120%;
-    margin-left: 5%;
-    width: 120%;
+    max-width: 140%;
+    margin-left: -2%;
+    margin-right: 2%;
+    width: 125%;
     padding-bottom: 3%;
 }
+
 .container img.right {
     float: var(--icons-side);
     margin-left: 0px;
