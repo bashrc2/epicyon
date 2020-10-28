@@ -109,6 +109,7 @@
     --vertical-between-posts-header: 10px;
     --containericons-horizontal-spacing: 1%;
     --containericons-horizontal-spacing-mobile: 3%;
+    --containericons-horizontal: -1.5%;
 }
 
 @font-face {
@@ -466,7 +467,7 @@ a:focus {
 
 .containericons {
     padding: 0px 0px;
-    margin: 0px 0px;
+    margin: 0px var(--containericons-horizontal);
 }
 
 .replyingto {
@@ -1224,9 +1225,9 @@ div.containerHeader {
     .container img.timelineicon {
         float: var(--icons-side);
         margin-left: 0px;
-        margin-right:0;
-        padding: 0 0;
-        margin: 0 0;
+        margin-right: 0px;
+        padding: 0px 0px;
+        margin: 0px 0px;
         width: 50px;
     }
     .containerHeader img.timelineicon {
@@ -1832,9 +1833,9 @@ div.containerHeader {
     .container img.timelineicon {
         float: var(--icons-side);
         margin-left: 0px;
-        margin-right:0;
-        padding: 0 0;
-        margin: 0 0;
+        margin-right: 0px;
+        padding: 0px 0px;
+        margin: 0px 0px;
         width: 100px;
     }
     .containerHeader img.timelineicon {
