@@ -1191,7 +1191,7 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
     }
     div.gallery {
-        margin: 5px;
+        margin: 5px 1.5%;
         border: 1px solid var(--gallery-border);
         float: left;
         width: 95%;
@@ -1801,7 +1801,7 @@ div.container {
         background-color: var(--main-bg-color);
     }
     div.gallery {
-        margin: 5px;
+        margin: 5px 1.5%;
         border: 1px solid var(--gallery-border);
         float: left;
         width: 98%;
