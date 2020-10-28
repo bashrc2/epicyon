@@ -384,7 +384,9 @@ a:focus {
     border: var(--border-width) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
-    padding: var(--container-padding);
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+    padding-top: var(--container-padding);
     margin: var(--vertical-between-posts);
 }
 
