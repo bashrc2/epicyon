@@ -663,6 +663,8 @@ def setThemeZen(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "banner-height": "25vh",
+        "banner-height-mobile": "10vh",
         "newswire-date-color": "yellow",
         "main-bg-color": "#5c4e41",
         "column-left-color": "#5c4e41",
