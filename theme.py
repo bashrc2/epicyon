@@ -325,8 +325,8 @@ def setThemeIndymediaClassic(baseDir: str):
     setNewswirePublishAsIcon(baseDir, False)
     setFullWidthTimelineButtonHeader(baseDir, True)
     setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, True)
+    setRssIconAtTop(baseDir, False)
+    setPublishButtonAtTop(baseDir, False)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
