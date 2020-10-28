@@ -322,7 +322,7 @@ def setThemeIndymediaClassic(baseDir: str):
     name = 'indymediaclassic'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, False)
+    setNewswirePublishAsIcon(baseDir, True)
     setFullWidthTimelineButtonHeader(baseDir, True)
     setIconsAsButtons(baseDir, False)
     setRssIconAtTop(baseDir, False)
