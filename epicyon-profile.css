@@ -105,6 +105,7 @@
     --icon-brightness-change: 150%;
     --container-button-padding: 20px;
     --container-padding: 20px;
+    --container-padding-bottom: 10px;
     --vertical-between-posts: 10px;
     --vertical-between-posts-header: 10px;
     --containericons-horizontal-spacing: 1%;
@@ -387,6 +388,7 @@ a:focus {
     padding-left: var(--container-padding);
     padding-right: var(--container-padding);
     padding-top: var(--container-padding);
+    padding-bottom: var(--container-padding-bottom);
     margin: var(--vertical-between-posts);
 }
 
