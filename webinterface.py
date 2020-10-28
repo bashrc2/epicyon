@@ -3381,9 +3381,8 @@ def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
 
     iconsDir = getIconsDir(baseDir)
     if not authorized:
-        loginButton = '<br>'
         # the links button to show left column links
-        loginButton += \
+        loginButton = \
             '      <a href="' + \
             '/users/news/newswiremobile' + \
             '"><button class="buttonMobile">' + \
