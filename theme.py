@@ -942,6 +942,8 @@ def setThemeHacker(baseDir: str):
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
+        "banner-height": "20vh",
+        "banner-height-mobile": "10vh",
         "hashtag-background-color": "lightblue",
         "focus-color": "grey",
         "font-size-button-mobile": "26px",
