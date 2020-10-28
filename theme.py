@@ -489,6 +489,8 @@ def setThemeNight(baseDir: str):
         "day-number": "#a961ab",
         "day-number2": "#555",
         "time-color": "#a961ab",
+        "time-vertical-align": "-4px",
+        "time-vertical-align-mobile": "15px",
         "place-color": "#a961ab",
         "event-color": "#a961ab",
         "event-background": "#333",
