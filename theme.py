@@ -663,6 +663,7 @@ def setThemeZen(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "newswire-date-color": "yellow",
         "main-bg-color": "#5c4e41",
         "column-left-color": "#5c4e41",
         "text-entry-background": "#5c4e41",
