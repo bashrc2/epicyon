@@ -326,7 +326,7 @@ def setThemeIndymediaClassic(baseDir: str):
     setFullWidthTimelineButtonHeader(baseDir, True)
     setIconsAsButtons(baseDir, False)
     setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
+    setPublishButtonAtTop(baseDir, True)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -334,7 +334,6 @@ def setThemeIndymediaClassic(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
-        "publish-button-vertical-offset": "-20px",
         "hashtag-background-color": "darkred",
         "font-size-newswire": "18px",
         "font-size-publish-button": "18px",
