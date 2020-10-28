@@ -108,7 +108,7 @@ def manualApproveFollowRequest(session, baseDir: str,
     if approveHandle not in approveFollowsStr:
         print('Manual follow accept: ' + approveHandle +
               ' not in requests file ' + approveFollowsFilename +
-              '\n"' + approveFollowsStr.replace('\n' ' ') + '"')
+              '\n"' + approveFollowsStr.replace('\n', ' ') + '"')
         exists = False
     elif '@' in approveHandle:
         reqNick = approveHandle.split('@')[0]
@@ -126,7 +126,7 @@ def manualApproveFollowRequest(session, baseDir: str,
         if not exists:
             print('Manual follow accept: ' + approveHandleFull +
                   ' not in requests file "' +
-                  approveFollowsStr.replace('\n' ' ') +
+                  approveFollowsStr.replace('\n', ' ') +
                   '" ' + approveFollowsFilename)
     if not exists:
         return
