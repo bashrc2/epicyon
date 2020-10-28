@@ -1194,7 +1194,7 @@ div.container {
         margin: 5px;
         border: 1px solid var(--gallery-border);
         float: left;
-        width: 100%;
+        width: 95%;
         object-fit: scale-down;
     }
     div.imagedesc {
@@ -1804,7 +1804,7 @@ div.container {
         margin: 5px;
         border: 1px solid var(--gallery-border);
         float: left;
-        width: 100%;
+        width: 98%;
     }
     div.imagedesc {
         padding: 35px;
