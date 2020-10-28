@@ -104,8 +104,9 @@
     --tab-border-color: grey;
     --icon-brightness-change: 150%;
     --container-button-padding: 20px;
-    --container-padding: 20px;
-    --container-padding-bottom: 10px;
+    --container-padding: 2%;
+    --container-padding-bottom: 1%;
+    --container-padding-bottom-mobile: 1%;
     --vertical-between-posts: 10px;
     --vertical-between-posts-header: 10px;
     --containericons-horizontal-spacing: 1%;
@@ -379,17 +380,6 @@ a:focus {
 .buttonselected:hover {
     background-color: var(--button-background-hover);
     color: var(--button-text-hover);
-}
-
-.container {
-    border: var(--border-width) solid var(--border-color);
-    background-color: var(--main-bg-color);
-    border-radius: var(--timeline-border-radius);
-    padding-left: var(--container-padding);
-    padding-right: var(--container-padding);
-    padding-top: var(--container-padding);
-    padding-bottom: var(--container-padding-bottom);
-    margin: var(--vertical-between-posts);
 }
 
 .containerNewPost {
@@ -1028,6 +1018,16 @@ div.container {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .container {
+	border: var(--border-width) solid var(--border-color);
+	background-color: var(--main-bg-color);
+	border-radius: var(--timeline-border-radius);
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
+	padding-top: var(--container-padding);
+	padding-bottom: var(--container-padding-bottom);
+	margin: var(--vertical-between-posts);
+    }    
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
@@ -1659,6 +1659,16 @@ div.container {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    .container {
+	border: var(--border-width) solid var(--border-color);
+	background-color: var(--main-bg-color);
+	border-radius: var(--timeline-border-radius);
+	padding-left: var(--container-padding);
+	padding-right: var(--container-padding);
+	padding-top: var(--container-padding);
+	padding-bottom: var(--container-padding-bottom-mobile);
+	margin: var(--vertical-between-posts);
+    }    
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
