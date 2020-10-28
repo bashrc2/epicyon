@@ -3395,7 +3395,7 @@ def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
             '</span></button></a>\n'
-         loginButton += \
+        loginButton += \
             '      <a href="/login' + \
             '"><button class="button">' + \
             '<span>' + translate['Login'] + \
