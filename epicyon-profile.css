@@ -386,6 +386,14 @@ a:focus {
     margin: var(--vertical-between-posts);
 }
 
+.containerNewPost {
+    border: var(--border-width) solid var(--border-color);
+    background-color: var(--main-bg-color);
+    border-radius: var(--timeline-border-radius);
+    padding: var(--container-padding);
+    margin: var(--vertical-between-posts);
+}
+
 .containerHeader {
     border: var(--border-width-header) solid var(--border-color);
     background-color: var(--main-bg-color);
