@@ -334,6 +334,7 @@ def setThemeIndymediaClassic(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "publish-button-vertical-offset": "-20px",
         "hashtag-background-color": "darkred",
         "font-size-newswire": "18px",
         "font-size-publish-button": "18px",
@@ -413,6 +414,8 @@ def setThemeBlue(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "banner-height": "20vh",
+        "banner-height-mobile": "10vh",
         "newswire-date-color": "blue",
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
