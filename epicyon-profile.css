@@ -116,6 +116,8 @@
     --likes-count-offset: 5px;
     --likes-count-offset-mobile: 10px;
     --publish-button-vertical-offset: 10px;
+    --banner-height: 30vh;
+    --banner-height-mobile: 15vh;
 }
 
 @font-face {
@@ -1022,15 +1024,15 @@ div.container {
         line-height: var(--line-spacing);
     }
     .container {
-	border: var(--border-width) solid var(--border-color);
-	background-color: var(--main-bg-color);
-	border-radius: var(--timeline-border-radius);
-	padding-left: var(--container-padding);
-	padding-right: var(--container-padding);
-	padding-top: var(--container-padding);
-	padding-bottom: var(--container-padding-bottom);
-	margin: var(--vertical-between-posts);
-    }    
+        border: var(--border-width) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding-left: var(--container-padding);
+        padding-right: var(--container-padding);
+        padding-top: var(--container-padding);
+        padding-bottom: var(--container-padding-bottom);
+        margin: var(--vertical-between-posts);
+    }
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
@@ -1080,7 +1082,7 @@ div.container {
     }
     .timeline-banner {
         width: 98vw;
-        height: 15vh;
+        height: var(--banner-height);
     }
     .timeline {
         border: 0;
@@ -1345,7 +1347,7 @@ div.container {
         transition: all 0.5s;
         cursor: pointer;
         margin: 0 0px;
-	margin-top: var(--publish-button-vertical-offset);
+        margin-top: var(--publish-button-vertical-offset);
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1664,15 +1666,15 @@ div.container {
         line-height: var(--line-spacing);
     }
     .container {
-	border: var(--border-width) solid var(--border-color);
-	background-color: var(--main-bg-color);
-	border-radius: var(--timeline-border-radius);
-	padding-left: var(--container-padding);
-	padding-right: var(--container-padding);
-	padding-top: var(--container-padding);
-	padding-bottom: var(--container-padding-bottom-mobile);
-	margin: var(--vertical-between-posts);
-    }    
+        border: var(--border-width) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding-left: var(--container-padding);
+        padding-right: var(--container-padding);
+        padding-top: var(--container-padding);
+        padding-bottom: var(--container-padding-bottom-mobile);
+        margin: var(--vertical-between-posts);
+    }
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
@@ -1747,7 +1749,8 @@ div.container {
         display: inline;
     }
     .timeline-banner {
-	height: 6%;
+        width: 98vw;
+        height: var(--banner-height-mobile);
     }
     .timeline {
         border: 0;
