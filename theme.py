@@ -312,7 +312,8 @@ def setThemeDefault(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
-        "dummy": "1234"
+        "banner-height": "20vh",
+        "banner-height-mobile": "10vh"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
