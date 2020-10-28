@@ -109,7 +109,7 @@
     --vertical-between-posts-header: 10px;
     --containericons-horizontal-spacing: 1%;
     --containericons-horizontal-spacing-mobile: 3%;
-    --containericons-horizontal: -1.5%;
+    --containericons-horizontal-offset: -1%;
 }
 
 @font-face {
@@ -467,7 +467,7 @@ a:focus {
 
 .containericons {
     padding: 0px 0px;
-    margin: 0px var(--containericons-horizontal);
+    margin: 0px var(--containericons-horizontal-offset);
 }
 
 .replyingto {
