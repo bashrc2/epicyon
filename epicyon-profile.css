@@ -1162,7 +1162,7 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         float: right;
         padding: 10px 0;
-        transform: translateX(-10px);
+        transform: translateX(5px);
         font-weight: bold;
     }
     .container p.administeredby {
@@ -1773,7 +1773,7 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         float: right;
         padding: 32px 0;
-        transform: translateX(-20px);
+        transform: translateX(10px);
         font-weight: bold;
     }
     .container p.administeredby {
