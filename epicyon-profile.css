@@ -43,6 +43,7 @@
     --font-size-tox2: 8px;
     --time-color: #aaa;
     --time-vertical-align: 4px;
+    --time-vertical-align-mobile: 25px;
     --publish-button-text: #FFFFFF;
     --button-text: #FFFFFF;
     --button-selected-text: #FFFFFF;
@@ -2065,7 +2066,7 @@ div.container {
     .time-right {
         float: var(--icons-side);
         color: var(--time-color);
-        margin: 25px 20px;
+        margin: var(--time-vertical-align-mobile) 20px;
     }
     input[type=text], select, textarea {
         width: 100%;
