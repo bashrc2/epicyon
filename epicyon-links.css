@@ -64,6 +64,7 @@
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
+    --banner-height: 15vh;
 }
 
 @font-face {
@@ -181,11 +182,8 @@ a:focus {
 }
 
 .timeline-banner {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
-    height: 15%;
-    background-repeat: no-repeat;
-    background-size: 100vw;
-    position: relative;
+    width: 98vw;
+    height: var(--banner-height);
 }
 
 .hero-image {
