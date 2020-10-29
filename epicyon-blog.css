@@ -44,7 +44,6 @@
     --timeline-border-radius: 30px;
     --focus-color: white;
     --line-spacing: 130%;
-    --banner-height: 15vh;
 }
 
 @font-face {
@@ -100,8 +99,12 @@ a:focus {
 }
 
 .timeline-banner {
-    width: 98vw;
-    height: var(--banner-height);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("banner.png");
+    height: 10%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: relative;
 }
 
 .hero-image {
