@@ -149,20 +149,37 @@ def getDomainBlocklist(baseDir: str) -> str:
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if not os.path.isfile(globalBlockingFilename):
         return blockedStr
-    with open(globalBlockingFilename, 'r') as file:
-        blockedStr += file.read()
+    with open(globalBlockingFilename, 'r') as fpBlocked:
+        blockedStr += fpBlocked.read()
     return blockedStr
 
 
 def isBlockedDomain(baseDir: str, domain: str) -> bool:
     """Is the given domain blocked?
     """
+    if '.' not in domain:
+        return False
+
     if isEvil(domain):
         return True
+
+    # by checking a shorter version we can thwart adversaries
+    # who constantly change their subdomain
+    sections = domain.split('.')
+    noOfSections = len(sections)
+    shortDomain = None
+    if noOfSections > 2:
+        shortDomain = domain[noOfSections-2] + '.' + domain[noOfSections-1]
+
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(globalBlockingFilename):
-        if '*@' + domain in open(globalBlockingFilename).read():
-            return True
+        with open(globalBlockingFilename, 'r') as fpBlocked:
+            blockedStr = fpBlocked.read()
+            if '*@' + domain in blockedStr:
+                return True
+            if shortDomain:
+                if '*@' + shortDomain in blockedStr:
+                    return True
     return False
 
 
