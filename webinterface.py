@@ -25,6 +25,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import getCSS
 from utils import isSystemAccount
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
@@ -327,7 +328,8 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
     return None
 
 
-def htmlFollowingList(baseDir: str, followingFilename: str) -> str:
+def htmlFollowingList(cssCache: {}, baseDir: str,
+                      followingFilename: str) -> str:
     """Returns a list of handles being followed
     """
     with open(followingFilename, 'r') as followingFile:
@@ -338,8 +340,9 @@ def htmlFollowingList(baseDir: str, followingFilename: str) -> str:
             cssFilename = baseDir + '/epicyon-profile.css'
             if os.path.isfile(baseDir + '/epicyon.css'):
                 cssFilename = baseDir + '/epicyon.css'
-            with open(cssFilename, 'r') as cssFile:
-                profileCSS = cssFile.read()
+
+            profileCSS = getCSS(baseDir, cssFilename, cssCache)
+            if profileCSS:
                 followingListHtml = htmlHeader(cssFilename, profileCSS)
                 for followingAddress in followingList:
                     if followingAddress:
@@ -391,7 +394,8 @@ def htmlFollowingDataList(baseDir: str, nickname: str,
     return listStr
 
 
-def htmlSearchEmoji(translate: {}, baseDir: str, httpPrefix: str,
+def htmlSearchEmoji(cssCache: {}, translate: {},
+                    baseDir: str, httpPrefix: str,
                     searchStr: str) -> str:
     """Search results for emoji
     """
@@ -405,8 +409,9 @@ def htmlSearchEmoji(translate: {}, baseDir: str, httpPrefix: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        emojiCSS = cssFile.read()
+
+    emojiCSS = getCSS(baseDir, cssFilename, cssCache)
+    if emojiCSS:
         if httpPrefix != 'https':
             emojiCSS = emojiCSS.replace('https://',
                                         httpPrefix + '://')
@@ -465,7 +470,7 @@ def getIconsDir(baseDir: str) -> str:
     return iconsDir
 
 
-def htmlSearchSharedItems(translate: {},
+def htmlSearchSharedItems(cssCache: {}, translate: {},
                           baseDir: str, searchStr: str,
                           pageNumber: int,
                           resultsPerPage: int,
@@ -485,8 +490,8 @@ def htmlSearchSharedItems(translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    with open(cssFilename, 'r') as cssFile:
-        sharedItemsCSS = cssFile.read()
+    sharedItemsCSS = getCSS(baseDir, cssFilename, cssCache)
+    if sharedItemsCSS:
         if httpPrefix != 'https':
             sharedItemsCSS = \
                 sharedItemsCSS.replace('https://',
@@ -640,7 +645,8 @@ def htmlSearchSharedItems(translate: {},
     return sharedItemsForm
 
 
-def htmlModerationInfo(translate: {}, baseDir: str, httpPrefix: str) -> str:
+def htmlModerationInfo(cssCache: {}, translate: {},
+                       baseDir: str, httpPrefix: str) -> str:
     msgStr1 = \
         'These are globally blocked for all accounts on this instance'
     msgStr2 = \
@@ -649,8 +655,9 @@ def htmlModerationInfo(translate: {}, baseDir: str, httpPrefix: str) -> str:
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        infoCSS = cssFile.read()
+
+    infoCSS = getCSS(baseDir, cssFilename, cssCache)
+    if infoCSS:
         if httpPrefix != 'https':
             infoCSS = infoCSS.replace('https://',
                                       httpPrefix + '://')
@@ -704,7 +711,8 @@ def htmlModerationInfo(translate: {}, baseDir: str, httpPrefix: str) -> str:
     return infoForm
 
 
-def htmlHashtagSearch(nickname: str, domain: str, port: int,
+def htmlHashtagSearch(cssCache: {},
+                      nickname: str, domain: str, port: int,
                       recentPostsCache: {}, maxRecentPosts: int,
                       translate: {},
                       baseDir: str, hashtag: str, pageNumber: int,
@@ -743,8 +751,9 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        hashtagSearchCSS = cssFile.read()
+
+    hashtagSearchCSS = getCSS(baseDir, cssFilename, cssCache)
+    if hashtagSearchCSS:
         if httpPrefix != 'https':
             hashtagSearchCSS = \
                 hashtagSearchCSS.replace('https://',
@@ -979,7 +988,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     return hashtagFeed + rss2TagFooter()
 
 
-def htmlSkillsSearch(translate: {}, baseDir: str,
+def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
                      httpPrefix: str,
                      skillsearch: str, instanceOnly: bool,
                      postsPerPage: int) -> str:
@@ -1067,8 +1076,9 @@ def htmlSkillsSearch(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        skillSearchCSS = cssFile.read()
+
+    skillSearchCSS = getCSS(baseDir, cssFilename, cssCache)
+    if skillSearchCSS:
         if httpPrefix != 'https':
             skillSearchCSS = \
                 skillSearchCSS.replace('https://',
@@ -1107,7 +1117,7 @@ def htmlSkillsSearch(translate: {}, baseDir: str,
     return skillSearchForm
 
 
-def htmlHistorySearch(translate: {}, baseDir: str,
+def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       httpPrefix: str,
                       nickname: str, domain: str,
                       historysearch: str,
@@ -1135,8 +1145,9 @@ def htmlHistorySearch(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        historySearchCSS = cssFile.read()
+
+    historySearchCSS = getCSS(baseDir, cssFilename, cssCache)
+    if historySearchCSS:
         if httpPrefix != 'https':
             historySearchCSS = \
                 historySearchCSS.replace('https://',
@@ -1214,7 +1225,7 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
     return False
 
 
-def htmlEditLinks(translate: {}, baseDir: str, path: str,
+def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                   domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit links screen
     """
@@ -1235,8 +1246,9 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
     cssFilename = baseDir + '/epicyon-links.css'
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
-    with open(cssFilename, 'r') as cssFile:
-        editCSS = cssFile.read()
+
+    editCSS = getCSS(baseDir, cssFilename, cssCache)
+    if editCSS:
         if httpPrefix != 'https':
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
@@ -1282,7 +1294,7 @@ def htmlEditLinks(translate: {}, baseDir: str, path: str,
     return editLinksForm
 
 
-def htmlEditNewswire(translate: {}, baseDir: str, path: str,
+def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit newswire screen
     """
@@ -1303,8 +1315,9 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
     cssFilename = baseDir + '/epicyon-links.css'
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
-    with open(cssFilename, 'r') as cssFile:
-        editCSS = cssFile.read()
+
+    editCSS = getCSS(baseDir, cssFilename, cssCache)
+    if editCSS:
         if httpPrefix != 'https':
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
@@ -1388,7 +1401,7 @@ def htmlEditNewswire(translate: {}, baseDir: str, path: str,
     return editNewswireForm
 
 
-def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
+def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int,
                      httpPrefix: str, postUrl: str) -> str:
     """Edits a news post
@@ -1416,8 +1429,9 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
     cssFilename = baseDir + '/epicyon-links.css'
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
-    with open(cssFilename, 'r') as cssFile:
-        editCSS = cssFile.read()
+
+    editCSS = getCSS(baseDir, cssFilename, cssCache)
+    if editCSS:
         if httpPrefix != 'https':
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
@@ -1465,7 +1479,7 @@ def htmlEditNewsPost(translate: {}, baseDir: str, path: str,
     return editNewsPostForm
 
 
-def htmlEditProfile(translate: {}, baseDir: str, path: str,
+def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str) -> str:
     """Shows the edit profile screen
     """
@@ -1652,8 +1666,9 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        editProfileCSS = cssFile.read()
+
+    editProfileCSS = getCSS(baseDir, cssFilename, cssCache)
+    if editProfileCSS:
         if httpPrefix != 'https':
             editProfileCSS = \
                 editProfileCSS.replace('https://', httpPrefix + '://')
@@ -2095,7 +2110,8 @@ def htmlGetLoginCredentials(loginParams: str,
     return nickname, password, register
 
 
-def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
+def htmlLogin(cssCache: {}, translate: {},
+              baseDir: str, autocomplete=True) -> str:
     """Shows the login screen
     """
     accounts = noOfAccounts(baseDir)
@@ -2150,8 +2166,11 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
     cssFilename = baseDir + '/epicyon-login.css'
     if os.path.isfile(baseDir + '/login.css'):
         cssFilename = baseDir + '/login.css'
-    with open(cssFilename, 'r') as cssFile:
-        loginCSS = cssFile.read()
+
+    loginCSS = getCSS(baseDir, cssFilename, cssCache)
+    if not loginCSS:
+        print('ERROR: login css file missing ' + cssFilename)
+        return None
 
     # show the register button
     registerButtonStr = ''
@@ -2218,7 +2237,8 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
     return loginForm
 
 
-def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
+def htmlTermsOfService(cssCache: {}, baseDir: str,
+                       httpPrefix: str, domainFull: str) -> str:
     """Show the terms of service screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -2240,8 +2260,9 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        termsCSS = cssFile.read()
+
+    termsCSS = getCSS(baseDir, cssFilename, cssCache)
+    if termsCSS:
         if httpPrefix != 'https':
             termsCSS = termsCSS.replace('https://', httpPrefix+'://')
 
@@ -2259,7 +2280,7 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
     return TOSForm
 
 
-def htmlAbout(baseDir: str, httpPrefix: str,
+def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
               domainFull: str, onionDomain: str) -> str:
     """Show the about screen
     """
@@ -2282,8 +2303,9 @@ def htmlAbout(baseDir: str, httpPrefix: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        aboutCSS = cssFile.read()
+
+    aboutCSS = getCSS(baseDir, cssFilename, cssCache)
+    if aboutCSS:
         if httpPrefix != 'http':
             aboutCSS = aboutCSS.replace('https://',
                                         httpPrefix + '://')
@@ -2306,15 +2328,16 @@ def htmlAbout(baseDir: str, httpPrefix: str,
     return aboutForm
 
 
-def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
+def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm = ''
     cssFilename = baseDir + '/epicyon-suspended.css'
     if os.path.isfile(baseDir + '/suspended.css'):
         cssFilename = baseDir + '/suspended.css'
-    with open(cssFilename, 'r') as cssFile:
-        blockedHashtagCSS = cssFile.read()
+
+    blockedHashtagCSS = getCSS(baseDir, cssFilename, cssCache)
+    if blockedHashtagCSS:
         blockedHashtagForm = htmlHeader(cssFilename, blockedHashtagCSS)
         blockedHashtagForm += '<div><center>\n'
         blockedHashtagForm += \
@@ -2328,15 +2351,16 @@ def htmlHashtagBlocked(baseDir: str, translate: {}) -> str:
     return blockedHashtagForm
 
 
-def htmlSuspended(baseDir: str) -> str:
+def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     """Show the screen for suspended accounts
     """
     suspendedForm = ''
     cssFilename = baseDir + '/epicyon-suspended.css'
     if os.path.isfile(baseDir + '/suspended.css'):
         cssFilename = baseDir + '/suspended.css'
-    with open(cssFilename, 'r') as cssFile:
-        suspendedCSS = cssFile.read()
+
+    suspendedCSS = getCSS(baseDir, cssFilename, cssCache)
+    if suspendedCSS:
         suspendedForm = htmlHeader(cssFilename, suspendedCSS)
         suspendedForm += '<div><center>\n'
         suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
@@ -2346,7 +2370,7 @@ def htmlSuspended(baseDir: str) -> str:
     return suspendedForm
 
 
-def htmlNewPost(mediaInstance: bool, translate: {},
+def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 baseDir: str, httpPrefix: str,
                 path: str, inReplyTo: str,
                 mentions: [],
@@ -2433,8 +2457,9 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        newPostCSS = cssFile.read()
+
+    newPostCSS = getCSS(baseDir, cssFilename, cssCache)
+    if newPostCSS:
         if httpPrefix != 'https':
             newPostCSS = newPostCSS.replace('https://',
                                             httpPrefix + '://')
@@ -3273,7 +3298,8 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     return timelineStr
 
 
-def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
+def htmlProfile(cssCache: {}, iconsAsButtons: bool,
+                defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
                 baseDir: str, httpPrefix: str, authorized: bool,
@@ -3572,10 +3598,12 @@ def htmlProfile(iconsAsButtons: bool, defaultTimeline: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         profileStyle = \
-            cssFile.read().replace('image.png',
-                                   profileJson['image']['url'])
+            profileStyle.replace('image.png',
+                                 profileJson['image']['url'])
         if isSystemAccount(nickname):
             bannerFile, bannerFilename = \
                 getBannerFile(baseDir, nickname, domain)
@@ -5854,7 +5882,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
+def htmlLinksMobile(cssCache: {}, baseDir: str,
+                    nickname: str, domainFull: str,
                     httpPrefix: str, translate,
                     timelinePath: str) -> str:
     """Show the left column links within mobile view
@@ -5866,11 +5895,8 @@ def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = None
-    with open(cssFilename, 'r') as cssFile:
-        # load css
-        profileStyle = \
-            cssFile.read()
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         # replace any https within the css with whatever prefix is needed
         if httpPrefix != 'https':
             profileStyle = \
@@ -5894,7 +5920,7 @@ def htmlLinksMobile(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlNewswireMobile(baseDir: str, nickname: str,
+def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        domain: str, domainFull: str,
                        httpPrefix: str, translate: {},
                        newswire: {},
@@ -5910,11 +5936,8 @@ def htmlNewswireMobile(baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = None
-    with open(cssFilename, 'r') as cssFile:
-        # load css
-        profileStyle = \
-            cssFile.read()
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         # replace any https within the css with whatever prefix is needed
         if httpPrefix != 'https':
             profileStyle = \
@@ -6273,7 +6296,7 @@ def getTimelineButtonHeader(defaultTimeline: str,
     return tlStr
 
 
-def htmlTimeline(defaultTimeline: str,
+def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
                  itemsPerPage: int, session, baseDir: str,
@@ -6360,16 +6383,20 @@ def htmlTimeline(defaultTimeline: str,
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 1 = ' + str(timeDiff))
 
-    with open(cssFilename, 'r') as cssFile:
-        # load css
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if not profileStyle:
+        print('ERROR: css file not found ' + cssFilename)
+        return None
+
+    # load css
+    profileStyle = \
+        profileStyle.replace('banner.png',
+                             '/users/' + nickname + '/' + bannerFile)
+    # replace any https within the css with whatever prefix is needed
+    if httpPrefix != 'https':
         profileStyle = \
-            cssFile.read().replace('banner.png',
-                                   '/users/' + nickname + '/' + bannerFile)
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://',
-                                     httpPrefix + '://')
+            profileStyle.replace('https://',
+                                 httpPrefix + '://')
 
     # is the user a moderator?
     if not moderator:
@@ -6856,7 +6883,7 @@ def htmlTimeline(defaultTimeline: str,
     return tlStr
 
 
-def htmlShares(defaultTimeline: str,
+def htmlShares(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, baseDir: str, wfRequest: {}, personCache: {},
@@ -6876,7 +6903,8 @@ def htmlShares(defaultTimeline: str,
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
 
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, None,
@@ -6890,7 +6918,7 @@ def htmlShares(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlInbox(defaultTimeline: str,
+def htmlInbox(cssCache: {}, defaultTimeline: str,
               recentPostsCache: {}, maxRecentPosts: int,
               translate: {}, pageNumber: int, itemsPerPage: int,
               session, baseDir: str, wfRequest: {}, personCache: {},
@@ -6910,7 +6938,8 @@ def htmlInbox(defaultTimeline: str,
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
 
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson,
@@ -6924,7 +6953,7 @@ def htmlInbox(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlBookmarks(defaultTimeline: str,
+def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   recentPostsCache: {}, maxRecentPosts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
                   session, baseDir: str, wfRequest: {}, personCache: {},
@@ -6944,7 +6973,8 @@ def htmlBookmarks(defaultTimeline: str,
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
 
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, bookmarksJson,
@@ -6958,7 +6988,7 @@ def htmlBookmarks(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlEvents(defaultTimeline: str,
+def htmlEvents(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, baseDir: str, wfRequest: {}, personCache: {},
@@ -6978,7 +7008,8 @@ def htmlEvents(defaultTimeline: str,
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
 
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, bookmarksJson,
@@ -6992,7 +7023,7 @@ def htmlEvents(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlInboxDMs(defaultTimeline: str,
+def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int, itemsPerPage: int,
                  session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7009,7 +7040,8 @@ def htmlInboxDMs(defaultTimeline: str,
                  publishButtonAtTop: bool) -> str:
     """Show the DM timeline as html
     """
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
@@ -7021,7 +7053,7 @@ def htmlInboxDMs(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlInboxReplies(defaultTimeline: str,
+def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      recentPostsCache: {}, maxRecentPosts: int,
                      translate: {}, pageNumber: int, itemsPerPage: int,
                      session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7038,7 +7070,8 @@ def htmlInboxReplies(defaultTimeline: str,
                      publishButtonAtTop: bool) -> str:
     """Show the replies timeline as html
     """
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
@@ -7051,7 +7084,7 @@ def htmlInboxReplies(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlInboxMedia(defaultTimeline: str,
+def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7068,7 +7101,8 @@ def htmlInboxMedia(defaultTimeline: str,
                    publishButtonAtTop: bool) -> str:
     """Show the media timeline as html
     """
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
@@ -7081,7 +7115,7 @@ def htmlInboxMedia(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlInboxBlogs(defaultTimeline: str,
+def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7098,7 +7132,8 @@ def htmlInboxBlogs(defaultTimeline: str,
                    publishButtonAtTop: bool) -> str:
     """Show the blogs timeline as html
     """
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
@@ -7111,7 +7146,7 @@ def htmlInboxBlogs(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlInboxNews(defaultTimeline: str,
+def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   recentPostsCache: {}, maxRecentPosts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
                   session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7128,7 +7163,8 @@ def htmlInboxNews(defaultTimeline: str,
                   publishButtonAtTop: bool) -> str:
     """Show the news timeline as html
     """
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlnews',
@@ -7141,7 +7177,7 @@ def htmlInboxNews(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlModeration(defaultTimeline: str,
+def htmlModeration(cssCache: {}, defaultTimeline: str,
                    recentPostsCache: {}, maxRecentPosts: int,
                    translate: {}, pageNumber: int, itemsPerPage: int,
                    session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7158,7 +7194,8 @@ def htmlModeration(defaultTimeline: str,
                    publishButtonAtTop: bool) -> str:
     """Show the moderation feed as html
     """
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
@@ -7169,7 +7206,7 @@ def htmlModeration(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlOutbox(defaultTimeline: str,
+def htmlOutbox(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
                session, baseDir: str, wfRequest: {}, personCache: {},
@@ -7188,7 +7225,8 @@ def htmlOutbox(defaultTimeline: str,
     """
     manuallyApproveFollowers = \
         followerApprovalActive(baseDir, nickname, domain)
-    return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, outboxJson, 'outbox',
@@ -7200,7 +7238,8 @@ def htmlOutbox(defaultTimeline: str,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop)
 
 
-def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
+def htmlIndividualPost(cssCache: {},
+                       recentPostsCache: {}, maxRecentPosts: int,
                        translate: {},
                        baseDir: str, session, wfRequest: {}, personCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
@@ -7311,15 +7350,17 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        postsCSS = cssFile.read()
+
+    postsCSS = getCSS(baseDir, cssFilename, cssCache)
+    if postsCSS:
         if httpPrefix != 'https':
             postsCSS = postsCSS.replace('https://',
                                         httpPrefix + '://')
     return htmlHeader(cssFilename, postsCSS) + postStr + htmlFooter()
 
 
-def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
+def htmlPostReplies(cssCache: {},
+                    recentPostsCache: {}, maxRecentPosts: int,
                     translate: {}, baseDir: str,
                     session, wfRequest: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
@@ -7347,15 +7388,16 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        postsCSS = cssFile.read()
+
+    postsCSS = getCSS(baseDir, cssFilename, cssCache)
+    if postsCSS:
         if httpPrefix != 'https':
             postsCSS = postsCSS.replace('https://',
                                         httpPrefix + '://')
     return htmlHeader(cssFilename, postsCSS) + repliesStr + htmlFooter()
 
 
-def htmlRemoveSharedItem(translate: {}, baseDir: str,
+def htmlRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
                          actor: str, shareName: str,
                          callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
@@ -7392,8 +7434,8 @@ def htmlRemoveSharedItem(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
     sharesStr = htmlHeader(cssFilename, profileStyle)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
@@ -7424,7 +7466,8 @@ def htmlRemoveSharedItem(translate: {}, baseDir: str,
     return sharesStr
 
 
-def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
+def htmlDeletePost(cssCache: {},
+                   recentPostsCache: {}, maxRecentPosts: int,
                    translate, pageNumber: int,
                    session, baseDir: str, messageId: str,
                    httpPrefix: str, projectVersion: str,
@@ -7462,8 +7505,9 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         if httpPrefix != 'https':
             profileStyle = profileStyle.replace('https://',
                                                 httpPrefix + '://')
@@ -7504,7 +7548,7 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
     return deletePostStr
 
 
-def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
+def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
                               path: str, httpPrefix: str,
                               domainFull: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
@@ -7533,8 +7577,9 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         if httpPrefix != 'https':
             profileStyle = profileStyle.replace('https://',
                                                 httpPrefix + '://')
@@ -7575,7 +7620,7 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
     return deletePostStr
 
 
-def htmlFollowConfirm(translate: {}, baseDir: str,
+def htmlFollowConfirm(cssCache: {}, translate: {}, baseDir: str,
                       originPathStr: str,
                       followActor: str,
                       followProfileUrl: str) -> str:
@@ -7591,8 +7636,8 @@ def htmlFollowConfirm(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
     followStr = htmlHeader(cssFilename, profileStyle)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -7620,7 +7665,7 @@ def htmlFollowConfirm(translate: {}, baseDir: str,
     return followStr
 
 
-def htmlUnfollowConfirm(translate: {}, baseDir: str,
+def htmlUnfollowConfirm(cssCache: {}, translate: {}, baseDir: str,
                         originPathStr: str,
                         followActor: str,
                         followProfileUrl: str) -> str:
@@ -7636,8 +7681,9 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+
     followStr = htmlHeader(cssFilename, profileStyle)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
@@ -7666,7 +7712,7 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
     return followStr
 
 
-def htmlPersonOptions(translate: {}, baseDir: str,
+def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
                       domain: str, domainFull: str,
                       originPathStr: str,
                       optionsActor: str,
@@ -7726,8 +7772,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-options.css'
     if os.path.isfile(baseDir + '/options.css'):
         cssFilename = baseDir + '/options.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         profileStyle = \
             profileStyle.replace('--follow-text-entry-width: 90%;',
                                  '--follow-text-entry-width: 20%;')
@@ -7888,7 +7935,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     return optionsStr
 
 
-def htmlUnblockConfirm(translate: {}, baseDir: str,
+def htmlUnblockConfirm(cssCache: {}, translate: {}, baseDir: str,
                        originPathStr: str,
                        blockActor: str,
                        blockProfileUrl: str) -> str:
@@ -7904,8 +7951,9 @@ def htmlUnblockConfirm(translate: {}, baseDir: str,
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+
     blockStr = htmlHeader(cssFilename, profileStyle)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'
@@ -7933,7 +7981,7 @@ def htmlUnblockConfirm(translate: {}, baseDir: str,
     return blockStr
 
 
-def htmlSearchEmojiTextEntry(translate: {},
+def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
                              baseDir: str, path: str) -> str:
     """Search for an emoji by name
     """
@@ -7954,8 +8002,9 @@ def htmlSearchEmojiTextEntry(translate: {},
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+
     emojiStr = htmlHeader(cssFilename, profileStyle)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
@@ -7987,7 +8036,7 @@ def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
     return int(firstDayOfMonth.strftime("%w")) + 1
 
 
-def htmlCalendarDay(translate: {},
+def htmlCalendarDay(cssCache: {}, translate: {},
                     baseDir: str, path: str,
                     year: int, monthNumber: int, dayNumber: int,
                     nickname: str, domain: str, dayEvents: [],
@@ -8002,8 +8051,8 @@ def htmlCalendarDay(translate: {},
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):
         cssFilename = baseDir + '/calendar.css'
-    with open(cssFilename, 'r') as cssFile:
-        calendarStyle = cssFile.read()
+
+    calendarStyle = getCSS(baseDir, cssFilename, cssCache)
 
     calActor = actor
     if '/users/' in actor:
@@ -8095,7 +8144,7 @@ def htmlCalendarDay(translate: {},
     return calendarStr
 
 
-def htmlCalendar(translate: {},
+def htmlCalendar(cssCache: {}, translate: {},
                  baseDir: str, path: str,
                  httpPrefix: str, domainFull: str) -> str:
     """Show the calendar for a person
@@ -8154,7 +8203,7 @@ def htmlCalendar(translate: {},
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return htmlCalendarDay(translate, baseDir, path,
+        return htmlCalendarDay(cssCache, translate, baseDir, path,
                                year, monthNumber, dayNumber,
                                nickname, domain, dayEvents,
                                monthName, actor)
@@ -8188,8 +8237,8 @@ def htmlCalendar(translate: {},
     cssFilename = baseDir + '/epicyon-calendar.css'
     if os.path.isfile(baseDir + '/calendar.css'):
         cssFilename = baseDir + '/calendar.css'
-    with open(cssFilename, 'r') as cssFile:
-        calendarStyle = cssFile.read()
+
+    calendarStyle = getCSS(baseDir, cssFilename, cssCache)
 
     calActor = actor
     if '/users/' in actor:
@@ -8393,7 +8442,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
     return tagSwarmHtml
 
 
-def htmlSearch(translate: {},
+def htmlSearch(cssCache: {}, translate: {},
                baseDir: str, path: str, domain: str) -> str:
     """Search called from the timeline icon
     """
@@ -8408,8 +8457,9 @@ def htmlSearch(translate: {},
     cssFilename = baseDir + '/epicyon-search.css'
     if os.path.isfile(baseDir + '/search.css'):
         cssFilename = baseDir + '/search.css'
-    with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+
     followStr = htmlHeader(cssFilename, profileStyle)
 
     # show a banner above the search box
@@ -8458,7 +8508,8 @@ def htmlSearch(translate: {},
     return followStr
 
 
-def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
+def htmlProfileAfterSearch(cssCache: {},
+                           recentPostsCache: {}, maxRecentPosts: int,
                            translate: {},
                            baseDir: str, path: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
@@ -8517,7 +8568,9 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
         wf = \
             webfingerHandle(session,
                             searchNickname + '@' + searchDomainFull,
@@ -8592,8 +8645,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if profileJson['image'].get('url'):
                 profileBackgroundImage = profileJson['image']['url']
 
-        profileStyle = cssFile.read().replace('image.png',
-                                              profileBackgroundImage)
+        profileStyle = profileStyle.replace('image.png',
+                                            profileBackgroundImage)
         if httpPrefix != 'https':
             profileStyle = profileStyle.replace('https://',
                                                 httpPrefix + '://')

@@ -1298,7 +1298,8 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if isSuspended(baseDir, loginNickname):
                     msg = \
-                        htmlSuspended(baseDir).encode('utf-8')
+                        htmlSuspended(self.server.cssCache,
+                                      baseDir).encode('utf-8')
                     self._login_headers('text/html',
                                         len(msg), callingDomain)
                     self._write(msg)
@@ -1420,7 +1421,8 @@ class PubServer(BaseHTTPRequestHandler):
                         moderationText = \
                             urllib.parse.unquote_plus(modText.strip())
                 elif moderationStr.startswith('submitInfo'):
-                    msg = htmlModerationInfo(self.server.translate,
+                    msg = htmlModerationInfo(self.server.cssCache,
+                                             self.server.translate,
                                              baseDir, httpPrefix)
                     msg = msg.encode('utf-8')
                     self._login_headers('text/html',
@@ -1763,7 +1765,8 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Unblocking ' + optionsActor)
             msg = \
-                htmlUnblockConfirm(self.server.translate,
+                htmlUnblockConfirm(self.server.cssCache,
+                                   self.server.translate,
                                    baseDir,
                                    usersPath,
                                    optionsActor,
@@ -1780,7 +1783,8 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Following ' + optionsActor)
             msg = \
-                htmlFollowConfirm(self.server.translate,
+                htmlFollowConfirm(self.server.cssCache,
+                                  self.server.translate,
                                   baseDir,
                                   usersPath,
                                   optionsActor,
@@ -1797,7 +1801,8 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Unfollowing ' + optionsActor)
             msg = \
-                htmlUnfollowConfirm(self.server.translate,
+                htmlUnfollowConfirm(self.server.cssCache,
+                                    self.server.translate,
                                     baseDir,
                                     usersPath,
                                     optionsActor,
@@ -1814,7 +1819,8 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Sending DM to ' + optionsActor)
             reportPath = path.replace('/personoptions', '') + '/newdm'
-            msg = htmlNewPost(False, self.server.translate,
+            msg = htmlNewPost(self.server.cssCache,
+                              False, self.server.translate,
                               baseDir,
                               httpPrefix,
                               reportPath, None,
@@ -1881,7 +1887,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Reporting ' + optionsActor)
             reportPath = \
                 path.replace('/personoptions', '') + '/newreport'
-            msg = htmlNewPost(False, self.server.translate,
+            msg = htmlNewPost(self.server.cssCache,
+                              False, self.server.translate,
                               baseDir,
                               httpPrefix,
                               reportPath, None, [],
@@ -2307,9 +2314,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = getNicknameFromActor(actorStr)
                 # hashtag search
                 hashtagStr = \
-                    htmlHashtagSearch(nickname,
-                                      domain,
-                                      port,
+                    htmlHashtagSearch(self.server.cssCache,
+                                      nickname, domain, port,
                                       self.server.recentPostsCache,
                                       self.server.maxRecentPosts,
                                       self.server.translate,
@@ -2334,7 +2340,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # skill search
                 searchStr = searchStr.replace('*', '').strip()
                 skillStr = \
-                    htmlSkillsSearch(self.server.translate,
+                    htmlSkillsSearch(self.server.cssCache,
+                                     self.server.translate,
                                      baseDir,
                                      httpPrefix,
                                      searchStr,
@@ -2352,7 +2359,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = getNicknameFromActor(actorStr)
                 searchStr = searchStr.replace('!', '').strip()
                 historyStr = \
-                    htmlHistorySearch(self.server.translate,
+                    htmlHistorySearch(self.server.cssCache,
+                                      self.server.translate,
                                       baseDir,
                                       httpPrefix,
                                       nickname,
@@ -2396,7 +2404,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                 profilePathStr = path.replace('/searchhandle', '')
                 profileStr = \
-                    htmlProfileAfterSearch(self.server.recentPostsCache,
+                    htmlProfileAfterSearch(self.server.cssCache,
+                                           self.server.recentPostsCache,
                                            self.server.maxRecentPosts,
                                            self.server.translate,
                                            baseDir,
@@ -2437,7 +2446,8 @@ class PubServer(BaseHTTPRequestHandler):
                         searchStr.replace(' emoji', '')
                 # emoji search
                 emojiStr = \
-                    htmlSearchEmoji(self.server.translate,
+                    htmlSearchEmoji(self.server.cssCache,
+                                    self.server.translate,
                                     baseDir,
                                     httpPrefix,
                                     searchStr)
@@ -2451,7 +2461,8 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 # shared items search
                 sharedItemsStr = \
-                    htmlSearchSharedItems(self.server.translate,
+                    htmlSearchSharedItems(self.server.cssCache,
+                                          self.server.translate,
                                           baseDir,
                                           searchStr, pageNumber,
                                           maxPostsInFeed,
@@ -4540,7 +4551,8 @@ class PubServer(BaseHTTPRequestHandler):
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
-            msg = htmlPersonOptions(self.server.translate,
+            msg = htmlPersonOptions(self.server.cssCache,
+                                    self.server.translate,
                                     baseDir, domain,
                                     domainFull,
                                     originPathStr,
@@ -4772,7 +4784,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
         if isBlockedHashtag(baseDir, hashtag):
-            msg = htmlHashtagBlocked(baseDir,
+            msg = htmlHashtagBlocked(self.server.cssCache, baseDir,
                                      self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
@@ -4785,8 +4797,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = \
                 getNicknameFromActor(actor)
         hashtagStr = \
-            htmlHashtagSearch(nickname,
-                              domain, port,
+            htmlHashtagSearch(self.server.cssCache,
+                              nickname, domain, port,
                               self.server.recentPostsCache,
                               self.server.maxRecentPosts,
                               self.server.translate,
@@ -5696,7 +5708,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             deleteStr = \
-                htmlDeletePost(self.server.recentPostsCache,
+                htmlDeletePost(self.server.cssCache,
+                               self.server.recentPostsCache,
                                self.server.maxRecentPosts,
                                self.server.translate, pageNumber,
                                self.server.session, baseDir,
@@ -5890,7 +5903,8 @@ class PubServer(BaseHTTPRequestHandler):
                 projectVersion = self.server.projectVersion
                 ytDomain = self.server.YTReplacementDomain
                 msg = \
-                    htmlPostReplies(recentPostsCache,
+                    htmlPostReplies(self.server.cssCache,
+                                    recentPostsCache,
                                     maxRecentPosts,
                                     translate,
                                     baseDir,
@@ -5971,7 +5985,8 @@ class PubServer(BaseHTTPRequestHandler):
                 projectVersion = self.server.projectVersion
                 ytDomain = self.server.YTReplacementDomain
                 msg = \
-                    htmlPostReplies(recentPostsCache,
+                    htmlPostReplies(self.server.cssCache,
+                                    recentPostsCache,
                                     maxRecentPosts,
                                     translate,
                                     baseDir,
@@ -6051,7 +6066,8 @@ class PubServer(BaseHTTPRequestHandler):
                     iconsAsButtons = \
                         self.server.iconsAsButtons
                     msg = \
-                        htmlProfile(iconsAsButtons,
+                        htmlProfile(self.server.cssCache,
+                                    iconsAsButtons,
                                     defaultTimeline,
                                     recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -6128,7 +6144,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 iconsAsButtons = \
                                     self.server.iconsAsButtons
                                 msg = \
-                                    htmlProfile(iconsAsButtons,
+                                    htmlProfile(self.server.cssCache,
+                                                iconsAsButtons,
                                                 defaultTimeline,
                                                 recentPostsCache,
                                                 self.server.maxRecentPosts,
@@ -6244,8 +6261,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain
                                 showPublishedDateOnly = \
                                     self.server.showPublishedDateOnly
+                                cssCache = self.server.cssCache
                                 msg = \
-                                    htmlIndividualPost(recentPostsCache,
+                                    htmlIndividualPost(cssCache,
+                                                       recentPostsCache,
                                                        maxRecentPosts,
                                                        translate,
                                                        self.server.session,
@@ -6355,7 +6374,8 @@ class PubServer(BaseHTTPRequestHandler):
                     showPublishedDateOnly = \
                         self.server.showPublishedDateOnly
                     msg = \
-                        htmlIndividualPost(recentPostsCache,
+                        htmlIndividualPost(self.server.cssCache,
+                                           recentPostsCache,
                                            maxRecentPosts,
                                            translate,
                                            baseDir,
@@ -6472,7 +6492,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show inbox page')
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
-                        msg = htmlInbox(defaultTimeline,
+                        msg = htmlInbox(self.server.cssCache,
+                                        defaultTimeline,
                                         recentPostsCache,
                                         maxRecentPosts,
                                         translate,
@@ -6593,7 +6614,8 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         msg = \
-                            htmlInboxDMs(self.server.defaultTimeline,
+                            htmlInboxDMs(self.server.cssCache,
+                                         self.server.defaultTimeline,
                                          self.server.recentPostsCache,
                                          self.server.maxRecentPosts,
                                          self.server.translate,
@@ -6707,7 +6729,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     msg = \
-                        htmlInboxReplies(self.server.defaultTimeline,
+                        htmlInboxReplies(self.server.cssCache,
+                                         self.server.defaultTimeline,
                                          self.server.recentPostsCache,
                                          self.server.maxRecentPosts,
                                          self.server.translate,
@@ -6821,7 +6844,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     msg = \
-                        htmlInboxMedia(self.server.defaultTimeline,
+                        htmlInboxMedia(self.server.cssCache,
+                                       self.server.defaultTimeline,
                                        self.server.recentPostsCache,
                                        self.server.maxRecentPosts,
                                        self.server.translate,
@@ -6935,7 +6959,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     msg = \
-                        htmlInboxBlogs(self.server.defaultTimeline,
+                        htmlInboxBlogs(self.server.cssCache,
+                                       self.server.defaultTimeline,
                                        self.server.recentPostsCache,
                                        self.server.maxRecentPosts,
                                        self.server.translate,
@@ -7057,7 +7082,8 @@ class PubServer(BaseHTTPRequestHandler):
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     msg = \
-                        htmlInboxNews(self.server.defaultTimeline,
+                        htmlInboxNews(self.server.cssCache,
+                                      self.server.defaultTimeline,
                                       self.server.recentPostsCache,
                                       self.server.maxRecentPosts,
                                       self.server.translate,
@@ -7142,7 +7168,8 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             pageNumber = 1
                     msg = \
-                        htmlShares(self.server.defaultTimeline,
+                        htmlShares(self.server.cssCache,
+                                   self.server.defaultTimeline,
                                    self.server.recentPostsCache,
                                    self.server.maxRecentPosts,
                                    self.server.translate,
@@ -7238,7 +7265,8 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         msg = \
-                            htmlBookmarks(self.server.defaultTimeline,
+                            htmlBookmarks(self.server.cssCache,
+                                          self.server.defaultTimeline,
                                           self.server.recentPostsCache,
                                           self.server.maxRecentPosts,
                                           self.server.translate,
@@ -7355,7 +7383,8 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         msg = \
-                            htmlEvents(self.server.defaultTimeline,
+                            htmlEvents(self.server.cssCache,
+                                       self.server.defaultTimeline,
                                        self.server.recentPostsCache,
                                        self.server.maxRecentPosts,
                                        self.server.translate,
@@ -7464,7 +7493,8 @@ class PubServer(BaseHTTPRequestHandler):
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
                 msg = \
-                    htmlOutbox(self.server.defaultTimeline,
+                    htmlOutbox(self.server.cssCache,
+                               self.server.defaultTimeline,
                                self.server.recentPostsCache,
                                self.server.maxRecentPosts,
                                self.server.translate,
@@ -7564,7 +7594,8 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         msg = \
-                            htmlModeration(self.server.defaultTimeline,
+                            htmlModeration(self.server.cssCache,
+                                           self.server.defaultTimeline,
                                            self.server.recentPostsCache,
                                            self.server.maxRecentPosts,
                                            self.server.translate,
@@ -7666,7 +7697,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
                     msg = \
-                        htmlProfile(self.server.iconsAsButtons,
+                        htmlProfile(self.server.cssCache,
+                                    self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -7755,7 +7787,8 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
 
                     msg = \
-                        htmlProfile(self.server.iconsAsButtons,
+                        htmlProfile(self.server.cssCache,
+                                    self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -7843,7 +7876,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
                     msg = \
-                        htmlProfile(self.server.iconsAsButtons,
+                        htmlProfile(self.server.cssCache,
+                                    self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
                                     self.server.maxRecentPosts,
@@ -7907,7 +7941,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return True
                 msg = \
-                    htmlProfile(self.server.iconsAsButtons,
+                    htmlProfile(self.server.cssCache,
+                                self.server.iconsAsButtons,
                                 self.server.defaultTimeline,
                                 self.server.recentPostsCache,
                                 self.server.maxRecentPosts,
@@ -8362,9 +8397,9 @@ class PubServer(BaseHTTPRequestHandler):
         if '?' in postDay:
             postDay = postDay.split('?')[0]
         # show the confirmation screen screen
-        msg = htmlCalendarDeleteConfirm(translate,
-                                        baseDir,
-                                        path,
+        msg = htmlCalendarDeleteConfirm(self.server.cssCache,
+                                        translate,
+                                        baseDir, path,
                                         httpPrefix,
                                         domainFull,
                                         postId, postTime,
@@ -8418,7 +8453,8 @@ class PubServer(BaseHTTPRequestHandler):
                     break
         if isNewPostEndpoint:
             nickname = getNicknameFromActor(path)
-            msg = htmlNewPost(mediaInstance,
+            msg = htmlNewPost(self.server.cssCache,
+                              mediaInstance,
                               translate,
                               baseDir,
                               httpPrefix,
@@ -8451,7 +8487,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the edit profile screen
         """
         if '/users/' in path and path.endswith('/editprofile'):
-            msg = htmlEditProfile(translate,
+            msg = htmlEditProfile(self.server.cssCache,
+                                  translate,
                                   baseDir,
                                   path, domain,
                                   port,
@@ -8473,7 +8510,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the links from the left column
         """
         if '/users/' in path and path.endswith('/editlinks'):
-            msg = htmlEditLinks(translate,
+            msg = htmlEditLinks(self.server.cssCache,
+                                translate,
                                 baseDir,
                                 path, domain,
                                 port,
@@ -8495,7 +8533,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the newswire from the right column
         """
         if '/users/' in path and path.endswith('/editnewswire'):
-            msg = htmlEditNewswire(translate,
+            msg = htmlEditNewswire(self.server.cssCache,
+                                   translate,
                                    baseDir,
                                    path, domain,
                                    port,
@@ -8524,7 +8563,8 @@ class PubServer(BaseHTTPRequestHandler):
             postUrl = httpPrefix + '://' + domainFull + \
                 '/users/news/statuses/' + postId
             path = path.split('/editnewspost=')[0]
-            msg = htmlEditNewsPost(translate, baseDir,
+            msg = htmlEditNewsPost(self.server.cssCache,
+                                   translate, baseDir,
                                    path, domain, port,
                                    httpPrefix,
                                    postUrl).encode('utf-8')
@@ -8618,7 +8658,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/logout':
             if not self.server.newsInstance:
                 msg = \
-                    htmlLogin(self.server.translate,
+                    htmlLogin(self.server.cssCache,
+                              self.server.translate,
                               self.server.baseDir, False).encode('utf-8')
                 self._logout_headers('text/html', len(msg), callingDomain)
                 self._write(msg)
@@ -8957,7 +8998,8 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
-            msg = htmlRemoveSharedItem(self.server.translate,
+            msg = htmlRemoveSharedItem(self.server.cssCache,
+                                       self.server.translate,
                                        self.server.baseDir,
                                        actor, shareName,
                                        callingDomain).encode('utf-8')
@@ -8986,14 +9028,17 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/terms'):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
-                msg = htmlTermsOfService(self.server.baseDir, 'http',
+                msg = htmlTermsOfService(self.server.cssCache,
+                                         self.server.baseDir, 'http',
                                          self.server.onionDomain)
             elif (callingDomain.endswith('.i2p') and
                   self.server.i2pDomain):
-                msg = htmlTermsOfService(self.server.baseDir, 'http',
+                msg = htmlTermsOfService(self.server.cssCache,
+                                         self.server.baseDir, 'http',
                                          self.server.i2pDomain)
             else:
-                msg = htmlTermsOfService(self.server.baseDir,
+                msg = htmlTermsOfService(self.server.cssCache,
+                                         self.server.baseDir,
                                          self.server.httpPrefix,
                                          self.server.domainFull)
             msg = msg.encode('utf-8')
@@ -9018,7 +9063,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not os.path.isfile(followingFilename):
                 self._404()
                 return
-            msg = htmlFollowingList(self.server.baseDir, followingFilename)
+            msg = htmlFollowingList(self.server.cssCache,
+                                    self.server.baseDir, followingFilename)
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg.encode('utf-8'))
             self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -9033,17 +9079,20 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/about'):
             if callingDomain.endswith('.onion'):
                 msg = \
-                    htmlAbout(self.server.baseDir, 'http',
+                    htmlAbout(self.server.cssCache,
+                              self.server.baseDir, 'http',
                               self.server.onionDomain,
                               None)
             elif callingDomain.endswith('.i2p'):
                 msg = \
-                    htmlAbout(self.server.baseDir, 'http',
+                    htmlAbout(self.server.cssCache,
+                              self.server.baseDir, 'http',
                               self.server.i2pDomain,
                               None)
             else:
                 msg = \
-                    htmlAbout(self.server.baseDir,
+                    htmlAbout(self.server.cssCache,
+                              self.server.baseDir,
                               self.server.httpPrefix,
                               self.server.domainFull,
                               self.server.onionDomain)
@@ -9393,7 +9442,8 @@ class PubServer(BaseHTTPRequestHandler):
              not authorized and
              not self.server.newsInstance)):
             # request basic auth
-            msg = htmlLogin(self.server.translate,
+            msg = htmlLogin(self.server.cssCache,
+                            self.server.translate,
                             self.server.baseDir).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
@@ -9448,7 +9498,8 @@ class PubServer(BaseHTTPRequestHandler):
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 showPublishAsIcon = self.server.showPublishAsIcon
-                msg = htmlNewswireMobile(self.server.baseDir,
+                msg = htmlNewswireMobile(self.server.cssCache,
+                                         self.server.baseDir,
                                          nickname,
                                          self.server.domain,
                                          self.server.domainFull,
@@ -9473,7 +9524,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             timelinePath = \
                 '/users/' + nickname + '/' + self.server.defaultTimeline
-            msg = htmlLinksMobile(self.server.baseDir, nickname,
+            msg = htmlLinksMobile(self.server.cssCache,
+                                  self.server.baseDir, nickname,
                                   self.server.domainFull,
                                   self.server.httpPrefix,
                                   self.server.translate,
@@ -9541,7 +9593,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?' in self.path:
                     self.path = self.path.split('?')[0]
                 # show the search screen
-                msg = htmlSearch(self.server.translate,
+                msg = htmlSearch(self.server.cssCache,
+                                 self.server.translate,
                                  self.server.baseDir, self.path,
                                  self.server.domain).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
@@ -9560,7 +9613,8 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
             if '/calendar' in self.path:
                 # show the calendar screen
-                msg = htmlCalendar(self.server.translate,
+                msg = htmlCalendar(self.server.cssCache,
+                                   self.server.translate,
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
                                    self.server.domainFull).encode('utf-8')
@@ -9600,7 +9654,8 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
             if self.path.endswith('/searchemoji'):
                 # show the search screen
-                msg = htmlSearchEmojiTextEntry(self.server.translate,
+                msg = htmlSearchEmojiTextEntry(self.server.cssCache,
+                                               self.server.translate,
                                                self.server.baseDir,
                                                self.path).encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -12343,6 +12398,9 @@ def runDaemon(publishButtonAtTop: bool,
     httpd.instanceOnlySkillsSearch = instanceOnlySkillsSearch
     # contains threads used to send posts to followers
     httpd.followersThreads = []
+
+    # cache to store css files
+    httpd.cssCache = {}
 
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)

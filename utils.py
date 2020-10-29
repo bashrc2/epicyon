@@ -1053,6 +1053,35 @@ def fileLastModified(filename: str) -> str:
     return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
+    """Retrieves the css for a given file, or from a cache
+    """
+    # does the css file exist?
+    if not os.path.isfile(cssFilename):
+        return None
+
+    lastModified = fileLastModified(cssFilename)
+
+    # has this already been loaded into the cache?
+    if cssCache.get(cssFilename):
+        if cssCache[cssFilename][0] == lastModified:
+            # file hasn't changed, so return the version in the cache
+            return cssCache[cssFilename][1]
+
+    with open(cssFilename, 'r') as fpCSS:
+        css = fpCSS.read()
+        if cssCache.get(cssFilename):
+            # alter the cache contents
+            cssCache[cssFilename][0] = lastModified
+            cssCache[cssFilename][1] = css
+        else:
+            # add entry to the cache
+            cssCache[cssFilename] = [lastModified, css]
+        return css
+
+    return None
+
+
 def daysInMonth(year: int, monthNumber: int) -> int:
     """Returns the number of days in the month
     """
