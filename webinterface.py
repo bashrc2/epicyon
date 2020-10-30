@@ -6004,6 +6004,12 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
+        '<img class="timeline-banner" src="/users/news/banner.png" />\n'
+    
+    htmlStr += '<center>' + \
+        headerButtonsFrontScreen(translate, nickname,
+                                 'newswire', authorized) + '</center>'
+    htmlStr += \
         getRightColumnContent(baseDir, nickname, domainFull,
                               httpPrefix, translate,
                               iconsDir, moderator, editor,
