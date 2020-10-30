@@ -3702,7 +3702,7 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
                                       iconsDir, False, False,
                                       newswire, False,
                                       False, None, False, False,
-                                      False, True, authorized)
+                                      False, True, authorized, True)
             profileFooterStr += '      </td>\n'
             profileFooterStr += '  </tr>\n'
             profileFooterStr += '  </tbody>\n'
@@ -5806,7 +5806,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           showPublishAsIcon: bool,
                           rssIconAtTop: bool,
                           publishButtonAtTop: bool,
-                          authorized: bool) -> str:
+                          authorized: bool,
+                          showHeaderImage: bool) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -5833,30 +5834,33 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if publishButtonAtTop:
         htmlStr += '<center>' + publishButtonStr + '</center>'
 
-    rightColumnImageFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/right_col_image.png'
-    if not os.path.isfile(rightColumnImageFilename):
-        theme = getConfigParam(baseDir, 'theme').lower()
-        if theme == 'default':
-            theme = ''
-        else:
-            theme = '_' + theme
-        themeRightColumnImageFilename = \
-            baseDir + '/img/right_col_image' + theme + '.png'
-        if os.path.isfile(themeRightColumnImageFilename):
-            copyfile(themeRightColumnImageFilename, rightColumnImageFilename)
+    editImageClass = ''
+    if showHeaderImage:
+        rightColumnImageFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + \
+            '/right_col_image.png'
+        if not os.path.isfile(rightColumnImageFilename):
+            theme = getConfigParam(baseDir, 'theme').lower()
+            if theme == 'default':
+                theme = ''
+            else:
+                theme = '_' + theme
+            themeRightColumnImageFilename = \
+                baseDir + '/img/right_col_image' + theme + '.png'
+            if os.path.isfile(themeRightColumnImageFilename):
+                copyfile(themeRightColumnImageFilename,
+                         rightColumnImageFilename)
 
-    # show the image at the top of the column
-    editImageClass = 'rightColEdit'
-    if os.path.isfile(rightColumnImageFilename):
-        editImageClass = 'rightColEditImage'
-        htmlStr += \
-            '\n      <center>\n' + \
-            '          <img class="rightColImg" ' + \
-            'loading="lazy" src="/users/' + \
-            nickname + '/right_col_image.png" />\n' + \
-            '      </center>\n'
+        # show the image at the top of the column
+        editImageClass = 'rightColEdit'
+        if os.path.isfile(rightColumnImageFilename):
+            editImageClass = 'rightColEditImage'
+            htmlStr += \
+                '\n      <center>\n' + \
+                '          <img class="rightColImg" ' + \
+                'loading="lazy" src="/users/' + \
+                nickname + '/right_col_image.png" />\n' + \
+                '      </center>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
@@ -6026,7 +6030,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                               newswire, positiveVoting,
                               True, timelinePath, showPublishButton,
                               showPublishAsIcon, True, False,
-                              authorized)
+                              authorized, False)
     htmlStr += htmlFooter()
     return htmlStr
 
@@ -6913,7 +6917,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            False, None, True,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
-                                           authorized)
+                                           authorized, True)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
