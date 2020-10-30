@@ -5967,7 +5967,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              iconsDir, editor,
-                             True, timelinePath, True, False)
+                             False, timelinePath, True, False)
     htmlStr += '</div>\n' + htmlFooter()
     return htmlStr
 
