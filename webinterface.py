@@ -3322,20 +3322,18 @@ def headerButtonsFrontScreen(translate: {},
             '</span></button></a>\n'
         if not authorized:
             headerStr += \
-                '        <a href="/login' + \
-                '"><button class="buttonMobile">' + \
+                '        <a href="/login">' + \
+                '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>\n'
         headerStr += \
-            '        <a href="' + \
-            '/users/news/newswiremobile' + \
-            '"><button class="' + buttonNewswire + '">' + \
+            '        <a href="/users/news/newswiremobile">' + \
+            '<button class="' + buttonNewswire + '">' + \
             '<span>' + translate['Newswire'] + \
             '</span></button></a>\n'
         headerStr += \
-            '        <a href="' + \
-            '/users/news/linksmobile' + \
-            '"><button class="' + buttonLinks + '">' + \
+            '        <a href="/users/news/linksmobile">' + \
+            '<button class="' + buttonLinks + '">' + \
             '<span>' + translate['Links'] + \
             '</span></button></a>\n'
     else:
