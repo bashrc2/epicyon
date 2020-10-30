@@ -1312,7 +1312,9 @@ div.container {
     .buttonMobile {
         background: transparent;
         border: none !important;
-        font-size:0;
+        font-size: 0;
+	padding: 0 0;
+	margin: 0 0;
     }
     .button {
         border-radius: var(--button-corner-radius);

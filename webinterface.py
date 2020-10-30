@@ -3408,23 +3408,25 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
     iconsDir = getIconsDir(baseDir)
     if not authorized:
         # the links button to show left column links
+        loginButton = '      <div>\n'
         loginButton = \
-            '      <a href="' + \
+            '        <a href="' + \
             '/users/news/newswiremobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
             '</span></button></a>\n'
         loginButton += \
-            '      <a href="' + \
+            '        <a href="' + \
             '/users/news/linksmobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
             '</span></button></a>\n'
         loginButton += \
-            '      <a href="/login' + \
+            '        <a href="/login' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Login'] + \
             '</span></button></a>\n'
+        loginButton = '      </div>\n'
     else:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
