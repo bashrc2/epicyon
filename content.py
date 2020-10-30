@@ -63,10 +63,12 @@ def htmlReplaceEmailQuote(content: str) -> str:
     # replace quote paragraph
     if '<p>&quot;' in content:
         if '&quot;</p>' in content:
-            content = content.replace('<p>&quot;', '<p><blockquote>')
-            content = content.replace('&quot;</p>', '</blockquote></p>')
+            if content.count('<p>&quot;') == content.count('&quot;</p>'):
+                content = content.replace('<p>&quot;', '<p><blockquote>')
+                content = content.replace('&quot;</p>', '</blockquote></p>')
     if '>\u201c' in content:
         if '\u201d<' in content:
+            if content.count('>\u201c') == content.count('\u201d<'):
             content = content.replace('>\u201c', '><blockquote>')
             content = content.replace('\u201d<', '</blockquote><')
     # replace email style quote
