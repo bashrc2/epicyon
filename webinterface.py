@@ -5928,7 +5928,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 def htmlLinksMobile(cssCache: {}, baseDir: str,
                     nickname: str, domainFull: str,
                     httpPrefix: str, translate,
-                    timelinePath: str) -> str:
+                    timelinePath: str, authorized: bool) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
