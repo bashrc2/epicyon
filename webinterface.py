@@ -6028,7 +6028,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                               httpPrefix, translate,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
-                              True, timelinePath, showPublishButton,
+                              False, timelinePath, showPublishButton,
                               showPublishAsIcon, True, False,
                               authorized, False)
     htmlStr += htmlFooter()
