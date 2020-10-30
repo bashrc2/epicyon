@@ -103,6 +103,12 @@ def htmlReplaceQuoteMarks(content: str) -> str:
         if '&quot;' not in content:
             return content
 
+    # only if there are a few quote marks
+    if content.count('"') > 4:
+        return content
+    if content.count('&quot;') > 4:
+        return content
+
     newContent = content
     if '"' in content:
         sections = content.split('"')
