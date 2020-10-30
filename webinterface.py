@@ -3411,6 +3411,11 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
         loginButton = '      <div class="frontPageMobileButtons">\n'
         if nickname == 'news':
             loginButton += \
+                '        <a href="/">' + \
+                '<button class="buttonSelected">' + \
+                '<span>' + translate['Features'] + \
+                '</span></button></a>\n'
+            loginButton += \
                 '        <a href="' + \
                 '/users/news/newswiremobile' + \
                 '"><button class="buttonMobile">' + \
@@ -3421,7 +3426,7 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
                 '/users/news/linksmobile' + \
                 '"><button class="buttonMobile">' + \
                 '<span>' + translate['Links'] + \
-                '</span></button></a>\n'            
+                '</span></button></a>\n'
         loginButton += \
             '        <a href="/login' + \
             '"><button class="buttonMobile">' + \
