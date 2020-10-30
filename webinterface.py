@@ -5592,6 +5592,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if ':' in domain:
         domain = domain.split(':')
 
+    editImageClass = 'leftColEdit'
     if showHeaderImage:
         leftColumnImageFilename = \
             baseDir + '/accounts/' + nickname + '@' + domain + \
@@ -5609,7 +5610,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          leftColumnImageFilename)
 
         # show the image at the top of the column
-        editImageClass = 'leftColEdit'
         if os.path.isfile(leftColumnImageFilename):
             editImageClass = 'leftColEditImage'
             htmlStr += \
