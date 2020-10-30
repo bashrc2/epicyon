@@ -3298,6 +3298,50 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     return timelineStr
 
 
+def headerButtonsFrontScreen(translate: {},
+                             nickname: str, boxName: str,
+                             authorized: bool) -> str:
+    """Returns the header buttons for the front page of a news instance
+    """
+    headerStr = '      <div class="frontPageMobileButtons">\n'
+    if nickname == 'news':
+        buttonFeatures = 'buttonMobile'
+        buttonNewswire = 'buttonMobile'
+        buttonLinks = 'buttonMobile'
+        if boxName == 'features':
+            buttonFeatures = 'buttonselected'
+        elif boxName == 'newswire':
+            buttonNewswire = 'buttonselected'
+        elif boxName == 'links':
+            buttonLinks = 'buttonselected'
+
+        headerStr += \
+            '        <a href="/">' + \
+            '<button class="' + buttonFeatures + '">' + \
+            '<span>' + translate['Features'] + \
+            '</span></button></a>\n'
+        headerStr += \
+            '        <a href="' + \
+            '/users/news/newswiremobile' + \
+            '"><button class="' + buttonNewswire + '">' + \
+            '<span>' + translate['Newswire'] + \
+            '</span></button></a>\n'
+        headerStr += \
+            '        <a href="' + \
+            '/users/news/linksmobile' + \
+            '"><button class="' + buttonLinks + '">' + \
+            '<span>' + translate['Links'] + \
+            '</span></button></a>\n'
+    if not authorized:
+        headerStr += \
+            '        <a href="/login' + \
+            '"><button class="buttonMobile">' + \
+            '<span>' + translate['Login'] + \
+            '</span></button></a>\n'
+    headerStr += '      </div>\n'
+    return headerStr
+
+
 def htmlProfile(cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
@@ -3407,32 +3451,8 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
 
     iconsDir = getIconsDir(baseDir)
     if not authorized:
-        # the links button to show left column links
-        loginButton = '      <div class="frontPageMobileButtons">\n'
-        if nickname == 'news':
-            loginButton += \
-                '        <a href="/">' + \
-                '<button class="buttonselected">' + \
-                '<span>' + translate['Features'] + \
-                '</span></button></a>\n'
-            loginButton += \
-                '        <a href="' + \
-                '/users/news/newswiremobile' + \
-                '"><button class="buttonMobile">' + \
-                '<span>' + translate['Newswire'] + \
-                '</span></button></a>\n'
-            loginButton += \
-                '        <a href="' + \
-                '/users/news/linksmobile' + \
-                '"><button class="buttonMobile">' + \
-                '<span>' + translate['Links'] + \
-                '</span></button></a>\n'
-        loginButton += \
-            '        <a href="/login' + \
-            '"><button class="buttonMobile">' + \
-            '<span>' + translate['Login'] + \
-            '</span></button></a>\n'
-        loginButton += '      </div>\n'
+        loginButton = headerButtonsFrontScreen(translate, nickname,
+                                               'features', authorized)
     else:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
