@@ -3408,7 +3408,7 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
     iconsDir = getIconsDir(baseDir)
     if not authorized:
         # the links button to show left column links
-        loginButton = '      <div class="buttonMobile">\n'
+        loginButton = '      <div class="frontPageMobileButtons">\n'
         loginButton += \
             '        <a href="' + \
             '/users/news/newswiremobile' + \
