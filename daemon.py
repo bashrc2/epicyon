@@ -6518,7 +6518,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         fullWidthTimelineButtonHeader,
                                         self.server.iconsAsButtons,
                                         self.server.rssIconAtTop,
-                                        self.server.publishButtonAtTop)
+                                        self.server.publishButtonAtTop,
+                                        authorized)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -6640,7 +6641,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          fullWidthTimelineButtonHeader,
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
-                                         self.server.publishButtonAtTop)
+                                         self.server.publishButtonAtTop,
+                                         authorized)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -6755,7 +6757,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          fullWidthTimelineButtonHeader,
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
-                                         self.server.publishButtonAtTop)
+                                         self.server.publishButtonAtTop,
+                                         authorized)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6870,7 +6873,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
-                                       self.server.publishButtonAtTop)
+                                       self.server.publishButtonAtTop,
+                                       authorized)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6985,7 +6989,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
-                                       self.server.publishButtonAtTop)
+                                       self.server.publishButtonAtTop,
+                                       authorized)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7109,7 +7114,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       fullWidthTimelineButtonHeader,
                                       self.server.iconsAsButtons,
                                       self.server.rssIconAtTop,
-                                      self.server.publishButtonAtTop)
+                                      self.server.publishButtonAtTop,
+                                      authorized)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7192,7 +7198,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.fullWidthTimelineButtonHeader,
                                    self.server.iconsAsButtons,
                                    self.server.rssIconAtTop,
-                                   self.server.publishButtonAtTop)
+                                   self.server.publishButtonAtTop,
+                                   authorized)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7291,7 +7298,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           fullWidthTimelineButtonHeader,
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
-                                          self.server.publishButtonAtTop)
+                                          self.server.publishButtonAtTop,
+                                          authorized)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7409,7 +7417,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fullWidthTimelineButtonHeader,
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
-                                       self.server.publishButtonAtTop)
+                                       self.server.publishButtonAtTop,
+                                       authorized)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7519,7 +7528,8 @@ class PubServer(BaseHTTPRequestHandler):
                                fullWidthTimelineButtonHeader,
                                self.server.iconsAsButtons,
                                self.server.rssIconAtTop,
-                               self.server.publishButtonAtTop)
+                               self.server.publishButtonAtTop,
+                               authorized)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -7619,7 +7629,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            fullWidthTimelineButtonHeader,
                                            self.server.iconsAsButtons,
                                            self.server.rssIconAtTop,
-                                           self.server.publishButtonAtTop)
+                                           self.server.publishButtonAtTop,
+                                           authorized)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -9508,7 +9519,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.newswire,
                                          self.server.positiveVoting,
                                          timelinePath,
-                                         showPublishAsIcon).encode('utf-8')
+                                         showPublishAsIcon,
+                                         authorized).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
