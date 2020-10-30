@@ -3412,7 +3412,7 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
         if nickname == 'news':
             loginButton += \
                 '        <a href="/">' + \
-                '<button class="buttonSelected">' + \
+                '<button class="buttonselected">' + \
                 '<span>' + translate['Features'] + \
                 '</span></button></a>\n'
             loginButton += \
