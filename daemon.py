@@ -9530,8 +9530,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy = False
                 return
 
-        if authorized and htmlGET and '/users/' in self.path and \
+        if htmlGET and self.path.startswith('/users/') and \
            self.path.endswith('/linksmobile'):
+            if (authorized or
+                (not authorized and
+                 self.path.startswith('/users/news/') and
+                 self.server.newsInstance)):
             nickname = getNicknameFromActor(self.path)
             if not nickname:
                 self._404()
