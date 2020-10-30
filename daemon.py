@@ -9129,7 +9129,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not self._pathIsImage(self.path) and self.path != '/':
+           not self._pathIsImage(self.path) and \
+           self.path != '/' and \
+           self.path != '/users/news/linksmobile' and \
+           self.path != '/users/news/newswiremobile':
             if self._redirectToLoginScreen(callingDomain, self.path,
                                            self.server.httpPrefix,
                                            self.server.domainFull,
