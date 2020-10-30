@@ -9536,23 +9536,23 @@ class PubServer(BaseHTTPRequestHandler):
                 (not authorized and
                  self.path.startswith('/users/news/') and
                  self.server.newsInstance)):
-            nickname = getNicknameFromActor(self.path)
-            if not nickname:
-                self._404()
+                nickname = getNicknameFromActor(self.path)
+                if not nickname:
+                    self._404()
+                    self.server.GETbusy = False
+                    return
+                timelinePath = \
+                    '/users/' + nickname + '/' + self.server.defaultTimeline
+                msg = htmlLinksMobile(self.server.cssCache,
+                                      self.server.baseDir, nickname,
+                                      self.server.domainFull,
+                                      self.server.httpPrefix,
+                                      self.server.translate,
+                                      timelinePath).encode('utf-8')
+                self._set_headers('text/html', len(msg), cookie, callingDomain)
+                self._write(msg)
                 self.server.GETbusy = False
                 return
-            timelinePath = \
-                '/users/' + nickname + '/' + self.server.defaultTimeline
-            msg = htmlLinksMobile(self.server.cssCache,
-                                  self.server.baseDir, nickname,
-                                  self.server.domainFull,
-                                  self.server.httpPrefix,
-                                  self.server.translate,
-                                  timelinePath).encode('utf-8')
-            self._set_headers('text/html', len(msg), cookie, callingDomain)
-            self._write(msg)
-            self.server.GETbusy = False
-            return
 
         # hashtag search
         if self.path.startswith('/tags/') or \
