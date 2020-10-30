@@ -3567,7 +3567,7 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
             getLeftColumnContent(baseDir, 'news', domainFull,
                                  httpPrefix, translate,
                                  iconsDir, False,
-                                 False, None, False)
+                                 False, None, False, True)
         profileHeaderStr += '      </td>\n'
         profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
@@ -5583,7 +5583,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
                          iconsDir: str, editor: bool,
                          showBackButton: bool, timelinePath: str,
-                         rssIconAtTop: bool) -> str:
+                         rssIconAtTop: bool, showHeaderImage: bool) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -5592,29 +5592,32 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if ':' in domain:
         domain = domain.split(':')
 
-    leftColumnImageFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/left_col_image.png'
-    if not os.path.isfile(leftColumnImageFilename):
-        theme = getConfigParam(baseDir, 'theme').lower()
-        if theme == 'default':
-            theme = ''
-        else:
-            theme = '_' + theme
-        themeLeftColumnImageFilename = \
-            baseDir + '/img/left_col_image' + theme + '.png'
-        if os.path.isfile(themeLeftColumnImageFilename):
-            copyfile(themeLeftColumnImageFilename, leftColumnImageFilename)
+    if showHeaderImage:
+        leftColumnImageFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + \
+            '/left_col_image.png'
+        if not os.path.isfile(leftColumnImageFilename):
+            theme = getConfigParam(baseDir, 'theme').lower()
+            if theme == 'default':
+                theme = ''
+            else:
+                theme = '_' + theme
+            themeLeftColumnImageFilename = \
+                baseDir + '/img/left_col_image' + theme + '.png'
+            if os.path.isfile(themeLeftColumnImageFilename):
+                copyfile(themeLeftColumnImageFilename,
+                         leftColumnImageFilename)
 
-    # show the image at the top of the column
-    editImageClass = 'leftColEdit'
-    if os.path.isfile(leftColumnImageFilename):
-        editImageClass = 'leftColEditImage'
-        htmlStr += \
-            '\n      <center>\n' + \
-            '        <img class="leftColImg" loading="lazy" src="/users/' + \
-            nickname + '/left_col_image.png" />\n' + \
-            '      </center>\n'
+        # show the image at the top of the column
+        editImageClass = 'leftColEdit'
+        if os.path.isfile(leftColumnImageFilename):
+            editImageClass = 'leftColEditImage'
+            htmlStr += \
+                '\n      <center>\n' + \
+                '        <img class="leftColImg" ' + \
+                'loading="lazy" src="/users/' + \
+                nickname + '/left_col_image.png" />\n' + \
+                '      </center>\n'
 
     if showBackButton:
         htmlStr += \
@@ -5964,7 +5967,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              iconsDir, editor,
-                             True, timelinePath, True)
+                             True, timelinePath, True, False)
     htmlStr += '</div>\n' + htmlFooter()
     return htmlStr
 
@@ -6719,7 +6722,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
-                             editor, False, None, rssIconAtTop)
+                             editor, False, None, rssIconAtTop,
+                             True)
     tlStr += '  <td valign="top" class="col-left">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
