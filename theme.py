@@ -337,7 +337,7 @@ def setThemeIndymediaClassic(baseDir: str):
         "hashtag-background-color": "darkred",
         "font-size-newswire": "18px",
         "font-size-publish-button": "18px",
-        "font-size-newswire-mobile": "48px",
+        "font-size-newswire-mobile": "40px",
         "line-spacing-newswire": "100%",
         "newswire-item-moderated-color": "white",
         "newswire-date-moderated-color": "white",
