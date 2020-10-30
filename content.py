@@ -69,8 +69,8 @@ def htmlReplaceEmailQuote(content: str) -> str:
     if '>\u201c' in content:
         if '\u201d<' in content:
             if content.count('>\u201c') == content.count('\u201d<'):
-            content = content.replace('>\u201c', '><blockquote>')
-            content = content.replace('\u201d<', '</blockquote><')
+                content = content.replace('>\u201c', '><blockquote>')
+                content = content.replace('\u201d<', '</blockquote><')
     # replace email style quote
     if '>&gt; ' not in content:
         return content
