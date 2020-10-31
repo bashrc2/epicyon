@@ -5857,7 +5857,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         iconsDir + '/logorss.png" /></a>\n'
-    if rssIconAtTop:
+    if rssIconAtTop and showHeaderImage:
         htmlStr += rssIconStr
 
     if showPublishButton:
@@ -5881,7 +5881,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                      positiveVoting, iconsDir)
     htmlStr += newswireContentStr
 
-    if newswireContentStr and not rssIconAtTop:
+    rssAtBottom = not rssIconAtTop or not showHeaderImage
+    if newswireContentStr and rssAtBottom:
         htmlStr += '<br>' + rssIconStr
     return htmlStr
 
