@@ -5665,7 +5665,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     rssAtBottom = not rssIconAtTop or not showHeaderImage
     if linksFileContainsEntries and rssAtBottom:
-        htmlStr += '<br>' + rssIconStr
+        htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
     return htmlStr
 
 
@@ -5883,7 +5883,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     rssAtBottom = not rssIconAtTop or not showHeaderImage
     if newswireContentStr and rssAtBottom:
-        htmlStr += '<br>' + rssIconStr
+        htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
     return htmlStr
 
 

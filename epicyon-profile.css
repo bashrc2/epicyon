@@ -1645,6 +1645,9 @@ div.container {
         padding: 10px;
         margin: 20px 60px;
     }
+    .columnIcons img {
+	float: right;
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -2289,5 +2292,8 @@ div.container {
         transform: scale(2);
         padding: 10px;
         margin: 40px 80px;
+    }
+    .columnIcons img {
+	float: right;
     }
 }
