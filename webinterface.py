@@ -5820,6 +5820,9 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
+    else:
+        if showHeaderImage:
+            htmlStr += '      <br>\n'
 
     if showBackButton:
         htmlStr += \
