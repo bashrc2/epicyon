@@ -1087,6 +1087,7 @@ div.container {
     .timeline {
         border: 0;
         width: 100vw;
+	table-layout: fixed;
     }
     .col-left a:link {
         background: var(--column-left-color);
@@ -1137,6 +1138,7 @@ div.container {
     .column-right {
         background-color: var(--column-left-color);
         width: var(--column-right-width);
+	overflow: hidden;
     }
     .col-right {
         background-color: var(--column-left-color);
@@ -1145,6 +1147,7 @@ div.container {
         padding-right: 30px;
         font-size: var(--font-size-links);
         width: var(--column-right-width);
+	overflow: hidden;
     }
     .col-right img.rightColEdit {
         background: var(--column-left-color);
@@ -1761,6 +1764,8 @@ div.container {
     .timeline {
         border: 0;
         width: 100vw;
+	table-layout: fixed;
+	overflow: hidden;
     }
     .column-left {
         display: none;
