@@ -6022,7 +6022,7 @@ def headerButtonsFrontScreen(translate: {},
                              authorized: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
-    headerStr = '      <div class="frontPageMobileButtons">\n'
+    headerStr = ''
     if nickname == 'news':
         buttonFeatures = 'buttonMobile'
         buttonNewswire = 'buttonMobile'
@@ -6062,7 +6062,11 @@ def headerButtonsFrontScreen(translate: {},
                 '"><button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>\n'
-    headerStr += '      </div>\n'
+
+    if headerStr:
+        headerStr = \
+            '      <div class="frontPageMobileButtons">\n' + \
+            headerStr + '      </div>\n'
     return headerStr
 
 
