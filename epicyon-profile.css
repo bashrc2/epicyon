@@ -1948,6 +1948,19 @@ div.container {
     }
     .frontPageMobileButtons{
 	display: inline;
+	border: var(--border-width-header) solid var(--border-color);
+	background-color: var(--main-bg-color);
+	border-radius: var(--timeline-border-radius);
+	padding: var(--container-button-padding);
+	margin: var(--vertical-between-posts-header);
+    }
+    .frontPageMobileButtons img {
+        float: left;
+        max-width: 400px;
+        width: 15%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: var(--image-corners);
     }
     .buttonMobile {
         border-radius: var(--button-corner-radius);
