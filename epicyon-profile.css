@@ -1950,7 +1950,7 @@ div.container {
         border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .frontPageMobileButtons{
-        display: inline;
+        display: block;
         border: var(--border-width-header) solid var(--border-color);
         background-color: var(--main-bg-color);
         border-radius: var(--timeline-border-radius);
@@ -1960,10 +1960,9 @@ div.container {
     .frontPageMobileButtons img {
         float: right;
         max-width: 400px;
-        width: 15%;
+        width: 10%;
         padding: 0px 7px;
         margin-right: 20px;
-        border-radius: var(--image-corners);
     }
     .buttonMobile {
         border-radius: var(--button-corner-radius);
