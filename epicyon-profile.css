@@ -1086,7 +1086,7 @@ div.container {
     }
     .timeline {
         border: 0;
-        width: 100vw;
+        width: 98vw;
     }
     .col-left a:link {
         background: var(--column-left-color);
@@ -1100,7 +1100,6 @@ div.container {
     }
     .col-left {
         color: var(--column-left-fg-color);
-        padding: 10px 10px;
         font-size: var(--font-size-links);
         float: left;
         width: var(--column-left-width);
