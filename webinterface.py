@@ -5875,8 +5875,6 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
-    else:
-        htmlStr += '      <br>\n'
 
     newswireContentStr = \
         htmlNewswire(newswire, nickname, moderator, translate,
