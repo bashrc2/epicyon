@@ -3298,55 +3298,6 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     return timelineStr
 
 
-def headerButtonsFrontScreen(translate: {},
-                             nickname: str, boxName: str,
-                             authorized: bool) -> str:
-    """Returns the header buttons for the front page of a news instance
-    """
-    headerStr = '      <div class="frontPageMobileButtons">\n'
-    if nickname == 'news':
-        buttonFeatures = 'buttonMobile'
-        buttonNewswire = 'buttonMobile'
-        buttonLinks = 'buttonMobile'
-        if boxName == 'features':
-            buttonFeatures = 'buttonselected'
-        elif boxName == 'newswire':
-            buttonNewswire = 'buttonselected'
-        elif boxName == 'links':
-            buttonLinks = 'buttonselected'
-
-        headerStr += \
-            '        <a href="/">' + \
-            '<button class="' + buttonFeatures + '">' + \
-            '<span>' + translate['Features'] + \
-            '</span></button></a>\n'
-        if not authorized:
-            headerStr += \
-                '        <a href="/login">' + \
-                '<button class="buttonMobile">' + \
-                '<span>' + translate['Login'] + \
-                '</span></button></a>\n'
-        headerStr += \
-            '        <a href="/users/news/newswiremobile">' + \
-            '<button class="' + buttonNewswire + '">' + \
-            '<span>' + translate['Newswire'] + \
-            '</span></button></a>\n'
-        headerStr += \
-            '        <a href="/users/news/linksmobile">' + \
-            '<button class="' + buttonLinks + '">' + \
-            '<span>' + translate['Links'] + \
-            '</span></button></a>\n'
-    else:
-        if not authorized:
-            headerStr += \
-                '        <a href="/login' + \
-                '"><button class="buttonMobile">' + \
-                '<span>' + translate['Login'] + \
-                '</span></button></a>\n'
-    headerStr += '      </div>\n'
-    return headerStr
-
-
 def htmlProfile(cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
@@ -6060,35 +6011,84 @@ def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
     return bannerFile, bannerFilename
 
 
-def getTimelineButtonHeader(defaultTimeline: str,
-                            boxName: str,
-                            pageNumber: int,
-                            translate: {},
-                            usersPath: str,
-                            mediaButton: str,
-                            blogsButton: str,
-                            newsButton: str,
-                            inboxButton: str,
-                            dmButton: str,
-                            newDM: str,
-                            repliesButton: str,
-                            newReply: str,
-                            minimal: bool,
-                            sentButton: str,
-                            sharesButtonStr: str,
-                            bookmarksButtonStr: str,
-                            eventsButtonStr: str,
-                            moderationButtonStr: str,
-                            newPostButtonStr: str,
-                            baseDir: str,
-                            nickname: str, domain: str,
-                            iconsDir: str,
-                            timelineStartTime,
-                            newCalendarEvent: bool,
-                            calendarPath: str,
-                            calendarImage: str,
-                            followApprovals: str,
-                            iconsAsButtons: bool) -> str:
+def headerButtonsFrontScreen(translate: {},
+                             nickname: str, boxName: str,
+                             authorized: bool) -> str:
+    """Returns the header buttons for the front page of a news instance
+    """
+    headerStr = '      <div class="frontPageMobileButtons">\n'
+    if nickname == 'news':
+        buttonFeatures = 'buttonMobile'
+        buttonNewswire = 'buttonMobile'
+        buttonLinks = 'buttonMobile'
+        if boxName == 'features':
+            buttonFeatures = 'buttonselected'
+        elif boxName == 'newswire':
+            buttonNewswire = 'buttonselected'
+        elif boxName == 'links':
+            buttonLinks = 'buttonselected'
+
+        headerStr += \
+            '        <a href="/">' + \
+            '<button class="' + buttonFeatures + '">' + \
+            '<span>' + translate['Features'] + \
+            '</span></button></a>\n'
+        if not authorized:
+            headerStr += \
+                '        <a href="/login">' + \
+                '<button class="buttonMobile">' + \
+                '<span>' + translate['Login'] + \
+                '</span></button></a>\n'
+        headerStr += \
+            '        <a href="/users/news/newswiremobile">' + \
+            '<button class="' + buttonNewswire + '">' + \
+            '<span>' + translate['Newswire'] + \
+            '</span></button></a>\n'
+        headerStr += \
+            '        <a href="/users/news/linksmobile">' + \
+            '<button class="' + buttonLinks + '">' + \
+            '<span>' + translate['Links'] + \
+            '</span></button></a>\n'
+    else:
+        if not authorized:
+            headerStr += \
+                '        <a href="/login' + \
+                '"><button class="buttonMobile">' + \
+                '<span>' + translate['Login'] + \
+                '</span></button></a>\n'
+    headerStr += '      </div>\n'
+    return headerStr
+
+
+def headerButtonsTimeline(defaultTimeline: str,
+                          boxName: str,
+                          pageNumber: int,
+                          translate: {},
+                          usersPath: str,
+                          mediaButton: str,
+                          blogsButton: str,
+                          newsButton: str,
+                          inboxButton: str,
+                          dmButton: str,
+                          newDM: str,
+                          repliesButton: str,
+                          newReply: str,
+                          minimal: bool,
+                          sentButton: str,
+                          sharesButtonStr: str,
+                          bookmarksButtonStr: str,
+                          eventsButtonStr: str,
+                          moderationButtonStr: str,
+                          newPostButtonStr: str,
+                          baseDir: str,
+                          nickname: str, domain: str,
+                          iconsDir: str,
+                          timelineStartTime,
+                          newCalendarEvent: bool,
+                          calendarPath: str,
+                          calendarImage: str,
+                          followApprovals: str,
+                          iconsAsButtons: bool) -> str:
     """Returns the header at the top of the timeline, containing
     buttons for inbox, outbox, search, calendar, etc
     """
@@ -6695,18 +6695,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     if fullWidthTimelineButtonHeader:
         tlStr += \
-            getTimelineButtonHeader(defaultTimeline, boxName, pageNumber,
-                                    translate, usersPath, mediaButton,
-                                    blogsButton, newsButton, inboxButton,
-                                    dmButton, newDM, repliesButton,
-                                    newReply, minimal, sentButton,
-                                    sharesButtonStr, bookmarksButtonStr,
-                                    eventsButtonStr, moderationButtonStr,
-                                    newPostButtonStr, baseDir, nickname,
-                                    domain, iconsDir, timelineStartTime,
-                                    newCalendarEvent, calendarPath,
-                                    calendarImage, followApprovals,
-                                    iconsAsButtons)
+            headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
+                                  translate, usersPath, mediaButton,
+                                  blogsButton, newsButton, inboxButton,
+                                  dmButton, newDM, repliesButton,
+                                  newReply, minimal, sentButton,
+                                  sharesButtonStr, bookmarksButtonStr,
+                                  eventsButtonStr, moderationButtonStr,
+                                  newPostButtonStr, baseDir, nickname,
+                                  domain, iconsDir, timelineStartTime,
+                                  newCalendarEvent, calendarPath,
+                                  calendarImage, followApprovals,
+                                  iconsAsButtons)
 
     # start the timeline
     tlStr += '<table class="timeline">\n'
@@ -6736,18 +6736,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     if not fullWidthTimelineButtonHeader:
         tlStr += \
-            getTimelineButtonHeader(defaultTimeline, boxName, pageNumber,
-                                    translate, usersPath, mediaButton,
-                                    blogsButton, newsButton, inboxButton,
-                                    dmButton, newDM, repliesButton,
-                                    newReply, minimal, sentButton,
-                                    sharesButtonStr, bookmarksButtonStr,
-                                    eventsButtonStr, moderationButtonStr,
-                                    newPostButtonStr, baseDir, nickname,
-                                    domain, iconsDir, timelineStartTime,
-                                    newCalendarEvent, calendarPath,
-                                    calendarImage, followApprovals,
-                                    iconsAsButtons)
+            headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
+                                  translate, usersPath, mediaButton,
+                                  blogsButton, newsButton, inboxButton,
+                                  dmButton, newDM, repliesButton,
+                                  newReply, minimal, sentButton,
+                                  sharesButtonStr, bookmarksButtonStr,
+                                  eventsButtonStr, moderationButtonStr,
+                                  newPostButtonStr, baseDir, nickname,
+                                  domain, iconsDir, timelineStartTime,
+                                  newCalendarEvent, calendarPath,
+                                  calendarImage, followApprovals,
+                                  iconsAsButtons)
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
