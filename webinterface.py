@@ -6089,7 +6089,7 @@ def headerButtonsFrontScreen(translate: {},
     if headerStr:
         headerStr = \
             '      <div class="frontPageMobileButtons">\n' + \
-            headerStr + '      </div>\n'
+            headerStr + '</div>\n'
     return headerStr
 
 
