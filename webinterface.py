@@ -5773,7 +5773,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         domain = domain.split(':')
 
     if authorized:
-        # only show the publish button if logged in
+        # only show the publish button if logged in, otherwise replace it with
+        # a login button
         publishButtonStr = \
             '        <a href="' + \
             '/users/' + nickname + '/newblog" ' + \
@@ -5787,9 +5788,11 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             '        <a href="/login"><button class="publishbtn">' + \
             translate['Login'] + '</button></a>\n'
 
+    # show publish button at the top if needed
     if publishButtonAtTop:
         htmlStr += '<center>' + publishButtonStr + '</center>'
 
+    # show a column header image, eg. title of the theme or newswire banner
     editImageClass = ''
     if showHeaderImage:
         rightColumnImageFilename = \
@@ -5821,6 +5824,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
 
+    # whether to show a back icon
+    # This is probably going to be osolete soon
     if showBackButton:
         htmlStr += \
             '      <a href="' + timelinePath + '">' + \
@@ -5831,6 +5836,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         if not showPublishAsIcon:
             htmlStr += publishButtonStr
 
+    # show the edit icon
     if editor:
         if os.path.isfile(baseDir + '/accounts/newswiremoderation.txt'):
             # show the edit icon highlighted
@@ -5853,6 +5859,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 translate['Edit newswire'] + '" src="/' + \
                 iconsDir + '/edit.png" /></a>\n'
 
+    # show the RSS icon
     rssIconStr = \
         '        <a href="/newswire.xml">' + \
         '<img class="' + editImageClass + \
@@ -5863,6 +5870,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if rssIconAtTop and showHeaderImage:
         htmlStr += rssIconStr
 
+    # show publish icon at top
     if showPublishButton:
         if showPublishAsIcon:
             htmlStr += \
@@ -5880,11 +5888,13 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         if showHeaderImage:
             htmlStr += '      <br>\n'
 
+    # show the newswire lines
     newswireContentStr = \
         htmlNewswire(newswire, nickname, moderator, translate,
                      positiveVoting, iconsDir)
     htmlStr += newswireContentStr
 
+    # show the rss icon at the bottom, typically on the right hand side
     rssAtBottom = not rssIconAtTop or not showHeaderImage
     if newswireContentStr and rssAtBottom:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
