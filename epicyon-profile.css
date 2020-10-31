@@ -1077,7 +1077,7 @@ div.container {
         color: var(--column-right-fg-color-voted-on);
         float: right;
     }
-    .imageAnchorMobile img.timelineicon {
+    .imageAnchorMobile img {
         display: none;
     }
     .timeline-banner {
@@ -1751,14 +1751,8 @@ div.container {
         color: var(--column-right-fg-color-voted-on);
         float: right;
     }
-    .imageAnchorMobile img.timelineicon {
+    .imageAnchorMobile img {
         display: inline;
-        float: var(--icons-side);
-        margin-left: 0px;
-        margin-right:0;
-        padding: 0 0;
-        margin: 0 0;
-        width: 50px;
     }
     .timeline-banner {
         width: 98vw;

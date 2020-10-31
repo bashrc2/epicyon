@@ -6065,14 +6065,14 @@ def headerButtonsFrontScreen(translate: {},
                 '</span></button></a>\n'
         else:
             headerStr += \
-                '        <a class="imageAnchorMobile" href="' + \
+                '        <a href="' + \
                 '/users/news/newswiremobile">' + \
                 '<img loading="lazy" src="/' + iconsDir + \
                 '/newswire.png" title="' + translate['Newswire'] + \
                 '" alt="| ' + translate['Newswire'] + \
                 '" class="timelineicon"/></a>\n'
             headerStr += \
-                '        <a class="imageAnchorMobile" href="' + \
+                '        <a href="' + \
                 '/users/news/linksmobile">' + \
                 '<img loading="lazy" src="/' + iconsDir + \
                 '/links.png" title="' + translate['Links'] + \
@@ -6081,15 +6081,16 @@ def headerButtonsFrontScreen(translate: {},
     else:
         if not authorized:
             headerStr += \
-                '        <a href="/login' + \
-                '"><button class="buttonMobile">' + \
+                '        <a href="/login">' + \
+                '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>\n'
 
     if headerStr:
         headerStr = \
-            '      <div class="frontPageMobileButtons">\n' + \
-            headerStr + '</div>\n'
+            '\n      <div class="frontPageMobileButtons">\n' + \
+            headerStr + \
+            '      </div>\n'
     return headerStr
 
 
