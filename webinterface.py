@@ -5615,8 +5615,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
-    else:
-        htmlStr += '      <br>\n'
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
