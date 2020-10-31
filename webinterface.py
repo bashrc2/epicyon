@@ -3409,7 +3409,8 @@ def htmlProfile(rssIconAtTop: bool,
     iconsDir = getIconsDir(baseDir)
     if not authorized:
         loginButton = headerButtonsFrontScreen(translate, nickname,
-                                               'features', authorized)
+                                               'features', authorized,
+                                               iconsAsButtons, iconsDir)
     else:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
@@ -5891,7 +5892,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     nickname: str, domainFull: str,
                     httpPrefix: str, translate,
                     timelinePath: str, authorized: bool,
-                    rssIconAtTop: bool) -> str:
+                    rssIconAtTop: bool,
+                    iconsAsButtons: bool) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -5922,7 +5924,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
-                                 'links', authorized) + '</center>'
+                                 'links', authorized,
+                                 iconsAsButtons, iconsDir) + '</center>'
     htmlStr += \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
@@ -5941,7 +5944,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        timelinePath: str,
                        showPublishAsIcon: bool,
                        authorized: bool,
-                       rssIconAtTop: bool) -> str:
+                       rssIconAtTop: bool,
+                       iconsAsButtons: bool) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -5979,7 +5983,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
-                                 'newswire', authorized) + '</center>'
+                                 'newswire', authorized,
+                                 iconsAsButtons, iconsDir) + '</center>'
     htmlStr += \
         getRightColumnContent(baseDir, nickname, domainFull,
                               httpPrefix, translate,
@@ -6019,7 +6024,9 @@ def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
 
 def headerButtonsFrontScreen(translate: {},
                              nickname: str, boxName: str,
-                             authorized: bool) -> str:
+                             authorized: bool,
+                             iconsAsButtons: bool,
+                             iconsDir: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
     headerStr = ''
@@ -6045,16 +6052,32 @@ def headerButtonsFrontScreen(translate: {},
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
                 '</span></button></a>\n'
-        headerStr += \
-            '        <a href="/users/news/newswiremobile">' + \
-            '<button class="' + buttonNewswire + '">' + \
-            '<span>' + translate['Newswire'] + \
-            '</span></button></a>\n'
-        headerStr += \
-            '        <a href="/users/news/linksmobile">' + \
-            '<button class="' + buttonLinks + '">' + \
-            '<span>' + translate['Links'] + \
-            '</span></button></a>\n'
+        if iconsAsButtons:
+            headerStr += \
+                '        <a href="/users/news/newswiremobile">' + \
+                '<button class="' + buttonNewswire + '">' + \
+                '<span>' + translate['Newswire'] + \
+                '</span></button></a>\n'
+            headerStr += \
+                '        <a href="/users/news/linksmobile">' + \
+                '<button class="' + buttonLinks + '">' + \
+                '<span>' + translate['Links'] + \
+                '</span></button></a>\n'
+        else:
+            headerStr += \
+                '        <a class="imageAnchorMobile" href="' + \
+                '/users/news/newswiremobile">' + \
+                '<img loading="lazy" src="/' + iconsDir + \
+                '/newswire.png" title="' + translate['Newswire'] + \
+                '" alt="| ' + translate['Newswire'] + \
+                '" class="timelineicon"/></a>\n'
+            headerStr += \
+                '        <a class="imageAnchorMobile" href="' + \
+                '/users/news/linksmobile">' + \
+                '<img loading="lazy" src="/' + iconsDir + \
+                '/links.png" title="' + translate['Links'] + \
+                '" alt="| ' + translate['Links'] + \
+                '" class="timelineicon"/></a>\n'
     else:
         if not authorized:
             headerStr += \
