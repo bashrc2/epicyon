@@ -9519,7 +9519,7 @@ class PubServer(BaseHTTPRequestHandler):
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 showPublishAsIcon = self.server.showPublishAsIcon
                 rssIconAtTop = self.server.rssIconAtTop
-                iconsAsButtons = htmlNewswireMobile
+                iconsAsButtons = self.server.iconsAsButtons
                 msg = htmlNewswireMobile(self.server.cssCache,
                                          self.server.baseDir,
                                          nickname,
