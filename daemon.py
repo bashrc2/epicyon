@@ -6066,7 +6066,8 @@ class PubServer(BaseHTTPRequestHandler):
                     iconsAsButtons = \
                         self.server.iconsAsButtons
                     msg = \
-                        htmlProfile(self.server.cssCache,
+                        htmlProfile(self.server.rssIconAtTop,
+                                    self.server.cssCache,
                                     iconsAsButtons,
                                     defaultTimeline,
                                     recentPostsCache,
@@ -6144,7 +6145,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 iconsAsButtons = \
                                     self.server.iconsAsButtons
                                 msg = \
-                                    htmlProfile(self.server.cssCache,
+                                    htmlProfile(self.server.rssIconAtTop,
+                                                self.server.cssCache,
                                                 iconsAsButtons,
                                                 defaultTimeline,
                                                 recentPostsCache,
@@ -7708,7 +7710,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
                     msg = \
-                        htmlProfile(self.server.cssCache,
+                        htmlProfile(self.server.rssIconAtTop,
+                                    self.server.cssCache,
                                     self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
@@ -7798,7 +7801,8 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
 
                     msg = \
-                        htmlProfile(self.server.cssCache,
+                        htmlProfile(self.server.rssIconAtTop,
+                                    self.server.cssCache,
                                     self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
@@ -7887,7 +7891,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy = False
                             return True
                     msg = \
-                        htmlProfile(self.server.cssCache,
+                        htmlProfile(self.server.rssIconAtTop,
+                                    self.server.cssCache,
                                     self.server.iconsAsButtons,
                                     self.server.defaultTimeline,
                                     self.server.recentPostsCache,
@@ -7952,7 +7957,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.GETbusy = False
                         return True
                 msg = \
-                    htmlProfile(self.server.cssCache,
+                    htmlProfile(self.server.rssIconAtTop,
+                                self.server.cssCache,
                                 self.server.iconsAsButtons,
                                 self.server.defaultTimeline,
                                 self.server.recentPostsCache,
@@ -9512,6 +9518,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 showPublishAsIcon = self.server.showPublishAsIcon
+                rssIconAtTop = self.server.rssIconAtTop
                 msg = htmlNewswireMobile(self.server.cssCache,
                                          self.server.baseDir,
                                          nickname,
@@ -9523,7 +9530,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.positiveVoting,
                                          timelinePath,
                                          showPublishAsIcon,
-                                         authorized).encode('utf-8')
+                                         authorized,
+                                         rssIconAtTop).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -9549,7 +9557,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.httpPrefix,
                                       self.server.translate,
                                       timelinePath,
-                                      authorized).encode('utf-8')
+                                      authorized,
+                                      self.server.rssIconAtTop).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False

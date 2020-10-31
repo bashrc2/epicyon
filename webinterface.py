@@ -3298,7 +3298,8 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     return timelineStr
 
 
-def htmlProfile(cssCache: {}, iconsAsButtons: bool,
+def htmlProfile(rssIconAtTop: bool,
+                cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
                 recentPostsCache: {}, maxRecentPosts: int,
                 translate: {}, projectVersion: str,
@@ -3518,7 +3519,7 @@ def htmlProfile(cssCache: {}, iconsAsButtons: bool,
             getLeftColumnContent(baseDir, 'news', domainFull,
                                  httpPrefix, translate,
                                  iconsDir, False,
-                                 False, None, False, True)
+                                 False, None, rssIconAtTop, True)
         profileHeaderStr += '      </td>\n'
         profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
@@ -5607,7 +5608,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         translate['RSS feed for this site'] + \
         '" title="' + translate['RSS feed for this site'] + \
         '" src="/' + iconsDir + '/logorss.png" /></a>\n'
-    if rssIconAtTop:
+    if rssIconAtTop and showHeaderImage:
         htmlStr += rssIconStr
 
     if editImageClass == 'leftColEdit':
@@ -5662,7 +5663,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p>' + lineStr + '</p>\n'
                     linksFileContainsEntries = True
 
-    if linksFileContainsEntries and not rssIconAtTop:
+    rssAtBottom = not rssIconAtTop or not showHeaderImage
+    if linksFileContainsEntries and rssAtBottom:
         htmlStr += '<br>' + rssIconStr
     return htmlStr
 
@@ -5887,7 +5889,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 def htmlLinksMobile(cssCache: {}, baseDir: str,
                     nickname: str, domainFull: str,
                     httpPrefix: str, translate,
-                    timelinePath: str, authorized: bool) -> str:
+                    timelinePath: str, authorized: bool,
+                    rssIconAtTop: bool) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -5923,7 +5926,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              iconsDir, editor,
-                             False, timelinePath, True, False)
+                             False, timelinePath,
+                             rssIconAtTop, False)
     htmlStr += '</div>\n' + htmlFooter()
     return htmlStr
 
@@ -5935,7 +5939,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        positiveVoting: bool,
                        timelinePath: str,
                        showPublishAsIcon: bool,
-                       authorized: bool) -> str:
+                       authorized: bool,
+                       rssIconAtTop: bool) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -5980,7 +5985,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                               iconsDir, moderator, editor,
                               newswire, positiveVoting,
                               False, timelinePath, showPublishButton,
-                              showPublishAsIcon, True, False,
+                              showPublishAsIcon, rssIconAtTop, False,
                               authorized, False)
     htmlStr += htmlFooter()
     return htmlStr
