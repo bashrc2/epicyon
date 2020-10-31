@@ -1675,6 +1675,15 @@ def testWebLinks():
     assert resultText == exampleText
 
     exampleText = \
+        'some.incredibly.long.and.annoying.word.which.should.be.removed: ' + \
+        'The remaining text'
+    resultText = removeLongWords(exampleText, 40, [])
+    print('resultText: ' + resultText)
+    assert resultText == \
+        'some.incredibly.long.and.annoying.word.w\n' + \
+        'hich.should.be.removed: The remaining text'
+
+    exampleText = \
         '<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C74' + \
         '4E8C45AB3C5E42C361C837155AFCFD9D448</p>'
     resultText = removeLongWords(exampleText, 40, [])

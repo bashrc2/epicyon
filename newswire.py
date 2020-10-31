@@ -22,7 +22,6 @@ from utils import removeHtml
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
-from content import removeLongWords
 
 
 def rss2Header(httpPrefix: str,
@@ -90,10 +89,6 @@ def addNewswireDictEntry(baseDir: str, domain: str,
                          tags=[], maxTags=32) -> None:
     """Update the newswire dictionary
     """
-    # remove any long words from the title, which can
-    # cause column overflows
-    title = removeLongWords(title, 30, [])
-
     allText = removeHtml(title + ' ' + description)
 
     # check that none of the text is filtered against

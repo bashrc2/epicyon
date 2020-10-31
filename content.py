@@ -639,7 +639,7 @@ def removeLongWords(content: str, maxWordLength: int,
                                       wordStr[:maxWordLength])
     if content.startswith('<p>'):
         if not content.endswith('</p>'):
-            content = content.strip()+'</p>'
+            content = content.strip() + '</p>'
     return content
 
 
