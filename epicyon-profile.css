@@ -1087,7 +1087,7 @@ div.container {
     .timeline {
         border: 0;
         width: 100vw;
-	table-layout: fixed;
+        table-layout: fixed;
     }
     .col-left a:link {
         background: var(--column-left-color);
@@ -1098,6 +1098,7 @@ div.container {
     .column-left {
         background-color: var(--column-left-color);
         width: var(--column-left-width);
+        overflow: hidden;
     }
     .col-left {
         color: var(--column-left-fg-color);
@@ -1105,6 +1106,7 @@ div.container {
         font-size: var(--font-size-links);
         float: left;
         width: var(--column-left-width);
+        overflow: hidden;
     }
     .col-left img.leftColEdit {
         background: var(--column-left-color);
@@ -1124,10 +1126,12 @@ div.container {
     }
     .column-center {
         width: var(--column-center-width);
+        overflow: hidden;
     }
     .col-center {
         width: var(--column-center-width);
         background-color: var(--main-bg-color);
+        overflow: hidden;
     }
     .col-right a:link {
         background: var(--column-left-color);
@@ -1138,7 +1142,7 @@ div.container {
     .column-right {
         background-color: var(--column-left-color);
         width: var(--column-right-width);
-	overflow: hidden;
+        overflow: hidden;
     }
     .col-right {
         background-color: var(--column-left-color);
@@ -1147,7 +1151,7 @@ div.container {
         padding-right: 30px;
         font-size: var(--font-size-links);
         width: var(--column-right-width);
-	overflow: hidden;
+        overflow: hidden;
     }
     .col-right img.rightColEdit {
         background: var(--column-left-color);
@@ -1764,8 +1768,8 @@ div.container {
     .timeline {
         border: 0;
         width: 100vw;
-	table-layout: fixed;
-	overflow: hidden;
+        table-layout: fixed;
+        overflow: hidden;
     }
     .column-left {
         display: none;
