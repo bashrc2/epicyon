@@ -3502,7 +3502,8 @@ def htmlProfile(rssIconAtTop: bool,
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
         profileHeaderStr = \
-            '<img class="timeline-banner" src="/users/news/banner.png" />\n'
+            '<img loading="lazy" class="timeline-banner" ' + \
+            'src="/users/news/banner.png" />\n'
         if loginButton:
             profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
@@ -5920,7 +5921,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
-        '<img class="timeline-banner" src="/users/news/banner.png" />\n'
+        '<img loading="lazy" class="timeline-banner" ' + \
+        'src="/users/news/banner.png" />\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
@@ -5979,7 +5981,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
-        '<img class="timeline-banner" src="/users/news/banner.png" />\n'
+        '<img loading="lazy" class="timeline-banner" ' + \
+        'src="/users/news/banner.png" />\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
@@ -6722,7 +6725,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
-    tlStr += '<img class="timeline-banner" src="' + \
+    tlStr += '<img loading="lazy" class="timeline-banner" src="' + \
         usersPath + '/banner.png" /></a>\n'
 
     if fullWidthTimelineButtonHeader:
