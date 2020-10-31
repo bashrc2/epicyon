@@ -1310,7 +1310,7 @@ div.container {
         margin: 5px;
     }
     .frontPageMobileButtons{
-	display: none;
+        display: none;
     }
     .buttonMobile {
         background: transparent;
@@ -1646,7 +1646,7 @@ div.container {
         margin: 20px 60px;
     }
     .columnIcons img {
-	float: right;
+        float: right;
     }
 }
 
@@ -1950,15 +1950,15 @@ div.container {
         border-right: var(--tab-border-width) solid var(--tab-border-color);
     }
     .frontPageMobileButtons{
-	display: inline;
-	border: var(--border-width-header) solid var(--border-color);
-	background-color: var(--main-bg-color);
-	border-radius: var(--timeline-border-radius);
-	padding: var(--container-button-padding);
-	margin: var(--vertical-between-posts-header);
+        display: inline;
+        border: var(--border-width-header) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding: var(--container-button-padding);
+        margin: var(--vertical-between-posts-header);
     }
     .frontPageMobileButtons img {
-        float: left;
+        float: right;
         max-width: 400px;
         width: 15%;
         padding: 0px 7px;
@@ -2294,6 +2294,6 @@ div.container {
         margin: 40px 80px;
     }
     .columnIcons img {
-	float: right;
+        float: right;
     }
 }

@@ -6069,15 +6069,13 @@ def headerButtonsFrontScreen(translate: {},
                 '/users/news/newswiremobile">' + \
                 '<img loading="lazy" src="/' + iconsDir + \
                 '/newswire.png" title="' + translate['Newswire'] + \
-                '" alt="| ' + translate['Newswire'] + \
-                '" class="timelineicon"/></a>\n'
+                '" alt="| ' + translate['Newswire'] + '"/></a>\n'
             headerStr += \
                 '        <a href="' + \
                 '/users/news/linksmobile">' + \
                 '<img loading="lazy" src="/' + iconsDir + \
                 '/links.png" title="' + translate['Links'] + \
-                '" alt="| ' + translate['Links'] + \
-                '" class="timelineicon"/></a>\n'
+                '" alt="| ' + translate['Links'] + '"/></a>\n'
     else:
         if not authorized:
             headerStr += \
