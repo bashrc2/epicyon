@@ -5622,6 +5622,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if rssIconAtTop:
         htmlStr += '</div><br>'
 
+    if showHeaderImage:
+        htmlStr += '<br>'        
+
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
     if os.path.isfile(linksFilename):
