@@ -5581,7 +5581,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
-    if rssIconAtTop and not showHeaderImage:
+    if (editor or rssIconAtTop) and not showHeaderImage:
         htmlStr += '<div class="columnIcons">'
 
     if editImageClass == 'leftColEdit':
@@ -5619,7 +5619,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
 
-    if rssIconAtTop:
+    if (editor or rssIconAtTop) and not showHeaderImage:
         htmlStr += '</div><br>'
 
     if showHeaderImage:
