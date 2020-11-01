@@ -462,6 +462,7 @@ def setThemeNight(baseDir: str):
     fontStrItalic = \
         "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
+        "column-left-header-background": "#07447c",
         "banner-height": "15vh",
         "banner-height-mobile": "10vh",
         "focus-color": "blue",
