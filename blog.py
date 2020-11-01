@@ -279,6 +279,7 @@ def htmlBlogPostRSS2(authorized: bool,
                      handle: str, restrictToDomain: bool) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
+    rssStr = ''
     messageLink = ''
     if postJsonObject['object'].get('id'):
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
@@ -305,6 +306,7 @@ def htmlBlogPostRSS3(authorized: bool,
                      handle: str, restrictToDomain: bool) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
+    rssStr = ''
     messageLink = ''
     if postJsonObject['object'].get('id'):
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')

@@ -1147,7 +1147,7 @@ class PubServer(BaseHTTPRequestHandler):
                   self.headers['Authorization'])
         return False
 
-    def _clearLoginDetails(self, nickname: str, callingDomain: str):
+    def _clearLoginDetails(self, nickname: str, callingDomain: str) -> None:
         """Clears login details for the given account
         """
         # remove any token
@@ -1160,7 +1160,8 @@ class PubServer(BaseHTTPRequestHandler):
                                callingDomain)
 
     def _benchmarkGETtimings(self, GETstartTime, GETtimings: {},
-                             prevGetId: str, currGetId: str):
+                             prevGetId: str,
+                             currGetId: str) -> None:
         """Updates a dictionary containing how long each segment of GET takes
         """
         timeDiff = int((time.time() - GETstartTime) * 1000)
@@ -1175,7 +1176,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('GET TIMING ' + currGetId + ' = ' + str(timeDiff))
 
     def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
-                              postID: int):
+                              postID: int) -> None:
         """Updates a list containing how long each segment of POST takes
         """
         if self.server.debug:
@@ -1226,7 +1227,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str, port: int,
                      onionDomain: str, i2pDomain: str,
-                     debug: bool):
+                     debug: bool) -> None:
         """Shows the login screen
         """
         # get the contents of POST containing login credentials
@@ -1381,7 +1382,7 @@ class PubServer(BaseHTTPRequestHandler):
                           baseDir: str, httpPrefix: str,
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
-                          debug: bool):
+                          debug: bool) -> None:
         """Actions on the moderator screeen
         """
         usersPath = path.replace('/moderationaction', '')
@@ -1534,7 +1535,7 @@ class PubServer(BaseHTTPRequestHandler):
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
-                       debug: bool):
+                       debug: bool) -> None:
         """Receive POST from person options screen
         """
         pageNumber = 1
@@ -1916,7 +1917,8 @@ class PubServer(BaseHTTPRequestHandler):
                          authorized: bool, path: str,
                          baseDir: str, httpPrefix: str,
                          domain: str, domainFull: str, port: int,
-                         onionDomain: str, i2pDomain: str, debug: bool):
+                         onionDomain: str, i2pDomain: str,
+                         debug: bool) -> None:
         """Confirm to unfollow
         """
         usersPath = path.split('/unfollowconfirm')[0]
@@ -1995,7 +1997,8 @@ class PubServer(BaseHTTPRequestHandler):
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str, port: int,
-                       onionDomain: str, i2pDomain: str, debug: bool):
+                       onionDomain: str, i2pDomain: str,
+                       debug: bool) -> None:
         """Confirm to follow
         """
         usersPath = path.split('/followconfirm')[0]
@@ -2078,7 +2081,8 @@ class PubServer(BaseHTTPRequestHandler):
                       authorized: bool, path: str,
                       baseDir: str, httpPrefix: str,
                       domain: str, domainFull: str, port: int,
-                      onionDomain: str, i2pDomain: str, debug: bool):
+                      onionDomain: str, i2pDomain: str,
+                      debug: bool) -> None:
         """Confirms a block
         """
         usersPath = path.split('/blockconfirm')[0]
@@ -2166,7 +2170,8 @@ class PubServer(BaseHTTPRequestHandler):
                         authorized: bool, path: str,
                         baseDir: str, httpPrefix: str,
                         domain: str, domainFull: str, port: int,
-                        onionDomain: str, i2pDomain: str, debug: bool):
+                        onionDomain: str, i2pDomain: str,
+                        debug: bool) -> None:
         """Confirms a unblock
         """
         usersPath = path.split('/unblockconfirm')[0]
@@ -2255,7 +2260,8 @@ class PubServer(BaseHTTPRequestHandler):
                             baseDir: str, httpPrefix: str,
                             domain: str, domainFull: str,
                             port: int, searchForEmoji: bool,
-                            onionDomain: str, i2pDomain: str, debug: bool):
+                            onionDomain: str, i2pDomain: str,
+                            debug: bool) -> None:
         """Receive a search query
         """
         # get the page number
@@ -2489,7 +2495,8 @@ class PubServer(BaseHTTPRequestHandler):
                      authorized: bool, path: str,
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str,
-                     onionDomain: str, i2pDomain: str, debug: bool):
+                     onionDomain: str, i2pDomain: str,
+                     debug: bool) -> None:
         """Receive a vote via POST
         """
         pageNumber = 1
@@ -2574,7 +2581,8 @@ class PubServer(BaseHTTPRequestHandler):
                       authorized: bool, path: str,
                       baseDir: str, httpPrefix: str,
                       domain: str, domainFull: str,
-                      onionDomain: str, i2pDomain: str, debug: bool):
+                      onionDomain: str, i2pDomain: str,
+                      debug: bool) -> None:
         """Receives an image via POST
         """
         if not self.outboxAuthenticated:
@@ -2641,7 +2649,8 @@ class PubServer(BaseHTTPRequestHandler):
                      authorized: bool, path: str,
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str,
-                     onionDomain: str, i2pDomain: str, debug: bool):
+                     onionDomain: str, i2pDomain: str,
+                     debug: bool) -> None:
         """Removes a shared item
         """
         usersPath = path.split('/rmshare')[0]
@@ -2699,7 +2708,8 @@ class PubServer(BaseHTTPRequestHandler):
                     authorized: bool, path: str,
                     baseDir: str, httpPrefix: str,
                     domain: str, domainFull: str,
-                    onionDomain: str, i2pDomain: str, debug: bool):
+                    onionDomain: str, i2pDomain: str,
+                    debug: bool) -> None:
         """Endpoint for removing posts
         """
         pageNumber = 1
@@ -2796,7 +2806,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str, debug: bool,
-                     defaultTimeline: str):
+                     defaultTimeline: str) -> None:
         """Updates the left links column of the timeline
         """
         usersPath = path.replace('/linksdata', '')
@@ -2901,7 +2911,7 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir: str, httpPrefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str, debug: bool,
-                        defaultTimeline: str):
+                        defaultTimeline: str) -> None:
         """Updates the right newswire column of the timeline
         """
         usersPath = path.replace('/newswiredata', '')
@@ -3040,7 +3050,7 @@ class PubServer(BaseHTTPRequestHandler):
                       baseDir: str, httpPrefix: str,
                       domain: str, domainFull: str,
                       onionDomain: str, i2pDomain: str, debug: bool,
-                      defaultTimeline: str):
+                      defaultTimeline: str) -> None:
         """edits a news post
         """
         usersPath = path.replace('/newseditdata', '')
@@ -3184,7 +3194,8 @@ class PubServer(BaseHTTPRequestHandler):
                        authorized: bool, path: str,
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str,
-                       onionDomain: str, i2pDomain: str, debug: bool):
+                       onionDomain: str, i2pDomain: str,
+                       debug: bool) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -4107,7 +4118,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy = False
 
     def _progressiveWebAppManifest(self, callingDomain: str,
-                                   GETstartTime, GETtimings: {}):
+                                   GETstartTime,
+                                   GETtimings: {}) -> None:
         """gets the PWA manifest
         """
         app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
@@ -4202,7 +4214,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout', 'send manifest')
 
     def _getFavicon(self, callingDomain: str,
-                    baseDir: str, debug: bool):
+                    baseDir: str, debug: bool) -> None:
         """Return the favicon
         """
         favType = 'image/x-icon'
@@ -4255,7 +4267,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getFonts(self, callingDomain: str, path: str,
                   baseDir: str, debug: bool,
-                  GETstartTime, GETtimings: {}):
+                  GETstartTime, GETtimings: {}) -> None:
         """Returns a font
         """
         fontStr = path.split('/fonts/')[1]
@@ -4317,7 +4329,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, port: int, proxyType: str,
                      GETstartTime, GETtimings: {},
-                     debug: bool):
+                     debug: bool) -> None:
         """Returns an RSS2 feed for the blog
         """
         nickname = path.split('/blog/')[1]
@@ -4370,7 +4382,7 @@ class PubServer(BaseHTTPRequestHandler):
                      domainFull: str, port: int, proxyType: str,
                      translate: {},
                      GETstartTime, GETtimings: {},
-                     debug: bool):
+                     debug: bool) -> None:
         """Returns an RSS2 feed for all blogs on this instance
         """
         if not self.server.session:
@@ -4429,7 +4441,7 @@ class PubServer(BaseHTTPRequestHandler):
                          baseDir: str, httpPrefix: str,
                          domain: str, port: int, proxyType: str,
                          GETstartTime, GETtimings: {},
-                         debug: bool):
+                         debug: bool) -> None:
         """Returns the newswire feed
         """
         if not self.server.session:
@@ -4465,7 +4477,7 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, port: int, proxyType: str,
                      GETstartTime, GETtimings: {},
-                     debug: bool):
+                     debug: bool) -> None:
         """Returns an RSS3 feed
         """
         nickname = path.split('/blog/')[1]
@@ -4512,7 +4524,7 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str,
                            GETstartTime, GETtimings: {},
                            onionDomain: str, i2pDomain: str,
-                           cookie: str, debug: bool):
+                           cookie: str, debug: bool) -> None:
         """Show person options screen
         """
         optionsStr = path.split('?options=')[1]
@@ -4592,7 +4604,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showMedia(self, callingDomain: str,
                    path: str, baseDir: str,
-                   GETstartTime, GETtimings: {}):
+                   GETstartTime, GETtimings: {}) -> None:
         """Returns a media file
         """
         if self._pathIsImage(path) or \
@@ -4640,7 +4652,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showEmoji(self, callingDomain: str, path: str,
                    baseDir: str,
-                   GETstartTime, GETtimings: {}):
+                   GETstartTime, GETtimings: {}) -> None:
         """Returns an emoji image
         """
         if self._pathIsImage(path):
@@ -4678,7 +4690,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showIcon(self, callingDomain: str, path: str,
                   baseDir: str,
-                  GETstartTime, GETtimings: {}):
+                  GETstartTime, GETtimings: {}) -> None:
         """Shows an icon
         """
         if path.endswith('.png'):
@@ -4714,7 +4726,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _showCachedAvatar(self, callingDomain: str, path: str,
                           baseDir: str,
-                          GETstartTime, GETtimings: {}):
+                          GETstartTime, GETtimings: {}) -> None:
         """Shows an avatar image obtained from the cache
         """
         mediaFilename = baseDir + '/cache' + path
@@ -4770,7 +4782,7 @@ class PubServer(BaseHTTPRequestHandler):
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str, port: int,
                        onionDomain: str, i2pDomain: str,
-                       GETstartTime, GETtimings: {}):
+                       GETstartTime, GETtimings: {}) -> None:
         """Return the result of a hashtag search
         """
         pageNumber = 1
@@ -4837,7 +4849,7 @@ class PubServer(BaseHTTPRequestHandler):
                            baseDir: str, httpPrefix: str,
                            domain: str, domainFull: str, port: int,
                            onionDomain: str, i2pDomain: str,
-                           GETstartTime, GETtimings: {}):
+                           GETstartTime, GETtimings: {}) -> None:
         """Return an RSS 2 feed for a hashtag
         """
         hashtag = path.split('/tags/rss2/')[1]
@@ -4893,7 +4905,8 @@ class PubServer(BaseHTTPRequestHandler):
                         domain: str, domainFull: str, port: int,
                         onionDomain: str, i2pDomain: str,
                         GETstartTime, GETtimings: {},
-                        repeatPrivate: bool, debug: bool):
+                        repeatPrivate: bool,
+                        debug: bool) -> None:
         """The announce/repeat button was pressed on a post
         """
         pageNumber = 1
