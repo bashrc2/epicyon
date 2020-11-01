@@ -5940,8 +5940,9 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
+        '<a href="/">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/news/banner.png" />\n'
+        'src="/users/news/banner.png" /></a>\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
@@ -6000,8 +6001,9 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
+        '<a href="/">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/news/banner.png" />\n'
+        'src="/users/news/banner.png" /></a>\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
