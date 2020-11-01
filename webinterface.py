@@ -5894,7 +5894,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             htmlStr += '      <br>\n'
 
     if rssIconAtTop and not showHeaderImage:
-        htmlStr += '</div>'
+        htmlStr += '</div><br>'
 
     # show the newswire lines
     newswireContentStr = \
