@@ -5623,7 +5623,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         htmlStr += '</div><br>'
 
     if showHeaderImage:
-        htmlStr += '<br>'        
+        htmlStr += '<br>'
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
@@ -5828,7 +5828,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 nickname + '/right_col_image.png" />\n' + \
                 '      </center>\n'
 
-    if rssIconAtTop and not showHeaderImage:
+    if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
         htmlStr += '<div class="columnIcons">'
 
     if editImageClass == 'rightColEdit':
@@ -5898,7 +5898,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         if showHeaderImage:
             htmlStr += '      <br>\n'
 
-    if rssIconAtTop and not showHeaderImage:
+    if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
         htmlStr += '</div><br>'
 
     # show the newswire lines
