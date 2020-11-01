@@ -5581,6 +5581,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '<button class="cancelbtn">' + \
             translate['Go Back'] + '</button></a>\n'
 
+    if rssIconAtTop and not showHeaderImage:
+        htmlStr += '<div class="columnIcons">'
+
     if editImageClass == 'leftColEdit':
         htmlStr += '\n      <center>\n'
 
@@ -5618,6 +5621,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         if showHeaderImage:
             htmlStr += '      <br>\n'
+
+    if rssIconAtTop and not showHeaderImage:
+        htmlStr += '</div><br>'
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
