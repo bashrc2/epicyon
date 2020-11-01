@@ -9520,6 +9520,7 @@ class PubServer(BaseHTTPRequestHandler):
                 showPublishAsIcon = self.server.showPublishAsIcon
                 rssIconAtTop = self.server.rssIconAtTop
                 iconsAsButtons = self.server.iconsAsButtons
+                defaultTimeline = self.server.defaultTimeline
                 msg = htmlNewswireMobile(self.server.cssCache,
                                          self.server.baseDir,
                                          nickname,
@@ -9533,7 +9534,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          showPublishAsIcon,
                                          authorized,
                                          rssIconAtTop,
-                                         iconsAsButtons).encode('utf-8')
+                                         iconsAsButtons,
+                                         defaultTimeline).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -9554,6 +9556,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timelinePath = \
                     '/users/' + nickname + '/' + self.server.defaultTimeline
                 iconsAsButtons = self.server.iconsAsButtons
+                defaultTimeline = self.server.defaultTimeline
                 msg = htmlLinksMobile(self.server.cssCache,
                                       self.server.baseDir, nickname,
                                       self.server.domainFull,
@@ -9562,7 +9565,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       timelinePath,
                                       authorized,
                                       self.server.rssIconAtTop,
-                                      iconsAsButtons).encode('utf-8')
+                                      iconsAsButtons,
+                                      defaultTimeline).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False

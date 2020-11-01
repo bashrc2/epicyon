@@ -5915,7 +5915,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     httpPrefix: str, translate,
                     timelinePath: str, authorized: bool,
                     rssIconAtTop: bool,
-                    iconsAsButtons: bool) -> str:
+                    iconsAsButtons: bool,
+                    defaultTimeline: str) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -5942,7 +5943,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
-        '<a href="/users/' + nickname + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/news/banner.png" /></a>\n'
 
@@ -5969,7 +5970,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        showPublishAsIcon: bool,
                        authorized: bool,
                        rssIconAtTop: bool,
-                       iconsAsButtons: bool) -> str:
+                       iconsAsButtons: bool,
+                       defaultTimeline: str) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -6003,7 +6005,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
-        '<a href="/users/' + nickname + '">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/news/banner.png" /></a>\n'
 
