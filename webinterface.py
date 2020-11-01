@@ -5613,7 +5613,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         translate['RSS feed for this site'] + \
         '" title="' + translate['RSS feed for this site'] + \
         '" src="/' + iconsDir + '/logorss.png" /></a>\n'
-    if rssIconAtTop and showHeaderImage:
+    if rssIconAtTop:
         htmlStr += rssIconStr
 
     if editImageClass == 'leftColEdit':
@@ -5622,7 +5622,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         if showHeaderImage:
             htmlStr += '      <br>\n'
 
-    if rssIconAtTop and not showHeaderImage:
+    if rssIconAtTop:
         htmlStr += '</div><br>'
 
     linksFilename = baseDir + '/accounts/links.txt'
@@ -5672,8 +5672,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p>' + lineStr + '</p>\n'
                     linksFileContainsEntries = True
 
-    rssAtBottom = not rssIconAtTop or not showHeaderImage
-    if linksFileContainsEntries and rssAtBottom:
+    if linksFileContainsEntries and not rssIconAtTop:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
     return htmlStr
 
