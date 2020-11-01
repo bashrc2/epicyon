@@ -5942,7 +5942,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
-        '<a href="/users/"' + nickname + '>' + \
+        '<a href="/users/' + nickname + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/news/banner.png" /></a>\n'
 
@@ -6003,7 +6003,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
     htmlStr += \
-        '<a href="/users/"' + nickname + '>' + \
+        '<a href="/users/' + nickname + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/news/banner.png" /></a>\n'
 
