@@ -5869,7 +5869,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         iconsDir + '/logorss.png" /></a>\n'
-    if rssIconAtTop and showHeaderImage:
+    if rssIconAtTop:
         htmlStr += rssIconStr
 
     # show publish icon at top
@@ -5897,8 +5897,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
-    rssAtBottom = not rssIconAtTop or (not showHeaderImage and not authorized)
-    if newswireContentStr and rssAtBottom:
+    if newswireContentStr and not rssIconAtTop:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
     return htmlStr
 
