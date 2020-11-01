@@ -334,6 +334,7 @@ def setThemeIndymediaClassic(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "container-button-padding": "0px",
         "hashtag-background-color": "darkred",
         "font-size-newswire": "18px",
         "font-size-publish-button": "18px",
