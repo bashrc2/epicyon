@@ -5823,6 +5823,9 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 nickname + '/right_col_image.png" />\n' + \
                 '      </center>\n'
 
+    if rssIconAtTop and not showHeaderImage:
+        htmlStr += '<div class="columnIcons">'
+
     if editImageClass == 'rightColEdit':
         htmlStr += '\n      <center>\n'
 
@@ -5889,6 +5892,9 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         if showHeaderImage:
             htmlStr += '      <br>\n'
+
+    if rssIconAtTop and not showHeaderImage:
+        htmlStr += '</div>'
 
     # show the newswire lines
     newswireContentStr = \
