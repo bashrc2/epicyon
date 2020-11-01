@@ -525,6 +525,7 @@ def setThemeStarlight(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "column-left-header-background": "#69282c",
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
         "focus-color": "darkred",
