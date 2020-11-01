@@ -5618,9 +5618,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
-    else:
-        if showHeaderImage:
-            htmlStr += '      <br>\n'
 
     if rssIconAtTop:
         htmlStr += '</div><br>'
