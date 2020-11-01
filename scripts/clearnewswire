@@ -2,6 +2,9 @@
 rm accounts/news@*/outbox/*
 rm accounts/news@*/postcache/*
 rm accounts/news@*/outbox.index
+if [ -d accounts/newsmirror ]; then
+    rm -rf accounts/newsmirror
+fi
 if [ -f accounts/.newswirestate.json ]; then
     rm accounts/.newswirestate.json
 fi

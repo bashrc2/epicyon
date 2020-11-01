@@ -19,6 +19,25 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def removeHtml(content: str) -> str:
+    """Removes html links from the given content.
+    Used to ensure that profile descriptions don't contain dubious content
+    """
+    if '<' not in content:
+        return content
+    removing = False
+    content = content.replace('<q>', '"').replace('</q>', '"')
+    result = ''
+    for ch in content:
+        if ch == '<':
+            removing = True
+        elif ch == '>':
+            removing = False
+        elif not removing:
+            result += ch
+    return result
+
+
 def isSystemAccount(nickname: str) -> bool:
     """Returns true if the given nickname is a system account
     """
@@ -587,6 +606,39 @@ def locateNewsArrival(baseDir: str, domain: str,
     return None
 
 
+def clearFromPostCaches(baseDir: str, recentPostsCache: {},
+                        postId: str) -> None:
+    """Clears cached html for the given post, so that edits
+    to news will appear
+    """
+    filename = '/postcache/' + postId + '.html'
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct:
+                continue
+            cacheDir = os.path.join(baseDir + '/accounts', acct)
+            postFilename = cacheDir + filename
+            if os.path.isfile(postFilename):
+                try:
+                    os.remove(postFilename)
+                except BaseException:
+                    print('WARN: clearFromPostCaches file not removed ' +
+                          postFilename)
+                    pass
+            # if the post is in the recent posts cache then remove it
+            if recentPostsCache.get('index'):
+                if postId in recentPostsCache['index']:
+                    recentPostsCache['index'].remove(postId)
+            if recentPostsCache.get('json'):
+                if recentPostsCache['json'].get(postId):
+                    del recentPostsCache['json'][postId]
+            if recentPostsCache.get('html'):
+                if recentPostsCache['html'].get(postId):
+                    del recentPostsCache['html'][postId]
+
+
 def locatePost(baseDir: str, nickname: str, domain: str,
                postUrl: str, replies=False) -> str:
     """Returns the filename for the given status post url
@@ -719,26 +771,21 @@ def deletePost(baseDir: str, httpPrefix: str,
             if recentPostsCache.get('index'):
                 if postId in recentPostsCache['index']:
                     recentPostsCache['index'].remove(postId)
-            if recentPostsCache['json'].get(postId):
-                del recentPostsCache['json'][postId]
+            if recentPostsCache.get('json'):
+                if recentPostsCache['json'].get(postId):
+                    del recentPostsCache['json'][postId]
+            if recentPostsCache.get('html'):
+                if recentPostsCache['html'].get(postId):
+                    del recentPostsCache['html'][postId]
 
         # remove any attachment
         removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
-        # remove any mute file
-        muteFilename = postFilename + '.muted'
-        if os.path.isfile(muteFilename):
-            os.remove(muteFilename)
-
-        # remove any votes file
-        votesFilename = postFilename + '.votes'
-        if os.path.isfile(votesFilename):
-            os.remove(votesFilename)
-
-        # remove any arrived file
-        arrivedFilename = postFilename + '.arrived'
-        if os.path.isfile(arrivedFilename):
-            os.remove(arrivedFilename)
+        extensions = ('votes', 'arrived', 'muted')
+        for ext in extensions:
+            extFilename = postFilename + '.' + ext
+            if os.path.isfile(extFilename):
+                os.remove(extFilename)
 
         # remove cached html version of the post
         cachedPostFilename = \
@@ -1004,6 +1051,35 @@ def fileLastModified(filename: str) -> str:
     t = os.path.getmtime(filename)
     modifiedTime = datetime.datetime.fromtimestamp(t)
     return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def getCSS(baseDir: str, cssFilename: str, cssCache: {}) -> str:
+    """Retrieves the css for a given file, or from a cache
+    """
+    # does the css file exist?
+    if not os.path.isfile(cssFilename):
+        return None
+
+    lastModified = fileLastModified(cssFilename)
+
+    # has this already been loaded into the cache?
+    if cssCache.get(cssFilename):
+        if cssCache[cssFilename][0] == lastModified:
+            # file hasn't changed, so return the version in the cache
+            return cssCache[cssFilename][1]
+
+    with open(cssFilename, 'r') as fpCSS:
+        css = fpCSS.read()
+        if cssCache.get(cssFilename):
+            # alter the cache contents
+            cssCache[cssFilename][0] = lastModified
+            cssCache[cssFilename][1] = css
+        else:
+            # add entry to the cache
+            cssCache[cssFilename] = [lastModified, css]
+        return css
+
+    return None
 
 
 def daysInMonth(year: int, monthNumber: int) -> int:

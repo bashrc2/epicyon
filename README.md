@@ -41,12 +41,12 @@ sudo apt install -y \
     tor python3-socks imagemagick \
     python3-numpy python3-setuptools \
     python3-crypto python3-pycryptodome \
-    python3-dateutil python3-pil.imagetk
+    python3-dateutil python3-pil.imagetk \
     python3-idna python3-requests \
     python3-django-timezone-field \
     libimage-exiftool-perl python3-flake8 \
     python3-pyqrcode python3-png python3-bandit \
-    certbot nginx
+    certbot nginx wget
 ```
 
 ## Installation
@@ -59,6 +59,14 @@ Add a dedicated user so that we don't have to run as root.
 
 ``` bash
 adduser --system --home=/opt/epicyon --group epicyon
+```
+
+Link news mirrors:
+
+``` bash
+mkdir /var/www/YOUR_DOMAIN
+mkdir -p /opt/epicyon/accounts/newsmirror
+ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror
 ```
 
 Edit */etc/systemd/system/epicyon.service* and add the following:
@@ -151,7 +159,12 @@ server {
     error_log /dev/null;
 
     index index.html;
- 
+
+    location /newsmirror {
+        root /var/www/YOUR_DOMAIN;
+        try_files $uri =404;
+    }
+
     location / {
         proxy_http_version 1.1;
         client_max_body_size 31M;
@@ -259,4 +272,3 @@ To run the network tests. These simulate instances exchanging messages.
 ``` bash
 python3 epicyon.py --testsnetwork
 ```
-

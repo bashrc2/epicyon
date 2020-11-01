@@ -1259,16 +1259,17 @@
       </p>
       <img width="70%" src="img/screenshot_tagswarm.jpg" />
 
-      <p class="siteheader">No Artificial Incentives</p>
+      <p class="siteheader">News integration</p>
       <p class="intro">
-        No algorithmic timelines. No rating or ranking of people. No trending stuff. Removing the artficial cruft of social networking allows you to focus on things you <i>actually care about</i>, instead of what someone else thinks you should pay attention to.
+        Want to read the news from an RSS feed, or run your own Independent Media Center producing news and federating it through the network? Both of those are possible. The newswire gives you the capability of collectively moderating news as it arrives, and publishing your own articles. The administrator can assign moderator and editor roles to other users on an instance. Organize your community to overcome the limitations of corporate media.
       </p>
+
       <p id="install" class="siteheader">Install</p>
     </center>
     <p class="intro">You will need python version 3.7 or later.</p>
     <p class="intro">On a Debian based system:</p>
     <div class="shell">
-      <p>sudo apt install -y tor python3-socks imagemagick python3-numpy python3-setuptools python3-crypto python3-pycryptodome python3-dateutil python3-pil.imagetk python3-idna python3-requests python3-flake8 python3-django-timezone-field python3-pyqrcode python3-png python3-bandit libimage-exiftool-perl certbot nginx</p>
+      <p>sudo apt install -y tor python3-socks imagemagick python3-numpy python3-setuptools python3-crypto python3-pycryptodome python3-dateutil python3-pil.imagetk python3-idna python3-requests python3-flake8 python3-django-timezone-field python3-pyqrcode python3-png python3-bandit libimage-exiftool-perl certbot nginx wget</p>
     </div>
 
     <p class="intro">
@@ -1290,6 +1291,15 @@
       <p>sudo su</p>
       <p>adduser --system --home=/opt/epicyon --group epicyon</p>
       <p>chown -R epicyon:epicyon /opt/epicyon</p>
+    </div>
+
+    <p class="intro">
+      Link news mirrors:
+    </p>
+    <div class="shell">
+      <p>mkdir /var/www/YOUR_DOMAIN</p>
+      <p>mkdir -p /opt/epicyon/accounts/newsmirror</p>
+      <p>ln -s /opt/epicyon/accounts/newsmirror /var/www/YOUR_DOMAIN/newsmirror</p>
     </div>
 
     <p class="intro">
@@ -1387,6 +1397,11 @@
       error_log /dev/null;<br>
       <br>
       index index.html;<br>
+      <br>
+      location /newsmirror {<br>
+        root /var/www/YOUR_DOMAIN;<br>
+        try_files $uri =404;<br>
+      }<br>
       <br>
       location / {<br>
       proxy_http_version 1.1;<br>

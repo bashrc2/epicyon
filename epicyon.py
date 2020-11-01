@@ -120,6 +120,21 @@ parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
                     default=2048,
                     help='Maximum newswire rss/atom feed size in K')
+parser.add_argument('--maxMirroredArticles',
+                    dest='maxMirroredArticles', type=int,
+                    default=100,
+                    help='Maximum number of news articles to mirror.' +
+                    ' Set to zero for indefinite mirroring.')
+parser.add_argument('--maxNewsPosts',
+                    dest='maxNewsPosts', type=int,
+                    default=0,
+                    help='Maximum number of news timeline posts to keep. ' +
+                    'Zero for no expiry.')
+parser.add_argument('--maxFollowers',
+                    dest='maxFollowers', type=int,
+                    default=2000,
+                    help='Maximum number of followers per account. ' +
+                    'Zero for no limit.')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -194,6 +209,41 @@ parser.add_argument("--repliesEnabled", "--commentsEnabled",
                     type=str2bool, nargs='?',
                     const=True, default=True,
                     help="Enable replies to a post")
+parser.add_argument("--showPublishAsIcon",
+                    dest='showPublishAsIcon',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Whether to show newswire publish " +
+                    "as an icon or a button")
+parser.add_argument("--fullWidthTimelineButtonHeader",
+                    dest='fullWidthTimelineButtonHeader',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to show the timeline " +
+                    "button header containing inbox and outbox " +
+                    "as the full width of the screen")
+parser.add_argument("--allowNewsFollowers",
+                    dest='allowNewsFollowers',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to allow the news account to be followed")
+parser.add_argument("--iconsAsButtons",
+                    dest='iconsAsButtons',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Show header icons as buttons")
+parser.add_argument("--rssIconAtTop",
+                    dest='rssIconAtTop',
+                    type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Whether to show the rss icon at teh top or bottom" +
+                    "of the timeline")
+parser.add_argument("--publishButtonAtTop",
+                    dest='publishButtonAtTop',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to show the publish button at the top of " +
+                    "the newswire column")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -1937,15 +1987,58 @@ if dateonly:
 maxNewswirePostsPerSource = \
     getConfigParam(baseDir, 'maxNewswirePostsPerSource')
 if maxNewswirePostsPerSource:
-    if maxNewswirePostsPerSource.isdigit():
-        args.maxNewswirePostsPerSource = maxNewswirePostsPerSource
+    args.maxNewswirePostsPerSource = int(maxNewswirePostsPerSource)
 
 # set the maximum size of a newswire rss/atom feed in Kilobytes
 maxNewswireFeedSizeKb = \
     getConfigParam(baseDir, 'maxNewswireFeedSizeKb')
 if maxNewswireFeedSizeKb:
-    if maxNewswireFeedSizeKb.isdigit():
-        args.maxNewswireFeedSizeKb = maxNewswireFeedSizeKb
+    args.maxNewswireFeedSizeKb = int(maxNewswireFeedSizeKb)
+
+maxMirroredArticles = \
+    getConfigParam(baseDir, 'maxMirroredArticles')
+if maxMirroredArticles is not None:
+    args.maxMirroredArticles = int(maxMirroredArticles)
+
+maxNewsPosts = \
+    getConfigParam(baseDir, 'maxNewsPosts')
+if maxNewsPosts is not None:
+    args.maxNewsPosts = int(maxNewsPosts)
+
+maxFollowers = \
+    getConfigParam(baseDir, 'maxFollowers')
+if maxFollowers is not None:
+    args.maxFollowers = int(maxFollowers)
+
+allowNewsFollowers = \
+    getConfigParam(baseDir, 'allowNewsFollowers')
+if allowNewsFollowers is not None:
+    args.allowNewsFollowers = bool(allowNewsFollowers)
+
+showPublishAsIcon = \
+    getConfigParam(baseDir, 'showPublishAsIcon')
+if showPublishAsIcon is not None:
+    args.showPublishAsIcon = bool(showPublishAsIcon)
+
+iconsAsButtons = \
+    getConfigParam(baseDir, 'iconsAsButtons')
+if iconsAsButtons is not None:
+    args.iconsAsButtons = bool(iconsAsButtons)
+
+rssIconAtTop = \
+    getConfigParam(baseDir, 'rssIconAtTop')
+if rssIconAtTop is not None:
+    args.rssIconAtTop = bool(rssIconAtTop)
+
+publishButtonAtTop = \
+    getConfigParam(baseDir, 'publishButtonAtTop')
+if publishButtonAtTop is not None:
+    args.publishButtonAtTop = bool(publishButtonAtTop)
+
+fullWidthTimelineButtonHeader = \
+    getConfigParam(baseDir, 'fullWidthTimelineButtonHeader')
+if fullWidthTimelineButtonHeader is not None:
+    args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
 
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
@@ -1960,7 +2053,16 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxNewswireFeedSizeKb,
+    runDaemon(args.publishButtonAtTop,
+              args.rssIconAtTop,
+              args.iconsAsButtons,
+              args.fullWidthTimelineButtonHeader,
+              args.showPublishAsIcon,
+              args.maxFollowers,
+              args.allowNewsFollowers,
+              args.maxNewsPosts,
+              args.maxMirroredArticles,
+              args.maxNewswireFeedSizeKb,
               args.maxNewswirePostsPerSource,
               args.dateonly,
               args.votingtime,

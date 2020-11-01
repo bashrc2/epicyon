@@ -43,6 +43,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
 from utils import getFollowersOfPerson
+from utils import removeHtml
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
@@ -71,7 +72,6 @@ from inbox import validInboxFilenames
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
-from content import removeHtml
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -82,6 +82,9 @@ from content import removeHtmlTag
 from theme import setCSSparam
 from jsonldsig import testSignJsonld
 from jsonldsig import jsonldVerify
+from newsdaemon import hashtagRuleTree
+from newsdaemon import hashtagRuleResolve
+from newswire import getNewswireTags
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -288,7 +291,9 @@ def createServerAlice(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     print('Server running: Alice')
-    runDaemon(1024, 5, False, 0, False, 1, False, False, False,
+    runDaemon(False, True, False, False, True, 10, False,
+              0, 100, 1024, 5, False,
+              0, False, 1, False, False, False,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
@@ -351,7 +356,9 @@ def createServerBob(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     print('Server running: Bob')
-    runDaemon(1024, 5, False, 0, False, 1, False, False, False,
+    runDaemon(False, True, False, False, True, 10, False,
+              0, 100, 1024, 5, False, 0,
+              False, 1, False, False, False,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
@@ -388,7 +395,9 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     onionDomain = None
     i2pDomain = None
     print('Server running: Eve')
-    runDaemon(1024, 5, False, 0, False, 1, False, False, False,
+    runDaemon(False, True, False, False, True, 10, False,
+              0, 100, 1024, 5, False, 0,
+              False, 1, False, False, False,
               5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
               onionDomain, i2pDomain, None, port, port,
@@ -753,7 +762,7 @@ def testFollowBetweenServers():
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
-                          True, __version__)
+                          True, __version__, False)
     print('sendResult: ' + str(sendResult))
 
     for t in range(10):
@@ -1666,6 +1675,15 @@ def testWebLinks():
     assert resultText == exampleText
 
     exampleText = \
+        'some.incredibly.long.and.annoying.word.which.should.be.removed: ' + \
+        'The remaining text'
+    resultText = removeLongWords(exampleText, 40, [])
+    print('resultText: ' + resultText)
+    assert resultText == \
+        'some.incredibly.long.and.annoying.word.w\n' + \
+        'hich.should.be.removed: The remaining text'
+
+    exampleText = \
         '<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C74' + \
         '4E8C45AB3C5E42C361C837155AFCFD9D448</p>'
     resultText = removeLongWords(exampleText, 40, [])
@@ -2092,7 +2110,7 @@ def testConstantTimeStringCheck():
     avTime2 = ((end - start) * 1000000 / itterations)
     timeDiffMicroseconds = abs(avTime2 - avTime1)
     # time difference should be less than 10uS
-    assert timeDiffMicroseconds < 10
+    assert int(timeDiffMicroseconds) < 10
 
     # change multiple characters and observe timing difference
     start = time.time()
@@ -2103,7 +2121,7 @@ def testConstantTimeStringCheck():
     avTime2 = ((end - start) * 1000000 / itterations)
     timeDiffMicroseconds = abs(avTime2 - avTime1)
     # time difference should be less than 10uS
-    assert timeDiffMicroseconds < 10
+    assert int(timeDiffMicroseconds) < 10
 
 
 def testReplaceEmailQuote():
@@ -2173,8 +2191,156 @@ def testRemoveHtmlTag():
         "src=\"https://somesiteorother.com/image.jpg\"></p>"
 
 
+def testHashtagRuleTree():
+    print('testHashtagRuleTree')
+    operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
+
+    url = 'testsite.com'
+    moderated = True
+    conditionsStr = \
+        'contains "Cat" or contains "Corvid" or ' + \
+        'contains "Dormouse" or contains "Buzzard"'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['or', ['contains', ['"Cat"']],
+                             ['contains', ['"Corvid"']],
+                             ['contains', ['"Dormouse"']],
+                             ['contains', ['"Buzzard"']]])
+
+    content = 'This is a test'
+    moderated = True
+    conditionsStr = '#foo or #bar'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['or', ['#foo'], ['#bar']])
+    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    hashtags = ['#foo']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#carrot', '#stick']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    content = 'This is a test'
+    url = 'https://testsite.com/something'
+    moderated = True
+    conditionsStr = '#foo and from "testsite.com"'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['and', ['#foo'], ['from', ['"testsite.com"']]])
+    assert str(tagsInConditions) == str(['#foo'])
+    hashtags = ['#foo']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content,
+                                  'othersite.net')
+
+    content = 'This is a test'
+    moderated = True
+    conditionsStr = 'contains "is a" and #foo or #bar'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == \
+        str(['and', ['contains', ['"is a"']],
+             ['or', ['#foo'], ['#bar']]])
+    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    hashtags = ['#foo']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#carrot', '#stick']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    moderated = False
+    conditionsStr = 'not moderated and #foo or #bar'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == \
+        str(['not', ['and', ['moderated'], ['or', ['#foo'], ['#bar']]]])
+    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    hashtags = ['#foo']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#carrot', '#stick']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    moderated = True
+    conditionsStr = 'moderated and #foo or #bar'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == \
+        str(['and', ['moderated'], ['or', ['#foo'], ['#bar']]])
+    assert str(tagsInConditions) == str(['#foo', '#bar'])
+    hashtags = ['#foo']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#carrot', '#stick']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    conditionsStr = 'x'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert tree is None
+    assert tagsInConditions == []
+    hashtags = ['#foo']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    conditionsStr = '#x'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['#x'])
+    assert str(tagsInConditions) == str(['#x'])
+    hashtags = ['#x']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#y', '#z']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    conditionsStr = 'not #b'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['not', ['#b']])
+    assert str(tagsInConditions) == str(['#b'])
+    hashtags = ['#y', '#z']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#a', '#b', '#c']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+    conditionsStr = '#foo or #bar and #a'
+    tagsInConditions = []
+    tree = hashtagRuleTree(operators, conditionsStr,
+                           tagsInConditions, moderated)
+    assert str(tree) == str(['and', ['or', ['#foo'], ['#bar']], ['#a']])
+    assert str(tagsInConditions) == str(['#foo', '#bar', '#a'])
+    hashtags = ['#foo', '#bar', '#a']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#bar', '#a']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#foo', '#a']
+    assert hashtagRuleResolve(tree, hashtags, moderated, content, url)
+    hashtags = ['#x', '#a']
+    assert not hashtagRuleResolve(tree, hashtags, moderated, content, url)
+
+
+def testGetNewswireTags():
+    print('testGetNewswireTags')
+    rssDescription = '<img src="https://somesite/someimage.jpg" ' + \
+        'class="misc-stuff" alt="#ExcitingHashtag" ' + \
+        'srcset="https://somesite/someimage.jpg" ' + \
+        'sizes="(max-width: 864px) 100vw, 864px" />' + \
+        'Compelling description with #ExcitingHashtag, which is ' + \
+        'being posted in #BoringForum'
+    tags = getNewswireTags(rssDescription, 10)
+    assert len(tags) == 2
+    assert '#BoringForum' in tags
+    assert '#ExcitingHashtag' in tags
+
+
 def runAllTests():
     print('Running tests...')
+    testGetNewswireTags()
+    testHashtagRuleTree()
     testRemoveHtmlTag()
     testReplaceEmailQuote()
     testConstantTimeStringCheck()

@@ -2436,7 +2436,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   allowDeletion: bool, debug: bool, maxMentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
                   YTReplacementDomain: str,
-                  showPublishedDateOnly: bool) -> None:
+                  showPublishedDateOnly: bool,
+                  allowNewsFollowers: bool,
+                  maxFollowers: int) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2722,7 +2724,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 personCache,
                                 queueJson['post'],
                                 federationList,
-                                debug, projectVersion):
+                                debug, projectVersion,
+                                allowNewsFollowers,
+                                maxFollowers):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:

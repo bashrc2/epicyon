@@ -6,17 +6,31 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+# Example hashtag logic:
+#
+# if moderated and not #imcoxford then block
+# if #pol and contains "westminster" then add #britpol
+# if #unwantedtag then block
+
 import os
 import time
 import datetime
+import html
+from shutil import rmtree
+from subprocess import Popen
 from collections import OrderedDict
 from newswire import getDictFromNewswire
+# from posts import sendSignedJson
 from posts import createNewsPost
+from posts import archivePostsForPerson
 from content import removeHtmlTag
 from content import dangerousMarkup
+from content import validHashTag
 from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
+from utils import clearFromPostCaches
+from inbox import storeHashTags
 
 
 def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
@@ -53,21 +67,396 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
 
 
 def removeControlCharacters(content: str) -> str:
-    """TODO this is hacky and a better solution is needed
-    the unicode is messing up somehow
+    """Remove escaped html
     """
-    lookups = {
-        "8211": "-",
-        "8230": "...",
-        "8216": "'",
-        "8217": "'",
-        "8220": '"',
-        "8221": '"'
-    }
-    for code, ch in lookups.items():
-        content = content.replace('&' + code + ';', ch)
-        content = content.replace('&#' + code + ';', ch)
+    if '&' in content:
+        return html.unescape(content)
     return content
+
+
+def hashtagRuleResolve(tree: [], hashtags: [], moderated: bool,
+                       content: str, url: str) -> bool:
+    """Returns whether the tree for a hashtag rule evaluates to true or false
+    """
+    if not tree:
+        return False
+
+    if tree[0] == 'not':
+        if len(tree) == 2:
+            if isinstance(tree[1], str):
+                return tree[1] not in hashtags
+            elif isinstance(tree[1], list):
+                return not hashtagRuleResolve(tree[1], hashtags, moderated,
+                                              content, url)
+    elif tree[0] == 'contains':
+        if len(tree) == 2:
+            matchStr = None
+            if isinstance(tree[1], str):
+                matchStr = tree[1]
+            elif isinstance(tree[1], list):
+                matchStr = tree[1][0]
+            if matchStr:
+                if matchStr.startswith('"') and matchStr.endswith('"'):
+                    matchStr = matchStr[1:]
+                    matchStr = matchStr[:len(matchStr) - 1]
+                matchStrLower = matchStr.lower()
+                contentWithoutTags = content.replace('#' + matchStrLower, '')
+                return matchStrLower in contentWithoutTags
+    elif tree[0] == 'from':
+        if len(tree) == 2:
+            matchStr = None
+            if isinstance(tree[1], str):
+                matchStr = tree[1]
+            elif isinstance(tree[1], list):
+                matchStr = tree[1][0]
+            if matchStr:
+                if matchStr.startswith('"') and matchStr.endswith('"'):
+                    matchStr = matchStr[1:]
+                    matchStr = matchStr[:len(matchStr) - 1]
+                return matchStr.lower() in url
+    elif tree[0] == 'and':
+        if len(tree) >= 3:
+            for argIndex in range(1, len(tree)):
+                argValue = False
+                if isinstance(tree[argIndex], str):
+                    argValue = (tree[argIndex] in hashtags)
+                elif isinstance(tree[argIndex], list):
+                    argValue = hashtagRuleResolve(tree[argIndex],
+                                                  hashtags, moderated,
+                                                  content, url)
+                if not argValue:
+                    return False
+            return True
+    elif tree[0] == 'or':
+        if len(tree) >= 3:
+            for argIndex in range(1, len(tree)):
+                argValue = False
+                if isinstance(tree[argIndex], str):
+                    argValue = (tree[argIndex] in hashtags)
+                elif isinstance(tree[argIndex], list):
+                    argValue = hashtagRuleResolve(tree[argIndex],
+                                                  hashtags, moderated,
+                                                  content, url)
+                if argValue:
+                    return True
+            return False
+    elif tree[0] == 'xor':
+        if len(tree) >= 3:
+            trueCtr = 0
+            for argIndex in range(1, len(tree)):
+                argValue = False
+                if isinstance(tree[argIndex], str):
+                    argValue = (tree[argIndex] in hashtags)
+                elif isinstance(tree[argIndex], list):
+                    argValue = hashtagRuleResolve(tree[argIndex],
+                                                  hashtags, moderated,
+                                                  content, url)
+                if argValue:
+                    trueCtr += 1
+            if trueCtr == 1:
+                return True
+    elif tree[0].startswith('#') and len(tree) == 1:
+        return tree[0] in hashtags
+    elif tree[0].startswith('moderated'):
+        return moderated
+    elif tree[0].startswith('"') and tree[0].endswith('"'):
+        return True
+
+    return False
+
+
+def hashtagRuleTree(operators: [],
+                    conditionsStr: str,
+                    tagsInConditions: [],
+                    moderated: bool) -> []:
+    """Walks the tree
+    """
+    if not operators and conditionsStr:
+        conditionsStr = conditionsStr.strip()
+        isStr = conditionsStr.startswith('"') and conditionsStr.endswith('"')
+        if conditionsStr.startswith('#') or isStr or \
+           conditionsStr in operators or \
+           conditionsStr == 'moderated' or \
+           conditionsStr == 'contains':
+            if conditionsStr.startswith('#'):
+                if conditionsStr not in tagsInConditions:
+                    if ' ' not in conditionsStr or \
+                       conditionsStr.startswith('"'):
+                        tagsInConditions.append(conditionsStr)
+            return [conditionsStr.strip()]
+        else:
+            return None
+    if not operators or not conditionsStr:
+        return None
+    tree = None
+    conditionsStr = conditionsStr.strip()
+    isStr = conditionsStr.startswith('"') and conditionsStr.endswith('"')
+    if conditionsStr.startswith('#') or isStr or \
+       conditionsStr in operators or \
+       conditionsStr == 'moderated' or \
+       conditionsStr == 'contains':
+        if conditionsStr.startswith('#'):
+            if conditionsStr not in tagsInConditions:
+                if ' ' not in conditionsStr or \
+                   conditionsStr.startswith('"'):
+                    tagsInConditions.append(conditionsStr)
+        tree = [conditionsStr.strip()]
+    ctr = 0
+    while ctr < len(operators):
+        op = operators[ctr]
+        opMatch = ' ' + op + ' '
+        if opMatch not in conditionsStr and \
+           not conditionsStr.startswith(op + ' '):
+            ctr += 1
+            continue
+        else:
+            tree = [op]
+            if opMatch in conditionsStr:
+                sections = conditionsStr.split(opMatch)
+            else:
+                sections = conditionsStr.split(op + ' ', 1)
+            for subConditionStr in sections:
+                result = hashtagRuleTree(operators[ctr + 1:],
+                                         subConditionStr,
+                                         tagsInConditions, moderated)
+                if result:
+                    tree.append(result)
+            break
+    return tree
+
+
+def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
+                              hashtags: [], httpPrefix: str,
+                              domain: str, port: int,
+                              personCache: {},
+                              cachedWebfingers: {},
+                              federationList: [],
+                              sendThreads: [], postLog: [],
+                              moderated: bool, url: str) -> bool:
+    """Applies hashtag rules to a news post.
+    Returns true if the post should be saved to the news timeline
+    of this instance
+    """
+    rulesFilename = baseDir + '/accounts/hashtagrules.txt'
+    if not os.path.isfile(rulesFilename):
+        return True
+    rules = []
+    with open(rulesFilename, "r") as f:
+        rules = f.readlines()
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    # get the full text content of the post
+    content = ''
+    if postJsonObject['object'].get('content'):
+        content += postJsonObject['object']['content']
+    if postJsonObject['object'].get('summary'):
+        content += ' ' + postJsonObject['object']['summary']
+    content = content.lower()
+
+    # actionOccurred = False
+    operators = ('not', 'and', 'or', 'xor', 'from', 'contains')
+    for ruleStr in rules:
+        if not ruleStr:
+            continue
+        if not ruleStr.startswith('if '):
+            continue
+        if ' then ' not in ruleStr:
+            continue
+        conditionsStr = ruleStr.split('if ', 1)[1]
+        conditionsStr = conditionsStr.split(' then ')[0]
+        tagsInConditions = []
+        tree = hashtagRuleTree(operators, conditionsStr,
+                               tagsInConditions, moderated)
+        if not hashtagRuleResolve(tree, hashtags, moderated, content, url):
+            continue
+        # the condition matches, so do something
+        actionStr = ruleStr.split(' then ')[1].strip()
+
+        # add a hashtag
+        if actionStr.startswith('add '):
+            addHashtag = actionStr.split('add ', 1)[1].strip()
+            if addHashtag.startswith('#'):
+                if addHashtag not in hashtags:
+                    hashtags.append(addHashtag)
+                htId = addHashtag.replace('#', '')
+                if validHashTag(htId):
+                    hashtagUrl = \
+                        httpPrefix + "://" + domainFull + "/tags/" + htId
+                    newTag = {
+                        'href': hashtagUrl,
+                        'name': addHashtag,
+                        'type': 'Hashtag'
+                    }
+                    # does the tag already exist?
+                    addTagObject = None
+                    for t in postJsonObject['object']['tag']:
+                        if t.get('type') and t.get('name'):
+                            if t['type'] == 'Hashtag' and \
+                               t['name'] == addHashtag:
+                                addTagObject = t
+                                break
+                    # append the tag if it wasn't found
+                    if not addTagObject:
+                        postJsonObject['object']['tag'].append(newTag)
+                    # add corresponding html to the post content
+                    hashtagHtml = \
+                        " <a href=\"" + hashtagUrl + \
+                        "\" class=\"addedHashtag\" " + \
+                        "rel=\"tag\">#<span>" + \
+                        htId + "</span></a>"
+                    content = postJsonObject['object']['content']
+                    if hashtagHtml not in content:
+                        if content.endswith('</p>'):
+                            content = \
+                                content[:len(content) - len('</p>')] + \
+                                hashtagHtml + '</p>'
+                        else:
+                            content += hashtagHtml
+                        postJsonObject['object']['content'] = content
+                        storeHashTags(baseDir, 'news', postJsonObject)
+                        # actionOccurred = True
+
+        # remove a hashtag
+        if actionStr.startswith('remove '):
+            rmHashtag = actionStr.split('remove ', 1)[1].strip()
+            if rmHashtag.startswith('#'):
+                if rmHashtag in hashtags:
+                    hashtags.remove(rmHashtag)
+                htId = rmHashtag.replace('#', '')
+                hashtagUrl = \
+                    httpPrefix + "://" + domainFull + "/tags/" + htId
+                # remove tag html from the post content
+                hashtagHtml = \
+                    "<a href=\"" + hashtagUrl + \
+                    "\" class=\"addedHashtag\" " + \
+                    "rel=\"tag\">#<span>" + \
+                    htId + "</span></a>"
+                content = postJsonObject['object']['content']
+                if hashtagHtml in content:
+                    content = \
+                        content.replace(hashtagHtml, '').replace('  ', ' ')
+                    postJsonObject['object']['content'] = content
+                rmTagObject = None
+                for t in postJsonObject['object']['tag']:
+                    if t.get('type') and t.get('name'):
+                        if t['type'] == 'Hashtag' and \
+                           t['name'] == rmHashtag:
+                            rmTagObject = t
+                            break
+                if rmTagObject:
+                    postJsonObject['object']['tag'].remove(rmTagObject)
+                    # actionOccurred = True
+
+        # Block this item
+        if actionStr.startswith('block') or actionStr.startswith('drop'):
+            return False
+
+    # TODO
+    # If routing to another instance
+    # sendSignedJson(postJsonObject: {}, session, baseDir: str,
+    #                nickname: str, domain: str, port: int,
+    #                toNickname: str, toDomain: str, toPort: int, cc: str,
+    #                httpPrefix: str, False, False,
+    #                federationList: [],
+    #                sendThreads: [], postLog: [], cachedWebfingers: {},
+    #                personCache: {}, False, __version__) -> int:
+    # if actionOccurred:
+    #     return True
+    return True
+
+
+def createNewsMirror(baseDir: str, domain: str,
+                     postIdNumber: str, url: str,
+                     maxMirroredArticles: int) -> bool:
+    """Creates a local mirror of a news article
+    """
+    if '|' in url or '>' in url:
+        return True
+
+    mirrorDir = baseDir + '/accounts/newsmirror'
+    if not os.path.isdir(mirrorDir):
+        os.mkdir(mirrorDir)
+
+    # count the directories
+    noOfDirs = 0
+    for subdir, dirs, files in os.walk(mirrorDir):
+        noOfDirs = len(dirs)
+
+    mirrorIndexFilename = baseDir + '/accounts/newsmirror.txt'
+
+    if maxMirroredArticles > 0 and noOfDirs > maxMirroredArticles:
+        if not os.path.isfile(mirrorIndexFilename):
+            # no index for mirrors found
+            return True
+        removals = []
+        with open(mirrorIndexFilename, 'r') as indexFile:
+            # remove the oldest directories
+            ctr = 0
+            while noOfDirs > maxMirroredArticles:
+                ctr += 1
+                if ctr > 5000:
+                    # escape valve
+                    break
+
+                postId = indexFile.readline()
+                if not postId:
+                    continue
+                postId = postId.strip()
+                mirrorArticleDir = mirrorDir + '/' + postId
+                if os.path.isdir(mirrorArticleDir):
+                    rmtree(mirrorArticleDir)
+                    removals.append(postId)
+                    noOfDirs -= 1
+
+        # remove the corresponding index entries
+        if removals:
+            indexContent = ''
+            with open(mirrorIndexFilename, 'r') as indexFile:
+                indexContent = indexFile.read()
+                for removePostId in removals:
+                    indexContent = \
+                        indexContent.replace(removePostId + '\n', '')
+            with open(mirrorIndexFilename, "w+") as indexFile:
+                indexFile.write(indexContent)
+
+    mirrorArticleDir = mirrorDir + '/' + postIdNumber
+    if os.path.isdir(mirrorArticleDir):
+        # already mirrored
+        return True
+
+    # for onion instances mirror via tor
+    prefixStr = ''
+    if domain.endswith('.onion'):
+        prefixStr = '/usr/bin/torsocks '
+
+    # download the files
+    commandStr = \
+        prefixStr + '/usr/bin/wget -mkEpnp -e robots=off ' + url + \
+        ' -P ' + mirrorArticleDir
+    p = Popen(commandStr, shell=True)
+    os.waitpid(p.pid, 0)
+
+    if not os.path.isdir(mirrorArticleDir):
+        print('WARN: failed to mirror ' + url)
+        return True
+
+    # append the post Id number to the index file
+    if os.path.isfile(mirrorIndexFilename):
+        indexFile = open(mirrorIndexFilename, "a+")
+        if indexFile:
+            indexFile.write(postIdNumber + '\n')
+            indexFile.close()
+    else:
+        indexFile = open(mirrorIndexFilename, "w+")
+        if indexFile:
+            indexFile.write(postIdNumber + '\n')
+            indexFile.close()
+
+    return True
 
 
 def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
@@ -76,7 +465,10 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             translate: {},
                             recentPostsCache: {}, maxRecentPosts: int,
                             session, cachedWebfingers: {},
-                            personCache: {}) -> None:
+                            personCache: {},
+                            federationList: [],
+                            sendThreads: [], postLog: [],
+                            maxMirroredArticles: int) -> None:
     """Converts rss items in a newswire into posts
     """
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
@@ -90,8 +482,13 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
     for dateStr, item in newswireReverse.items():
         originalDateStr = dateStr
         # convert the date to the format used by ActivityPub
-        dateStr = dateStr.replace(' ', 'T')
-        dateStr = dateStr.replace('+00:00', 'Z')
+        if '+00:00' in dateStr:
+            dateStr = dateStr.replace(' ', 'T')
+            dateStr = dateStr.replace('+00:00', 'Z')
+        else:
+            dateStrWithOffset = \
+                datetime.datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            dateStr = dateStrWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
 
         statusNumber, published = getStatusNumber(dateStr)
         newPostId = \
@@ -120,16 +517,28 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
+        if '&' in rssDescription:
+            rssDescription = html.unescape(rssDescription)
         rssDescription = '<p>' + rssDescription + '<p>'
+
+        mirrored = item[7]
+        postUrl = url
+        if mirrored and '://' in url:
+            postUrl = '/newsmirror/' + statusNumber + '/' + \
+                url.split('://')[1]
+            if postUrl.endswith('/'):
+                postUrl += 'index.html'
+            else:
+                postUrl += '/index.html'
 
         # add the off-site link to the description
         if rssDescription and not dangerousMarkup(rssDescription):
             rssDescription += \
-                '<br><a href="' + url + '">' + \
+                '<br><a href="' + postUrl + '">' + \
                 translate['Read more...'] + '</a>'
         else:
             rssDescription = \
-                '<a href="' + url + '">' + \
+                '<a href="' + postUrl + '">' + \
                 translate['Read more...'] + '</a>'
 
         # remove image dimensions
@@ -151,6 +560,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if not blog:
             continue
 
+        if mirrored:
+            if not createNewsMirror(baseDir, domain, statusNumber,
+                                    url, maxMirroredArticles):
+                continue
+
         idStr = \
             httpPrefix + '://' + domain + '/users/news' + \
             '/statuses/' + statusNumber + '/replies'
@@ -171,28 +585,84 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             httpPrefix + '://' + domain + '/@news/' + statusNumber
         blog['object']['published'] = dateStr
 
+        blog['object']['content'] = rssDescription
+        blog['object']['contentMap']['en'] = rssDescription
+
+        domainFull = domain
+        if port:
+            if port != 80 and port != 443:
+                domainFull = domain + ':' + str(port)
+
+        hashtags = item[6]
+
         postId = newPostId.replace('/', '#')
 
         moderated = item[5]
 
+        savePost = newswireHashtagProcessing(session, baseDir, blog, hashtags,
+                                             httpPrefix, domain, port,
+                                             personCache, cachedWebfingers,
+                                             federationList,
+                                             sendThreads, postLog,
+                                             moderated, url)
+
         # save the post and update the index
-        if saveJson(blog, filename):
-            updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
+        if savePost:
+            # ensure that all hashtags are stored in the json
+            # and appended to the content
+            blog['object']['tag'] = []
+            for tagName in hashtags:
+                htId = tagName.replace('#', '')
+                hashtagUrl = \
+                    httpPrefix + "://" + domainFull + "/tags/" + htId
+                newTag = {
+                    'href': hashtagUrl,
+                    'name': tagName,
+                    'type': 'Hashtag'
+                }
+                blog['object']['tag'].append(newTag)
+                hashtagHtml = \
+                    " <a href=\"" + hashtagUrl + \
+                    "\" class=\"addedHashtag\" " + \
+                    "rel=\"tag\">#<span>" + \
+                    htId + "</span></a>"
+                content = blog['object']['content']
+                if hashtagHtml not in content:
+                    if content.endswith('</p>'):
+                        content = \
+                            content[:len(content) - len('</p>')] + \
+                            hashtagHtml + '</p>'
+                    else:
+                        content += hashtagHtml
+                    blog['object']['content'] = content
 
-            # Save a file containing the time when the post arrived
-            # this can then later be used to construct the news timeline
-            # excluding items during the voting period
-            if moderated:
-                saveArrivedTime(baseDir, filename, blog['object']['arrived'])
-            else:
-                if os.path.isfile(filename + '.arrived'):
-                    os.remove(filename + '.arrived')
+            # update the newswire tags if new ones have been found by
+            # newswireHashtagProcessing
+            for tag in hashtags:
+                if tag not in newswire[originalDateStr][6]:
+                    newswire[originalDateStr][6].append(tag)
 
-            # set the url
-            newswire[originalDateStr][1] = \
-                '/users/news/statuses/' + statusNumber
-            # set the filename
-            newswire[originalDateStr][3] = filename
+            storeHashTags(baseDir, 'news', blog)
+
+            clearFromPostCaches(baseDir, recentPostsCache, postId)
+            if saveJson(blog, filename):
+                updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
+
+                # Save a file containing the time when the post arrived
+                # this can then later be used to construct the news timeline
+                # excluding items during the voting period
+                if moderated:
+                    saveArrivedTime(baseDir, filename,
+                                    blog['object']['arrived'])
+                else:
+                    if os.path.isfile(filename + '.arrived'):
+                        os.remove(filename + '.arrived')
+
+                # set the url
+                newswire[originalDateStr][1] = \
+                    '/users/news/statuses/' + statusNumber
+                # set the filename
+                newswire[originalDateStr][3] = filename
 
 
 def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
@@ -226,9 +696,10 @@ def runNewswireDaemon(baseDir: str, httpd,
         newNewswire = None
         try:
             newNewswire = \
-                getDictFromNewswire(httpd.session, baseDir,
+                getDictFromNewswire(httpd.session, baseDir, domain,
                                     httpd.maxNewswirePostsPerSource,
-                                    httpd.maxNewswireFeedSizeKb)
+                                    httpd.maxNewswireFeedSizeKb,
+                                    httpd.maxTags)
         except Exception as e:
             print('WARN: unable to update newswire ' + str(e))
             time.sleep(120)
@@ -251,8 +722,22 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.maxRecentPosts,
                                 httpd.session,
                                 httpd.cachedWebfingers,
-                                httpd.personCache)
+                                httpd.personCache,
+                                httpd.federationList,
+                                httpd.sendThreads,
+                                httpd.postLog,
+                                httpd.maxMirroredArticles)
         print('Newswire feed converted to ActivityPub')
+
+        if httpd.maxNewsPosts > 0:
+            archiveDir = baseDir + '/archive'
+            archiveSubdir = \
+                archiveDir + '/accounts/news@' + domain + '/outbox'
+            archivePostsForPerson(httpPrefix, 'news',
+                                  domain, baseDir, 'outbox',
+                                  archiveSubdir,
+                                  httpd.recentPostsCache,
+                                  httpd.maxNewsPosts)
 
         # wait a while before the next feeds update
         time.sleep(1200)

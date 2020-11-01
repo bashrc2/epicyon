@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
+from utils import isSystemAccount
 from utils import getFollowersList
 from utils import validNickname
 from utils import domainPermitted
@@ -28,9 +29,14 @@ from session import postJson
 
 def preApprovedFollower(baseDir: str,
                         nickname: str, domain: str,
-                        approveHandle: str) -> bool:
+                        approveHandle: str,
+                        allowNewsFollowers: bool) -> bool:
     """Is the given handle an already manually approved follower?
     """
+    # optionally allow the news account to be followed
+    if nickname == 'news' and allowNewsFollowers:
+        return True
+
     handle = nickname + '@' + domain
     accountDir = baseDir + '/accounts/' + handle
     approvedFilename = accountDir + '/approved.txt'
@@ -149,7 +155,26 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(followersFile):
         return False
     handle = followerNickname + '@' + followerDomain
-    return handle in open(followersFile).read()
+
+    alreadyFollowing = False
+
+    followersStr = ''
+    with open(followersFile, 'r') as fpFollowers:
+        followersStr = fpFollowers.read()
+
+    if handle in followersStr:
+        alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/profile/' + followerNickname in followersStr:
+        alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/channel/' + followerNickname in followersStr:
+        alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/accounts/' + followerNickname in followersStr:
+        alreadyFollowing = True
+
+    return alreadyFollowing
 
 
 def unfollowPerson(baseDir: str, nickname: str, domain: str,
@@ -247,13 +272,19 @@ def getNoOfFollows(baseDir: str, nickname: str, domain: str,
     with open(filename, "r") as f:
         lines = f.readlines()
         for line in lines:
-            if '#' not in line:
-                if '@' in line and \
-                   '.' in line and \
-                   not line.startswith('http'):
-                    ctr += 1
-                elif line.startswith('http') and '/users/' in line:
-                    ctr += 1
+            if '#' in line:
+                continue
+            if '@' in line and \
+               '.' in line and \
+               not line.startswith('http'):
+                ctr += 1
+            elif ((line.startswith('http') or
+                   line.startswith('dat')) and
+                  ('/users/' in line or
+                   '/profile/' in line or
+                   '/accounts/' in line or
+                   '/channel/' in line)):
+                ctr += 1
     return ctr
 
 
@@ -269,7 +300,8 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                      httpPrefix: str, authenticated: bool,
                      followsPerPage=12,
                      followFile='following') -> {}:
-    """Returns the following and followers feeds from GET requests
+    """Returns the following and followers feeds from GET requests.
+    This accesses the following.txt or followers.txt and builds a collection.
     """
     # Show a small number of follows to non-authenticated viewers
     if not authenticated:
@@ -360,6 +392,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
         for line in lines:
             if '#' not in line:
                 if '@' in line and not line.startswith('http'):
+                    # nickname@domain
                     pageCtr += 1
                     totalCtr += 1
                     if currPage == pageNumber:
@@ -371,7 +404,12 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                             line2.split('@')[0]
                         following['orderedItems'].append(url)
                 elif ((line.startswith('http') or
-                       line.startswith('dat')) and '/users/' in line):
+                       line.startswith('dat')) and
+                      ('/users/' in line or
+                       '/profile/' in line or
+                       '/accounts/' in line or
+                       '/channel/' in line)):
+                    # https://domain/users/nickname
                     pageCtr += 1
                     totalCtr += 1
                     if currPage == pageNumber:
@@ -394,12 +432,13 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
 
 def followApprovalRequired(baseDir: str, nicknameToFollow: str,
                            domainToFollow: str, debug: bool,
-                           followRequestHandle: str) -> bool:
+                           followRequestHandle: str,
+                           allowNewsFollowers: bool) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
     if preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
-                           followRequestHandle):
+                           followRequestHandle, allowNewsFollowers):
         return False
 
     manuallyApproveFollows = False
@@ -453,7 +492,7 @@ def storeFollowRequest(baseDir: str,
                        nicknameToFollow: str, domainToFollow: str, port: int,
                        nickname: str, domain: str, fromPort: int,
                        followJson: {},
-                       debug: bool) -> bool:
+                       debug: bool, personUrl: str) -> bool:
     """Stores the follow request for later use
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -462,14 +501,31 @@ def storeFollowRequest(baseDir: str,
         return False
 
     approveHandle = nickname + '@' + domain
+    domainFull = domain
     if fromPort:
         if fromPort != 80 and fromPort != 443:
             if ':' not in domain:
                 approveHandle = nickname + '@' + domain + ':' + str(fromPort)
+                domainFull = domain + ':' + str(fromPort)
 
     followersFilename = accountsDir + '/followers.txt'
     if os.path.isfile(followersFilename):
-        if approveHandle in open(followersFilename).read():
+        alreadyFollowing = False
+
+        followersStr = ''
+        with open(followersFilename, 'r') as fpFollowers:
+            followersStr = fpFollowers.read()
+
+        if approveHandle in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/profile/' + nickname in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/channel/' + nickname in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/accounts/' + nickname in followersStr:
+            alreadyFollowing = True
+
+        if alreadyFollowing:
             if debug:
                 print('DEBUG: ' +
                       nicknameToFollow + '@' + domainToFollow +
@@ -488,17 +544,23 @@ def storeFollowRequest(baseDir: str,
 
     # add to a file which contains a list of requests
     approveFollowsFilename = accountsDir + '/followrequests.txt'
+
+    # store either nick@domain or the full person/actor url
+    approveHandleStored = approveHandle
+    if '/users/' not in personUrl:
+        approveHandleStored = personUrl
+
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
             with open(approveFollowsFilename, 'a+') as fp:
-                fp.write(approveHandle + '\n')
+                fp.write(approveHandleStored + '\n')
         else:
             if debug:
-                print('DEBUG: ' + approveHandle +
+                print('DEBUG: ' + approveHandleStored +
                       ' is already awaiting approval')
     else:
         with open(approveFollowsFilename, "w+") as fp:
-            fp.write(approveHandle + '\n')
+            fp.write(approveHandleStored + '\n')
 
     # store the follow request in its own directory
     # We don't rely upon the inbox because items in there could expire
@@ -513,7 +575,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          port: int, sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
-                         debug: bool, projectVersion: str) -> bool:
+                         debug: bool, projectVersion: str,
+                         allowNewsFollowers: bool,
+                         maxFollowers: int) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -528,7 +592,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor')
+            print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
     domain, tempPort = getDomainFromActor(messageJson['actor'])
     fromPort = port
@@ -556,7 +620,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
        '/channel/' not in messageJson['object'] and \
        '/profile/' not in messageJson['object']:
         if debug:
-            print('DEBUG: "users" or "profile" not found within object')
+            print('DEBUG: users/profile/channel/accounts ' +
+                  'not found within object')
         return False
     domainToFollow, tempPort = getDomainFromActor(messageJson['object'])
     if not domainPermitted(domainToFollow, federationList):
@@ -574,10 +639,19 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request does not contain a ' +
                   'nickname for the account followed')
         return True
-    if nicknameToFollow == 'news' or nicknameToFollow == 'inbox':
-        if debug:
-            print('DEBUG: Cannot follow the news or inbox accounts')
-        return True
+    if isSystemAccount(nicknameToFollow):
+        if not (nicknameToFollow == 'news' and allowNewsFollowers):
+            if debug:
+                print('DEBUG: Cannot follow system account - ' +
+                      nicknameToFollow)
+            return True
+    if maxFollowers > 0:
+        if getNoOfFollowers(baseDir,
+                            nicknameToFollow, domainToFollow,
+                            True) > maxFollowers:
+            print('WARN: ' + nicknameToFollow +
+                  ' has reached their maximum number of followers')
+            return True
     handleToFollow = nicknameToFollow + '@' + domainToFollow
     if domainToFollow == domain:
         if not os.path.isdir(baseDir + '/accounts/' + handleToFollow):
@@ -598,7 +672,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     # what is the followers policy?
     approveHandle = nickname + '@' + domainFull
     if followApprovalRequired(baseDir, nicknameToFollow,
-                              domainToFollow, debug, approveHandle):
+                              domainToFollow, debug, approveHandle,
+                              allowNewsFollowers):
         print('Follow approval is required')
         if domain.endswith('.onion'):
             if noOfFollowRequests(baseDir,
@@ -626,7 +701,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         return storeFollowRequest(baseDir,
                                   nicknameToFollow, domainToFollow, port,
                                   nickname, domain, fromPort,
-                                  messageJson, debug)
+                                  messageJson, debug, messageJson['actor'])
     else:
         print('Follow request does not require approval')
         # update the followers
@@ -635,6 +710,12 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             followersFilename = \
                 baseDir + '/accounts/' + \
                 nicknameToFollow + '@' + domainToFollow + '/followers.txt'
+
+            # for actors which don't follow the mastodon
+            # /users/ path convention store the full actor
+            if '/users/' not in messageJson['actor']:
+                approveHandle = messageJson['actor']
+
             print('Updating followers file: ' +
                   followersFilename + ' adding ' + approveHandle)
             if os.path.isfile(followersFilename):
@@ -788,7 +869,7 @@ def sendFollowRequest(session, baseDir: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
                       personCache: {}, debug: bool,
-                      projectVersion: str) -> {}:
+                      projectVersion: str, allowNewsFollowers: bool) -> {}:
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain, federationList):
@@ -830,7 +911,8 @@ def sendFollowRequest(session, baseDir: str,
         'object': followedId
     }
 
-    if followApprovalRequired(baseDir, nickname, domain, debug, followHandle):
+    if followApprovalRequired(baseDir, nickname, domain, debug,
+                              followHandle, allowNewsFollowers):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected

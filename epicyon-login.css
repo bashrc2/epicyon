@@ -10,8 +10,8 @@
     --border-width: 2px;
     --font-size-header: 18px;
     --font-color-header: #ccc;
-    --font-size: 22px;
-    --font-size-mobile: 40px;
+    --login-font-size: 22px;
+    --login-font-size-mobile: 40px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -21,6 +21,7 @@
     --form-border-radius: 30px;
     --focus-color: white;
     --line-spacing: 130%;
+    --login-logo-width: 20%;
 }
 
 @font-face {
@@ -53,7 +54,7 @@ body, html {
     max-width: 60%;
     min-width: 600px;
     margin: 0 auto;
-    font-size: var(--font-size);
+    font-size: var(--login-font-size);
     line-height: var(--line-spacing);
 }
 
@@ -89,7 +90,7 @@ input[type=text], input[type=password] {
     display: inline-block;
     border: 1px solid #ccc;
     box-sizing: border-box;
-    font-size: var(--font-size);
+    font-size: var(--login-font-size);
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -101,12 +102,12 @@ button {
     border: none;
     cursor: pointer;
     width: 100%;
-    font-size: var(--font-size);
+    font-size: var(--login-font-size);
     font-family: Arial, Helvetica, sans-serif;
 }
 
 .login-text {
-    font-size: var(--font-size);
+    font-size: var(--login-font-size);
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -117,6 +118,10 @@ button:hover {
 .imgcontainer {
     text-align: center;
     margin: 24px 0 12px 0;
+}
+
+.imgcontainer img {
+    width: var(--login-logo-width);
 }
 
 img.avatar {
@@ -148,12 +153,12 @@ span.psw {
         max-width: 60%;
         min-width: 600px;
         margin: 0 auto;
-        font-size: var(--font-size);
+        font-size: var(--login-font-size);
         font-family: Arial, Helvetica, sans-serif;
         position: relative;
     }
     .login-text {
-        font-size: var(--font-size);
+        font-size: var(--login-font-size);
         font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text], input[type=password] {
@@ -163,7 +168,7 @@ span.psw {
         display: inline-block;
         border: 1px solid #ccc;
         box-sizing: border-box;
-        font-size: var(--font-size);
+        font-size: var(--login-font-size);
         font-family: Arial, Helvetica, sans-serif;
     }
     button {
@@ -174,7 +179,7 @@ span.psw {
         border: none;
         cursor: pointer;
         width: 100%;
-        font-size: var(--font-size);
+        font-size: var(--login-font-size);
         font-family: Arial, Helvetica, sans-serif;
     }
 }
@@ -188,12 +193,12 @@ span.psw {
         max-width: 95%;
         min-width: 600px;
         margin: 0 auto;
-        font-size: var(--font-size-mobile);
+        font-size: var(--login-font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
         position: relative;
     }
     .login-text {
-        font-size: var(--font-size-mobile);
+        font-size: var(--login-font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text], input[type=password] {
@@ -203,7 +208,7 @@ span.psw {
         display: inline-block;
         border: 1px solid #ccc;
         box-sizing: border-box;
-        font-size: var(--font-size-mobile);
+        font-size: var(--login-font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
     }
     button {
@@ -214,7 +219,7 @@ span.psw {
         border: none;
         cursor: pointer;
         width: 100%;
-        font-size: var(--font-size-mobile);
+        font-size: var(--login-font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
     }
 }

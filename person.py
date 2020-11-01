@@ -233,6 +233,15 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         personName = originalDomain
         approveFollowers = True
         personType = 'Application'
+    elif nickname == 'news':
+        # shared inbox
+        inboxStr = httpPrefix + '://' + domain + '/actor/news'
+        personId = httpPrefix + '://' + domain + '/actor'
+        personUrl = httpPrefix + '://' + domain + \
+            '/about/more?news_actor=true'
+        personName = originalDomain
+        approveFollowers = True
+        personType = 'Application'
 
     # NOTE: these image files don't need to have
     # cryptographically secure names

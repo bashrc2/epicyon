@@ -12,12 +12,16 @@ from socket import error as SocketError
 import errno
 from datetime import datetime
 from collections import OrderedDict
+from utils import isPublicPost
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
 from utils import containsInvalidChars
+from utils import removeHtml
 from blocking import isBlockedDomain
+from blocking import isBlockedHashtag
+from filters import isFiltered
 
 
 def rss2Header(httpPrefix: str,
@@ -52,7 +56,76 @@ def rss2Footer() -> str:
     return rssStr
 
 
-def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
+def getNewswireTags(text: str, maxTags: int) -> []:
+    """Returns a list of hashtags found in the given text
+    """
+    if '#' not in text:
+        return []
+    if ' ' not in text:
+        return []
+    textSimplified = \
+        text.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
+    textSimplified = textSimplified.replace('. ', ' ').strip()
+    if textSimplified.endswith('.'):
+        textSimplified = textSimplified[:len(textSimplified)-1]
+    words = textSimplified.split(' ')
+    tags = []
+    for wrd in words:
+        if wrd.startswith('#'):
+            if len(wrd) > 1:
+                if wrd not in tags:
+                    tags.append(wrd)
+                    if len(tags) >= maxTags:
+                        break
+    return tags
+
+
+def addNewswireDictEntry(baseDir: str, domain: str,
+                         newswire: {}, dateStr: str,
+                         title: str, link: str,
+                         votesStatus: str, postFilename: str,
+                         description: str, moderated: bool,
+                         mirrored: bool,
+                         tags=[], maxTags=32) -> None:
+    """Update the newswire dictionary
+    """
+    allText = removeHtml(title + ' ' + description)
+
+    # check that none of the text is filtered against
+    if isFiltered(baseDir, 'news', domain, allText):
+        return
+
+    if tags is None:
+        tags = []
+
+    # extract hashtags from the text of the feed post
+    postTags = getNewswireTags(allText, maxTags)
+
+    # combine the tags into a single list
+    for tag in tags:
+        if tag not in postTags:
+            if len(postTags) < maxTags:
+                postTags.append(tag)
+
+    # check that no tags are blocked
+    for tag in postTags:
+        if isBlockedHashtag(baseDir, tag.replace('#', '')):
+            return
+
+    newswire[dateStr] = [
+        title,
+        link,
+        votesStatus,
+        postFilename,
+        description,
+        moderated,
+        postTags,
+        mirrored
+    ]
+
+
+def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
+                  moderated: bool, mirrored: bool,
                   maxPostsPerSource: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
@@ -84,10 +157,10 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        domain = link.split('://')[1]
-        if '/' in domain:
-            domain = domain.split('/')[0]
-        if isBlockedDomain(baseDir, domain):
+        itemDomain = link.split('://')[1]
+        if '/' in itemDomain:
+            itemDomain = itemDomain.split('/')[0]
+        if isBlockedDomain(baseDir, itemDomain):
             continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
@@ -97,9 +170,11 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
             postFilename = ''
             votesStatus = []
-            result[str(publishedDate)] = [title, link,
-                                          votesStatus, postFilename,
-                                          description, moderated]
+            addNewswireDictEntry(baseDir, domain,
+                                 result, str(publishedDate),
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated, mirrored)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
@@ -112,10 +187,12 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                result[str(publishedDate) + '+00:00'] = \
-                    [title, link,
-                     votesStatus, postFilename,
-                     description, moderated]
+                addNewswireDictEntry(baseDir, domain,
+                                     result,
+                                     str(publishedDate) + '+00:00',
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -126,7 +203,8 @@ def xml2StrToDict(baseDir: str, xmlStr: str, moderated: bool,
     return result
 
 
-def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
+def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
+                   moderated: bool, mirrored: bool,
                    maxPostsPerSource: int) -> {}:
     """Converts an atom feed string to a dictionary
     """
@@ -158,10 +236,10 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
-        domain = link.split('://')[1]
-        if '/' in domain:
-            domain = domain.split('/')[0]
-        if isBlockedDomain(baseDir, domain):
+        itemDomain = link.split('://')[1]
+        if '/' in itemDomain:
+            itemDomain = itemDomain.split('/')[0]
+        if isBlockedDomain(baseDir, itemDomain):
             continue
         pubDate = rssItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
@@ -171,9 +249,11 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                 datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
             postFilename = ''
             votesStatus = []
-            result[str(publishedDate)] = [title, link,
-                                          votesStatus, postFilename,
-                                          description, moderated]
+            addNewswireDictEntry(baseDir, domain,
+                                 result, str(publishedDate),
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated, mirrored)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
@@ -186,10 +266,11 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
                 postFilename = ''
                 votesStatus = []
-                result[str(publishedDate) + '+00:00'] = \
-                    [title, link,
-                     votesStatus, postFilename,
-                     description, moderated]
+                addNewswireDictEntry(baseDir, domain, result,
+                                     str(publishedDate) + '+00:00',
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
@@ -200,20 +281,23 @@ def atomFeedToDict(baseDir: str, xmlStr: str, moderated: bool,
     return result
 
 
-def xmlStrToDict(baseDir: str, xmlStr: str, moderated: bool,
+def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
+                 moderated: bool, mirrored: bool,
                  maxPostsPerSource: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
-        return xml2StrToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
+        return xml2StrToDict(baseDir, domain,
+                             xmlStr, moderated, mirrored, maxPostsPerSource)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
-        return atomFeedToDict(baseDir, xmlStr, moderated, maxPostsPerSource)
+        return atomFeedToDict(baseDir, domain,
+                              xmlStr, moderated, mirrored, maxPostsPerSource)
     return {}
 
 
-def getRSS(baseDir: str, session, url: str, moderated: bool,
-           maxPostsPerSource: int,
-           maxFeedSizeKb: int) -> {}:
+def getRSS(baseDir: str, domain: str, session, url: str,
+           moderated: bool, mirrored: bool,
+           maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -239,7 +323,8 @@ def getRSS(baseDir: str, session, url: str, moderated: bool,
         if result:
             if int(len(result.text) / 1024) < maxFeedSizeKb and \
                not containsInvalidChars(result.text):
-                return xmlStrToDict(baseDir, result.text, moderated,
+                return xmlStrToDict(baseDir, domain, result.text,
+                                    moderated, mirrored,
                                     maxPostsPerSource)
             else:
                 print('WARN: feed is too large: ' + url)
@@ -270,11 +355,17 @@ def getRSSfromDict(baseDir: str, newswire: {},
                         None, domainFull,
                         'Newswire', translate)
     for published, fields in newswire.items():
-        published = published.replace('+00:00', 'Z').strip()
-        published = published.replace(' ', 'T')
+        if '+00:00' in published:
+            published = published.replace('+00:00', 'Z').strip()
+            published = published.replace(' ', 'T')
+        else:
+            publishedWithOffset = \
+                datetime.strptime(published, "%Y-%m-%d %H:%M:%S%z")
+            published = publishedWithOffset.strftime("%Y-%m-%dT%H:%M:%SZ")
         try:
             pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-        except BaseException:
+        except Exception as e:
+            print('WARN: Unable to convert date ' + published + ' ' + str(e))
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
@@ -290,8 +381,11 @@ def getRSSfromDict(baseDir: str, newswire: {},
     return rssStr
 
 
-def isaBlogPost(postJsonObject: {}) -> bool:
+def isNewswireBlogPost(postJsonObject: {}) -> bool:
     """Is the given object a blog post?
+    There isn't any difference between a blog post and a newswire blog post
+    but we may here need to check for different properties than
+    isBlogPost does
     """
     if not postJsonObject:
         return False
@@ -302,14 +396,41 @@ def isaBlogPost(postJsonObject: {}) -> bool:
     if postJsonObject['object'].get('summary') and \
        postJsonObject['object'].get('url') and \
        postJsonObject['object'].get('published'):
-        return True
+        return isPublicPost(postJsonObject)
     return False
+
+
+def getHashtagsFromPost(postJsonObject: {}) -> []:
+    """Returns a list of any hashtags within a post
+    """
+    if not postJsonObject.get('object'):
+        return []
+    if not isinstance(postJsonObject['object'], dict):
+        return []
+    if not postJsonObject['object'].get('tag'):
+        return []
+    if not isinstance(postJsonObject['object']['tag'], list):
+        return []
+    tags = []
+    for tg in postJsonObject['object']['tag']:
+        if not isinstance(tg, dict):
+            continue
+        if not tg.get('name'):
+            continue
+        if not tg.get('type'):
+            continue
+        if tg['type'] != 'Hashtag':
+            continue
+        if tg['name'] not in tags:
+            tags.append(tg['name'])
+    return tags
 
 
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                               newswire: {},
                               maxBlogsPerAccount: int,
-                              indexFilename: str) -> None:
+                              indexFilename: str,
+                              maxTags: int) -> None:
     """Adds blogs for the given account to the newswire
     """
     if not os.path.isfile(indexFilename):
@@ -355,7 +476,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                 postJsonObject = None
                 if fullPostFilename:
                     postJsonObject = loadJson(fullPostFilename)
-                if isaBlogPost(postJsonObject):
+                if isNewswireBlogPost(postJsonObject):
                     published = postJsonObject['object']['published']
                     published = published.replace('T', ' ')
                     published = published.replace('Z', '+00:00')
@@ -363,18 +484,23 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
                     description = ''
-                    newswire[published] = \
-                        [postJsonObject['object']['summary'],
-                         postJsonObject['object']['url'], votes,
-                         fullPostFilename, description, moderated]
+                    addNewswireDictEntry(baseDir, domain,
+                                         newswire, published,
+                                         postJsonObject['object']['summary'],
+                                         postJsonObject['object']['url'],
+                                         votes, fullPostFilename,
+                                         description, moderated, False,
+                                         getHashtagsFromPost(postJsonObject),
+                                         maxTags)
 
             ctr += 1
             if ctr >= maxBlogsPerAccount:
                 break
 
 
-def addBlogsToNewswire(baseDir: str, newswire: {},
-                       maxBlogsPerAccount: int) -> None:
+def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
+                       maxBlogsPerAccount: int,
+                       maxTags: int) -> None:
     """Adds blogs from each user account into the newswire
     """
     moderationDict = {}
@@ -404,7 +530,7 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
                 domain = handle.split('@')[1]
                 addAccountBlogsToNewswire(baseDir, nickname, domain,
                                           newswire, maxBlogsPerAccount,
-                                          blogsIndex)
+                                          blogsIndex, maxTags)
 
     # sort the moderation dict into chronological order, latest first
     sortedModerationDict = \
@@ -419,8 +545,9 @@ def addBlogsToNewswire(baseDir: str, newswire: {},
             os.remove(newswireModerationFilename)
 
 
-def getDictFromNewswire(session, baseDir: str,
-                        maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
+def getDictFromNewswire(session, baseDir: str, domain: str,
+                        maxPostsPerSource: int, maxFeedSizeKb: int,
+                        maxTags: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -451,13 +578,21 @@ def getDictFromNewswire(session, baseDir: str,
             moderated = True
             url = url.replace('*', '').strip()
 
-        itemsList = getRSS(baseDir, session, url, moderated,
+        # should this feed content be mirrored?
+        mirrored = False
+        if '!' in url:
+            mirrored = True
+            url = url.replace('!', '').strip()
+
+        itemsList = getRSS(baseDir, domain, session, url,
+                           moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb)
         for dateStr, item in itemsList.items():
             result[dateStr] = item
 
     # add blogs from each user account
-    addBlogsToNewswire(baseDir, result, maxPostsPerSource)
+    addBlogsToNewswire(baseDir, domain, result,
+                       maxPostsPerSource, maxTags)
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
