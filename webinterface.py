@@ -5897,7 +5897,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
-    rssAtBottom = not rssIconAtTop or not showHeaderImage
+    rssAtBottom = not rssIconAtTop or (not showHeaderImage and not authorized)
     if newswireContentStr and rssAtBottom:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
     return htmlStr
