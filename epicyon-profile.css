@@ -387,15 +387,15 @@ a:focus {
 }
 
 .containerNewPost {
-    border: 0;
+    border: 0var(--border-width) solid var(--border-color);
+    border-radius: var(--timeline-border-radius);
     background-color: var(--main-bg-color);
     margin: var(--vertical-between-posts);
 }
 
 .containerSubmitNewPost {
-    border: var(--border-width) solid var(--border-color);
+    border: 0;
     background-color: var(--main-bg-color);
-    border-radius: var(--timeline-border-radius);
     margin: var(--vertical-between-posts);
 }
 
