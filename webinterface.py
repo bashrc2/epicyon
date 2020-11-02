@@ -6462,7 +6462,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             usersPath + '/newswiremobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
 
     # the links button to show left column links
     if not iconsAsButtons:
@@ -6479,7 +6479,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             usersPath + '/linksmobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
 
     if newsHeader:
         tlStr += \
