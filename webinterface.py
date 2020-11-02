@@ -1384,7 +1384,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<br>'
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
-        'style="height:500px">' + newswireStr + '</textarea>'
+        'style="height:80vh">' + newswireStr + '</textarea>'
 
     filterStr = ''
     filterFilename = \
@@ -1399,7 +1399,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="filteredWordsNewswire" style="height:200px">' + \
+        'name="filteredWordsNewswire" style="height:50vh">' + \
         filterStr + '</textarea>\n'
 
     hashtagRulesStr = ''
@@ -1419,7 +1419,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="hashtagRulesList" style="height:50vh">' + \
+        'name="hashtagRulesList" style="height:80vh">' + \
         hashtagRulesStr + '</textarea>\n'
 
     editNewswireForm += \
