@@ -6415,9 +6415,13 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if newsHeader:
         tlStr += \
-            '      <a href="' + usersPath + '/inbox' + \
-            '"><button class="button">' + \
+            '      <a href="' + usersPath + '/inbox">' + \
+            '<button class="button">' + \
             '<span>' + translate['User'] + '</span></button></a>\n'
+        tlStr += \
+            '      <a href="' + usersPath + '/editprofile">' + \
+            '<button class="button">' + \
+            '<span>' + translate['Settings'] + '</span></button></a>\n'
 
     # the newswire button to show right column links
     if not iconsAsButtons:
