@@ -6177,7 +6177,7 @@ def headerButtonsFrontScreen(translate: {},
                 '        <a href="/login">' + \
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     if headerStr:
         headerStr = \
@@ -6487,7 +6487,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + usersPath + '/editprofile">' + \
             '<button class="buttonDesktop">' + \
-            '<span>' + translate['Settings'] + '</span></button></a>\n'
+            '<span>' + translate['Settings'] + '</span></button></a>'
 
     if not newsHeader:
         tlStr += followApprovals
