@@ -2386,6 +2386,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     showPublicOnDropdown = True
     messageBoxHeight = 400
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
@@ -2738,6 +2741,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm = htmlHeader(cssFilename, newPostCSS)
 
+    newPostForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        usersPath + '/' + bannerFile + '" /></a>\n'
+    
     # only show the share option if this is not a reply
     shareOptionOnDropdown = ''
     questionOptionOnDropdown = ''
@@ -2901,24 +2911,32 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '    <div class="containerNewPost">\n'
     newPostForm += '      <table style="width:100%" border="0"><tr>\n'
     newPostForm += '<td>' + dropDownContent + '</td>\n'
+    
     newPostForm += \
         '      <td><a href="' + pathBase + \
         '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
+
+    newPostForm += \
+        '      <td><input type="submit" name="submitPost" value="' + \
+        translate['Submit'] + '"></td>\n'
+
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
+    
     newPostForm += '    <div class="container"><center>\n'
-    newPostForm += \
-        '      <a href="' + pathBase + \
-        '/inbox"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
+    # newPostForm += \
+    #     '      <a href="' + pathBase + \
+    #     '/inbox"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
     newPostForm += '    </center></div>\n'
+
     newPostForm += replyStr
     if mediaInstance and not replyStr:
         newPostForm += newPostImageSection
