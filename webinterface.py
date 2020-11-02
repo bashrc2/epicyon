@@ -6457,6 +6457,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '" alt="| ' + translate['News'] + \
             '" class="timelineicon"/></a>\n'
     else:
+        # NOTE: deliberately no \n at end of line
         tlStr += \
             '<a href="' + \
             usersPath + '/newswiremobile' + \
@@ -6474,6 +6475,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '" alt="| ' + translate['Edit Links'] + \
             '" class="timelineicon"/></a>\n'
     else:
+        # NOTE: deliberately no \n at end of line
         tlStr += \
             '<a href="' + \
             usersPath + '/linksmobile' + \
