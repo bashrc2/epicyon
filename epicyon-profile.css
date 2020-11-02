@@ -1318,6 +1318,10 @@ div.container {
         background: transparent;
         border: none !important;
         font-size: 0;
+        padding-left: 0; padding-right: 0;
+        border-left-width: 0; border-right-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .button {
         border-radius: var(--button-corner-radius);
@@ -2008,6 +2012,10 @@ div.container {
         background: transparent;
         border: none !important;
         font-size: 0;
+        padding-left: 0; padding-right: 0;
+        border-left-width: 0; border-right-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
