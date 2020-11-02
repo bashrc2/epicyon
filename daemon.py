@@ -9646,7 +9646,8 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = htmlSearch(self.server.cssCache,
                                  self.server.translate,
                                  self.server.baseDir, self.path,
-                                 self.server.domain).encode('utf-8')
+                                 self.server.domain,
+                                 self.server.defaultTimeline).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False

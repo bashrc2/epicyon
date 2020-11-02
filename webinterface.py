@@ -8600,7 +8600,8 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
 
 
 def htmlSearch(cssCache: {}, translate: {},
-               baseDir: str, path: str, domain: str) -> str:
+               baseDir: str, path: str, domain: str,
+               defaultTimeline: str) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
