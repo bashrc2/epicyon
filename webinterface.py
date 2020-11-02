@@ -2918,11 +2918,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
-
-    newPostForm += \
-        '      <td><input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '"></td>\n'
-
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
