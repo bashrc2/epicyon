@@ -1817,8 +1817,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
     #     translate['Go Back'] + '</button></a>\n'
     editProfileForm += \
-        '      <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">\n'
+        '      <center>\n' + \
+        '        <input type="submit" name="submitProfile" value="' + \
+        translate['Submit'] + '">\n' + \
+        '      </center>\n'
     editProfileForm += '    </div>\n'
 
     if scheduledPostsExist(baseDir, nickname, domain):
