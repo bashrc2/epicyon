@@ -1678,14 +1678,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     moderatorsStr = ''
     themesDropdown = ''
-
-    # top banner
-    instanceStr = \
-        '<a href="/users/' + nickname + '" title="' + \
-        translate['Switch to profile view'] + '" alt="' + \
-        translate['Switch to profile view'] + '">\n'
-    instanceStr += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+    instanceStr = '';
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
@@ -1803,6 +1796,15 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                        '" selected>')
 
     editProfileForm = htmlHeader(cssFilename, editProfileCSS)
+
+    # top banner
+    editProfileForm += \
+        '<a href="/users/' + nickname + '" title="' + \
+        translate['Switch to profile view'] + '" alt="' + \
+        translate['Switch to profile view'] + '">\n'
+    editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     editProfileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
