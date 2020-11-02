@@ -387,7 +387,7 @@ a:focus {
 }
 
 .containerNewPost {
-    border: 0var(--border-width) solid var(--border-color);
+    border: var(--border-width) solid var(--border-color);
     border-radius: var(--timeline-border-radius);
     background-color: var(--main-bg-color);
     margin: var(--vertical-between-posts);
