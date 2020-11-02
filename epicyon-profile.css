@@ -938,7 +938,6 @@ aside .toggle-inside li {
     -ms-transition: all 0.1s ease-in-out;
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
-    width: 170px;
     margin: 0 auto;
     text-decoration: none;
     display: inline-block;
