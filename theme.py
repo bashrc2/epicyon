@@ -526,6 +526,7 @@ def setThemeStarlight(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "search-banner-height-mobile": "15vh",
         "column-left-header-background": "#69282c",
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
