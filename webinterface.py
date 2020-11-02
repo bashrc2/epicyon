@@ -8620,7 +8620,6 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr = htmlHeader(cssFilename, profileStyle)
 
     # show a banner above the search box
-    usersPath = baseDir + '/accounts/' + searchNickname + '@' + domain
     searchBannerFile, searchBannerFilename = \
         getSearchBannerFile(baseDir, searchNickname, domain)
     if not os.path.isfile(searchBannerFilename):
@@ -8633,17 +8632,20 @@ def htmlSearch(cssCache: {}, translate: {},
         bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
         for ext in bannerExtensions:
             searchBannerFile = 'search_banner.' + ext
-            searchBannerFilename = usersPath + '/' + searchBannerFile
+            searchBannerFilename = \
+                baseDir + '/accounts/' + \
+                searchNickname + '@' + domain + '/' + searchBannerFile
             themeSearchBannerFilename = \
                 baseDir + '/img/search_banner' + theme + '.' + ext
             if os.path.isfile(themeSearchBannerFilename):
                 copyfile(themeSearchBannerFilename, searchBannerFilename)
                 break
     if os.path.isfile(searchBannerFilename):
+        usersPath = '/users/' + searchNickname
         followStr += \
-            '<a href="/users/' + searchNickname + '" title="' + \
-            translate['Switch to profile view'] + '" alt="' + \
-            translate['Switch to profile view'] + '">\n'
+            '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
+            translate['Switch to timeline view'] + '" alt="' + \
+            translate['Switch to timeline view'] + '">\n'
         followStr += '<img loading="lazy" class="timeline-banner" src="' + \
             usersPath + '/' + searchBannerFile + '" /></a>\n'
 
