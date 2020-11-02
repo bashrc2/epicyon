@@ -1480,11 +1480,11 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
 
 
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
-                    domain: str, port: int, httpPrefix: str) -> str:
+                    domain: str, port: int, httpPrefix: str,
+                    defaultTimeline: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = '.png, .jpg, .jpeg, .gif, .webp, .avif'
-    pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)
@@ -1678,7 +1678,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     moderatorsStr = ''
     themesDropdown = ''
-    instanceStr = '';
+    instanceStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
@@ -1799,7 +1799,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # top banner
     editProfileForm += \
-        '<a href="/users/' + nickname + '" title="' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
     editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
