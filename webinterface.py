@@ -6699,12 +6699,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     moderationButtonStr = ''
     if moderator and not minimal:
         moderationButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + \
             '/moderation"><button class="' + \
             moderationButton + '"><span>' + \
             htmlHighlightLabel(translate['Mod'], newReport) + \
-            ' </span></button></a>\n'
+            ' </span></button></a>'
 
     # shares, bookmarks and events buttons
     sharesButtonStr = ''
