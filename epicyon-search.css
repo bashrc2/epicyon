@@ -33,8 +33,8 @@
     --follow-text-size2: 40px;
     --follow-text-entry-width: 90%;
     --focus-color: white;
-    --search-banner-height: 15vh;
-    --search-banner-height-mobile: 10vh;
+    --search-banner-height: 30vh;
+    --search-banner-height-mobile: 20vh;
 }
 
 @font-face {
