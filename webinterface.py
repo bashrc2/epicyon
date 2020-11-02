@@ -2922,7 +2922,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
 
-    newPostForm += '    <div class="container"><center>\n'
+    newPostForm += '    <div class="containerSubmitNewPost"><center>\n'
     # newPostForm += \
     #     '      <a href="' + pathBase + \
     #     '/inbox"><button class="cancelbtn">' + \
