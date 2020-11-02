@@ -1501,6 +1501,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if not os.path.isfile(actorFilename):
         return ''
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+
     isBot = ''
     isGroup = ''
     followDMs = ''
@@ -1673,9 +1676,17 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             editProfileCSS = \
                 editProfileCSS.replace('https://', httpPrefix + '://')
 
-    instanceStr = ''
     moderatorsStr = ''
     themesDropdown = ''
+
+    # top banner
+    instanceStr = \
+        '<a href="/users/' + nickname + '" title="' + \
+        translate['Switch to profile view'] + '" alt="' + \
+        translate['Switch to profile view'] + '">\n'
+    instanceStr += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
@@ -1685,7 +1696,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 getConfigParam(baseDir, 'instanceDescriptionShort')
             instanceTitle = \
                 getConfigParam(baseDir, 'instanceTitle')
-            instanceStr = '<div class="container">'
+            instanceStr += '<div class="container">'
             instanceStr += \
                 '  <label class="labels">' + \
                 translate['Instance Title'] + '</label>'
@@ -1800,9 +1811,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Profile for'] + \
         ' ' + nickname + '@' + domainFull + '</p>'
     editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
+    # editProfileForm += \
+    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     editProfileForm += \
         '      <input type="submit" name="submitProfile" value="' + \
         translate['Submit'] + '">\n'
