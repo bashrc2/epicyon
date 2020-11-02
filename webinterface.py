@@ -6458,7 +6458,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '      <a href="' + \
+            '<a href="' + \
             usersPath + '/newswiremobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
@@ -6475,7 +6475,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '" class="timelineicon"/></a>\n'
     else:
         tlStr += \
-            '      <a href="' + \
+            '<a href="' + \
             usersPath + '/linksmobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
@@ -6483,7 +6483,7 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if newsHeader:
         tlStr += \
-            '      <a href="' + usersPath + '/editprofile">' + \
+            '<a href="' + usersPath + '/editprofile">' + \
             '<button class="buttonDesktop">' + \
             '<span>' + translate['Settings'] + '</span></button></a>\n'
 
