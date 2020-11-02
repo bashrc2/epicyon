@@ -6712,23 +6712,20 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     eventsButtonStr = ''
     if not minimal:
         sharesButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
             sharesButton + '"><span>' + \
             htmlHighlightLabel(translate['Shares'], newShare) + \
-            ' </span></button></a>\n'
+            '</span></button></a>'
 
         bookmarksButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
-            ' </span></button></a>\n'
+            '</span></button></a>'
 
         eventsButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + '/tlevents"><button class="' + \
             eventsButton + '"><span>' + translate['Events'] + \
-            ' </span></button></a>\n'
+            '</span></button></a>'
 
     tlStr = htmlHeader(cssFilename, profileStyle)
 
@@ -6741,7 +6738,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if boxName == 'dm':
         if not iconsAsButtons:
             newPostButtonStr = \
-                '      <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newdm"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new DM'] + \
@@ -6751,11 +6748,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newdm">' + \
                 '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>\n'
+                translate['Post'] + ' </span></button></a>'
     elif boxName == 'tlblogs' or boxName == 'tlnews':
         if not iconsAsButtons:
             newPostButtonStr = \
-                '        <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -6765,11 +6762,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newblog">' + \
                 '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>\n'
+                translate['Post'] + '</span></button></a>'
     elif boxName == 'tlevents':
         if not iconsAsButtons:
             newPostButtonStr = \
-                '        <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newevent"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new event'] + '" alt="| ' + \
@@ -6779,12 +6776,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newevent">' + \
                 '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>\n'
+                translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
                 newPostButtonStr = \
-                    '        <a class="imageAnchor" href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
@@ -6794,11 +6791,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 newPostButtonStr = \
                     '<a href="' + usersPath + '/newpost">' + \
                     '<button class="button"><span>' + \
-                    translate['Post'] + ' </span></button></a>\n'
+                    translate['Post'] + '</span></button></a>'
         else:
             if not iconsAsButtons:
                 newPostButtonStr = \
-                    '        <a class="imageAnchor" href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + \
@@ -6808,7 +6805,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 newPostButtonStr = \
                     '<a href="' + usersPath + '/newfollowers">' + \
                     '<button class="button"><span>' + \
-                    translate['Post'] + ' </span></button></a>\n'
+                    translate['Post'] + '</span></button></a>'
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
