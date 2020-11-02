@@ -6517,10 +6517,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         print('ERROR: css file not found ' + cssFilename)
         return None
 
-    # load css
-    profileStyle = \
-        profileStyle.replace('banner.png',
-                             '/users/' + nickname + '/' + bannerFile)
     # replace any https within the css with whatever prefix is needed
     if httpPrefix != 'https':
         profileStyle = \
@@ -6754,7 +6750,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
     tlStr += '<img loading="lazy" class="timeline-banner" src="' + \
-        usersPath + '/banner.png" /></a>\n'
+        usersPath + '/' + bannerFile + '" /></a>\n'
 
     if fullWidthTimelineButtonHeader:
         tlStr += \
