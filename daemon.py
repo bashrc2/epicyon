@@ -8546,7 +8546,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 baseDir,
                                 path, domain,
                                 port,
-                                httpPrefix).encode('utf-8')
+                                httpPrefix,
+                                self.server.defaultTimeline).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)

@@ -1226,12 +1226,12 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 
 
 def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
-                  domain: str, port: int, httpPrefix: str) -> str:
+                  domain: str, port: int, httpPrefix: str,
+                  defaultTimeline: str) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
         return ''
-    pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
 
@@ -1253,7 +1253,19 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+
     editLinksForm = htmlHeader(cssFilename, editCSS)
+
+    # top banner
+    editLinksForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    editLinksForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     editLinksForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/linksdata">\n'
@@ -1263,12 +1275,14 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Edit Links'] + '</p>'
     editLinksForm += \
         '    <div class="container">\n'
+    # editLinksForm += \
+    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     editLinksForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
-    editLinksForm += \
-        '      <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '">\n'
+        '      <center>\n' + \
+        '        <input type="submit" name="submitLinks" value="' + \
+        translate['Submit'] + '">\n' + \
+        '      <center>\n'
     editLinksForm += \
         '    </div>\n'
 
@@ -1301,7 +1315,6 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     """
     if '/users/' not in path:
         return ''
-    pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
 
@@ -1325,7 +1338,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
-    
+
     editNewswireForm = htmlHeader(cssFilename, editCSS)
 
     # top banner
@@ -1345,12 +1358,14 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Edit newswire'] + '</p>'
     editNewswireForm += \
         '    <div class="container">\n'
+    # editNewswireForm += \
+    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     editNewswireForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
-    editNewswireForm += \
+        '      <center>\n' + \
         '      <input type="submit" name="submitNewswire" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '">\n' + \
+        '      <center>\n'
     editNewswireForm += \
         '    </div>\n'
 
@@ -1813,8 +1828,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     # top banner
     editProfileForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to profile view'] + '" alt="' + \
-        translate['Switch to profile view'] + '">\n'
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
     editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
