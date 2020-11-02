@@ -8110,26 +8110,26 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <a href="/"><button type="button" class="buttonIcon" ' + \
-        'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
+        'name="submitBack">' + translate['Go Back'] + '</button></a>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>\n'
+        translate['View'] + '</button>'
     optionsStr += donateStr
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>\n'
+        followStr + '">' + translate[followStr] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>\n'
+        blockStr + '">' + translate[blockStr] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>\n'
+        translate['DM'] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
+        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>\n'
+        translate['Report'] + '</button>'
 
     personNotes = ''
     personNotesFilename = \
