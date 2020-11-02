@@ -6220,29 +6220,29 @@ def headerButtonsTimeline(defaultTimeline: str,
     buttons for inbox, outbox, search, calendar, etc
     """
     # start of the button header with inbox, outbox, etc
-    tlStr = '    <div class="containerHeader">\n'
+    tlStr = '<div class="containerHeader">\n'
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlmedia"><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>'
     elif defaultTimeline == 'tlblogs':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>'
     elif defaultTimeline == 'tlnews':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlnews"><button class="' + \
             newsButton + '"><span>' + translate['Features'] + \
             '</span></button></a>'
     else:
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/inbox"><button class="' + \
             inboxButton + '"><span>' + \
             translate['Inbox'] + '</span></button></a>'
@@ -6254,13 +6254,13 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if not newsHeader:
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/dm"><button class="' + dmButton + \
             '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
             '</span></button></a>'
 
         tlStr += \
-            '      <a href="' + usersPath + '/tlreplies"><button class="' + \
+            '<a href="' + usersPath + '/tlreplies"><button class="' + \
             repliesButton + '"><span>' + \
             htmlHighlightLabel(translate['Replies'], newReply) + \
             '</span></button></a>'
@@ -6269,14 +6269,14 @@ def headerButtonsTimeline(defaultTimeline: str,
     if defaultTimeline != 'tlmedia':
         if not minimal and not newsHeader:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/tlmedia"><button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
     else:
         if not minimal:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton+'"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
@@ -6293,14 +6293,14 @@ def headerButtonsTimeline(defaultTimeline: str,
                 if defaultTimeline == 'tlnews':
                     titleStr = translate['Article']
                 tlStr += \
-                    '      <a href="' + usersPath + \
+                    '<a href="' + usersPath + \
                     '/tlblogs"><button class="' + \
                     blogsButton + '"><span>' + titleStr + \
                     '</span></button></a>'
         else:
             if not minimal:
                 tlStr += \
-                    '      <a href="' + usersPath + \
+                    '<a href="' + usersPath + \
                     '/inbox"><button class="' + \
                     inboxButton + '"><span>' + translate['Inbox'] + \
                     '</span></button></a>'
@@ -6309,14 +6309,14 @@ def headerButtonsTimeline(defaultTimeline: str,
     # but may change if this is a news oriented instance
     if defaultTimeline != 'tlnews':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlnews"><button class="' + \
             newsButton + '"><span>' + translate['News'] + \
             '</span></button></a>'
     else:
         if not newsHeader:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
@@ -6324,7 +6324,7 @@ def headerButtonsTimeline(defaultTimeline: str,
     if not newsHeader:
         # button for the outbox
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/outbox"><button class="' + \
             sentButton + '"><span>' + translate['Outbox'] + \
             '</span></button></a>'
@@ -6342,14 +6342,14 @@ def headerButtonsTimeline(defaultTimeline: str,
             # happening today button
             if not iconsAsButtons:
                 tlStr += \
-                    '    <a href="' + usersPath + '/calendar?year=' + \
+                    '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
                     '?day=' + str(now.day) + '">' + \
                     '<button class="buttonevent">' + \
                     translate['Happening Today'] + '</button></a>'
             else:
                 tlStr += \
-                    '    <a href="' + usersPath + '/calendar?year=' + \
+                    '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
                     '?day=' + str(now.day) + '">' + \
                     '<button class="button">' + \
@@ -6359,12 +6359,12 @@ def headerButtonsTimeline(defaultTimeline: str,
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 if not iconsAsButtons:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="buttonevent">' + \
                         translate['Happening This Week'] + '</button></a>'
                 else:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="button">' + \
                         translate['Happening This Week'] + '</button></a>'
         else:
@@ -6372,12 +6372,12 @@ def headerButtonsTimeline(defaultTimeline: str,
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 if not iconsAsButtons:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="buttonevent">' + \
                         translate['Happening This Week'] + '</button></a>'
                 else:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="button">' + \
                         translate['Happening This Week'] + '</button></a>'
 
@@ -6393,7 +6393,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>'
         else:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/search"><button class="button">' + \
                 '<span>' + translate['Search'] + \
                 '</span></button></a>'
@@ -6419,7 +6419,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             tlStr += \
-                '      <a href="' + usersPath + calendarPath + \
+                '<a href="' + usersPath + calendarPath + \
                 '"><button class="button">' + \
                 '<span>' + translate['Calendar'] + \
                 '</span></button></a>'
@@ -6436,14 +6436,14 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             tlStr += \
-                '      <a href="' + usersPath + '/minimal' + \
+                '<a href="' + usersPath + '/minimal' + \
                 '"><button class="button">' + \
                 '<span>' + translate['Expand'] + \
                 '</span></button></a>'
 
     if newsHeader:
         tlStr += \
-            '      <a href="' + usersPath + '/inbox">' + \
+            '<a href="' + usersPath + '/inbox">' + \
             '<button class="button">' + \
             '<span>' + translate['User'] + '</span></button></a>'
 
