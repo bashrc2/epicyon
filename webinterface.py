@@ -8618,6 +8618,13 @@ def htmlSearch(cssCache: {}, translate: {},
 
     profileStyle = getCSS(baseDir, cssFilename, cssCache)
 
+    if not os.path.isfile(baseDir + '/accounts/' +
+                          'follow-background.jpg'):
+        profileStyle = \
+            profileStyle.replace('background-image: ' + \
+                                 'url("follow-background.jpg");',
+                                 'background-image: none;')
+
     followStr = htmlHeader(cssFilename, profileStyle)
 
     # show a banner above the search box
