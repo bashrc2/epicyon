@@ -1299,7 +1299,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     editLinksForm += \
-        '  <textarea id="message" name="editedLinks" style="height:50vh">' + \
+        '  <textarea id="message" name="editedLinks" style="height:80vh">' + \
         linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
@@ -1419,7 +1419,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="hashtagRulesList" style="height:200px">' + \
+        'name="hashtagRulesList" style="height:50vh">' + \
         hashtagRulesStr + '</textarea>\n'
 
     editNewswireForm += \
