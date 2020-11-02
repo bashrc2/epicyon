@@ -6032,24 +6032,32 @@ def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
     """
     returns the banner filename
     """
-    # filename of the banner shown at the top
-    bannerFile = 'banner.png'
-    bannerFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.jpg'
+    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
+    bannerFile = ''
+    bannerFilename = ''
+    for ext in bannerExtensions:
+        bannerFile = 'banner.' + ext
         bannerFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.gif'
+        if os.path.isfile(bannerFilename):
+            break
+    return bannerFile, bannerFilename
+
+
+def getSearchBannerFile(baseDir: str,
+                        nickname: str, domain: str) -> (str, str):
+    """
+    returns the search banner filename
+    """
+    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
+    bannerFile = ''
+    bannerFilename = ''
+    for ext in bannerExtensions:
+        bannerFile = 'search_banner.' + ext
         bannerFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.avif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.webp'
+        if os.path.isfile(bannerFilename):
+            break
     return bannerFile, bannerFilename
 
 
@@ -8612,23 +8620,32 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr = htmlHeader(cssFilename, profileStyle)
 
     # show a banner above the search box
-    searchBannerFilename = \
-        baseDir + '/accounts/' + searchNickname + '@' + domain + \
-        '/search_banner.png'
+    usersPath = baseDir + '/accounts/' + searchNickname + '@' + domain
+    searchBannerFile, searchBannerFilename = \
+        getSearchBannerFile(baseDir, searchNickname, domain)
     if not os.path.isfile(searchBannerFilename):
+        # get the default search banner for the theme
         theme = getConfigParam(baseDir, 'theme').lower()
         if theme == 'default':
             theme = ''
         else:
             theme = '_' + theme
-        themeSearchBannerFilename = \
-            baseDir + '/img/search_banner' + theme + '.png'
-        if os.path.isfile(themeSearchBannerFilename):
-            copyfile(themeSearchBannerFilename, searchBannerFilename)
+        bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
+        for ext in bannerExtensions:
+            searchBannerFile = 'search_banner.' + ext
+            searchBannerFilename = usersPath + '/' + searchBannerFile
+            themeSearchBannerFilename = \
+                baseDir + '/img/search_banner' + theme + '.' + ext
+            if os.path.isfile(themeSearchBannerFilename):
+                copyfile(themeSearchBannerFilename, searchBannerFilename)
+                break
     if os.path.isfile(searchBannerFilename):
-        followStr += '<center>\n<div class="searchBanner">\n' + \
-            '<br><br><br><br><br><br><br><br>' + \
-            '<br><br><br><br><br><br><br><br>\n</div>\n</center>\n'
+        followStr += \
+            '<a href="/users/' + searchNickname + '" title="' + \
+            translate['Switch to profile view'] + '" alt="' + \
+            translate['Switch to profile view'] + '">\n'
+        followStr += '<img loading="lazy" class="timeline-banner" src="' + \
+            usersPath + '/' + searchBannerFile + '" /></a>\n'
 
     # show the search box
     followStr += '<div class="follow">\n'
