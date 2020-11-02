@@ -6450,12 +6450,12 @@ def headerButtonsTimeline(defaultTimeline: str,
     # the newswire button to show right column links
     if not iconsAsButtons:
         tlStr += \
-            '      <a class="imageAnchorMobile" href="' + \
+            '<a class="imageAnchorMobile" href="' + \
             usersPath + '/newswiremobile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
             '/newswire.png" title="' + translate['News'] + \
             '" alt="| ' + translate['News'] + \
-            '" class="timelineicon"/></a>\n'
+            '" class="timelineicon"/></a>'
     else:
         # NOTE: deliberately no \n at end of line
         tlStr += \
@@ -6468,12 +6468,12 @@ def headerButtonsTimeline(defaultTimeline: str,
     # the links button to show left column links
     if not iconsAsButtons:
         tlStr += \
-            '      <a class="imageAnchorMobile" href="' + \
+            '<a class="imageAnchorMobile" href="' + \
             usersPath + '/linksmobile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
-            '" class="timelineicon"/></a>\n'
+            '" class="timelineicon"/></a>'
     else:
         # NOTE: deliberately no \n at end of line
         tlStr += \
