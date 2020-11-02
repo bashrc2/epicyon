@@ -194,14 +194,14 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 
 .buttonprev {
     float: left;
-    width: 10%;
+    width: 8%;
     -ms-transform: translateY(30%);
     transform: translateY(30%);
 }
 
 .buttonnext {
     float: right;
-    width: 10%;
+    width: 8%;
     -ms-transform: translateY(30%) scaleX(-1);
     transform: translateY(30%) scaleX(-1);
 }
