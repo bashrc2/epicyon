@@ -390,7 +390,6 @@ a:focus {
     border: var(--border-width) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
-    padding: var(--container-padding);
     margin: var(--vertical-between-posts);
 }
 
