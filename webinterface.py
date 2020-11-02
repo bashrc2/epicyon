@@ -2746,8 +2746,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        usersPath + '/' + bannerFile + '" /></a>\n'
-    
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     # only show the share option if this is not a reply
     shareOptionOnDropdown = ''
     questionOptionOnDropdown = ''
@@ -2911,7 +2911,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '    <div class="containerNewPost">\n'
     newPostForm += '      <table style="width:100%" border="0"><tr>\n'
     newPostForm += '<td>' + dropDownContent + '</td>\n'
-    
+
     newPostForm += \
         '      <td><a href="' + pathBase + \
         '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
@@ -2926,7 +2926,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
-    
+
     newPostForm += '    <div class="container"><center>\n'
     # newPostForm += \
     #     '      <a href="' + pathBase + \
@@ -7957,7 +7957,7 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
     if not os.path.isfile(baseDir + '/accounts/' +
                           'options-background.jpg'):
         profileStyle = \
-            profileStyle.replace('background-image: ' + \
+            profileStyle.replace('background-image: ' +
                                  'url("options-background.jpg");',
                                  'background-image: none;')
 
@@ -8646,7 +8646,7 @@ def htmlSearch(cssCache: {}, translate: {},
     if not os.path.isfile(baseDir + '/accounts/' +
                           'follow-background.jpg'):
         profileStyle = \
-            profileStyle.replace('background-image: ' + \
+            profileStyle.replace('background-image: ' +
                                  'url("follow-background.jpg");',
                                  'background-image: none;')
 
