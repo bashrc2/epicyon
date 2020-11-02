@@ -7936,6 +7936,13 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
             profileStyle.replace('--follow-text-entry-width: 90%;',
                                  '--follow-text-entry-width: 20%;')
 
+    if not os.path.isfile(baseDir + '/accounts/' +
+                          'options-background.jpg'):
+        profileStyle = \
+            profileStyle.replace('background-image: ' + \
+                                 'url("options-background.jpg");',
+                                 'background-image: none;')
+
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
     if nickname:
