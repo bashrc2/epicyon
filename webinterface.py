@@ -7033,6 +7033,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    # page down arrow
+    if itemCtr > 2:
+        tlStr += \
+            '      <center>\n' + \
+            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
+            str(pageNumber + 1) + \
+            '"><img loading="lazy" class="pageicon" src="/' + \
+            iconsDir + '/pagedown.png" title="' + \
+            translate['Page down'] + '" alt="' + \
+            translate['Page down'] + '"></a>\n' + \
+            '      </center>\n'
+
     # end of column-center
     tlStr += '  </td>\n'
 
@@ -7053,24 +7065,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 9 = ' + str(timeDiff))
-
-    # page down arrow
-    if itemCtr > 2:
-        tlStr += \
-            '  <tr>\n' + \
-            '    <td class="col-left"></td>\n' + \
-            '    <td class="col-center">\n' + \
-            '      <center>\n' + \
-            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
-            str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsDir + '/pagedown.png" title="' + \
-            translate['Page down'] + '" alt="' + \
-            translate['Page down'] + '"></a>\n' + \
-            '      </center>\n' + \
-            '    </td>\n' + \
-            '    <td class="col-right"></td>\n' + \
-            '  </tr>\n'
 
     tlStr += '  </tbody>\n'
     tlStr += '</table>\n'
