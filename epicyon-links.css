@@ -64,6 +64,8 @@
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
+    --banner-height: 15vh;
+    --banner-height-mobile: 10vh;
 }
 
 @font-face {
@@ -958,6 +960,10 @@ aside .toggle-inside li {
         border: 0;
         width: 100vw;
     }
+    .timeline-banner {
+        width: 98vw;
+        height: var(--banner-height);
+    }
     .column-left {
         width: var(--column-left-width);
     }
@@ -1442,6 +1448,10 @@ aside .toggle-inside li {
     .timeline {
         border: 0;
         width: 100vw;
+    }
+    .timeline-banner {
+        width: 98vw;
+        height: var(--banner-height-mobile);
     }
     .column-left {
         width: 0%;
