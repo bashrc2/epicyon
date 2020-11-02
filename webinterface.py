@@ -1295,7 +1295,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
 
 
 def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
-                     domain: str, port: int, httpPrefix: str) -> str:
+                     domain: str, port: int, httpPrefix: str,
+                     defaultTimeline: str) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -1322,7 +1323,19 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    
     editNewswireForm = htmlHeader(cssFilename, editCSS)
+
+    # top banner
+    editNewswireForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     editNewswireForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newswiredata">\n'
