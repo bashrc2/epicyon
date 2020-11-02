@@ -1226,12 +1226,12 @@ def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
 
 
 def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
-                  domain: str, port: int, httpPrefix: str) -> str:
+                  domain: str, port: int, httpPrefix: str,
+                  defaultTimeline: str) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
         return ''
-    pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
 
@@ -1253,7 +1253,19 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+
     editLinksForm = htmlHeader(cssFilename, editCSS)
+
+    # top banner
+    editLinksForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    editLinksForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     editLinksForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/linksdata">\n'
@@ -1263,12 +1275,14 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Edit Links'] + '</p>'
     editLinksForm += \
         '    <div class="container">\n'
+    # editLinksForm += \
+    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     editLinksForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
-    editLinksForm += \
-        '      <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '">\n'
+        '      <center>\n' + \
+        '        <input type="submit" name="submitLinks" value="' + \
+        translate['Submit'] + '">\n' + \
+        '      <center>\n'
     editLinksForm += \
         '    </div>\n'
 
@@ -1285,7 +1299,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     editLinksForm += \
-        '  <textarea id="message" name="editedLinks" style="height:50vh">' + \
+        '  <textarea id="message" name="editedLinks" style="height:80vh">' + \
         linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
@@ -1295,12 +1309,12 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
 
 
 def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
-                     domain: str, port: int, httpPrefix: str) -> str:
+                     domain: str, port: int, httpPrefix: str,
+                     defaultTimeline: str) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
         return ''
-    pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
 
@@ -1322,7 +1336,19 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+
     editNewswireForm = htmlHeader(cssFilename, editCSS)
+
+    # top banner
+    editNewswireForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     editNewswireForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newswiredata">\n'
@@ -1332,12 +1358,14 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Edit newswire'] + '</p>'
     editNewswireForm += \
         '    <div class="container">\n'
+    # editNewswireForm += \
+    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     editNewswireForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
-    editNewswireForm += \
+        '      <center>\n' + \
         '      <input type="submit" name="submitNewswire" value="' + \
-        translate['Submit'] + '">\n'
+        translate['Submit'] + '">\n' + \
+        '      <center>\n'
     editNewswireForm += \
         '    </div>\n'
 
@@ -1356,7 +1384,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<br>'
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
-        'style="height:500px">' + newswireStr + '</textarea>'
+        'style="height:80vh">' + newswireStr + '</textarea>'
 
     filterStr = ''
     filterFilename = \
@@ -1371,7 +1399,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="filteredWordsNewswire" style="height:200px">' + \
+        'name="filteredWordsNewswire" style="height:50vh">' + \
         filterStr + '</textarea>\n'
 
     hashtagRulesStr = ''
@@ -1391,7 +1419,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="hashtagRulesList" style="height:200px">' + \
+        'name="hashtagRulesList" style="height:80vh">' + \
         hashtagRulesStr + '</textarea>\n'
 
     editNewswireForm += \
@@ -1480,11 +1508,11 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
 
 
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
-                    domain: str, port: int, httpPrefix: str) -> str:
+                    domain: str, port: int, httpPrefix: str,
+                    defaultTimeline: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = '.png, .jpg, .jpeg, .gif, .webp, .avif'
-    pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)
@@ -1500,6 +1528,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         baseDir + '/accounts/' + nickname + '@' + domain + '.json'
     if not os.path.isfile(actorFilename):
         return ''
+
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
     isBot = ''
     isGroup = ''
@@ -1673,9 +1704,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             editProfileCSS = \
                 editProfileCSS.replace('https://', httpPrefix + '://')
 
-    instanceStr = ''
     moderatorsStr = ''
     themesDropdown = ''
+    instanceStr = ''
+
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
@@ -1685,7 +1717,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 getConfigParam(baseDir, 'instanceDescriptionShort')
             instanceTitle = \
                 getConfigParam(baseDir, 'instanceTitle')
-            instanceStr = '<div class="container">'
+            instanceStr += '<div class="container">'
             instanceStr += \
                 '  <label class="labels">' + \
                 translate['Instance Title'] + '</label>'
@@ -1792,6 +1824,15 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                        '" selected>')
 
     editProfileForm = htmlHeader(cssFilename, editProfileCSS)
+
+    # top banner
+    editProfileForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     editProfileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
@@ -1800,12 +1841,14 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Profile for'] + \
         ' ' + nickname + '@' + domainFull + '</p>'
     editProfileForm += '    <div class="container">\n'
+    # editProfileForm += \
+    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     editProfileForm += \
-        '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
-    editProfileForm += \
-        '      <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">\n'
+        '      <center>\n' + \
+        '        <input type="submit" name="submitProfile" value="' + \
+        translate['Submit'] + '">\n' + \
+        '      </center>\n'
     editProfileForm += '    </div>\n'
 
     if scheduledPostsExist(baseDir, nickname, domain):
@@ -2386,6 +2429,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     showPublicOnDropdown = True
     messageBoxHeight = 400
 
+    # filename of the banner shown at the top
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
@@ -2738,6 +2784,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm = htmlHeader(cssFilename, newPostCSS)
 
+    newPostForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
     # only show the share option if this is not a reply
     shareOptionOnDropdown = ''
     questionOptionOnDropdown = ''
@@ -2901,6 +2954,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '    <div class="containerNewPost">\n'
     newPostForm += '      <table style="width:100%" border="0"><tr>\n'
     newPostForm += '<td>' + dropDownContent + '</td>\n'
+
     newPostForm += \
         '      <td><a href="' + pathBase + \
         '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
@@ -2910,15 +2964,17 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
-    newPostForm += '    <div class="container"><center>\n'
-    newPostForm += \
-        '      <a href="' + pathBase + \
-        '/inbox"><button class="cancelbtn">' + \
-        translate['Go Back'] + '</button></a>\n'
+
+    newPostForm += '    <div class="containerSubmitNewPost"><center>\n'
+    # newPostForm += \
+    #     '      <a href="' + pathBase + \
+    #     '/inbox"><button class="cancelbtn">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
     newPostForm += '    </center></div>\n'
+
     newPostForm += replyStr
     if mediaInstance and not replyStr:
         newPostForm += newPostImageSection
@@ -6032,24 +6088,32 @@ def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
     """
     returns the banner filename
     """
-    # filename of the banner shown at the top
-    bannerFile = 'banner.png'
-    bannerFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.jpg'
+    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
+    bannerFile = ''
+    bannerFilename = ''
+    for ext in bannerExtensions:
+        bannerFile = 'banner.' + ext
         bannerFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.gif'
+        if os.path.isfile(bannerFilename):
+            break
+    return bannerFile, bannerFilename
+
+
+def getSearchBannerFile(baseDir: str,
+                        nickname: str, domain: str) -> (str, str):
+    """
+    returns the search banner filename
+    """
+    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
+    bannerFile = ''
+    bannerFilename = ''
+    for ext in bannerExtensions:
+        bannerFile = 'search_banner.' + ext
         bannerFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.avif'
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-    if not os.path.isfile(bannerFilename):
-        bannerFile = 'banner.webp'
+        if os.path.isfile(bannerFilename):
+            break
     return bannerFile, bannerFilename
 
 
@@ -6076,24 +6140,24 @@ def headerButtonsFrontScreen(translate: {},
             '        <a href="/">' + \
             '<button class="' + buttonFeatures + '">' + \
             '<span>' + translate['Features'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
         if not authorized:
             headerStr += \
                 '        <a href="/login">' + \
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
         if iconsAsButtons:
             headerStr += \
                 '        <a href="/users/news/newswiremobile">' + \
                 '<button class="' + buttonNewswire + '">' + \
                 '<span>' + translate['Newswire'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
             headerStr += \
                 '        <a href="/users/news/linksmobile">' + \
                 '<button class="' + buttonLinks + '">' + \
                 '<span>' + translate['Links'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
         else:
             headerStr += \
                 '        <a href="' + \
@@ -6113,7 +6177,7 @@ def headerButtonsFrontScreen(translate: {},
                 '        <a href="/login">' + \
                 '<button class="buttonMobile">' + \
                 '<span>' + translate['Login'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     if headerStr:
         headerStr = \
@@ -6156,32 +6220,32 @@ def headerButtonsTimeline(defaultTimeline: str,
     buttons for inbox, outbox, search, calendar, etc
     """
     # start of the button header with inbox, outbox, etc
-    tlStr = '    <div class="containerHeader">\n'
+    tlStr = '<div class="containerHeader">\n'
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlmedia"><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
     elif defaultTimeline == 'tlblogs':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
     elif defaultTimeline == 'tlnews':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlnews"><button class="' + \
             newsButton + '"><span>' + translate['Features'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
     else:
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/inbox"><button class="' + \
             inboxButton + '"><span>' + \
-            translate['Inbox'] + '</span></button></a>\n'
+            translate['Inbox'] + '</span></button></a>'
 
     # if this is a news instance and we are viewing the news timeline
     newsHeader = False
@@ -6190,32 +6254,32 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if not newsHeader:
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/dm"><button class="' + dmButton + \
             '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
-            '</span></button></a>\n'
+            '</span></button></a>'
 
         tlStr += \
-            '      <a href="' + usersPath + '/tlreplies"><button class="' + \
+            '<a href="' + usersPath + '/tlreplies"><button class="' + \
             repliesButton + '"><span>' + \
             htmlHighlightLabel(translate['Replies'], newReply) + \
-            '</span></button></a>\n'
+            '</span></button></a>'
 
     # typically the media button
     if defaultTimeline != 'tlmedia':
         if not minimal and not newsHeader:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/tlmedia"><button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
     else:
         if not minimal:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton+'"><span>' + translate['Inbox'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     isFeaturesTimeline = \
         defaultTimeline == 'tlnews' and boxName == 'tlnews'
@@ -6229,41 +6293,41 @@ def headerButtonsTimeline(defaultTimeline: str,
                 if defaultTimeline == 'tlnews':
                     titleStr = translate['Article']
                 tlStr += \
-                    '      <a href="' + usersPath + \
+                    '<a href="' + usersPath + \
                     '/tlblogs"><button class="' + \
                     blogsButton + '"><span>' + titleStr + \
-                    '</span></button></a>\n'
+                    '</span></button></a>'
         else:
             if not minimal:
                 tlStr += \
-                    '      <a href="' + usersPath + \
+                    '<a href="' + usersPath + \
                     '/inbox"><button class="' + \
                     inboxButton + '"><span>' + translate['Inbox'] + \
-                    '</span></button></a>\n'
+                    '</span></button></a>'
 
     # typically the news button
     # but may change if this is a news oriented instance
     if defaultTimeline != 'tlnews':
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/tlnews"><button class="' + \
             newsButton + '"><span>' + translate['News'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
     else:
         if not newsHeader:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/inbox"><button class="' + \
                 inboxButton + '"><span>' + translate['Inbox'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     if not newsHeader:
         # button for the outbox
         tlStr += \
-            '      <a href="' + usersPath + \
+            '<a href="' + usersPath + \
             '/outbox"><button class="' + \
             sentButton + '"><span>' + translate['Outbox'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
 
         # add other buttons
         tlStr += \
@@ -6278,44 +6342,44 @@ def headerButtonsTimeline(defaultTimeline: str,
             # happening today button
             if not iconsAsButtons:
                 tlStr += \
-                    '    <a href="' + usersPath + '/calendar?year=' + \
+                    '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
                     '?day=' + str(now.day) + '">' + \
                     '<button class="buttonevent">' + \
-                    translate['Happening Today'] + '</button></a>\n'
+                    translate['Happening Today'] + '</button></a>'
             else:
                 tlStr += \
-                    '    <a href="' + usersPath + '/calendar?year=' + \
+                    '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
                     '?day=' + str(now.day) + '">' + \
                     '<button class="button">' + \
-                    translate['Happening Today'] + '</button></a>\n'
+                    translate['Happening Today'] + '</button></a>'
 
             # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 if not iconsAsButtons:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>\n'
+                        translate['Happening This Week'] + '</button></a>'
                 else:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>\n'
+                        translate['Happening This Week'] + '</button></a>'
         else:
             # happening this week button
             if thisWeeksEventsCheck(baseDir, nickname, domain):
                 if not iconsAsButtons:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>\n'
+                        translate['Happening This Week'] + '</button></a>'
                 else:
                     tlStr += \
-                        '    <a href="' + usersPath + \
+                        '<a href="' + usersPath + \
                         '/calendar"><button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>\n'
+                        translate['Happening This Week'] + '</button></a>'
 
     if not newsHeader:
         if not iconsAsButtons:
@@ -6326,13 +6390,13 @@ def headerButtonsTimeline(defaultTimeline: str,
                 iconsDir + '/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
-                '" class="timelineicon"/></a>\n'
+                '" class="timelineicon"/></a>'
         else:
             tlStr += \
-                '      <a href="' + usersPath + \
+                '<a href="' + usersPath + \
                 '/search"><button class="button">' + \
                 '<span>' + translate['Search'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     # benchmark 5
     timeDiff = int((time.time() - timelineStartTime) * 1000)
@@ -6355,10 +6419,10 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             tlStr += \
-                '      <a href="' + usersPath + calendarPath + \
+                '<a href="' + usersPath + calendarPath + \
                 '"><button class="button">' + \
                 '<span>' + translate['Calendar'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     if not newsHeader:
         # the show/hide button, for a simpler header appearance
@@ -6372,50 +6436,58 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
         else:
             tlStr += \
-                '      <a href="' + usersPath + '/minimal' + \
+                '<a href="' + usersPath + '/minimal' + \
                 '"><button class="button">' + \
                 '<span>' + translate['Expand'] + \
-                '</span></button></a>\n'
+                '</span></button></a>'
 
     if newsHeader:
         tlStr += \
-            '      <a href="' + usersPath + '/inbox' + \
-            '"><button class="button">' + \
-            '<span>' + translate['User'] + '</span></button></a>\n'
+            '<a href="' + usersPath + '/inbox">' + \
+            '<button class="button">' + \
+            '<span>' + translate['User'] + '</span></button></a>'
 
     # the newswire button to show right column links
     if not iconsAsButtons:
         tlStr += \
-            '      <a class="imageAnchorMobile" href="' + \
+            '<a class="imageAnchorMobile" href="' + \
             usersPath + '/newswiremobile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
             '/newswire.png" title="' + translate['News'] + \
             '" alt="| ' + translate['News'] + \
-            '" class="timelineicon"/></a>\n'
+            '" class="timelineicon"/></a>'
     else:
+        # NOTE: deliberately no \n at end of line
         tlStr += \
-            '      <a href="' + \
+            '<a href="' + \
             usersPath + '/newswiremobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
 
     # the links button to show left column links
     if not iconsAsButtons:
         tlStr += \
-            '      <a class="imageAnchorMobile" href="' + \
+            '<a class="imageAnchorMobile" href="' + \
             usersPath + '/linksmobile">' + \
             '<img loading="lazy" src="/' + iconsDir + \
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
-            '" class="timelineicon"/></a>\n'
+            '" class="timelineicon"/></a>'
     else:
+        # NOTE: deliberately no \n at end of line
         tlStr += \
-            '      <a href="' + \
+            '<a href="' + \
             usersPath + '/linksmobile' + \
             '"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
-            '</span></button></a>\n'
+            '</span></button></a>'
+
+    if newsHeader:
+        tlStr += \
+            '<a href="' + usersPath + '/editprofile">' + \
+            '<button class="buttonDesktop">' + \
+            '<span>' + translate['Settings'] + '</span></button></a>'
 
     if not newsHeader:
         tlStr += followApprovals
@@ -6517,10 +6589,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         print('ERROR: css file not found ' + cssFilename)
         return None
 
-    # load css
-    profileStyle = \
-        profileStyle.replace('banner.png',
-                             '/users/' + nickname + '/' + bannerFile)
     # replace any https within the css with whatever prefix is needed
     if httpPrefix != 'https':
         profileStyle = \
@@ -6631,12 +6699,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     moderationButtonStr = ''
     if moderator and not minimal:
         moderationButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + \
             '/moderation"><button class="' + \
             moderationButton + '"><span>' + \
             htmlHighlightLabel(translate['Mod'], newReport) + \
-            ' </span></button></a>\n'
+            ' </span></button></a>'
 
     # shares, bookmarks and events buttons
     sharesButtonStr = ''
@@ -6644,23 +6711,20 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     eventsButtonStr = ''
     if not minimal:
         sharesButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
             sharesButton + '"><span>' + \
             htmlHighlightLabel(translate['Shares'], newShare) + \
-            ' </span></button></a>\n'
+            '</span></button></a>'
 
         bookmarksButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
-            ' </span></button></a>\n'
+            '</span></button></a>'
 
         eventsButtonStr = \
-            '      ' + \
             '<a href="' + usersPath + '/tlevents"><button class="' + \
             eventsButton + '"><span>' + translate['Events'] + \
-            ' </span></button></a>\n'
+            '</span></button></a>'
 
     tlStr = htmlHeader(cssFilename, profileStyle)
 
@@ -6673,7 +6737,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if boxName == 'dm':
         if not iconsAsButtons:
             newPostButtonStr = \
-                '      <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newdm"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new DM'] + \
@@ -6683,11 +6747,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newdm">' + \
                 '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>\n'
+                translate['Post'] + ' </span></button></a>'
     elif boxName == 'tlblogs' or boxName == 'tlnews':
         if not iconsAsButtons:
             newPostButtonStr = \
-                '        <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -6697,11 +6761,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newblog">' + \
                 '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>\n'
+                translate['Post'] + '</span></button></a>'
     elif boxName == 'tlevents':
         if not iconsAsButtons:
             newPostButtonStr = \
-                '        <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newevent"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new event'] + '" alt="| ' + \
@@ -6711,12 +6775,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr = \
                 '<a href="' + usersPath + '/newevent">' + \
                 '<button class="button"><span>' + \
-                translate['Post'] + ' </span></button></a>\n'
+                translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
                 newPostButtonStr = \
-                    '        <a class="imageAnchor" href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
@@ -6726,11 +6790,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 newPostButtonStr = \
                     '<a href="' + usersPath + '/newpost">' + \
                     '<button class="button"><span>' + \
-                    translate['Post'] + ' </span></button></a>\n'
+                    translate['Post'] + '</span></button></a>'
         else:
             if not iconsAsButtons:
                 newPostButtonStr = \
-                    '        <a class="imageAnchor" href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + \
@@ -6740,7 +6804,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 newPostButtonStr = \
                     '<a href="' + usersPath + '/newfollowers">' + \
                     '<button class="button"><span>' + \
-                    translate['Post'] + ' </span></button></a>\n'
+                    translate['Post'] + '</span></button></a>'
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
@@ -6754,7 +6818,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
     tlStr += '<img loading="lazy" class="timeline-banner" src="' + \
-        usersPath + '/banner.png" /></a>\n'
+        usersPath + '/' + bannerFile + '" /></a>\n'
 
     if fullWidthTimelineButtonHeader:
         tlStr += \
@@ -6969,6 +7033,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    # page down arrow
+    if itemCtr > 2:
+        tlStr += \
+            '      <center>\n' + \
+            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
+            str(pageNumber + 1) + \
+            '"><img loading="lazy" class="pageicon" src="/' + \
+            iconsDir + '/pagedown.png" title="' + \
+            translate['Page down'] + '" alt="' + \
+            translate['Page down'] + '"></a>\n' + \
+            '      </center>\n'
+
     # end of column-center
     tlStr += '  </td>\n'
 
@@ -6989,24 +7065,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 9 = ' + str(timeDiff))
-
-    # page down arrow
-    if itemCtr > 2:
-        tlStr += \
-            '  <tr>\n' + \
-            '    <td class="col-left"></td>\n' + \
-            '    <td class="col-center">\n' + \
-            '      <center>\n' + \
-            '        <a href="' + usersPath + '/' + boxName + '?page=' + \
-            str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsDir + '/pagedown.png" title="' + \
-            translate['Page down'] + '" alt="' + \
-            translate['Page down'] + '"></a>\n' + \
-            '      </center>\n' + \
-            '    </td>\n' + \
-            '    <td class="col-right"></td>\n' + \
-            '  </tr>\n'
 
     tlStr += '  </tbody>\n'
     tlStr += '</table>\n'
@@ -7932,6 +7990,13 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
             profileStyle.replace('--follow-text-entry-width: 90%;',
                                  '--follow-text-entry-width: 20%;')
 
+    if not os.path.isfile(baseDir + '/accounts/' +
+                          'options-background.jpg'):
+        profileStyle = \
+            profileStyle.replace('background-image: ' +
+                                 'url("options-background.jpg");',
+                                 'background-image: none;')
+
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
     if nickname:
@@ -8041,26 +8106,26 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <a href="/"><button type="button" class="buttonIcon" ' + \
-        'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
+        'name="submitBack">' + translate['Go Back'] + '</button></a>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>\n'
+        translate['View'] + '</button>'
     optionsStr += donateStr
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>\n'
+        followStr + '">' + translate[followStr] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>\n'
+        blockStr + '">' + translate[blockStr] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>\n'
+        translate['DM'] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
+        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>\n'
+        translate['Report'] + '</button>'
 
     personNotes = ''
     personNotesFilename = \
@@ -8596,7 +8661,8 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
 
 
 def htmlSearch(cssCache: {}, translate: {},
-               baseDir: str, path: str, domain: str) -> str:
+               baseDir: str, path: str, domain: str,
+               defaultTimeline: str) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -8613,26 +8679,44 @@ def htmlSearch(cssCache: {}, translate: {},
 
     profileStyle = getCSS(baseDir, cssFilename, cssCache)
 
+    if not os.path.isfile(baseDir + '/accounts/' +
+                          'follow-background.jpg'):
+        profileStyle = \
+            profileStyle.replace('background-image: ' +
+                                 'url("follow-background.jpg");',
+                                 'background-image: none;')
+
     followStr = htmlHeader(cssFilename, profileStyle)
 
     # show a banner above the search box
-    searchBannerFilename = \
-        baseDir + '/accounts/' + searchNickname + '@' + domain + \
-        '/search_banner.png'
+    searchBannerFile, searchBannerFilename = \
+        getSearchBannerFile(baseDir, searchNickname, domain)
     if not os.path.isfile(searchBannerFilename):
+        # get the default search banner for the theme
         theme = getConfigParam(baseDir, 'theme').lower()
         if theme == 'default':
             theme = ''
         else:
             theme = '_' + theme
-        themeSearchBannerFilename = \
-            baseDir + '/img/search_banner' + theme + '.png'
-        if os.path.isfile(themeSearchBannerFilename):
-            copyfile(themeSearchBannerFilename, searchBannerFilename)
+        bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
+        for ext in bannerExtensions:
+            searchBannerFile = 'search_banner.' + ext
+            searchBannerFilename = \
+                baseDir + '/accounts/' + \
+                searchNickname + '@' + domain + '/' + searchBannerFile
+            themeSearchBannerFilename = \
+                baseDir + '/img/search_banner' + theme + '.' + ext
+            if os.path.isfile(themeSearchBannerFilename):
+                copyfile(themeSearchBannerFilename, searchBannerFilename)
+                break
     if os.path.isfile(searchBannerFilename):
-        followStr += '<center>\n<div class="searchBanner">\n' + \
-            '<br><br><br><br><br><br><br><br>' + \
-            '<br><br><br><br><br><br><br><br>\n</div>\n</center>\n'
+        usersPath = '/users/' + searchNickname
+        followStr += \
+            '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
+            translate['Switch to timeline view'] + '" alt="' + \
+            translate['Switch to timeline view'] + '">\n'
+        followStr += '<img loading="lazy" class="timeline-banner" src="' + \
+            usersPath + '/' + searchBannerFile + '" /></a>\n'
 
     # show the search box
     followStr += '<div class="follow">\n'
@@ -8647,8 +8731,8 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
-    followStr += '    <a href="/"><button type="button" class="button" ' + \
-        'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
+    # followStr += '    <a href="/"><button type="button" class="button" ' + \
+    #    'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     followStr += '    <button type="submit" class="button" ' + \
         'name="submitSearch">' + translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'

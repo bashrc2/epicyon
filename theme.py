@@ -526,6 +526,7 @@ def setThemeStarlight(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "search-banner-height-mobile": "15vh",
         "column-left-header-background": "#69282c",
         "column-left-image-width-mobile": "40vw",
         "line-spacing-newswire": "120%",
@@ -1018,6 +1019,8 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "search-banner-height": "15vh",
+        "search-banner-height-mobile": "10vh",
         "publish-button-vertical-offset": "10px",
         "container-button-padding": "0px",
         "container-button-margin": "0px",

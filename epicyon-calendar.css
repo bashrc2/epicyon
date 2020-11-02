@@ -34,9 +34,6 @@
 body {
     background-color: var(--main-bg-color);
     color: var(--day-number2);
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
     -webkit-box-align: center;
     -ms-flex-align: center;
     align-items: center;
@@ -45,7 +42,7 @@ body {
     justify-content: center;
     font-family: 'Montserrat';
     font-weight: 700;
-    min-height: 100vh;
+    margin: 5%;
 }
 
 main {
@@ -197,14 +194,14 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 
 .buttonprev {
     float: left;
-    width: 10%;
+    width: 8%;
     -ms-transform: translateY(30%);
     transform: translateY(30%);
 }
 
 .buttonnext {
     float: right;
-    width: 10%;
+    width: 8%;
     -ms-transform: translateY(30%) scaleX(-1);
     transform: translateY(30%) scaleX(-1);
 }

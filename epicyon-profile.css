@@ -388,9 +388,14 @@ a:focus {
 
 .containerNewPost {
     border: var(--border-width) solid var(--border-color);
-    background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
-    padding: var(--container-padding);
+    background-color: var(--main-bg-color);
+    margin: var(--vertical-between-posts);
+}
+
+.containerSubmitNewPost {
+    border: 0;
+    background-color: var(--main-bg-color);
     margin: var(--vertical-between-posts);
 }
 
@@ -663,7 +668,6 @@ input[type=submit]:hover {
     max-width: 90%;
     min-width: 600px;
     margin: 0 auto;
-    padding: 5% 0px;
 }
 
 /* The container <div> - needed to position the dropdown content */
@@ -934,7 +938,6 @@ aside .toggle-inside li {
     -ms-transition: all 0.1s ease-in-out;
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
-    width: 170px;
     margin: 0 auto;
     text-decoration: none;
     display: inline-block;
@@ -1315,8 +1318,30 @@ div.container {
         background: transparent;
         border: none !important;
         font-size: 0;
+        padding-left: 0; padding-right: 0;
+        border-left-width: 0; border-right-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .button {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 10%;
+        margin: 5px;
+        min-width: var(--button-width-chars);
+        transition: all 0.5s;
+        cursor: pointer;
+        border-top: var(--tab-border-width) solid var(--tab-border-color);
+        border-bottom: none;
+        border-left: var(--tab-border-width) solid var(--tab-border-color);
+        border-right: var(--tab-border-width) solid var(--tab-border-color);
+    }
+    .buttonDesktop {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
         color: var(--button-text);
@@ -1982,6 +2007,15 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
+    }
+    .buttonDesktop {
+        background: transparent;
+        border: none !important;
+        font-size: 0;
+        padding-left: 0; padding-right: 0;
+        border-left-width: 0; border-right-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);

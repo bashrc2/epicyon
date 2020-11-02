@@ -114,7 +114,7 @@ parser.add_argument('-p', '--port', dest='port', type=int,
                     help='Port number to run on')
 parser.add_argument('--postsPerSource',
                     dest='maxNewswirePostsPerSource', type=int,
-                    default=5,
+                    default=4,
                     help='Maximum newswire posts per feed or account')
 parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
