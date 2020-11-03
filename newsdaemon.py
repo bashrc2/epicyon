@@ -695,10 +695,10 @@ def runNewswireDaemon(baseDir: str, httpd,
     while True:
         # has the session been created yet?
         if not httpd.session:
-            print('Newswire daemon has no session')
+            print('Newswire daemon waiting for session')
             httpd.session = createSession(httpd.proxyType)
             if not httpd.session:
-                print('Newswire daemon waiting for session')
+                print('Newswire daemon has no session')
                 time.sleep(60)
                 continue
             else:
