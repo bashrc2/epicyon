@@ -589,8 +589,9 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
         itemsList = getRSS(baseDir, domain, session, url,
                            moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb)
-        for dateStr, item in itemsList.items():
-            result[dateStr] = item
+        if itemsList:
+            for dateStr, item in itemsList.items():
+                result[dateStr] = item
 
     # add blogs from each user account
     addBlogsToNewswire(baseDir, domain, result,
