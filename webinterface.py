@@ -3557,9 +3557,10 @@ def htmlProfile(rssIconAtTop: bool,
 
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
+        bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
         profileHeaderStr = \
             '<img loading="lazy" class="timeline-banner" ' + \
-            'src="/users/news/banner.png" />\n'
+            'src="/users/' + nickname + '/' + bannerFile + '" />\n'
         if loginButton:
             profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
@@ -5604,20 +5605,24 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     editImageClass = ''
     if showHeaderImage:
-        leftColumnImageFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/left_col_image.png'
+        leftImageFile, leftColumnImageFilename = \
+            getLeftImageFile(baseDir, nickname, domain)
         if not os.path.isfile(leftColumnImageFilename):
             theme = getConfigParam(baseDir, 'theme').lower()
             if theme == 'default':
                 theme = ''
             else:
                 theme = '_' + theme
-            themeLeftColumnImageFilename = \
-                baseDir + '/img/left_col_image' + theme + '.png'
+            themeLeftImageFile, themeLeftColumnImageFilename = \
+                getImageFile(baseDir, 'left_col_image', baseDir + '/img',
+                             nickname, domain)
             if os.path.isfile(themeLeftColumnImageFilename):
+                leftColumnImageFilename = \
+                    baseDir + '/accounts/' + \
+                    nickname + '@' + domain + '/' + themeLeftImageFile
                 copyfile(themeLeftColumnImageFilename,
                          leftColumnImageFilename)
+                leftImageFile = themeLeftImageFile
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
@@ -5627,7 +5632,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '\n      <center>\n' + \
                 '        <img class="leftColImg" ' + \
                 'loading="lazy" src="/users/' + \
-                nickname + '/left_col_image.png" />\n' + \
+                nickname + '/' + leftImageFile + '" />\n' + \
                 '      </center>\n'
 
     if showBackButton:
@@ -5858,20 +5863,24 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show a column header image, eg. title of the theme or newswire banner
     editImageClass = ''
     if showHeaderImage:
-        rightColumnImageFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/right_col_image.png'
+        rightImageFile, rightColumnImageFilename = \
+            getRightImageFile(baseDir, nickname, domain)
         if not os.path.isfile(rightColumnImageFilename):
             theme = getConfigParam(baseDir, 'theme').lower()
             if theme == 'default':
                 theme = ''
             else:
                 theme = '_' + theme
-            themeRightColumnImageFilename = \
-                baseDir + '/img/right_col_image' + theme + '.png'
+            themeRightImageFile, themeRightColumnImageFilename = \
+                getImageFile(baseDir, 'right_col_image', baseDir + '/img',
+                             nickname, domain)
             if os.path.isfile(themeRightColumnImageFilename):
+                rightColumnImageFilename = \
+                    baseDir + '/accounts/' + \
+                    nickname + '@' + domain + '/' + themeRightImageFile
                 copyfile(themeRightColumnImageFilename,
                          rightColumnImageFilename)
+                rightImageFile = themeRightImageFile
 
         # show the image at the top of the column
         editImageClass = 'rightColEdit'
@@ -5881,7 +5890,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
                 'loading="lazy" src="/users/' + \
-                nickname + '/right_col_image.png" />\n' + \
+                nickname + '/' + rightImageFile + '" />\n' + \
                 '      </center>\n'
 
     if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
@@ -6000,11 +6009,16 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     else:
         editor = isEditor(baseDir, nickname)
 
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')[0]
+
     htmlStr = htmlHeader(cssFilename, profileStyle)
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/news/banner.png" /></a>\n'
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
@@ -6063,10 +6077,12 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     showPublishButton = editor
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
+
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/news/banner.png" /></a>\n'
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
@@ -6084,37 +6100,48 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     return htmlStr
 
 
-def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
+def getImageFile(baseDir: str, name: str, directory: str,
+                 nickname: str, domain: str) -> (str, str):
     """
-    returns the banner filename
+    returns the filenames for an image with the given name
     """
     bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
     bannerFile = ''
     bannerFilename = ''
     for ext in bannerExtensions:
-        bannerFile = 'banner.' + ext
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
+        bannerFile = name + '.' + ext
+        bannerFilename = directory + '/' + bannerFile
         if os.path.isfile(bannerFilename):
             break
     return bannerFile, bannerFilename
+
+
+def getBannerFile(baseDir: str,
+                  nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'banner',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
 
 
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str) -> (str, str):
-    """
-    returns the search banner filename
-    """
-    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
-    bannerFile = ''
-    bannerFilename = ''
-    for ext in bannerExtensions:
-        bannerFile = 'search_banner.' + ext
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-        if os.path.isfile(bannerFilename):
-            break
-    return bannerFile, bannerFilename
+    return getImageFile(baseDir, 'search_banner',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
+
+
+def getLeftImageFile(baseDir: str,
+                     nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'left_col_image',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
+
+
+def getRightImageFile(baseDir: str,
+                      nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'right_col_image',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
 
 
 def headerButtonsFrontScreen(translate: {},
@@ -8698,17 +8725,17 @@ def htmlSearch(cssCache: {}, translate: {},
             theme = ''
         else:
             theme = '_' + theme
-        bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
-        for ext in bannerExtensions:
-            searchBannerFile = 'search_banner.' + ext
+        themeSearchImageFile, themeSearchBannerFilename = \
+            getImageFile(baseDir, 'search_banner', baseDir + '/img',
+                         searchNickname, domain)
+        if os.path.isfile(themeSearchBannerFilename):
             searchBannerFilename = \
                 baseDir + '/accounts/' + \
-                searchNickname + '@' + domain + '/' + searchBannerFile
-            themeSearchBannerFilename = \
-                baseDir + '/img/search_banner' + theme + '.' + ext
-            if os.path.isfile(themeSearchBannerFilename):
-                copyfile(themeSearchBannerFilename, searchBannerFilename)
-                break
+                searchNickname + '@' + domain + '/' + themeSearchImageFile
+            copyfile(themeSearchBannerFilename,
+                     searchBannerFilename)
+            searchBannerFile = themeSearchImageFile
+
     if os.path.isfile(searchBannerFilename):
         usersPath = '/users/' + searchNickname
         followStr += \

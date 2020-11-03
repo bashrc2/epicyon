@@ -53,7 +53,7 @@ sudo apt install -y \
 
 In the most common case you'll be using systemd to set up a daemon to run the server.
 
-The following instructions install Epicyon to the **/etc** directory. It's not essential that it be installed there, and it could be in any other preferred directory.
+The following instructions install Epicyon to the **/opt** directory. It's not essential that it be installed there, and it could be in any other preferred directory.
 
 Add a dedicated user so that we don't have to run as root.
 

@@ -126,7 +126,8 @@ def addNewswireDictEntry(baseDir: str, domain: str,
 
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
-                  maxPostsPerSource: int) -> {}:
+                  maxPostsPerSource: int,
+                  maxFeedItemSizeKb: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
@@ -134,7 +135,11 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
     result = {}
     rssItems = xmlStr.split('<item>')
     postCtr = 0
+    maxBytes = maxFeedItemSizeKb * 1024
     for rssItem in rssItems:
+        if len(rssItem) > maxBytes:
+            print('WARN: rss feed item is too big')
+            continue
         if '<title>' not in rssItem:
             continue
         if '</title>' not in rssItem:
@@ -205,7 +210,8 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
 
 def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                    moderated: bool, mirrored: bool,
-                   maxPostsPerSource: int) -> {}:
+                   maxPostsPerSource: int,
+                   maxFeedItemSizeKb: int) -> {}:
     """Converts an atom feed string to a dictionary
     """
     if '<entry>' not in xmlStr:
@@ -213,7 +219,11 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     result = {}
     rssItems = xmlStr.split('<entry>')
     postCtr = 0
+    maxBytes = maxFeedItemSizeKb * 1024
     for rssItem in rssItems:
+        if len(rssItem) > maxBytes:
+            print('WARN: atom feed item is too big')
+            continue
         if '<title>' not in rssItem:
             continue
         if '</title>' not in rssItem:
@@ -283,21 +293,25 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
 
 def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                  moderated: bool, mirrored: bool,
-                 maxPostsPerSource: int) -> {}:
+                 maxPostsPerSource: int,
+                 maxFeedItemSizeKb: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(baseDir, domain,
-                             xmlStr, moderated, mirrored, maxPostsPerSource)
+                             xmlStr, moderated, mirrored,
+                             maxPostsPerSource, maxFeedItemSizeKb)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return atomFeedToDict(baseDir, domain,
-                              xmlStr, moderated, mirrored, maxPostsPerSource)
+                              xmlStr, moderated, mirrored,
+                              maxPostsPerSource, maxFeedItemSizeKb)
     return {}
 
 
 def getRSS(baseDir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
-           maxPostsPerSource: int, maxFeedSizeKb: int) -> {}:
+           maxPostsPerSource: int, maxFeedSizeKb: int,
+           maxFeedItemSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -325,7 +339,8 @@ def getRSS(baseDir: str, domain: str, session, url: str,
                not containsInvalidChars(result.text):
                 return xmlStrToDict(baseDir, domain, result.text,
                                     moderated, mirrored,
-                                    maxPostsPerSource)
+                                    maxPostsPerSource,
+                                    maxFeedItemSizeKb)
             else:
                 print('WARN: feed is too large: ' + url)
     except requests.exceptions.RequestException as e:
@@ -354,6 +369,8 @@ def getRSSfromDict(baseDir: str, newswire: {},
     rssStr = rss2Header(httpPrefix,
                         None, domainFull,
                         'Newswire', translate)
+    if not newswire:
+        return ''
     for published, fields in newswire.items():
         if '+00:00' in published:
             published = published.replace('+00:00', 'Z').strip()
@@ -547,7 +564,7 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
 
 def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
-                        maxTags: int) -> {}:
+                        maxTags: int, maxFeedItemSizeKb: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -586,9 +603,11 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
 
         itemsList = getRSS(baseDir, domain, session, url,
                            moderated, mirrored,
-                           maxPostsPerSource, maxFeedSizeKb)
-        for dateStr, item in itemsList.items():
-            result[dateStr] = item
+                           maxPostsPerSource, maxFeedSizeKb,
+                           maxFeedItemSizeKb)
+        if itemsList:
+            for dateStr, item in itemsList.items():
+                result[dateStr] = item
 
     # add blogs from each user account
     addBlogsToNewswire(baseDir, domain, result,

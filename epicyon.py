@@ -118,8 +118,13 @@ parser.add_argument('--postsPerSource',
                     help='Maximum newswire posts per feed or account')
 parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
-                    default=2048,
+                    default=10240,
                     help='Maximum newswire rss/atom feed size in K')
+parser.add_argument('--maxFeedItemSizeKb',
+                    dest='maxFeedItemSizeKb', type=int,
+                    default=2048,
+                    help='Maximum size of an individual rss/atom ' +
+                    'feed item in K')
 parser.add_argument('--maxMirroredArticles',
                     dest='maxMirroredArticles', type=int,
                     default=100,
@@ -2010,6 +2015,11 @@ maxFollowers = \
 if maxFollowers is not None:
     args.maxFollowers = int(maxFollowers)
 
+maxFeedItemSizeKb = \
+    getConfigParam(baseDir, 'maxFeedItemSizeKb')
+if maxFeedItemSizeKb is not None:
+    args.maxFeedItemSizeKb = int(maxFeedItemSizeKb)
+
 allowNewsFollowers = \
     getConfigParam(baseDir, 'allowNewsFollowers')
 if allowNewsFollowers is not None:
@@ -2053,7 +2063,8 @@ if setTheme(baseDir, themeName, domain):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.publishButtonAtTop,
+    runDaemon(args.maxFeedItemSizeKb,
+              args.publishButtonAtTop,
               args.rssIconAtTop,
               args.iconsAsButtons,
               args.fullWidthTimelineButtonHeader,

@@ -31,6 +31,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from utils import clearFromPostCaches
 from inbox import storeHashTags
+from session import createSession
 
 
 def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
@@ -471,6 +472,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             maxMirroredArticles: int) -> None:
     """Converts rss items in a newswire into posts
     """
+    if not newswire:
+        return
+
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
     if not os.path.isdir(basePath):
         os.mkdir(basePath)
@@ -669,6 +673,9 @@ def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
     """Preserve any votes or generated activitypub post filename
     as rss feeds are updated
     """
+    if not oldNewswire:
+        return
+
     for published, fields in oldNewswire.items():
         if not newNewswire.get(published):
             continue
@@ -689,8 +696,13 @@ def runNewswireDaemon(baseDir: str, httpd,
         # has the session been created yet?
         if not httpd.session:
             print('Newswire daemon waiting for session')
-            time.sleep(60)
-            continue
+            httpd.session = createSession(httpd.proxyType)
+            if not httpd.session:
+                print('Newswire daemon has no session')
+                time.sleep(60)
+                continue
+            else:
+                print('Newswire daemon session established')
 
         # try to update the feeds
         newNewswire = None
@@ -699,7 +711,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                 getDictFromNewswire(httpd.session, baseDir, domain,
                                     httpd.maxNewswirePostsPerSource,
                                     httpd.maxNewswireFeedSizeKb,
-                                    httpd.maxTags)
+                                    httpd.maxTags,
+                                    httpd.maxFeedItemSizeKb)
         except Exception as e:
             print('WARN: unable to update newswire ' + str(e))
             time.sleep(120)
