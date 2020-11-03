@@ -6092,37 +6092,31 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     return htmlStr
 
 
-def getBannerFile(baseDir: str, nickname: str, domain: str) -> (str, str):
+def getImageFile(baseDir: str, name: str,
+                 nickname: str, domain: str) -> (str, str):
     """
-    returns the banner filename
+    returns the filenames for an image with the given name
     """
     bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
     bannerFile = ''
     bannerFilename = ''
     for ext in bannerExtensions:
-        bannerFile = 'banner.' + ext
+        bannerFile = name + '.' + ext
         bannerFilename = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/' + bannerFile
         if os.path.isfile(bannerFilename):
             break
     return bannerFile, bannerFilename
+
+
+def getBannerFile(baseDir: str,
+                  nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'banner', nickname, domain)
 
 
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str) -> (str, str):
-    """
-    returns the search banner filename
-    """
-    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
-    bannerFile = ''
-    bannerFilename = ''
-    for ext in bannerExtensions:
-        bannerFile = 'search_banner.' + ext
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
-        if os.path.isfile(bannerFilename):
-            break
-    return bannerFile, bannerFilename
+    return getImageFile(baseDir, 'search_banner', nickname, domain)
 
 
 def headerButtonsFrontScreen(translate: {},
