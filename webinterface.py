@@ -3557,9 +3557,10 @@ def htmlProfile(rssIconAtTop: bool,
 
     # If this is the news account then show a different banner
     if isSystemAccount(nickname):
+        bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
         profileHeaderStr = \
             '<img loading="lazy" class="timeline-banner" ' + \
-            'src="/users/news/banner.png" />\n'
+            'src="/users/' + nickname + '/' + bannerFile + '" />\n'
         if loginButton:
             profileHeaderStr += '<center>' + loginButton + '</center>\n'
 
@@ -6000,11 +6001,16 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     else:
         editor = isEditor(baseDir, nickname)
 
+    domain = domainFull
+    if ':' in domain:
+        domain = domain.split(':')[0]
+
     htmlStr = htmlHeader(cssFilename, profileStyle)
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/news/banner.png" /></a>\n'
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
@@ -6063,10 +6069,12 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     showPublishButton = editor
 
     htmlStr = htmlHeader(cssFilename, profileStyle)
+
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
-        'src="/users/news/banner.png" /></a>\n'
+        'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
