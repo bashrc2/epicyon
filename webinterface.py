@@ -5605,9 +5605,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     editImageClass = ''
     if showHeaderImage:
-        leftColumnImageFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/left_col_image.png'
+        leftImageFile, leftColumnImageFilename = \
+            getLeftImageFile(baseDir, nickname, domain)
         if not os.path.isfile(leftColumnImageFilename):
             theme = getConfigParam(baseDir, 'theme').lower()
             if theme == 'default':
@@ -5619,6 +5618,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             if os.path.isfile(themeLeftColumnImageFilename):
                 copyfile(themeLeftColumnImageFilename,
                          leftColumnImageFilename)
+                leftImageFile = 'left_col_image.png'
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
@@ -5628,7 +5628,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '\n      <center>\n' + \
                 '        <img class="leftColImg" ' + \
                 'loading="lazy" src="/users/' + \
-                nickname + '/left_col_image.png" />\n' + \
+                nickname + '/' + leftImageFile + '" />\n' + \
                 '      </center>\n'
 
     if showBackButton:
@@ -6117,6 +6117,11 @@ def getBannerFile(baseDir: str,
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str) -> (str, str):
     return getImageFile(baseDir, 'search_banner', nickname, domain)
+
+
+def getLeftImageFile(baseDir: str,
+                     nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'left_col_image', nickname, domain)
 
 
 def headerButtonsFrontScreen(translate: {},
