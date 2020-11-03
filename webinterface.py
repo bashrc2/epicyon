@@ -8725,17 +8725,17 @@ def htmlSearch(cssCache: {}, translate: {},
             theme = ''
         else:
             theme = '_' + theme
-        bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
-        for ext in bannerExtensions:
-            searchBannerFile = 'search_banner.' + ext
+        themeSearchImageFile, themeSearchBannerFilename = \
+            getImageFile(baseDir, 'search_banner', baseDir + '/img',
+                         searchNickname, domain)
+        if os.path.isfile(themeSearchBannerFilename):
             searchBannerFilename = \
                 baseDir + '/accounts/' + \
-                searchNickname + '@' + domain + '/' + searchBannerFile
-            themeSearchBannerFilename = \
-                baseDir + '/img/search_banner' + theme + '.' + ext
-            if os.path.isfile(themeSearchBannerFilename):
-                copyfile(themeSearchBannerFilename, searchBannerFilename)
-                break
+                searchNickname + '@' + domain + '/' + themeSearchImageFile
+            copyfile(themeSearchBannerFilename,
+                     searchBannerFilename)
+            searchBannerFile = themeSearchImageFile
+
     if os.path.isfile(searchBannerFilename):
         usersPath = '/users/' + searchNickname
         followStr += \
