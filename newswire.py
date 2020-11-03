@@ -354,6 +354,8 @@ def getRSSfromDict(baseDir: str, newswire: {},
     rssStr = rss2Header(httpPrefix,
                         None, domainFull,
                         'Newswire', translate)
+    if not newswire:
+        return ''
     for published, fields in newswire.items():
         if '+00:00' in published:
             published = published.replace('+00:00', 'Z').strip()

@@ -471,6 +471,9 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             maxMirroredArticles: int) -> None:
     """Converts rss items in a newswire into posts
     """
+    if not newswire:
+        return
+
     basePath = baseDir + '/accounts/news@' + domain + '/outbox'
     if not os.path.isdir(basePath):
         os.mkdir(basePath)
@@ -669,6 +672,9 @@ def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
     """Preserve any votes or generated activitypub post filename
     as rss feeds are updated
     """
+    if not oldNewswire:
+        return
+
     for published, fields in oldNewswire.items():
         if not newNewswire.get(published):
             continue
