@@ -12222,7 +12222,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(publishButtonAtTop: bool,
+def runDaemon(maxFeedItemSizeKb: int,
+              publishButtonAtTop: bool,
               rssIconAtTop: bool,
               iconsAsButtons: bool,
               fullWidthTimelineButtonHeader: bool,
@@ -12399,6 +12400,9 @@ def runDaemon(publishButtonAtTop: bool,
     # Whether to show the newswire publish button at the top,
     # above the header image
     httpd.publishButtonAtTop = publishButtonAtTop
+
+    # maximum size of individual RSS feed items, in K
+    httpd.maxFeedItemSizeKb = maxFeedItemSizeKb
 
     if registration == 'open':
         httpd.registration = True
