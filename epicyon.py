@@ -118,7 +118,7 @@ parser.add_argument('--postsPerSource',
                     help='Maximum newswire posts per feed or account')
 parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
-                    default=2048,
+                    default=10240,
                     help='Maximum newswire rss/atom feed size in K')
 parser.add_argument('--maxMirroredArticles',
                     dest='maxMirroredArticles', type=int,
