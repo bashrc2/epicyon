@@ -5871,12 +5871,16 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 theme = ''
             else:
                 theme = '_' + theme
-            themeRightColumnImageFilename = \
-                baseDir + '/img/right_col_image' + theme + '.png'
+            themeRightImageFile, themeRightColumnImageFilename = \
+                getImageFile(baseDir, 'right_col_image', baseDir + '/img',
+                             nickname, domain)
             if os.path.isfile(themeRightColumnImageFilename):
+                rightColumnImageFilename = \
+                    baseDir + '/accounts/' + \
+                    nickname + '@' + domain + '/' + themeRightImageFile
                 copyfile(themeRightColumnImageFilename,
                          rightColumnImageFilename)
-                rightImageFile = 'right_col_image.png'
+                rightImageFile = themeRightImageFile
 
         # show the image at the top of the column
         editImageClass = 'rightColEdit'
