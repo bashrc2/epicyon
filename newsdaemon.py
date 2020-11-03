@@ -31,6 +31,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from utils import clearFromPostCaches
 from inbox import storeHashTags
+from session import createSession
 
 
 def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
@@ -694,9 +695,14 @@ def runNewswireDaemon(baseDir: str, httpd,
     while True:
         # has the session been created yet?
         if not httpd.session:
-            print('Newswire daemon waiting for session')
-            time.sleep(60)
-            continue
+            print('Newswire daemon has no session')
+            httpd.session = createSession(httpd.proxyType)
+            if not httpd.session:
+                print('Newswire daemon waiting for session')
+                time.sleep(60)
+                continue
+            else:
+                print('Newswire daemon session established')
 
         # try to update the feeds
         newNewswire = None
