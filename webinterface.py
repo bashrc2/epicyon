@@ -5613,12 +5613,16 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 theme = ''
             else:
                 theme = '_' + theme
-            themeLeftColumnImageFilename = \
-                baseDir + '/img/left_col_image' + theme + '.png'
+            themeLeftImageFile, themeLeftColumnImageFilename = \
+                getImageFile(baseDir, 'left_col_image', baseDir + '/img',
+                             nickname, domain)
             if os.path.isfile(themeLeftColumnImageFilename):
+                leftColumnImageFilename = \
+                    baseDir + '/accounts/' + \
+                    nickname + '@' + domain + '/' + themeLeftImageFile
                 copyfile(themeLeftColumnImageFilename,
                          leftColumnImageFilename)
-                leftImageFile = 'left_col_image.png'
+                leftImageFile = themeLeftImageFile
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
@@ -6092,7 +6096,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     return htmlStr
 
 
-def getImageFile(baseDir: str, name: str,
+def getImageFile(baseDir: str, name: str, directory: str,
                  nickname: str, domain: str) -> (str, str):
     """
     returns the filenames for an image with the given name
@@ -6102,8 +6106,7 @@ def getImageFile(baseDir: str, name: str,
     bannerFilename = ''
     for ext in bannerExtensions:
         bannerFile = name + '.' + ext
-        bannerFilename = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/' + bannerFile
+        bannerFilename = directory + '/' + bannerFile
         if os.path.isfile(bannerFilename):
             break
     return bannerFile, bannerFilename
@@ -6111,22 +6114,30 @@ def getImageFile(baseDir: str, name: str,
 
 def getBannerFile(baseDir: str,
                   nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'banner', nickname, domain)
+    return getImageFile(baseDir, 'banner',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
 
 
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'search_banner', nickname, domain)
+    return getImageFile(baseDir, 'search_banner',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
 
 
 def getLeftImageFile(baseDir: str,
                      nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'left_col_image', nickname, domain)
+    return getImageFile(baseDir, 'left_col_image',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
 
 
 def getRightImageFile(baseDir: str,
                       nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'right_col_image', nickname, domain)
+    return getImageFile(baseDir, 'right_col_image',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
 
 
 def headerButtonsFrontScreen(translate: {},
