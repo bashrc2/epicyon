@@ -5859,9 +5859,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show a column header image, eg. title of the theme or newswire banner
     editImageClass = ''
     if showHeaderImage:
-        rightColumnImageFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/right_col_image.png'
+        rightImageFile, rightColumnImageFilename = \
+            getRightImageFile(baseDir, nickname, domain)
         if not os.path.isfile(rightColumnImageFilename):
             theme = getConfigParam(baseDir, 'theme').lower()
             if theme == 'default':
@@ -5873,6 +5872,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             if os.path.isfile(themeRightColumnImageFilename):
                 copyfile(themeRightColumnImageFilename,
                          rightColumnImageFilename)
+                rightImageFile = 'right_col_image.png'
 
         # show the image at the top of the column
         editImageClass = 'rightColEdit'
@@ -5882,7 +5882,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
                 'loading="lazy" src="/users/' + \
-                nickname + '/right_col_image.png" />\n' + \
+                nickname + '/' + rightImageFile + '" />\n' + \
                 '      </center>\n'
 
     if (showPublishButton or editor or rssIconAtTop) and not showHeaderImage:
@@ -6122,6 +6122,11 @@ def getSearchBannerFile(baseDir: str,
 def getLeftImageFile(baseDir: str,
                      nickname: str, domain: str) -> (str, str):
     return getImageFile(baseDir, 'left_col_image', nickname, domain)
+
+
+def getRightImageFile(baseDir: str,
+                      nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'right_col_image', nickname, domain)
 
 
 def headerButtonsFrontScreen(translate: {},
