@@ -736,9 +736,6 @@ input[type=submit]:hover {
   text-decoration: none;
   border: 0;
   cursor: pointer;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
 }
 
 .newPostDropdown > label:hover,
