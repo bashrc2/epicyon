@@ -2413,7 +2413,8 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     return suspendedForm
 
 
-def htmlNewPostDropDown(replyStr: str,
+def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
+                        replyStr: str,
                         translate: {},
                         iconsDir: str,
                         showPublicOnDropdown: bool,
@@ -2434,7 +2435,9 @@ def htmlNewPostDropDown(replyStr: str,
         'id="my-newPostDropdown" value="" name="my-checkbox">\n'
     dropDownContent += '  <label for="my-newPostDropdown"\n'
     dropDownContent += '     data-toggle="newPostDropdown">\n'
-    dropDownContent += '  Choose one\n'
+    dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/' + scopeIcon + '"/><b>' + \
+        scopeDescription + '</b>\n'
     dropDownContent += '  </label>\n'
     dropDownContent += '  <ul>\n'
 
@@ -3049,7 +3052,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropDownContent += '</div>\n'
 
         dropDownContent = \
-            htmlNewPostDropDown(replyStr,
+            htmlNewPostDropDown(scopeIcon, scopeDescription,
+                                replyStr,
                                 translate,
                                 iconsDir,
                                 showPublicOnDropdown,
