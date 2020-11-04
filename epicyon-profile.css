@@ -30,6 +30,7 @@
     --font-size-publish-button: 18px;
     --font-size-newswire: 18px;
     --font-size-newswire-mobile: 40px;
+    --font-size-dropdown-header: 40px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -670,23 +671,6 @@ input[type=submit]:hover {
     margin: 0 auto;
 }
 
-/* The container <div> - needed to position the dropdown content */
-.dropdown {
-    margin: 10px auto;
-    padding: 0px 14px;
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown img {
-    opacity: 1.0;
-    width: 32px;
-    height: 32px;
-    padding: 0px 16px;
-    -ms-transform: translateY(-10%);
-    transform: translateY(-10%);
-}
-
 .timeline-avatar {
     margin: 10px auto;
     padding: 0px 0px;
@@ -718,7 +702,7 @@ input[type=submit]:hover {
 }
 
 .newPostDropdown img {
-  width: 70px;
+  width: var(--font-size-dropdown-header);
 }
 
 .newPostDropdown > input[type="checkbox"] {
@@ -729,9 +713,9 @@ input[type=submit]:hover {
 .newPostDropdown > label,
 .newPostDropdown > a[role="button"] {
   display: inline-block;
-  padding: 6px 15px;
+  padding: 6px 0px;
   color: var(--dropdown-fg-color);
-  font-size: var(--font-size)
+  font-size: var(--font-size-dropdown-header);
   line-height: 1.5em;
   text-decoration: none;
   border: 0;
