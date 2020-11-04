@@ -775,7 +775,7 @@ input[type=submit]:hover {
 
 .newPostDropdown > [type="checkbox"]:checked + label:after,
 .newPostDropdown > ul:target ~ a:after {
-  content: "\f0d8";
+  content: "↴";
 }
 
 .newPostDropdown a.close {
