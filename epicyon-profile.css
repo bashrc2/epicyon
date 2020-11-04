@@ -715,7 +715,6 @@ input[type=submit]:hover {
 
 .newPostDropdown {
   position: relative;
-  display: inline-block;
 }
 
 .newPostDropdown > input[type="checkbox"] {
