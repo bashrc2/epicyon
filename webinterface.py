@@ -2796,12 +2796,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     questionOptionOnDropdown = ''
     if not replyStr:
         shareOptionOnDropdown = \
-            '        <a href="' + pathBase + \
+            '<a href="' + pathBase + \
             '/newshare"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_share.png"/><b>' + translate['Shares'] + \
             '</b><br>' + translate['Describe a shared item'] + '</li></a>'
         questionOptionOnDropdown = \
-            '        <a href="' + pathBase + \
+            '<a href="' + pathBase + \
             '/newquestion"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_question.png"/><b>' + translate['Question'] + \
             '</b><br>' + translate['Ask a question'] + '</li></a>'
@@ -2862,17 +2862,20 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropDownContent += "right desktoponly' id='msgscope'>"
         dropDownContent += "<ul class='nav msgscope-nav msgscope-right'>"
         dropDownContent += "<li style='position: relative;'>"
+
         dropDownContent += "<div class='toggle-msgScope button-msgScope'>"
         dropDownContent += "<input id='toggleMsgScope' "
         dropDownContent += "name='toggleMsgScope' type='checkbox'/>"
         dropDownContent += "<label for='toggleMsgScope'>"
+
         dropDownContent += "<div class='lined-thin'>"
         dropDownContent += '<img loading="lazy" alt="" title="" src="/'
         dropDownContent += iconsDir + '/' + scopeIcon
         dropDownContent += '"/><b class="scope-desc">'
         dropDownContent += scopeDescription + '</b>'
-        dropDownContent += "<span class='caret'/>"
+        dropDownContent += "<span class='caret'>"
         dropDownContent += "</div>"
+
         dropDownContent += "</label>"
         dropDownContent += "<div class='toggle-inside'>"
         dropDownContent += "<ul aria-labelledby='dropdownMsgScope' "
