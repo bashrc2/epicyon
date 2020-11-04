@@ -1119,6 +1119,7 @@ def setThemeSolidaric(baseDir: str):
     themeParams = {
         "banner-height": "35vh",
         "banner-height-mobile": "15vh",
+        "search-banner-height-mobile": "15vh",
         "time-vertical-align": "-4px",
         "time-vertical-align-mobile": "15px",
         "hashtag-background-color": "lightred",
