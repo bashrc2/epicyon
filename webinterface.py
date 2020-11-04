@@ -1282,7 +1282,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <center>\n' + \
         '        <input type="submit" name="submitLinks" value="' + \
         translate['Submit'] + '">\n' + \
-        '      <center>\n'
+        '      </center>\n'
     editLinksForm += \
         '    </div>\n'
 
@@ -1365,7 +1365,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <center>\n' + \
         '      <input type="submit" name="submitNewswire" value="' + \
         translate['Submit'] + '">\n' + \
-        '      <center>\n'
+        '      </center>\n'
     editNewswireForm += \
         '    </div>\n'
 
@@ -5855,38 +5855,67 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
 
 def htmlCitations(baseDir: str, nickname: str, domain: str,
                   httpPrefix: str, defaultTimeline: str,
-                  translate: {}, newswire: {}) -> str:
+                  translate: {}, newswire: {}, cssCache: {}) -> str:
     """Show the citations screen when creating a blog
     """
     htmlStr = ''
 
+    # the css filename
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
+        # replace any https within the css with whatever prefix is needed
+        if httpPrefix != 'https':
+            profileStyle = \
+                profileStyle.replace('https://', httpPrefix + '://')
+
+    # iconsDir = getIconsDir(baseDir)
+
+    htmlStr = htmlHeader(cssFilename, profileStyle)
+
     # top banner
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        '<a href="/users/' + nickname + '/newblog" title="' + \
+        translate['Go Back'] + '" alt="' + \
+        translate['Go Back'] + '">\n'
     htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
-    # TODO add submit button
+    # submit button
+    htmlStr += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="/users/' + nickname + \
+        '/citationsdata">\n'
+    htmlStr += \
+        '  <center>\n' + \
+        '    <input type="submit" name="submitCitations" value="' + \
+        translate['Submit'] + '">\n' + \
+        '  </center>\n'
 
-    for dateStr, item in newswire.items():
-        publishedDate = \
-            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
-        dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
+    # list of newswire items
+    if newswire:
+        for dateStr, item in newswire.items():
+            publishedDate = \
+                datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
-        title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
-        link = item[1]
+            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            link = item[1]
 
-        # TODO add checkbox
-        htmlStr += '<p class="newswireItem">' + \
-            '<a href="' + link + '">' + \
-            title + '</a>'
-        htmlStr += ' <span class="newswireDate">'
-        htmlStr += dateShown + '</span></p>\n'
+            htmlStr += \
+                '<input type="checkbox" name="citations[]" ' + \
+                'value="' + dateStr + '"/>' + \
+                '<a href="' + link + '">' + title + '</a> '
+            htmlStr += '<span class="newswireDate">' + \
+                dateShown + '</span></p>'
+            htmlStr += '<br/>\n'
 
-    return htmlStr
+    htmlStr += '</form>\n'
+    return htmlStr + htmlFooter()
 
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
