@@ -325,5 +325,7 @@
     "Features" : "особенности",
     "Article": "Статья",
     "Create an article": "Создать статью",
-    "Settings": "Настройки"
+    "Settings": "Настройки",
+    "Citations": "Цитаты",
+    "Choose newswire items referenced in your article": "Выберите элементы ленты новостей, на которые есть ссылки в вашей статье"
 }

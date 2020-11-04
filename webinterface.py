@@ -2525,7 +2525,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 reportUrl: str, pageNumber: int,
                 nickname: str, domain: str,
                 domainFull: str,
-                defaultTimeline: str) -> str:
+                defaultTimeline: str, newswire: {}) -> str:
     """New post screen
     """
     iconsDir = getIconsDir(baseDir)
@@ -2996,6 +2996,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
+
+    # for a new blog if newswire items exist then add a citations button
+    if newswire and path.endswith('/newblog'):
+        newPostForm += \
+            '      <input type="submit" name="submitCitations" value="' + \
+            translate['Citations'] + '">\n'
+
     newPostForm += '    </center></div>\n'
 
     newPostForm += replyStr

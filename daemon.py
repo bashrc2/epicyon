@@ -1830,7 +1830,8 @@ class PubServer(BaseHTTPRequestHandler):
                               chooserNickname,
                               domain,
                               domainFull,
-                              self.server.defaultTimeline).encode('utf-8')
+                              self.server.defaultTimeline,
+                              self.server.newswire).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -1897,7 +1898,8 @@ class PubServer(BaseHTTPRequestHandler):
                               chooserNickname,
                               domain,
                               domainFull,
-                              self.server.defaultTimeline).encode('utf-8')
+                              self.server.defaultTimeline,
+                              self.server.newswire).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -8494,7 +8496,8 @@ class PubServer(BaseHTTPRequestHandler):
                               replyPageNumber,
                               nickname, domain,
                               domainFull,
-                              self.server.defaultTimeline).encode('utf-8')
+                              self.server.defaultTimeline,
+                              self.server.newswire).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()

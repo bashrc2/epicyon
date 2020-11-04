@@ -321,5 +321,7 @@
     "Features" : "Features",
     "Article": "Article",
     "Create an article": "Create an article",
-    "Settings": "Settings"
+    "Settings": "Settings",
+    "Citations": "Citations",
+    "Choose newswire items referenced in your article": "Choose newswire items referenced in your article"
 }
