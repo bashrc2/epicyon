@@ -725,7 +725,7 @@ input[type=submit]:hover {
 .newPostDropdown > label:hover,
 .newPostDropdown > a[role="button"]:hover,
 .newPostDropdown > a[role="button"]:focus {
-  border-color: var(--dropdown-fg-color);
+  border-color: var(--dropdown-fg-color-hover);
 }
 
 .newPostDropdown > label:after,
@@ -754,11 +754,12 @@ input[type=submit]:hover {
   display: block;
   padding: 6px 15px;
   text-decoration: none;
-  color: var(--main-fg-color);
+  color: var(--dropdown-fg-color);
 }
 
 .newPostDropdown > ul a:hover,
 .newPostDropdown > ul a:focus {
+  color: var(--dropdown-fg-color-hover);
   background: var(--dropdown-bg-color-hover);
 }
 
