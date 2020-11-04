@@ -746,7 +746,7 @@ input[type=submit]:hover {
 
 .newPostDropdown > label:after,
 .newPostDropdown > a[role="button"]:after {
-  content: "\f0d7";
+  content: "";
   font-family: 'Bedstead';
   display: inline-block;
   margin-left: 6px;

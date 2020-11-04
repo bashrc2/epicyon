@@ -2437,7 +2437,7 @@ def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
         iconsDir + '/' + scopeIcon + '"/><b>' + \
-        scopeDescription + '</b></label>\n'
+        scopeDescription.strip() + '</b></label>\n'
     dropDownContent += '  <ul>\n'
 
     if showPublicOnDropdown:
