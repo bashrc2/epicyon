@@ -2879,57 +2879,57 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropDownContent += "class='dropdown-menutoggle'>"
 
         if showPublicOnDropdown:
-            dropDownContent += "        " \
+            dropDownContent += \
                 '<a href="' + pathBase + dropdownNewPostSuffix + \
                 '"><li><img loading="lazy" alt="" title="" src="/' + \
                 iconsDir + '/scope_public.png"/><b>' + \
                 translate['Public'] + '</b><br>' + \
                 translate['Visible to anyone'] + '</li></a>'
             if defaultTimeline == 'tlnews':
-                dropDownContent += "        " \
+                dropDownContent += \
                     '<a href="' + pathBase + dropdownNewBlogSuffix + \
                     '"><li><img loading="lazy" alt="" title="" src="/' + \
                     iconsDir + '/scope_blog.png"/><b>' + \
                     translate['Article'] + '</b><br>' + \
                     translate['Create an article'] + '</li></a>'
             else:
-                dropDownContent += "        " \
+                dropDownContent += \
                     '<a href="' + pathBase + dropdownNewBlogSuffix + \
                     '"><li><img loading="lazy" alt="" title="" src="/' + \
                     iconsDir + '/scope_blog.png"/><b>' + \
                     translate['Blog'] + '</b><br>' + \
                     translate['Publicly visible post'] + '</li></a>'
-            dropDownContent += "        " \
+            dropDownContent += \
                 '<a href="' + pathBase + dropdownUnlistedSuffix + \
                 '"><li><img loading="lazy" alt="" title="" src="/' + \
                 iconsDir+'/scope_unlisted.png"/><b>' + \
                 translate['Unlisted'] + '</b><br>' + \
                 translate['Not on public timeline'] + '</li></a>'
-        dropDownContent += "        " \
+        dropDownContent += \
             '<a href="' + pathBase + dropdownFollowersSuffix + \
             '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_followers.png"/><b>' + \
             translate['Followers'] + '</b><br>' + \
             translate['Only to followers'] + '</li></a>'
-        dropDownContent += "        " \
+        dropDownContent += \
             '<a href="' + pathBase + dropdownDMSuffix + \
             '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_dm.png"/><b>' + translate['DM'] + \
             '</b><br>' + translate['Only to mentioned people'] + \
             '</li></a>'
-        dropDownContent += "        " \
+        dropDownContent += \
             '<a href="' + pathBase + dropdownReminderSuffix + \
             '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_reminder.png"/><b>' + translate['Reminder'] + \
             '</b><br>' + translate['Scheduled note to yourself'] + \
             '</li></a>'
-        dropDownContent += "        " \
+        dropDownContent += \
             '<a href="' + pathBase + dropdownEventSuffix + \
             '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_event.png"/><b>' + translate['Event'] + \
             '</b><br>' + translate['Create an event'] + \
             '</li></a>'
-        dropDownContent += "        " \
+        dropDownContent += \
             '<a href="' + pathBase + dropdownReportSuffix + \
             '"><li><img loading="lazy" alt="" title="" src="/' + iconsDir + \
             '/scope_report.png"/><b>' + translate['Report'] + \
