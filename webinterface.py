@@ -2859,23 +2859,23 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     dropDownContent = ''
     if not reportUrl:
         dropDownContent += "<div class='msgscope-collapse collapse "
-        dropDownContent += "right desktoponly' id='msgscope'>\n"
-        dropDownContent += "  <ul class='nav msgscope-nav msgscope-right'>\n"
-        dropDownContent += "  <li class=' ' style='position: relative;'>\n"
-        dropDownContent += "  <div class='toggle-msgScope button-msgScope'>\n"
-        dropDownContent += "    <input id='toggleMsgScope' "
-        dropDownContent += "name='toggleMsgScope' type='checkbox'/>\n"
-        dropDownContent += "    <label for='toggleMsgScope'>\n"
-        dropDownContent += "      <div class='lined-thin'>\n"
-        dropDownContent += '        <img loading="lazy" alt="" title="" src="/'
+        dropDownContent += "right desktoponly' id='msgscope'>"
+        dropDownContent += "<ul class='nav msgscope-nav msgscope-right'>"
+        dropDownContent += "<li style='position: relative;'>"
+        dropDownContent += "<div class='toggle-msgScope button-msgScope'>"
+        dropDownContent += "<input id='toggleMsgScope' "
+        dropDownContent += "name='toggleMsgScope' type='checkbox'/>"
+        dropDownContent += "<label for='toggleMsgScope'>"
+        dropDownContent += "<div class='lined-thin'>"
+        dropDownContent += '<img loading="lazy" alt="" title="" src="/'
         dropDownContent += iconsDir + '/' + scopeIcon
         dropDownContent += '"/><b class="scope-desc">'
-        dropDownContent += scopeDescription + '</b>\n'
-        dropDownContent += "        <span class='caret'/>\n"
-        dropDownContent += "      </div>\n"
-        dropDownContent += "    </label>\n"
-        dropDownContent += "    <div class='toggle-inside'>\n"
-        dropDownContent += "      <ul aria-labelledby='dropdownMsgScope' "
+        dropDownContent += scopeDescription + '</b>'
+        dropDownContent += "<span class='caret'/>"
+        dropDownContent += "</div>"
+        dropDownContent += "</label>"
+        dropDownContent += "<div class='toggle-inside'>"
+        dropDownContent += "<ul aria-labelledby='dropdownMsgScope' "
         dropDownContent += "class='dropdown-menutoggle'>"
 
         if showPublicOnDropdown:
