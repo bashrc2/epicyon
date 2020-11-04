@@ -2413,6 +2413,109 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     return suspendedForm
 
 
+def htmlNewPostDropDown(replyStr: str,
+                        translate: {},
+                        iconsDir: str,
+                        showPublicOnDropdown: bool,
+                        defaultTimeline: str,
+                        pathBase: str,
+                        dropdownNewPostSuffix: str,
+                        dropdownNewBlogSuffix: str,
+                        dropdownUnlistedSuffix: str,
+                        dropdownFollowersSuffix: str,
+                        dropdownDMSuffix: str,
+                        dropdownReminderSuffix: str,
+                        dropdownEventSuffix: str,
+                        dropdownReportSuffix: str) -> str:
+    """Returns the html for a drop down list of new post types
+    """
+    dropDownContent = '<div class="newPostDropdown">\n'
+    dropDownContent += '  <input type="checkbox" ' + \
+        'id="my-newPostDropdown" value="" name="my-checkbox">\n'
+    dropDownContent += '  <label for="my-newPostDropdown"\n'
+    dropDownContent += '     data-toggle="newPostDropdown">\n'
+    dropDownContent += '  Choose one\n'
+    dropDownContent += '  </label>\n'
+    dropDownContent += '  <ul>\n'
+
+    if showPublicOnDropdown:
+        dropDownContent += \
+            '<li><a href="' + pathBase + dropdownNewPostSuffix + \
+            '"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_public.png"/><b>' + \
+            translate['Public'] + '</b><br>' + \
+            translate['Visible to anyone'] + '</a></li>\n'
+        if defaultTimeline == 'tlnews':
+            dropDownContent += \
+                '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
+                '"><img loading="lazy" alt="" title="" src="/' + \
+                iconsDir + '/scope_blog.png"/><b>' + \
+                translate['Article'] + '</b><br>' + \
+                translate['Create an article'] + '</a></li>\n'
+        else:
+            dropDownContent += \
+                '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
+                '"><img loading="lazy" alt="" title="" src="/' + \
+                iconsDir + '/scope_blog.png"/><b>' + \
+                translate['Blog'] + '</b><br>' + \
+                translate['Publicly visible post'] + '</a></li>\n'
+        dropDownContent += \
+            '<li><a href="' + pathBase + dropdownUnlistedSuffix + \
+            '"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_unlisted.png"/><b>' + \
+            translate['Unlisted'] + '</b><br>' + \
+            translate['Not on public timeline'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownFollowersSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_followers.png"/><b>' + \
+        translate['Followers'] + '</b><br>' + \
+        translate['Only to followers'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownDMSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_dm.png"/><b>' + \
+        translate['DM'] + '</b><br>' + \
+        translate['Only to mentioned people'] + '</a></li>\n'
+
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownReminderSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_reminder.png"/><b>' + \
+        translate['Reminder'] + '</b><br>' + \
+        translate['Scheduled note to yourself'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownEventSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_event.png"/><b>' + \
+        translate['Event'] + '</b><br>' + \
+        translate['Create an event'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownReportSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_report.png"/><b>' + \
+        translate['Report'] + '</b><br>' + \
+        translate['Send to moderators'] + '</a></li>\n'
+
+    if not replyStr:
+        dropDownContent += \
+            '<li><a href="' + pathBase + \
+            '/newshare"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_share.png"/><b>' + \
+            translate['Shares'] + '</b><br>' + \
+            translate['Describe a shared item'] + '</a></li>\n'
+        dropDownContent += \
+            '<li><a href="' + pathBase + \
+            '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_question.png"/><b>' + \
+            translate['Question'] + '</b><br>' + \
+            translate['Ask a question'] + '</a></li>\n'
+
+    dropDownContent += '  </ul>\n'
+    dropDownContent += '</div>\n'
+    return dropDownContent
+
+
 def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 baseDir: str, httpPrefix: str,
                 path: str, inReplyTo: str,
@@ -2944,6 +3047,22 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropDownContent += '  </li>\n'
         dropDownContent += '  </ul>\n'
         dropDownContent += '</div>\n'
+
+        dropDownContent = \
+            htmlNewPostDropDown(replyStr,
+                                translate,
+                                iconsDir,
+                                showPublicOnDropdown,
+                                defaultTimeline,
+                                pathBase,
+                                dropdownNewPostSuffix,
+                                dropdownNewBlogSuffix,
+                                dropdownUnlistedSuffix,
+                                dropdownFollowersSuffix,
+                                dropdownDMSuffix,
+                                dropdownReminderSuffix,
+                                dropdownEventSuffix,
+                                dropdownReportSuffix)
     else:
         mentionsStr = 'Re: ' + reportUrl + '\n\n' + mentionsStr
 

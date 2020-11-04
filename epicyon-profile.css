@@ -711,6 +711,108 @@ input[type=submit]:hover {
     padding: 0px 30px;
 }
 
+/* new post dropdown */
+
+.newPostDropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.newPostDropdown > input[type="checkbox"] {
+  position: absolute;
+  left: -100vw;
+}
+
+.newPostDropdown > label,
+.newPostDropdown > a[role="button"] {
+  display: inline-block;
+  padding: 6px 15px;
+  color: #333;
+  line-height: 1.5em;
+  text-decoration: none;
+  border: 1px solid #8c8c8c;
+  cursor: pointer;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+
+.newPostDropdown > label:hover,
+.newPostDropdown > a[role="button"]:hover,
+.newPostDropdown > a[role="button"]:focus {
+  border-color: #333;
+}
+
+.newPostDropdown > label:after,
+.newPostDropdown > a[role="button"]:after {
+  content: "\f0d7";
+  font-family: 'Bedstead';
+  display: inline-block;
+  margin-left: 6px;
+}
+
+.newPostDropdown > ul {
+  position: absolute;
+  z-index: 999;
+  display: block;
+  left: -100vw;
+  top: calc(1.5em + 14px);
+  border: 1px solid #8c8c8c;
+  background: #fff;
+  padding: 6px 0;
+  margin: 0;
+  list-style: none;
+  width: 100%;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  -moz-box-shadow: 0 3px 8px rgba(0,0,0,.15);
+  box-shadow: 0 3px 8px rgba(0,0,0,.15);
+}
+
+.newPostDropdown > ul a {
+  display: block;
+  padding: 6px 15px;
+  text-decoration: none;
+  color: #333;
+}
+
+.newPostDropdown > ul a:hover,
+.newPostDropdown > ul a:focus {
+  background: #ececec;
+}
+
+.newPostDropdown > input[type="checkbox"]:checked ~ ul,
+.newPostDropdown > ul:target {
+  left: 0;
+}
+
+.newPostDropdown > [type="checkbox"]:checked + label:after,
+.newPostDropdown > ul:target ~ a:after {
+  content: "\f0d8";
+}
+
+.newPostDropdown a.close {
+  display: none;
+}
+
+.newPostDropdown > ul:target ~ a.close {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  text-indent: -100vw;
+  z-index: 1000;
+}
+
+.newPostDropdown + h2 {
+  margin-top: 60px;
+}
+
+
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
     display: none;
