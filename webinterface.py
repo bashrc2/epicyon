@@ -2437,7 +2437,7 @@ def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
         iconsDir + '/' + scopeIcon + '"/><b>' + \
-        scopeDescription.strip() + '</b></label>\n'
+        scopeDescription + '</b></label>\n'
     dropDownContent += '  <ul>\n'
 
     if showPublicOnDropdown:
@@ -2896,21 +2896,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
-    # only show the share option if this is not a reply
-    shareOptionOnDropdown = ''
-    questionOptionOnDropdown = ''
-    if not replyStr:
-        shareOptionOnDropdown = \
-            '<a href="' + pathBase + \
-            '/newshare"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_share.png"/><b>' + translate['Shares'] + \
-            '</b><br>' + translate['Describe a shared item'] + '</li></a>'
-        questionOptionOnDropdown = \
-            '<a href="' + pathBase + \
-            '/newquestion"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_question.png"/><b>' + translate['Question'] + \
-            '</b><br>' + translate['Ask a question'] + '</li></a>'
-
     mentionsStr = ''
     for m in mentions:
         mentionNickname = getNicknameFromActor(m)
@@ -2963,93 +2948,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     dropDownContent = ''
     if not reportUrl:
-        dropDownContent += "<div class='msgscope-collapse collapse "
-        dropDownContent += "right desktoponly' id='msgscope'>"
-        dropDownContent += "<ul class='nav msgscope-nav msgscope-right'>"
-        dropDownContent += "<li style='position: relative;'>"
-
-        dropDownContent += "<div class='toggle-msgScope button-msgScope'>"
-        dropDownContent += "<input id='toggleMsgScope' "
-        dropDownContent += "name='toggleMsgScope' type='checkbox'/>"
-        dropDownContent += "<label for='toggleMsgScope'>"
-
-        dropDownContent += "<div class='lined-thin'>"
-        dropDownContent += '<img loading="lazy" alt="" title="" src="/'
-        dropDownContent += iconsDir + '/' + scopeIcon
-        dropDownContent += '"/><b class="scope-desc">'
-        dropDownContent += scopeDescription + '</b>'
-        dropDownContent += "<span class='caret'>"
-        dropDownContent += "</div>"
-
-        dropDownContent += "</label>"
-        dropDownContent += "<div class='toggle-inside'>"
-        dropDownContent += "<ul aria-labelledby='dropdownMsgScope' "
-        dropDownContent += "class='dropdown-menutoggle'>"
-
-        if showPublicOnDropdown:
-            dropDownContent += \
-                '<a href="' + pathBase + dropdownNewPostSuffix + \
-                '"><li><img loading="lazy" alt="" title="" src="/' + \
-                iconsDir + '/scope_public.png"/><b>' + \
-                translate['Public'] + '</b><br>' + \
-                translate['Visible to anyone'] + '</li></a>'
-            if defaultTimeline == 'tlnews':
-                dropDownContent += \
-                    '<a href="' + pathBase + dropdownNewBlogSuffix + \
-                    '"><li><img loading="lazy" alt="" title="" src="/' + \
-                    iconsDir + '/scope_blog.png"/><b>' + \
-                    translate['Article'] + '</b><br>' + \
-                    translate['Create an article'] + '</li></a>'
-            else:
-                dropDownContent += \
-                    '<a href="' + pathBase + dropdownNewBlogSuffix + \
-                    '"><li><img loading="lazy" alt="" title="" src="/' + \
-                    iconsDir + '/scope_blog.png"/><b>' + \
-                    translate['Blog'] + '</b><br>' + \
-                    translate['Publicly visible post'] + '</li></a>'
-            dropDownContent += \
-                '<a href="' + pathBase + dropdownUnlistedSuffix + \
-                '"><li><img loading="lazy" alt="" title="" src="/' + \
-                iconsDir+'/scope_unlisted.png"/><b>' + \
-                translate['Unlisted'] + '</b><br>' + \
-                translate['Not on public timeline'] + '</li></a>'
-        dropDownContent += \
-            '<a href="' + pathBase + dropdownFollowersSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_followers.png"/><b>' + \
-            translate['Followers'] + '</b><br>' + \
-            translate['Only to followers'] + '</li></a>'
-        dropDownContent += \
-            '<a href="' + pathBase + dropdownDMSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_dm.png"/><b>' + translate['DM'] + \
-            '</b><br>' + translate['Only to mentioned people'] + \
-            '</li></a>'
-        dropDownContent += \
-            '<a href="' + pathBase + dropdownReminderSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_reminder.png"/><b>' + translate['Reminder'] + \
-            '</b><br>' + translate['Scheduled note to yourself'] + \
-            '</li></a>'
-        dropDownContent += \
-            '<a href="' + pathBase + dropdownEventSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_event.png"/><b>' + translate['Event'] + \
-            '</b><br>' + translate['Create an event'] + \
-            '</li></a>'
-        dropDownContent += \
-            '<a href="' + pathBase + dropdownReportSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + iconsDir + \
-            '/scope_report.png"/><b>' + translate['Report'] + \
-            '</b><br>' + translate['Send to moderators'] + '</li></a>'
-        dropDownContent += questionOptionOnDropdown + shareOptionOnDropdown
-        dropDownContent += '      </ul>'
-        dropDownContent += '    </div>\n'
-        dropDownContent += '  </div>\n'
-        dropDownContent += '  </li>\n'
-        dropDownContent += '  </ul>\n'
-        dropDownContent += '</div>\n'
-
         dropDownContent = \
             htmlNewPostDropDown(scopeIcon, scopeDescription,
                                 replyStr,

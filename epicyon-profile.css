@@ -813,39 +813,6 @@ input[type=submit]:hover {
 }
 
 
-/* Dropdown Content (Hidden by Default) */
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: var(--dropdown-bg-color);
-    min-width: 600px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-/* Links inside the dropdown */
-.dropdown-content a {
-    background-color: var(--dropdown-bg-color);
-    color: var(--dropdown-fg-color);
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown-content img {
-    width: 32px;
-    height: 32px;
-    padding: 0px 0px;
-}
-
-/* Change color of dropdown links on hover */
-.dropdown-content a:hover {
-    color: var(--dropdown-fg-color-hover);
-    background-color: var(--dropdown-bg-color-hover);
-}
-
-/* Show the dropdown menu on hover */
-.show {display: block;}
 
 .slider {
     -webkit-appearance: none;
@@ -910,8 +877,6 @@ div.gallery img {
 }
 
 li { list-style:none;}
-.msgscope-collapse { position: relative; }
-.nav { width: 150px; }
 /***********BUTTON CODE ******************************************************/
 
 a, button, input:focus, input[type='button'], input[type='reset'], input[type='submit'], textarea:focus, .button {
@@ -922,191 +887,8 @@ a, button, input:focus, input[type='button'], input[type='reset'], input[type='s
     transition: all 0.1s ease-in-out;
     text-decoration: none;
 }
-.button-msgScope {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    width: 100%;
-    min-height: 100%;
-}
-.button-msgScope button, .button-msgScope div.lined-thin {
-    align-self: center;
-    background: transparent;
-    padding: 1rem 1rem;
-    margin: 0 1rem;
-    transition: all .5s ease;
-    color: var(--dropdown-fg-color);
-    font-size: 2rem;
-    letter-spacing: 1px;
-    outline: none;
-}
 .btn {
     margin: -3px 0 0 0;
-}
-
-aside .toggle-msgScope input[type='checkbox'] {
-  float: right;
-}
-
-.toggle-msgScope {
-    position: relative;
-    overflow: hidden;
-    transition: margin 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-    line-height: 2rem;
-    font-size: 2.5rem;
-}
-.toggle-msgScope div[class*='toggle-inside'] {
-    overflow: hidden;
-    box-sizing: border-box;
-    display: none;
-}
-aside .toggle-msgScope input[type='checkbox'] {
-    float:right;
-}
-aside .toggle-inside li {
-    padding-left: 20px;
-    width: 100%;
-    margin-left: -15px;
-    overflow: hidden;
-}
-.nav li:hover {
-    color: var(--dropdown-fg-color-hover);
-    background-color: var(--dropdown-bg-color-hover);
-}
-.nav .toggle-msgScope {
-    overflow: visible;
-}
-#msgscope label div {
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
-    margin: 0 auto;
-    font-size: 1.5rem;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: bold;
-    background-color: var(--dropdown-bg-color);
-    color: var(--dropdown-fg-color);
-    display: inline-block;
-    margin-bottom: 0;
-    text-align: center;
-    vertical-align: middle;
-    cursor: pointer;
-    background-image: none;
-    white-space: nowrap;
-    font-size: 0px;
-    line-height: 1.42857143;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    margin-top: 10px;
-}
-[id*='toggle'] .container, [class*='toggle'] .container  {
-    transition: margin 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-}
-[id*='toggle'] {
-    visibility: hidden;
-    appearance:none;
-    cursor:pointer;
-    left:-100%;
-    top:-100%;
-}
-[id*='toggle'] + label {
-    cursor:pointer;
-    text-align: left;
-    -webkit-font-smoothing: antialiased;
-    cursor: pointer;
-    transition:all 500ms ease;
-}
-[id*='toggle'toggle'toggle'] + label div {
-    transition:all 500ms ease;
-}
-[id*='toggle'toggle'toggle'] + label div:after {
-    content:&#39;\002b&#39;; /* open */
-    text-align: left;
-    float: left;
-}
-[id*='toggle'toggle'toggle']:checked + label div:after {
-    content:&#39;\2212&#39;; /* close */
-    text-align: left;
-    float: left;
-}
-#msgscope label div {
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
-    margin: 0 auto;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: bold;
-    display: inline-block;
-    margin-bottom: 0;
-    text-align: left;
-    vertical-align: middle;
-    cursor: pointer;
-    background-image: none;
-    white-space: nowrap;
-    font-size: 0px;
-    line-height: 1.42857143;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
-[id*='toggle'] .container, [class*='toggle'] .container  {
-    transition: margin 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
-}
-[id*='toggle'] {
-    visibility: hidden;
-    appearance:none;
-    cursor:pointer;
-    left:-100%;
-    top:-100%;
-}
-[id*='toggle'] + label {
-    cursor:pointer;
-    text-align: left;
-    -webkit-font-smoothing: antialiased;
-    cursor: pointer;
-    transition:all 500ms ease;
-}
-[id*='toggle'] + label div {
-    transition:all 500ms ease;
-}
-[id*='toggle'] + label div:after {
-    content:'\002b'; /* open */
-    text-align: left;
-    float: left;
-}
-[id*='toggle']:checked + label div:after {
-    content:'\2212'; /* close */
-    text-align: left;
-    float: left;
-}
-
-.nav [id*='toggle'] + label div:after {
-    content:&#39; &#39;; /* open */
-}
-.nav [id*='toggle']:checked + label div:after {
-    content:&#39; &#39;; /* close */
-}
-
-[id*='toggle']:checked ~ .container {
-    display: none;
-}
-
-[id*='toggle']:checked ~ .toggle-inside {
-    display: block;
-}
-.toggle-msgScope div[class*='toggle-inside'] {
-    overflow: hidden;
-    box-sizing: border-box;
-    display: none;
 }
 
 div.containerHeader {
@@ -1706,40 +1488,6 @@ div.container {
     .hero-text img.title {
         border-radius: 1%;
         width: 15%;
-    }
-    #msgscope label img {
-        width: 46px;
-        height: 46px;
-        padding: 0px 0px;
-    }
-    .toggle-msgScope img {
-        width: 32px;
-        height: 32px;
-        padding: 0px 0px;
-    }
-    .dropdown-menutoggle {
-        -webkit-margin-start: 0px;
-        -webkit-margin-end: 0px;
-        -webkit-padding-start: 40px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        position: absolute;
-        top: 100%;
-        left: 21px;
-        width: 300%;
-        min-width: 100%;
-        z-index: 1000;
-        display: block;
-        float: left;
-        padding: 0 17px !important;
-        margin: 2px 0 0 !important;
-        font-size: var(--font-size2);
-        text-align: left;
-        list-style: none;
-        color: var(--dropdown-fg-color);
-        background-color: var(--dropdown-bg-color);
-        -webkit-background-clip: padding-box;
-        background-clip: padding-box;
     }
     input[type=checkbox]
     {
@@ -2363,41 +2111,6 @@ div.container {
     .hero-text img.title {
         border-radius: 1%;
         width: 25%;
-    }
-    #msgscope label  img {
-        width: 64px;
-        height: 64px;
-        padding: 0px 0px;
-    }
-    .toggle-msgScope img {
-        width: 64px;
-        height: 64px;
-        margin: -15px 0px;
-        padding: 0px 20px;
-    }
-    .dropdown-menutoggle {
-        -webkit-margin-start: 0px;
-        -webkit-margin-end: 0px;
-        -webkit-padding-start: 40px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-        position: absolute;
-        top: 100%;
-        left: 21px;
-        width: 460%;
-        min-width: 100%;
-        z-index: 1000;
-        display: block;
-        float: left;
-        padding: 0 17px !important;
-        margin: 2px 0 0 !important;
-        font-size: var(--font-size3);
-        text-align: left;
-        list-style: none;
-        color: var(--dropdown-fg-color);
-        background-color: var(--dropdown-bg-color);
-        -webkit-background-clip: padding-box;
-        background-clip: padding-box;
     }
     input[type=checkbox]
     {
