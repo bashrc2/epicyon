@@ -748,12 +748,6 @@ input[type=submit]:hover {
   margin: 0;
   list-style: none;
   width: 100%;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  -webkit-box-shadow: 0 3px 8px rgba(0,0,0,.15);
-  -moz-box-shadow: 0 3px 8px rgba(0,0,0,.15);
-  box-shadow: 0 3px 8px rgba(0,0,0,.15);
 }
 
 .newPostDropdown > ul a {
@@ -796,8 +790,6 @@ input[type=submit]:hover {
 .newPostDropdown + h2 {
   margin-top: 60px;
 }
-
-
 
 .slider {
     -webkit-appearance: none;
