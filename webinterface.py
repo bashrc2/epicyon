@@ -5853,6 +5853,42 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
     return htmlStr
 
 
+def htmlCitations(baseDir: str, nickname: str, domain: str,
+                  httpPrefix: str, defaultTimeline: str,
+                  translate: {}, newswire: {}) -> str:
+    """Show the citations screen when creating a blog
+    """
+    htmlStr = ''
+
+    # top banner
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    htmlStr += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '" alt="' + \
+        translate['Switch to timeline view'] + '">\n'
+    htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
+    # TODO add submit button
+
+    for dateStr, item in newswire.items():
+        publishedDate = \
+            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+        dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
+
+        title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+        link = item[1]
+
+        # TODO add checkbox
+        htmlStr += '<p class="newswireItem">' + \
+            '<a href="' + link + '">' + \
+            title + '</a>'
+        htmlStr += ' <span class="newswireDate">'
+        htmlStr += dateShown + '</span></p>\n'
+
+    return htmlStr
+
+
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
                           iconsDir: str, moderator: bool, editor: bool,
