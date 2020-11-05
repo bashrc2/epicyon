@@ -10880,17 +10880,16 @@ class PubServer(BaseHTTPRequestHandler):
                     citationsButtonPress = True
             print('citationstest: 0b ' + str(citationsButtonPress))
 
-            # process the received text fields from the POST
-            if not fields.get('message') and \
-               not fields.get('imageDescription'):
-                if not citationsButtonPress:
+            if not citationsButtonPress:
+                # process the received text fields from the POST
+                if not fields.get('message') and \
+                   not fields.get('imageDescription'):
                     return -1
-            if fields.get('submitPost'):
-                if fields['submitPost'] != self.server.translate['Submit']:
-                    if not citationsButtonPress:
+                if fields.get('submitPost'):
+                    if fields['submitPost'] != self.server.translate['Submit']:
                         return -1
-            else:
-                return 2
+                else:
+                    return 2
 
             if not fields.get('imageDescription'):
                 fields['imageDescription'] = None
