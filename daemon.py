@@ -10875,7 +10875,7 @@ class PubServer(BaseHTTPRequestHandler):
             citationsButtonPress = False
             if postType == 'newblog' and fields.get('submitCitations'):
                 if fields['submitCitations'] == \
-                   self.server.translate['SubmitCitations']:
+                   self.server.translate['Citations']:
                     citationsButtonPress = True
 
             # process the received text fields from the POST
