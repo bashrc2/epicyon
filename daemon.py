@@ -3047,6 +3047,95 @@ class PubServer(BaseHTTPRequestHandler):
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
+    def _citationsUpdate(self, callingDomain: str, cookie: str,
+                         authorized: bool, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, domainFull: str,
+                         onionDomain: str, i2pDomain: str, debug: bool,
+                         defaultTimeline: str) -> None:
+        """Updates the citations for a blog post after hitting
+        update button on the citations screen
+        """
+        usersPath = path.replace('/citationsdata', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum citations data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form ' +
+                          'citation screen POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form citations screen POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for ' +
+                      'citations screen POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            if fields.get('citations'):
+                citationsFilename = \
+                    baseDir + '/accounts/' + \
+                    nickname + '@' + domain + '/.citations.txt'
+                citationsStr = fields['citations']
+                print('DEBUG: citationsStr = ' + citationsStr)
+                # save citations, so that they can be added when
+                # reloading the newblog screen
+                citationsFile = open(citationsFilename, "w+")
+                if citationsFile:
+                    citationsFile.write(citationsStr)
+                    citationsFile.close()
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/newblog',
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
     def _newsPostEdit(self, callingDomain: str, cookie: str,
                       authorized: bool, path: str,
                       baseDir: str, httpPrefix: str,
@@ -11638,6 +11727,16 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain, self.server.debug,
                                  self.server.defaultTimeline)
+            return
+
+        if authorized and self.path.endswith('/citationsdata'):
+            self._citationsUpdate(callingDomain, cookie, authorized, self.path,
+                                  self.server.baseDir, self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.domainFull,
+                                  self.server.onionDomain,
+                                  self.server.i2pDomain, self.server.debug,
+                                  self.server.defaultTimeline)
             return
 
         if authorized and self.path.endswith('/newseditdata'):
