@@ -10874,11 +10874,9 @@ class PubServer(BaseHTTPRequestHandler):
             # was the citations button pressed on the newblog screen?
             citationsButtonPress = False
             if postType == 'newblog' and fields.get('submitCitations'):
-                print('citationstest: 0a ' + fields['submitCitations'])
                 if fields['submitCitations'] == \
                    self.server.translate['Citations']:
                     citationsButtonPress = True
-            print('citationstest: 0b ' + str(citationsButtonPress))
 
             if not citationsButtonPress:
                 # process the received text fields from the POST
@@ -10969,7 +10967,6 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newblog':
-                print('citationstest: 1 ' + str(citationsButtonPress))
                 # citations button on newblog screen
                 if citationsButtonPress:
                     messageJson = \
@@ -10985,9 +10982,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       fields['message'],
                                       filename, attachmentMediaType,
                                       fields['imageDescription'])
-                    print('citationstest: 2')
                     if messageJson:
-                        print('citationstest: 3 ' + str(messageJson))
                         messageJson = messageJson.encode('utf-8')
                         self._set_headers('text/html',
                                           len(messageJson),
@@ -10995,7 +10990,6 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(messageJson)
                         return 1
                     else:
-                        print('citationstest: 4')
                         return -1
                 # submit button on newblog screen
                 messageJson = \
