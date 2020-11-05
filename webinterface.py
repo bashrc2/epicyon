@@ -5855,7 +5855,11 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
 
 def htmlCitations(baseDir: str, nickname: str, domain: str,
                   httpPrefix: str, defaultTimeline: str,
-                  translate: {}, newswire: {}, cssCache: {}) -> str:
+                  translate: {}, newswire: {}, cssCache: {},
+                  blogTitle: str, blogContent: str,
+                  blogImageFilename: str,
+                  blogImageAttachmentMediaType: str,
+                  blogImageDescription: str) -> str:
     """Show the citations screen when creating a blog
     """
     htmlStr = ''
@@ -5893,6 +5897,12 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     htmlStr += '  <center>\n'
     htmlStr += translate['Choose newswire items ' +
                          'referenced in your article'] + '<br>'
+    htmlStr += \
+        '    <input type="hidden" name="blogTitle" value="' + \
+        blogTitle + '">\n'
+    htmlStr += \
+        '    <input type="hidden" name="blogContent" value="' + \
+        blogContent + '">\n'
     htmlStr += \
         '    <input type="submit" name="submitCitations" value="' + \
         translate['Submit'] + '">\n'

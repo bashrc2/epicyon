@@ -112,6 +112,7 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webinterface import htmlCitations
 from webinterface import htmlFollowingList
 from webinterface import getBlogAddress
 from webinterface import setBlogAddress
@@ -10848,9 +10849,8 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.webp') or \
                    filename.endswith('.avif') or \
                    filename.endswith('.gif'):
-                    if self.server.debug:
-                        print('DEBUG: POST media removing metadata')
                     postImageFilename = filename.replace('.temp', '')
+                    print('Removing metadata from ' + postImageFilename)
                     removeMetaData(filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
@@ -10876,7 +10876,7 @@ class PubServer(BaseHTTPRequestHandler):
                not fields.get('imageDescription'):
                 return -1
             if fields.get('submitPost'):
-                if fields['submitPost'] != 'Submit':
+                if fields['submitPost'] != self.server.translate['Submit']:
                     return -1
             else:
                 return 2
@@ -10958,6 +10958,34 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newblog':
+                # citations button on newblog screen
+                messageJson = None
+                if fields.get('submitCitations'):
+                    if fields['submitCitations'] == \
+                       self.server.translate['Citations']:
+                        messageJson = \
+                            htmlCitations(self.server.baseDir,
+                                          nickname,
+                                          self.server.domain,
+                                          self.server.httpPrefix,
+                                          self.server.defaultTimeline,
+                                          self.server.translate,
+                                          self.server.newswire,
+                                          self.server.cssCache,
+                                          fields['subject'],
+                                          fields['message'],
+                                          filename, attachmentMediaType,
+                                          fields['imageDescription'])
+                        if messageJson:
+                            messageJson = messageJson.encode('utf-8')
+                            self._set_headers('text/html',
+                                              len(messageJson),
+                                              cookie, callingDomain)
+                            self._write(messageJson)
+                            return 1
+                        else:
+                            return -1
+                # submit button on newblog screen
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
                                    self.server.domain, self.server.port,
@@ -10968,8 +10996,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['imageDescription'],
                                    self.server.useBlurHash,
                                    fields['replyTo'], fields['replyTo'],
-                                   fields['subject'], fields['schedulePost'],
-                                   fields['eventDate'], fields['eventTime'],
+                                   fields['subject'],
+                                   fields['schedulePost'],
+                                   fields['eventDate'],
+                                   fields['eventTime'],
                                    fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
