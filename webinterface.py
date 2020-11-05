@@ -5927,8 +5927,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
                 'value="' + dateStr + '"/>' + \
                 '<a href="' + link + '">' + title + '</a> '
             htmlStr += '<span class="newswireDate">' + \
-                dateShown + '</span></p>'
-            htmlStr += '<br/>\n'
+                dateShown + '</span>\n'
 
     htmlStr += '</form>\n'
     return htmlStr + htmlFooter()
