@@ -10871,13 +10871,22 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('WARN: no text fields could be extracted from POST')
 
+            # was the citations button pressed on the newblog screen?
+            citationsButtonPress = False
+            if postType == 'newblog' and fields.get('submitCitations'):
+                if fields['submitCitations'] == \
+                   self.server.translate['SubmitCitations']:
+                    citationsButtonPress = True
+
             # process the received text fields from the POST
             if not fields.get('message') and \
                not fields.get('imageDescription'):
-                return -1
+                if not citationsButtonPress:
+                    return -1
             if fields.get('submitPost'):
                 if fields['submitPost'] != self.server.translate['Submit']:
-                    return -1
+                    if not citationsButtonPress:
+                        return -1
             else:
                 return 2
 
@@ -10959,32 +10968,29 @@ class PubServer(BaseHTTPRequestHandler):
                         return -1
             elif postType == 'newblog':
                 # citations button on newblog screen
-                messageJson = None
-                if fields.get('submitCitations'):
-                    if fields['submitCitations'] == \
-                       self.server.translate['Citations']:
-                        messageJson = \
-                            htmlCitations(self.server.baseDir,
-                                          nickname,
-                                          self.server.domain,
-                                          self.server.httpPrefix,
-                                          self.server.defaultTimeline,
-                                          self.server.translate,
-                                          self.server.newswire,
-                                          self.server.cssCache,
-                                          fields['subject'],
-                                          fields['message'],
-                                          filename, attachmentMediaType,
-                                          fields['imageDescription'])
-                        if messageJson:
-                            messageJson = messageJson.encode('utf-8')
-                            self._set_headers('text/html',
-                                              len(messageJson),
-                                              cookie, callingDomain)
-                            self._write(messageJson)
-                            return 1
-                        else:
-                            return -1
+                if citationsButtonPress:
+                    messageJson = \
+                        htmlCitations(self.server.baseDir,
+                                      nickname,
+                                      self.server.domain,
+                                      self.server.httpPrefix,
+                                      self.server.defaultTimeline,
+                                      self.server.translate,
+                                      self.server.newswire,
+                                      self.server.cssCache,
+                                      fields['subject'],
+                                      fields['message'],
+                                      filename, attachmentMediaType,
+                                      fields['imageDescription'])
+                    if messageJson:
+                        messageJson = messageJson.encode('utf-8')
+                        self._set_headers('text/html',
+                                          len(messageJson),
+                                          cookie, callingDomain)
+                        self._write(messageJson)
+                        return 1
+                    else:
+                        return -1
                 # submit button on newblog screen
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
