@@ -5890,11 +5890,13 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="/users/' + nickname + \
         '/citationsdata">\n'
+    htmlStr += '  <center>\n'
+    htmlStr += translate['Choose newswire items ' +
+                         'referenced in your article'] + '<br>'
     htmlStr += \
-        '  <center>\n' + \
         '    <input type="submit" name="submitCitations" value="' + \
-        translate['Submit'] + '">\n' + \
-        '  </center>\n'
+        translate['Submit'] + '">\n'
+    htmlStr += '  </center>\n'
 
     # list of newswire items
     if newswire:
