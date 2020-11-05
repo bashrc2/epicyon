@@ -3111,6 +3111,7 @@ class PubServer(BaseHTTPRequestHandler):
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
+            print('citationstest: ' + str(fields))
             if fields.get('citations'):
                 citationsFilename = \
                     baseDir + '/accounts/' + \
