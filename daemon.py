@@ -10910,19 +10910,20 @@ class PubServer(BaseHTTPRequestHandler):
             if not fields.get('location'):
                 fields['location'] = None
 
-            # Store a file which contains the time in seconds
-            # since epoch when an attempt to post something was made.
-            # This is then used for active monthly users counts
-            lastUsedFilename = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/.lastUsed'
-            try:
-                lastUsedFile = open(lastUsedFilename, 'w+')
-                if lastUsedFile:
-                    lastUsedFile.write(str(int(time.time())))
-                    lastUsedFile.close()
-            except BaseException:
-                pass
+            if not citationsButtonPress:
+                # Store a file which contains the time in seconds
+                # since epoch when an attempt to post something was made.
+                # This is then used for active monthly users counts
+                lastUsedFilename = \
+                    self.server.baseDir + '/accounts/' + \
+                    nickname + '@' + self.server.domain + '/.lastUsed'
+                try:
+                    lastUsedFile = open(lastUsedFilename, 'w+')
+                    if lastUsedFile:
+                        lastUsedFile.write(str(int(time.time())))
+                        lastUsedFile.close()
+                except BaseException:
+                    pass
 
             mentionsStr = ''
             if fields.get('mentions'):
@@ -10967,6 +10968,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newblog':
+                print('citationstest: 1 ' + str(citationsButtonPress))
                 # citations button on newblog screen
                 if citationsButtonPress:
                     messageJson = \
@@ -10982,7 +10984,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       fields['message'],
                                       filename, attachmentMediaType,
                                       fields['imageDescription'])
+                    print('citationstest: 2')
                     if messageJson:
+                        print('citationstest: 3 ' + str(messageJson))
                         messageJson = messageJson.encode('utf-8')
                         self._set_headers('text/html',
                                           len(messageJson),
@@ -10990,6 +10994,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(messageJson)
                         return 1
                     else:
+                        print('citationstest: 4')
                         return -1
                 # submit button on newblog screen
                 messageJson = \
