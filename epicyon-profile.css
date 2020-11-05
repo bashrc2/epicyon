@@ -83,6 +83,7 @@
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
+    --column-left-header-style: uppercase;
     --column-left-header-background: #555;
     --column-left-header-color: #fff;
     --column-left-header-size: 20px;
@@ -902,7 +903,7 @@ div.container {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
         font-size: var(--column-left-header-size);
-        text-transform: uppercase;
+        text-transform: var(--column-left-header-style);
         padding: 4px;
         border: none;
     }

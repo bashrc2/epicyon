@@ -1019,6 +1019,8 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "column-left-header-background": "white",
+        "column-left-header-style": "none",
         "search-banner-height": "15vh",
         "search-banner-height-mobile": "10vh",
         "publish-button-vertical-offset": "10px",
