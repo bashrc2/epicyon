@@ -8597,7 +8597,7 @@ def htmlCalendar(cssCache: {}, translate: {},
         '" title="' + translate['Previous month'] + '" src="/' + iconsDir + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendarStr += '  <a href="' + calActor + '/inbox" title='
-    calendarStr += translate['switch to timeline view'] + '>'
+    calendarStr += translate['Switch to timeline view'] + '>'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
