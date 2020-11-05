@@ -10874,9 +10874,11 @@ class PubServer(BaseHTTPRequestHandler):
             # was the citations button pressed on the newblog screen?
             citationsButtonPress = False
             if postType == 'newblog' and fields.get('submitCitations'):
+                print('citationstest: 0a ' + fields['submitCitations'])
                 if fields['submitCitations'] == \
                    self.server.translate['Citations']:
                     citationsButtonPress = True
+            print('citationstest: 0b ' + str(citationsButtonPress))
 
             # process the received text fields from the POST
             if not fields.get('message') and \
