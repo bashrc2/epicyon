@@ -5897,9 +5897,13 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     htmlStr += '  <center>\n'
     htmlStr += translate['Choose newswire items ' +
                          'referenced in your article'] + '<br>'
+    if blogTitle is None:
+        blogTitle = ''
     htmlStr += \
         '    <input type="hidden" name="blogTitle" value="' + \
         blogTitle + '">\n'
+    if blogContent is None:
+        blogContent = ''
     htmlStr += \
         '    <input type="hidden" name="blogContent" value="' + \
         blogContent + '">\n'
