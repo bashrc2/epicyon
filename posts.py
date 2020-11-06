@@ -1243,7 +1243,7 @@ def createBlogPost(baseDir: str,
                 sections = line.strip().split(citationsSeparator)
                 if len(sections) != 3:
                     continue
-                dateStr = sections[0]
+                # dateStr = sections[0]
                 title = sections[1]
                 link = sections[2]
                 tagJson = {

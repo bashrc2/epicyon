@@ -2748,6 +2748,30 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<input type="text" name="location">\n'
         extraFields += '</div>\n'
 
+    citationsStr = ''
+    if endpoint == 'newblog':
+        citationsFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.citations.txt'
+        if os.path.isfile(citationsFilename):
+            citationsStr = '<div class="container">\n'
+            citationsStr += '<p><label class="labels">' + \
+                translate['Citations'] + ':</label></p>\n'
+            citationsSeparator = '#####'
+            with open(citationsFilename, "r") as f:
+                citations = f.readlines()
+                for line in citations:
+                    if citationsSeparator not in line:
+                        continue
+                    sections = line.strip().split(citationsSeparator)
+                    if len(sections) != 3:
+                        continue
+                    title = sections[1]
+                    link = sections[2]
+                    citationsStr += \
+                        '<a href="' + link + '">' + title + '</a><br>'
+            citationsStr += '</div>\n'
+
     dateAndLocation = ''
     if endpoint != 'newshare' and \
        endpoint != 'newreport' and \
@@ -3050,7 +3074,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
         str(messageBoxHeight) + 'px"' + selectedStr + '></textarea>\n'
-    newPostForm += extraFields+dateAndLocation
+    newPostForm += extraFields + citationsStr + dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
     newPostForm += '  </div>\n'
