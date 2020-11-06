@@ -1021,6 +1021,7 @@ def setThemeIndymediaModern(baseDir: str):
     themeParams = {
         "column-left-header-line-color": "#BBBBBB",
         "column-left-header-line-width": "1px",
+        "post-line-width": "1px",
         "column-left-header-color": "black",
         "column-left-header-background": "white",
         "column-left-header-style": "none",
@@ -1032,6 +1033,7 @@ def setThemeIndymediaModern(baseDir: str):
         "column-right-icon-size": "11%",
         "button-height-padding": "5px",
         "icon-brightness-change": "70%",
+        "border-width": "0px",
         "border-width-header": "0px",
         "tab-border-width": "3px",
         "tab-border-color": "grey",

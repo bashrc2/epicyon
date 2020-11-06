@@ -7269,6 +7269,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 if currTlStr:
                     itemCtr += 1
+                    tlStr += '<hr class="postLine">\n'
                     tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
