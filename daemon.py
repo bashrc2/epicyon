@@ -3058,6 +3058,13 @@ class PubServer(BaseHTTPRequestHandler):
         """Updates the citations for a blog post after hitting
         update button on the citations screen
         """
+        citationsFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.citations.txt'
+        # remove any existing citations file
+        if os.path.isfile(citationsFilename):
+            os.remove(citationsFilename)
+
         usersPath = path.replace('/citationsdata', '')
         actorStr = httpPrefix + '://' + domainFull + usersPath
         if newswire and \
@@ -3122,9 +3129,6 @@ class PubServer(BaseHTTPRequestHandler):
                 citations.append(fields[fieldName])
 
             if citations:
-                citationsFilename = \
-                    baseDir + '/accounts/' + \
-                    nickname + '@' + domain + '/.citations.txt'
                 citationsStr = ''
                 for citationDate in citations:
                     citationsStr += citationDate + '\n'
