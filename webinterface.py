@@ -5889,7 +5889,6 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
-    # submit button
     htmlStr += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="/users/' + nickname + \
@@ -5907,9 +5906,10 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     htmlStr += \
         '    <input type="hidden" name="blogContent" value="' + \
         blogContent + '">\n'
+    # submit button
     htmlStr += \
         '    <input type="submit" name="submitCitations" value="' + \
-        translate['Citations'] + '">\n'
+        translate['Submit'] + '">\n'
     htmlStr += '  </center>\n'
 
     # list of newswire items
