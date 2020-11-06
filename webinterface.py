@@ -5914,6 +5914,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
 
     # list of newswire items
     if newswire:
+        ctr = 0
         for dateStr, item in newswire.items():
             publishedDate = \
                 datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
@@ -5923,11 +5924,12 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             link = item[1]
 
             htmlStr += \
-                '<input type="checkbox" name="citations[]" ' + \
-                'value="' + dateStr + '"/>' + \
+                '<input type="checkbox" name="' + dateStr + \
+                '" value="' + dateStr + '"/>' + \
                 '<a href="' + link + '">' + title + '</a> '
             htmlStr += '<span class="newswireDate">' + \
                 dateShown + '</span><br>\n'
+            ctr += 1
 
     htmlStr += '</form>\n'
     return htmlStr + htmlFooter()

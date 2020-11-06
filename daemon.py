@@ -3053,13 +3053,15 @@ class PubServer(BaseHTTPRequestHandler):
                          baseDir: str, httpPrefix: str,
                          domain: str, domainFull: str,
                          onionDomain: str, i2pDomain: str, debug: bool,
-                         defaultTimeline: str) -> None:
+                         defaultTimeline: str,
+                         newswire: {}) -> None:
         """Updates the citations for a blog post after hitting
         update button on the citations screen
         """
         usersPath = path.replace('/citationsdata', '')
         actorStr = httpPrefix + '://' + domainFull + usersPath
-        if ' boundary=' in self.headers['Content-type']:
+        if newswire and \
+           ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
@@ -3111,14 +3113,20 @@ class PubServer(BaseHTTPRequestHandler):
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
-            print('citationstest: ' + str(fields))
-            if fields.get('citations'):
+            citations = []
+            for dateStr, item in newswire.items():
+                if fields.get(dateStr):
+                    if fields[dateStr] == 'on':
+                        citations.append(dateStr)
+
+            if citations:
                 citationsFilename = \
                     baseDir + '/accounts/' + \
                     nickname + '@' + domain + '/.citations.txt'
-                citationsStr = fields['citations']
-                print('DEBUG: citationsStr = ' + citationsStr)
-                # save citations, so that they can be added when
+                citationsStr = ''
+                for citationDate in citations:
+                    citationsStr += citationDate + '\n'
+                # save citations dates, so that they can be added when
                 # reloading the newblog screen
                 citationsFile = open(citationsFilename, "w+")
                 if citationsFile:
@@ -11773,7 +11781,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.domainFull,
                                   self.server.onionDomain,
                                   self.server.i2pDomain, self.server.debug,
-                                  self.server.defaultTimeline)
+                                  self.server.defaultTimeline,
+                                  self.server.newswire)
             return
 
         if authorized and self.path.endswith('/newseditdata'):
