@@ -1248,7 +1248,7 @@ def createBlogPost(baseDir: str,
                 link = sections[2]
                 tagJson = {
                     "type": "Article",
-                    "name": title
+                    "name": title,
                     "url": link
                 }
                 blog['object']['tag'].append(tagJson)
