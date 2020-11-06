@@ -5849,7 +5849,7 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         moderatedItem = item[5]
-        htmlStr += '<hr class="linksLine">\n'
+        htmlStr += '<hr class="newswireLine">\n'
         if moderatedItem and 'vote:' + nickname in item[2]:
             totalVotesStr = ''
             totalVotes = 0

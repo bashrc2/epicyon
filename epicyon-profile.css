@@ -92,6 +92,8 @@
     --column-left-border-width: 0;
     --column-right-border-width: 0;
     --column-left-border-color: black;
+    --column-right-header-line-margin: 2%;
+    --column-right-header-line-width: 0;
     --column-left-header-line-width: 0;
     --column-left-header-line-margin: 2%;
     --post-line-margin: 2%;
@@ -159,6 +161,16 @@ body, html {
 hr.linksLine {
     margin: var(--column-left-header-line-margin);
     border: var(--column-left-header-line-width) solid var(--column-left-header-line-color);
+}
+
+hr.linksLine {
+    margin: var(--column-left-header-line-margin);
+    border: var(--column-left-header-line-width) solid var(--column-left-header-line-color);
+}
+
+hr.newswireLine {
+    margin: var(--column-right-header-line-margin);
+    border: var(--column-right-header-line-width) solid var(--column-left-header-line-color);
 }
 
 hr.postLine {
