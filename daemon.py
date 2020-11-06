@@ -3058,6 +3058,10 @@ class PubServer(BaseHTTPRequestHandler):
         """Updates the citations for a blog post after hitting
         update button on the citations screen
         """
+        usersPath = path.replace('/citationsdata', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        nickname = getNicknameFromActor(actorStr)
+
         citationsFilename = \
             baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.citations.txt'
@@ -3065,16 +3069,11 @@ class PubServer(BaseHTTPRequestHandler):
         if os.path.isfile(citationsFilename):
             os.remove(citationsFilename)
 
-        usersPath = path.replace('/citationsdata', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
         if newswire and \
            ' boundary=' in self.headers['Content-type']:
             boundary = self.headers['Content-type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary = boundary.split(';')[0]
-
-            # get the nickname
-            nickname = getNicknameFromActor(actorStr)
 
             length = int(self.headers['Content-length'])
 
