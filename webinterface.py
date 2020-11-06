@@ -6697,8 +6697,8 @@ def headerButtonsTimeline(defaultTimeline: str,
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
             '" class="timelineicon"/></a>'
-            # end of headericons div
-            tlStr += '</div>'
+        # end of headericons div
+        tlStr += '</div>'
     else:
         # NOTE: deliberately no \n at end of line
         tlStr += \
