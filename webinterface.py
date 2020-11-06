@@ -5890,6 +5890,25 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     """
     htmlStr = ''
 
+    # create a list of dates for citations
+    # these can then be used to re-select checkboxes later
+    citationsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.citations.txt'
+    citationsSelected = []
+    if os.path.isfile(citationsFilename):
+        citationsSeparator = '#####'
+        with open(citationsFilename, "r") as f:
+            citations = f.readlines()
+            for line in citations:
+                if citationsSeparator not in line:
+                    continue
+                sections = line.strip().split(citationsSeparator)
+                if len(sections) != 3:
+                    continue
+                dateStr = sections[0]
+                citationsSelected.append(dateStr)
+
     # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -5944,6 +5963,11 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if newswire:
         ctr = 0
         for dateStr, item in newswire.items():
+            # should this checkbox be selected?
+            selectedStr = ''
+            if dateStr in citationsSelected:
+                selectedStr = ' selected'
+
             publishedDate = \
                 datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
             dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
@@ -5957,7 +5981,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
                 link
             htmlStr += \
                 '<input type="checkbox" name="newswire' + str(ctr) + \
-                '" value="' + citationValue + '"/>' + \
+                '" value="' + citationValue + '"' + selectedStr + '/>' + \
                 '<a href="' + link + '">' + title + '</a> '
             htmlStr += '<span class="newswireDate">' + \
                 dateShown + '</span><br>\n'
