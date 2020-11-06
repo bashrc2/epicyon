@@ -830,6 +830,7 @@ def htmlHashtagSearch(cssCache: {},
                 showIndividualPostIcons = True
             allowDeletion = False
             hashtagSearchForm += \
+                '<hr class="postLine">\n' + \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      iconsDir, translate, None,
@@ -1192,6 +1193,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         showIndividualPostIcons = True
         allowDeletion = False
         historySearchForm += \
+            '<hr class="postLine">\n' + \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  iconsDir, translate, None,
