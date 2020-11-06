@@ -1228,6 +1228,27 @@ def createBlogPost(baseDir: str,
                          schedulePost,
                          eventDate, eventTime, location)
     blog['object']['type'] = 'Article'
+
+    # append citations tags, stored in a file
+    citationsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.citations.txt'
+    if os.path.isfile(citationsFilename):
+        citationsSeparator = '#####'
+        with open(citationsFilename, "r") as f:
+            citations = f.readlines()
+            for line in citations:
+                sections = line.split(citationsSeparator)
+                dateStr = sections[0]
+                title = sections[1]
+                link = sections[2]
+                tagJson = {
+                    "type": "Article",
+                    "name": title
+                    "url": link
+                }
+                blog['object']['tag'].append(tagJson)
+
     return blog
 
 

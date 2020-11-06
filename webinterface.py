@@ -5912,6 +5912,8 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
         translate['Submit'] + '">\n'
     htmlStr += '  </center>\n'
 
+    citationsSeparator = '#####'
+
     # list of newswire items
     if newswire:
         ctr = 0
@@ -5923,9 +5925,13 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             link = item[1]
 
+            citationValue = \
+                dateStr + citationsSeparator + \
+                title + citationsSeparator + \
+                link
             htmlStr += \
                 '<input type="checkbox" name="newswire' + str(ctr) + \
-                '" value="' + dateStr + '"/>' + \
+                '" value="' + citationValue + '"/>' + \
                 '<a href="' + link + '">' + title + '</a> '
             htmlStr += '<span class="newswireDate">' + \
                 dateShown + '</span><br>\n'
