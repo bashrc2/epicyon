@@ -6962,6 +6962,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if defaultTimeline == 'tlnews' and boxName == 'tlnews':
         newsHeader = True
 
+    newPostButtonStr = ''
     # start of headericons div
     if not newsHeader:
         if not iconsAsButtons:
@@ -6970,7 +6971,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # what screen to go to when a new post is created
     if boxName == 'dm':
         if not iconsAsButtons:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newdm"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
@@ -6978,13 +6979,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 '" alt="| ' + translate['Create a new DM'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a href="' + usersPath + '/newdm">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
     elif boxName == 'tlblogs' or boxName == 'tlnews':
         if not iconsAsButtons:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
@@ -6992,13 +6993,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a href="' + usersPath + '/newblog">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif boxName == 'tlevents':
         if not iconsAsButtons:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newevent"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
@@ -7006,14 +7007,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 translate['Create a new event'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a href="' + usersPath + '/newevent">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
@@ -7021,13 +7022,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
             else:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a href="' + usersPath + '/newpost">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
         else:
             if not iconsAsButtons:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
@@ -7035,7 +7036,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '" alt="| ' + translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
             else:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a href="' + usersPath + '/newfollowers">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
