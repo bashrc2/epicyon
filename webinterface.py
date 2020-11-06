@@ -3002,8 +3002,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             translate['Citations'] + '">\n'
 
     newPostForm += \
-        '      <input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '">\n'
+        '      <input type="submit" name="submitPost" value="Submit">\n'
 
     newPostForm += '    </center></div>\n'
 
@@ -5908,8 +5907,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
         '    <input type="hidden" name="blogContent" value="' + \
         blogContent + '">\n'
     htmlStr += \
-        '    <input type="submit" name="submitCitations" value="' + \
-        translate['Submit'] + '">\n'
+        '    <input type="submit" name="submitCitations" value="Submit">\n'
     htmlStr += '  </center>\n'
 
     # list of newswire items
@@ -5924,7 +5922,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             link = item[1]
 
             htmlStr += \
-                '<input type="checkbox" name="' + dateStr + \
+                '<input type="checkbox" name="newswire' + str(ctr) + \
                 '" value="' + dateStr + '"/>' + \
                 '<a href="' + link + '">' + title + '</a> '
             htmlStr += '<span class="newswireDate">' + \

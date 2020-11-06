@@ -3115,10 +3115,11 @@ class PubServer(BaseHTTPRequestHandler):
                 extractTextFieldsInPOST(postBytes, boundary, debug)
             print('citationstest: ' + str(fields))
             citations = []
-            for dateStr, item in newswire.items():
-                if fields.get(dateStr):
-                    if fields[dateStr] == 'on':
-                        citations.append(dateStr)
+            for ctr in range(0, 128):
+                fieldName = 'newswire' + str(ctr)
+                if not fields.get(fieldName):
+                    continue
+                citations.append(fields[fieldName])
 
             if citations:
                 citationsFilename = \
@@ -10884,8 +10885,7 @@ class PubServer(BaseHTTPRequestHandler):
             # was the citations button pressed on the newblog screen?
             citationsButtonPress = False
             if postType == 'newblog' and fields.get('submitCitations'):
-                if fields['submitCitations'] == \
-                   self.server.translate['Citations']:
+                if fields['submitCitations'] == 'Submit':
                     citationsButtonPress = True
 
             if not citationsButtonPress:
@@ -10894,7 +10894,7 @@ class PubServer(BaseHTTPRequestHandler):
                    not fields.get('imageDescription'):
                     return -1
                 if fields.get('submitPost'):
-                    if fields['submitPost'] != self.server.translate['Submit']:
+                    if fields['submitPost'] != 'Submit':
                         return -1
                 else:
                     return 2
