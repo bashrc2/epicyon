@@ -481,6 +481,7 @@ a:focus {
 
 .headericons {
     display: inline-block;
+    float: right;
 }
 
 .replyingto {
