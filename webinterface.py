@@ -5808,6 +5808,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     if lineStr.startswith('#') or lineStr.startswith('*'):
                         lineStr = lineStr[1:].strip()
                         htmlStr += \
+                            '      <hr class="linksLine">\n'
+                        htmlStr += \
                             '      <h3 class="linksHeader">' + \
                             lineStr + '</h3>\n'
                     else:

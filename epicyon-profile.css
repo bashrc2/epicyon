@@ -88,6 +88,8 @@
     --column-left-header-color: #fff;
     --column-left-header-size: 20px;
     --column-left-header-size-mobile: 50px;
+    --column-left-header-line-color: #555;
+    --column-left-header-line-width: 0;
     --column-left-icon-size: 20%;
     --column-left-icon-size-mobile: 10%;
     --column-left-image-width-mobile: 40vw;
@@ -146,6 +148,10 @@ body, html {
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
+}
+
+hr.linksLine {
+    border: var(--column-left-header-line-width) solid var(--column-left-header-line-color);
 }
 
 .headericons {
