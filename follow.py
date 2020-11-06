@@ -205,10 +205,11 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
         return
     with open(filename, "r") as f:
         lines = f.readlines()
-    with open(filename, 'w+') as f:
-        for line in lines:
-            if line.strip("\n").strip("\r").lower() != handleToUnfollowLower:
-                f.write(line)
+        with open(filename, 'w+') as f:
+            for line in lines:
+                if line.strip("\n").strip("\r").lower() != \
+                   handleToUnfollowLower:
+                    f.write(line)
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
@@ -216,7 +217,7 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(unfollowedFilename):
         if handleToUnfollowLower not in \
            open(unfollowedFilename).read().lower():
-            with open(filename, "a+") as f:
+            with open(unfollowedFilename, "a+") as f:
                 f.write(handleToUnfollow + '\n')
     else:
         with open(unfollowedFilename, "w+") as f:
