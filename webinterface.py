@@ -2770,7 +2770,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     title = sections[1]
                     link = sections[2]
                     citationsStr += \
-                        '    <li><a href="' + link + '">' + title + '</a></li>'
+                        '    <li><a href="' + link + '"><cite>' + \
+                        title + '</cite></a></li>'
             citationsStr += '  </ul>\n'
             citationsStr += '</div>\n'
 
