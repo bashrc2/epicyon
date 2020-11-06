@@ -2757,6 +2757,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             citationsStr = '<div class="container">\n'
             citationsStr += '<p><label class="labels">' + \
                 translate['Citations'] + ':</label></p>\n'
+            citationsStr += '  <ul>\n'
             citationsSeparator = '#####'
             with open(citationsFilename, "r") as f:
                 citations = f.readlines()
@@ -2769,7 +2770,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     title = sections[1]
                     link = sections[2]
                     citationsStr += \
-                        '<a href="' + link + '">' + title + '</a><br>'
+                        '    <li><a href="' + link + '">' + title + '</a></li>'
+            citationsStr += '  </ul>\n'
             citationsStr += '</div>\n'
 
     dateAndLocation = ''
