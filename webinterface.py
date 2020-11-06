@@ -5588,6 +5588,8 @@ def individualPostAsHtml(allowDownloads: bool,
     if boxName == 'tlblog':
         if postJsonObject['object'].get('tag'):
             for tagJson in postJsonObject['object']['tag']:
+                if not isinstance(tagJson, dict):
+                    continue
                 if not tagJson.get('type'):
                     continue
                 if tagJson['type'] != 'Article':
