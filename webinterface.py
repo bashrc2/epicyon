@@ -7029,9 +7029,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
 
+
+    # if this is a news instance and we are viewing the news timeline
+    newsHeader = False
+    if defaultTimeline == 'tlnews' and boxName == 'tlnews':
+        newsHeader = True
+
     # end of headericons div
-    if newPostButtonStr and not iconsAsButtons and not newsHeader:
-        tlStr += '</div>'
+    if not newsHeader:
+        if not iconsAsButtons:
+            newPostButtonStr += '</div>'
 
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
