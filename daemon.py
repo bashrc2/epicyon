@@ -3113,6 +3113,7 @@ class PubServer(BaseHTTPRequestHandler):
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
+            print('citationstest: ' + str(fields))
             citations = []
             for dateStr, item in newswire.items():
                 if fields.get(dateStr):
