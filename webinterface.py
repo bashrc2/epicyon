@@ -2998,8 +2998,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     # for a new blog if newswire items exist then add a citations button
     if newswire and path.endswith('/newblog'):
         newPostForm += \
-            '      <input type="submit" name="submitCitations" value="' + \
-            translate['Citations'] + '">\n'
+            '      <input type="submit" ' + \
+            'name="submitCitations" value="Submit">\n'
 
     newPostForm += \
         '      <input type="submit" name="submitPost" value="Submit">\n'
