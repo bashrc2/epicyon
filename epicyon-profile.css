@@ -479,11 +479,6 @@ a:focus {
     margin: 0px var(--containericons-horizontal-offset);
 }
 
-.headericons {
-    display: inline-block;
-    float: right;
-}
-
 .replyingto {
     color: var(--main-fg-color);
 }
@@ -893,6 +888,10 @@ div.container {
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    .headericons {
+	display: inline-block;
+	float: right;
     }
     .container {
         border: var(--border-width) solid var(--border-color);
@@ -1528,6 +1527,10 @@ div.container {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    .headericons {
+	display: block;
+	float: right;
     }
     .container {
         border: var(--border-width) solid var(--border-color);
