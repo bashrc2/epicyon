@@ -1025,7 +1025,7 @@ def setThemeIndymediaModern(baseDir: str):
         "column-right-header-line-width": "0",
         "column-left-border-width": "1px",
         "column-right-border-width": "1px",
-        "column-left-border-color": "#BBBBBB",
+        "column-left-border-color": "black",
         "column-left-header-line-color": "#BBBBBB",
         "column-left-header-line-width": "1px",
         "post-line-width": "1px",
