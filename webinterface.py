@@ -2998,11 +2998,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     # for a new blog if newswire items exist then add a citations button
     if newswire and path.endswith('/newblog'):
         newPostForm += \
-            '      <input type="submit" ' + \
-            'name="submitCitations" value="Submit">\n'
+            '      <input type="submit" name="submitCitations" value="' + \
+            translate['Citations'] + '">\n'
 
     newPostForm += \
-        '      <input type="submit" name="submitPost" value="Submit">\n'
+        '      <input type="submit" name="submitPost" value="' + \
+        translate['Submit'] + '">\n'
 
     newPostForm += '    </center></div>\n'
 
@@ -5907,7 +5908,8 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
         '    <input type="hidden" name="blogContent" value="' + \
         blogContent + '">\n'
     htmlStr += \
-        '    <input type="submit" name="submitCitations" value="Submit">\n'
+        '    <input type="submit" name="submitCitations" value="' + \
+        translate['Citations'] + '">\n'
     htmlStr += '  </center>\n'
 
     # list of newswire items

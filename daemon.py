@@ -10885,7 +10885,8 @@ class PubServer(BaseHTTPRequestHandler):
             # was the citations button pressed on the newblog screen?
             citationsButtonPress = False
             if postType == 'newblog' and fields.get('submitCitations'):
-                if fields['submitCitations'] == 'Submit':
+                if fields['submitCitations'] == \
+                   self.server.translate['Citations']:
                     citationsButtonPress = True
 
             if not citationsButtonPress:
@@ -10894,7 +10895,8 @@ class PubServer(BaseHTTPRequestHandler):
                    not fields.get('imageDescription'):
                     return -1
                 if fields.get('submitPost'):
-                    if fields['submitPost'] != 'Submit':
+                    if fields['submitPost'] != \
+                       self.server.translate['Submit']:
                         return -1
                 else:
                     return 2
