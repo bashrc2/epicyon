@@ -1238,6 +1238,8 @@ def createBlogPost(baseDir: str,
         with open(citationsFilename, "r") as f:
             citations = f.readlines()
             for line in citations:
+                if citationsSeparator not in line:
+                    continue
                 sections = line.strip().split(citationsSeparator)
                 if len(sections) != 3:
                     continue
