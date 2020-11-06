@@ -5982,7 +5982,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             htmlStr += \
                 '<input type="checkbox" name="newswire' + str(ctr) + \
                 '" value="' + citationValue + '"' + selectedStr + '/>' + \
-                '<a href="' + link + '">' + title + '</a> '
+                '<a href="' + link + '"><cite>' + title + '</cite></a> '
             htmlStr += '<span class="newswireDate">' + \
                 dateShown + '</span><br>\n'
             ctr += 1
