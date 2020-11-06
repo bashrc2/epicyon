@@ -1238,7 +1238,7 @@ def createBlogPost(baseDir: str,
         with open(citationsFilename, "r") as f:
             citations = f.readlines()
             for line in citations:
-                sections = line.split(citationsSeparator)
+                sections = line.strip().split(citationsSeparator)
                 dateStr = sections[0]
                 title = sections[1]
                 link = sections[2]
