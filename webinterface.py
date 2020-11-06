@@ -5902,6 +5902,7 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'
+        htmlStr += '<hr class="linksLine">\n'
     return htmlStr
 
 
