@@ -1022,7 +1022,7 @@ def setThemeIndymediaModern(baseDir: str):
         "column-left-header-line-margin": "2%",
         "column-right-header-line-margin": "2%",
         "post-line-margin": "2%",
-        "column-right-header-line-width": "0";
+        "column-right-header-line-width": "0",
         "column-left-border-width": "1px",
         "column-right-border-width": "1px",
         "column-left-border-color": "#BBBBBB",
