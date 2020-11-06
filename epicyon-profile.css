@@ -1008,7 +1008,6 @@ div.container {
     }
     .col-left img.leftColEdit {
         background: var(--column-left-color);
-        margin: 40px 0;
         width: var(--column-left-icon-size);
     }
     .col-left img.leftColEditImage {
@@ -1050,7 +1049,6 @@ div.container {
     }
     .col-right img.rightColEdit {
         background: var(--column-left-color);
-        margin: 40px 0;
         width: var(--column-right-icon-size);
     }
     .col-right img.rightColEditImage {
