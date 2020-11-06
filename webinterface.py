@@ -5767,8 +5767,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if (editor or rssIconAtTop) and not showHeaderImage:
         htmlStr += '</div><br>'
 
-    if showHeaderImage:
-        htmlStr += '<br>'
+    # if showHeaderImage:
+    #     htmlStr += '<br>'
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
