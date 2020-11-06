@@ -6666,8 +6666,6 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '<span>' + translate['Expand'] + \
                 '</span></button></a>'
 
-    tlStr += happeningStr
-
     if newsHeader:
         tlStr += \
             '<a href="' + usersPath + '/inbox">' + \
