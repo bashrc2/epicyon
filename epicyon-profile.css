@@ -1530,7 +1530,6 @@ div.container {
     }
     .headericons {
 	display: block;
-	float: right;
     }
     .container {
         border: var(--border-width) solid var(--border-color);
