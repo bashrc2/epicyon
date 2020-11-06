@@ -5966,7 +5966,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
             # should this checkbox be selected?
             selectedStr = ''
             if dateStr in citationsSelected:
-                selectedStr = ' selected'
+                selectedStr = ' checked'
 
             publishedDate = \
                 datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
