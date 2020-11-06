@@ -148,6 +148,11 @@ body, html {
     line-height: var(--line-spacing);
 }
 
+.headericons {
+    display: inline-block;
+    float: right;
+}
+
 blockquote {
     border-left: 10px;
     margin: 1.5em 10px;
@@ -889,10 +894,6 @@ div.container {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
-    .headericons {
-	display: inline-block;
-	float: right;
-    }
     .container {
         border: var(--border-width) solid var(--border-color);
         background-color: var(--main-bg-color);
@@ -1527,9 +1528,6 @@ div.container {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
-    }
-    .headericons {
-	display: block;
     }
     .container {
         border: var(--border-width) solid var(--border-color);
