@@ -6542,6 +6542,54 @@ def headerButtonsTimeline(defaultTimeline: str,
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
+    # show todays events buttons on the first inbox page
+    happeningStr = ''
+    if boxName == 'inbox' and pageNumber == 1:
+        if todaysEventsCheck(baseDir, nickname, domain):
+            now = datetime.now()
+
+            # happening today button
+            if not iconsAsButtons:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(now.year) + '?month=' + str(now.month) + \
+                    '?day=' + str(now.day) + '">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening Today'] + '</button></a>'
+            else:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(now.year) + '?month=' + str(now.month) + \
+                    '?day=' + str(now.day) + '">' + \
+                    '<button class="button">' + \
+                    translate['Happening Today'] + '</button></a>'
+
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                if not iconsAsButtons:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="buttonevent">' + \
+                        translate['Happening This Week'] + '</button></a>'
+                else:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="button">' + \
+                        translate['Happening This Week'] + '</button></a>'
+        else:
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                if not iconsAsButtons:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="buttonevent">' + \
+                        translate['Happening This Week'] + '</button></a>'
+                else:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="button">' + \
+                        translate['Happening This Week'] + '</button></a>'
+
     if not newsHeader:
         # button for the outbox
         tlStr += \
@@ -6553,54 +6601,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         # add other buttons
         tlStr += \
             sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
-            moderationButtonStr + newPostButtonStr
-
-    # show todays events buttons on the first inbox page
-    if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
-            # happening today button
-            if not iconsAsButtons:
-                tlStr += \
-                    '<a href="' + usersPath + '/calendar?year=' + \
-                    str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '">' + \
-                    '<button class="buttonevent">' + \
-                    translate['Happening Today'] + '</button></a>'
-            else:
-                tlStr += \
-                    '<a href="' + usersPath + '/calendar?year=' + \
-                    str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '">' + \
-                    '<button class="button">' + \
-                    translate['Happening Today'] + '</button></a>'
-
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
+            moderationButtonStr + happeningStr + newPostButtonStr
 
     if not newsHeader:
         if not iconsAsButtons:
@@ -6664,6 +6665,8 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '"><button class="button">' + \
                 '<span>' + translate['Expand'] + \
                 '</span></button></a>'
+
+    tlStr += happeningStr
 
     if newsHeader:
         tlStr += \
