@@ -479,6 +479,10 @@ a:focus {
     margin: 0px var(--containericons-horizontal-offset);
 }
 
+.headericons {
+    display: inline-block;
+}
+
 .replyingto {
     color: var(--main-fg-color);
 }

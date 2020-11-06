@@ -6604,9 +6604,11 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if not newsHeader:
         if not iconsAsButtons:
+            # start of headericons div
+            tlStr += '<div class="headericons">'
             # the search button
             tlStr += \
-                '        <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/search"><img loading="lazy" src="/' + \
                 iconsDir + '/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
@@ -7026,6 +7028,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '<a href="' + usersPath + '/newfollowers">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
+
+    # end of headericons div
+    if newPostButtonStr and not iconsAsButtons and not newsHeader:
+        tlStr += '</div>'
+
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
