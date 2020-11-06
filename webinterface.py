@@ -6604,8 +6604,6 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if not newsHeader:
         if not iconsAsButtons:
-            # start of headericons div
-            tlStr += '<div class="headericons">'
             # the search button
             tlStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
@@ -6614,6 +6612,8 @@ def headerButtonsTimeline(defaultTimeline: str,
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
                 '" class="timelineicon"/></a>'
+            # end of headericons div
+            tlStr += '</div>'
         else:
             tlStr += \
                 '<a href="' + usersPath + \
@@ -7035,10 +7035,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if defaultTimeline == 'tlnews' and boxName == 'tlnews':
         newsHeader = True
 
-    # end of headericons div
+    # start of headericons div
     if not newsHeader:
         if not iconsAsButtons:
-            newPostButtonStr += '</div>'
+            newPostButtonStr += '<div class="headericons">'
 
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
