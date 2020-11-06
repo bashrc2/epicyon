@@ -1019,6 +1019,11 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "column-left-header-line-margin": "2%",
+        "post-line-margin": "2%",
+        "column-left-border-width": "1px",
+        "column-right-border-width": "1px",
+        "column-left-border-color": "#BBBBBB",
         "column-left-header-line-color": "#BBBBBB",
         "column-left-header-line-width": "1px",
         "post-line-width": "1px",

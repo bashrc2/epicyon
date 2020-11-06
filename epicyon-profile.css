@@ -89,7 +89,12 @@
     --column-left-header-size: 20px;
     --column-left-header-size-mobile: 50px;
     --column-left-header-line-color: #555;
+    --column-left-border-width: 0;
+    --column-right-border-width: 0;
+    --column-left-border-color: black;
     --column-left-header-line-width: 0;
+    --column-left-header-line-margin: 2%;
+    --post-line-margin: 2%;
     --post-line-width: 0;
     --column-left-icon-size: 20%;
     --column-left-icon-size-mobile: 10%;
@@ -152,10 +157,12 @@ body, html {
 }
 
 hr.linksLine {
+    margin: var(--column-left-header-line-margin);
     border: var(--column-left-header-line-width) solid var(--column-left-header-line-color);
 }
 
 hr.postLine {
+    margin: var(--post-line-margin);
     border: var(--post-line-width) solid var(--column-left-header-line-color);
 }
 
@@ -981,6 +988,7 @@ div.container {
         width: var(--column-left-width);
     }
     .col-left {
+	border: var(--column-left-border-width) solid var(--column-left-border-color);
         color: var(--column-left-fg-color);
         font-size: var(--font-size-links);
         float: left;
@@ -1021,6 +1029,7 @@ div.container {
         overflow: hidden;
     }
     .col-right {
+	border: var(--column-right-border-width) solid var(--column-left-border-color);
         background-color: var(--column-left-color);
         color: var(--column-left-fg-color);
         font-size: var(--font-size-links);
