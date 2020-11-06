@@ -6604,7 +6604,7 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     if not newsHeader:
         if not iconsAsButtons:
-            # the search button
+            # the search icon
             tlStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/search"><img loading="lazy" src="/' + \
@@ -6612,9 +6612,8 @@ def headerButtonsTimeline(defaultTimeline: str,
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
                 '" class="timelineicon"/></a>'
-            # end of headericons div
-            tlStr += '</div>'
         else:
+            # the search button
             tlStr += \
                 '<a href="' + usersPath + \
                 '/search"><button class="button">' + \
@@ -6657,6 +6656,8 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
                 '" alt="| ' + translate['Show/Hide Buttons'] + \
                 '" class="timelineicon"/></a>\n'
+            # end of headericons div
+            tlStr += '</div>'
         else:
             tlStr += \
                 '<a href="' + usersPath + '/minimal' + \
