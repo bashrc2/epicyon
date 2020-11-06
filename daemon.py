@@ -87,6 +87,7 @@ from inbox import populateReplies
 from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import sendFollowRequest
+from follow import unfollowPerson
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -1800,8 +1801,7 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, unfollow button
         # See htmlPersonOptions
         if '&submitUnfollow=' in optionsConfirmParams:
-            if debug:
-                print('Unfollowing ' + optionsActor)
+            print('Unfollowing ' + optionsActor)
             msg = \
                 htmlUnfollowConfirm(self.server.cssCache,
                                     self.server.translate,
@@ -1959,6 +1959,11 @@ class PubServer(BaseHTTPRequestHandler):
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
                 getDomainFromActor(followingActor)
+            followingDomainFull = followingDomain
+            if followingPort:
+                if followingPort != 80 and followingPort != 443:
+                    followingDomainFull = \
+                        followingDomain + ':' + str(followingPort)
             if followerNickname == followingNickname and \
                followingDomain == domain and \
                followingPort == port:
@@ -1987,6 +1992,9 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
+                unfollowPerson(self.server.baseDir, self.postToNickname,
+                               self.server.domain,
+                               followingNickname, followingDomainFull)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onionDomain:
