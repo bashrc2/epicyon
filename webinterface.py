@@ -5583,6 +5583,27 @@ def individualPostAsHtml(allowDownloads: bool,
                 '<div class="gitpatch"><pre><code>' + contentStr + \
                 '</code></pre></div>\n'
 
+    # show blog citations
+    citationsStr = ''
+    if boxName == 'tlblog':
+        if postJsonObject['object'].get('tag'):
+            for tagJson in postJsonObject['object']['tag']:
+                if not tagJson.get('type'):
+                    continue
+                if tagJson['type'] != 'Article':
+                    continue
+                if not tagJson.get('name'):
+                    continue
+                if not tagJson.get('url'):
+                    continue
+                citationsStr += \
+                    '<li><a href="' + tagJson['url'] + '">' + \
+                    '<cite>' + tagJson['name'] + '</cite></a></li>\n'
+            if citationsStr:
+                citationsStr = '<p><b>' + translate['Citations'] + \
+                    ':</b></p>' + \
+                    '<ul>\n' + citationsStr + '</ul>\n'
+
     postHtml = ''
     if boxName != 'tlmedia':
         postHtml = '    <div id="' + timelinePostBookmark + \
@@ -5591,7 +5612,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postHtml += '      <div class="post-title">\n' + \
             '        ' + titleStr + \
             replyAvatarImageInPost + '      </div>\n'
-        postHtml += contentStr + footerStr + '\n'
+        postHtml += contentStr + citationsStr + footerStr + '\n'
         postHtml += '    </div>\n'
     else:
         postHtml = galleryStr
