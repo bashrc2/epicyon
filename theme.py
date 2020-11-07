@@ -1132,7 +1132,7 @@ def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
         "post-separator-width": "98%",
-        "post-separator-height": "10px",
+        "post-separator-height": "40px",
         "border-width-header": "0",
         "post-line-margin": "0 5%",
         "post-line-width": "1px",
