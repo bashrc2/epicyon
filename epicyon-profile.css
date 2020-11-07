@@ -155,6 +155,8 @@ body, html {
 }
 
 .leftColIcons img {
+    width: 100%;
+    background-color: var(--main-bg-color);
     float: right;
     display: block;
 }
