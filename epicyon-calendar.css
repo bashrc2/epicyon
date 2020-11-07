@@ -14,6 +14,10 @@
     --title-text: #282c37;
     --title-background: #ccc;
     --focus-color: white;
+    --calendar-horizontal-padding: 0;
+    --font-size-calendar-header: 3rem;
+    --font-size-calendar-day: 1rem;
+    --font-size-calendar-cell: 4rem;
 }
 
 @font-face {
@@ -54,6 +58,7 @@ main {
 .calendar {
     table-display: fixed;
     width: 100%;
+    padding: 0 var(--calendar-horizontal-padding);
 }
 
 a:visited{
@@ -105,7 +110,7 @@ a:focus {
     background-color: var(--title-background);
     color: var(--title-text);
     display: inline-block;
-    font-size: 3rem;
+    font-size: var(--font-size-calendar-header);
     font-weight: 400;
     letter-spacing: 0.1em;
     padding: .5rem 2rem;
@@ -113,13 +118,13 @@ a:focus {
 }
 
 .calendar__day__header {
-    font-size: 1rem;
+    font-size: var(--font-size-calendar-day);
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
 
 .calendar__day__cell {
-    font-size: 4rem;
+    font-size: var(--font-size-calendar-cell);
     position: relative;
 }
 

@@ -1026,6 +1026,9 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "font-size-calendar-header": "2rem",
+        "font-size-calendar-cell": "2rem",
+        "calendar-horizontal-padding": "20%",
         "time-vertical-align": "10px",
         "header-vertical-offset": "-10%",
         "publish-button-vertical-offset": "0",
