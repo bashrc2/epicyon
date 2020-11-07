@@ -89,6 +89,7 @@
     --column-left-header-size: 20px;
     --column-left-header-size-mobile: 50px;
     --column-left-border-width: 0;
+    --column-left-icons-margin: 0;
     --column-right-border-width: 0;
     --column-left-border-color: black;
     --column-left-icon-size: 20%;
@@ -159,6 +160,7 @@ body, html {
     background-color: var(--main-bg-color);
     float: right;
     display: block;
+    padding-bottom: var(--column-left-icons-margin);
 }
 
 .postSeparatorImage img {
