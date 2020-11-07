@@ -129,6 +129,7 @@
     --post-separator-margin-bottom: 0;
     --post-separator-width: 95%;
     --post-separator-height: 1px;
+    --header-vertical-offset: 0;
 }
 
 @font-face {
@@ -429,14 +430,6 @@ a:focus {
     border: 0;
     background-color: var(--main-bg-color);
     margin: var(--vertical-between-posts);
-}
-
-.containerHeader {
-    border: var(--border-width-header) solid var(--border-color);
-    background-color: var(--main-bg-color);
-    border-radius: var(--timeline-border-radius);
-    padding: var(--header-button-padding);
-    margin: var(--vertical-between-posts-header);
 }
 
 .media {
@@ -918,6 +911,14 @@ div.container {
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    .containerHeader {
+        border: var(--border-width-header) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding: var(--header-button-padding);
+        margin: var(--vertical-between-posts-header);
+        transform: translateY(var(--header-vertical-offset));
     }
     .container {
         border: var(--border-width) solid var(--border-color);
@@ -1555,6 +1556,13 @@ div.container {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    .containerHeader {
+        border: var(--border-width-header) solid var(--border-color);
+        background-color: var(--main-bg-color);
+        border-radius: var(--timeline-border-radius);
+        padding: var(--header-button-padding);
+        margin: var(--vertical-between-posts-header);
     }
     .container {
         border: var(--border-width) solid var(--border-color);
