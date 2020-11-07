@@ -937,6 +937,8 @@ div.container {
         border: none;
     }
     .newswireItem {
+        padding-top: 0;
+        margin-top: 0;
         font-size: var(--font-size-newswire);
         color: var(--column-right-fg-color);
         line-height: var(--line-spacing-newswire);
@@ -1598,6 +1600,8 @@ div.container {
         padding: 0 0;
     }
     .newswireItem {
+        padding-top: 0;
+        margin-top: 0;
         font-size: var(--font-size-newswire-mobile);
         color: var(--column-right-fg-color);
         line-height: var(--line-spacing-newswire);
