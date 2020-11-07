@@ -154,7 +154,7 @@ body, html {
     line-height: var(--line-spacing);
 }
 
-.leftColIcons img {
+.leftColIcons {
     width: 100%;
     background-color: var(--main-bg-color);
     float: right;
