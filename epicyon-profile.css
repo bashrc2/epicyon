@@ -111,6 +111,7 @@
     --tab-border-color: grey;
     --icon-brightness-change: 150%;
     --container-button-padding: 20px;
+    --header-button-padding: 20px;
     --container-padding: 2%;
     --container-padding-bottom: 1%;
     --container-padding-bottom-mobile: 0%;
@@ -434,7 +435,7 @@ a:focus {
     border: var(--border-width-header) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
-    padding: var(--container-button-padding);
+    padding: var(--header-button-padding);
     margin: var(--vertical-between-posts-header);
 }
 
