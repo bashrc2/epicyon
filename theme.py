@@ -313,7 +313,8 @@ def setThemeDefault(baseDir: str):
     }
     themeParams = {
         "banner-height": "20vh",
-        "banner-height-mobile": "10vh"
+        "banner-height-mobile": "10vh",
+        "search-banner-height-mobile": "15vh"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -462,6 +463,11 @@ def setThemeNight(baseDir: str):
     fontStrItalic = \
         "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
+        "main-visited-color": "#0481f5",
+        "post-separator-margin-top": "9%",
+        "post-separator-margin-bottom": "9%",
+        "post-separator-width": "80%",
+        "post-separator-height": "10%",
         "column-left-header-background": "#07447c",
         "banner-height": "15vh",
         "banner-height-mobile": "10vh",
@@ -476,7 +482,7 @@ def setThemeNight(baseDir: str):
         "column-left-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
-        "main-link-color": "ff9900",
+        "main-link-color": "#6481f5",
         "main-link-color-hover": "#d09338",
         "main-fg-color": "#0481f5",
         "column-left-fg-color": "#0481f5",
@@ -600,6 +606,7 @@ def setThemeHenge(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "banner-height": "25vh",
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
         "font-size-button-mobile": "26px",
@@ -1019,14 +1026,49 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "follow-text-size1": "14px",
+        "follow-text-size2": "30px",
+        "hashtag-size1": "20px",
+        "hashtag-size2": "30px",
+        "font-size-calendar-header": "2rem",
+        "font-size-calendar-cell": "2rem",
+        "calendar-horizontal-padding": "20%",
+        "time-vertical-align": "10px",
+        "header-vertical-offset": "-10%",
+        "publish-button-vertical-offset": "0",
+        "vertical-between-posts-header": "0 0",
+        "header-button-padding": "0 0",
+        "containericons-horizontal-spacing": "0%",
+        "font-size-header": "14px",
+        "font-size": "22px",
+        "font-size2": "16px",
+        "font-size3": "30px",
+        "font-size4": "14px",
+        "font-size5": "12px",
+        "font-size-likes": "10px",
+        "font-size-links": "12px",
+        "font-size-newswire": "12px",
+        "font-size-newswire-mobile": "30px",
+        "font-size-dropdown-header": "30px",
+        "post-separator-margin-top": "1%",
+        "post-separator-margin-bottom": "1%",
+        "post-separator-width": "95%",
+        "post-separator-height": "1px",
+        "column-left-border-width": "1px",
+        "column-right-border-width": "0px",
+        "column-left-border-color": "black",
+        "column-left-header-color": "black",
+        "column-left-header-background": "white",
+        "column-left-header-style": "none",
         "search-banner-height": "15vh",
         "search-banner-height-mobile": "10vh",
-        "publish-button-vertical-offset": "10px",
         "container-button-padding": "0px",
         "container-button-margin": "0px",
-        "column-right-icon-size": "11%",
+        "column-left-icon-size": "15%",
+        "column-right-icon-size": "15%",
         "button-height-padding": "5px",
         "icon-brightness-change": "70%",
+        "border-width": "0px",
         "border-width-header": "0px",
         "tab-border-width": "3px",
         "tab-border-color": "grey",
@@ -1034,8 +1076,8 @@ def setThemeIndymediaModern(baseDir: str):
         "login-button-color": "#25408f",
         "login-button-fg-color": "white",
         "column-left-width": "10vw",
-        "column-center-width": "70vw",
-        "column-right-width": "20vw",
+        "column-center-width": "80vw",
+        "column-right-width": "10vw",
         "column-right-fg-color": "#25408f",
         "column-right-fg-color-voted-on": "red",
         "newswire-item-moderated-color": "red",
@@ -1054,12 +1096,7 @@ def setThemeIndymediaModern(baseDir: str):
         "hashtag-background-color": "#b2b2b2",
         "focus-color": "grey",
         "font-size-button-mobile": "26px",
-        "font-size-publish-button": "26px",
-        "font-size": "32px",
-        "font-size2": "26px",
-        "font-size3": "40px",
-        "font-size4": "24px",
-        "font-size5": "22px",
+        "font-size-publish-button": "14px",
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "column-left-color": "white",
         "main-bg-color": "white",
@@ -1108,7 +1145,7 @@ def setThemeIndymediaModern(baseDir: str):
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
     setNewswirePublishAsIcon(baseDir, False)
-    setFullWidthTimelineButtonHeader(baseDir, True)
+    setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, True)
     setRssIconAtTop(baseDir, False)
     setPublishButtonAtTop(baseDir, True)
@@ -1117,8 +1154,15 @@ def setThemeIndymediaModern(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "button-corner-radius": "5px",
+        "column-left-icons-margin": "15px",
+        "post-separator-width": "96.5%",
+        "post-separator-height": "40px",
+        "border-width-header": "0",
+        "border-width": "0",
         "banner-height": "35vh",
         "banner-height-mobile": "15vh",
+        "search-banner-height-mobile": "15vh",
         "time-vertical-align": "-4px",
         "time-vertical-align-mobile": "15px",
         "hashtag-background-color": "lightred",

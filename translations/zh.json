@@ -212,8 +212,8 @@
     "Remove Twitter posts": "删除Twitter帖子",
     "Sensitive": "敏感",
     "Word Replacements": "单词替换",
-    "Happening Today": "今天发生",
-    "Happening This Week": "本周发生",
+    "Happening Today": "今天",
+    "Happening This Week": "不久",
     "Blog": "博客",
     "Blogs": "网志",
     "Title": "标题",
@@ -325,5 +325,7 @@
     "Features" : "特征",
     "Article": "文章",
     "Create an article": "建立文章",
-    "Settings": "设定值"
+    "Settings": "设定值",
+    "Citations": "引文",
+    "Choose newswire items referenced in your article": "选择文章中引用的新闻专栏文章"
 }

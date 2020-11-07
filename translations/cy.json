@@ -212,8 +212,8 @@
     "Remove Twitter posts": "Dileu postiadau Twitter",
     "Sensitive": "Sensitif",
     "Word Replacements": "Amnewidiadau Geiriau",
-    "Happening Today": "Digwydd Heddiw",
-    "Happening This Week": "Yn Digwydd Yr Wythnos Hon",
+    "Happening Today": "Heddiw",
+    "Happening This Week": "Yn fuan",
     "Blog": "Blog",
     "Blogs": "Blogs",
     "Title": "Teitl",
@@ -325,5 +325,7 @@
     "Features" : "Nodweddion",
     "Article": "Erthygl",
     "Create an article": "Creu erthygl",
-    "Settings": "Gosodiadau"
+    "Settings": "Gosodiadau",
+    "Citations": "Dyfyniadau",
+    "Choose newswire items referenced in your article": "Dewiswch eitemau newyddion y cyfeirir atynt yn eich erthygl"
 }

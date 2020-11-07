@@ -213,7 +213,7 @@
     "Sensitive": "Sensitive",
     "Word Replacements": "Word Replacements",
     "Happening Today": "Today",
-    "Happening This Week": "This Week",
+    "Happening This Week": "Soon",
     "Blog": "Blog",
     "Blogs": "Blogs",
     "Title": "Title",
@@ -325,5 +325,7 @@
     "Features" : "Features",
     "Article": "Article",
     "Create an article": "Create an article",
-    "Settings": "Settings"
+    "Settings": "Settings",
+    "Citations": "Citations",
+    "Choose newswire items referenced in your article": "Choose newswire items referenced in your article"
 }

@@ -212,8 +212,8 @@
     "Remove Twitter posts": "Удалить сообщения из Твиттера",
     "Sensitive": "чувствительный",
     "Word Replacements": "Замены слов",
-    "Happening Today": "Происходит сегодня",
-    "Happening This Week": "Происходит на этой неделе",
+    "Happening Today": "Cегодня",
+    "Happening This Week": "Скоро",
     "Blog": "Блог",
     "Blogs": "Блоги",
     "Title": "заглавие",
@@ -325,5 +325,7 @@
     "Features" : "особенности",
     "Article": "Статья",
     "Create an article": "Создать статью",
-    "Settings": "Настройки"
+    "Settings": "Настройки",
+    "Citations": "Цитаты",
+    "Choose newswire items referenced in your article": "Выберите элементы ленты новостей, на которые есть ссылки в вашей статье"
 }

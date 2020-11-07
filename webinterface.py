@@ -736,6 +736,7 @@ def htmlHashtagSearch(cssCache: {},
         return None
 
     iconsDir = getIconsDir(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
     if nickname:
@@ -829,7 +830,7 @@ def htmlHashtagSearch(cssCache: {},
             if nickname:
                 showIndividualPostIcons = True
             allowDeletion = False
-            hashtagSearchForm += \
+            hashtagSearchForm += separatorStr + \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      iconsDir, translate, None,
@@ -1165,6 +1166,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         return historySearchForm
 
     iconsDir = getIconsDir(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -1191,7 +1193,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             continue
         showIndividualPostIcons = True
         allowDeletion = False
-        historySearchForm += \
+        historySearchForm += separatorStr + \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  iconsDir, translate, None,
@@ -1282,7 +1284,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <center>\n' + \
         '        <input type="submit" name="submitLinks" value="' + \
         translate['Submit'] + '">\n' + \
-        '      <center>\n'
+        '      </center>\n'
     editLinksForm += \
         '    </div>\n'
 
@@ -1365,7 +1367,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <center>\n' + \
         '      <input type="submit" name="submitNewswire" value="' + \
         translate['Submit'] + '">\n' + \
-        '      <center>\n'
+        '      </center>\n'
     editNewswireForm += \
         '    </div>\n'
 
@@ -2413,6 +2415,111 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     return suspendedForm
 
 
+def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
+                        replyStr: str,
+                        translate: {},
+                        iconsDir: str,
+                        showPublicOnDropdown: bool,
+                        defaultTimeline: str,
+                        pathBase: str,
+                        dropdownNewPostSuffix: str,
+                        dropdownNewBlogSuffix: str,
+                        dropdownUnlistedSuffix: str,
+                        dropdownFollowersSuffix: str,
+                        dropdownDMSuffix: str,
+                        dropdownReminderSuffix: str,
+                        dropdownEventSuffix: str,
+                        dropdownReportSuffix: str) -> str:
+    """Returns the html for a drop down list of new post types
+    """
+    dropDownContent = '<div class="newPostDropdown">\n'
+    dropDownContent += '  <input type="checkbox" ' + \
+        'id="my-newPostDropdown" value="" name="my-checkbox">\n'
+    dropDownContent += '  <label for="my-newPostDropdown"\n'
+    dropDownContent += '     data-toggle="newPostDropdown">\n'
+    dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/' + scopeIcon + '"/><b>' + \
+        scopeDescription + '</b></label>\n'
+    dropDownContent += '  <ul>\n'
+
+    if showPublicOnDropdown:
+        dropDownContent += \
+            '<li><a href="' + pathBase + dropdownNewPostSuffix + \
+            '"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_public.png"/><b>' + \
+            translate['Public'] + '</b><br>' + \
+            translate['Visible to anyone'] + '</a></li>\n'
+        if defaultTimeline == 'tlnews':
+            dropDownContent += \
+                '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
+                '"><img loading="lazy" alt="" title="" src="/' + \
+                iconsDir + '/scope_blog.png"/><b>' + \
+                translate['Article'] + '</b><br>' + \
+                translate['Create an article'] + '</a></li>\n'
+        else:
+            dropDownContent += \
+                '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
+                '"><img loading="lazy" alt="" title="" src="/' + \
+                iconsDir + '/scope_blog.png"/><b>' + \
+                translate['Blog'] + '</b><br>' + \
+                translate['Publicly visible post'] + '</a></li>\n'
+        dropDownContent += \
+            '<li><a href="' + pathBase + dropdownUnlistedSuffix + \
+            '"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_unlisted.png"/><b>' + \
+            translate['Unlisted'] + '</b><br>' + \
+            translate['Not on public timeline'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownFollowersSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_followers.png"/><b>' + \
+        translate['Followers'] + '</b><br>' + \
+        translate['Only to followers'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownDMSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_dm.png"/><b>' + \
+        translate['DM'] + '</b><br>' + \
+        translate['Only to mentioned people'] + '</a></li>\n'
+
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownReminderSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_reminder.png"/><b>' + \
+        translate['Reminder'] + '</b><br>' + \
+        translate['Scheduled note to yourself'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownEventSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_event.png"/><b>' + \
+        translate['Event'] + '</b><br>' + \
+        translate['Create an event'] + '</a></li>\n'
+    dropDownContent += \
+        '<li><a href="' + pathBase + dropdownReportSuffix + \
+        '"><img loading="lazy" alt="" title="" src="/' + \
+        iconsDir + '/scope_report.png"/><b>' + \
+        translate['Report'] + '</b><br>' + \
+        translate['Send to moderators'] + '</a></li>\n'
+
+    if not replyStr:
+        dropDownContent += \
+            '<li><a href="' + pathBase + \
+            '/newshare"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_share.png"/><b>' + \
+            translate['Shares'] + '</b><br>' + \
+            translate['Describe a shared item'] + '</a></li>\n'
+        dropDownContent += \
+            '<li><a href="' + pathBase + \
+            '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_question.png"/><b>' + \
+            translate['Question'] + '</b><br>' + \
+            translate['Ask a question'] + '</a></li>\n'
+
+    dropDownContent += '  </ul>\n'
+    dropDownContent += '</div>\n'
+    return dropDownContent
+
+
 def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 baseDir: str, httpPrefix: str,
                 path: str, inReplyTo: str,
@@ -2420,7 +2527,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 reportUrl: str, pageNumber: int,
                 nickname: str, domain: str,
                 domainFull: str,
-                defaultTimeline: str) -> str:
+                defaultTimeline: str, newswire: {}) -> str:
     """New post screen
     """
     iconsDir = getIconsDir(baseDir)
@@ -2643,6 +2750,33 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         extraFields += '<input type="text" name="location">\n'
         extraFields += '</div>\n'
 
+    citationsStr = ''
+    if endpoint == 'newblog':
+        citationsFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.citations.txt'
+        if os.path.isfile(citationsFilename):
+            citationsStr = '<div class="container">\n'
+            citationsStr += '<p><label class="labels">' + \
+                translate['Citations'] + ':</label></p>\n'
+            citationsStr += '  <ul>\n'
+            citationsSeparator = '#####'
+            with open(citationsFilename, "r") as f:
+                citations = f.readlines()
+                for line in citations:
+                    if citationsSeparator not in line:
+                        continue
+                    sections = line.strip().split(citationsSeparator)
+                    if len(sections) != 3:
+                        continue
+                    title = sections[1]
+                    link = sections[2]
+                    citationsStr += \
+                        '    <li><a href="' + link + '"><cite>' + \
+                        title + '</cite></a></li>'
+            citationsStr += '  </ul>\n'
+            citationsStr += '</div>\n'
+
     dateAndLocation = ''
     if endpoint != 'newshare' and \
        endpoint != 'newreport' and \
@@ -2791,21 +2925,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
-    # only show the share option if this is not a reply
-    shareOptionOnDropdown = ''
-    questionOptionOnDropdown = ''
-    if not replyStr:
-        shareOptionOnDropdown = \
-            '        <a href="' + pathBase + \
-            '/newshare"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_share.png"/><b>' + translate['Shares'] + \
-            '</b><br>' + translate['Describe a shared item'] + '</li></a>\n'
-        questionOptionOnDropdown = \
-            '        <a href="' + pathBase + \
-            '/newquestion"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_question.png"/><b>' + translate['Question'] + \
-            '</b><br>' + translate['Ask a question'] + '</li></a>\n'
-
     mentionsStr = ''
     for m in mentions:
         mentionNickname = getNicknameFromActor(m)
@@ -2858,89 +2977,22 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     dropDownContent = ''
     if not reportUrl:
-        dropDownContent += "<div class='msgscope-collapse collapse "
-        dropDownContent += "right desktoponly' id='msgscope'>\n"
-        dropDownContent += "  <ul class='nav msgscope-nav msgscope-right'>\n"
-        dropDownContent += "  <li class=' ' style='position: relative;'>\n"
-        dropDownContent += "  <div class='toggle-msgScope button-msgScope'>\n"
-        dropDownContent += "    <input id='toggleMsgScope' "
-        dropDownContent += "name='toggleMsgScope' type='checkbox'/>\n"
-        dropDownContent += "    <label for='toggleMsgScope'>\n"
-        dropDownContent += "      <div class='lined-thin'>\n"
-        dropDownContent += '        <img loading="lazy" alt="" title="" src="/'
-        dropDownContent += iconsDir + '/' + scopeIcon
-        dropDownContent += '"/><b class="scope-desc">'
-        dropDownContent += scopeDescription + '</b>\n'
-        dropDownContent += "        <span class='caret'/>\n"
-        dropDownContent += "      </div>\n"
-        dropDownContent += "    </label>\n"
-        dropDownContent += "    <div class='toggle-inside'>\n"
-        dropDownContent += "      <ul aria-labelledby='dropdownMsgScope' "
-        dropDownContent += "class='dropdown-menutoggle'>\n"
-
-        if showPublicOnDropdown:
-            dropDownContent += "        " \
-                '<a href="' + pathBase + dropdownNewPostSuffix + \
-                '"><li><img loading="lazy" alt="" title="" src="/' + \
-                iconsDir + '/scope_public.png"/><b>' + \
-                translate['Public'] + '</b><br>' + \
-                translate['Visible to anyone'] + '</li></a>\n'
-            if defaultTimeline == 'tlnews':
-                dropDownContent += "        " \
-                    '<a href="' + pathBase + dropdownNewBlogSuffix + \
-                    '"><li><img loading="lazy" alt="" title="" src="/' + \
-                    iconsDir + '/scope_blog.png"/><b>' + \
-                    translate['Article'] + '</b><br>' + \
-                    translate['Create an article'] + '</li></a>\n'
-            else:
-                dropDownContent += "        " \
-                    '<a href="' + pathBase + dropdownNewBlogSuffix + \
-                    '"><li><img loading="lazy" alt="" title="" src="/' + \
-                    iconsDir + '/scope_blog.png"/><b>' + \
-                    translate['Blog'] + '</b><br>' + \
-                    translate['Publicly visible post'] + '</li></a>\n'
-            dropDownContent += "        " \
-                '<a href="' + pathBase + dropdownUnlistedSuffix + \
-                '"><li><img loading="lazy" alt="" title="" src="/' + \
-                iconsDir+'/scope_unlisted.png"/><b>' + \
-                translate['Unlisted'] + '</b><br>' + \
-                translate['Not on public timeline'] + '</li></a>\n'
-        dropDownContent += "        " \
-            '<a href="' + pathBase + dropdownFollowersSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_followers.png"/><b>' + \
-            translate['Followers'] + '</b><br>' + \
-            translate['Only to followers'] + '</li></a>\n'
-        dropDownContent += "        " \
-            '<a href="' + pathBase + dropdownDMSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_dm.png"/><b>' + translate['DM'] + \
-            '</b><br>' + translate['Only to mentioned people'] + \
-            '</li></a>\n'
-        dropDownContent += "        " \
-            '<a href="' + pathBase + dropdownReminderSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_reminder.png"/><b>' + translate['Reminder'] + \
-            '</b><br>' + translate['Scheduled note to yourself'] + \
-            '</li></a>\n'
-        dropDownContent += "        " \
-            '<a href="' + pathBase + dropdownEventSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + \
-            iconsDir + '/scope_event.png"/><b>' + translate['Event'] + \
-            '</b><br>' + translate['Create an event'] + \
-            '</li></a>\n'
-        dropDownContent += "        " \
-            '<a href="' + pathBase + dropdownReportSuffix + \
-            '"><li><img loading="lazy" alt="" title="" src="/' + iconsDir + \
-            '/scope_report.png"/><b>' + translate['Report'] + \
-            '</b><br>' + translate['Send to moderators'] + '</li></a>\n'
-        dropDownContent += questionOptionOnDropdown + shareOptionOnDropdown
-        dropDownContent += '      </ul>\n'
-        dropDownContent += '    </div>\n'
-        dropDownContent += '  </div>\n'
-        dropDownContent += '  </li>\n'
-        dropDownContent += '  </ul>\n'
-        dropDownContent += '</div>\n'
+        dropDownContent = \
+            htmlNewPostDropDown(scopeIcon, scopeDescription,
+                                replyStr,
+                                translate,
+                                iconsDir,
+                                showPublicOnDropdown,
+                                defaultTimeline,
+                                pathBase,
+                                dropdownNewPostSuffix,
+                                dropdownNewBlogSuffix,
+                                dropdownUnlistedSuffix,
+                                dropdownFollowersSuffix,
+                                dropdownDMSuffix,
+                                dropdownReminderSuffix,
+                                dropdownEventSuffix,
+                                dropdownReportSuffix)
     else:
         mentionsStr = 'Re: ' + reportUrl + '\n\n' + mentionsStr
 
@@ -2966,13 +3018,22 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += '    </div>\n'
 
     newPostForm += '    <div class="containerSubmitNewPost"><center>\n'
+
     # newPostForm += \
     #     '      <a href="' + pathBase + \
     #     '/inbox"><button class="cancelbtn">' + \
     #     translate['Go Back'] + '</button></a>\n'
+
+    # for a new blog if newswire items exist then add a citations button
+    if newswire and path.endswith('/newblog'):
+        newPostForm += \
+            '      <input type="submit" name="submitCitations" value="' + \
+            translate['Citations'] + '">\n'
+
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
+
     newPostForm += '    </center></div>\n'
 
     newPostForm += replyStr
@@ -3018,7 +3079,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
         str(messageBoxHeight) + 'px"' + selectedStr + '></textarea>\n'
-    newPostForm += extraFields+dateAndLocation
+    newPostForm += extraFields + citationsStr + dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
     newPostForm += '  </div>\n'
@@ -3079,6 +3140,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     These should only be public posts
     """
     iconsDir = getIconsDir(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
     profileStr = ''
     maxItems = 4
     ctr = 0
@@ -3111,7 +3173,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          False, False, False, True, False)
                 if postStr:
-                    profileStr += postStr
+                    profileStr += separatorStr + postStr
                     ctr += 1
                     if ctr >= maxItems:
                         break
@@ -3329,6 +3391,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
+    separatorStr = htmlPostSeparator(baseDir, None)
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
@@ -3336,7 +3399,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         showRemoveButton = False
         if item['actor'] == actor:
             showRemoveButton = True
-        timelineStr += \
+        timelineStr += separatorStr + \
             htmlIndividualShare(actor, item, translate,
                                 showContactButton, showRemoveButton)
 
@@ -5524,6 +5587,29 @@ def individualPostAsHtml(allowDownloads: bool,
                 '<div class="gitpatch"><pre><code>' + contentStr + \
                 '</code></pre></div>\n'
 
+    # show blog citations
+    citationsStr = ''
+    if boxName == 'tlblog':
+        if postJsonObject['object'].get('tag'):
+            for tagJson in postJsonObject['object']['tag']:
+                if not isinstance(tagJson, dict):
+                    continue
+                if not tagJson.get('type'):
+                    continue
+                if tagJson['type'] != 'Article':
+                    continue
+                if not tagJson.get('name'):
+                    continue
+                if not tagJson.get('url'):
+                    continue
+                citationsStr += \
+                    '<li><a href="' + tagJson['url'] + '">' + \
+                    '<cite>' + tagJson['name'] + '</cite></a></li>\n'
+            if citationsStr:
+                citationsStr = '<p><b>' + translate['Citations'] + \
+                    ':</b></p>' + \
+                    '<ul>\n' + citationsStr + '</ul>\n'
+
     postHtml = ''
     if boxName != 'tlmedia':
         postHtml = '    <div id="' + timelinePostBookmark + \
@@ -5532,7 +5618,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postHtml += '      <div class="post-title">\n' + \
             '        ' + titleStr + \
             replyAvatarImageInPost + '      </div>\n'
-        postHtml += contentStr + footerStr + '\n'
+        postHtml += contentStr + citationsStr + footerStr + '\n'
         postHtml += '    </div>\n'
     else:
         postHtml = galleryStr
@@ -5599,6 +5685,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     """
     htmlStr = ''
 
+    separatorStr = htmlPostSeparator(baseDir, 'left')
     domain = domainFull
     if ':' in domain:
         domain = domain.split(':')
@@ -5648,6 +5735,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'leftColEdit':
         htmlStr += '\n      <center>\n'
 
+    htmlStr += '      <div class="leftColIcons">\n'
     if editor:
         # show the edit icon
         htmlStr += \
@@ -5676,6 +5764,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" src="/' + iconsDir + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
+    htmlStr += '      </div>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'
@@ -5683,8 +5772,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if (editor or rssIconAtTop) and not showHeaderImage:
         htmlStr += '</div><br>'
 
-    if showHeaderImage:
-        htmlStr += '<br>'
+    # if showHeaderImage:
+    #     htmlStr += '<br>'
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
@@ -5725,6 +5814,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 else:
                     if lineStr.startswith('#') or lineStr.startswith('*'):
                         lineStr = lineStr[1:].strip()
+                        htmlStr += separatorStr
                         htmlStr += \
                             '      <h3 class="linksHeader">' + \
                             lineStr + '</h3>\n'
@@ -5752,10 +5842,11 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
     return totalVotesStr
 
 
-def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
+def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                  translate: {}, positiveVoting: bool, iconsDir: str) -> str:
     """Converts a newswire dict into html
     """
+    separatorStr = htmlPostSeparator(baseDir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
         publishedDate = \
@@ -5765,6 +5856,7 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         moderatedItem = item[5]
+        htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
             totalVotesStr = ''
             totalVotes = 0
@@ -5819,6 +5911,118 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'
     return htmlStr
+
+
+def htmlCitations(baseDir: str, nickname: str, domain: str,
+                  httpPrefix: str, defaultTimeline: str,
+                  translate: {}, newswire: {}, cssCache: {},
+                  blogTitle: str, blogContent: str,
+                  blogImageFilename: str,
+                  blogImageAttachmentMediaType: str,
+                  blogImageDescription: str) -> str:
+    """Show the citations screen when creating a blog
+    """
+    htmlStr = ''
+
+    # create a list of dates for citations
+    # these can then be used to re-select checkboxes later
+    citationsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.citations.txt'
+    citationsSelected = []
+    if os.path.isfile(citationsFilename):
+        citationsSeparator = '#####'
+        with open(citationsFilename, "r") as f:
+            citations = f.readlines()
+            for line in citations:
+                if citationsSeparator not in line:
+                    continue
+                sections = line.strip().split(citationsSeparator)
+                if len(sections) != 3:
+                    continue
+                dateStr = sections[0]
+                citationsSelected.append(dateStr)
+
+    # the css filename
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    profileStyle = getCSS(baseDir, cssFilename, cssCache)
+    if profileStyle:
+        # replace any https within the css with whatever prefix is needed
+        if httpPrefix != 'https':
+            profileStyle = \
+                profileStyle.replace('https://', httpPrefix + '://')
+
+    # iconsDir = getIconsDir(baseDir)
+
+    htmlStr = htmlHeader(cssFilename, profileStyle)
+
+    # top banner
+    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    htmlStr += \
+        '<a href="/users/' + nickname + '/newblog" title="' + \
+        translate['Go Back'] + '" alt="' + \
+        translate['Go Back'] + '">\n'
+    htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+
+    htmlStr += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="/users/' + nickname + \
+        '/citationsdata">\n'
+    htmlStr += '  <center>\n'
+    htmlStr += translate['Choose newswire items ' +
+                         'referenced in your article'] + '<br>'
+    if blogTitle is None:
+        blogTitle = ''
+    htmlStr += \
+        '    <input type="hidden" name="blogTitle" value="' + \
+        blogTitle + '">\n'
+    if blogContent is None:
+        blogContent = ''
+    htmlStr += \
+        '    <input type="hidden" name="blogContent" value="' + \
+        blogContent + '">\n'
+    # submit button
+    htmlStr += \
+        '    <input type="submit" name="submitCitations" value="' + \
+        translate['Submit'] + '">\n'
+    htmlStr += '  </center>\n'
+
+    citationsSeparator = '#####'
+
+    # list of newswire items
+    if newswire:
+        ctr = 0
+        for dateStr, item in newswire.items():
+            # should this checkbox be selected?
+            selectedStr = ''
+            if dateStr in citationsSelected:
+                selectedStr = ' checked'
+
+            publishedDate = \
+                datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+            dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
+
+            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            link = item[1]
+
+            citationValue = \
+                dateStr + citationsSeparator + \
+                title + citationsSeparator + \
+                link
+            htmlStr += \
+                '<input type="checkbox" name="newswire' + str(ctr) + \
+                '" value="' + citationValue + '"' + selectedStr + '/>' + \
+                '<a href="' + link + '"><cite>' + title + '</cite></a> '
+            htmlStr += '<span class="newswireDate">' + \
+                dateShown + '</span><br>\n'
+            ctr += 1
+
+    htmlStr += '</form>\n'
+    return htmlStr + htmlFooter()
 
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
@@ -5968,7 +6172,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     # show the newswire lines
     newswireContentStr = \
-        htmlNewswire(newswire, nickname, moderator, translate,
+        htmlNewswire(baseDir, newswire, nickname, moderator, translate,
                      positiveVoting, iconsDir)
     htmlStr += newswireContentStr
 
@@ -6348,6 +6552,54 @@ def headerButtonsTimeline(defaultTimeline: str,
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
+    # show todays events buttons on the first inbox page
+    happeningStr = ''
+    if boxName == 'inbox' and pageNumber == 1:
+        if todaysEventsCheck(baseDir, nickname, domain):
+            now = datetime.now()
+
+            # happening today button
+            if not iconsAsButtons:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(now.year) + '?month=' + str(now.month) + \
+                    '?day=' + str(now.day) + '">' + \
+                    '<button class="buttonevent">' + \
+                    translate['Happening Today'] + '</button></a>'
+            else:
+                happeningStr += \
+                    '<a href="' + usersPath + '/calendar?year=' + \
+                    str(now.year) + '?month=' + str(now.month) + \
+                    '?day=' + str(now.day) + '">' + \
+                    '<button class="button">' + \
+                    translate['Happening Today'] + '</button></a>'
+
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                if not iconsAsButtons:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="buttonevent">' + \
+                        translate['Happening This Week'] + '</button></a>'
+                else:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="button">' + \
+                        translate['Happening This Week'] + '</button></a>'
+        else:
+            # happening this week button
+            if thisWeeksEventsCheck(baseDir, nickname, domain):
+                if not iconsAsButtons:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="buttonevent">' + \
+                        translate['Happening This Week'] + '</button></a>'
+                else:
+                    happeningStr += \
+                        '<a href="' + usersPath + \
+                        '/calendar"><button class="button">' + \
+                        translate['Happening This Week'] + '</button></a>'
+
     if not newsHeader:
         # button for the outbox
         tlStr += \
@@ -6359,66 +6611,20 @@ def headerButtonsTimeline(defaultTimeline: str,
         # add other buttons
         tlStr += \
             sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
-            moderationButtonStr + newPostButtonStr
-
-    # show todays events buttons on the first inbox page
-    if boxName == 'inbox' and pageNumber == 1:
-        if todaysEventsCheck(baseDir, nickname, domain):
-            now = datetime.now()
-
-            # happening today button
-            if not iconsAsButtons:
-                tlStr += \
-                    '<a href="' + usersPath + '/calendar?year=' + \
-                    str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '">' + \
-                    '<button class="buttonevent">' + \
-                    translate['Happening Today'] + '</button></a>'
-            else:
-                tlStr += \
-                    '<a href="' + usersPath + '/calendar?year=' + \
-                    str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '">' + \
-                    '<button class="button">' + \
-                    translate['Happening Today'] + '</button></a>'
-
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
-        else:
-            # happening this week button
-            if thisWeeksEventsCheck(baseDir, nickname, domain):
-                if not iconsAsButtons:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="buttonevent">' + \
-                        translate['Happening This Week'] + '</button></a>'
-                else:
-                    tlStr += \
-                        '<a href="' + usersPath + \
-                        '/calendar"><button class="button">' + \
-                        translate['Happening This Week'] + '</button></a>'
+            moderationButtonStr + happeningStr + newPostButtonStr
 
     if not newsHeader:
         if not iconsAsButtons:
-            # the search button
+            # the search icon
             tlStr += \
-                '        <a class="imageAnchor" href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/search"><img loading="lazy" src="/' + \
                 iconsDir + '/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
                 '" class="timelineicon"/></a>'
         else:
+            # the search button
             tlStr += \
                 '<a href="' + usersPath + \
                 '/search"><button class="button">' + \
@@ -6501,6 +6707,8 @@ def headerButtonsTimeline(defaultTimeline: str,
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
             '" class="timelineicon"/></a>'
+        # end of headericons div
+        tlStr += '</div>'
     else:
         # NOTE: deliberately no \n at end of line
         tlStr += \
@@ -6521,6 +6729,23 @@ def headerButtonsTimeline(defaultTimeline: str,
     # end of the button header with inbox, outbox, etc
     tlStr += '    </div>\n'
     return tlStr
+
+
+def htmlPostSeparator(baseDir: str, column: str) -> str:
+    """Returns the html for a timeline post separator image
+    """
+    iconsDir = getIconsDir(baseDir)
+    filename = 'separator.png'
+    if column:
+        filename = 'separator_' + column + '.png'
+    separatorImageFilename = baseDir + '/img/' + iconsDir + '/' + filename
+    separatorStr = ''
+    if os.path.isfile(separatorImageFilename):
+        separatorStr = \
+            '<div class="postSeparatorImage"><center>' + \
+            '<img src="/' + iconsDir + '/' + filename + '"/>' + \
+            '</center></div>\n'
+    return separatorStr
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
@@ -6597,6 +6822,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # directory where icons are found
     # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
+
+    separatorStr = ''
+    if boxName != 'tlmedia':
+        separatorStr = htmlPostSeparator(baseDir, None)
 
     # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -6760,10 +6989,21 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 4 = ' + str(timeDiff))
 
+    # if this is a news instance and we are viewing the news timeline
+    newsHeader = False
+    if defaultTimeline == 'tlnews' and boxName == 'tlnews':
+        newsHeader = True
+
+    newPostButtonStr = ''
+    # start of headericons div
+    if not newsHeader:
+        if not iconsAsButtons:
+            newPostButtonStr += '<div class="headericons">'
+
     # what screen to go to when a new post is created
     if boxName == 'dm':
         if not iconsAsButtons:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newdm"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
@@ -6771,13 +7011,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 '" alt="| ' + translate['Create a new DM'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a href="' + usersPath + '/newdm">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
     elif boxName == 'tlblogs' or boxName == 'tlnews':
         if not iconsAsButtons:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
@@ -6785,13 +7025,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a href="' + usersPath + '/newblog">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif boxName == 'tlevents':
         if not iconsAsButtons:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newevent"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
@@ -6799,14 +7039,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 translate['Create a new event'] + \
                 '" class="timelineicon"/></a>\n'
         else:
-            newPostButtonStr = \
+            newPostButtonStr += \
                 '<a href="' + usersPath + '/newevent">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
@@ -6814,13 +7054,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
             else:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a href="' + usersPath + '/newpost">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
         else:
             if not iconsAsButtons:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
@@ -6828,10 +7068,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '" alt="| ' + translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
             else:
-                newPostButtonStr = \
+                newPostButtonStr += \
                     '<a href="' + usersPath + '/newfollowers">' + \
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
+
     # This creates a link to the profile page when viewed
     # in lynx, but should be invisible in a graphical web browser
     tlStr += \
@@ -7056,6 +7297,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 if currTlStr:
                     itemCtr += 1
+                    if separatorStr:
+                        tlStr += separatorStr
                     tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
@@ -8499,7 +8742,8 @@ def htmlCalendar(cssCache: {}, translate: {},
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/' + iconsDir + \
         '/prev.png" class="buttonprev"/></a>\n'
-    calendarStr += '  <a href="' + calActor + '/inbox">'
+    calendarStr += '  <a href="' + calActor + '/inbox" title="'
+    calendarStr += translate['Switch to timeline view'] + '">'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \

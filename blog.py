@@ -233,7 +233,28 @@ def htmlBlogPostContent(authorized: bool,
                                               'content')
         blogStr += '<br>' + contentStr + '\n'
 
-    blogStr += '<br>\n'
+    citationsStr = ''
+    if postJsonObject['object'].get('tag'):
+        for tagJson in postJsonObject['object']['tag']:
+            if not isinstance(tagJson, dict):
+                continue
+            if not tagJson.get('type'):
+                continue
+            if tagJson['type'] != 'Article':
+                continue
+            if not tagJson.get('name'):
+                continue
+            if not tagJson.get('url'):
+                continue
+            citationsStr += \
+                '<li><a href="' + tagJson['url'] + '">' + \
+                '<cite>' + tagJson['name'] + '</cite></a></li>\n'
+        if citationsStr:
+            citationsStr = '<p><b>' + translate['Citations'] + \
+                ':</b></p>' + \
+                '<ul>\n' + citationsStr + '</ul>\n'
+
+    blogStr += '<br>\n' + citationsStr
 
     if not linkedAuthor:
         blogStr += '<p class="about"><a class="about" href="' + \

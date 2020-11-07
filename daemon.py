@@ -87,6 +87,7 @@ from inbox import populateReplies
 from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import sendFollowRequest
+from follow import unfollowPerson
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -112,6 +113,7 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webinterface import htmlCitations
 from webinterface import htmlFollowingList
 from webinterface import getBlogAddress
 from webinterface import setBlogAddress
@@ -1799,8 +1801,7 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, unfollow button
         # See htmlPersonOptions
         if '&submitUnfollow=' in optionsConfirmParams:
-            if debug:
-                print('Unfollowing ' + optionsActor)
+            print('Unfollowing ' + optionsActor)
             msg = \
                 htmlUnfollowConfirm(self.server.cssCache,
                                     self.server.translate,
@@ -1830,7 +1831,8 @@ class PubServer(BaseHTTPRequestHandler):
                               chooserNickname,
                               domain,
                               domainFull,
-                              self.server.defaultTimeline).encode('utf-8')
+                              self.server.defaultTimeline,
+                              self.server.newswire).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -1897,7 +1899,8 @@ class PubServer(BaseHTTPRequestHandler):
                               chooserNickname,
                               domain,
                               domainFull,
-                              self.server.defaultTimeline).encode('utf-8')
+                              self.server.defaultTimeline,
+                              self.server.newswire).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -1956,6 +1959,11 @@ class PubServer(BaseHTTPRequestHandler):
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
                 getDomainFromActor(followingActor)
+            followingDomainFull = followingDomain
+            if followingPort:
+                if followingPort != 80 and followingPort != 443:
+                    followingDomainFull = \
+                        followingDomain + ':' + str(followingPort)
             if followerNickname == followingNickname and \
                followingDomain == domain and \
                followingPort == port:
@@ -1984,6 +1992,9 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
+                unfollowPerson(self.server.baseDir, self.postToNickname,
+                               self.server.domain,
+                               followingNickname, followingDomainFull)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onionDomain:
@@ -3042,6 +3053,109 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr = \
                 'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _citationsUpdate(self, callingDomain: str, cookie: str,
+                         authorized: bool, path: str,
+                         baseDir: str, httpPrefix: str,
+                         domain: str, domainFull: str,
+                         onionDomain: str, i2pDomain: str, debug: bool,
+                         defaultTimeline: str,
+                         newswire: {}) -> None:
+        """Updates the citations for a blog post after hitting
+        update button on the citations screen
+        """
+        usersPath = path.replace('/citationsdata', '')
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        nickname = getNicknameFromActor(actorStr)
+
+        citationsFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.citations.txt'
+        # remove any existing citations file
+        if os.path.isfile(citationsFilename):
+            os.remove(citationsFilename)
+
+        if newswire and \
+           ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum citations data length exceeded ' + str(length))
+                self._redirect_headers(actorStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form ' +
+                          'citation screen POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form citations screen POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for ' +
+                      'citations screen POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+            print('citationstest: ' + str(fields))
+            citations = []
+            for ctr in range(0, 128):
+                fieldName = 'newswire' + str(ctr)
+                if not fields.get(fieldName):
+                    continue
+                citations.append(fields[fieldName])
+
+            if citations:
+                citationsStr = ''
+                for citationDate in citations:
+                    citationsStr += citationDate + '\n'
+                # save citations dates, so that they can be added when
+                # reloading the newblog screen
+                citationsFile = open(citationsFilename, "w+")
+                if citationsFile:
+                    citationsFile.write(citationsStr)
+                    citationsFile.close()
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(actorStr + '/newblog',
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -8494,7 +8608,8 @@ class PubServer(BaseHTTPRequestHandler):
                               replyPageNumber,
                               nickname, domain,
                               domainFull,
-                              self.server.defaultTimeline).encode('utf-8')
+                              self.server.defaultTimeline,
+                              self.server.newswire).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -10756,9 +10871,8 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.webp') or \
                    filename.endswith('.avif') or \
                    filename.endswith('.gif'):
-                    if self.server.debug:
-                        print('DEBUG: POST media removing metadata')
                     postImageFilename = filename.replace('.temp', '')
+                    print('Removing metadata from ' + postImageFilename)
                     removeMetaData(filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to ' + postImageFilename)
@@ -10779,15 +10893,24 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     print('WARN: no text fields could be extracted from POST')
 
-            # process the received text fields from the POST
-            if not fields.get('message') and \
-               not fields.get('imageDescription'):
-                return -1
-            if fields.get('submitPost'):
-                if fields['submitPost'] != 'Submit':
+            # was the citations button pressed on the newblog screen?
+            citationsButtonPress = False
+            if postType == 'newblog' and fields.get('submitCitations'):
+                if fields['submitCitations'] == \
+                   self.server.translate['Citations']:
+                    citationsButtonPress = True
+
+            if not citationsButtonPress:
+                # process the received text fields from the POST
+                if not fields.get('message') and \
+                   not fields.get('imageDescription'):
                     return -1
-            else:
-                return 2
+                if fields.get('submitPost'):
+                    if fields['submitPost'] != \
+                       self.server.translate['Submit']:
+                        return -1
+                else:
+                    return 2
 
             if not fields.get('imageDescription'):
                 fields['imageDescription'] = None
@@ -10809,19 +10932,20 @@ class PubServer(BaseHTTPRequestHandler):
             if not fields.get('location'):
                 fields['location'] = None
 
-            # Store a file which contains the time in seconds
-            # since epoch when an attempt to post something was made.
-            # This is then used for active monthly users counts
-            lastUsedFilename = \
-                self.server.baseDir + '/accounts/' + \
-                nickname + '@' + self.server.domain + '/.lastUsed'
-            try:
-                lastUsedFile = open(lastUsedFilename, 'w+')
-                if lastUsedFile:
-                    lastUsedFile.write(str(int(time.time())))
-                    lastUsedFile.close()
-            except BaseException:
-                pass
+            if not citationsButtonPress:
+                # Store a file which contains the time in seconds
+                # since epoch when an attempt to post something was made.
+                # This is then used for active monthly users counts
+                lastUsedFilename = \
+                    self.server.baseDir + '/accounts/' + \
+                    nickname + '@' + self.server.domain + '/.lastUsed'
+                try:
+                    lastUsedFile = open(lastUsedFilename, 'w+')
+                    if lastUsedFile:
+                        lastUsedFile.write(str(int(time.time())))
+                        lastUsedFile.close()
+                except BaseException:
+                    pass
 
             mentionsStr = ''
             if fields.get('mentions'):
@@ -10866,6 +10990,31 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newblog':
+                # citations button on newblog screen
+                if citationsButtonPress:
+                    messageJson = \
+                        htmlCitations(self.server.baseDir,
+                                      nickname,
+                                      self.server.domain,
+                                      self.server.httpPrefix,
+                                      self.server.defaultTimeline,
+                                      self.server.translate,
+                                      self.server.newswire,
+                                      self.server.cssCache,
+                                      fields['subject'],
+                                      fields['message'],
+                                      filename, attachmentMediaType,
+                                      fields['imageDescription'])
+                    if messageJson:
+                        messageJson = messageJson.encode('utf-8')
+                        self._set_headers('text/html',
+                                          len(messageJson),
+                                          cookie, callingDomain)
+                        self._write(messageJson)
+                        return 1
+                    else:
+                        return -1
+                # submit button on newblog screen
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
                                    self.server.domain, self.server.port,
@@ -10876,8 +11025,10 @@ class PubServer(BaseHTTPRequestHandler):
                                    fields['imageDescription'],
                                    self.server.useBlurHash,
                                    fields['replyTo'], fields['replyTo'],
-                                   fields['subject'], fields['schedulePost'],
-                                   fields['eventDate'], fields['eventTime'],
+                                   fields['subject'],
+                                   fields['schedulePost'],
+                                   fields['eventDate'],
+                                   fields['eventTime'],
                                    fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
@@ -11635,6 +11786,17 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.onionDomain,
                                  self.server.i2pDomain, self.server.debug,
                                  self.server.defaultTimeline)
+            return
+
+        if authorized and self.path.endswith('/citationsdata'):
+            self._citationsUpdate(callingDomain, cookie, authorized, self.path,
+                                  self.server.baseDir, self.server.httpPrefix,
+                                  self.server.domain,
+                                  self.server.domainFull,
+                                  self.server.onionDomain,
+                                  self.server.i2pDomain, self.server.debug,
+                                  self.server.defaultTimeline,
+                                  self.server.newswire)
             return
 
         if authorized and self.path.endswith('/newseditdata'):

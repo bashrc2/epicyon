@@ -212,8 +212,8 @@
     "Remove Twitter posts": "Twitterの投稿を削除する",
     "Sensitive": "敏感",
     "Word Replacements": "単語の置換",
-    "Happening Today": "今日の出来事",
-    "Happening This Week": "今週の出来事",
+    "Happening Today": "今日",
+    "Happening This Week": "すぐに",
     "Blog": "ブログ",
     "Blogs": "ブログ",
     "Title": "題名",
@@ -325,5 +325,7 @@
     "Features" : "特徴",
     "Article": "論文",
     "Create an article": "記事を作成する",
-    "Settings": "設定"
+    "Settings": "設定",
+    "Citations": "引用",
+    "Choose newswire items referenced in your article": "あなたの記事で参照されているニュースワイヤーアイテムを選択してください"
 }

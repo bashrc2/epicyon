@@ -212,8 +212,8 @@
     "Remove Twitter posts": "ट्विटर पोस्ट हटाएं",
     "Sensitive": "संवेदनशील",
     "Word Replacements": "शब्द प्रतिस्थापन",
-    "Happening Today": "आज हो रहा है",
-    "Happening This Week": "इस सप्ताह हो रहा है",
+    "Happening Today": "आज",
+    "Happening This Week": "जल्द ही",
     "Blog": "ब्लॉग",
     "Blogs": "ब्लॉग",
     "Title": "शीर्षक",
@@ -325,5 +325,7 @@
     "Features" : "विशेषताएं",
     "Article": "लेख",
     "Create an article": "एक लेख बनाएँ",
-    "Settings": "समायोजन"
+    "Settings": "समायोजन",
+    "Citations": "उद्धरण",
+    "Choose newswire items referenced in your article": "अपने लेख में संदर्भित newswire आइटम चुनें"
 }

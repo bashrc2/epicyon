@@ -212,8 +212,8 @@
     "Remove Twitter posts": "Remover postagens do Twitter",
     "Sensitive": "Sensível",
     "Word Replacements": "Substituições do Word",
-    "Happening Today": "Acontecendo hoje",
-    "Happening This Week": "Acontecendo Esta Semana",
+    "Happening Today": "Hoje",
+    "Happening This Week": "Em breve",
     "Blog": "Blog",
     "Blogs": "Blogs",
     "Title": "Título",
@@ -325,5 +325,7 @@
     "Features" : "Recursos",
     "Article": "Artigo",
     "Create an article": "Crie um artigo",
-    "Settings": "Definições"
+    "Settings": "Definições",
+    "Citations": "Citações",
+    "Choose newswire items referenced in your article": "Escolha os itens de notícias mencionados em seu artigo"
 }

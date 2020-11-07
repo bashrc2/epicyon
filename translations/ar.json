@@ -212,8 +212,8 @@
     "Remove Twitter posts": "إزالة مشاركات Twitter",
     "Sensitive": "حساس",
     "Word Replacements": "استبدال الكلمات",
-    "Happening Today": "يحدث اليوم",
-    "Happening This Week": "يحدث هذا الاسبوع",
+    "Happening Today": "اليوم",
+    "Happening This Week": "هكذا",
     "Blog": "مدونة",
     "Blogs": "المدونات",
     "Title": "عنوان",
@@ -325,5 +325,7 @@
     "Features" : "ميزات",
     "Article": "مقال إخباري",
     "Create an article": "قم بإنشاء مقال",
-    "Settings": "إعدادات"
+    "Settings": "إعدادات",
+    "Citations": "اقتباسات",
+    "Choose newswire items referenced in your article": "اختر العناصر الإخبارية المشار إليها في مقالتك"
 }

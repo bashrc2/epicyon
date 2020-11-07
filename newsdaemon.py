@@ -725,8 +725,9 @@ def runNewswireDaemon(baseDir: str, httpd,
         mergeWithPreviousNewswire(httpd.newswire, newNewswire)
 
         httpd.newswire = newNewswire
-        saveJson(httpd.newswire, newswireStateFilename)
-        print('Newswire updated')
+        if newNewswire:
+            saveJson(httpd.newswire, newswireStateFilename)
+            print('Newswire updated')
 
         convertRSStoActivityPub(baseDir,
                                 httpPrefix, domain, port,

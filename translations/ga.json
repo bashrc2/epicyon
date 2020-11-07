@@ -212,8 +212,8 @@
     "Remove Twitter posts": "Bain poist Twitter",
     "Sensitive": "Íogair",
     "Word Replacements": "Athchur Focal",
-    "Happening Today": "Ag tarlú inniu",
-    "Happening This Week": "Ag tarlú an tseachtain seo",
+    "Happening Today": "Inniu",
+    "Happening This Week": "Go gairid",
     "Blog": "Blag",
     "Blogs": "Blaganna",
     "Title": "Teideal",
@@ -325,5 +325,7 @@
     "Features" : "Gnéithe",
     "Article": "Airteagal",
     "Create an article": "Cruthaigh alt",
-    "Settings": "Socruithe"
+    "Settings": "Socruithe",
+    "Citations": "Citations",
+    "Choose newswire items referenced in your article": "Roghnaigh míreanna sreanga nuachta dá dtagraítear i d’alt"
 }
