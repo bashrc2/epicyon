@@ -462,6 +462,7 @@ def setThemeNight(baseDir: str):
     fontStrItalic = \
         "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
+        "main-visited-color": "#0481f5",
         "post-separator-margin-top": "2%",
         "post-separator-margin-bottom": "2%",
         "post-separator-width": "80%",
@@ -480,7 +481,7 @@ def setThemeNight(baseDir: str):
         "column-left-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
-        "main-link-color": "ff9900",
+        "main-link-color": "#6481f5",
         "main-link-color-hover": "#d09338",
         "main-fg-color": "#0481f5",
         "column-left-fg-color": "#0481f5",
