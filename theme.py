@@ -1026,6 +1026,7 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "font-size-header": "14px",
         "font-size": "22px",
         "font-size2": "16px",
         "font-size3": "30px",
@@ -1034,6 +1035,8 @@ def setThemeIndymediaModern(baseDir: str):
         "font-size-likes": "10px",
         "font-size-links": "12px",
         "font-size-newswire": "12px",
+        "font-size-newswire-mobile": "30px",
+        "font-size-dropdown-header": "30px",
         "post-separator-margin-top": "1%",
         "post-separator-margin-bottom": "1%",
         "post-separator-width": "95%",
