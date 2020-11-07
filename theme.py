@@ -605,6 +605,8 @@ def setThemeHenge(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "post-separator-width": "96.5%",
+        "post-separator-height": "40px",
         "banner-height": "25vh",
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
@@ -626,7 +628,7 @@ def setThemeHenge(baseDir: str):
         "column-left-fg-color": "white",
         "main-bg-color-dm": "#343335",
         "border-color": "#222",
-        "border-width": "5px",
+        "border-width": "0",
         "border-width-header": "5px",
         "main-bg-color-reply": "#383335",
         "main-bg-color-report": "#383335",
