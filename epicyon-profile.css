@@ -124,7 +124,8 @@
     --publish-button-vertical-offset: 10px;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
-    --post-separator-margin: 0;
+    --post-separator-margin-top: 0;
+    --post-separator-margin-bottom: 0;
     --post-separator-width: 95%;
     --post-separator-height: 1px;
 }
@@ -164,7 +165,8 @@ body, html {
 }
 
 .postSeparatorImage img {
-    margin: var(--post-separator-margin) 0;
+    padding-top: var(--post-separator-margin-top);
+    padding-bottom: var(--post-separator-margin-bottom);
     width: var(--post-separator-width);
     height: var(--post-separator-height);
     display: block;
