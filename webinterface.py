@@ -5733,6 +5733,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if editImageClass == 'leftColEdit':
         htmlStr += '\n      <center>\n'
 
+    htmlStr += '      <div class="leftColIcons">\n'
     if editor:
         # show the edit icon
         htmlStr += \
@@ -5761,6 +5762,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" src="/' + iconsDir + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
+    htmlStr += '      </div>\n'
 
     if editImageClass == 'leftColEdit':
         htmlStr += '      </center>\n'

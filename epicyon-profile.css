@@ -154,6 +154,11 @@ body, html {
     line-height: var(--line-spacing);
 }
 
+.leftColIcons img {
+    float: right;
+    display: block;
+}
+
 .postSeparatorImage img {
     margin: var(--post-separator-margin) 0;
     width: var(--post-separator-width);
