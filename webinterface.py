@@ -6807,7 +6807,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         separatorStr = \
             '<div class="postSeparatorImage">' + \
             '<img src="' + \
-            iconsDir.replace(baseDir, '/separator.png') + '"/>' + \
+            iconsDir.replace(baseDir + '/img', '/separator.png') + '"/>' + \
             '</div>\n'
 
     # the css filename
