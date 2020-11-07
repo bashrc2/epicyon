@@ -1131,6 +1131,11 @@ def setThemeIndymediaModern(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "post-line-margin": "0 49.5%",
+        "post-line-width": "5px",
+        "post-line-radius": "10px",
+        "column-left-header-line-color": "#999",
+        "border-width": "0",
         "banner-height": "35vh",
         "banner-height-mobile": "15vh",
         "search-banner-height-mobile": "15vh",
