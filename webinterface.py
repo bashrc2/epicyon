@@ -736,6 +736,7 @@ def htmlHashtagSearch(cssCache: {},
         return None
 
     iconsDir = getIconsDir(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
     if nickname:
@@ -829,8 +830,7 @@ def htmlHashtagSearch(cssCache: {},
             if nickname:
                 showIndividualPostIcons = True
             allowDeletion = False
-            hashtagSearchForm += \
-                '<hr class="postLine">\n' + \
+            hashtagSearchForm += separatorStr + \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      iconsDir, translate, None,
@@ -1166,6 +1166,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         return historySearchForm
 
     iconsDir = getIconsDir(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -1192,8 +1193,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             continue
         showIndividualPostIcons = True
         allowDeletion = False
-        historySearchForm += \
-            '<hr class="postLine">\n' + \
+        historySearchForm += separatorStr + \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  iconsDir, translate, None,
@@ -5683,6 +5683,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     """
     htmlStr = ''
 
+    separatorStr = htmlPostSeparator(baseDir, 'left')
     domain = domainFull
     if ':' in domain:
         domain = domain.split(':')
@@ -5809,8 +5810,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 else:
                     if lineStr.startswith('#') or lineStr.startswith('*'):
                         lineStr = lineStr[1:].strip()
-                        htmlStr += \
-                            '      <hr class="linksLine">\n'
+                        htmlStr += separatorStr
                         htmlStr += \
                             '      <h3 class="linksHeader">' + \
                             lineStr + '</h3>\n'
@@ -5838,10 +5838,11 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
     return totalVotesStr
 
 
-def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
+def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                  translate: {}, positiveVoting: bool, iconsDir: str) -> str:
     """Converts a newswire dict into html
     """
+    separatorStr = htmlPostSeparator(baseDir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
         publishedDate = \
@@ -5851,7 +5852,7 @@ def htmlNewswire(newswire: {}, nickname: str, moderator: bool,
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         moderatedItem = item[5]
-        htmlStr += '<hr class="newswireLine">\n'
+        htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
             totalVotesStr = ''
             totalVotes = 0
@@ -6167,7 +6168,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     # show the newswire lines
     newswireContentStr = \
-        htmlNewswire(newswire, nickname, moderator, translate,
+        htmlNewswire(baseDir, newswire, nickname, moderator, translate,
                      positiveVoting, iconsDir)
     htmlStr += newswireContentStr
 
@@ -6726,6 +6727,23 @@ def headerButtonsTimeline(defaultTimeline: str,
     return tlStr
 
 
+def htmlPostSeparator(baseDir: str, column: str) -> str:
+    """Returns the html for a timeline post separator image
+    """
+    iconsDir = getIconsDir(baseDir)
+    filename = 'separator.png'
+    if column:
+        filename = 'separator_' + column + '.png'
+    separatorImageFilename = baseDir + '/img/' + iconsDir + '/' + filename
+    separatorStr = ''
+    if os.path.isfile(separatorImageFilename):
+        separatorStr = \
+            '<div class="postSeparatorImage"><center>' + \
+            '<img src="/' + iconsDir + '/' + filename + '"/>' + \
+            '</center></div>\n'
+    return separatorStr
+
+
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -6801,13 +6819,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
 
-    separatorImageFilename = baseDir + '/img/' + iconsDir + '/separator.png'
-    separatorStr = ''
-    if os.path.isfile(separatorImageFilename):
-        separatorStr = \
-            '<div class="postSeparatorImage"><center>' + \
-            '<img src="/' + iconsDir + '/separator.png"/>' + \
-            '</center></div>\n'
+    separatorStr = htmlPostSeparator(baseDir, None)
 
     # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
