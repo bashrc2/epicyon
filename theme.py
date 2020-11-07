@@ -1088,7 +1088,7 @@ def setThemeIndymediaModern(baseDir: str):
         "hashtag-background-color": "#b2b2b2",
         "focus-color": "grey",
         "font-size-button-mobile": "26px",
-        "font-size-publish-button": "26px",
+        "font-size-publish-button": "14px",
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "column-left-color": "white",
         "main-bg-color": "white",
