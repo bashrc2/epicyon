@@ -6819,7 +6819,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
 
-    separatorStr = htmlPostSeparator(baseDir, None)
+    if boxName != 'tlmedia':
+        separatorStr = htmlPostSeparator(baseDir, None)
 
     # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
