@@ -3140,6 +3140,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     These should only be public posts
     """
     iconsDir = getIconsDir(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
     profileStr = ''
     maxItems = 4
     ctr = 0
@@ -3172,7 +3173,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          False, False, False, True, False)
                 if postStr:
-                    profileStr += postStr
+                    profileStr += separatorStr + postStr
                     ctr += 1
                     if ctr >= maxItems:
                         break
@@ -3390,6 +3391,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
+    separatorStr = htmlPostSeparator(baseDir, None)
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
@@ -3397,7 +3399,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         showRemoveButton = False
         if item['actor'] == actor:
             showRemoveButton = True
-        timelineStr += \
+        timelineStr += separatorStr + \
             htmlIndividualShare(actor, item, translate,
                                 showContactButton, showRemoveButton)
 
