@@ -6805,9 +6805,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     separatorStr = ''
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
-            '<div class="postSeparatorImage">' + \
+            '<div class="postSeparatorImage"><center>' + \
             '<img src="/' + iconsDir + '/separator.png"/>' + \
-            '</div>\n'
+            '</center></div>\n'
 
     # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
