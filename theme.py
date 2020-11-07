@@ -605,6 +605,7 @@ def setThemeHenge(baseDir: str):
     setRssIconAtTop(baseDir, True)
     setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "banner-height": "25vh",
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
         "font-size-button-mobile": "26px",
