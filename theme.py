@@ -1140,7 +1140,7 @@ def setThemeIndymediaModern(baseDir: str):
     setNewswirePublishAsIcon(baseDir, False)
     setFullWidthTimelineButtonHeader(baseDir, False)
     setIconsAsButtons(baseDir, True)
-    setRssIconAtTop(baseDir, True)
+    setRssIconAtTop(baseDir, False)
     setPublishButtonAtTop(baseDir, True)
 
 
