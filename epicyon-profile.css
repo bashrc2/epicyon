@@ -1563,6 +1563,7 @@ div.container {
         border-radius: var(--timeline-border-radius);
         padding: var(--header-button-padding);
         margin: var(--vertical-between-posts-header);
+        transform: translateY(0%);
     }
     .container {
         border: var(--border-width) solid var(--border-color);
