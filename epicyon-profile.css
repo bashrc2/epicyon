@@ -131,6 +131,9 @@
     --publish-button-vertical-offset: 10px;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
+    --post-separator-margin: 0;
+    --post-separator-width: 95%;
+    --post-separator-height: 1px;
 }
 
 @font-face {
@@ -157,6 +160,13 @@ body, html {
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
+}
+
+.postSeparatorImage img {
+    margin: var(--post-separator-margin) 0;
+    width: var(--post-separator-width);
+    height: var(--post-separator-height);
+    display: block;
 }
 
 hr.linksLine {
@@ -997,7 +1007,7 @@ div.container {
         width: var(--column-left-width);
     }
     .col-left {
-	border: var(--column-left-border-width) solid var(--column-left-border-color);
+        border: var(--column-left-border-width) solid var(--column-left-border-color);
         color: var(--column-left-fg-color);
         font-size: var(--font-size-links);
         float: left;
@@ -1037,7 +1047,7 @@ div.container {
         overflow: hidden;
     }
     .col-right {
-	border: var(--column-right-border-width) solid var(--column-left-border-color);
+        border: var(--column-right-border-width) solid var(--column-left-border-color);
         background-color: var(--column-left-color);
         color: var(--column-left-fg-color);
         font-size: var(--font-size-links);

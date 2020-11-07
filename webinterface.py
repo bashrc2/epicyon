@@ -6801,6 +6801,15 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
 
+    separatorImageFilename = iconsDir + '/separator.png'
+    separatorStr = ''
+    if os.path.isfile(separatorImageFilename):
+        separatorStr = \
+            '<div class="postSeparatorImage">' + \
+            '<img src="' + \
+            iconsDir.replace(baseDir, '/separator.png') + '"/>' + \
+            '</div>\n'
+
     # the css filename
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -7271,7 +7280,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 if currTlStr:
                     itemCtr += 1
-                    tlStr += '<hr class="postLine">\n'
+                    if separatorStr:
+                        tlStr += separatorStr
                     tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
