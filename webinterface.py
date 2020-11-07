@@ -6801,14 +6801,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # This changes depending upon theme
     iconsDir = getIconsDir(baseDir)
 
-    separatorImageFilename = iconsDir + '/separator.png'
+    separatorImageFilename = baseDir + '/img/' + iconsDir + '/separator.png'
     separatorStr = ''
-    print('separatorImageFilename: ' + separatorImageFilename)
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
             '<div class="postSeparatorImage">' + \
-            '<img src="/' + \
-            iconsDir.split('/img/')[1] + '/separator.png"/>' + \
+            '<img src="/' + iconsDir + '/separator.png"/>' + \
             '</div>\n'
 
     # the css filename
