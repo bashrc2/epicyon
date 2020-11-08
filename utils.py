@@ -19,11 +19,10 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
-def firstParagraph(postJsonObject: {}) -> str:
+def firstParagraphFromString(content: str) -> str:
     """Get the first paragraph from a blog post
     to be used as a summary in the newswire feed
     """
-    content = postJsonObject['object']['content']
     if '<p>' not in content or '</p>' not in content:
         return removeHtml(content)
     paragraph = content.split('<p>')[1]
