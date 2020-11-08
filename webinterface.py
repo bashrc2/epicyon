@@ -3642,7 +3642,8 @@ def htmlProfile(rssIconAtTop: bool,
             getLeftColumnContent(baseDir, 'news', domainFull,
                                  httpPrefix, translate,
                                  iconsDir, False,
-                                 False, None, rssIconAtTop, True)
+                                 False, None, rssIconAtTop, True,
+                                 True)
         profileHeaderStr += '      </td>\n'
         profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
@@ -5681,7 +5682,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
                          iconsDir: str, editor: bool,
                          showBackButton: bool, timelinePath: str,
-                         rssIconAtTop: bool, showHeaderImage: bool) -> str:
+                         rssIconAtTop: bool, showHeaderImage: bool,
+                         frontPage: bool) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -5756,12 +5758,15 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     else:
         # rss feed for all accounts on the instance
         rssUrl = httpPrefix + '://' + domainFull + '/blog/rss.xml'
+    if not frontPage:
+        rssTitle = translate['RSS feed for your blog']
+    else:
+        rssTitle = translate['RSS feed for this site']
     rssIconStr = \
         '      <a href="' + rssUrl + '">' + \
         '<img class="' + editImageClass + \
-        '" loading="lazy" alt="' + \
-        translate['RSS feed for this site'] + \
-        '" title="' + translate['RSS feed for this site'] + \
+        '" loading="lazy" alt="' + rssTitle + \
+        '" title="' + rssTitle + \
         '" src="/' + iconsDir + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
@@ -6234,7 +6239,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                              httpPrefix, translate,
                              iconsDir, editor,
                              False, timelinePath,
-                             rssIconAtTop, False)
+                             rssIconAtTop, False, False)
     htmlStr += '</div>\n' + htmlFooter()
     return htmlStr
 
@@ -7124,7 +7129,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate, iconsDir,
                              editor, False, None, rssIconAtTop,
-                             True)
+                             True, False)
     tlStr += '  <td valign="top" class="col-left">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts

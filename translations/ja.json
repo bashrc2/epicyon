@@ -327,5 +327,6 @@
     "Create an article": "記事を作成する",
     "Settings": "設定",
     "Citations": "引用",
-    "Choose newswire items referenced in your article": "あなたの記事で参照されているニュースワイヤーアイテムを選択してください"
+    "Choose newswire items referenced in your article": "あなたの記事で参照されているニュースワイヤーアイテムを選択してください",
+    "RSS feed for your blog": "ブログのRSSフィード"
 }
