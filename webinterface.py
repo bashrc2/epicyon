@@ -973,8 +973,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                 description = postJsonObject['object']['content']
                 description = firstParagraphFromString(description)
                 hashtagFeed += \
-                    '         <description><![CDATA[' + \
-                    description + ']]></description>'
+                    '         <description>' + description + '</description>'
                 hashtagFeed += \
                     '         <pubDate>' + rssDateStr + '</pubDate>'
                 if postJsonObject['object'].get('attachment'):
