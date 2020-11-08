@@ -663,9 +663,11 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     if os.path.isfile(filename + '.arrived'):
                         os.remove(filename + '.arrived')
 
-                # set the url
+                # setting the url here links to the activitypub object
+                # stored locally
                 # newswire[originalDateStr][1] = \
                 #     '/users/news/statuses/' + statusNumber
+
                 # set the filename
                 newswire[originalDateStr][3] = filename
 
