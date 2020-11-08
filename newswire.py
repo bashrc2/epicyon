@@ -82,7 +82,7 @@ def getNewswireTags(text: str, maxTags: int) -> []:
 
 def addNewswireDictEntry(baseDir: str, domain: str,
                          newswire: {}, dateStr: str,
-                         title: str, link: str,
+                         title: str, content: str, link: str,
                          votesStatus: str, postFilename: str,
                          description: str, moderated: bool,
                          mirrored: bool,
@@ -412,6 +412,7 @@ def isNewswireBlogPost(postJsonObject: {}) -> bool:
         return False
     if postJsonObject['object'].get('summary') and \
        postJsonObject['object'].get('url') and \
+       postJsonObject['object'].get('content') and \
        postJsonObject['object'].get('published'):
         return isPublicPost(postJsonObject)
     return False
@@ -441,6 +442,19 @@ def getHashtagsFromPost(postJsonObject: {}) -> []:
         if tg['name'] not in tags:
             tags.append(tg['name'])
     return tags
+
+
+def firstParagraph(postJsonObject: {}) -> str:
+    """Get the first paragraph from a blog post
+    to be used as a summary in the newswire feed
+    """
+    content = postJsonObject['object']['content']
+    if '<p>' not in content or '</p>' not in content:
+        return removeHtml(content)
+    paragraph = content.split('<p>')[1]
+    if '</p>' in paragraph:
+        paragraph = paragraph.split('</p>')[0]
+    return removeHtml(paragraph)
 
 
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
@@ -500,7 +514,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     votes = []
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
-                    description = ''
+                    description = firstParagraph(postJsonObject)
                     addNewswireDictEntry(baseDir, domain,
                                          newswire, published,
                                          postJsonObject['object']['summary'],
