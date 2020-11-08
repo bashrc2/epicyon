@@ -166,10 +166,12 @@ def htmlBlogPostContent(authorized: bool,
     if postJsonObject['object'].get('id'):
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
     titleStr = ''
+    articleAdded = False
     if postJsonObject['object'].get('summary'):
         titleStr = postJsonObject['object']['summary']
-        blogStr += '<h1><a href="' + messageLink + '">' + \
+        blogStr += '<article><h1><a href="' + messageLink + '">' + \
             titleStr + '</a></h1>\n'
+        articleAdded = True
 
     # get the handle of the author
     if postJsonObject['object'].get('attributedTo'):
@@ -232,7 +234,10 @@ def htmlBlogPostContent(authorized: bool,
             contentStr = replaceEmojiFromTags(contentStr,
                                               postJsonObject['object']['tag'],
                                               'content')
-        blogStr += '<br>' + contentStr + '\n'
+        if articleAdded:
+            blogStr += '<br>' + contentStr + '</article>\n'
+        else:
+            blogStr += '<br><article>' + contentStr + '</article>\n'
 
     citationsStr = ''
     if postJsonObject['object'].get('tag'):
