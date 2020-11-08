@@ -19,6 +19,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
+from utils import firstParagraph
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
@@ -312,9 +313,12 @@ def htmlBlogPostRSS2(authorized: bool,
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                description = firstParagraph(postJsonObject)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
                 rssStr += '         <link>' + messageLink + '</link>'
+                rssStr += \
+                    '         <description>' + description + '</description>'
                 rssStr += '         <pubDate>' + rssDateStr + '</pubDate>'
                 rssStr += '     </item>'
     return rssStr
@@ -339,8 +343,10 @@ def htmlBlogPostRSS3(authorized: bool,
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                description = firstParagraph(postJsonObject)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
+                rssStr += 'description: ' + description + '\n'
                 rssStr += 'created: ' + rssDateStr + '\n\n'
     return rssStr
 

@@ -12,6 +12,7 @@ from socket import error as SocketError
 import errno
 from datetime import datetime
 from collections import OrderedDict
+from utils import firstParagraph
 from utils import isPublicPost
 from utils import locatePost
 from utils import loadJson
@@ -442,19 +443,6 @@ def getHashtagsFromPost(postJsonObject: {}) -> []:
         if tg['name'] not in tags:
             tags.append(tg['name'])
     return tags
-
-
-def firstParagraph(postJsonObject: {}) -> str:
-    """Get the first paragraph from a blog post
-    to be used as a summary in the newswire feed
-    """
-    content = postJsonObject['object']['content']
-    if '<p>' not in content or '</p>' not in content:
-        return removeHtml(content)
-    paragraph = content.split('<p>')[1]
-    if '</p>' in paragraph:
-        paragraph = paragraph.split('</p>')[0]
-    return removeHtml(paragraph)
 
 
 def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
