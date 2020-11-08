@@ -19,18 +19,6 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
-def firstParagraphFromString(content: str) -> str:
-    """Get the first paragraph from a blog post
-    to be used as a summary in the newswire feed
-    """
-    if '<p>' not in content or '</p>' not in content:
-        return removeHtml(content)
-    paragraph = content.split('<p>')[1]
-    if '</p>' in paragraph:
-        paragraph = paragraph.split('</p>')[0]
-    return removeHtml(paragraph)
-
-
 def removeHtml(content: str) -> str:
     """Removes html links from the given content.
     Used to ensure that profile descriptions don't contain dubious content
@@ -48,6 +36,18 @@ def removeHtml(content: str) -> str:
         elif not removing:
             result += ch
     return result
+
+
+def firstParagraphFromString(content: str) -> str:
+    """Get the first paragraph from a blog post
+    to be used as a summary in the newswire feed
+    """
+    if '<p>' not in content or '</p>' not in content:
+        return removeHtml(content)
+    paragraph = content.split('<p>')[1]
+    if '</p>' in paragraph:
+        paragraph = paragraph.split('</p>')[0]
+    return removeHtml(paragraph)
 
 
 def isSystemAccount(nickname: str) -> bool:
