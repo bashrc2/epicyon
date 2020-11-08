@@ -25,6 +25,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import firstParagraphFromString
 from utils import getCSS
 from utils import isSystemAccount
 from utils import removeIdEnding
@@ -969,10 +970,11 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                         '         <title>' + \
                         postJsonObject['object']['summary'] + \
                         '</title>'
+                description = postJsonObject['object']['content']
+                description = firstParagraphFromString(description)
                 hashtagFeed += \
                     '         <description><![CDATA[' + \
-                    postJsonObject['object']['content'] + \
-                    ']]></description>'
+                    description + ']]></description>'
                 hashtagFeed += \
                     '         <pubDate>' + rssDateStr + '</pubDate>'
                 if postJsonObject['object'].get('attachment'):
