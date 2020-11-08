@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import firstParagraphFromString
 from utils import clearFromPostCaches
 from utils import containsInvalidChars
 from utils import isSystemAccount
@@ -3272,7 +3273,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.newswire[publishedDate][0] = \
                             newsPostTitle
                         self.server.newswire[publishedDate][4] = \
-                            newsPostContent
+                            firstParagraphFromString(newsPostContent)
                         # save newswire
                         newswireStateFilename = \
                             baseDir + '/accounts/.newswirestate.json'
