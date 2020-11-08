@@ -521,6 +521,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
+            rssDescription = rssDescription.replace(']]', '')
         if '&' in rssDescription:
             rssDescription = html.unescape(rssDescription)
         rssDescription = '<p>' + rssDescription + '<p>'
