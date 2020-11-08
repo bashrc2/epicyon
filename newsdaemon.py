@@ -504,8 +504,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         if os.path.isfile(filename):
             # don't create the post if it already exists
             # set the url
-            newswire[originalDateStr][1] = \
-                '/users/news/statuses/' + statusNumber
+            # newswire[originalDateStr][1] = \
+            #     '/users/news/statuses/' + statusNumber
             # set the filename
             newswire[originalDateStr][3] = filename
             continue
