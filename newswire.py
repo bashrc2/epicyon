@@ -82,7 +82,7 @@ def getNewswireTags(text: str, maxTags: int) -> []:
 
 def addNewswireDictEntry(baseDir: str, domain: str,
                          newswire: {}, dateStr: str,
-                         title: str, content: str, link: str,
+                         title: str, link: str,
                          votesStatus: str, postFilename: str,
                          description: str, moderated: bool,
                          mirrored: bool,
