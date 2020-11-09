@@ -58,7 +58,6 @@ from posts import sendSignedJson
 from posts import sendToFollowersThread
 from webapp import individualPostAsHtml
 from webapp import getIconsDir
-from webapp import removeOldHashtags
 from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
@@ -66,6 +65,7 @@ from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
 from happening import saveEventPost
+from delete import removeOldHashtags
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:

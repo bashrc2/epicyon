@@ -11,10 +11,10 @@ from datetime import datetime
 
 from content import replaceEmojiFromTags
 from webapp import getIconsDir
-from webapp import getPostAttachmentsAsHtml
 from webapp import htmlHeader
 from webapp import htmlFooter
-from webapp import addEmbeddedElements
+from webapp_media import addEmbeddedElements
+from webapp_utils import getPostAttachmentsAsHtml
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost

@@ -11,9 +11,12 @@ from collections import OrderedDict
 from session import getJson
 from utils import getProtocolPrefixes
 from utils import loadJson
+from utils import getCachedPostFilename
 from utils import getConfigParam
 from cache import getPersonFromCache
 from cache import storePersonInCache
+from content import addHtmlTags
+from content import replaceEmojiFromTags
 
 
 def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
@@ -414,3 +417,326 @@ def getRightImageFile(baseDir: str,
     return getImageFile(baseDir, 'right_col_image',
                         baseDir + '/accounts/' + nickname + '@' + domain,
                         nickname, domain)
+
+
+def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
+    htmlStr = '<!DOCTYPE html>\n'
+    htmlStr += '<html lang="' + lang + '">\n'
+    htmlStr += '  <head>\n'
+    htmlStr += '    <meta charset="utf-8">\n'
+    fontName, fontFormat = getFontFromCss(css)
+    if fontName:
+        htmlStr += '    <link rel="preload" as="font" type="' + \
+            fontFormat + '" href="' + fontName + '" crossorigin>\n'
+    htmlStr += '    <style>\n' + css + '</style>\n'
+    htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
+    htmlStr += '    <meta name="theme-color" content="grey">\n'
+    htmlStr += '    <title>Epicyon</title>\n'
+    htmlStr += '  </head>\n'
+    htmlStr += '  <body>\n'
+    return htmlStr
+
+
+def htmlFooter() -> str:
+    htmlStr = '  </body>\n'
+    htmlStr += '</html>\n'
+    return htmlStr
+
+
+def getFontFromCss(css: str) -> (str, str):
+    """Returns the font name and format
+    """
+    if ' url(' not in css:
+        return None, None
+    fontName = css.split(" url(")[1].split(")")[0].replace("'", '')
+    fontFormat = css.split(" format('")[1].split("')")[0]
+    return fontName, fontFormat
+
+
+def loadIndividualPostAsHtmlFromCache(baseDir: str,
+                                      nickname: str, domain: str,
+                                      postJsonObject: {}) -> str:
+    """If a cached html version of the given post exists then load it and
+    return the html text
+    This is much quicker than generating the html from the json object
+    """
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+
+    postHtml = ''
+    if not cachedPostFilename:
+        return postHtml
+
+    if not os.path.isfile(cachedPostFilename):
+        return postHtml
+
+    tries = 0
+    while tries < 3:
+        try:
+            with open(cachedPostFilename, 'r') as file:
+                postHtml = file.read()
+                break
+        except Exception as e:
+            print(e)
+            # no sleep
+            tries += 1
+    if postHtml:
+        return postHtml
+
+
+def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
+                          nickname: str, domain: str,
+                          displayName: str, inProfileName: bool) -> str:
+    """Adds emoji icons to display names on individual posts
+    """
+    if ':' not in displayName:
+        return displayName
+
+    displayName = displayName.replace('<p>', '').replace('</p>', '')
+    emojiTags = {}
+    print('TAG: displayName before tags: ' + displayName)
+    displayName = \
+        addHtmlTags(baseDir, httpPrefix,
+                    nickname, domain, displayName, [], emojiTags)
+    displayName = displayName.replace('<p>', '').replace('</p>', '')
+    print('TAG: displayName after tags: ' + displayName)
+    # convert the emoji dictionary to a list
+    emojiTagsList = []
+    for tagName, tag in emojiTags.items():
+        emojiTagsList.append(tag)
+    print('TAG: emoji tags list: ' + str(emojiTagsList))
+    if not inProfileName:
+        displayName = \
+            replaceEmojiFromTags(displayName, emojiTagsList, 'post header')
+    else:
+        displayName = \
+            replaceEmojiFromTags(displayName, emojiTagsList, 'profile')
+    print('TAG: displayName after tags 2: ' + displayName)
+
+    # remove any stray emoji
+    while ':' in displayName:
+        if '://' in displayName:
+            break
+        emojiStr = displayName.split(':')[1]
+        prevDisplayName = displayName
+        displayName = displayName.replace(':' + emojiStr + ':', '').strip()
+        if prevDisplayName == displayName:
+            break
+        print('TAG: displayName after tags 3: ' + displayName)
+    print('TAG: displayName after tag replacements: ' + displayName)
+
+    return displayName
+
+
+def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
+                             isMuted: bool, avatarLink: str,
+                             replyStr: str, announceStr: str, likeStr: str,
+                             bookmarkStr: str, deleteStr: str,
+                             muteStr: str) -> (str, str):
+    """Returns a string representing any attachments
+    """
+    attachmentStr = ''
+    galleryStr = ''
+    if not postJsonObject['object'].get('attachment'):
+        return attachmentStr, galleryStr
+
+    if not isinstance(postJsonObject['object']['attachment'], list):
+        return attachmentStr, galleryStr
+
+    attachmentCtr = 0
+    attachmentStr += '<div class="media">\n'
+    for attach in postJsonObject['object']['attachment']:
+        if not (attach.get('mediaType') and attach.get('url')):
+            continue
+
+        mediaType = attach['mediaType']
+        imageDescription = ''
+        if attach.get('name'):
+            imageDescription = attach['name'].replace('"', "'")
+        if mediaType == 'image/png' or \
+           mediaType == 'image/jpeg' or \
+           mediaType == 'image/webp' or \
+           mediaType == 'image/avif' or \
+           mediaType == 'image/gif':
+            if attach['url'].endswith('.png') or \
+               attach['url'].endswith('.jpg') or \
+               attach['url'].endswith('.jpeg') or \
+               attach['url'].endswith('.webp') or \
+               attach['url'].endswith('.avif') or \
+               attach['url'].endswith('.gif'):
+                if attachmentCtr > 0:
+                    attachmentStr += '<br>'
+                if boxName == 'tlmedia':
+                    galleryStr += '<div class="gallery">\n'
+                    if not isMuted:
+                        galleryStr += '  <a href="' + attach['url'] + '">\n'
+                        galleryStr += \
+                            '    <img loading="lazy" src="' + \
+                            attach['url'] + '" alt="" title="">\n'
+                        galleryStr += '  </a>\n'
+                    if postJsonObject['object'].get('url'):
+                        imagePostUrl = postJsonObject['object']['url']
+                    else:
+                        imagePostUrl = postJsonObject['object']['id']
+                    if imageDescription and not isMuted:
+                        galleryStr += \
+                            '  <a href="' + imagePostUrl + \
+                            '" class="gallerytext"><div ' + \
+                            'class="gallerytext">' + \
+                            imageDescription + '</div></a>\n'
+                    else:
+                        galleryStr += \
+                            '<label class="transparent">---</label><br>'
+                    galleryStr += '  <div class="mediaicons">\n'
+                    galleryStr += \
+                        '    ' + replyStr+announceStr + likeStr + \
+                        bookmarkStr + deleteStr + muteStr + '\n'
+                    galleryStr += '  </div>\n'
+                    galleryStr += '  <div class="mediaavatar">\n'
+                    galleryStr += '    ' + avatarLink + '\n'
+                    galleryStr += '  </div>\n'
+                    galleryStr += '</div>\n'
+
+                attachmentStr += '<a href="' + attach['url'] + '">'
+                attachmentStr += \
+                    '<img loading="lazy" src="' + attach['url'] + \
+                    '" alt="' + imageDescription + '" title="' + \
+                    imageDescription + '" class="attachment"></a>\n'
+                attachmentCtr += 1
+        elif (mediaType == 'video/mp4' or
+              mediaType == 'video/webm' or
+              mediaType == 'video/ogv'):
+            extension = '.mp4'
+            if attach['url'].endswith('.webm'):
+                extension = '.webm'
+            elif attach['url'].endswith('.ogv'):
+                extension = '.ogv'
+            if attach['url'].endswith(extension):
+                if attachmentCtr > 0:
+                    attachmentStr += '<br>'
+                if boxName == 'tlmedia':
+                    galleryStr += '<div class="gallery">\n'
+                    if not isMuted:
+                        galleryStr += '  <a href="' + attach['url'] + '">\n'
+                        galleryStr += \
+                            '    <video width="600" height="400" controls>\n'
+                        galleryStr += \
+                            '      <source src="' + attach['url'] + \
+                            '" alt="' + imageDescription + \
+                            '" title="' + imageDescription + \
+                            '" class="attachment" type="video/' + \
+                            extension.replace('.', '') + '">'
+                        idx = 'Your browser does not support the video tag.'
+                        galleryStr += translate[idx]
+                        galleryStr += '    </video>\n'
+                        galleryStr += '  </a>\n'
+                    if postJsonObject['object'].get('url'):
+                        videoPostUrl = postJsonObject['object']['url']
+                    else:
+                        videoPostUrl = postJsonObject['object']['id']
+                    if imageDescription and not isMuted:
+                        galleryStr += \
+                            '  <a href="' + videoPostUrl + \
+                            '" class="gallerytext"><div ' + \
+                            'class="gallerytext">' + \
+                            imageDescription + '</div></a>\n'
+                    else:
+                        galleryStr += \
+                            '<label class="transparent">---</label><br>'
+                    galleryStr += '  <div class="mediaicons">\n'
+                    galleryStr += \
+                        '    ' + replyStr + announceStr + likeStr + \
+                        bookmarkStr + deleteStr + muteStr + '\n'
+                    galleryStr += '  </div>\n'
+                    galleryStr += '  <div class="mediaavatar">\n'
+                    galleryStr += '    ' + avatarLink + '\n'
+                    galleryStr += '  </div>\n'
+                    galleryStr += '</div>\n'
+
+                attachmentStr += \
+                    '<center><video width="400" height="300" controls>'
+                attachmentStr += \
+                    '<source src="' + attach['url'] + '" alt="' + \
+                    imageDescription + '" title="' + imageDescription + \
+                    '" class="attachment" type="video/' + \
+                    extension.replace('.', '') + '">'
+                attachmentStr += \
+                    translate['Your browser does not support the video tag.']
+                attachmentStr += '</video></center>'
+                attachmentCtr += 1
+        elif (mediaType == 'audio/mpeg' or
+              mediaType == 'audio/ogg'):
+            extension = '.mp3'
+            if attach['url'].endswith('.ogg'):
+                extension = '.ogg'
+            if attach['url'].endswith(extension):
+                if attachmentCtr > 0:
+                    attachmentStr += '<br>'
+                if boxName == 'tlmedia':
+                    galleryStr += '<div class="gallery">\n'
+                    if not isMuted:
+                        galleryStr += '  <a href="' + attach['url'] + '">\n'
+                        galleryStr += '    <audio controls>\n'
+                        galleryStr += \
+                            '      <source src="' + attach['url'] + \
+                            '" alt="' + imageDescription + \
+                            '" title="' + imageDescription + \
+                            '" class="attachment" type="audio/' + \
+                            extension.replace('.', '') + '">'
+                        idx = 'Your browser does not support the audio tag.'
+                        galleryStr += translate[idx]
+                        galleryStr += '    </audio>\n'
+                        galleryStr += '  </a>\n'
+                    if postJsonObject['object'].get('url'):
+                        audioPostUrl = postJsonObject['object']['url']
+                    else:
+                        audioPostUrl = postJsonObject['object']['id']
+                    if imageDescription and not isMuted:
+                        galleryStr += \
+                            '  <a href="' + audioPostUrl + \
+                            '" class="gallerytext"><div ' + \
+                            'class="gallerytext">' + \
+                            imageDescription + '</div></a>\n'
+                    else:
+                        galleryStr += \
+                            '<label class="transparent">---</label><br>'
+                    galleryStr += '  <div class="mediaicons">\n'
+                    galleryStr += \
+                        '    ' + replyStr + announceStr + \
+                        likeStr + bookmarkStr + \
+                        deleteStr + muteStr+'\n'
+                    galleryStr += '  </div>\n'
+                    galleryStr += '  <div class="mediaavatar">\n'
+                    galleryStr += '    ' + avatarLink + '\n'
+                    galleryStr += '  </div>\n'
+                    galleryStr += '</div>\n'
+
+                attachmentStr += '<center>\n<audio controls>\n'
+                attachmentStr += \
+                    '<source src="' + attach['url'] + '" alt="' + \
+                    imageDescription + '" title="' + imageDescription + \
+                    '" class="attachment" type="audio/' + \
+                    extension.replace('.', '') + '">'
+                attachmentStr += \
+                    translate['Your browser does not support the audio tag.']
+                attachmentStr += '</audio>\n</center>\n'
+                attachmentCtr += 1
+    attachmentStr += '</div>'
+    return attachmentStr, galleryStr
+
+
+def htmlPostSeparator(baseDir: str, column: str) -> str:
+    """Returns the html for a timeline post separator image
+    """
+    iconsDir = getIconsDir(baseDir)
+    filename = 'separator.png'
+    if column:
+        filename = 'separator_' + column + '.png'
+    separatorImageFilename = baseDir + '/img/' + iconsDir + '/' + filename
+    separatorStr = ''
+    if os.path.isfile(separatorImageFilename):
+        separatorStr = \
+            '<div class="postSeparatorImage"><center>' + \
+            '<img src="/' + iconsDir + '/' + filename + '"/>' + \
+            '</center></div>\n'
+    return separatorStr
