@@ -113,10 +113,10 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import setBlogAddress
 from webapp import htmlCitations
 from webapp import htmlFollowingList
 from webapp import getBlogAddress
-from webapp import setBlogAddress
 from webapp import htmlCalendarDeleteConfirm
 from webapp import htmlDeletePost
 from webapp import htmlAbout
