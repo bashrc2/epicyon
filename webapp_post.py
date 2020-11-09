@@ -16,11 +16,16 @@ from cache import getPersonFromCache
 from bookmarks import bookmarkedByPerson
 from like import likedByPerson
 from like import noOfLikes
+from follow import isFollowingActor
 from posts import isEditor
 from posts import postIsMuted
 from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
+from posts import populateRepliesJson
+from utils import locatePost
+from utils import loadJson
+from utils import getCSS
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import getProtocolPrefixes
@@ -49,6 +54,9 @@ from webapp_utils import addEmojiToDisplayName
 from webapp_utils import postContainsPublic
 from webapp_utils import getContentWarningButton
 from webapp_utils import getPostAttachmentsAsHtml
+from webapp_utils import getIconsDir
+from webapp_utils import htmlHeader
+from webapp_utils import htmlFooter
 from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
@@ -1215,3 +1223,162 @@ def individualPostAsHtml(allowDownloads: bool,
             print('TIMING INDIV ' + boxName + ' 19 = ' + str(timeDiff))
 
     return postHtml
+
+
+def htmlIndividualPost(cssCache: {},
+                       recentPostsCache: {}, maxRecentPosts: int,
+                       translate: {},
+                       baseDir: str, session, wfRequest: {}, personCache: {},
+                       nickname: str, domain: str, port: int, authorized: bool,
+                       postJsonObject: {}, httpPrefix: str,
+                       projectVersion: str, likedBy: str,
+                       YTReplacementDomain: str,
+                       showPublishedDateOnly: bool) -> str:
+    """Show an individual post as html
+    """
+    iconsDir = getIconsDir(baseDir)
+    postStr = ''
+    if likedBy:
+        likedByNickname = getNicknameFromActor(likedBy)
+        likedByDomain, likedByPort = getDomainFromActor(likedBy)
+        if likedByPort:
+            if likedByPort != 80 and likedByPort != 443:
+                likedByDomain += ':' + str(likedByPort)
+        likedByHandle = likedByNickname + '@' + likedByDomain
+        postStr += \
+            '<p>' + translate['Liked by'] + \
+            ' <a href="' + likedBy + '">@' + \
+            likedByHandle + '</a>\n'
+
+        domainFull = domain
+        if port:
+            if port != 80 and port != 443:
+                domainFull = domain + ':' + str(port)
+        actor = '/users/' + nickname
+        followStr = '  <form method="POST" ' + \
+            'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
+        followStr += \
+            '    <input type="hidden" name="actor" value="' + actor + '">\n'
+        followStr += \
+            '    <input type="hidden" name="searchtext" value="' + \
+            likedByHandle + '">\n'
+        if not isFollowingActor(baseDir, nickname, domainFull, likedBy):
+            followStr += '    <button type="submit" class="button" ' + \
+                'name="submitSearch">' + translate['Follow'] + '</button>\n'
+        followStr += '    <button type="submit" class="button" ' + \
+            'name="submitBack">' + translate['Go Back'] + '</button>\n'
+        followStr += '  </form>\n'
+        postStr += followStr + '</p>\n'
+
+    postStr += \
+        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                             iconsDir, translate, None,
+                             baseDir, session, wfRequest, personCache,
+                             nickname, domain, port, postJsonObject,
+                             None, True, False,
+                             httpPrefix, projectVersion, 'inbox',
+                             YTReplacementDomain,
+                             showPublishedDateOnly,
+                             False, authorized, False, False, False)
+    messageId = removeIdEnding(postJsonObject['id'])
+
+    # show the previous posts
+    if isinstance(postJsonObject['object'], dict):
+        while postJsonObject['object'].get('inReplyTo'):
+            postFilename = \
+                locatePost(baseDir, nickname, domain,
+                           postJsonObject['object']['inReplyTo'])
+            if not postFilename:
+                break
+            postJsonObject = loadJson(postFilename)
+            if postJsonObject:
+                postStr = \
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
+                                         iconsDir, translate, None,
+                                         baseDir, session, wfRequest,
+                                         personCache,
+                                         nickname, domain, port,
+                                         postJsonObject,
+                                         None, True, False,
+                                         httpPrefix, projectVersion, 'inbox',
+                                         YTReplacementDomain,
+                                         showPublishedDateOnly,
+                                         False, authorized,
+                                         False, False, False) + postStr
+
+    # show the following posts
+    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    if postFilename:
+        # is there a replies file for this post?
+        repliesFilename = postFilename.replace('.json', '.replies')
+        if os.path.isfile(repliesFilename):
+            # get items from the replies file
+            repliesJson = {
+                'orderedItems': []
+            }
+            populateRepliesJson(baseDir, nickname, domain,
+                                repliesFilename, authorized, repliesJson)
+            # add items to the html output
+            for item in repliesJson['orderedItems']:
+                postStr += \
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
+                                         iconsDir, translate, None,
+                                         baseDir, session, wfRequest,
+                                         personCache,
+                                         nickname, domain, port, item,
+                                         None, True, False,
+                                         httpPrefix, projectVersion, 'inbox',
+                                         YTReplacementDomain,
+                                         showPublishedDateOnly,
+                                         False, authorized,
+                                         False, False, False)
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    postsCSS = getCSS(baseDir, cssFilename, cssCache)
+    if postsCSS:
+        if httpPrefix != 'https':
+            postsCSS = postsCSS.replace('https://',
+                                        httpPrefix + '://')
+    return htmlHeader(cssFilename, postsCSS) + postStr + htmlFooter()
+
+
+def htmlPostReplies(cssCache: {},
+                    recentPostsCache: {}, maxRecentPosts: int,
+                    translate: {}, baseDir: str,
+                    session, wfRequest: {}, personCache: {},
+                    nickname: str, domain: str, port: int, repliesJson: {},
+                    httpPrefix: str, projectVersion: str,
+                    YTReplacementDomain: str,
+                    showPublishedDateOnly: bool) -> str:
+    """Show the replies to an individual post as html
+    """
+    iconsDir = getIconsDir(baseDir)
+    repliesStr = ''
+    if repliesJson.get('orderedItems'):
+        for item in repliesJson['orderedItems']:
+            repliesStr += \
+                individualPostAsHtml(True, recentPostsCache,
+                                     maxRecentPosts,
+                                     iconsDir, translate, None,
+                                     baseDir, session, wfRequest, personCache,
+                                     nickname, domain, port, item,
+                                     None, True, False,
+                                     httpPrefix, projectVersion, 'inbox',
+                                     YTReplacementDomain,
+                                     showPublishedDateOnly,
+                                     False, False, False, False, False)
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    postsCSS = getCSS(baseDir, cssFilename, cssCache)
+    if postsCSS:
+        if httpPrefix != 'https':
+            postsCSS = postsCSS.replace('https://',
+                                        httpPrefix + '://')
+    return htmlHeader(cssFilename, postsCSS) + repliesStr + htmlFooter()
