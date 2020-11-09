@@ -56,9 +56,9 @@ from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
 from posts import sendToFollowersThread
-from webinterface import individualPostAsHtml
-from webinterface import getIconsDir
-from webinterface import removeOldHashtags
+from webapp import individualPostAsHtml
+from webapp import getIconsDir
+from webapp import removeOldHashtags
 from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
