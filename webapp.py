@@ -24,6 +24,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from question import isQuestion
 from utils import firstParagraphFromString
 from utils import getCSS
 from utils import isSystemAccount
@@ -48,6 +49,7 @@ from utils import getConfigParam
 from utils import votesOnNewswireItem
 from utils import removeHtml
 from follow import isFollowingActor
+from follow import followerApprovalActive
 from webfinger import webfingerHandle
 from posts import isDM
 from posts import getPersonBox
@@ -96,7 +98,11 @@ from webapp_utils import getIconsDir
 from webapp_utils import scheduledPostsExist
 from webapp_utils import sharesTimelineJson
 from webapp_utils import postContainsPublic
-from webapp_utils import isQuestion
+from webapp_utils import getImageFile
+from webapp_utils import getBannerFile
+from webapp_utils import getSearchBannerFile
+from webapp_utils import getLeftImageFile
+from webapp_utils import getRightImageFile
 
 
 def htmlFollowingList(cssCache: {}, baseDir: str,
@@ -3741,20 +3747,6 @@ def addEmbeddedElements(translate: {}, content: str) -> str:
     return addEmbeddedVideo(translate, content)
 
 
-def followerApprovalActive(baseDir: str, nickname: str, domain: str) -> bool:
-    """Returns true if the given account requires follower approval
-    """
-    manuallyApprovesFollowers = False
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
-    if os.path.isfile(actorFilename):
-        actorJson = loadJson(actorFilename)
-        if actorJson:
-            if actorJson.get('manuallyApprovesFollowers'):
-                manuallyApprovesFollowers = \
-                    actorJson['manuallyApprovesFollowers']
-    return manuallyApprovesFollowers
-
-
 def insertQuestion(baseDir: str, translate: {},
                    nickname: str, domain: str, port: int,
                    content: str,
@@ -5948,50 +5940,6 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                               authorized, False)
     htmlStr += htmlFooter()
     return htmlStr
-
-
-def getImageFile(baseDir: str, name: str, directory: str,
-                 nickname: str, domain: str) -> (str, str):
-    """
-    returns the filenames for an image with the given name
-    """
-    bannerExtensions = ('png', 'jpg', 'jpeg', 'gif', 'avif', 'webp')
-    bannerFile = ''
-    bannerFilename = ''
-    for ext in bannerExtensions:
-        bannerFile = name + '.' + ext
-        bannerFilename = directory + '/' + bannerFile
-        if os.path.isfile(bannerFilename):
-            break
-    return bannerFile, bannerFilename
-
-
-def getBannerFile(baseDir: str,
-                  nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'banner',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
-
-
-def getSearchBannerFile(baseDir: str,
-                        nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'search_banner',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
-
-
-def getLeftImageFile(baseDir: str,
-                     nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'left_col_image',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
-
-
-def getRightImageFile(baseDir: str,
-                      nickname: str, domain: str) -> (str, str):
-    return getImageFile(baseDir, 'right_col_image',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
 
 
 def headerButtonsFrontScreen(translate: {},

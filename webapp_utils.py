@@ -372,20 +372,45 @@ def postContainsPublic(postJsonObject: {}) -> bool:
     return containsPublic
 
 
-def isQuestion(postObjectJson: {}) -> bool:
-    """ is the given post a question?
+def getImageFile(baseDir: str, name: str, directory: str,
+                 nickname: str, domain: str) -> (str, str):
     """
-    if postObjectJson['type'] != 'Create' and \
-       postObjectJson['type'] != 'Update':
-        return False
-    if not isinstance(postObjectJson['object'], dict):
-        return False
-    if not postObjectJson['object'].get('type'):
-        return False
-    if postObjectJson['object']['type'] != 'Question':
-        return False
-    if not postObjectJson['object'].get('oneOf'):
-        return False
-    if not isinstance(postObjectJson['object']['oneOf'], list):
-        return False
-    return True
+    returns the filenames for an image with the given name
+    """
+    bannerExtensions = getImageExtensions()
+    bannerFile = ''
+    bannerFilename = ''
+    for ext in bannerExtensions:
+        bannerFile = name + '.' + ext
+        bannerFilename = directory + '/' + bannerFile
+        if os.path.isfile(bannerFilename):
+            break
+    return bannerFile, bannerFilename
+
+
+def getBannerFile(baseDir: str,
+                  nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'banner',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
+
+
+def getSearchBannerFile(baseDir: str,
+                        nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'search_banner',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
+
+
+def getLeftImageFile(baseDir: str,
+                     nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'left_col_image',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
+
+
+def getRightImageFile(baseDir: str,
+                      nickname: str, domain: str) -> (str, str):
+    return getImageFile(baseDir, 'right_col_image',
+                        baseDir + '/accounts/' + nickname + '@' + domain,
+                        nickname, domain)
