@@ -114,10 +114,11 @@ from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
 from webapp_utils import setBlogAddress
+from webapp_calendar import htmlCalendarDeleteConfirm
+from webapp_calendar import htmlCalendar
 from webapp import htmlCitations
 from webapp import htmlFollowingList
 from webapp import getBlogAddress
-from webapp import htmlCalendarDeleteConfirm
 from webapp import htmlDeletePost
 from webapp import htmlAbout
 from webapp import htmlRemoveSharedItem
@@ -142,7 +143,6 @@ from webapp import htmlSuspended
 from webapp import htmlGetLoginCredentials
 from webapp import htmlNewPost
 from webapp import htmlFollowConfirm
-from webapp import htmlCalendar
 from webapp import htmlNewswireMobile
 from webapp import htmlLinksMobile
 from webapp import htmlUnfollowConfirm

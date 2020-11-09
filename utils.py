@@ -1500,5 +1500,5 @@ def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
-    firstDayOfMonth = datetime(year, monthNumber, 1, 0, 0)
+    firstDayOfMonth = datetime.datetime(year, monthNumber, 1, 0, 0)
     return int(firstDayOfMonth.strftime("%w")) + 1
