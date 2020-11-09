@@ -6,6 +6,8 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
+from datetime import datetime
 from utils import removeIdEnding
 from utils import getStatusNumber
 from utils import urlPermitted
@@ -295,3 +297,33 @@ def outboxDelete(baseDir: str, httpPrefix: str,
                postFilename, debug, recentPostsCache)
     if debug:
         print('DEBUG: post deleted via c2s - ' + postFilename)
+
+
+def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
+    """Remove old hashtags
+    """
+    if maxMonths > 11:
+        maxMonths = 11
+    maxDaysSinceEpoch = \
+        (datetime.utcnow() - datetime(1970, 1 + maxMonths, 1)).days
+    removeHashtags = []
+
+    for subdir, dirs, files in os.walk(baseDir + '/tags'):
+        for f in files:
+            tagsFilename = os.path.join(baseDir + '/tags', f)
+            if not os.path.isfile(tagsFilename):
+                continue
+            # get last modified datetime
+            modTimesinceEpoc = os.path.getmtime(tagsFilename)
+            lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
+            fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
+
+            # check of the file is too old
+            if fileDaysSinceEpoch < maxDaysSinceEpoch:
+                removeHashtags.append(tagsFilename)
+
+    for removeFilename in removeHashtags:
+        try:
+            os.remove(removeFilename)
+        except BaseException:
+            pass

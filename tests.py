@@ -32,6 +32,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import firstParagraphFromString
 from utils import removeIdEnding
 from utils import siteIsActive
 from utils import updateRecentPostsCache
@@ -2336,8 +2337,22 @@ def testGetNewswireTags():
     assert '#ExcitingHashtag' in tags
 
 
+def testFirstParagraphFromString():
+    print('testFirstParagraphFromString')
+    testStr = \
+        '<p><a href="https://somesite.com/somepath">This is a test</a></p>' + \
+        '<p>This is another paragraph</p>'
+    resultStr = firstParagraphFromString(testStr)
+    assert resultStr == 'This is a test'
+
+    testStr = 'Testing without html'
+    resultStr = firstParagraphFromString(testStr)
+    assert resultStr == testStr
+
+
 def runAllTests():
     print('Running tests...')
+    testFirstParagraphFromString()
     testGetNewswireTags()
     testHashtagRuleTree()
     testRemoveHtmlTag()

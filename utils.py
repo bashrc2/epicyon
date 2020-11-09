@@ -38,6 +38,18 @@ def removeHtml(content: str) -> str:
     return result
 
 
+def firstParagraphFromString(content: str) -> str:
+    """Get the first paragraph from a blog post
+    to be used as a summary in the newswire feed
+    """
+    if '<p>' not in content or '</p>' not in content:
+        return removeHtml(content)
+    paragraph = content.split('<p>')[1]
+    if '</p>' in paragraph:
+        paragraph = paragraph.split('</p>')[0]
+    return removeHtml(paragraph)
+
+
 def isSystemAccount(nickname: str) -> bool:
     """Returns true if the given nickname is a system account
     """
@@ -1482,3 +1494,11 @@ def siteIsActive(url: str) -> bool:
         if e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during siteIsActive')
     return False
+
+
+def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
+    """Gets the day number of the first day of the month
+    1=sun, 7=sat
+    """
+    firstDayOfMonth = datetime.datetime(year, monthNumber, 1, 0, 0)
+    return int(firstDayOfMonth.strftime("%w")) + 1

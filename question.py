@@ -124,3 +124,22 @@ def questionUpdateVotes(baseDir: str, nickname: str, domain: str,
     # save the question with altered totals
     saveJson(questionJson, questionPostFilename)
     return questionJson
+
+
+def isQuestion(postObjectJson: {}) -> bool:
+    """ is the given post a question?
+    """
+    if postObjectJson['type'] != 'Create' and \
+       postObjectJson['type'] != 'Update':
+        return False
+    if not isinstance(postObjectJson['object'], dict):
+        return False
+    if not postObjectJson['object'].get('type'):
+        return False
+    if postObjectJson['object']['type'] != 'Question':
+        return False
+    if not postObjectJson['object'].get('oneOf'):
+        return False
+    if not isinstance(postObjectJson['object']['oneOf'], list):
+        return False
+    return True

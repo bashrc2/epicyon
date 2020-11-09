@@ -1232,3 +1232,17 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         if debug:
             print('WARN: ' + nicknameFollower + ' could not unfollow ' +
                   nicknameFollowing + '@' + domainFollowingFull)
+
+
+def followerApprovalActive(baseDir: str, nickname: str, domain: str) -> bool:
+    """Returns true if the given account requires follower approval
+    """
+    manuallyApprovesFollowers = False
+    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    if os.path.isfile(actorFilename):
+        actorJson = loadJson(actorFilename)
+        if actorJson:
+            if actorJson.get('manuallyApprovesFollowers'):
+                manuallyApprovesFollowers = \
+                    actorJson['manuallyApprovesFollowers']
+    return manuallyApprovesFollowers

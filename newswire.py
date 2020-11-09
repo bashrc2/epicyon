@@ -12,6 +12,7 @@ from socket import error as SocketError
 import errno
 from datetime import datetime
 from collections import OrderedDict
+from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
 from utils import loadJson
@@ -386,9 +387,12 @@ def getRSSfromDict(baseDir: str, newswire: {},
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
+        description = firstParagraphFromString(fields[4])
+        rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
-        if domainFull not in url:
-            url = httpPrefix + '://' + domainFull + url
+        if '://' not in url:
+            if domainFull not in url:
+                url = httpPrefix + '://' + domainFull + url
         rssStr += '  <link>' + url + '</link>\n'
 
         rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
@@ -412,6 +416,7 @@ def isNewswireBlogPost(postJsonObject: {}) -> bool:
         return False
     if postJsonObject['object'].get('summary') and \
        postJsonObject['object'].get('url') and \
+       postJsonObject['object'].get('content') and \
        postJsonObject['object'].get('published'):
         return isPublicPost(postJsonObject)
     return False
@@ -500,7 +505,8 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     votes = []
                     if os.path.isfile(fullPostFilename + '.votes'):
                         votes = loadJson(fullPostFilename + '.votes')
-                    description = ''
+                    content = postJsonObject['object']['content']
+                    description = firstParagraphFromString(content)
                     addNewswireDictEntry(baseDir, domain,
                                          newswire, published,
                                          postJsonObject['object']['summary'],

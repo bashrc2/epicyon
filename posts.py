@@ -3977,3 +3977,27 @@ def sendUndoBlockViaServer(baseDir: str, session,
         print('DEBUG: c2s POST block success')
 
     return newBlockJson
+
+
+def postIsMuted(baseDir: str, nickname: str, domain: str,
+                postJsonObject: {}, messageId: str) -> bool:
+    """ Returns true if the given post is muted
+    """
+    isMuted = postJsonObject.get('muted')
+    if isMuted is True or isMuted is False:
+        return isMuted
+    postDir = baseDir + '/accounts/' + nickname + '@' + domain
+    muteFilename = \
+        postDir + '/inbox/' + messageId.replace('/', '#') + '.json.muted'
+    if os.path.isfile(muteFilename):
+        return True
+    muteFilename = \
+        postDir + '/outbox/' + messageId.replace('/', '#') + '.json.muted'
+    if os.path.isfile(muteFilename):
+        return True
+    muteFilename = \
+        baseDir + '/accounts/cache/announce/' + nickname + \
+        '/' + messageId.replace('/', '#') + '.json.muted'
+    if os.path.isfile(muteFilename):
+        return True
+    return False

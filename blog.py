@@ -10,15 +10,16 @@ import os
 from datetime import datetime
 
 from content import replaceEmojiFromTags
-from webinterface import getIconsDir
-from webinterface import getPostAttachmentsAsHtml
-from webinterface import htmlHeader
-from webinterface import htmlFooter
-from webinterface import addEmbeddedElements
+from webapp import getIconsDir
+from webapp import htmlHeader
+from webapp import htmlFooter
+from webapp_media import addEmbeddedElements
+from webapp_utils import getPostAttachmentsAsHtml
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
+from utils import firstParagraphFromString
 from posts import createBlogsTimeline
 from newswire import rss2Header
 from newswire import rss2Footer
@@ -165,10 +166,12 @@ def htmlBlogPostContent(authorized: bool,
     if postJsonObject['object'].get('id'):
         messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
     titleStr = ''
+    articleAdded = False
     if postJsonObject['object'].get('summary'):
         titleStr = postJsonObject['object']['summary']
-        blogStr += '<h1><a href="' + messageLink + '">' + \
+        blogStr += '<article><h1><a href="' + messageLink + '">' + \
             titleStr + '</a></h1>\n'
+        articleAdded = True
 
     # get the handle of the author
     if postJsonObject['object'].get('attributedTo'):
@@ -231,7 +234,10 @@ def htmlBlogPostContent(authorized: bool,
             contentStr = replaceEmojiFromTags(contentStr,
                                               postJsonObject['object']['tag'],
                                               'content')
-        blogStr += '<br>' + contentStr + '\n'
+        if articleAdded:
+            blogStr += '<br>' + contentStr + '</article>\n'
+        else:
+            blogStr += '<br><article>' + contentStr + '</article>\n'
 
     citationsStr = ''
     if postJsonObject['object'].get('tag'):
@@ -312,9 +318,13 @@ def htmlBlogPostRSS2(authorized: bool,
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                content = postJsonObject['object']['content']
+                description = firstParagraphFromString(content)
                 rssStr = '     <item>'
                 rssStr += '         <title>' + titleStr + '</title>'
                 rssStr += '         <link>' + messageLink + '</link>'
+                rssStr += \
+                    '         <description>' + description + '</description>'
                 rssStr += '         <pubDate>' + rssDateStr + '</pubDate>'
                 rssStr += '     </item>'
     return rssStr
@@ -339,8 +349,11 @@ def htmlBlogPostRSS3(authorized: bool,
                 pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
                 titleStr = postJsonObject['object']['summary']
                 rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                content = postJsonObject['object']['content']
+                description = firstParagraphFromString(content)
                 rssStr = 'title: ' + titleStr + '\n'
                 rssStr += 'link: ' + messageLink + '\n'
+                rssStr += 'description: ' + description + '\n'
                 rssStr += 'created: ' + rssDateStr + '\n\n'
     return rssStr
 
