@@ -8,9 +8,9 @@ __status__ = "Production"
 
 import os
 from collections import OrderedDict
+from session import getJson
 from utils import getProtocolPrefixes
 from utils import loadJson
-from utils import getJson
 from utils import getConfigParam
 from cache import getPersonFromCache
 from cache import storePersonInCache
