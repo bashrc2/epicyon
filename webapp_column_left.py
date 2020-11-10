@@ -17,7 +17,7 @@ from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import getIconsDir
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 
@@ -125,6 +125,13 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     # if showHeaderImage:
     #     htmlStr += '<br>'
 
+    htmlStr += \
+        '<p class="login-text"><a href="/about">' + \
+        translate['About this Instance'] + '</a></p>'
+    htmlStr += \
+        '<p class="login-text"><a href="/terms">' + \
+        translate['Terms of Service'] + '</a></p>'
+
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
     if os.path.isfile(linksFilename):
@@ -213,7 +220,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if ':' in domain:
         domain = domain.split(':')[0]
 
-    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
@@ -265,7 +272,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editLinksForm = htmlHeader(cssFilename, editCSS)
+    editLinksForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
 
     # top banner
     editLinksForm += \
@@ -284,9 +291,6 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <p class="new-post-text">' + translate['Edit Links'] + '</p>'
     editLinksForm += \
         '    <div class="container">\n'
-    # editLinksForm += \
-    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-    #     translate['Go Back'] + '</button></a>\n'
     editLinksForm += \
         '      <center>\n' + \
         '        <input type="submit" name="submitLinks" value="' + \
@@ -312,6 +316,46 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
+
+    # the admin can edit terms of service and about text
+    adminNickname = getConfigParam(baseDir, 'admin')
+    if adminNickname:
+        if nickname == adminNickname:
+            aboutFilename = baseDir + '/accounts/about.txt'
+            aboutStr = ''
+            if os.path.isfile(aboutFilename):
+                with open(aboutFilename, 'r') as fp:
+                    aboutStr = fp.read()
+
+            editLinksForm += \
+                '<div class="container">'
+            editLinksForm += \
+                '  ' + \
+                translate['About this Instance'] + \
+                '<br>'
+            editLinksForm += \
+                '  <textarea id="message" name="editedAbout" ' + \
+                'style="height:100vh">' + aboutStr + '</textarea>'
+            editLinksForm += \
+                '</div>'
+
+            TOSFilename = baseDir + '/accounts/tos.txt'
+            TOSStr = ''
+            if os.path.isfile(TOSFilename):
+                with open(TOSFilename, 'r') as fp:
+                    TOSStr = fp.read()
+
+            editLinksForm += \
+                '<div class="container">'
+            editLinksForm += \
+                '  ' + \
+                translate['Terms of Service'] + \
+                '<br>'
+            editLinksForm += \
+                '  <textarea id="message" name="editedTOS" ' + \
+                'style="height:100vh">' + TOSStr + '</textarea>'
+            editLinksForm += \
+                '</div>'
 
     editLinksForm += htmlFooter()
     return editLinksForm

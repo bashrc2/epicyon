@@ -437,6 +437,25 @@ def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     return htmlStr
 
 
+def htmlHeaderWithExternalStyle(cssFilename: str, css: str, lang='en') -> str:
+    htmlStr = '<!DOCTYPE html>\n'
+    htmlStr += '<html lang="' + lang + '">\n'
+    htmlStr += '  <head>\n'
+    htmlStr += '    <meta charset="utf-8">\n'
+    fontName, fontFormat = getFontFromCss(css)
+    if fontName:
+        htmlStr += '    <link rel="preload" as="font" type="' + \
+            fontFormat + '" href="' + fontName + '" crossorigin>\n'
+    cssFile = cssFilename.split('/')[-1]
+    htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">\n'
+    htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
+    htmlStr += '    <meta name="theme-color" content="grey">\n'
+    htmlStr += '    <title>Epicyon</title>\n'
+    htmlStr += '  </head>\n'
+    htmlStr += '  <body>\n'
+    return htmlStr
+
+
 def htmlFooter() -> str:
     htmlStr = '  </body>\n'
     htmlStr += '</html>\n'

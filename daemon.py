@@ -117,9 +117,9 @@ from webapp_utils import setBlogAddress
 from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
+from webapp_about import htmlAbout
 from webapp import htmlFollowingList
 from webapp import htmlDeletePost
-from webapp import htmlAbout
 from webapp import htmlRemoveSharedItem
 from webapp import htmlUnblockConfirm
 from webapp_person_options import htmlPersonOptions
@@ -133,16 +133,15 @@ from webapp_timeline import htmlInboxMedia
 from webapp_timeline import htmlInboxBlogs
 from webapp_timeline import htmlInboxNews
 from webapp_timeline import htmlOutbox
-from webapp_timeline import htmlModeration
+from webapp_moderation import htmlModeration
+from webapp_moderation import htmlModerationInfo
 from webapp_create_post import htmlNewPost
-from webapp import htmlLogin
-from webapp import htmlSuspended
-from webapp import htmlGetLoginCredentials
+from webapp_login import htmlLogin
+from webapp_login import htmlGetLoginCredentials
+from webapp_suspended import htmlSuspended
+from webapp_tos import htmlTermsOfService
 from webapp import htmlFollowConfirm
 from webapp import htmlUnfollowConfirm
-from webapp import htmlEditNewsPost
-from webapp import htmlTermsOfService
-from webapp import htmlModerationInfo
 from webapp import htmlHashtagBlocked
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
@@ -154,6 +153,7 @@ from webapp_column_left import htmlEditLinks
 from webapp_column_right import htmlNewswireMobile
 from webapp_column_right import htmlEditNewswire
 from webapp_column_right import htmlCitations
+from webapp_column_right import htmlEditNewsPost
 from webapp_search import htmlSkillsSearch
 from webapp_search import htmlHistorySearch
 from webapp_search import htmlHashtagSearch
@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getCSS
 from utils import firstParagraphFromString
 from utils import clearFromPostCaches
 from utils import containsInvalidChars
@@ -191,6 +192,7 @@ from utils import isSuspended
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
+from content import dangerousMarkup
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
@@ -2891,10 +2893,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             linksFilename = baseDir + '/accounts/links.txt'
+            aboutFilename = baseDir + '/accounts/about.txt'
+            TOSFilename = baseDir + '/accounts/tos.txt'
 
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
+
             if fields.get('editedLinks'):
                 linksStr = fields['editedLinks']
                 linksFile = open(linksFilename, "w+")
@@ -2904,6 +2909,31 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if os.path.isfile(linksFilename):
                     os.remove(linksFilename)
+
+            adminNickname = \
+                getConfigParam(baseDir, 'admin')
+            if nickname == adminNickname:
+                if fields.get('editedAbout'):
+                    aboutStr = fields['editedAbout']
+                    if not dangerousMarkup(aboutStr):
+                        aboutFile = open(aboutFilename, "w+")
+                        if aboutFile:
+                            aboutFile.write(aboutStr)
+                            aboutFile.close()
+                else:
+                    if os.path.isfile(aboutFilename):
+                        os.remove(aboutFilename)
+
+                if fields.get('editedTOS'):
+                    TOSStr = fields['editedTOS']
+                    if not dangerousMarkup(TOSStr):
+                        TOSFile = open(TOSFilename, "w+")
+                        if TOSFile:
+                            TOSFile.write(TOSStr)
+                            TOSFile.close()
+                else:
+                    if os.path.isfile(TOSFilename):
+                        os.remove(TOSFilename)
 
         # redirect back to the default timeline
         if callingDomain.endswith('.onion') and \
@@ -4678,7 +4708,8 @@ class PubServer(BaseHTTPRequestHandler):
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
-            msg = htmlPersonOptions(self.server.cssCache,
+            msg = htmlPersonOptions(self.server.defaultTimeline,
+                                    self.server.cssCache,
                                     self.server.translate,
                                     baseDir, domain,
                                     domainFull,
@@ -8250,8 +8281,9 @@ class PubServer(BaseHTTPRequestHandler):
             tries = 0
             while tries < 5:
                 try:
-                    with open(path, 'r') as cssfile:
-                        css = cssfile.read()
+                    css = getCSS(self.server.baseDir, path,
+                                 self.server.cssCache)
+                    if css:
                         break
                 except Exception as e:
                     print(e)

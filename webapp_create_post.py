@@ -13,7 +13,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from webapp_utils import getIconsDir
 from webapp_utils import getBannerFile
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
@@ -558,7 +558,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
-    newPostForm = htmlHeader(cssFilename, newPostCSS)
+    newPostForm = htmlHeaderWithExternalStyle(cssFilename, newPostCSS)
 
     newPostForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
