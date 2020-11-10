@@ -191,6 +191,7 @@ from utils import isSuspended
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
+from content import dangerousMarkup
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
@@ -2913,20 +2914,22 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname == adminNickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
-                    aboutFile = open(aboutFilename, "w+")
-                    if aboutFile:
-                        aboutFile.write(aboutStr)
-                        aboutFile.close()
+                    if not dangerousMarkup(aboutStr):
+                        aboutFile = open(aboutFilename, "w+")
+                        if aboutFile:
+                            aboutFile.write(aboutStr)
+                            aboutFile.close()
                 else:
                     if os.path.isfile(aboutFilename):
                         os.remove(aboutFilename)
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
-                    TOSFile = open(TOSFilename, "w+")
-                    if TOSFile:
-                        TOSFile.write(TOSStr)
-                        TOSFile.close()
+                    if not dangerousMarkup(TOSStr):
+                        TOSFile = open(TOSFilename, "w+")
+                        if TOSFile:
+                            TOSFile.write(TOSStr)
+                            TOSFile.close()
                 else:
                     if os.path.isfile(TOSFilename):
                         os.remove(TOSFilename)
