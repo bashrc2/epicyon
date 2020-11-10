@@ -135,9 +135,9 @@ from webapp_timeline import htmlInboxNews
 from webapp_timeline import htmlOutbox
 from webapp_timeline import htmlModeration
 from webapp_create_post import htmlNewPost
-from webapp import htmlLogin
+from webapp_login import htmlLogin
+from webapp_login import htmlGetLoginCredentials
 from webapp import htmlSuspended
-from webapp import htmlGetLoginCredentials
 from webapp import htmlFollowConfirm
 from webapp import htmlUnfollowConfirm
 from webapp import htmlEditNewsPost
