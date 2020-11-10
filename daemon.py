@@ -140,7 +140,6 @@ from webapp_login import htmlGetLoginCredentials
 from webapp import htmlSuspended
 from webapp import htmlFollowConfirm
 from webapp import htmlUnfollowConfirm
-from webapp import htmlEditNewsPost
 from webapp import htmlTermsOfService
 from webapp import htmlModerationInfo
 from webapp import htmlHashtagBlocked
@@ -154,6 +153,7 @@ from webapp_column_left import htmlEditLinks
 from webapp_column_right import htmlNewswireMobile
 from webapp_column_right import htmlEditNewswire
 from webapp_column_right import htmlCitations
+from webapp_column_right import htmlEditNewsPost
 from webapp_search import htmlSkillsSearch
 from webapp_search import htmlHistorySearch
 from webapp_search import htmlHashtagSearch

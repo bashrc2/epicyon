@@ -10,6 +10,8 @@ import os
 from datetime import datetime
 from shutil import copyfile
 from content import removeLongWords
+from utils import locatePost
+from utils import loadJson
 from utils import getCSS
 from utils import getConfigParam
 from utils import votesOnNewswireItem
@@ -565,3 +567,81 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     editNewswireForm += htmlFooter()
     return editNewswireForm
+
+
+def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
+                     domain: str, port: int,
+                     httpPrefix: str, postUrl: str) -> str:
+    """Edits a news post on the news/features timeline
+    """
+    if '/users/' not in path:
+        return ''
+    pathOriginal = path
+
+    nickname = getNicknameFromActor(path)
+    if not nickname:
+        return ''
+
+    # is the user an editor?
+    if not isEditor(baseDir, nickname):
+        return ''
+
+    postUrl = postUrl.replace('/', '#')
+    postFilename = locatePost(baseDir, nickname, domain, postUrl)
+    if not postFilename:
+        return ''
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return ''
+
+    cssFilename = baseDir + '/epicyon-links.css'
+    if os.path.isfile(baseDir + '/links.css'):
+        cssFilename = baseDir + '/links.css'
+
+    editCSS = getCSS(baseDir, cssFilename, cssCache)
+    if editCSS:
+        if httpPrefix != 'https':
+            editCSS = \
+                editCSS.replace('https://', httpPrefix + '://')
+
+    editNewsPostForm = htmlHeader(cssFilename, editCSS)
+    editNewsPostForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'
+    editNewsPostForm += \
+        '  <div class="vertical-center">\n'
+    editNewsPostForm += \
+        '    <p class="new-post-text">' + translate['Edit News Post'] + '</p>'
+    editNewsPostForm += \
+        '    <div class="container">\n'
+    editNewsPostForm += \
+        '      <a href="' + pathOriginal + '/tlnews">' + \
+        '<button class="cancelbtn">' + translate['Go Back'] + '</button></a>\n'
+    editNewsPostForm += \
+        '      <input type="submit" name="submitEditedNewsPost" value="' + \
+        translate['Submit'] + '">\n'
+    editNewsPostForm += \
+        '    </div>\n'
+
+    editNewsPostForm += \
+        '<div class="container">'
+
+    editNewsPostForm += \
+        '  <input type="hidden" name="newsPostUrl" value="' + \
+        postUrl + '">\n'
+
+    newsPostTitle = postJsonObject['object']['summary']
+    editNewsPostForm += \
+        '  <input type="text" name="newsPostTitle" value="' + \
+        newsPostTitle + '"><br>\n'
+
+    newsPostContent = postJsonObject['object']['content']
+    editNewsPostForm += \
+        '  <textarea id="message" name="editedNewsPost" ' + \
+        'style="height:600px">' + newsPostContent + '</textarea>'
+
+    editNewsPostForm += \
+        '</div>'
+
+    editNewsPostForm += htmlFooter()
+    return editNewsPostForm
