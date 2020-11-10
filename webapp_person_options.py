@@ -202,9 +202,13 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
             optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
+    backPath = '/'
+    if nickname:
+        backPath = '/users/' + nickname
     optionsStr += \
-        '    <a href="/"><button type="button" class="buttonIcon" ' + \
-        'name="submitBack">' + translate['Go Back'] + '</button></a>'
+        '    <a href="' + backPath + '"><button type="button" ' + \
+        'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
+        '</button></a>'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
         translate['View'] + '</button>'
