@@ -447,7 +447,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, css: str, lang='en') -> str:
         htmlStr += '    <link rel="preload" as="font" type="' + \
             fontFormat + '" href="' + fontName + '" crossorigin>\n'
     cssFile = cssFilename.split('/')[-1]
-    htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">'
+    htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">\n'
     htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
     htmlStr += '    <meta name="theme-color" content="grey">\n'
     htmlStr += '    <title>Epicyon</title>\n'
