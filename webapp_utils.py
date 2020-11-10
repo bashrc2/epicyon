@@ -446,7 +446,6 @@ def htmlHeaderWithExternalStyle(cssFilename: str, css: str, lang='en') -> str:
     if fontName:
         htmlStr += '    <link rel="preload" as="font" type="' + \
             fontFormat + '" href="' + fontName + '" crossorigin>\n'
-    htmlStr += '    <style>\n' + css + '</style>\n'
     cssFile = cssFilename.split('/')[-1]
     htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">'
     htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
