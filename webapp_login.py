@@ -119,11 +119,11 @@ def htmlLogin(cssCache: {}, translate: {},
                 '<button type="submit" name="register">Register</button>'
 
     TOSstr = \
-        '<p class="login-text"><a href="/terms">' + \
-        translate['Terms of Service'] + '</a></p>'
-    TOSstr += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
+    TOSstr += \
+        '<p class="login-text"><a href="/terms">' + \
+        translate['Terms of Service'] + '</a></p>'
 
     loginButtonStr = ''
     if accounts > 0:
