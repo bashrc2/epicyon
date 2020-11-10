@@ -1,6 +1,6 @@
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
-<img src="https://epicyon.net/img/screenshot_indymedia.jpg" width="80%"/>
+<img src="https://epicyon.net/img/screenshot_starlight.jpg" width="80%"/>
 
 <img src="https://epicyon.net/img/mobile.jpg" width="30%"/>
 
