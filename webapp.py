@@ -13,7 +13,6 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
-from utils import getConfigParam
 from shares import getValidSharedItemID
 from webapp_utils import getAltPath
 from webapp_utils import getIconsDir
@@ -48,163 +47,6 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
     return ''
 
 
-def htmlModerationInfo(cssCache: {}, translate: {},
-                       baseDir: str, httpPrefix: str) -> str:
-    msgStr1 = \
-        'These are globally blocked for all accounts on this instance'
-    msgStr2 = \
-        'Any blocks or suspensions made by moderators will be shown here.'
-    infoForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
-
-    infoCSS = getCSS(baseDir, cssFilename, cssCache)
-    if infoCSS:
-        if httpPrefix != 'https':
-            infoCSS = infoCSS.replace('https://',
-                                      httpPrefix + '://')
-        infoForm = htmlHeader(cssFilename, infoCSS)
-
-        infoForm += \
-            '<center><h1>' + \
-            translate['Moderation Information'] + \
-            '</h1></center>'
-
-        infoShown = False
-        suspendedFilename = baseDir + '/accounts/suspended.txt'
-        if os.path.isfile(suspendedFilename):
-            with open(suspendedFilename, "r") as f:
-                suspendedStr = f.read()
-                infoForm += '<div class="container">'
-                infoForm += '  <br><b>' + \
-                    translate['Suspended accounts'] + '</b>'
-                infoForm += '  <br>' + \
-                    translate['These are currently suspended']
-                infoForm += \
-                    '  <textarea id="message" ' + \
-                    'name="suspended" style="height:200px">' + \
-                    suspendedStr + '</textarea>'
-                infoForm += '</div>'
-                infoShown = True
-
-        blockingFilename = baseDir + '/accounts/blocking.txt'
-        if os.path.isfile(blockingFilename):
-            with open(blockingFilename, "r") as f:
-                blockedStr = f.read()
-                infoForm += '<div class="container">'
-                infoForm += \
-                    '  <br><b>' + \
-                    translate['Blocked accounts and hashtags'] + '</b>'
-                infoForm += \
-                    '  <br>' + \
-                    translate[msgStr1]
-                infoForm += \
-                    '  <textarea id="message" ' + \
-                    'name="blocked" style="height:700px">' + \
-                    blockedStr + '</textarea>'
-                infoForm += '</div>'
-                infoShown = True
-        if not infoShown:
-            infoForm += \
-                '<center><p>' + \
-                translate[msgStr2] + \
-                '</p></center>'
-        infoForm += htmlFooter()
-    return infoForm
-
-
-def htmlTermsOfService(cssCache: {}, baseDir: str,
-                       httpPrefix: str, domainFull: str) -> str:
-    """Show the terms of service screen
-    """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/tos.txt'):
-        copyfile(baseDir + '/default_tos.txt',
-                 baseDir + '/accounts/tos.txt')
-
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
-            copyfile(baseDir + '/accounts/login-background-custom.jpg',
-                     baseDir + '/accounts/login-background.jpg')
-
-    TOSText = 'Terms of Service go here.'
-    if os.path.isfile(baseDir + '/accounts/tos.txt'):
-        with open(baseDir + '/accounts/tos.txt', 'r') as file:
-            TOSText = file.read()
-
-    TOSForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
-
-    termsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if termsCSS:
-        if httpPrefix != 'https':
-            termsCSS = termsCSS.replace('https://', httpPrefix+'://')
-
-        TOSForm = htmlHeader(cssFilename, termsCSS)
-        TOSForm += '<div class="container">' + TOSText + '</div>\n'
-        if adminNickname:
-            adminActor = httpPrefix + '://' + domainFull + \
-                '/users/' + adminNickname
-            TOSForm += \
-                '<div class="container"><center>\n' + \
-                '<p class="administeredby">Administered by <a href="' + \
-                adminActor + '">' + adminNickname + '</a></p>\n' + \
-                '</center></div>\n'
-        TOSForm += htmlFooter()
-    return TOSForm
-
-
-def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
-              domainFull: str, onionDomain: str) -> str:
-    """Show the about screen
-    """
-    adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/about.txt'):
-        copyfile(baseDir + '/default_about.txt',
-                 baseDir + '/accounts/about.txt')
-
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
-            copyfile(baseDir + '/accounts/login-background-custom.jpg',
-                     baseDir + '/accounts/login-background.jpg')
-
-    aboutText = 'Information about this instance goes here.'
-    if os.path.isfile(baseDir + '/accounts/about.txt'):
-        with open(baseDir + '/accounts/about.txt', 'r') as aboutFile:
-            aboutText = aboutFile.read()
-
-    aboutForm = ''
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
-
-    aboutCSS = getCSS(baseDir, cssFilename, cssCache)
-    if aboutCSS:
-        if httpPrefix != 'http':
-            aboutCSS = aboutCSS.replace('https://',
-                                        httpPrefix + '://')
-
-        aboutForm = htmlHeader(cssFilename, aboutCSS)
-        aboutForm += '<div class="container">' + aboutText + '</div>'
-        if onionDomain:
-            aboutForm += \
-                '<div class="container"><center>\n' + \
-                '<p class="administeredby">' + \
-                'http://' + onionDomain + '</p>\n</center></div>\n'
-        if adminNickname:
-            adminActor = '/users/' + adminNickname
-            aboutForm += \
-                '<div class="container"><center>\n' + \
-                '<p class="administeredby">Administered by <a href="' + \
-                adminActor + '">' + adminNickname + '</a></p>\n' + \
-                '</center></div>\n'
-        aboutForm += htmlFooter()
-    return aboutForm
-
-
 def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
     """Show the screen for a blocked hashtag
     """
@@ -226,25 +68,6 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
         blockedHashtagForm += '</center></div>\n'
         blockedHashtagForm += htmlFooter()
     return blockedHashtagForm
-
-
-def htmlSuspended(cssCache: {}, baseDir: str) -> str:
-    """Show the screen for suspended accounts
-    """
-    suspendedForm = ''
-    cssFilename = baseDir + '/epicyon-suspended.css'
-    if os.path.isfile(baseDir + '/suspended.css'):
-        cssFilename = baseDir + '/suspended.css'
-
-    suspendedCSS = getCSS(baseDir, cssFilename, cssCache)
-    if suspendedCSS:
-        suspendedForm = htmlHeader(cssFilename, suspendedCSS)
-        suspendedForm += '<div><center>\n'
-        suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
-        suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>\n'
-        suspendedForm += '</center></div>\n'
-        suspendedForm += htmlFooter()
-    return suspendedForm
 
 
 def htmlRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,

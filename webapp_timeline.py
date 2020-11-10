@@ -1346,37 +1346,6 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         authorized)
 
 
-def htmlModeration(cssCache: {}, defaultTimeline: str,
-                   recentPostsCache: {}, maxRecentPosts: int,
-                   translate: {}, pageNumber: int, itemsPerPage: int,
-                   session, baseDir: str, wfRequest: {}, personCache: {},
-                   nickname: str, domain: str, port: int, inboxJson: {},
-                   allowDeletion: bool,
-                   httpPrefix: str, projectVersion: str,
-                   YTReplacementDomain: str,
-                   showPublishedDateOnly: bool,
-                   newswire: {}, positiveVoting: bool,
-                   showPublishAsIcon: bool,
-                   fullWidthTimelineButtonHeader: bool,
-                   iconsAsButtons: bool,
-                   rssIconAtTop: bool,
-                   publishButtonAtTop: bool,
-                   authorized: bool) -> str:
-    """Show the moderation feed as html
-    """
-    return htmlTimeline(cssCache, defaultTimeline,
-                        recentPostsCache, maxRecentPosts,
-                        translate, pageNumber,
-                        itemsPerPage, session, baseDir, wfRequest, personCache,
-                        nickname, domain, port, inboxJson, 'moderation',
-                        allowDeletion, httpPrefix, projectVersion, True, False,
-                        YTReplacementDomain, showPublishedDateOnly,
-                        newswire, False, False, positiveVoting,
-                        showPublishAsIcon, fullWidthTimelineButtonHeader,
-                        iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
-
-
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
                recentPostsCache: {}, maxRecentPosts: int,
                translate: {}, pageNumber: int, itemsPerPage: int,
