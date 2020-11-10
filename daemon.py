@@ -2891,10 +2891,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             linksFilename = baseDir + '/accounts/links.txt'
+            aboutFilename = baseDir + '/accounts/about.txt'
+            TOSFilename = baseDir + '/accounts/tos.txt'
 
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
+
             if fields.get('editedLinks'):
                 linksStr = fields['editedLinks']
                 linksFile = open(linksFilename, "w+")
@@ -2904,6 +2907,26 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 if os.path.isfile(linksFilename):
                     os.remove(linksFilename)
+
+            if fields.get('editedAbout'):
+                aboutStr = fields['editedAbout']
+                aboutFile = open(aboutFilename, "w+")
+                if aboutFile:
+                    aboutFile.write(aboutStr)
+                    aboutFile.close()
+            else:
+                if os.path.isfile(aboutFilename):
+                    os.remove(aboutFilename)
+
+            if fields.get('editedTOS'):
+                TOSStr = fields['editedTOS']
+                TOSFile = open(TOSFilename, "w+")
+                if TOSFile:
+                    TOSFile.write(TOSStr)
+                    TOSFile.close()
+            else:
+                if os.path.isfile(TOSFilename):
+                    os.remove(TOSFilename)
 
         # redirect back to the default timeline
         if callingDomain.endswith('.onion') and \
