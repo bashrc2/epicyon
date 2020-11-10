@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getCSS
 from utils import firstParagraphFromString
 from utils import clearFromPostCaches
 from utils import containsInvalidChars
@@ -8279,8 +8280,9 @@ class PubServer(BaseHTTPRequestHandler):
             tries = 0
             while tries < 5:
                 try:
-                    with open(path, 'r') as cssfile:
-                        css = cssfile.read()
+                    css = getCSS(self.server.baseDir, path,
+                                 self.server.cssCache)
+                    if css:
                         break
                 except Exception as e:
                     print(e)
