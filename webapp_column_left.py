@@ -17,7 +17,7 @@ from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import getIconsDir
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 
@@ -220,7 +220,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if ':' in domain:
         domain = domain.split(':')[0]
 
-    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
@@ -272,7 +272,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editLinksForm = htmlHeader(cssFilename, editCSS)
+    editLinksForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
 
     # top banner
     editLinksForm += \

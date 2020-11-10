@@ -20,7 +20,7 @@ from posts import isEditor
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import getImageFile
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
@@ -314,7 +314,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
 
     # iconsDir = getIconsDir(baseDir)
 
-    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
 
     # top banner
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
@@ -424,7 +424,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     showPublishButton = editor
 
-    htmlStr = htmlHeader(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
 
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
@@ -479,7 +479,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editNewswireForm = htmlHeader(cssFilename, editCSS)
+    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
 
     # top banner
     editNewswireForm += \
@@ -604,7 +604,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
             editCSS = \
                 editCSS.replace('https://', httpPrefix + '://')
 
-    editNewsPostForm = htmlHeader(cssFilename, editCSS)
+    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'
