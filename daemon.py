@@ -2908,25 +2908,28 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(linksFilename):
                     os.remove(linksFilename)
 
-            if fields.get('editedAbout'):
-                aboutStr = fields['editedAbout']
-                aboutFile = open(aboutFilename, "w+")
-                if aboutFile:
-                    aboutFile.write(aboutStr)
-                    aboutFile.close()
-            else:
-                if os.path.isfile(aboutFilename):
-                    os.remove(aboutFilename)
+            adminNickname = \
+                getConfigParam(baseDir, 'admin')
+            if nickname == adminNickname:
+                if fields.get('editedAbout'):
+                    aboutStr = fields['editedAbout']
+                    aboutFile = open(aboutFilename, "w+")
+                    if aboutFile:
+                        aboutFile.write(aboutStr)
+                        aboutFile.close()
+                else:
+                    if os.path.isfile(aboutFilename):
+                        os.remove(aboutFilename)
 
-            if fields.get('editedTOS'):
-                TOSStr = fields['editedTOS']
-                TOSFile = open(TOSFilename, "w+")
-                if TOSFile:
-                    TOSFile.write(TOSStr)
-                    TOSFile.close()
-            else:
-                if os.path.isfile(TOSFilename):
-                    os.remove(TOSFilename)
+                if fields.get('editedTOS'):
+                    TOSStr = fields['editedTOS']
+                    TOSFile = open(TOSFilename, "w+")
+                    if TOSFile:
+                        TOSFile.write(TOSStr)
+                        TOSFile.close()
+                else:
+                    if os.path.isfile(TOSFilename):
+                        os.remove(TOSFilename)
 
         # redirect back to the default timeline
         if callingDomain.endswith('.onion') and \
