@@ -21,7 +21,8 @@ from webapp_utils import htmlHeader
 from webapp_utils import htmlFooter
 
 
-def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
+def htmlPersonOptions(defaultTimeline: str,
+                      cssCache: {}, translate: {}, baseDir: str,
                       domain: str, domainFull: str,
                       originPathStr: str,
                       optionsActor: str,
@@ -204,7 +205,7 @@ def htmlPersonOptions(cssCache: {}, translate: {}, baseDir: str,
     optionsStr += optionsLinkStr
     backPath = '/'
     if nickname:
-        backPath = '/users/' + nickname
+        backPath = '/users/' + nickname + '/' + defaultTimeline
     optionsStr += \
         '    <a href="' + backPath + '"><button type="button" ' + \
         'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \

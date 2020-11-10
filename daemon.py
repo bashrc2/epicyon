@@ -4708,7 +4708,8 @@ class PubServer(BaseHTTPRequestHandler):
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
-            msg = htmlPersonOptions(self.server.cssCache,
+            msg = htmlPersonOptions(self.server.defaultTimeline,
+                                    self.server.cssCache,
                                     self.server.translate,
                                     baseDir, domain,
                                     domainFull,
