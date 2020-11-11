@@ -1943,30 +1943,50 @@ def testDangerousMarkup():
     print('testDangerousMarkup')
     content = '<p>This is a valid message</p>'
     assert(not dangerousMarkup(content))
+
     content = 'This is a valid message without markup'
     assert(not dangerousMarkup(content))
+
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
     assert(dangerousMarkup(content))
+
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
     assert(dangerousMarkup(content))
+
     content = '<p>This message embeds an evil frame.' + \
         '<iframe src="somesite"></iframe></p>'
     assert(dangerousMarkup(content))
+
     content = '<p>This message tries to obfuscate an evil frame.' + \
         '<  iframe     src = "somesite"></    iframe  ></p>'
     assert(dangerousMarkup(content))
+
     content = '<p>This message is not necessarily evil, but annoying.' + \
         '<hr><br><br><br><br><br><br><br><hr><hr></p>'
     assert(dangerousMarkup(content))
+
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/index.html">valid link.</a></p>'
     assert(not dangerousMarkup(content))
+
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/iframe.html">' + \
         'valid link having invalid but harmless name.</a></p>'
+    assert(not dangerousMarkup(content))
+
+    content = '<p>This message which <a href="127.0.0.1:8736">' + \
+        'tries to access the local network</a></p>'
+    assert(dangerousMarkup(content))
+
+    content = '<p>This message which <a href="http://192.168.5.10:7235">' + \
+        'tries to access the local network</a></p>'
+    assert(dangerousMarkup(content))
+
+    content = '<p>127.0.0.1 This message which does not access ' + \
+        'the local network</a></p>'
     assert(not dangerousMarkup(content))
 
 

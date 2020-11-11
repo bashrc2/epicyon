@@ -159,6 +159,7 @@ def dangerousMarkup(content: str) -> bool:
     if '>' not in content:
         return False
     contentSections = content.split('<')
+    invalidPartials = ('127.0.', '192.168', '10.0.')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
                       'hr')
@@ -166,6 +167,9 @@ def dangerousMarkup(content: str) -> bool:
         if '>' not in markup:
             continue
         markup = markup.split('>')[0].strip()
+        for partialMatch in invalidPartials:
+            if partialMatch in markup:
+                return True
         if ' ' not in markup:
             for badStr in invalidStrings:
                 if badStr in markup:
