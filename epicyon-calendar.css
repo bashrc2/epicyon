@@ -15,6 +15,8 @@
     --title-background: #ccc;
     --focus-color: white;
     --calendar-horizontal-padding: 0;
+    --calendar-cell-size: 1.5rem;
+    --calendar-cell-size-mobile: 2rem;
     --font-size-calendar-header: 3rem;
     --font-size-calendar-day: 1rem;
     --font-size-calendar-cell: 2rem;
@@ -90,11 +92,6 @@ a:focus {
 .calendar__day__header:last-child,
 .calendar__day__cell:last-child {
     border-right: none;
-}
-
-.calendar__day__header,
-.calendar__day__cell {
-    padding: .75rem 0 1.5rem;
 }
 
 .calendar__banner--month {
@@ -212,6 +209,10 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
         font-size: var(--font-size-calendar-cell);
         position: relative;
     }
+    .calendar__day__header,
+    .calendar__day__cell {
+        padding: var(--calendar-cell-size) 0 1.5rem;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -224,5 +225,9 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     .calendar__day__cell {
         font-size: var(--font-size-calendar-cell-mobile);
         position: relative;
+    }
+    .calendar__day__header,
+    .calendar__day__cell {
+        padding: var(--calendar-cell-size-mobile) 0 1.5rem;
     }
 }
