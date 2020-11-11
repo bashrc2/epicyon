@@ -15,8 +15,8 @@
     --title-background: #ccc;
     --focus-color: white;
     --calendar-horizontal-padding: 0;
-    --calendar-cell-size: 1.5rem;
-    --calendar-cell-size-mobile: 2rem;
+    --calendar-cell-size: 1.5vw;
+    --calendar-cell-size-mobile: 1.5vw;
     --font-size-calendar-header: 3rem;
     --font-size-calendar-day: 1rem;
     --font-size-calendar-cell: 2rem;
