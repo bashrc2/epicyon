@@ -596,7 +596,7 @@ def htmlHashtagSearch(cssCache: {},
             if nickname:
                 showIndividualPostIcons = True
             allowDeletion = False
-            hashtagSearchForm += separatorStr + \
+            postStr = \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      iconsDir, translate, None,
@@ -612,6 +612,8 @@ def htmlHashtagSearch(cssCache: {},
                                      showIndividualPostIcons,
                                      showIndividualPostIcons,
                                      False, False, False)
+            if postStr:
+                hashtagSearchForm += separatorStr + postStr
         index += 1
 
     if endIndex < noOfLines - 1:
@@ -943,7 +945,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             continue
         showIndividualPostIcons = True
         allowDeletion = False
-        historySearchForm += separatorStr + \
+        postStr = \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  iconsDir, translate, None,
@@ -959,6 +961,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
+        if postStr:
+            historySearchForm += separatorStr + postStr
         index += 1
 
     historySearchForm += htmlFooter()
