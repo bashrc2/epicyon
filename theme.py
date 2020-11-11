@@ -1154,6 +1154,7 @@ def setThemeIndymediaModern(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "font-size-pgp-key2": "18px",
         "button-corner-radius": "5px",
         "column-left-icons-margin": "15px",
         "post-separator-width": "96.5%",
