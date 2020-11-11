@@ -204,7 +204,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     }
     .calendar__day__header,
     .calendar__day__cell {
-        padding: var(--calendar-cell-size) 0 1.5rem;
+        padding: var(--calendar-cell-size) 0 var(--calendar-cell-size);
     }
 }
 
@@ -221,6 +221,6 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     }
     .calendar__day__header,
     .calendar__day__cell {
-        padding: var(--calendar-cell-size-mobile) 0 1.5rem;
+        padding: var(--calendar-cell-size-mobile) 0 var(--calendar-cell-size-mobile);
     }
 }
