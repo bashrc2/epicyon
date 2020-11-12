@@ -288,9 +288,11 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
         'src="/users/' + nickname + '/image.png" /></a>\n'
     htmlStr += '      <figcaption>\n'
     htmlStr += \
-        '        <img loading="lazy" src="' + avatarUrl + '" ' \
-        'title="' + avatarDescription + '" alt="' + \
-        avatarDescription + '" class="title">\n'
+        '        <a href="/users/' + \
+        nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '">\n' + \
+        '          <img loading="lazy" src="' + avatarUrl + '" ' + \
+        ' class="title"></a>\n'
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
