@@ -209,19 +209,13 @@ def htmlProfileAfterSearch(cssCache: {},
             if '<' in avatarDescription:
                 avatarDescription = removeHtml(avatarDescription)
 
-    profileStr = ' <div class="hero-image">\n'
-    profileStr += '  <div class="hero-text">\n'
-    if avatarUrl:
-        profileStr += \
-            '    <img loading="lazy" src="' + avatarUrl + \
-            '" alt="' + avatarDescription + '" title="' + \
-            avatarDescription + '" class="title">\n'
-    profileStr += '    <h1>' + displayName + '</h1>\n'
-    profileStr += '    <p><b>@' + searchNickname + '@' + \
-        searchDomainFull + '</b></p>\n'
-    profileStr += '    <p>' + profileDescriptionShort + '</p>\n'
-    profileStr += '  </div>\n'
-    profileStr += '</div>\n'
+    profileStr = \
+        getProfileHeaderAfterSearch(baseDir, searchNickname,
+                                    searchDomainFull,
+                                    translate,
+                                    displayName,
+                                    profileDescriptionShort,
+                                    avatarUrl)
 
     profileStr += '<div class="container">\n'
     profileStr += '  <form method="POST" action="' + \
@@ -304,6 +298,32 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
         '/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
+    htmlStr += '      </figcaption>\n'
+    htmlStr += '    </figure>\n\n'
+    return htmlStr
+
+
+def getProfileHeaderAfterSearch(baseDir: str, searchNickname: str,
+                                searchDomainFull: str,
+                                translate: {},
+                                displayName: str,
+                                profileDescriptionShort: str,
+                                avatarUrl: str) -> str:
+    """The header of a searched for handle, containing background
+    image and avatar
+    """
+    htmlStr = '\n\n    <figure class="profileHeader">\n'
+    # htmlStr += '        <img class="profileBackground" ' + \
+    #     'src="/users/' + nickname + '/image.png" /></a>\n'
+    htmlStr += '      <figcaption>\n'
+    if avatarUrl:
+        htmlStr += \
+            '          <img loading="lazy" src="' + avatarUrl + '" ' + \
+            ' class="title">\n'
+    htmlStr += '        <h1>' + displayName + '</h1>\n'
+    htmlStr += \
+        '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
+    htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
     return htmlStr
