@@ -12,7 +12,6 @@ from shutil import copyfile
 from content import removeLongWords
 from utils import locatePost
 from utils import loadJson
-from utils import getCSS
 from utils import getConfigParam
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
@@ -305,16 +304,9 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://', httpPrefix + '://')
-
     # iconsDir = getIconsDir(baseDir)
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
@@ -402,14 +394,6 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://',
-                                     httpPrefix + '://')
-
     iconsDir = getIconsDir(baseDir)
 
     if nickname == 'news':
@@ -424,7 +408,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     showPublishButton = editor
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
@@ -470,16 +454,10 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editCSS:
-        if httpPrefix != 'https':
-            editCSS = \
-                editCSS.replace('https://', httpPrefix + '://')
-
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
+    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     editNewswireForm += \
@@ -598,13 +576,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editCSS:
-        if httpPrefix != 'https':
-            editCSS = \
-                editCSS.replace('https://', httpPrefix + '://')
-
-    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
+    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'

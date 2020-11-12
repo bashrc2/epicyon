@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 from datetime import datetime
 import time
-from utils import getCSS
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
@@ -120,17 +119,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     timeDiff = int((time.time() - timelineStartTime) * 1000)
     if timeDiff > 100:
         print('TIMELINE TIMING ' + boxName + ' 1 = ' + str(timeDiff))
-
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if not profileStyle:
-        print('ERROR: css file not found ' + cssFilename)
-        return None
-
-    # replace any https within the css with whatever prefix is needed
-    if httpPrefix != 'https':
-        profileStyle = \
-            profileStyle.replace('https://',
-                                 httpPrefix + '://')
 
     # is the user a moderator?
     if not moderator:
@@ -263,7 +251,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             eventsButton + '"><span>' + translate['Events'] + \
             '</span></button></a>'
 
-    tlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    tlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     # benchmark 4
     timeDiff = int((time.time() - timelineStartTime) * 1000)

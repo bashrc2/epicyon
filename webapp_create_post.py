@@ -8,7 +8,6 @@ __status__ = "Production"
 
 import os
 from utils import isPublicPostFromUrl
-from utils import getCSS
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from webapp_utils import getIconsDir
@@ -252,12 +251,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-
-    newPostCSS = getCSS(baseDir, cssFilename, cssCache)
-    if newPostCSS:
-        if httpPrefix != 'https':
-            newPostCSS = newPostCSS.replace('https://',
-                                            httpPrefix + '://')
 
     if '?' in path:
         path = path.split('?')[0]
@@ -558,7 +551,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
-    newPostForm = htmlHeaderWithExternalStyle(cssFilename, newPostCSS)
+    newPostForm = htmlHeaderWithExternalStyle(cssFilename)
 
     newPostForm += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \

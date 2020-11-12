@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 from shutil import copyfile
 from utils import getConfigParam
-from utils import getCSS
 from utils import getNicknameFromActor
 from posts import isEditor
 from webapp_utils import htmlPostSeparator
@@ -201,13 +200,6 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://', httpPrefix + '://')
-
     iconsDir = getIconsDir(baseDir)
 
     # is the user a site editor?
@@ -220,7 +212,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if ':' in domain:
         domain = domain.split(':')[0]
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
@@ -263,16 +255,10 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editCSS:
-        if httpPrefix != 'https':
-            editCSS = \
-                editCSS.replace('https://', httpPrefix + '://')
-
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editLinksForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
+    editLinksForm = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     editLinksForm += \
