@@ -280,29 +280,29 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
     """The header of the profile screen, containing background
     image and avatar
     """
-    htmlStr = '\n<figure class="profileHeader">\n'
-    htmlStr += '  <a href="/users/' + \
+    htmlStr = '\n\n    <figure class="profileHeader">\n'
+    htmlStr += '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
-    htmlStr += '    <img src="/users/' + nickname + '/image.png" /></a>\n'
-    htmlStr += '  <figcaption>\n'
+    htmlStr += '        <img src="/users/' + nickname + '/image.png" /></a>\n'
+    htmlStr += '      <figcaption>\n'
     htmlStr += \
-        '    <img loading="lazy" src="' + avatarUrl + '" ' \
+        '        <img loading="lazy" src="' + avatarUrl + '" ' \
         'title="' + avatarDescription + '" alt="' + \
         avatarDescription + '" class="title">\n'
-    htmlStr += '    <h1>' + displayName + '</h1>\n'
+    htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
-        '<p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
+        '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
     htmlStr += \
-        '<a href="/users/' + nickname + \
+        '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
         '<img class="qrcode" src="/' + iconsDir + \
         '/qrcode.png" /></a></p>\n'
-    htmlStr += '    <p>' + profileDescriptionShort + '</p>\n'
+    htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
-    htmlStr += '  </figcaption>\n'
-    htmlStr += '</figure>\n'
+    htmlStr += '      </figcaption>\n'
+    htmlStr += '    </figure>\n\n'
     return htmlStr
 
 
