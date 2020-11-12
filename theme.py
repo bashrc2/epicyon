@@ -865,7 +865,7 @@ def setThemePurple(baseDir: str):
         "day-number2": "lightgrey",
         "today-foreground": "white",
         "today-circle": "red",
-        "event-background": "yellow",
+        "event-background": "#444",
         "event-foreground": "white",
         "title-text": "white",
         "title-background": "#ff42a0",
