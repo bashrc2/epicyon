@@ -3408,6 +3408,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+
             # get the various avatar, banner and background images
             actorChanged = True
             profileMediaTypes = ('avatar', 'image',
@@ -3416,6 +3418,14 @@ class PubServer(BaseHTTPRequestHandler):
                                  'left_col_image', 'right_col_image')
             profileMediaTypesUploaded = {}
             for mType in profileMediaTypes:
+                # some images can only be changed by the admin
+                if mType == 'instanceLogo' or \
+                   mType == 'image':
+                    if nickname != adminNickname:
+                        print('WARN: only the admin can change ' +
+                              'instance logo or profile backgrounds')
+                        continue
+
                 if debug:
                     print('DEBUG: profile update extracting ' + mType +
                           ' image or font from POST')
@@ -3432,6 +3442,13 @@ class PubServer(BaseHTTPRequestHandler):
                               ' image or font was found in POST')
                     continue
 
+                # NOTE: profile background comes from the news system user
+                # perhaps at some future time profile background will be
+                # per account
+                currNick = nickname
+                if mType == 'image':
+                    currNick = 'news'
+
                 # Note: a .temp extension is used here so that at no
                 # time is an image with metadata publicly exposed,
                 # even for a few mS
@@ -3441,7 +3458,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     filenameBase = \
                         baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
+                        currNick + '@' + domain + \
                         '/' + mType + '.temp'
 
                 filename, attachmentMediaType = \
