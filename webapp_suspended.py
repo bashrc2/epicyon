@@ -7,8 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from utils import getCSS
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
@@ -20,12 +19,10 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     if os.path.isfile(baseDir + '/suspended.css'):
         cssFilename = baseDir + '/suspended.css'
 
-    suspendedCSS = getCSS(baseDir, cssFilename, cssCache)
-    if suspendedCSS:
-        suspendedForm = htmlHeader(cssFilename, suspendedCSS)
-        suspendedForm += '<div><center>\n'
-        suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
-        suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>\n'
-        suspendedForm += '</center></div>\n'
-        suspendedForm += htmlFooter()
+    suspendedForm = htmlHeaderWithExternalStyle(cssFilename)
+    suspendedForm += '<div><center>\n'
+    suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
+    suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>\n'
+    suspendedForm += '</center></div>\n'
+    suspendedForm += htmlFooter()
     return suspendedForm

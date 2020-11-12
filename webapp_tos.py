@@ -8,9 +8,8 @@ __status__ = "Production"
 
 import os
 from shutil import copyfile
-from utils import getCSS
 from utils import getConfigParam
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
@@ -38,20 +37,15 @@ def htmlTermsOfService(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    termsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if termsCSS:
-        if httpPrefix != 'https':
-            termsCSS = termsCSS.replace('https://', httpPrefix+'://')
-
-        TOSForm = htmlHeader(cssFilename, termsCSS)
-        TOSForm += '<div class="container">' + TOSText + '</div>\n'
-        if adminNickname:
-            adminActor = httpPrefix + '://' + domainFull + \
-                '/users/' + adminNickname
-            TOSForm += \
-                '<div class="container"><center>\n' + \
-                '<p class="administeredby">Administered by <a href="' + \
-                adminActor + '">' + adminNickname + '</a></p>\n' + \
-                '</center></div>\n'
-        TOSForm += htmlFooter()
+    TOSForm = htmlHeaderWithExternalStyle(cssFilename)
+    TOSForm += '<div class="container">' + TOSText + '</div>\n'
+    if adminNickname:
+        adminActor = httpPrefix + '://' + domainFull + \
+            '/users/' + adminNickname
+        TOSForm += \
+            '<div class="container"><center>\n' + \
+            '<p class="administeredby">Administered by <a href="' + \
+            adminActor + '">' + adminNickname + '</a></p>\n' + \
+            '</center></div>\n'
+    TOSForm += htmlFooter()
     return TOSForm

@@ -7,9 +7,8 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from utils import getCSS
 from webapp_timeline import htmlTimeline
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
@@ -56,56 +55,51 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    infoCSS = getCSS(baseDir, cssFilename, cssCache)
-    if infoCSS:
-        if httpPrefix != 'https':
-            infoCSS = infoCSS.replace('https://',
-                                      httpPrefix + '://')
-        infoForm = htmlHeader(cssFilename, infoCSS)
+    infoForm = htmlHeaderWithExternalStyle(cssFilename)
 
-        infoForm += \
-            '<center><h1>' + \
-            translate['Moderation Information'] + \
-            '</h1></center>'
+    infoForm += \
+        '<center><h1>' + \
+        translate['Moderation Information'] + \
+        '</h1></center>'
 
-        infoShown = False
-        suspendedFilename = baseDir + '/accounts/suspended.txt'
-        if os.path.isfile(suspendedFilename):
-            with open(suspendedFilename, "r") as f:
-                suspendedStr = f.read()
-                infoForm += '<div class="container">'
-                infoForm += '  <br><b>' + \
-                    translate['Suspended accounts'] + '</b>'
-                infoForm += '  <br>' + \
-                    translate['These are currently suspended']
-                infoForm += \
-                    '  <textarea id="message" ' + \
-                    'name="suspended" style="height:200px">' + \
-                    suspendedStr + '</textarea>'
-                infoForm += '</div>'
-                infoShown = True
-
-        blockingFilename = baseDir + '/accounts/blocking.txt'
-        if os.path.isfile(blockingFilename):
-            with open(blockingFilename, "r") as f:
-                blockedStr = f.read()
-                infoForm += '<div class="container">'
-                infoForm += \
-                    '  <br><b>' + \
-                    translate['Blocked accounts and hashtags'] + '</b>'
-                infoForm += \
-                    '  <br>' + \
-                    translate[msgStr1]
-                infoForm += \
-                    '  <textarea id="message" ' + \
-                    'name="blocked" style="height:700px">' + \
-                    blockedStr + '</textarea>'
-                infoForm += '</div>'
-                infoShown = True
-        if not infoShown:
+    infoShown = False
+    suspendedFilename = baseDir + '/accounts/suspended.txt'
+    if os.path.isfile(suspendedFilename):
+        with open(suspendedFilename, "r") as f:
+            suspendedStr = f.read()
+            infoForm += '<div class="container">'
+            infoForm += '  <br><b>' + \
+                translate['Suspended accounts'] + '</b>'
+            infoForm += '  <br>' + \
+                translate['These are currently suspended']
             infoForm += \
-                '<center><p>' + \
-                translate[msgStr2] + \
-                '</p></center>'
-        infoForm += htmlFooter()
+                '  <textarea id="message" ' + \
+                'name="suspended" style="height:200px">' + \
+                suspendedStr + '</textarea>'
+            infoForm += '</div>'
+            infoShown = True
+
+    blockingFilename = baseDir + '/accounts/blocking.txt'
+    if os.path.isfile(blockingFilename):
+        with open(blockingFilename, "r") as f:
+            blockedStr = f.read()
+            infoForm += '<div class="container">'
+            infoForm += \
+                '  <br><b>' + \
+                translate['Blocked accounts and hashtags'] + '</b>'
+            infoForm += \
+                '  <br>' + \
+                translate[msgStr1]
+            infoForm += \
+                '  <textarea id="message" ' + \
+                'name="blocked" style="height:700px">' + \
+                blockedStr + '</textarea>'
+            infoForm += '</div>'
+            infoShown = True
+    if not infoShown:
+        infoForm += \
+            '<center><p>' + \
+            translate[msgStr2] + \
+            '</p></center>'
+    infoForm += htmlFooter()
     return infoForm

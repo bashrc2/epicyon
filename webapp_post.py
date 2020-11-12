@@ -25,7 +25,6 @@ from posts import downloadAnnounce
 from posts import populateRepliesJson
 from utils import locatePost
 from utils import loadJson
-from utils import getCSS
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import getProtocolPrefixes
@@ -55,7 +54,7 @@ from webapp_utils import postContainsPublic
 from webapp_utils import getContentWarningButton
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_utils import getIconsDir
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
@@ -1338,12 +1337,7 @@ def htmlIndividualPost(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    postsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if postsCSS:
-        if httpPrefix != 'https':
-            postsCSS = postsCSS.replace('https://',
-                                        httpPrefix + '://')
-    return htmlHeader(cssFilename, postsCSS) + postStr + htmlFooter()
+    return htmlHeaderWithExternalStyle(cssFilename) + postStr + htmlFooter()
 
 
 def htmlPostReplies(cssCache: {},
@@ -1376,9 +1370,4 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    postsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if postsCSS:
-        if httpPrefix != 'https':
-            postsCSS = postsCSS.replace('https://',
-                                        httpPrefix + '://')
-    return htmlHeader(cssFilename, postsCSS) + repliesStr + htmlFooter()
+    return htmlHeaderWithExternalStyle(cssFilename) + repliesStr + htmlFooter()

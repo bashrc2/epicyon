@@ -11,8 +11,7 @@ import time
 from shutil import copyfile
 from utils import getConfigParam
 from utils import noOfAccounts
-from utils import getCSS
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
@@ -100,11 +99,6 @@ def htmlLogin(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/login.css'):
         cssFilename = baseDir + '/login.css'
 
-    loginCSS = getCSS(baseDir, cssFilename, cssCache)
-    if not loginCSS:
-        print('ERROR: login css file missing ' + cssFilename)
-        return None
-
     # show the register button
     registerButtonStr = ''
     if getConfigParam(baseDir, 'registration') == 'open':
@@ -135,7 +129,7 @@ def htmlLogin(cssCache: {}, translate: {},
     if not autocomplete:
         autocompleteStr = 'autocomplete="off" value=""'
 
-    loginForm = htmlHeader(cssFilename, loginCSS)
+    loginForm = htmlHeaderWithExternalStyle(cssFilename)
     loginForm += '<br>\n'
     loginForm += '<form method="POST" action="/login">\n'
     loginForm += '  <div class="imgcontainer">\n'

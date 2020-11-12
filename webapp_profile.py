@@ -10,7 +10,6 @@ import os
 from pprint import pprint
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getCSS
 from utils import isSystemAccount
 from utils import removeHtml
 from utils import loadJson
@@ -34,7 +33,7 @@ from tox import getToxAddress
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import getIconsDir
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
 from webapp_utils import headerButtonsFrontScreen
@@ -108,171 +107,165 @@ def htmlProfileAfterSearch(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        wf = \
-            webfingerHandle(session,
-                            searchNickname + '@' + searchDomainFull,
-                            httpPrefix, cachedWebfingers,
-                            domain, projectVersion)
-        if not wf:
-            print('DEBUG: Unable to webfinger ' +
-                  searchNickname + '@' + searchDomainFull)
-            print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
-            print('DEBUG: httpPrefix ' + httpPrefix)
-            print('DEBUG: domain ' + domain)
-            return None
-        if not isinstance(wf, dict):
-            print('WARN: Webfinger search for ' +
-                  searchNickname + '@' + searchDomainFull +
-                  ' did not return a dict. ' +
-                  str(wf))
-            return None
+    wf = \
+        webfingerHandle(session,
+                        searchNickname + '@' + searchDomainFull,
+                        httpPrefix, cachedWebfingers,
+                        domain, projectVersion)
+    if not wf:
+        print('DEBUG: Unable to webfinger ' +
+              searchNickname + '@' + searchDomainFull)
+        print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
+        print('DEBUG: httpPrefix ' + httpPrefix)
+        print('DEBUG: domain ' + domain)
+        return None
+    if not isinstance(wf, dict):
+        print('WARN: Webfinger search for ' +
+              searchNickname + '@' + searchDomainFull +
+              ' did not return a dict. ' +
+              str(wf))
+        return None
 
-        personUrl = None
-        if wf.get('errors'):
-            personUrl = httpPrefix + '://' + \
-                searchDomainFull + '/users/' + searchNickname
+    personUrl = None
+    if wf.get('errors'):
+        personUrl = httpPrefix + '://' + \
+            searchDomainFull + '/users/' + searchNickname
 
-        profileStr = 'https://www.w3.org/ns/activitystreams'
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if not personUrl:
+        personUrl = getUserUrl(wf)
+    if not personUrl:
+        # try single user instance
         asHeader = {
-            'Accept': 'application/activity+json; profile="' + profileStr + '"'
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-        if not personUrl:
-            personUrl = getUserUrl(wf)
-        if not personUrl:
-            # try single user instance
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
-            }
-            personUrl = httpPrefix + '://' + searchDomainFull
+        personUrl = httpPrefix + '://' + searchDomainFull
+    profileJson = \
+        getJson(session, personUrl, asHeader, None,
+                projectVersion, httpPrefix, domain)
+    if not profileJson:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
         profileJson = \
             getJson(session, personUrl, asHeader, None,
                     projectVersion, httpPrefix, domain)
-        if not profileJson:
-            asHeader = {
-                'Accept': 'application/ld+json; profile="' + profileStr + '"'
-            }
-            profileJson = \
-                getJson(session, personUrl, asHeader, None,
-                        projectVersion, httpPrefix, domain)
-        if not profileJson:
-            print('DEBUG: No actor returned from ' + personUrl)
-            return None
-        avatarUrl = ''
-        if profileJson.get('icon'):
-            if profileJson['icon'].get('url'):
-                avatarUrl = profileJson['icon']['url']
-        if not avatarUrl:
-            avatarUrl = getPersonAvatarUrl(baseDir, personUrl,
-                                           personCache, True)
-        displayName = searchNickname
-        if profileJson.get('name'):
-            displayName = profileJson['name']
-        profileDescription = ''
-        if profileJson.get('summary'):
-            profileDescription = profileJson['summary']
-        outboxUrl = None
-        if not profileJson.get('outbox'):
-            if debug:
-                pprint(profileJson)
-                print('DEBUG: No outbox found')
-            return None
-        outboxUrl = profileJson['outbox']
-        profileBackgroundImage = ''
-        if profileJson.get('image'):
-            if profileJson['image'].get('url'):
-                profileBackgroundImage = profileJson['image']['url']
+    if not profileJson:
+        print('DEBUG: No actor returned from ' + personUrl)
+        return None
+    avatarUrl = ''
+    if profileJson.get('icon'):
+        if profileJson['icon'].get('url'):
+            avatarUrl = profileJson['icon']['url']
+    if not avatarUrl:
+        avatarUrl = getPersonAvatarUrl(baseDir, personUrl,
+                                       personCache, True)
+    displayName = searchNickname
+    if profileJson.get('name'):
+        displayName = profileJson['name']
+    profileDescription = ''
+    if profileJson.get('summary'):
+        profileDescription = profileJson['summary']
+    outboxUrl = None
+    if not profileJson.get('outbox'):
+        if debug:
+            pprint(profileJson)
+            print('DEBUG: No outbox found')
+        return None
+    outboxUrl = profileJson['outbox']
 
-        profileStyle = profileStyle.replace('image.png',
-                                            profileBackgroundImage)
-        if httpPrefix != 'https':
-            profileStyle = profileStyle.replace('https://',
-                                                httpPrefix + '://')
-        # url to return to
-        backUrl = path
-        if not backUrl.endswith('/inbox'):
-            backUrl += '/inbox'
+    # profileBackgroundImage = ''
+    # if profileJson.get('image'):
+    #     if profileJson['image'].get('url'):
+    #         profileBackgroundImage = profileJson['image']['url']
 
-        profileDescriptionShort = profileDescription
-        if '\n' in profileDescription:
-            if len(profileDescription.split('\n')) > 2:
-                profileDescriptionShort = ''
-        else:
-            if '<br>' in profileDescription:
-                if len(profileDescription.split('<br>')) > 2:
-                    profileDescriptionShort = ''
-        # keep the profile description short
-        if len(profileDescriptionShort) > 256:
+    # url to return to
+    backUrl = path
+    if not backUrl.endswith('/inbox'):
+        backUrl += '/inbox'
+
+    profileDescriptionShort = profileDescription
+    if '\n' in profileDescription:
+        if len(profileDescription.split('\n')) > 2:
             profileDescriptionShort = ''
-        # remove formatting from profile description used on title
-        avatarDescription = ''
-        if profileJson.get('summary'):
-            if isinstance(profileJson['summary'], str):
-                avatarDescription = \
-                    profileJson['summary'].replace('<br>', '\n')
-                avatarDescription = avatarDescription.replace('<p>', '')
-                avatarDescription = avatarDescription.replace('</p>', '')
-                if '<' in avatarDescription:
-                    avatarDescription = removeHtml(avatarDescription)
-        profileStr = ' <div class="hero-image">\n'
-        profileStr += '  <div class="hero-text">\n'
-        if avatarUrl:
-            profileStr += \
-                '    <img loading="lazy" src="' + avatarUrl + \
-                '" alt="' + avatarDescription + '" title="' + \
-                avatarDescription + '" class="title">\n'
-        profileStr += '    <h1>' + displayName + '</h1>\n'
-        profileStr += '    <p><b>@' + searchNickname + '@' + \
-            searchDomainFull + '</b></p>\n'
-        profileStr += '    <p>' + profileDescriptionShort + '</p>\n'
-        profileStr += '  </div>\n'
-        profileStr += '</div>\n'
-        profileStr += '<div class="container">\n'
-        profileStr += '  <form method="POST" action="' + \
-            backUrl + '/followconfirm">\n'
-        profileStr += '    <center>\n'
+    else:
+        if '<br>' in profileDescription:
+            if len(profileDescription.split('<br>')) > 2:
+                profileDescriptionShort = ''
+    # keep the profile description short
+    if len(profileDescriptionShort) > 256:
+        profileDescriptionShort = ''
+    # remove formatting from profile description used on title
+    avatarDescription = ''
+    if profileJson.get('summary'):
+        if isinstance(profileJson['summary'], str):
+            avatarDescription = \
+                profileJson['summary'].replace('<br>', '\n')
+            avatarDescription = avatarDescription.replace('<p>', '')
+            avatarDescription = avatarDescription.replace('</p>', '')
+            if '<' in avatarDescription:
+                avatarDescription = removeHtml(avatarDescription)
+    profileStr = ' <div class="hero-image">\n'
+    profileStr += '  <div class="hero-text">\n'
+    if avatarUrl:
         profileStr += \
-            '      <input type="hidden" name="actor" value="' + \
-            personUrl + '">\n'
-        profileStr += \
-            '      <a href="' + backUrl + '"><button class="button">' + \
-            translate['Go Back'] + '</button></a>\n'
-        profileStr += \
-            '      <button type="submit" class="button" name="submitYes">' + \
-            translate['Follow'] + '</button>\n'
-        profileStr += \
-            '      <button type="submit" class="button" name="submitView">' + \
-            translate['View'] + '</button>\n'
-        profileStr += '    </center>\n'
-        profileStr += '  </form>\n'
-        profileStr += '</div>\n'
+            '    <img loading="lazy" src="' + avatarUrl + \
+            '" alt="' + avatarDescription + '" title="' + \
+            avatarDescription + '" class="title">\n'
+    profileStr += '    <h1>' + displayName + '</h1>\n'
+    profileStr += '    <p><b>@' + searchNickname + '@' + \
+        searchDomainFull + '</b></p>\n'
+    profileStr += '    <p>' + profileDescriptionShort + '</p>\n'
+    profileStr += '  </div>\n'
+    profileStr += '</div>\n'
+    profileStr += '<div class="container">\n'
+    profileStr += '  <form method="POST" action="' + \
+        backUrl + '/followconfirm">\n'
+    profileStr += '    <center>\n'
+    profileStr += \
+        '      <input type="hidden" name="actor" value="' + \
+        personUrl + '">\n'
+    profileStr += \
+        '      <a href="' + backUrl + '"><button class="button">' + \
+        translate['Go Back'] + '</button></a>\n'
+    profileStr += \
+        '      <button type="submit" class="button" name="submitYes">' + \
+        translate['Follow'] + '</button>\n'
+    profileStr += \
+        '      <button type="submit" class="button" name="submitView">' + \
+        translate['View'] + '</button>\n'
+    profileStr += '    </center>\n'
+    profileStr += '  </form>\n'
+    profileStr += '</div>\n'
 
-        iconsDir = getIconsDir(baseDir)
-        i = 0
-        for item in parseUserFeed(session, outboxUrl, asHeader,
-                                  projectVersion, httpPrefix, domain):
-            if not item.get('type'):
-                continue
-            if item['type'] != 'Create' and item['type'] != 'Announce':
-                continue
-            if not item.get('object'):
-                continue
-            profileStr += \
-                individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                     iconsDir, translate, None, baseDir,
-                                     session, cachedWebfingers, personCache,
-                                     nickname, domain, port,
-                                     item, avatarUrl, False, False,
-                                     httpPrefix, projectVersion, 'inbox',
-                                     YTReplacementDomain,
-                                     showPublishedDateOnly,
-                                     False, False, False, False, False)
-            i += 1
-            if i >= 20:
-                break
+    iconsDir = getIconsDir(baseDir)
+    i = 0
+    for item in parseUserFeed(session, outboxUrl, asHeader,
+                              projectVersion, httpPrefix, domain):
+        if not item.get('type'):
+            continue
+        if item['type'] != 'Create' and item['type'] != 'Announce':
+            continue
+        if not item.get('object'):
+            continue
+        profileStr += \
+            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                                 iconsDir, translate, None, baseDir,
+                                 session, cachedWebfingers, personCache,
+                                 nickname, domain, port,
+                                 item, avatarUrl, False, False,
+                                 httpPrefix, projectVersion, 'inbox',
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly,
+                                 False, False, False, False, False)
+        i += 1
+        if i >= 20:
+            break
 
-    return htmlHeader(cssFilename, profileStyle) + profileStr + htmlFooter()
+    return htmlHeaderWithExternalStyle(cssFilename) + profileStr + htmlFooter()
 
 
 def htmlProfile(rssIconAtTop: bool,
@@ -566,84 +559,79 @@ def htmlProfile(rssIconAtTop: bool,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        profileStyle = \
-            profileStyle.replace('image.png',
-                                 profileJson['image']['url'])
-        if isSystemAccount(nickname):
-            bannerFile, bannerFilename = \
-                getBannerFile(baseDir, nickname, domain)
-            profileStyle = \
-                profileStyle.replace('banner.png',
-                                     '/users/' + nickname + '/' + bannerFile)
+    if isSystemAccount(nickname):
+        bannerFile, bannerFilename = \
+            getBannerFile(baseDir, nickname, domain)
+        # profileStyle = \
+        #     profileStyle.replace('banner.png',
+        #                          '/users/' + nickname + '/' + bannerFile)
 
-        licenseStr = \
-            '<a href="https://gitlab.com/bashrc2/epicyon">' + \
-            '<img loading="lazy" class="license" alt="' + \
-            translate['Get the source code'] + '" title="' + \
-            translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
+    licenseStr = \
+        '<a href="https://gitlab.com/bashrc2/epicyon">' + \
+        '<img loading="lazy" class="license" alt="' + \
+        translate['Get the source code'] + '" title="' + \
+        translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
-        if selected == 'posts':
-            profileStr += \
-                htmlProfilePosts(recentPostsCache, maxRecentPosts,
-                                 translate,
-                                 baseDir, httpPrefix, authorized,
-                                 nickname, domain, port,
-                                 session, wfRequest, personCache,
-                                 projectVersion,
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly) + licenseStr
-        if selected == 'following':
-            profileStr += \
-                htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, nickname,
-                                     domain, port, session,
-                                     wfRequest, personCache, extraJson,
-                                     projectVersion, ["unfollow"], selected,
-                                     usersPath, pageNumber, maxItemsPerPage)
-        if selected == 'followers':
-            profileStr += \
-                htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, nickname,
-                                     domain, port, session,
-                                     wfRequest, personCache, extraJson,
-                                     projectVersion, ["block"],
-                                     selected, usersPath, pageNumber,
-                                     maxItemsPerPage)
-        if selected == 'roles':
-            profileStr += \
-                htmlProfileRoles(translate, nickname, domainFull, extraJson)
-        if selected == 'skills':
-            profileStr += \
-                htmlProfileSkills(translate, nickname, domainFull, extraJson)
-        if selected == 'shares':
-            profileStr += \
-                htmlProfileShares(actor, translate,
-                                  nickname, domainFull,
-                                  extraJson) + licenseStr
+    if selected == 'posts':
+        profileStr += \
+            htmlProfilePosts(recentPostsCache, maxRecentPosts,
+                             translate,
+                             baseDir, httpPrefix, authorized,
+                             nickname, domain, port,
+                             session, wfRequest, personCache,
+                             projectVersion,
+                             YTReplacementDomain,
+                             showPublishedDateOnly) + licenseStr
+    if selected == 'following':
+        profileStr += \
+            htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                 authorized, nickname,
+                                 domain, port, session,
+                                 wfRequest, personCache, extraJson,
+                                 projectVersion, ["unfollow"], selected,
+                                 usersPath, pageNumber, maxItemsPerPage)
+    if selected == 'followers':
+        profileStr += \
+            htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                 authorized, nickname,
+                                 domain, port, session,
+                                 wfRequest, personCache, extraJson,
+                                 projectVersion, ["block"],
+                                 selected, usersPath, pageNumber,
+                                 maxItemsPerPage)
+    if selected == 'roles':
+        profileStr += \
+            htmlProfileRoles(translate, nickname, domainFull, extraJson)
+    if selected == 'skills':
+        profileStr += \
+            htmlProfileSkills(translate, nickname, domainFull, extraJson)
+    if selected == 'shares':
+        profileStr += \
+            htmlProfileShares(actor, translate,
+                              nickname, domainFull,
+                              extraJson) + licenseStr
 
-        # Footer which is only used for system accounts
-        profileFooterStr = ''
-        if isSystemAccount(nickname):
-            profileFooterStr = '      </td>\n'
-            profileFooterStr += '      <td valign="top" class="col-right">\n'
-            iconsDir = getIconsDir(baseDir)
-            profileFooterStr += \
-                getRightColumnContent(baseDir, 'news', domainFull,
-                                      httpPrefix, translate,
-                                      iconsDir, False, False,
-                                      newswire, False,
-                                      False, None, False, False,
-                                      False, True, authorized, True)
-            profileFooterStr += '      </td>\n'
-            profileFooterStr += '  </tr>\n'
-            profileFooterStr += '  </tbody>\n'
-            profileFooterStr += '</table>\n'
+    # Footer which is only used for system accounts
+    profileFooterStr = ''
+    if isSystemAccount(nickname):
+        profileFooterStr = '      </td>\n'
+        profileFooterStr += '      <td valign="top" class="col-right">\n'
+        iconsDir = getIconsDir(baseDir)
+        profileFooterStr += \
+            getRightColumnContent(baseDir, 'news', domainFull,
+                                  httpPrefix, translate,
+                                  iconsDir, False, False,
+                                  newswire, False,
+                                  False, None, False, False,
+                                  False, True, authorized, True)
+        profileFooterStr += '      </td>\n'
+        profileFooterStr += '  </tr>\n'
+        profileFooterStr += '  </tbody>\n'
+        profileFooterStr += '</table>\n'
 
-        profileStr = \
-            htmlHeader(cssFilename, profileStyle) + \
-            profileStr + profileFooterStr + htmlFooter()
+    profileStr = \
+        htmlHeaderWithExternalStyle(cssFilename) + \
+        profileStr + profileFooterStr + htmlFooter()
     return profileStr
 
 
@@ -989,12 +977,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    editProfileCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editProfileCSS:
-        if httpPrefix != 'https':
-            editProfileCSS = \
-                editProfileCSS.replace('https://', httpPrefix + '://')
-
     moderatorsStr = ''
     themesDropdown = ''
     instanceStr = ''
@@ -1114,7 +1096,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                        '<option value="' + themeName +
                                        '" selected>')
 
-    editProfileForm = htmlHeader(cssFilename, editProfileCSS)
+    editProfileForm = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     editProfileForm += \
