@@ -284,7 +284,8 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
     htmlStr += '      <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
-    htmlStr += '        <img src="/users/' + nickname + '/image.png" /></a>\n'
+    htmlStr += '        <img class="profileBackground" ' + \
+        'src="/users/' + nickname + '/image.png" /></a>\n'
     htmlStr += '      <figcaption>\n'
     htmlStr += \
         '        <img loading="lazy" src="' + avatarUrl + '" ' \
