@@ -829,6 +829,7 @@ def setThemePurple(baseDir: str):
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
+        "search-banner-height-mobile": "15vh",
         "font-size-button-mobile": "26px",
         "font-size": "32px",
         "font-size2": "26px",
