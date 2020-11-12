@@ -268,6 +268,42 @@ def htmlProfileAfterSearch(cssCache: {},
     return htmlHeaderWithExternalStyle(cssFilename) + profileStr + htmlFooter()
 
 
+def getProfileHeader(baseDir: str, nickname: str, domain: str,
+                     domainFull: str, translate: {}, iconsDir: str,
+                     defaultTimeline: str,
+                     displayName: str,
+                     avatarDescription: str,
+                     profileDescriptionShort: str,
+                     loginButton: str) -> str:
+    """The header of the profile screen, containing background
+    image and avatar
+    """
+    htmlStr = '<figure class="profileHeader">\n'
+    htmlStr += '  <a href="/users/' + \
+        nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '">\n'
+    htmlStr += '    <img src="/users/' + nickname + '/image.png" /></a>\n'
+    htmlStr += '  <figcaption>\n'
+    htmlStr += \
+        '    <img loading="lazy" src="/users/' + nickname + '/avatar.png' + \
+        '" title="' + avatarDescription + '" alt="' + \
+        avatarDescription + '" class="title">\n'
+    htmlStr += '    <h1>' + displayName + '</h1>\n'
+    htmlStr += \
+        '<p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
+    htmlStr += \
+        '<a href="/users/' + nickname + \
+        '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
+        translate['QR Code'] + '">' + \
+        '<img class="qrcode" src="/' + iconsDir + \
+        '/qrcode.png" /></a></p>\n'
+    htmlStr += '    <p>' + profileDescriptionShort + '</p>\n'
+    htmlStr += loginButton
+    htmlStr += '  </figcaption>\n'
+    htmlStr += '</figure>\n'
+    return htmlStr
+
+
 def htmlProfile(rssIconAtTop: bool,
                 cssCache: {}, iconsAsButtons: bool,
                 defaultTimeline: str,
@@ -497,26 +533,13 @@ def htmlProfile(rssIconAtTop: bool,
         profileHeaderStr += '      </td>\n'
         profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
-        profileHeaderStr = '<div class="hero-image">\n'
-        profileHeaderStr += '  <div class="hero-text">\n'
-        profileHeaderStr += \
-            '    <img loading="lazy" src="' + profileJson['icon']['url'] + \
-            '" title="' + avatarDescription + '" alt="' + \
-            avatarDescription + '" class="title">\n'
-        profileHeaderStr += '    <h1>' + displayName + '</h1>\n'
-        iconsDir = getIconsDir(baseDir)
-        profileHeaderStr += \
-            '<p><b>@' + nickname + '@' + domainFull + '</b><br>'
-        profileHeaderStr += \
-            '<a href="/users/' + nickname + \
-            '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
-            translate['QR Code'] + '">' + \
-            '<img class="qrcode" src="/' + iconsDir + \
-            '/qrcode.png" /></a></p>\n'
-        profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>\n'
-        profileHeaderStr += loginButton
-        profileHeaderStr += '  </div>\n'
-        profileHeaderStr += '</div>\n'
+        profileHeaderStr = \
+            getProfileHeader(baseDir, nickname, domain,
+                             domainFull, translate, iconsDir,
+                             defaultTimeline, displayName,
+                             avatarDescription,
+                             profileDescriptionShort,
+                             loginButton)
 
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \

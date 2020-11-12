@@ -251,6 +251,31 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
+.profileHeader {
+    font-family: Arial, Helvetica, sans-serif;
+    position: relative;
+    overflow: hidden;
+    margin: 10px;
+    min-width: 230px;
+    max-width: 315px;
+    width: 100%;
+    color: #ffffff;
+    text-align: left;
+    line-height: 1.4em;
+    background-color: #141414;
+}
+
+.profileHeader .title {
+    border-radius: 50%;
+    position: absolute;
+    bottom: 100%;
+    left: 25px;
+    z-index: 1;
+    max-width: 90px;
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
 .hero-image {
     background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("/users/news/image.png");
     height: 50%;
