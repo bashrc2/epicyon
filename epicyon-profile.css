@@ -252,7 +252,7 @@ a:focus {
 }
 
 .hero-image {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("image.png");
+    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("/users/news/image.png");
     height: 50%;
     background-position: center;
     background-repeat: no-repeat;
