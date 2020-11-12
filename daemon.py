@@ -2441,7 +2441,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.debug,
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
-                                           self.server.showPublishedDateOnly)
+                                           self.server.showPublishedDateOnly,
+                                           self.server.defaultTimeline)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     self._login_headers('text/html',

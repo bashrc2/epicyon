@@ -55,7 +55,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            session, cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str,
                            YTReplacementDomain: str,
-                           showPublishedDateOnly: bool) -> str:
+                           showPublishedDateOnly: bool,
+                           defaultTimeline: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if '/users/' in profileHandle or \
@@ -215,7 +216,9 @@ def htmlProfileAfterSearch(cssCache: {},
             imageUrl = profileJson['image']['url']
 
     profileStr = \
-        getProfileHeaderAfterSearch(baseDir, searchNickname,
+        getProfileHeaderAfterSearch(baseDir,
+                                    nickname, defaultTimeline,
+                                    searchNickname,
                                     searchDomainFull,
                                     translate,
                                     displayName,
@@ -229,9 +232,9 @@ def htmlProfileAfterSearch(cssCache: {},
     profileStr += \
         '      <input type="hidden" name="actor" value="' + \
         personUrl + '">\n'
-    profileStr += \
-        '      <a href="' + backUrl + '"><button class="button">' + \
-        translate['Go Back'] + '</button></a>\n'
+    # profileStr += \
+    #     '      <a href="' + backUrl + '"><button class="button">' + \
+    #     translate['Go Back'] + '</button></a>\n'
     profileStr += \
         '      <button type="submit" class="button" name="submitYes">' + \
         translate['Follow'] + '</button>\n'
@@ -308,7 +311,9 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
     return htmlStr
 
 
-def getProfileHeaderAfterSearch(baseDir: str, searchNickname: str,
+def getProfileHeaderAfterSearch(baseDir: str,
+                                nickname: str, defaultTimeline: str,
+                                searchNickname: str,
                                 searchDomainFull: str,
                                 translate: {},
                                 displayName: str,
@@ -318,13 +323,19 @@ def getProfileHeaderAfterSearch(baseDir: str, searchNickname: str,
     image and avatar
     """
     htmlStr = '\n\n    <figure class="profileHeader">\n'
+    htmlStr += '      <a href="/users/' + \
+        nickname + '/' + defaultTimeline + '" title="' + \
+        translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
         'src="' + imageUrl + '" /></a>\n'
     htmlStr += '      <figcaption>\n'
     if avatarUrl:
+        htmlStr += '      <a href="/users/' + \
+            nickname + '/' + defaultTimeline + '" title="' + \
+            translate['Switch to timeline view'] + '">\n'
         htmlStr += \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
-            ' class="title">\n'
+            ' class="title"></a>\n'
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
