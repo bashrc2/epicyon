@@ -208,6 +208,7 @@ def htmlProfileAfterSearch(cssCache: {},
             avatarDescription = avatarDescription.replace('</p>', '')
             if '<' in avatarDescription:
                 avatarDescription = removeHtml(avatarDescription)
+
     profileStr = ' <div class="hero-image">\n'
     profileStr += '  <div class="hero-text">\n'
     if avatarUrl:
@@ -221,6 +222,7 @@ def htmlProfileAfterSearch(cssCache: {},
     profileStr += '    <p>' + profileDescriptionShort + '</p>\n'
     profileStr += '  </div>\n'
     profileStr += '</div>\n'
+
     profileStr += '<div class="container">\n'
     profileStr += '  <form method="POST" action="' + \
         backUrl + '/followconfirm">\n'
@@ -274,7 +276,7 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
                      displayName: str,
                      avatarDescription: str,
                      profileDescriptionShort: str,
-                     loginButton: str) -> str:
+                     loginButton: str, avatarUrl: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -285,8 +287,8 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
     htmlStr += '    <img src="/users/' + nickname + '/image.png" /></a>\n'
     htmlStr += '  <figcaption>\n'
     htmlStr += \
-        '    <img loading="lazy" src="/users/' + nickname + '/avatar.png' + \
-        '" title="' + avatarDescription + '" alt="' + \
+        '    <img loading="lazy" src="' + avatarUrl + '" ' \
+        'title="' + avatarDescription + '" alt="' + \
         avatarDescription + '" class="title">\n'
     htmlStr += '    <h1>' + displayName + '</h1>\n'
     htmlStr += \
@@ -533,13 +535,14 @@ def htmlProfile(rssIconAtTop: bool,
         profileHeaderStr += '      </td>\n'
         profileHeaderStr += '      <td valign="top" class="col-center">\n'
     else:
+        avatarUrl = profileJson['icon']['url']
         profileHeaderStr = \
             getProfileHeader(baseDir, nickname, domain,
                              domainFull, translate, iconsDir,
                              defaultTimeline, displayName,
                              avatarDescription,
                              profileDescriptionShort,
-                             loginButton)
+                             loginButton, avatarUrl)
 
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \
@@ -1228,12 +1231,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="file" id="avatar" name="avatar"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    if nickname == adminNickname:
-        editProfileForm += \
-            '      <br><label class="labels">' + \
-            translate['Background image'] + '</label>\n'
-        editProfileForm += '      <input type="file" id="image" name="image"'
-        editProfileForm += '            accept="' + imageFormats + '">\n'
+    editProfileForm += \
+        '      <br><label class="labels">' + \
+        translate['Background image'] + '</label>\n'
+    editProfileForm += '      <input type="file" id="image" name="image"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '      <br><label class="labels">' + \
         translate['Timeline banner image'] + '</label>\n'
