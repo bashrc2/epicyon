@@ -24,7 +24,7 @@ from feeds import rss2TagFooter
 from webapp_utils import getAltPath
 from webapp_utils import getIconsDir
 from webapp_utils import getImageFile
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile
 from webapp_utils import htmlPostSeparator
@@ -50,13 +50,10 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
 
     emojiCSS = getCSS(baseDir, cssFilename, cssCache)
     if emojiCSS:
-        if httpPrefix != 'https':
-            emojiCSS = emojiCSS.replace('https://',
-                                        httpPrefix + '://')
         emojiLookupFilename = baseDir + '/emoji/emoji.json'
 
         # create header
-        emojiForm = htmlHeader(cssFilename, emojiCSS)
+        emojiForm = htmlHeaderWithExternalStyle(cssFilename, emojiCSS)
         emojiForm += '<center><h1>' + \
             translate['Emoji Search'] + \
             '</h1></center>'
@@ -119,11 +116,8 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
 
     sharedItemsCSS = getCSS(baseDir, cssFilename, cssCache)
     if sharedItemsCSS:
-        if httpPrefix != 'https':
-            sharedItemsCSS = \
-                sharedItemsCSS.replace('https://',
-                                       httpPrefix + '://')
-        sharedItemsForm = htmlHeader(cssFilename, sharedItemsCSS)
+        sharedItemsForm = \
+            htmlHeaderWithExternalStyle(cssFilename, sharedItemsCSS)
         sharedItemsForm += \
             '<center><h1>' + translate['Shared Items Search'] + \
             '</h1></center>'
@@ -296,7 +290,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 
     profileStyle = getCSS(baseDir, cssFilename, cssCache)
 
-    emojiStr = htmlHeader(cssFilename, profileStyle)
+    emojiStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -338,14 +332,7 @@ def htmlSearch(cssCache: {}, translate: {},
 
     profileStyle = getCSS(baseDir, cssFilename, cssCache)
 
-    if not os.path.isfile(baseDir + '/accounts/' +
-                          'follow-background.jpg'):
-        profileStyle = \
-            profileStyle.replace('background-image: ' +
-                                 'url("follow-background.jpg");',
-                                 'background-image: none;')
-
-    followStr = htmlHeader(cssFilename, profileStyle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
@@ -520,11 +507,6 @@ def htmlHashtagSearch(cssCache: {},
         cssFilename = baseDir + '/epicyon.css'
 
     hashtagSearchCSS = getCSS(baseDir, cssFilename, cssCache)
-    if hashtagSearchCSS:
-        if httpPrefix != 'https':
-            hashtagSearchCSS = \
-                hashtagSearchCSS.replace('https://',
-                                         httpPrefix + '://')
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -540,7 +522,8 @@ def htmlHashtagSearch(cssCache: {},
         endIndex = noOfLines - 1
 
     # add the page title
-    hashtagSearchForm = htmlHeader(cssFilename, hashtagSearchCSS)
+    hashtagSearchForm = \
+        htmlHeaderWithExternalStyle(cssFilename, hashtagSearchCSS)
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
@@ -831,12 +814,8 @@ def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
         cssFilename = baseDir + '/epicyon.css'
 
     skillSearchCSS = getCSS(baseDir, cssFilename, cssCache)
-    if skillSearchCSS:
-        if httpPrefix != 'https':
-            skillSearchCSS = \
-                skillSearchCSS.replace('https://',
-                                       httpPrefix + '://')
-    skillSearchForm = htmlHeader(cssFilename, skillSearchCSS)
+
+    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename, skillSearchCSS)
     skillSearchForm += \
         '<center><h1>' + translate['Skills search'] + ': ' + \
         skillsearch + '</h1></center>'
@@ -900,12 +879,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         cssFilename = baseDir + '/epicyon.css'
 
     historySearchCSS = getCSS(baseDir, cssFilename, cssCache)
-    if historySearchCSS:
-        if httpPrefix != 'https':
-            historySearchCSS = \
-                historySearchCSS.replace('https://',
-                                         httpPrefix + '://')
-    historySearchForm = htmlHeader(cssFilename, historySearchCSS)
+    historySearchForm = \
+        htmlHeaderWithExternalStyle(cssFilename, historySearchCSS)
 
     # add the page title
     historySearchForm += \
