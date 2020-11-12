@@ -11,7 +11,7 @@ from datetime import datetime
 
 from content import replaceEmojiFromTags
 from webapp import getIconsDir
-from webapp import htmlHeader
+from webapp import htmlHeaderWithExternalStyle
 from webapp import htmlFooter
 from webapp_media import addEmbeddedElements
 from webapp_utils import getPostAttachmentsAsHtml
@@ -381,39 +381,36 @@ def htmlBlogPost(authorized: bool,
     cssFilename = baseDir + '/epicyon-blog.css'
     if os.path.isfile(baseDir + '/blog.css'):
         cssFilename = baseDir + '/blog.css'
-    with open(cssFilename, 'r') as cssFile:
-        blogCSS = cssFile.read()
-        blogStr = htmlHeader(cssFilename, blogCSS)
-        htmlBlogRemoveCwButton(blogStr, translate)
+    blogStr = htmlHeaderWithExternalStyle(cssFilename)
+    htmlBlogRemoveCwButton(blogStr, translate)
 
-        blogStr += htmlBlogPostContent(authorized, baseDir,
-                                       httpPrefix, translate,
-                                       nickname, domain,
-                                       domainFull, postJsonObject,
-                                       None, False)
+    blogStr += htmlBlogPostContent(authorized, baseDir,
+                                   httpPrefix, translate,
+                                   nickname, domain,
+                                   domainFull, postJsonObject,
+                                   None, False)
 
-        # show rss links
-        iconsDir = getIconsDir(baseDir)
-        blogStr += '<p class="rssfeed">'
+    # show rss links
+    iconsDir = getIconsDir(baseDir)
+    blogStr += '<p class="rssfeed">'
 
-        blogStr += '<a href="' + httpPrefix + '://' + \
-            domainFull + '/blog/' + nickname + '/rss.xml">'
-        blogStr += '<img style="width:3%;min-width:50px" ' + \
-            'loading="lazy" alt="RSS 2.0" ' + \
-            'title="RSS 2.0" src="/' + \
-            iconsDir + '/logorss.png" /></a>'
+    blogStr += '<a href="' + httpPrefix + '://' + \
+        domainFull + '/blog/' + nickname + '/rss.xml">'
+    blogStr += '<img style="width:3%;min-width:50px" ' + \
+        'loading="lazy" alt="RSS 2.0" ' + \
+        'title="RSS 2.0" src="/' + \
+        iconsDir + '/logorss.png" /></a>'
 
-        # blogStr += '<a href="' + httpPrefix + '://' + \
-        #     domainFull + '/blog/' + nickname + '/rss.txt">'
-        # blogStr += '<img style="width:3%;min-width:50px" ' + \
-        #     'loading="lazy" alt="RSS 3.0" ' + \
-        #     'title="RSS 3.0" src="/' + \
-        #     iconsDir + '/rss3.png" /></a>'
+    # blogStr += '<a href="' + httpPrefix + '://' + \
+    #     domainFull + '/blog/' + nickname + '/rss.txt">'
+    # blogStr += '<img style="width:3%;min-width:50px" ' + \
+    #     'loading="lazy" alt="RSS 3.0" ' + \
+    #     'title="RSS 3.0" src="/' + \
+    #     iconsDir + '/rss3.png" /></a>'
 
-        blogStr += '</p>'
+    blogStr += '</p>'
 
-        return blogStr + htmlFooter()
-    return None
+    return blogStr + htmlFooter()
 
 
 def htmlBlogPage(authorized: bool, session,
@@ -430,85 +427,81 @@ def htmlBlogPage(authorized: bool, session,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        blogCSS = cssFile.read()
-        blogStr = htmlHeader(cssFilename, blogCSS)
-        htmlBlogRemoveCwButton(blogStr, translate)
+    blogStr = htmlHeaderWithExternalStyle(cssFilename)
+    htmlBlogRemoveCwButton(blogStr, translate)
 
-        blogsIndex = baseDir + '/accounts/' + \
-            nickname + '@' + domain + '/tlblogs.index'
-        if not os.path.isfile(blogsIndex):
-            return blogStr + htmlFooter()
-
-        timelineJson = createBlogsTimeline(session, baseDir,
-                                           nickname, domain, port,
-                                           httpPrefix,
-                                           noOfItems, False,
-                                           pageNumber)
-
-        if not timelineJson:
-            return blogStr + htmlFooter()
-
-        domainFull = domain
-        if port:
-            if port != 80 and port != 443:
-                domainFull = domain + ':' + str(port)
-
-        # show previous and next buttons
-        if pageNumber is not None:
-            iconsDir = getIconsDir(baseDir)
-            navigateStr = '<p>'
-            if pageNumber > 1:
-                # show previous button
-                navigateStr += '<a href="' + httpPrefix + '://' + \
-                    domainFull + '/blog/' + \
-                    nickname + '?page=' + str(pageNumber-1) + '">' + \
-                    '<img loading="lazy" alt="<" title="<" ' + \
-                    'src="/' + iconsDir + \
-                    '/prev.png" class="buttonprev"/></a>\n'
-            if len(timelineJson['orderedItems']) >= noOfItems:
-                # show next button
-                navigateStr += '<a href="' + httpPrefix + '://' + \
-                    domainFull + '/blog/' + nickname + \
-                    '?page=' + str(pageNumber + 1) + '">' + \
-                    '<img loading="lazy" alt=">" title=">" ' + \
-                    'src="/' + iconsDir + \
-                    '/prev.png" class="buttonnext"/></a>\n'
-            navigateStr += '</p>'
-            blogStr += navigateStr
-
-        for item in timelineJson['orderedItems']:
-            if item['type'] != 'Create':
-                continue
-
-            blogStr += htmlBlogPostContent(authorized, baseDir,
-                                           httpPrefix, translate,
-                                           nickname, domain,
-                                           domainFull, item,
-                                           None, True)
-
-        if len(timelineJson['orderedItems']) >= noOfItems:
-            blogStr += navigateStr
-
-        # show rss link
-        blogStr += '<p class="rssfeed">'
-
-        blogStr += '<a href="' + httpPrefix + '://' + \
-            domainFull + '/blog/' + nickname + '/rss.xml">'
-        blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
-            'title="RSS 2.0" src="/' + \
-            iconsDir + '/logorss.png" /></a>'
-
-        # blogStr += '<a href="' + httpPrefix + '://' + \
-        #     domainFull + '/blog/' + nickname + '/rss.txt">'
-        # blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
-        #     'title="RSS 3.0" src="/' + \
-        #     iconsDir + '/rss3.png" /></a>'
-
-        blogStr += '</p>'
-
+    blogsIndex = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/tlblogs.index'
+    if not os.path.isfile(blogsIndex):
         return blogStr + htmlFooter()
-    return None
+
+    timelineJson = createBlogsTimeline(session, baseDir,
+                                       nickname, domain, port,
+                                       httpPrefix,
+                                       noOfItems, False,
+                                       pageNumber)
+
+    if not timelineJson:
+        return blogStr + htmlFooter()
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    # show previous and next buttons
+    if pageNumber is not None:
+        iconsDir = getIconsDir(baseDir)
+        navigateStr = '<p>'
+        if pageNumber > 1:
+            # show previous button
+            navigateStr += '<a href="' + httpPrefix + '://' + \
+                domainFull + '/blog/' + \
+                nickname + '?page=' + str(pageNumber-1) + '">' + \
+                '<img loading="lazy" alt="<" title="<" ' + \
+                'src="/' + iconsDir + \
+                '/prev.png" class="buttonprev"/></a>\n'
+        if len(timelineJson['orderedItems']) >= noOfItems:
+            # show next button
+            navigateStr += '<a href="' + httpPrefix + '://' + \
+                domainFull + '/blog/' + nickname + \
+                '?page=' + str(pageNumber + 1) + '">' + \
+                '<img loading="lazy" alt=">" title=">" ' + \
+                'src="/' + iconsDir + \
+                '/prev.png" class="buttonnext"/></a>\n'
+        navigateStr += '</p>'
+        blogStr += navigateStr
+
+    for item in timelineJson['orderedItems']:
+        if item['type'] != 'Create':
+            continue
+
+        blogStr += htmlBlogPostContent(authorized, baseDir,
+                                       httpPrefix, translate,
+                                       nickname, domain,
+                                       domainFull, item,
+                                       None, True)
+
+    if len(timelineJson['orderedItems']) >= noOfItems:
+        blogStr += navigateStr
+
+    # show rss link
+    blogStr += '<p class="rssfeed">'
+
+    blogStr += '<a href="' + httpPrefix + '://' + \
+        domainFull + '/blog/' + nickname + '/rss.xml">'
+    blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
+        'title="RSS 2.0" src="/' + \
+        iconsDir + '/logorss.png" /></a>'
+
+    # blogStr += '<a href="' + httpPrefix + '://' + \
+    #     domainFull + '/blog/' + nickname + '/rss.txt">'
+    # blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
+    #     'title="RSS 3.0" src="/' + \
+    #     iconsDir + '/rss3.png" /></a>'
+
+    blogStr += '</p>'
+    return blogStr + htmlFooter()
 
 
 def htmlBlogPageRSS2(authorized: bool, session,
@@ -678,40 +671,37 @@ def htmlBlogView(authorized: bool,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        blogCSS = cssFile.read()
-        blogStr = htmlHeader(cssFilename, blogCSS)
+    blogStr = htmlHeaderWithExternalStyle(cssFilename)
 
-        if noOfBlogAccounts(baseDir) <= 1:
-            nickname = singleBlogAccountNickname(baseDir)
-            if nickname:
-                return htmlBlogPage(authorized, session,
-                                    baseDir, httpPrefix, translate,
-                                    nickname, domain, port,
-                                    noOfItems, 1)
+    if noOfBlogAccounts(baseDir) <= 1:
+        nickname = singleBlogAccountNickname(baseDir)
+        if nickname:
+            return htmlBlogPage(authorized, session,
+                                baseDir, httpPrefix, translate,
+                                nickname, domain, port,
+                                noOfItems, 1)
 
-        domainFull = domain
-        if port:
-            if port != 80 and port != 443:
-                domainFull = domain + ':' + str(port)
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
 
-        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-            for acct in dirs:
-                if '@' not in acct:
-                    continue
-                if 'inbox@' in acct:
-                    continue
-                accountDir = os.path.join(baseDir + '/accounts', acct)
-                blogsIndex = accountDir + '/tlblogs.index'
-                if os.path.isfile(blogsIndex):
-                    blogStr += '<p class="blogaccount">'
-                    blogStr += '<a href="' + \
-                        httpPrefix + '://' + domainFull + '/blog/' + \
-                        acct.split('@')[0] + '">' + acct + '</a>'
-                    blogStr += '</p>'
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct:
+                continue
+            accountDir = os.path.join(baseDir + '/accounts', acct)
+            blogsIndex = accountDir + '/tlblogs.index'
+            if os.path.isfile(blogsIndex):
+                blogStr += '<p class="blogaccount">'
+                blogStr += '<a href="' + \
+                    httpPrefix + '://' + domainFull + '/blog/' + \
+                    acct.split('@')[0] + '">' + acct + '</a>'
+                blogStr += '</p>'
 
-        return blogStr + htmlFooter()
-    return None
+    return blogStr + htmlFooter()
 
 
 def htmlEditBlog(mediaInstance: bool, translate: {},
@@ -744,10 +734,6 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    with open(cssFilename, 'r') as cssFile:
-        editBlogCSS = cssFile.read()
-        if httpPrefix != 'https':
-            editBlogCSS = editBlogCSS.replace('https://', httpPrefix+'://')
 
     if '?' in path:
         path = path.split('?')[0]
@@ -794,7 +780,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     dateAndLocation += '<input type="text" name="location">'
     dateAndLocation += '</div>'
 
-    editBlogForm = htmlHeader(cssFilename, editBlogCSS)
+    editBlogForm = htmlHeaderWithExternalStyle(cssFilename)
 
     editBlogForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
