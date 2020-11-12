@@ -442,7 +442,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, lang='en') -> str:
     htmlStr += '<html lang="' + lang + '">\n'
     htmlStr += '  <head>\n'
     htmlStr += '    <meta charset="utf-8">\n'
-    cssFile = cssFilename.split('/')[-1]
+    cssFile = '/' + cssFilename.split('/')[-1]
     htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">\n'
     htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
     htmlStr += '    <meta name="theme-color" content="grey">\n'
