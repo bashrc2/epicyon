@@ -958,7 +958,7 @@ def setThemeHacker(baseDir: str):
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
-        "newswire-item-moderated-color", "grey",
+        "newswire-item-moderated-color": "grey",
         "newswire-date-moderated-color": "grey",
         "newswire-date-color": "#0562bd",
         "search-banner-height": "25vh",
