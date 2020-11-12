@@ -1205,11 +1205,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="file" id="avatar" name="avatar"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += \
-        '      <br><label class="labels">' + \
-        translate['Background image'] + '</label>\n'
-    editProfileForm += '      <input type="file" id="image" name="image"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+    if nickname == adminNickname:
+        editProfileForm += \
+            '      <br><label class="labels">' + \
+            translate['Background image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="image" name="image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '      <br><label class="labels">' + \
         translate['Timeline banner image'] + '</label>\n'
