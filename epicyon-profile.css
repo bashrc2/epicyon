@@ -276,6 +276,38 @@ a:focus {
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
+.profileHeader * {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all 0.25s ease;
+    transition: all 0.25s ease;
+}
+
+.profileHeader img {
+    max-width: 100%;
+    vertical-align: top;
+    opacity: 0.85;
+}
+
+.profileHeader figcaption {
+    width: 100%;
+    background-color: #141414;
+    padding: 25px;
+    position: relative;
+}
+
+.profileHeader figcaption:before {
+    position: absolute;
+    content: '';
+    bottom: 100%;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 55px 0 0 400px;
+    border-color: transparent transparent transparent #141414;
+}
+
 .hero-image {
     background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("/users/news/image.png");
     height: 50%;
