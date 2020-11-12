@@ -280,7 +280,7 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
     """The header of the profile screen, containing background
     image and avatar
     """
-    htmlStr = '<figure class="profileHeader">\n'
+    htmlStr = '\n<figure class="profileHeader">\n'
     htmlStr += '  <a href="/users/' + \
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
@@ -359,8 +359,6 @@ def htmlProfile(rssIconAtTop: bool,
 
     followApprovalsSection = ''
     followApprovals = False
-    linkToTimelineStart = ''
-    linkToTimelineEnd = ''
     editProfileStr = ''
     logoutStr = ''
     actor = profileJson['id']
@@ -433,15 +431,6 @@ def htmlProfile(rssIconAtTop: bool,
             '" alt="| ' + translate['Logout'] + \
             '" class="timelineicon"/></a>\n'
 
-        linkToTimelineStart = \
-            '<a href="/users/' + nickname + '/' + defaultTimeline + \
-            '"><label class="transparent">' + \
-            translate['Switch to timeline view'] + '</label></a>'
-        linkToTimelineStart += \
-            '<a href="/users/' + nickname + '/' + defaultTimeline + \
-            '" title="' + translate['Switch to timeline view'] + \
-            '" alt="' + translate['Switch to timeline view'] + '">'
-        linkToTimelineEnd = '</a>'
         # are there any follow requests?
         followRequestsFilename = \
             baseDir + '/accounts/' + \
@@ -544,9 +533,7 @@ def htmlProfile(rssIconAtTop: bool,
                              profileDescriptionShort,
                              loginButton, avatarUrl)
 
-    profileStr = \
-        linkToTimelineStart + profileHeaderStr + \
-        linkToTimelineEnd + donateSection
+    profileStr = profileHeaderStr + donateSection
     if not isSystemAccount(nickname):
         profileStr += '<div class="container" id="buttonheader">\n'
         profileStr += '  <center>'
