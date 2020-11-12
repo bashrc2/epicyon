@@ -209,13 +209,18 @@ def htmlProfileAfterSearch(cssCache: {},
             if '<' in avatarDescription:
                 avatarDescription = removeHtml(avatarDescription)
 
+    imageUrl = ''
+    if profileJson.get('image'):
+        if profileJson['image'].get('url'):
+            imageUrl = profileJson['image']['url']
+
     profileStr = \
         getProfileHeaderAfterSearch(baseDir, searchNickname,
                                     searchDomainFull,
                                     translate,
                                     displayName,
                                     profileDescriptionShort,
-                                    avatarUrl)
+                                    avatarUrl, imageUrl)
 
     profileStr += '<div class="container">\n'
     profileStr += '  <form method="POST" action="' + \
@@ -308,13 +313,13 @@ def getProfileHeaderAfterSearch(baseDir: str, searchNickname: str,
                                 translate: {},
                                 displayName: str,
                                 profileDescriptionShort: str,
-                                avatarUrl: str) -> str:
+                                avatarUrl: str, imageUrl: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
     htmlStr = '\n\n    <figure class="profileHeader">\n'
-    # htmlStr += '        <img class="profileBackground" ' + \
-    #     'src="/users/' + nickname + '/image.png" /></a>\n'
+    htmlStr += '        <img class="profileBackground" ' + \
+        'src="' + imageUrl + '" /></a>\n'
     htmlStr += '      <figcaption>\n'
     if avatarUrl:
         htmlStr += \
