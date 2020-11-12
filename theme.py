@@ -958,6 +958,8 @@ def setThemeHacker(baseDir: str):
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
+        "search-banner-height": "25vh",
+        "search-banner-height-mobile": "15vh",
         "banner-height": "20vh",
         "banner-height-mobile": "10vh",
         "hashtag-background-color": "lightblue",
