@@ -8955,6 +8955,13 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'create session', 'hasAccept')
 
+        # get css
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.endswith('.css'):
+            if self._getStyleSheet(callingDomain, self.path,
+                                   GETstartTime, GETtimings):
+                return
+
         # get fonts
         if '/fonts/' in self.path:
             self._getFonts(callingDomain, self.path,
@@ -9315,17 +9322,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'robots txt',
                                   'show login screen done')
-
-        # get css
-        # Note that this comes before the busy flag to avoid conflicts
-        if self.path.endswith('.css'):
-            if self._getStyleSheet(callingDomain, self.path,
-                                   GETstartTime, GETtimings):
-                return
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  'show login screen done',
-                                  'profile.css done')
 
         # manifest images used to create a home screen icon
         # when selecting "add to home screen" in browsers
