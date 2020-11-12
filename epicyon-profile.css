@@ -306,15 +306,6 @@ a:focus {
     border-color: transparent transparent transparent #141414;
 }
 
-.hero-image {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("/users/news/image.png");
-    height: 50%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    position: relative;
-}
-
 .rssfeed img {
     width: 5%;
     float: right;
@@ -347,10 +338,6 @@ a:focus {
     transform: translateY(30%) scaleX(-1);
 }
 
-.hero-image img {
-    width: 50%;
-}
-
 .new-post-text {
     font-size: var(--font-size2);
     font-family: Arial, Helvetica, sans-serif;
@@ -376,30 +363,6 @@ a:focus {
 .roles-inner {
     padding: 10px 25px;
     background-color: var(--main-bg-color);
-}
-
-.hero-text img.emoji {
-    width: 50px;
-    padding: 0 0;
-    margin: 0 0;
-    float: none;
-}
-
-.hero-text button {
-    border: none;
-    outline: 0;
-    display: inline-block;
-    padding: 10px 25px;
-    color: black;
-    background-color: #ddd;
-    text-align: center;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.hero-text button:hover {
-    background-color: var(--button-background);
-    color: var(--button-text);
 }
 
 .timelineIcon {
@@ -533,16 +496,6 @@ a:focus {
 }
 
 .container img.emoji {
-    float: none;
-    width: 50px;
-    margin-left: 0px;
-    margin-right: 0px;
-    padding-right: 0px;
-    border-radius: 0px;
-    vertical-align: middle;
-}
-
-.hero-text img.emojiprofile {
     float: none;
     width: 50px;
     margin-left: 0px;
@@ -1536,26 +1489,6 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
     }
-    .hero-text {
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 70%;
-        transform: translate(-50%, -50%);
-        color: var(--font-color-header);
-        font-size: var(--font-size-header);
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .hero-text img.qrcode {
-        border-radius: 1%;
-        width: 5%;
-        min-width: 20px;
-    }
-    .hero-text img.title {
-        border-radius: 1%;
-        width: 15%;
-    }
     input[type=checkbox]
     {
         -ms-transform: scale(2);
@@ -2168,26 +2101,6 @@ div.container {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
-    }
-    .hero-text {
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 70%;
-        transform: translate(-50%, -50%);
-        color: var(--font-color-header);
-        font-size: var(--font-size-header-mobile);
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .hero-text img.qrcode {
-        border-radius: 1%;
-        width: 15%;
-        min-width: 20px;
-    }
-    .hero-text img.title {
-        border-radius: 1%;
-        width: 25%;
     }
     input[type=checkbox]
     {
