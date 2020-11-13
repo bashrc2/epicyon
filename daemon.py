@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import mediaFileMimeType
 from utils import getCSS
 from utils import firstParagraphFromString
 from utils import clearFromPostCaches
@@ -4774,25 +4775,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._304()
                     return
 
-                mediaFileType = 'image/png'
-                if mediaFilename.endswith('.png'):
-                    mediaFileType = 'image/png'
-                elif mediaFilename.endswith('.jpg'):
-                    mediaFileType = 'image/jpeg'
-                elif mediaFilename.endswith('.gif'):
-                    mediaFileType = 'image/gif'
-                elif mediaFilename.endswith('.webp'):
-                    mediaFileType = 'image/webp'
-                elif mediaFilename.endswith('.avif'):
-                    mediaFileType = 'image/avif'
-                elif mediaFilename.endswith('.mp4'):
-                    mediaFileType = 'video/mp4'
-                elif mediaFilename.endswith('.ogv'):
-                    mediaFileType = 'video/ogv'
-                elif mediaFilename.endswith('.mp3'):
-                    mediaFileType = 'audio/mpeg'
-                elif mediaFilename.endswith('.ogg'):
-                    mediaFileType = 'audio/ogg'
+                mediaFileType = mediaFileMimeType(mediaFilename)
 
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
@@ -4859,7 +4842,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get(mediaStr):
                 mediaBinary = self.server.iconsCache[mediaStr]
                 self._set_headers_etag(mediaFilename,
-                                       'image/png',
+                                       mediaFileMimeType(mediaFilename),
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -4868,8 +4851,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(mediaFilename):
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
+                        mimeType = mediaFileMimeType(mediaFilename)
                         self._set_headers_etag(mediaFilename,
-                                               'image/png',
+                                               mimeType,
                                                mediaBinary, None,
                                                callingDomain)
                         self._write(mediaBinary)
@@ -4893,39 +4877,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             with open(mediaFilename, 'rb') as avFile:
                 mediaBinary = avFile.read()
-                if mediaFilename.endswith('.png'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/png',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.jpg'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/jpeg',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.gif'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/gif',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.webp'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/webp',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.avif'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/avif',
-                                           mediaBinary, None,
-                                           callingDomain)
-                else:
-                    # default to jpeg
-                    self._set_headers_etag(mediaFilename,
-                                           'image/jpeg',
-                                           mediaBinary, None,
-                                           callingDomain)
-                    # self._404()
-                    return
+                mimeType = mediaFileMimeType(mediaFilename)
+                self._set_headers_etag(mediaFilename,
+                                       mimeType,
+                                       mediaBinary, None,
+                                       callingDomain)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'icon shown done',
@@ -8337,7 +8293,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                self._set_headers_etag(qrFilename, 'image/png',
+                mimeType = mediaFileMimeType(qrFilename)
+                self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -8375,7 +8332,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                self._set_headers_etag(bannerFilename, 'image/png',
+                mimeType = mediaFileMimeType(bannerFilename)
+                self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -8416,7 +8374,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                self._set_headers_etag(bannerFilename, 'image/png',
+                mimeType = mediaFileMimeType(bannerFilename)
+                self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -9364,8 +9323,8 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename,
-                                           'image/png',
+                    mimeType = mediaFileMimeType(mediaFilename)
+                    self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -9404,8 +9363,8 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(screenFilename,
-                                           'image/png',
+                    mimeType = mediaFileMimeType(screenFilename)
+                    self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -9449,7 +9408,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries += 1
                 if mediaBinary:
                     self._set_headers_etag(iconFilename,
-                                           'image/png',
+                                           mediaFileMimeType(iconFilename),
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -10821,26 +10780,7 @@ class PubServer(BaseHTTPRequestHandler):
                             except BaseException:
                                 pass
 
-        mediaFileType = 'application/json'
-        if checkPath.endswith('.png'):
-            mediaFileType = 'image/png'
-        elif checkPath.endswith('.jpg'):
-            mediaFileType = 'image/jpeg'
-        elif checkPath.endswith('.gif'):
-            mediaFileType = 'image/gif'
-        elif checkPath.endswith('.webp'):
-            mediaFileType = 'image/webp'
-        elif checkPath.endswith('.avif'):
-            mediaFileType = 'image/avif'
-        elif checkPath.endswith('.mp4'):
-            mediaFileType = 'video/mp4'
-        elif checkPath.endswith('.ogv'):
-            mediaFileType = 'video/ogv'
-        elif checkPath.endswith('.mp3'):
-            mediaFileType = 'audio/mpeg'
-        elif checkPath.endswith('.ogg'):
-            mediaFileType = 'audio/ogg'
-
+        mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
                                etag, callingDomain)
 
