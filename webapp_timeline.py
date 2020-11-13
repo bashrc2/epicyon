@@ -962,7 +962,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '<a href="' + usersPath + '/minimal' + \
                 '"><button class="button">' + \
-                '<span>' + translate['Expand'] + \
+                '<span>' + translate['Show/Hide Buttons'] + \
                 '</span></button></a>'
 
     if newsHeader:
