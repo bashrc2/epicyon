@@ -292,7 +292,8 @@ a:focus {
 
 .profileHeader figcaption {
     width: 100%;
-    background-color: #141414;
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
     padding: 25px;
     position: relative;
 }
@@ -306,7 +307,7 @@ a:focus {
     height: 0;
     border-style: solid;
     border-width: 55px 0 0 400px;
-    border-color: transparent transparent transparent #141414;
+    border-color: transparent transparent transparent var(--main-bg-color);
 }
 
 .rssfeed img {
