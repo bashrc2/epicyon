@@ -570,7 +570,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
                      callingDomain: str) -> None:
         self._set_headers_base(fileFormat, length, cookie, callingDomain)
-        self.send_header('Cache-Control', 'public, max-age=86400')
+        self.send_header('Cache-Control', 'public, max-age=20')
         self.end_headers()
 
     def _set_headers_head(self, fileFormat: str, length: int, etag: str,
