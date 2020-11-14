@@ -32,7 +32,7 @@ from pgp import getPGPpubKey
 from tox import getToxAddress
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
@@ -245,7 +245,7 @@ def htmlProfileAfterSearch(cssCache: {},
     profileStr += '  </form>\n'
     profileStr += '</div>\n'
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
                               projectVersion, httpPrefix, domain):
@@ -451,7 +451,7 @@ def htmlProfile(rssIconAtTop: bool,
         donateSection += '  </center>\n'
         donateSection += '</div>\n'
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     if not authorized:
         loginButton = headerButtonsFrontScreen(translate, nickname,
                                                'features', authorized,
@@ -553,7 +553,7 @@ def htmlProfile(rssIconAtTop: bool,
         profileHeaderStr += '  <tbody>\n'
         profileHeaderStr += '    <tr>\n'
         profileHeaderStr += '      <td valign="top" class="col-left">\n'
-        iconsDir = getIconsDir(baseDir)
+        iconsDir = getIconsWebPath(baseDir)
         profileHeaderStr += \
             getLeftColumnContent(baseDir, 'news', domainFull,
                                  httpPrefix, translate,
@@ -668,7 +668,7 @@ def htmlProfile(rssIconAtTop: bool,
     if isSystemAccount(nickname):
         profileFooterStr = '      </td>\n'
         profileFooterStr += '      <td valign="top" class="col-right">\n'
-        iconsDir = getIconsDir(baseDir)
+        iconsDir = getIconsWebPath(baseDir)
         profileFooterStr += \
             getRightColumnContent(baseDir, 'news', domainFull,
                                   httpPrefix, translate,
@@ -699,7 +699,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     """Shows posts on the profile screen
     These should only be public posts
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
     profileStr = ''
     maxItems = 4
@@ -754,7 +754,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
     """
     profileStr = ''
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     if authorized and pageNumber:
         if authorized and pageNumber > 1:
             # page up arrow

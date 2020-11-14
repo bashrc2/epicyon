@@ -24,7 +24,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 
 
 def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
@@ -304,7 +304,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    # iconsDir = getIconsDir(baseDir)
+    # iconsDir = getIconsWebPath(baseDir)
 
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
@@ -394,7 +394,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
 
     if nickname == 'news':
         editor = False

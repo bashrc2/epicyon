@@ -21,7 +21,7 @@ from utils import searchBoxPosts
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import getImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -100,7 +100,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           callingDomain: str) -> str:
     """Search results for shared items
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     currPage = 1
     ctr = 0
     sharedItemsForm = ''
@@ -479,7 +479,7 @@ def htmlHashtagSearch(cssCache: {},
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
@@ -878,7 +878,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             '</h5></center>'
         return historySearchForm
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds

@@ -10,7 +10,7 @@ import os
 from datetime import datetime
 
 from content import replaceEmojiFromTags
-from webapp import getIconsDir
+from webapp import getIconsWebPath
 from webapp import htmlHeaderWithExternalStyle
 from webapp import htmlFooter
 from webapp_media import addEmbeddedElements
@@ -391,7 +391,7 @@ def htmlBlogPost(authorized: bool,
                                    None, False)
 
     # show rss links
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     blogStr += '<p class="rssfeed">'
 
     blogStr += '<a href="' + httpPrefix + '://' + \
@@ -451,7 +451,7 @@ def htmlBlogPage(authorized: bool, session,
 
     # show previous and next buttons
     if pageNumber is not None:
-        iconsDir = getIconsDir(baseDir)
+        iconsDir = getIconsWebPath(baseDir)
         navigateStr = '<p>'
         if pageNumber > 1:
             # show previous button
@@ -722,7 +722,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
         print('Edit blog: json not loaded for ' + postFilename)
         return None
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
 
     editBlogText = '<p class="new-post-text">' + \
         translate['Write your post text below.'] + '</p>'

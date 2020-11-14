@@ -20,7 +20,7 @@ from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
@@ -122,7 +122,7 @@ def htmlCalendarDay(cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<tbody>\n'
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
 
     if dayEvents:
         for eventPost in dayEvents:
@@ -201,7 +201,7 @@ def htmlCalendar(cssCache: {}, translate: {},
                  httpPrefix: str, domainFull: str) -> str:
     """Show the calendar for a person
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     domain = domainFull
     if ':' in domainFull:
         domain = domainFull.split(':')[0]

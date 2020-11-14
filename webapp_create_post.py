@@ -10,7 +10,7 @@ import os
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -171,7 +171,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 defaultTimeline: str, newswire: {}) -> str:
     """New post screen
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     replyStr = ''
 
     showPublicOnDropdown = True

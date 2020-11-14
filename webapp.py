@@ -14,7 +14,7 @@ from utils import locatePost
 from utils import loadJson
 from shares import getValidSharedItemID
 from webapp_utils import getAltPath
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
@@ -146,7 +146,7 @@ def htmlDeletePost(cssCache: {},
     """
     if '/statuses/' not in messageId:
         return None
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)

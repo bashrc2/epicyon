@@ -15,7 +15,7 @@ from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -200,7 +200,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
 
     # is the user a site editor?
     if nickname == 'news':

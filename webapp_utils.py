@@ -280,7 +280,7 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
     return None
 
 
-def getIconsDir(baseDir: str) -> str:
+def getIconsWebPath(baseDir: str) -> str:
     """Returns the web path where icons exist
     """
     iconsDir = 'icons'
@@ -725,7 +725,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
 def htmlPostSeparator(baseDir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     theme = getConfigParam(baseDir, 'theme')
     filename = 'separator.png'
     if column:

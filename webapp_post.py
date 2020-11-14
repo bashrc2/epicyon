@@ -53,7 +53,7 @@ from webapp_utils import addEmojiToDisplayName
 from webapp_utils import postContainsPublic
 from webapp_utils import getContentWarningButton
 from webapp_utils import getPostAttachmentsAsHtml
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_media import addEmbeddedElements
@@ -1235,7 +1235,7 @@ def htmlIndividualPost(cssCache: {},
                        showPublishedDateOnly: bool) -> str:
     """Show an individual post as html
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     postStr = ''
     if likedBy:
         likedByNickname = getNicknameFromActor(likedBy)
@@ -1350,7 +1350,7 @@ def htmlPostReplies(cssCache: {},
                     showPublishedDateOnly: bool) -> str:
     """Show the replies to an individual post as html
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
     repliesStr = ''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:

@@ -14,7 +14,7 @@ from follow import followerApprovalActive
 from person import isPersonSnoozed
 from happening import todaysEventsCheck
 from happening import thisWeeksEventsCheck
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -101,7 +101,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # directory where icons are found
     # This changes depending upon theme
-    iconsDir = getIconsDir(baseDir)
+    iconsDir = getIconsWebPath(baseDir)
 
     separatorStr = ''
     if boxName != 'tlmedia':
@@ -662,7 +662,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     timelineStr = ''
 
     if pageNumber > 1:
-        iconsDir = getIconsDir(baseDir)
+        iconsDir = getIconsWebPath(baseDir)
         timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tlshares?page=' + \
@@ -685,7 +685,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
                                 showContactButton, showRemoveButton)
 
     if not lastPage:
-        iconsDir = getIconsDir(baseDir)
+        iconsDir = getIconsWebPath(baseDir)
         timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tlshares?page=' + \
