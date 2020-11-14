@@ -246,7 +246,7 @@ If you want to use your own favicon then copy your `favicon.ico` file to the bas
 
 ## Adding Themes
 
-If you want to add a new theme then open `theme.py` and add the theme name to the list within `getThemesList`. Add a function with the name `setTheme[YourThemeName]`. Have a look at the other themes to get an idea of how to set the colors and fonts.
+If you want to add a new theme then open `theme.py` and add a function with the name `setTheme[YourThemeName]`. Have a look at the other themes to get an idea of how to set the colors and fonts.
 
 Add the name of your theme to the translations files.
 
