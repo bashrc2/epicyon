@@ -27,7 +27,8 @@ def getThemesList(baseDir: str) -> []:
     themes = []
     for subdir, dirs, files in os.walk(baseDir + '/theme'):
         for themeName in dirs:
-            themes.append(themeName.title())
+            if '~' not in themeName and themeName != 'icons':
+                themes.append(themeName.title())
     print('Themes available: ' + str(themes))
     return themes
 
