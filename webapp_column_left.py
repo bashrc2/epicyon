@@ -23,7 +23,7 @@ from webapp_utils import getBannerFile
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsDir: str, editor: bool,
+                         iconsPath: str, editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool) -> str:
@@ -91,7 +91,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
-            iconsDir + '/edit.png" /></a>\n'
+            iconsPath + '/edit.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -110,7 +110,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + rssTitle + \
         '" title="' + rssTitle + \
-        '" src="/' + iconsDir + '/logorss.png" /></a>\n'
+        '" src="/' + iconsPath + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
     htmlStr += '      </div>\n'
@@ -200,7 +200,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
 
     # is the user a site editor?
     if nickname == 'news':
@@ -222,11 +222,11 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
-                                 iconsAsButtons, iconsDir) + '</center>'
+                                 iconsAsButtons, iconsPath) + '</center>'
     htmlStr += \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
-                             iconsDir, editor,
+                             iconsPath, editor,
                              False, timelinePath,
                              rssIconAtTop, False, False)
     htmlStr += '</div>\n' + htmlFooter()

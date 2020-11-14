@@ -245,7 +245,7 @@ def htmlProfileAfterSearch(cssCache: {},
     profileStr += '  </form>\n'
     profileStr += '</div>\n'
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
                               projectVersion, httpPrefix, domain):
@@ -257,7 +257,7 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                 iconsDir, translate, None, baseDir,
+                                 iconsPath, translate, None, baseDir,
                                  session, cachedWebfingers, personCache,
                                  nickname, domain, port,
                                  item, avatarUrl, False, False,
@@ -273,7 +273,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
 
 def getProfileHeader(baseDir: str, nickname: str, domain: str,
-                     domainFull: str, translate: {}, iconsDir: str,
+                     domainFull: str, translate: {}, iconsPath: str,
                      defaultTimeline: str,
                      displayName: str,
                      avatarDescription: str,
@@ -302,7 +302,7 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
-        '<img class="qrcode" src="/' + iconsDir + \
+        '<img class="qrcode" src="/' + iconsPath + \
         '/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
@@ -451,21 +451,21 @@ def htmlProfile(rssIconAtTop: bool,
         donateSection += '  </center>\n'
         donateSection += '</div>\n'
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     if not authorized:
         loginButton = headerButtonsFrontScreen(translate, nickname,
                                                'features', authorized,
-                                               iconsAsButtons, iconsDir)
+                                               iconsAsButtons, iconsPath)
     else:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
-            '<img loading="lazy" src="/' + iconsDir + \
+            '<img loading="lazy" src="/' + iconsPath + \
             '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
         logoutStr = \
             '<a class="imageAnchor" href="/logout">' + \
-            '<img loading="lazy" src="/' + iconsDir + \
+            '<img loading="lazy" src="/' + iconsPath + \
             '/logout.png" title="' + translate['Logout'] + \
             '" alt="| ' + translate['Logout'] + \
             '" class="timelineicon"/></a>\n'
@@ -553,11 +553,11 @@ def htmlProfile(rssIconAtTop: bool,
         profileHeaderStr += '  <tbody>\n'
         profileHeaderStr += '    <tr>\n'
         profileHeaderStr += '      <td valign="top" class="col-left">\n'
-        iconsDir = getIconsWebPath(baseDir)
+        iconsPath = getIconsWebPath(baseDir)
         profileHeaderStr += \
             getLeftColumnContent(baseDir, 'news', domainFull,
                                  httpPrefix, translate,
-                                 iconsDir, False,
+                                 iconsPath, False,
                                  False, None, rssIconAtTop, True,
                                  True)
         profileHeaderStr += '      </td>\n'
@@ -566,7 +566,7 @@ def htmlProfile(rssIconAtTop: bool,
         avatarUrl = profileJson['icon']['url']
         profileHeaderStr = \
             getProfileHeader(baseDir, nickname, domain,
-                             domainFull, translate, iconsDir,
+                             domainFull, translate, iconsPath,
                              defaultTimeline, displayName,
                              avatarDescription,
                              profileDescriptionShort,
@@ -668,11 +668,11 @@ def htmlProfile(rssIconAtTop: bool,
     if isSystemAccount(nickname):
         profileFooterStr = '      </td>\n'
         profileFooterStr += '      <td valign="top" class="col-right">\n'
-        iconsDir = getIconsWebPath(baseDir)
+        iconsPath = getIconsWebPath(baseDir)
         profileFooterStr += \
             getRightColumnContent(baseDir, 'news', domainFull,
                                   httpPrefix, translate,
-                                  iconsDir, False, False,
+                                  iconsPath, False, False,
                                   newswire, False,
                                   False, None, False, False,
                                   False, True, authorized, True)
@@ -699,7 +699,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     """Shows posts on the profile screen
     These should only be public posts
     """
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
     profileStr = ''
     maxItems = 4
@@ -723,7 +723,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         iconsDir, translate, None,
+                                         iconsPath, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,
@@ -754,7 +754,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
     """
     profileStr = ''
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     if authorized and pageNumber:
         if authorized and pageNumber > 1:
             # page up arrow
@@ -763,7 +763,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber - 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
-                iconsDir + '/pageup.png" title="' + \
+                iconsPath + '/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
                 translate['Page up'] + '"></a>\n' + \
                 '  </center>\n'
@@ -783,7 +783,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber + 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
-                iconsDir + '/pagedown.png" title="' + \
+                iconsPath + '/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
                 translate['Page down'] + '"></a>\n' + \
                 '  </center>\n'

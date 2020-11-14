@@ -100,7 +100,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           callingDomain: str) -> str:
     """Search results for shared items
     """
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     currPage = 1
     ctr = 0
     sharedItemsForm = ''
@@ -211,7 +211,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" type="submit" name="submitSearch">\n'
                             sharedItemsForm += \
                                 '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/' + iconsDir + \
+                                'class="pageicon" src="/' + iconsPath + \
                                 '/pageup.png" title="' + \
                                 translate['Page up'] + \
                                 '" alt="' + translate['Page up'] + \
@@ -245,7 +245,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" type="submit" name="submitSearch">\n'
                             sharedItemsForm += \
                                 '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/' + iconsDir + \
+                                'class="pageicon" src="/' + iconsPath + \
                                 '/pagedown.png" title="' + \
                                 translate['Page down'] + \
                                 '" alt="' + translate['Page down'] + \
@@ -479,7 +479,7 @@ def htmlHashtagSearch(cssCache: {},
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
@@ -527,7 +527,7 @@ def htmlHashtagSearch(cssCache: {},
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
-        iconsDir + '/logorss.png" /></a></center>'
+        iconsPath + '/logorss.png" /></a></center>'
 
     if startIndex > 0:
         # previous page link
@@ -536,7 +536,7 @@ def htmlHashtagSearch(cssCache: {},
             '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsDir + '/pageup.png" title="' + \
+            iconsPath + '/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
@@ -571,7 +571,7 @@ def htmlHashtagSearch(cssCache: {},
             postStr = \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
-                                     iconsDir, translate, None,
+                                     iconsPath, translate, None,
                                      baseDir, session, wfRequest,
                                      personCache,
                                      nickname, domain, port,
@@ -594,7 +594,7 @@ def htmlHashtagSearch(cssCache: {},
             '  <center>\n' + \
             '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + iconsDir + \
+            '"><img loading="lazy" class="pageicon" src="/' + iconsPath + \
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'
@@ -878,7 +878,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             '</h5></center>'
         return historySearchForm
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds
@@ -909,7 +909,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         postStr = \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
-                                 iconsDir, translate, None,
+                                 iconsPath, translate, None,
                                  baseDir, session, wfRequest,
                                  personCache,
                                  nickname, domain, port,

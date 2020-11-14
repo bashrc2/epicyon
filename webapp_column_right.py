@@ -43,7 +43,7 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
-                          iconsDir: str, moderator: bool, editor: bool,
+                          iconsPath: str, moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
@@ -142,7 +142,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + '" title="' + \
                 translate['Edit newswire'] + '" src="/' + \
-                iconsDir + '/edit_notify.png" /></a>\n'
+                iconsPath + '/edit_notify.png" /></a>\n'
         else:
             # show the edit icon
             htmlStr += \
@@ -152,7 +152,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + '" title="' + \
                 translate['Edit newswire'] + '" src="/' + \
-                iconsDir + '/edit.png" /></a>\n'
+                iconsPath + '/edit.png" /></a>\n'
 
     # show the RSS icon
     rssIconStr = \
@@ -161,7 +161,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
-        iconsDir + '/logorss.png" /></a>\n'
+        iconsPath + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
 
@@ -175,7 +175,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Publish a news article'] + '" title="' + \
                 translate['Publish a news article'] + '" src="/' + \
-                iconsDir + '/publish.png" /></a>\n'
+                iconsPath + '/publish.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
@@ -189,7 +189,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show the newswire lines
     newswireContentStr = \
         htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                     positiveVoting, iconsDir)
+                     positiveVoting, iconsPath)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -199,7 +199,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
 
 def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
-                 translate: {}, positiveVoting: bool, iconsDir: str) -> str:
+                 translate: {}, positiveVoting: bool, iconsPath: str) -> str:
     """Converts a newswire dict into html
     """
     separatorStr = htmlPostSeparator(baseDir, 'right')
@@ -232,7 +232,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
                 htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
-                    iconsDir + '/vote.png" /></a></p>\n'
+                    iconsPath + '/vote.png" /></a></p>\n'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
                 htmlStr += dateShown + '</span></p>\n'
@@ -257,7 +257,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
                 htmlStr += '<img class="voteicon" src="/' + \
-                    iconsDir + '/vote.png" /></a>'
+                    iconsPath + '/vote.png" /></a>'
                 htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
@@ -304,7 +304,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    # iconsDir = getIconsWebPath(baseDir)
+    # iconsPath = getIconsWebPath(baseDir)
 
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
@@ -394,7 +394,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
 
     if nickname == 'news':
         editor = False
@@ -419,11 +419,11 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
-                                 iconsAsButtons, iconsDir) + '</center>'
+                                 iconsAsButtons, iconsPath) + '</center>'
     htmlStr += \
         getRightColumnContent(baseDir, nickname, domainFull,
                               httpPrefix, translate,
-                              iconsDir, moderator, editor,
+                              iconsPath, moderator, editor,
                               newswire, positiveVoting,
                               False, timelinePath, showPublishButton,
                               showPublishAsIcon, rssIconAtTop, False,

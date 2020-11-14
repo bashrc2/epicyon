@@ -146,7 +146,7 @@ def htmlDeletePost(cssCache: {},
     """
     if '/statuses/' not in messageId:
         return None
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
@@ -176,7 +176,7 @@ def htmlDeletePost(cssCache: {},
     deletePostStr = htmlHeaderWithExternalStyle(cssFilename)
     deletePostStr += \
         individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                             iconsDir, translate, pageNumber,
+                             iconsPath, translate, pageNumber,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,

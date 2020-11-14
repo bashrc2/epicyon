@@ -391,7 +391,7 @@ def htmlBlogPost(authorized: bool,
                                    None, False)
 
     # show rss links
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     blogStr += '<p class="rssfeed">'
 
     blogStr += '<a href="' + httpPrefix + '://' + \
@@ -399,14 +399,14 @@ def htmlBlogPost(authorized: bool,
     blogStr += '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
-        iconsDir + '/logorss.png" /></a>'
+        iconsPath + '/logorss.png" /></a>'
 
     # blogStr += '<a href="' + httpPrefix + '://' + \
     #     domainFull + '/blog/' + nickname + '/rss.txt">'
     # blogStr += '<img style="width:3%;min-width:50px" ' + \
     #     'loading="lazy" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
-    #     iconsDir + '/rss3.png" /></a>'
+    #     iconsPath + '/rss3.png" /></a>'
 
     blogStr += '</p>'
 
@@ -451,7 +451,7 @@ def htmlBlogPage(authorized: bool, session,
 
     # show previous and next buttons
     if pageNumber is not None:
-        iconsDir = getIconsWebPath(baseDir)
+        iconsPath = getIconsWebPath(baseDir)
         navigateStr = '<p>'
         if pageNumber > 1:
             # show previous button
@@ -459,7 +459,7 @@ def htmlBlogPage(authorized: bool, session,
                 domainFull + '/blog/' + \
                 nickname + '?page=' + str(pageNumber-1) + '">' + \
                 '<img loading="lazy" alt="<" title="<" ' + \
-                'src="/' + iconsDir + \
+                'src="/' + iconsPath + \
                 '/prev.png" class="buttonprev"/></a>\n'
         if len(timelineJson['orderedItems']) >= noOfItems:
             # show next button
@@ -467,7 +467,7 @@ def htmlBlogPage(authorized: bool, session,
                 domainFull + '/blog/' + nickname + \
                 '?page=' + str(pageNumber + 1) + '">' + \
                 '<img loading="lazy" alt=">" title=">" ' + \
-                'src="/' + iconsDir + \
+                'src="/' + iconsPath + \
                 '/prev.png" class="buttonnext"/></a>\n'
         navigateStr += '</p>'
         blogStr += navigateStr
@@ -492,13 +492,13 @@ def htmlBlogPage(authorized: bool, session,
         domainFull + '/blog/' + nickname + '/rss.xml">'
     blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
-        iconsDir + '/logorss.png" /></a>'
+        iconsPath + '/logorss.png" /></a>'
 
     # blogStr += '<a href="' + httpPrefix + '://' + \
     #     domainFull + '/blog/' + nickname + '/rss.txt">'
     # blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
     #     'title="RSS 3.0" src="/' + \
-    #     iconsDir + '/rss3.png" /></a>'
+    #     iconsPath + '/rss3.png" /></a>'
 
     blogStr += '</p>'
     return blogStr + htmlFooter()
@@ -722,7 +722,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
         print('Edit blog: json not loaded for ' + postFilename)
         return None
 
-    iconsDir = getIconsWebPath(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
 
     editBlogText = '<p class="new-post-text">' + \
         translate['Write your post text below.'] + '</p>'
@@ -767,7 +767,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     dateAndLocation += \
         '<p><img loading="lazy" alt="" title="" ' + \
         'class="emojicalendar" src="/' + \
-        iconsDir + '/calendar.png"/>'
+        iconsPath + '/calendar.png"/>'
     dateAndLocation += \
         '<label class="labels">' + translate['Date'] + ': </label>'
     dateAndLocation += '<input type="date" name="eventDate">'
@@ -798,7 +798,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     editBlogForm += '      <div class="dropbtn">'
     editBlogForm += \
-        '        <img loading="lazy" alt="" title="" src="/' + iconsDir + \
+        '        <img loading="lazy" alt="" title="" src="/' + iconsPath + \
         '/' + scopeIcon + '"/><b class="scope-desc">' + \
         scopeDescription + '</b>'
     editBlogForm += '      </div>'
