@@ -175,11 +175,21 @@ def setThemeFromDict(baseDir: str, name: str,
         setThemeInConfig(baseDir, name)
     themeFiles = getThemeFiles()
     for filename in themeFiles:
-        templateFilename = baseDir + '/epicyon-' + filename
+        # check for custom css within the theme directory
+        templateFilename = baseDir + '/theme/' + name + '/epicyon-' + filename
         if filename == 'epicyon.css':
-            templateFilename = baseDir + '/epicyon-profile.css'
+            templateFilename = \
+                baseDir + '/theme/' + name + '/epicyon-profile.css'
+
+        if not os.path.isfile(templateFilename):
+            # use default css
+            templateFilename = baseDir + '/epicyon-' + filename
+            if filename == 'epicyon.css':
+                templateFilename = baseDir + '/epicyon-profile.css'
+
         if not os.path.isfile(templateFilename):
             continue
+
         with open(templateFilename, 'r') as cssfile:
             css = cssfile.read()
             for paramName, paramValue in themeParams.items():
