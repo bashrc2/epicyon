@@ -14,14 +14,13 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
-from utils import getCSS
 from utils import weekDayOfMonthStart
 from happening import getTodaysEvents
 from happening import getCalendarEvents
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
@@ -54,45 +53,40 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        if httpPrefix != 'https':
-            profileStyle = profileStyle.replace('https://',
-                                                httpPrefix + '://')
-        deletePostStr = htmlHeader(cssFilename, profileStyle)
-        deletePostStr += \
-            '<center><h1>' + postTime + ' ' + str(year) + '/' + \
-            str(monthNumber) + \
-            '/' + str(dayNumber) + '</h1></center>'
-        deletePostStr += '<center>'
-        deletePostStr += '  <p class="followText">' + \
-            translate['Delete this event'] + '</p>'
+    deletePostStr = htmlHeaderWithExternalStyle(cssFilename)
+    deletePostStr += \
+        '<center><h1>' + postTime + ' ' + str(year) + '/' + \
+        str(monthNumber) + \
+        '/' + str(dayNumber) + '</h1></center>'
+    deletePostStr += '<center>'
+    deletePostStr += '  <p class="followText">' + \
+        translate['Delete this event'] + '</p>'
 
-        postActor = getAltPath(actor, domainFull, callingDomain)
-        deletePostStr += \
-            '  <form method="POST" action="' + postActor + '/rmpost">\n'
-        deletePostStr += '    <input type="hidden" name="year" value="' + \
-            str(year) + '">\n'
-        deletePostStr += '    <input type="hidden" name="month" value="' + \
-            str(monthNumber) + '">\n'
-        deletePostStr += '    <input type="hidden" name="day" value="' + \
-            str(dayNumber) + '">\n'
-        deletePostStr += \
-            '    <input type="hidden" name="pageNumber" value="1">\n'
-        deletePostStr += \
-            '    <input type="hidden" name="messageId" value="' + \
-            messageId + '">\n'
-        deletePostStr += \
-            '    <button type="submit" class="button" name="submitYes">' + \
-            translate['Yes'] + '</button>\n'
-        deletePostStr += \
-            '    <a href="' + actor + '/calendar?year=' + \
-            str(year) + '?month=' + \
-            str(monthNumber) + '"><button class="button">' + \
-            translate['No'] + '</button></a>\n'
-        deletePostStr += '  </form>\n'
-        deletePostStr += '</center>\n'
-        deletePostStr += htmlFooter()
+    postActor = getAltPath(actor, domainFull, callingDomain)
+    deletePostStr += \
+        '  <form method="POST" action="' + postActor + '/rmpost">\n'
+    deletePostStr += '    <input type="hidden" name="year" value="' + \
+        str(year) + '">\n'
+    deletePostStr += '    <input type="hidden" name="month" value="' + \
+        str(monthNumber) + '">\n'
+    deletePostStr += '    <input type="hidden" name="day" value="' + \
+        str(dayNumber) + '">\n'
+    deletePostStr += \
+        '    <input type="hidden" name="pageNumber" value="1">\n'
+    deletePostStr += \
+        '    <input type="hidden" name="messageId" value="' + \
+        messageId + '">\n'
+    deletePostStr += \
+        '    <button type="submit" class="button" name="submitYes">' + \
+        translate['Yes'] + '</button>\n'
+    deletePostStr += \
+        '    <a href="' + actor + '/calendar?year=' + \
+        str(year) + '?month=' + \
+        str(monthNumber) + '"><button class="button">' + \
+        translate['No'] + '</button></a>\n'
+    deletePostStr += '  </form>\n'
+    deletePostStr += '</center>\n'
+    deletePostStr += htmlFooter()
     return deletePostStr
 
 
@@ -112,13 +106,11 @@ def htmlCalendarDay(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/calendar.css'):
         cssFilename = baseDir + '/calendar.css'
 
-    calendarStyle = getCSS(baseDir, cssFilename, cssCache)
-
     calActor = actor
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    calendarStr = htmlHeader(cssFilename, calendarStyle)
+    calendarStr = htmlHeaderWithExternalStyle(cssFilename)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
@@ -130,7 +122,7 @@ def htmlCalendarDay(cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<tbody>\n'
 
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
 
     if dayEvents:
         for eventPost in dayEvents:
@@ -164,7 +156,7 @@ def htmlCalendarDay(cssCache: {}, translate: {},
                     '">\n<img class="calendardayicon" loading="lazy" alt="' + \
                     translate['Delete this event'] + ' |" title="' + \
                     translate['Delete this event'] + '" src="/' + \
-                    iconsDir + '/delete.png" /></a></td>\n'
+                    iconsPath + '/delete.png" /></a></td>\n'
 
             if eventTime and eventDescription and eventPlace:
                 calendarStr += \
@@ -209,7 +201,7 @@ def htmlCalendar(cssCache: {}, translate: {},
                  httpPrefix: str, domainFull: str) -> str:
     """Show the calendar for a person
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     domain = domainFull
     if ':' in domainFull:
         domain = domainFull.split(':')[0]
@@ -298,13 +290,11 @@ def htmlCalendar(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/calendar.css'):
         cssFilename = baseDir + '/calendar.css'
 
-    calendarStyle = getCSS(baseDir, cssFilename, cssCache)
-
     calActor = actor
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    calendarStr = htmlHeader(cssFilename, calendarStyle)
+    calendarStr = htmlHeaderWithExternalStyle(cssFilename)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
@@ -312,7 +302,7 @@ def htmlCalendar(cssCache: {}, translate: {},
         '?month=' + str(prevMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
-        '" title="' + translate['Previous month'] + '" src="/' + iconsDir + \
+        '" title="' + translate['Previous month'] + '" src="/' + iconsPath + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendarStr += '  <a href="' + calActor + '/inbox" title="'
     calendarStr += translate['Switch to timeline view'] + '">'
@@ -322,7 +312,7 @@ def htmlCalendar(cssCache: {}, translate: {},
         '?month=' + str(nextMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
-        '" title="' + translate['Next month'] + '" src="/' + iconsDir + \
+        '" title="' + translate['Next month'] + '" src="/' + iconsPath + \
         '/prev.png" class="buttonnext"/></a>\n'
     calendarStr += '</caption>\n'
     calendarStr += '<thead>\n'

@@ -483,17 +483,19 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  baseDir + '/accounts/' + nickname + '@' + domain +
                  '/avatar.png')
     theme = getConfigParam(baseDir, 'theme')
-    defaultProfileImageFilename = baseDir + '/img/image.png'
+    if not theme:
+        theme = 'default'
+    defaultProfileImageFilename = baseDir + '/theme/default/image.png'
     if theme:
-        if os.path.isfile(baseDir + '/img/image_' + theme + '.png'):
-            defaultBannerFilename = baseDir + '/img/image_' + theme + '.png'
+        if os.path.isfile(baseDir + '/theme/' + theme + '/image.png'):
+            defaultBannerFilename = baseDir + '/theme/' + theme + '/image.png'
     if os.path.isfile(defaultProfileImageFilename):
         copyfile(defaultProfileImageFilename, baseDir +
                  '/accounts/' + nickname + '@' + domain + '/image.png')
-    defaultBannerFilename = baseDir + '/img/banner.png'
+    defaultBannerFilename = baseDir + '/theme/default/banner.png'
     if theme:
-        if os.path.isfile(baseDir + '/img/banner_' + theme + '.png'):
-            defaultBannerFilename = baseDir + '/img/banner_' + theme + '.png'
+        if os.path.isfile(baseDir + '/theme/' + theme + '/banner.png'):
+            defaultBannerFilename = baseDir + '/theme/' + theme + '/banner.png'
     if os.path.isfile(defaultBannerFilename):
         copyfile(defaultBannerFilename, baseDir + '/accounts/' +
                  nickname + '@' + domain + '/banner.png')

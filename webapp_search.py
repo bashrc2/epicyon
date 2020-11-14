@@ -10,7 +10,6 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
-from utils import getCSS
 from utils import loadJson
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -22,9 +21,9 @@ from utils import searchBoxPosts
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import getImageFile
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile
 from webapp_utils import htmlPostSeparator
@@ -48,52 +47,47 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    emojiCSS = getCSS(baseDir, cssFilename, cssCache)
-    if emojiCSS:
-        if httpPrefix != 'https':
-            emojiCSS = emojiCSS.replace('https://',
-                                        httpPrefix + '://')
-        emojiLookupFilename = baseDir + '/emoji/emoji.json'
+    emojiLookupFilename = baseDir + '/emoji/emoji.json'
 
-        # create header
-        emojiForm = htmlHeader(cssFilename, emojiCSS)
-        emojiForm += '<center><h1>' + \
-            translate['Emoji Search'] + \
-            '</h1></center>'
+    # create header
+    emojiForm = htmlHeaderWithExternalStyle(cssFilename)
+    emojiForm += '<center><h1>' + \
+        translate['Emoji Search'] + \
+        '</h1></center>'
 
-        # does the lookup file exist?
-        if not os.path.isfile(emojiLookupFilename):
-            emojiForm += '<center><h5>' + \
-                translate['No results'] + '</h5></center>'
-            emojiForm += htmlFooter()
-            return emojiForm
-
-        emojiJson = loadJson(emojiLookupFilename)
-        if emojiJson:
-            results = {}
-            for emojiName, filename in emojiJson.items():
-                if searchStr in emojiName:
-                    results[emojiName] = filename + '.png'
-            for emojiName, filename in emojiJson.items():
-                if emojiName in searchStr:
-                    results[emojiName] = filename + '.png'
-            headingShown = False
-            emojiForm += '<center>'
-            msgStr1 = translate['Copy the text then paste it into your post']
-            msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
-            for emojiName, filename in results.items():
-                if os.path.isfile(baseDir + '/emoji/' + filename):
-                    if not headingShown:
-                        emojiForm += \
-                            '<center><h5>' + msgStr1 + \
-                            '</h5></center>'
-                        headingShown = True
-                    emojiForm += \
-                        '<h3>:' + emojiName + msgStr2 + \
-                        filename + '"/></h3>'
-            emojiForm += '</center>'
-
+    # does the lookup file exist?
+    if not os.path.isfile(emojiLookupFilename):
+        emojiForm += '<center><h5>' + \
+            translate['No results'] + '</h5></center>'
         emojiForm += htmlFooter()
+        return emojiForm
+
+    emojiJson = loadJson(emojiLookupFilename)
+    if emojiJson:
+        results = {}
+        for emojiName, filename in emojiJson.items():
+            if searchStr in emojiName:
+                results[emojiName] = filename + '.png'
+        for emojiName, filename in emojiJson.items():
+            if emojiName in searchStr:
+                results[emojiName] = filename + '.png'
+        headingShown = False
+        emojiForm += '<center>'
+        msgStr1 = translate['Copy the text then paste it into your post']
+        msgStr2 = ':<img loading="lazy" class="searchEmoji" src="/emoji/'
+        for emojiName, filename in results.items():
+            if os.path.isfile(baseDir + '/emoji/' + filename):
+                if not headingShown:
+                    emojiForm += \
+                        '<center><h5>' + msgStr1 + \
+                        '</h5></center>'
+                    headingShown = True
+                emojiForm += \
+                    '<h3>:' + emojiName + msgStr2 + \
+                    filename + '"/></h3>'
+        emojiForm += '</center>'
+
+    emojiForm += htmlFooter()
     return emojiForm
 
 
@@ -106,7 +100,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           callingDomain: str) -> str:
     """Search results for shared items
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     currPage = 1
     ctr = 0
     sharedItemsForm = ''
@@ -117,158 +111,153 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    sharedItemsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if sharedItemsCSS:
-        if httpPrefix != 'https':
-            sharedItemsCSS = \
-                sharedItemsCSS.replace('https://',
-                                       httpPrefix + '://')
-        sharedItemsForm = htmlHeader(cssFilename, sharedItemsCSS)
-        sharedItemsForm += \
-            '<center><h1>' + translate['Shared Items Search'] + \
-            '</h1></center>'
-        resultsExist = False
-        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-            for handle in dirs:
-                if '@' not in handle:
-                    continue
-                contactNickname = handle.split('@')[0]
-                sharesFilename = baseDir + '/accounts/' + handle + \
-                    '/shares.json'
-                if not os.path.isfile(sharesFilename):
-                    continue
+    sharedItemsForm = \
+        htmlHeaderWithExternalStyle(cssFilename)
+    sharedItemsForm += \
+        '<center><h1>' + translate['Shared Items Search'] + \
+        '</h1></center>'
+    resultsExist = False
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for handle in dirs:
+            if '@' not in handle:
+                continue
+            contactNickname = handle.split('@')[0]
+            sharesFilename = baseDir + '/accounts/' + handle + \
+                '/shares.json'
+            if not os.path.isfile(sharesFilename):
+                continue
 
-                sharesJson = loadJson(sharesFilename)
-                if not sharesJson:
-                    continue
+            sharesJson = loadJson(sharesFilename)
+            if not sharesJson:
+                continue
 
-                for name, sharedItem in sharesJson.items():
-                    matched = True
-                    for searchSubstr in searchStrLowerList:
-                        subStrMatched = False
-                        searchSubstr = searchSubstr.strip()
-                        if searchSubstr in sharedItem['location'].lower():
-                            subStrMatched = True
-                        elif searchSubstr in sharedItem['summary'].lower():
-                            subStrMatched = True
-                        elif searchSubstr in sharedItem['displayName'].lower():
-                            subStrMatched = True
-                        elif searchSubstr in sharedItem['category'].lower():
-                            subStrMatched = True
-                        if not subStrMatched:
-                            matched = False
+            for name, sharedItem in sharesJson.items():
+                matched = True
+                for searchSubstr in searchStrLowerList:
+                    subStrMatched = False
+                    searchSubstr = searchSubstr.strip()
+                    if searchSubstr in sharedItem['location'].lower():
+                        subStrMatched = True
+                    elif searchSubstr in sharedItem['summary'].lower():
+                        subStrMatched = True
+                    elif searchSubstr in sharedItem['displayName'].lower():
+                        subStrMatched = True
+                    elif searchSubstr in sharedItem['category'].lower():
+                        subStrMatched = True
+                    if not subStrMatched:
+                        matched = False
+                        break
+                if matched:
+                    if currPage == pageNumber:
+                        sharedItemsForm += '<div class="container">\n'
+                        sharedItemsForm += \
+                            '<p class="share-title">' + \
+                            sharedItem['displayName'] + '</p>\n'
+                        if sharedItem.get('imageUrl'):
+                            sharedItemsForm += \
+                                '<a href="' + \
+                                sharedItem['imageUrl'] + '">\n'
+                            sharedItemsForm += \
+                                '<img loading="lazy" src="' + \
+                                sharedItem['imageUrl'] + \
+                                '" alt="Item image"></a>\n'
+                        sharedItemsForm += \
+                            '<p>' + sharedItem['summary'] + '</p>\n'
+                        sharedItemsForm += \
+                            '<p><b>' + translate['Type'] + \
+                            ':</b> ' + sharedItem['itemType'] + ' '
+                        sharedItemsForm += \
+                            '<b>' + translate['Category'] + \
+                            ':</b> ' + sharedItem['category'] + ' '
+                        sharedItemsForm += \
+                            '<b>' + translate['Location'] + \
+                            ':</b> ' + sharedItem['location'] + '</p>\n'
+                        contactActor = \
+                            httpPrefix + '://' + domainFull + \
+                            '/users/' + contactNickname
+                        sharedItemsForm += \
+                            '<p><a href="' + actor + \
+                            '?replydm=sharedesc:' + \
+                            sharedItem['displayName'] + \
+                            '?mention=' + contactActor + \
+                            '"><button class="button">' + \
+                            translate['Contact'] + '</button></a>\n'
+                        if actor.endswith('/users/' + contactNickname):
+                            sharedItemsForm += \
+                                ' <a href="' + actor + '?rmshare=' + \
+                                name + '"><button class="button">' + \
+                                translate['Remove'] + '</button></a>\n'
+                        sharedItemsForm += '</p></div>\n'
+                        if not resultsExist and currPage > 1:
+                            postActor = \
+                                getAltPath(actor, domainFull,
+                                           callingDomain)
+                            # previous page link, needs to be a POST
+                            sharedItemsForm += \
+                                '<form method="POST" action="' + \
+                                postActor + \
+                                '/searchhandle?page=' + \
+                                str(pageNumber - 1) + '">\n'
+                            sharedItemsForm += \
+                                '  <input type="hidden" ' + \
+                                'name="actor" value="' + actor + '">\n'
+                            sharedItemsForm += \
+                                '  <input type="hidden" ' + \
+                                'name="searchtext" value="' + \
+                                searchStrLower + '"><br>\n'
+                            sharedItemsForm += \
+                                '  <center>\n' + \
+                                '    <a href="' + actor + \
+                                '" type="submit" name="submitSearch">\n'
+                            sharedItemsForm += \
+                                '    <img loading="lazy" ' + \
+                                'class="pageicon" src="/' + iconsPath + \
+                                '/pageup.png" title="' + \
+                                translate['Page up'] + \
+                                '" alt="' + translate['Page up'] + \
+                                '"/></a>\n'
+                            sharedItemsForm += '  </center>\n'
+                            sharedItemsForm += '</form>\n'
+                            resultsExist = True
+                    ctr += 1
+                    if ctr >= resultsPerPage:
+                        currPage += 1
+                        if currPage > pageNumber:
+                            postActor = \
+                                getAltPath(actor, domainFull,
+                                           callingDomain)
+                            # next page link, needs to be a POST
+                            sharedItemsForm += \
+                                '<form method="POST" action="' + \
+                                postActor + \
+                                '/searchhandle?page=' + \
+                                str(pageNumber + 1) + '">\n'
+                            sharedItemsForm += \
+                                '  <input type="hidden" ' + \
+                                'name="actor" value="' + actor + '">\n'
+                            sharedItemsForm += \
+                                '  <input type="hidden" ' + \
+                                'name="searchtext" value="' + \
+                                searchStrLower + '"><br>\n'
+                            sharedItemsForm += \
+                                '  <center>\n' + \
+                                '    <a href="' + actor + \
+                                '" type="submit" name="submitSearch">\n'
+                            sharedItemsForm += \
+                                '    <img loading="lazy" ' + \
+                                'class="pageicon" src="/' + iconsPath + \
+                                '/pagedown.png" title="' + \
+                                translate['Page down'] + \
+                                '" alt="' + translate['Page down'] + \
+                                '"/></a>\n'
+                            sharedItemsForm += '  </center>\n'
+                            sharedItemsForm += '</form>\n'
                             break
-                    if matched:
-                        if currPage == pageNumber:
-                            sharedItemsForm += '<div class="container">\n'
-                            sharedItemsForm += \
-                                '<p class="share-title">' + \
-                                sharedItem['displayName'] + '</p>\n'
-                            if sharedItem.get('imageUrl'):
-                                sharedItemsForm += \
-                                    '<a href="' + \
-                                    sharedItem['imageUrl'] + '">\n'
-                                sharedItemsForm += \
-                                    '<img loading="lazy" src="' + \
-                                    sharedItem['imageUrl'] + \
-                                    '" alt="Item image"></a>\n'
-                            sharedItemsForm += \
-                                '<p>' + sharedItem['summary'] + '</p>\n'
-                            sharedItemsForm += \
-                                '<p><b>' + translate['Type'] + \
-                                ':</b> ' + sharedItem['itemType'] + ' '
-                            sharedItemsForm += \
-                                '<b>' + translate['Category'] + \
-                                ':</b> ' + sharedItem['category'] + ' '
-                            sharedItemsForm += \
-                                '<b>' + translate['Location'] + \
-                                ':</b> ' + sharedItem['location'] + '</p>\n'
-                            contactActor = \
-                                httpPrefix + '://' + domainFull + \
-                                '/users/' + contactNickname
-                            sharedItemsForm += \
-                                '<p><a href="' + actor + \
-                                '?replydm=sharedesc:' + \
-                                sharedItem['displayName'] + \
-                                '?mention=' + contactActor + \
-                                '"><button class="button">' + \
-                                translate['Contact'] + '</button></a>\n'
-                            if actor.endswith('/users/' + contactNickname):
-                                sharedItemsForm += \
-                                    ' <a href="' + actor + '?rmshare=' + \
-                                    name + '"><button class="button">' + \
-                                    translate['Remove'] + '</button></a>\n'
-                            sharedItemsForm += '</p></div>\n'
-                            if not resultsExist and currPage > 1:
-                                postActor = \
-                                    getAltPath(actor, domainFull,
-                                               callingDomain)
-                                # previous page link, needs to be a POST
-                                sharedItemsForm += \
-                                    '<form method="POST" action="' + \
-                                    postActor + \
-                                    '/searchhandle?page=' + \
-                                    str(pageNumber - 1) + '">\n'
-                                sharedItemsForm += \
-                                    '  <input type="hidden" ' + \
-                                    'name="actor" value="' + actor + '">\n'
-                                sharedItemsForm += \
-                                    '  <input type="hidden" ' + \
-                                    'name="searchtext" value="' + \
-                                    searchStrLower + '"><br>\n'
-                                sharedItemsForm += \
-                                    '  <center>\n' + \
-                                    '    <a href="' + actor + \
-                                    '" type="submit" name="submitSearch">\n'
-                                sharedItemsForm += \
-                                    '    <img loading="lazy" ' + \
-                                    'class="pageicon" src="/' + iconsDir + \
-                                    '/pageup.png" title="' + \
-                                    translate['Page up'] + \
-                                    '" alt="' + translate['Page up'] + \
-                                    '"/></a>\n'
-                                sharedItemsForm += '  </center>\n'
-                                sharedItemsForm += '</form>\n'
-                                resultsExist = True
-                        ctr += 1
-                        if ctr >= resultsPerPage:
-                            currPage += 1
-                            if currPage > pageNumber:
-                                postActor = \
-                                    getAltPath(actor, domainFull,
-                                               callingDomain)
-                                # next page link, needs to be a POST
-                                sharedItemsForm += \
-                                    '<form method="POST" action="' + \
-                                    postActor + \
-                                    '/searchhandle?page=' + \
-                                    str(pageNumber + 1) + '">\n'
-                                sharedItemsForm += \
-                                    '  <input type="hidden" ' + \
-                                    'name="actor" value="' + actor + '">\n'
-                                sharedItemsForm += \
-                                    '  <input type="hidden" ' + \
-                                    'name="searchtext" value="' + \
-                                    searchStrLower + '"><br>\n'
-                                sharedItemsForm += \
-                                    '  <center>\n' + \
-                                    '    <a href="' + actor + \
-                                    '" type="submit" name="submitSearch">\n'
-                                sharedItemsForm += \
-                                    '    <img loading="lazy" ' + \
-                                    'class="pageicon" src="/' + iconsDir + \
-                                    '/pagedown.png" title="' + \
-                                    translate['Page down'] + \
-                                    '" alt="' + translate['Page down'] + \
-                                    '"/></a>\n'
-                                sharedItemsForm += '  </center>\n'
-                                sharedItemsForm += '</form>\n'
-                                break
-                            ctr = 0
-        if not resultsExist:
-            sharedItemsForm += \
-                '<center><h5>' + translate['No results'] + '</h5></center>\n'
-        sharedItemsForm += htmlFooter()
+                        ctr = 0
+    if not resultsExist:
+        sharedItemsForm += \
+            '<center><h5>' + translate['No results'] + '</h5></center>\n'
+    sharedItemsForm += htmlFooter()
     return sharedItemsForm
 
 
@@ -294,9 +283,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-
-    emojiStr = htmlHeader(cssFilename, profileStyle)
+    emojiStr = htmlHeaderWithExternalStyle(cssFilename)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -336,16 +323,7 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/search.css'):
         cssFilename = baseDir + '/search.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-
-    if not os.path.isfile(baseDir + '/accounts/' +
-                          'follow-background.jpg'):
-        profileStyle = \
-            profileStyle.replace('background-image: ' +
-                                 'url("follow-background.jpg");',
-                                 'background-image: none;')
-
-    followStr = htmlHeader(cssFilename, profileStyle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
@@ -390,8 +368,6 @@ def htmlSearch(cssCache: {}, translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
-    # followStr += '    <a href="/"><button type="button" class="button" ' + \
-    #    'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     followStr += '    <button type="submit" class="button" ' + \
         'name="submitSearch">' + translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
@@ -503,7 +479,7 @@ def htmlHashtagSearch(cssCache: {},
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
@@ -521,13 +497,6 @@ def htmlHashtagSearch(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    hashtagSearchCSS = getCSS(baseDir, cssFilename, cssCache)
-    if hashtagSearchCSS:
-        if httpPrefix != 'https':
-            hashtagSearchCSS = \
-                hashtagSearchCSS.replace('https://',
-                                         httpPrefix + '://')
-
     # ensure that the page number is in bounds
     if not pageNumber:
         pageNumber = 1
@@ -542,7 +511,8 @@ def htmlHashtagSearch(cssCache: {},
         endIndex = noOfLines - 1
 
     # add the page title
-    hashtagSearchForm = htmlHeader(cssFilename, hashtagSearchCSS)
+    hashtagSearchForm = \
+        htmlHeaderWithExternalStyle(cssFilename)
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
@@ -557,7 +527,7 @@ def htmlHashtagSearch(cssCache: {},
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" ' + \
         'title="RSS 2.0" src="/' + \
-        iconsDir + '/logorss.png" /></a></center>'
+        iconsPath + '/logorss.png" /></a></center>'
 
     if startIndex > 0:
         # previous page link
@@ -566,7 +536,7 @@ def htmlHashtagSearch(cssCache: {},
             '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsDir + '/pageup.png" title="' + \
+            iconsPath + '/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
@@ -598,10 +568,10 @@ def htmlHashtagSearch(cssCache: {},
             if nickname:
                 showIndividualPostIcons = True
             allowDeletion = False
-            hashtagSearchForm += separatorStr + \
+            postStr = \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
-                                     iconsDir, translate, None,
+                                     iconsPath, translate, None,
                                      baseDir, session, wfRequest,
                                      personCache,
                                      nickname, domain, port,
@@ -614,6 +584,8 @@ def htmlHashtagSearch(cssCache: {},
                                      showIndividualPostIcons,
                                      showIndividualPostIcons,
                                      False, False, False)
+            if postStr:
+                hashtagSearchForm += separatorStr + postStr
         index += 1
 
     if endIndex < noOfLines - 1:
@@ -622,7 +594,7 @@ def htmlHashtagSearch(cssCache: {},
             '  <center>\n' + \
             '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + iconsDir + \
+            '"><img loading="lazy" class="pageicon" src="/' + iconsPath + \
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'
@@ -830,13 +802,7 @@ def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    skillSearchCSS = getCSS(baseDir, cssFilename, cssCache)
-    if skillSearchCSS:
-        if httpPrefix != 'https':
-            skillSearchCSS = \
-                skillSearchCSS.replace('https://',
-                                       httpPrefix + '://')
-    skillSearchForm = htmlHeader(cssFilename, skillSearchCSS)
+    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
     skillSearchForm += \
         '<center><h1>' + translate['Skills search'] + ': ' + \
         skillsearch + '</h1></center>'
@@ -899,13 +865,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    historySearchCSS = getCSS(baseDir, cssFilename, cssCache)
-    if historySearchCSS:
-        if httpPrefix != 'https':
-            historySearchCSS = \
-                historySearchCSS.replace('https://',
-                                         httpPrefix + '://')
-    historySearchForm = htmlHeader(cssFilename, historySearchCSS)
+    historySearchForm = \
+        htmlHeaderWithExternalStyle(cssFilename)
 
     # add the page title
     historySearchForm += \
@@ -917,7 +878,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             '</h5></center>'
         return historySearchForm
 
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds
@@ -945,10 +906,10 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             continue
         showIndividualPostIcons = True
         allowDeletion = False
-        historySearchForm += separatorStr + \
+        postStr = \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
-                                 iconsDir, translate, None,
+                                 iconsPath, translate, None,
                                  baseDir, session, wfRequest,
                                  personCache,
                                  nickname, domain, port,
@@ -961,6 +922,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
+        if postStr:
+            historySearchForm += separatorStr + postStr
         index += 1
 
     historySearchForm += htmlFooter()

@@ -9,14 +9,13 @@ __status__ = "Production"
 import os
 from shutil import copyfile
 from utils import getConfigParam
-from utils import getCSS
 from utils import getNicknameFromActor
 from posts import isEditor
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -24,7 +23,7 @@ from webapp_utils import getBannerFile
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsDir: str, editor: bool,
+                         iconsPath: str, editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool) -> str:
@@ -92,7 +91,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
-            iconsDir + '/edit.png" /></a>\n'
+            iconsPath + '/edit.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -111,7 +110,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + rssTitle + \
         '" title="' + rssTitle + \
-        '" src="/' + iconsDir + '/logorss.png" /></a>\n'
+        '" src="/' + iconsPath + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
     htmlStr += '      </div>\n'
@@ -201,14 +200,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://', httpPrefix + '://')
-
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
 
     # is the user a site editor?
     if nickname == 'news':
@@ -220,7 +212,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if ':' in domain:
         domain = domain.split(':')[0]
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
@@ -230,11 +222,11 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
-                                 iconsAsButtons, iconsDir) + '</center>'
+                                 iconsAsButtons, iconsPath) + '</center>'
     htmlStr += \
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
-                             iconsDir, editor,
+                             iconsPath, editor,
                              False, timelinePath,
                              rssIconAtTop, False, False)
     htmlStr += '</div>\n' + htmlFooter()
@@ -263,16 +255,10 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editCSS:
-        if httpPrefix != 'https':
-            editCSS = \
-                editCSS.replace('https://', httpPrefix + '://')
-
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editLinksForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
+    editLinksForm = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     editLinksForm += \

@@ -8,15 +8,14 @@ __status__ = "Production"
 
 import os
 from shutil import copyfile
-from utils import getCSS
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from shares import getValidSharedItemID
 from webapp_utils import getAltPath
-from webapp_utils import getIconsDir
-from webapp_utils import htmlHeader
+from webapp_utils import getIconsWebPath
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
 
@@ -34,15 +33,13 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
             if os.path.isfile(baseDir + '/epicyon.css'):
                 cssFilename = baseDir + '/epicyon.css'
 
-            profileCSS = getCSS(baseDir, cssFilename, cssCache)
-            if profileCSS:
-                followingListHtml = htmlHeader(cssFilename, profileCSS)
-                for followingAddress in followingList:
-                    if followingAddress:
-                        followingListHtml += \
-                            '<h3>@' + followingAddress + '</h3>'
-                followingListHtml += htmlFooter()
-                msg = followingListHtml
+            followingListHtml = htmlHeaderWithExternalStyle(cssFilename)
+            for followingAddress in followingList:
+                if followingAddress:
+                    followingListHtml += \
+                        '<h3>@' + followingAddress + '</h3>'
+            followingListHtml += htmlFooter()
+            msg = followingListHtml
         return msg
     return ''
 
@@ -55,18 +52,16 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
     if os.path.isfile(baseDir + '/suspended.css'):
         cssFilename = baseDir + '/suspended.css'
 
-    blockedHashtagCSS = getCSS(baseDir, cssFilename, cssCache)
-    if blockedHashtagCSS:
-        blockedHashtagForm = htmlHeader(cssFilename, blockedHashtagCSS)
-        blockedHashtagForm += '<div><center>\n'
-        blockedHashtagForm += \
-            '  <p class="screentitle">' + \
-            translate['Hashtag Blocked'] + '</p>\n'
-        blockedHashtagForm += \
-            '  <p>See <a href="/terms">' + \
-            translate['Terms of Service'] + '</a></p>\n'
-        blockedHashtagForm += '</center></div>\n'
-        blockedHashtagForm += htmlFooter()
+    blockedHashtagForm = htmlHeaderWithExternalStyle(cssFilename)
+    blockedHashtagForm += '<div><center>\n'
+    blockedHashtagForm += \
+        '  <p class="screentitle">' + \
+        translate['Hashtag Blocked'] + '</p>\n'
+    blockedHashtagForm += \
+        '  <p>See <a href="/terms">' + \
+        translate['Terms of Service'] + '</a></p>\n'
+    blockedHashtagForm += '</center></div>\n'
+    blockedHashtagForm += htmlFooter()
     return blockedHashtagForm
 
 
@@ -108,8 +103,7 @@ def htmlRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    sharesStr = htmlHeader(cssFilename, profileStyle)
+    sharesStr = htmlHeaderWithExternalStyle(cssFilename)
     sharesStr += '<div class="follow">\n'
     sharesStr += '  <div class="followAvatar">\n'
     sharesStr += '  <center>\n'
@@ -152,7 +146,7 @@ def htmlDeletePost(cssCache: {},
     """
     if '/statuses/' not in messageId:
         return None
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
@@ -179,45 +173,40 @@ def htmlDeletePost(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        if httpPrefix != 'https':
-            profileStyle = profileStyle.replace('https://',
-                                                httpPrefix + '://')
-        deletePostStr = htmlHeader(cssFilename, profileStyle)
-        deletePostStr += \
-            individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                 iconsDir, translate, pageNumber,
-                                 baseDir, session, wfRequest, personCache,
-                                 nickname, domain, port, postJsonObject,
-                                 None, True, False,
-                                 httpPrefix, projectVersion, 'outbox',
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly,
-                                 False, False, False, False, False)
-        deletePostStr += '<center>'
-        deletePostStr += \
-            '  <p class="followText">' + \
-            translate['Delete this post?'] + '</p>'
+    deletePostStr = htmlHeaderWithExternalStyle(cssFilename)
+    deletePostStr += \
+        individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
+                             iconsPath, translate, pageNumber,
+                             baseDir, session, wfRequest, personCache,
+                             nickname, domain, port, postJsonObject,
+                             None, True, False,
+                             httpPrefix, projectVersion, 'outbox',
+                             YTReplacementDomain,
+                             showPublishedDateOnly,
+                             False, False, False, False, False)
+    deletePostStr += '<center>'
+    deletePostStr += \
+        '  <p class="followText">' + \
+        translate['Delete this post?'] + '</p>'
 
-        postActor = getAltPath(actor, domainFull, callingDomain)
-        deletePostStr += \
-            '  <form method="POST" action="' + postActor + '/rmpost">\n'
-        deletePostStr += \
-            '    <input type="hidden" name="pageNumber" value="' + \
-            str(pageNumber) + '">\n'
-        deletePostStr += \
-            '    <input type="hidden" name="messageId" value="' + \
-            messageId + '">\n'
-        deletePostStr += \
-            '    <button type="submit" class="button" name="submitYes">' + \
-            translate['Yes'] + '</button>\n'
-        deletePostStr += \
-            '    <a href="' + actor + '/inbox"><button class="button">' + \
-            translate['No'] + '</button></a>\n'
-        deletePostStr += '  </form>\n'
-        deletePostStr += '</center>\n'
-        deletePostStr += htmlFooter()
+    postActor = getAltPath(actor, domainFull, callingDomain)
+    deletePostStr += \
+        '  <form method="POST" action="' + postActor + '/rmpost">\n'
+    deletePostStr += \
+        '    <input type="hidden" name="pageNumber" value="' + \
+        str(pageNumber) + '">\n'
+    deletePostStr += \
+        '    <input type="hidden" name="messageId" value="' + \
+        messageId + '">\n'
+    deletePostStr += \
+        '    <button type="submit" class="button" name="submitYes">' + \
+        translate['Yes'] + '</button>\n'
+    deletePostStr += \
+        '    <a href="' + actor + '/inbox"><button class="button">' + \
+        translate['No'] + '</button></a>\n'
+    deletePostStr += '  </form>\n'
+    deletePostStr += '</center>\n'
+    deletePostStr += htmlFooter()
     return deletePostStr
 
 
@@ -238,8 +227,7 @@ def htmlFollowConfirm(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    followStr = htmlHeader(cssFilename, profileStyle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
@@ -283,9 +271,7 @@ def htmlUnfollowConfirm(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-
-    followStr = htmlHeader(cssFilename, profileStyle)
+    followStr = htmlHeaderWithExternalStyle(cssFilename)
     followStr += '<div class="follow">\n'
     followStr += '  <div class="followAvatar">\n'
     followStr += '  <center>\n'
@@ -330,9 +316,7 @@ def htmlUnblockConfirm(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-
-    blockStr = htmlHeader(cssFilename, profileStyle)
+    blockStr = htmlHeaderWithExternalStyle(cssFilename)
     blockStr += '<div class="block">\n'
     blockStr += '  <div class="blockAvatar">\n'
     blockStr += '  <center>\n'

@@ -250,13 +250,13 @@ If you want to use your own favicon then copy your `favicon.ico` file to the bas
 
 ## Adding Themes
 
-If you want to add a new theme then open `theme.py` and add the theme name to the list within `getThemesList`. Add a function with the name `setTheme[YourThemeName]`. Have a look at the other themes to get an idea of how to set the colors and fonts.
+If you want to add a new theme then first add the name of your theme to the translations files.
 
-Add the name of your theme to the translations files.
+Within the `theme` directory create a directory with the name of your theme and add icons and banners. As a quick way to begin you could copy the contents of `theme/default`, then edit the graphics. Keep the size of images as small as possible to avoid creating a laggy user interface.
 
-Within the `img` directory add a default profile background image called `image_[YourThemeName].png` and a banner image `banner_[YourThemeName].png`. Because the banner image will be reloaded occasionally it should be small - preferably kilobytes rather than megabytes.
+On a running instance you can experiment with colors or fonts by editing `epicyon.css` and then reloading the web page. Once you are happy with the results then you can update the changed variable values within your `theme/yourtheme/theme.json` file.
 
-On a running instance you can experiment with colors or fonts by editing `epicyon.css` and then reloading the web page. Once you are happy with the results then you can update the changed values within your `setTheme` function.
+Epicyon normally uses one set of CSS files whose variables are then altered per theme. If you want to use entirely bespoke CSS then copy `epicyon-*.css` into your theme directory and edit it to your requirements. This will be used rather than the default CSS files. Be warned that if you're maintaining the CSS files yourself then you may need to keep up with whatever changes are happening upstream, otherwise your user interface will break.
 
 
 ## Running Unit Tests

@@ -12,7 +12,6 @@ from shutil import copyfile
 from content import removeLongWords
 from utils import locatePost
 from utils import loadJson
-from utils import getCSS
 from utils import getConfigParam
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
@@ -25,7 +24,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsDir
+from webapp_utils import getIconsWebPath
 
 
 def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
@@ -44,7 +43,7 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
-                          iconsDir: str, moderator: bool, editor: bool,
+                          iconsPath: str, moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
@@ -143,7 +142,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + '" title="' + \
                 translate['Edit newswire'] + '" src="/' + \
-                iconsDir + '/edit_notify.png" /></a>\n'
+                iconsPath + '/edit_notify.png" /></a>\n'
         else:
             # show the edit icon
             htmlStr += \
@@ -153,7 +152,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + '" title="' + \
                 translate['Edit newswire'] + '" src="/' + \
-                iconsDir + '/edit.png" /></a>\n'
+                iconsPath + '/edit.png" /></a>\n'
 
     # show the RSS icon
     rssIconStr = \
@@ -162,7 +161,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
-        iconsDir + '/logorss.png" /></a>\n'
+        iconsPath + '/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
 
@@ -176,7 +175,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Publish a news article'] + '" title="' + \
                 translate['Publish a news article'] + '" src="/' + \
-                iconsDir + '/publish.png" /></a>\n'
+                iconsPath + '/publish.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
@@ -190,7 +189,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show the newswire lines
     newswireContentStr = \
         htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                     positiveVoting, iconsDir)
+                     positiveVoting, iconsPath)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -200,7 +199,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
 
 def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
-                 translate: {}, positiveVoting: bool, iconsDir: str) -> str:
+                 translate: {}, positiveVoting: bool, iconsPath: str) -> str:
     """Converts a newswire dict into html
     """
     separatorStr = htmlPostSeparator(baseDir, 'right')
@@ -233,7 +232,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
                 htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
-                    iconsDir + '/vote.png" /></a></p>\n'
+                    iconsPath + '/vote.png" /></a></p>\n'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
                 htmlStr += dateShown + '</span></p>\n'
@@ -258,7 +257,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
                 htmlStr += '<img class="voteicon" src="/' + \
-                    iconsDir + '/vote.png" /></a>'
+                    iconsPath + '/vote.png" /></a>'
                 htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
@@ -305,16 +304,9 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://', httpPrefix + '://')
+    # iconsPath = getIconsWebPath(baseDir)
 
-    # iconsDir = getIconsDir(baseDir)
-
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
@@ -402,15 +394,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        # replace any https within the css with whatever prefix is needed
-        if httpPrefix != 'https':
-            profileStyle = \
-                profileStyle.replace('https://',
-                                     httpPrefix + '://')
-
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
 
     if nickname == 'news':
         editor = False
@@ -424,7 +408,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     showPublishButton = editor
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename, profileStyle)
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
     htmlStr += \
@@ -435,11 +419,11 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
-                                 iconsAsButtons, iconsDir) + '</center>'
+                                 iconsAsButtons, iconsPath) + '</center>'
     htmlStr += \
         getRightColumnContent(baseDir, nickname, domainFull,
                               httpPrefix, translate,
-                              iconsDir, moderator, editor,
+                              iconsPath, moderator, editor,
                               newswire, positiveVoting,
                               False, timelinePath, showPublishButton,
                               showPublishAsIcon, rssIconAtTop, False,
@@ -470,16 +454,10 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editCSS:
-        if httpPrefix != 'https':
-            editCSS = \
-                editCSS.replace('https://', httpPrefix + '://')
-
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
+    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
     editNewswireForm += \
@@ -598,13 +576,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editCSS = getCSS(baseDir, cssFilename, cssCache)
-    if editCSS:
-        if httpPrefix != 'https':
-            editCSS = \
-                editCSS.replace('https://', httpPrefix + '://')
-
-    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename, editCSS)
+    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'

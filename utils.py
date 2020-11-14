@@ -1502,3 +1502,27 @@ def weekDayOfMonthStart(monthNumber: int, year: int) -> int:
     """
     firstDayOfMonth = datetime.datetime(year, monthNumber, 1, 0, 0)
     return int(firstDayOfMonth.strftime("%w")) + 1
+
+
+def mediaFileMimeType(filename: str) -> str:
+    """Given a media filename return its mime type
+    """
+    if '.' not in filename:
+        return 'image/png'
+    extensions = {
+        'json': 'application/json',
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'webp': 'image/webp',
+        'avif': 'image/avif',
+        'mp3': 'audio/mpeg',
+        'ogg': 'audio/ogg',
+        'mp4': 'video/mp4',
+        'ogv': 'video/ogv'
+    }
+    fileExt = filename.split('.')[-1]
+    if not extensions.get(fileExt):
+        return 'image/png'
+    return extensions[fileExt]

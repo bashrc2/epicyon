@@ -39,9 +39,9 @@
     --font-size-likes: 20px;
     --font-size-likes-mobile: 32px;
     --font-size-pgp-key: 16px;
-    --font-size-pgp-key2: 8px;
+    --font-size-pgp-key2: 18px;
     --font-size-tox: 16px;
-    --font-size-tox2: 8px;
+    --font-size-tox2: 18px;
     --time-color: #aaa;
     --time-vertical-align: 4px;
     --time-vertical-align-mobile: 25px;
@@ -130,6 +130,8 @@
     --post-separator-width: 95%;
     --post-separator-height: 1px;
     --header-vertical-offset: 0;
+    --profile-background-height: 25vw;
+    --profile-text-align: left;
 }
 
 @font-face {
@@ -251,13 +253,61 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
-.hero-image {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("image.png");
-    height: 50%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+.profileHeader {
+    font-family: Arial, Helvetica, sans-serif;
     position: relative;
+    overflow: hidden;
+    margin: 10px;
+    width: 100%;
+    color: #ffffff;
+    text-align: var(--profile-text-align);
+    line-height: 1.4em;
+    background-color: #141414;
+}
+
+.profileHeader .title {
+    border-radius: 50%;
+    position: absolute;
+    bottom: 100%;
+    left: 25px;
+    z-index: 1;
+    max-width: 20%;
+    opacity: 1;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.profileHeader * {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-transition: all 0.25s ease;
+    transition: all 0.25s ease;
+}
+
+.profileHeader img.profileBackground {
+    object-fit: cover;
+    max-height: var(--profile-background-height);
+    width: 100%;
+    vertical-align: top;
+}
+
+.profileHeader figcaption {
+    width: 100%;
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+    padding: 25px;
+    position: relative;
+}
+
+.profileHeader figcaption:before {
+    position: absolute;
+    content: '';
+    bottom: 100%;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 55px 0 0 400px;
+    border-color: transparent transparent transparent var(--main-bg-color);
 }
 
 .rssfeed img {
@@ -292,10 +342,6 @@ a:focus {
     transform: translateY(30%) scaleX(-1);
 }
 
-.hero-image img {
-    width: 50%;
-}
-
 .new-post-text {
     font-size: var(--font-size2);
     font-family: Arial, Helvetica, sans-serif;
@@ -321,30 +367,6 @@ a:focus {
 .roles-inner {
     padding: 10px 25px;
     background-color: var(--main-bg-color);
-}
-
-.hero-text img.emoji {
-    width: 50px;
-    padding: 0 0;
-    margin: 0 0;
-    float: none;
-}
-
-.hero-text button {
-    border: none;
-    outline: 0;
-    display: inline-block;
-    padding: 10px 25px;
-    color: black;
-    background-color: #ddd;
-    text-align: center;
-    cursor: pointer;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.hero-text button:hover {
-    background-color: var(--button-background);
-    color: var(--button-text);
 }
 
 .timelineIcon {
@@ -478,16 +500,6 @@ a:focus {
 }
 
 .container img.emoji {
-    float: none;
-    width: 50px;
-    margin-left: 0px;
-    margin-right: 0px;
-    padding-right: 0px;
-    border-radius: 0px;
-    vertical-align: middle;
-}
-
-.hero-text img.emojiprofile {
     float: none;
     width: 50px;
     margin-left: 0px;
@@ -980,8 +992,9 @@ div.container {
         display: none;
     }
     .timeline-banner {
+        object-fit: cover;
         width: 98vw;
-        height: var(--banner-height);
+        max-height: var(--banner-height);
     }
     .timeline {
         border: 0;
@@ -1481,26 +1494,6 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
     }
-    .hero-text {
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 70%;
-        transform: translate(-50%, -50%);
-        color: var(--font-color-header);
-        font-size: var(--font-size-header);
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .hero-text img.qrcode {
-        border-radius: 1%;
-        width: 5%;
-        min-width: 20px;
-    }
-    .hero-text img.title {
-        border-radius: 1%;
-        width: 15%;
-    }
     input[type=checkbox]
     {
         -ms-transform: scale(2);
@@ -1651,8 +1644,9 @@ div.container {
         display: inline;
     }
     .timeline-banner {
+        object-fit: cover;
         width: 98vw;
-        height: var(--banner-height-mobile);
+        max-height: var(--banner-height-mobile);
     }
     .timeline {
         border: 0;
@@ -2113,26 +2107,6 @@ div.container {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
-    }
-    .hero-text {
-        text-align: center;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 70%;
-        transform: translate(-50%, -50%);
-        color: var(--font-color-header);
-        font-size: var(--font-size-header-mobile);
-        font-family: Arial, Helvetica, sans-serif;
-    }
-    .hero-text img.qrcode {
-        border-radius: 1%;
-        width: 15%;
-        min-width: 20px;
-    }
-    .hero-text img.title {
-        border-radius: 1%;
-        width: 25%;
     }
     input[type=checkbox]
     {

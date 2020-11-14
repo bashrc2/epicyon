@@ -13,11 +13,10 @@ from person import isPersonSnoozed
 from posts import isModerator
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import getCSS
 from blocking import isBlocked
 from follow import isFollowingActor
 from followingCalendar import receivingCalendarEvents
-from webapp_utils import htmlHeader
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
@@ -83,19 +82,6 @@ def htmlPersonOptions(defaultTimeline: str,
     if os.path.isfile(baseDir + '/options.css'):
         cssFilename = baseDir + '/options.css'
 
-    profileStyle = getCSS(baseDir, cssFilename, cssCache)
-    if profileStyle:
-        profileStyle = \
-            profileStyle.replace('--follow-text-entry-width: 90%;',
-                                 '--follow-text-entry-width: 20%;')
-
-    if not os.path.isfile(baseDir + '/accounts/' +
-                          'options-background.jpg'):
-        profileStyle = \
-            profileStyle.replace('background-image: ' +
-                                 'url("options-background.jpg");',
-                                 'background-image: none;')
-
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
     if nickname:
@@ -109,7 +95,7 @@ def htmlPersonOptions(defaultTimeline: str,
             '"><button class="button" name="submitDonate">' + \
             translate['Donate'] + '</button></a>\n'
 
-    optionsStr = htmlHeader(cssFilename, profileStyle)
+    optionsStr = htmlHeaderWithExternalStyle(cssFilename)
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'

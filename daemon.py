@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import mediaFileMimeType
 from utils import getCSS
 from utils import firstParagraphFromString
 from utils import clearFromPostCaches
@@ -2441,7 +2442,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.debug,
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
-                                           self.server.showPublishedDateOnly)
+                                           self.server.showPublishedDateOnly,
+                                           self.server.defaultTimeline)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     self._login_headers('text/html',
@@ -3408,6 +3410,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+
             # get the various avatar, banner and background images
             actorChanged = True
             profileMediaTypes = ('avatar', 'image',
@@ -3416,6 +3420,13 @@ class PubServer(BaseHTTPRequestHandler):
                                  'left_col_image', 'right_col_image')
             profileMediaTypesUploaded = {}
             for mType in profileMediaTypes:
+                # some images can only be changed by the admin
+                if mType == 'instanceLogo':
+                    if nickname != adminNickname:
+                        print('WARN: only the admin can change ' +
+                              'instance logo')
+                        continue
+
                 if debug:
                     print('DEBUG: profile update extracting ' + mType +
                           ' image or font from POST')
@@ -4371,12 +4382,16 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
                 favFilename = 'favicon.avif'
+        themeName = getConfigParam(baseDir, 'theme')
+        if not themeName:
+            themeName = 'default'
         # custom favicon
-        faviconFilename = baseDir + '/' + favFilename
+        faviconFilename = \
+            baseDir + '/theme/' + themeName + '/icons/' + favFilename
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
-                baseDir + '/img/icons/' + favFilename
+                baseDir + '/theme/default/icons/' + favFilename
         if self._etag_exists(faviconFilename):
             # The file has not changed
             if debug:
@@ -4764,25 +4779,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._304()
                     return
 
-                mediaFileType = 'image/png'
-                if mediaFilename.endswith('.png'):
-                    mediaFileType = 'image/png'
-                elif mediaFilename.endswith('.jpg'):
-                    mediaFileType = 'image/jpeg'
-                elif mediaFilename.endswith('.gif'):
-                    mediaFileType = 'image/gif'
-                elif mediaFilename.endswith('.webp'):
-                    mediaFileType = 'image/webp'
-                elif mediaFilename.endswith('.avif'):
-                    mediaFileType = 'image/avif'
-                elif mediaFilename.endswith('.mp4'):
-                    mediaFileType = 'video/mp4'
-                elif mediaFilename.endswith('.ogv'):
-                    mediaFileType = 'video/ogv'
-                elif mediaFilename.endswith('.mp3'):
-                    mediaFileType = 'audio/mpeg'
-                elif mediaFilename.endswith('.ogg'):
-                    mediaFileType = 'audio/ogg'
+                mediaFileType = mediaFileMimeType(mediaFilename)
 
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
@@ -4841,7 +4838,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if path.endswith('.png'):
             mediaStr = path.split('/icons/')[1]
-            mediaFilename = baseDir + '/img/icons/' + mediaStr
+            if '/' not in mediaStr:
+                self._404()
+                return
+            theme = mediaStr.split('/')[0]
+            iconFilename = mediaStr.split('/')[1]
+            mediaFilename = \
+                baseDir + '/theme/' + theme + '/icons/' + iconFilename
             if self._etag_exists(mediaFilename):
                 # The file has not changed
                 self._304()
@@ -4849,7 +4852,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get(mediaStr):
                 mediaBinary = self.server.iconsCache[mediaStr]
                 self._set_headers_etag(mediaFilename,
-                                       'image/png',
+                                       mediaFileMimeType(mediaFilename),
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -4858,8 +4861,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(mediaFilename):
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
+                        mimeType = mediaFileMimeType(mediaFilename)
                         self._set_headers_etag(mediaFilename,
-                                               'image/png',
+                                               mimeType,
                                                mediaBinary, None,
                                                callingDomain)
                         self._write(mediaBinary)
@@ -4883,39 +4887,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             with open(mediaFilename, 'rb') as avFile:
                 mediaBinary = avFile.read()
-                if mediaFilename.endswith('.png'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/png',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.jpg'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/jpeg',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.gif'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/gif',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.webp'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/webp',
-                                           mediaBinary, None,
-                                           callingDomain)
-                elif mediaFilename.endswith('.avif'):
-                    self._set_headers_etag(mediaFilename,
-                                           'image/avif',
-                                           mediaBinary, None,
-                                           callingDomain)
-                else:
-                    # default to jpeg
-                    self._set_headers_etag(mediaFilename,
-                                           'image/jpeg',
-                                           mediaBinary, None,
-                                           callingDomain)
-                    # self._404()
-                    return
+                mimeType = mediaFileMimeType(mediaFilename)
+                self._set_headers_etag(mediaFilename,
+                                       mimeType,
+                                       mediaBinary, None,
+                                       callingDomain)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'icon shown done',
@@ -8327,7 +8303,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                self._set_headers_etag(qrFilename, 'image/png',
+                mimeType = mediaFileMimeType(qrFilename)
+                self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -8365,7 +8342,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                self._set_headers_etag(bannerFilename, 'image/png',
+                mimeType = mediaFileMimeType(bannerFilename)
+                self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -8406,7 +8384,8 @@ class PubServer(BaseHTTPRequestHandler):
                     time.sleep(1)
                     tries += 1
             if mediaBinary:
-                self._set_headers_etag(bannerFilename, 'image/png',
+                mimeType = mediaFileMimeType(bannerFilename)
+                self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
                                        callingDomain)
                 self._write(mediaBinary)
@@ -8955,6 +8934,13 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'create session', 'hasAccept')
 
+        # get css
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.endswith('.css'):
+            if self._getStyleSheet(callingDomain, self.path,
+                                   GETstartTime, GETtimings):
+                return
+
         # get fonts
         if '/fonts/' in self.path:
             self._getFonts(callingDomain, self.path,
@@ -9316,17 +9302,6 @@ class PubServer(BaseHTTPRequestHandler):
                                   'robots txt',
                                   'show login screen done')
 
-        # get css
-        # Note that this comes before the busy flag to avoid conflicts
-        if self.path.endswith('.css'):
-            if self._getStyleSheet(callingDomain, self.path,
-                                   GETstartTime, GETtimings):
-                return
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  'show login screen done',
-                                  'profile.css done')
-
         # manifest images used to create a home screen icon
         # when selecting "add to home screen" in browsers
         # which support progressive web apps
@@ -9358,8 +9333,8 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename,
-                                           'image/png',
+                    mimeType = mediaFileMimeType(mediaFilename)
+                    self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -9398,8 +9373,8 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(screenFilename,
-                                           'image/png',
+                    mimeType = mediaFileMimeType(screenFilename)
+                    self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -9443,7 +9418,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries += 1
                 if mediaBinary:
                     self._set_headers_etag(iconFilename,
-                                           'image/png',
+                                           mediaFileMimeType(iconFilename),
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -10815,26 +10790,7 @@ class PubServer(BaseHTTPRequestHandler):
                             except BaseException:
                                 pass
 
-        mediaFileType = 'application/json'
-        if checkPath.endswith('.png'):
-            mediaFileType = 'image/png'
-        elif checkPath.endswith('.jpg'):
-            mediaFileType = 'image/jpeg'
-        elif checkPath.endswith('.gif'):
-            mediaFileType = 'image/gif'
-        elif checkPath.endswith('.webp'):
-            mediaFileType = 'image/webp'
-        elif checkPath.endswith('.avif'):
-            mediaFileType = 'image/avif'
-        elif checkPath.endswith('.mp4'):
-            mediaFileType = 'video/mp4'
-        elif checkPath.endswith('.ogv'):
-            mediaFileType = 'video/ogv'
-        elif checkPath.endswith('.mp3'):
-            mediaFileType = 'audio/mpeg'
-        elif checkPath.endswith('.ogg'):
-            mediaFileType = 'audio/ogg'
-
+        mediaFileType = mediaFileMimeType(checkPath)
         self._set_headers_head(mediaFileType, fileLength,
                                etag, callingDomain)
 

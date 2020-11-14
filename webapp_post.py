@@ -25,7 +25,6 @@ from posts import downloadAnnounce
 from posts import populateRepliesJson
 from utils import locatePost
 from utils import loadJson
-from utils import getCSS
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
 from utils import getProtocolPrefixes
@@ -54,8 +53,8 @@ from webapp_utils import addEmojiToDisplayName
 from webapp_utils import postContainsPublic
 from webapp_utils import getContentWarningButton
 from webapp_utils import getPostAttachmentsAsHtml
-from webapp_utils import getIconsDir
-from webapp_utils import htmlHeader
+from webapp_utils import getIconsWebPath
+from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
@@ -109,7 +108,7 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,
 
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
-                         iconsDir: str, translate: {},
+                         iconsPath: str, translate: {},
                          pageNumber: int, baseDir: str,
                          session, wfRequest: {}, personCache: {},
                          nickname: str, domain: str, port: int,
@@ -392,7 +391,7 @@ def individualPostAsHtml(allowDownloads: bool,
     if showDMicon:
         titleStr = \
             titleStr + ' <img loading="lazy" src="/' + \
-            iconsDir + '/dm.png" class="DMicon"/>\n'
+            iconsPath + '/dm.png" class="DMicon"/>\n'
 
     replyStr = ''
     # check if replying is permitted
@@ -446,7 +445,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '<img loading="lazy" title="' + \
             translate['Reply to this post'] + '" alt="' + \
             translate['Reply to this post'] + \
-            ' |" src="/' + iconsDir + '/reply.png"/></a>\n'
+            ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
 
     # benchmark 10
     if not allowDownloads:
@@ -481,7 +480,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         '<img loading="lazy" title="' + \
                         translate['Edit blog post'] + '" alt="' + \
                         translate['Edit blog post'] + \
-                        ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                        ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
                 else:
                     editStr += \
                         '        ' + \
@@ -493,7 +492,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         '<img loading="lazy" title="' + \
                         translate['Edit blog post'] + '" alt="' + \
                         translate['Edit blog post'] + \
-                        ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                        ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
             elif isEvent:
                 eventPostId = postJsonObject['object']['id']
                 editStr += \
@@ -506,7 +505,7 @@ def individualPostAsHtml(allowDownloads: bool,
                     '<img loading="lazy" title="' + \
                     translate['Edit event'] + '" alt="' + \
                     translate['Edit event'] + \
-                    ' |" src="/' + iconsDir + '/edit.png"/></a>\n'
+                    ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
 
     announceStr = ''
     if not isModerationPost and showRepeatIcon:
@@ -532,7 +531,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '          ' + \
             '<img loading="lazy" title="' + translate['Repeat this post'] + \
             '" alt="' + translate['Repeat this post'] + \
-            ' |" src="/' + iconsDir + '/' + announceIcon + '"/></a>\n'
+            ' |" src="/' + iconsPath + '/' + announceIcon + '"/></a>\n'
 
     # benchmark 12
     if not allowDownloads:
@@ -598,7 +597,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '          ' + \
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
-            ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>\n'
+            ' |" src="/' + iconsPath + '/' + likeIcon + '"/></a>\n'
 
     # benchmark 12.5
     if not allowDownloads:
@@ -630,7 +629,7 @@ def individualPostAsHtml(allowDownloads: bool,
         bookmarkStr += \
             '        ' + \
             '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
-            bookmarkTitle + ' |" src="/' + iconsDir + \
+            bookmarkTitle + ' |" src="/' + iconsPath + \
             '/' + bookmarkIcon + '"/></a>\n'
 
     # benchmark 12.9
@@ -664,7 +663,7 @@ def individualPostAsHtml(allowDownloads: bool,
                     '<img loading="lazy" alt="' + \
                     translate['Delete this post'] + \
                     ' |" title="' + translate['Delete this post'] + \
-                    '" src="/' + iconsDir + '/delete.png"/></a>\n'
+                    '" src="/' + iconsPath + '/delete.png"/></a>\n'
     else:
         if not isMuted:
             muteStr = \
@@ -677,7 +676,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 '<img loading="lazy" alt="' + \
                 translate['Mute this post'] + \
                 ' |" title="' + translate['Mute this post'] + \
-                '" src="/' + iconsDir + '/mute.png"/></a>\n'
+                '" src="/' + iconsPath + '/mute.png"/></a>\n'
         else:
             muteStr = \
                 '        <a class="imageAnchor" href="/users/' + \
@@ -689,7 +688,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 '          ' + \
                 '<img loading="lazy" alt="' + translate['Undo mute'] + \
                 ' |" title="' + translate['Undo mute'] + \
-                '" src="/' + iconsDir+'/unmute.png"/></a>\n'
+                '" src="/' + iconsPath+'/unmute.png"/></a>\n'
 
     # benchmark 13.1
     if not allowDownloads:
@@ -709,7 +708,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         '        <img loading="lazy" title="' + \
                         translate['announces'] + \
                         '" alt="' + translate['announces'] + \
-                        '" src="/' + iconsDir + \
+                        '" src="/' + iconsPath + \
                         '/repeat_inactive.png" class="announceOrReply"/>\n'
                 else:
                     # benchmark 13.2
@@ -756,7 +755,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '<img loading="lazy" title="' + \
                                 translate['announces'] + '" alt="' + \
                                 translate['announces'] + '" src="/' + \
-                                iconsDir + '/repeat_inactive.png" ' + \
+                                iconsPath + '/repeat_inactive.png" ' + \
                                 'class="announceOrReply"/>\n' + \
                                 '        <a href="' + \
                                 postJsonObject['object']['id'] + '">' + \
@@ -801,7 +800,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '    <img loading="lazy" title="' + \
                                 translate['announces'] + \
                                 '" alt="' + translate['announces'] + \
-                                '" src="/' + iconsDir + \
+                                '" src="/' + iconsPath + \
                                 '/repeat_inactive.png" ' + \
                                 'class="announceOrReply"/>\n' + \
                                 '      <a href="' + \
@@ -812,7 +811,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         titleStr += \
                             '    <img loading="lazy" title="' + \
                             translate['announces'] + '" alt="' + \
-                            translate['announces'] + '" src="/' + iconsDir + \
+                            translate['announces'] + '" src="/' + iconsPath + \
                             '/repeat_inactive.png" ' + \
                             'class="announceOrReply"/>\n' + \
                             '      <a href="' + \
@@ -823,7 +822,7 @@ def individualPostAsHtml(allowDownloads: bool,
                     '    ' + \
                     '<img loading="lazy" title="' + translate['announces'] + \
                     '" alt="' + translate['announces'] + \
-                    '" src="/' + iconsDir + \
+                    '" src="/' + iconsPath + \
                     '/repeat_inactive.png" ' + \
                     'class="announceOrReply"/>\n' + \
                     '      <a href="' + \
@@ -837,7 +836,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         '    <img loading="lazy" title="' + \
                         translate['replying to themselves'] + \
                         '" alt="' + translate['replying to themselves'] + \
-                        '" src="/' + iconsDir + \
+                        '" src="/' + iconsPath + \
                         '/reply.png" class="announceOrReply"/>\n'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
@@ -889,7 +888,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                         '" alt="' + \
                                         translate['replying to'] + \
                                         '" src="/' + \
-                                        iconsDir + '/reply.png" ' + \
+                                        iconsPath + '/reply.png" ' + \
                                         'class="announceOrReply"/>\n' + \
                                         '        ' + \
                                         '<a href="' + inReplyTo + \
@@ -951,7 +950,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                         '" alt="' + \
                                         translate['replying to'] + \
                                         '" src="/' + \
-                                        iconsDir + '/reply.png" ' + \
+                                        iconsPath + '/reply.png" ' + \
                                         'class="announceOrReply"/>\n' + \
                                         '        <a href="' + \
                                         inReplyTo + '">@' + \
@@ -964,7 +963,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '" alt="' + \
                                 translate['replying to'] + \
                                 '" src="/' + \
-                                iconsDir + \
+                                iconsPath + \
                                 '/reply.png" class="announceOrReply"/>\n' + \
                                 '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
@@ -983,7 +982,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 translate['replying to'] + \
                                 '" alt="' + translate['replying to'] + \
                                 '" src="/' + \
-                                iconsDir + '/reply.png" ' + \
+                                iconsPath + '/reply.png" ' + \
                                 'class="announceOrReply"/>\n' + \
                                 '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
@@ -1236,7 +1235,7 @@ def htmlIndividualPost(cssCache: {},
                        showPublishedDateOnly: bool) -> str:
     """Show an individual post as html
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     postStr = ''
     if likedBy:
         likedByNickname = getNicknameFromActor(likedBy)
@@ -1272,7 +1271,7 @@ def htmlIndividualPost(cssCache: {},
 
     postStr += \
         individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                             iconsDir, translate, None,
+                             iconsPath, translate, None,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
@@ -1295,7 +1294,7 @@ def htmlIndividualPost(cssCache: {},
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         iconsDir, translate, None,
+                                         iconsPath, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port,
@@ -1324,7 +1323,7 @@ def htmlIndividualPost(cssCache: {},
                 postStr += \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         iconsDir, translate, None,
+                                         iconsPath, translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,
@@ -1338,12 +1337,7 @@ def htmlIndividualPost(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    postsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if postsCSS:
-        if httpPrefix != 'https':
-            postsCSS = postsCSS.replace('https://',
-                                        httpPrefix + '://')
-    return htmlHeader(cssFilename, postsCSS) + postStr + htmlFooter()
+    return htmlHeaderWithExternalStyle(cssFilename) + postStr + htmlFooter()
 
 
 def htmlPostReplies(cssCache: {},
@@ -1356,14 +1350,14 @@ def htmlPostReplies(cssCache: {},
                     showPublishedDateOnly: bool) -> str:
     """Show the replies to an individual post as html
     """
-    iconsDir = getIconsDir(baseDir)
+    iconsPath = getIconsWebPath(baseDir)
     repliesStr = ''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr += \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
-                                     iconsDir, translate, None,
+                                     iconsPath, translate, None,
                                      baseDir, session, wfRequest, personCache,
                                      nickname, domain, port, item,
                                      None, True, False,
@@ -1376,9 +1370,4 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    postsCSS = getCSS(baseDir, cssFilename, cssCache)
-    if postsCSS:
-        if httpPrefix != 'https':
-            postsCSS = postsCSS.replace('https://',
-                                        httpPrefix + '://')
-    return htmlHeader(cssFilename, postsCSS) + repliesStr + htmlFooter()
+    return htmlHeaderWithExternalStyle(cssFilename) + repliesStr + htmlFooter()

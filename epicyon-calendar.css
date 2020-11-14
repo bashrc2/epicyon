@@ -15,9 +15,12 @@
     --title-background: #ccc;
     --focus-color: white;
     --calendar-horizontal-padding: 0;
+    --calendar-cell-size: 1.5vw;
+    --calendar-cell-size-mobile: 1.5vw;
     --font-size-calendar-header: 3rem;
     --font-size-calendar-day: 1rem;
-    --font-size-calendar-cell: 4rem;
+    --font-size-calendar-cell: 2rem;
+    --font-size-calendar-cell-mobile: 4rem;
 }
 
 @font-face {
@@ -38,27 +41,14 @@
 body {
     background-color: var(--main-bg-color);
     color: var(--day-number2);
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
     font-family: 'Montserrat';
     font-weight: 700;
-    margin: 5%;
 }
 
 main {
     background-color: var(--calendar-bg-color);
     -ms-flex-preferred-size: 980px;
     flex-basis: 980px;
-}
-
-.calendar {
-    table-display: fixed;
-    width: 100%;
-    padding: 0 var(--calendar-horizontal-padding);
 }
 
 a:visited{
@@ -97,11 +87,6 @@ a:focus {
     border-right: none;
 }
 
-.calendar__day__header,
-.calendar__day__cell {
-    padding: .75rem 0 1.5rem;
-}
-
 .calendar__banner--month {
     text-align: center;
     padding: .75rem;
@@ -121,11 +106,6 @@ a:focus {
     font-size: var(--font-size-calendar-day);
     letter-spacing: 0.1em;
     text-transform: uppercase;
-}
-
-.calendar__day__cell {
-    font-size: var(--font-size-calendar-cell);
-    position: relative;
 }
 
 .year {
@@ -209,4 +189,38 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     width: 8%;
     -ms-transform: translateY(30%) scaleX(-1);
     transform: translateY(30%) scaleX(-1);
+}
+
+@media screen and (min-width: 400px) {
+    .calendar {
+        table-display: fixed;
+        margin: 0 20%;
+        width: 60%;
+        padding: 0 var(--calendar-horizontal-padding);
+    }
+    .calendar__day__cell {
+        font-size: var(--font-size-calendar-cell);
+        position: relative;
+    }
+    .calendar__day__header,
+    .calendar__day__cell {
+        padding: var(--calendar-cell-size) 0 var(--calendar-cell-size);
+    }
+}
+
+@media screen and (max-width: 1000px) {
+    .calendar {
+        table-display: fixed;
+        margin: 0 0;
+        width: 100%;
+        padding: 0 var(--calendar-horizontal-padding);
+    }
+    .calendar__day__cell {
+        font-size: var(--font-size-calendar-cell-mobile);
+        position: relative;
+    }
+    .calendar__day__header,
+    .calendar__day__cell {
+        padding: var(--calendar-cell-size-mobile) 0 var(--calendar-cell-size-mobile);
+    }
 }
