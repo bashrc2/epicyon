@@ -483,6 +483,8 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  baseDir + '/accounts/' + nickname + '@' + domain +
                  '/avatar.png')
     theme = getConfigParam(baseDir, 'theme')
+    if not theme:
+        theme = 'default'
     defaultProfileImageFilename = baseDir + '/img/image.png'
     if theme:
         if os.path.isfile(baseDir + '/img/image_' + theme + '.png'):

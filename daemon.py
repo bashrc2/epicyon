@@ -4382,8 +4382,12 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
                 favFilename = 'favicon.avif'
+        themeName = getConfigParam(baseDir, 'theme')
+        if not themeName:
+            themeName = 'default'
         # custom favicon
-        faviconFilename = baseDir + '/' + favFilename
+        faviconFilename = \
+            baseDir + '/theme/' + themeName + '/icons/' + favFilename
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
