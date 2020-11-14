@@ -18,16 +18,18 @@ def getThemeFiles() -> []:
             'options.css', 'search.css', 'links.css')
 
 
-def getThemesList() -> []:
+def getThemesList(baseDir: str) -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
     also used to create the web interface dropdown list
     and to lookup function names
     """
-    return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'IndymediaClassic', 'IndymediaModern',
-            'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
-            'Starlight', 'Zen')
+    themes = []
+    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+        for themeName in dirs:
+            themes.append(themeName.title())
+    print('Themes available: ' + str(themes))
+    return themes
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
