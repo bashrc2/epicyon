@@ -25,7 +25,7 @@ def getThemesList(baseDir: str) -> []:
     and to lookup function names
     """
     themes = []
-    for subdir, dirs, files in os.walk(baseDir + '/theme'):
+    for subdir, dirs, files in next(os.walk(baseDir + '/theme')):
         for themeName in dirs:
             if '~' not in themeName and themeName != 'icons':
                 themes.append(themeName.title())
