@@ -4387,7 +4387,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
-                baseDir + '/img/icons/' + favFilename
+                baseDir + '/theme/default/icons/' + favFilename
         if self._etag_exists(faviconFilename):
             # The file has not changed
             if debug:
@@ -4834,7 +4834,13 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if path.endswith('.png'):
             mediaStr = path.split('/icons/')[1]
-            mediaFilename = baseDir + '/img/icons/' + mediaStr
+            if '/' not in mediaStr:
+                self._404()
+                return
+            theme = mediaStr.split('/')[0]
+            iconFilename = mediaStr.split('/')[1]
+            mediaFilename = \
+                baseDir + '/theme/' + theme + '/icons/' + iconFilename
             if self._etag_exists(mediaFilename):
                 # The file has not changed
                 self._304()

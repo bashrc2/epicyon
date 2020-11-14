@@ -1364,9 +1364,9 @@ def setNewsAvatar(baseDir: str, name: str,
     """Sets the avatar for the news account
     """
     nickname = 'news'
-    newFilename = baseDir + '/img/icons/' + name + '/avatar_news.png'
+    newFilename = baseDir + '/theme/' + name + '/icons/avatar_news.png'
     if not os.path.isfile(newFilename):
-        newFilename = baseDir + '/img/icons/avatar_news.png'
+        newFilename = baseDir + '/theme/default/icons/avatar_news.png'
     if not os.path.isfile(newFilename):
         return
     avatarFilename = \
@@ -1409,7 +1409,7 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
 
     # set the news avatar
     newsAvatarThemeFilename = \
-        baseDir + '/img/icons/' + name + '/avatar_news.png'
+        baseDir + '/theme/' + name + '/icons/avatar_news.png'
     if os.path.isfile(newsAvatarThemeFilename):
         newsAvatarFilename = \
             baseDir + '/accounts/news@' + domain + '/avatar.png'

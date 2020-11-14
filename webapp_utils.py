@@ -281,12 +281,12 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
 
 
 def getIconsDir(baseDir: str) -> str:
-    """Returns the directory where icons exist
+    """Returns the web path where icons exist
     """
     iconsDir = 'icons'
     theme = getConfigParam(baseDir, 'theme')
     if theme:
-        if os.path.isdir(baseDir + '/img/icons/' + theme):
+        if os.path.isdir(baseDir + '/theme/' + theme + '/icons'):
             iconsDir = 'icons/' + theme
     return iconsDir
 
@@ -726,10 +726,11 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
     iconsDir = getIconsDir(baseDir)
+    theme = getConfigParam(baseDir, 'theme')
     filename = 'separator.png'
     if column:
         filename = 'separator_' + column + '.png'
-    separatorImageFilename = baseDir + '/img/' + iconsDir + '/' + filename
+    separatorImageFilename = baseDir + '/theme/' + theme + '/icons/' + filename
     separatorStr = ''
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
