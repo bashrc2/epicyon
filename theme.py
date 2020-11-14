@@ -198,22 +198,34 @@ def setThemeFromDict(baseDir: str, name: str,
             css = cssfile.read()
             for paramName, paramValue in themeParams.items():
                 if paramName == 'newswire-publish-icon':
-                    setNewswirePublishAsIcon(baseDir,
-                                             paramValue.lower() == 'true')
+                    if paramValue.lower() == 'true':
+                        setNewswirePublishAsIcon(baseDir, True)
+                    else:
+                        setNewswirePublishAsIcon(baseDir, False)
                     continue
                 elif paramName == 'full-width-timeline-buttons':
-                    paramBool = paramValue.lower() == 'true'
-                    setFullWidthTimelineButtonHeader(baseDir, paramBool)
+                    if paramValue.lower() == 'true':
+                        setFullWidthTimelineButtonHeader(baseDir, True)
+                    else:
+                        setFullWidthTimelineButtonHeader(baseDir, False)
                     continue
                 elif paramName == 'icons-as-buttons':
-                    setIconsAsButtons(baseDir, paramValue.lower() == 'true')
+                    if paramValue.lower() == 'true':
+                        setIconsAsButtons(baseDir, True)
+                    else:
+                        setIconsAsButtons(baseDir, False)
                     continue
                 elif paramName == 'rss-icon-at-top':
-                    setRssIconAtTop(baseDir, paramValue.lower() == 'true')
+                    if paramValue.lower() == 'true':
+                        setRssIconAtTop(baseDir, True)
+                    else:
+                        setRssIconAtTop(baseDir, False)
                     continue
                 elif paramName == 'publish-button-at-top':
-                    setPublishButtonAtTop(baseDir,
-                                          paramValue.lower() == 'true')
+                    if paramValue.lower() == 'true':
+                        setPublishButtonAtTop(baseDir, True)
+                    else:
+                        setPublishButtonAtTop(baseDir, False)
                     continue
                 css = setCSSparam(css, paramName, paramValue)
             filename = baseDir + '/' + filename
