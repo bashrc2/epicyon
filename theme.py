@@ -1248,26 +1248,26 @@ def setThemeImages(baseDir: str, name: str) -> None:
 
     if themeNameLower == 'default':
         profileImageFilename = \
-            baseDir + '/img/image.png'
+            baseDir + '/theme/default/image.png'
         bannerFilename = \
-            baseDir + '/img/banner.png'
+            baseDir + '/theme/default/banner.png'
         searchBannerFilename = \
-            baseDir + '/img/search_banner.png'
+            baseDir + '/theme/default/search_banner.png'
         leftColImageFilename = \
-            baseDir + '/img/left_col_image.png'
+            baseDir + '/theme/default/left_col_image.png'
         rightColImageFilename = \
-            baseDir + '/img/right_col_image.png'
+            baseDir + '/theme/default/right_col_image.png'
     else:
         profileImageFilename = \
-            baseDir + '/img/image_' + themeNameLower + '.png'
+            baseDir + '/theme/' + themeNameLower + '/image.png'
         bannerFilename = \
-            baseDir + '/img/banner_' + themeNameLower + '.png'
+            baseDir + '/theme/' + themeNameLower + '/banner.png'
         searchBannerFilename = \
-            baseDir + '/img/search_banner_' + themeNameLower + '.png'
+            baseDir + '/theme/' + themeNameLower + '/search_banner.png'
         leftColImageFilename = \
-            baseDir + '/img/left_col_image_' + themeNameLower + '.png'
+            baseDir + '/theme/' + themeNameLower + '/left_col_image.png'
         rightColImageFilename = \
-            baseDir + '/img/right_col_image_' + themeNameLower + '.png'
+            baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
@@ -1286,30 +1286,28 @@ def setThemeImages(baseDir: str, name: str) -> None:
                 for ext in extensions:
                     if themeNameLower == 'default':
                         backgroundImageFilename = \
-                            baseDir + '/img/' + backgroundType + \
-                            '-background.' + ext
+                            baseDir + '/theme/default/' + \
+                            backgroundType + '_background.' + ext
                     else:
                         backgroundImageFilename = \
-                            baseDir + '/img/' + backgroundType + \
-                            '_background_' + themeNameLower + '.' + ext
+                            baseDir + '/theme/' + themeNameLower + '/' + \
+                            backgroundType + '_background' + '.' + ext
 
                     if os.path.isfile(backgroundImageFilename):
                         try:
                             copyfile(backgroundImageFilename,
-                                     baseDir + '/accounts/' + backgroundType +
-                                     '-background.' + ext)
+                                     baseDir + '/accounts/' +
+                                     backgroundType + '-background.' + ext)
                             continue
                         except BaseException:
                             pass
                     # background image was not found
                     # so remove any existing file
                     if os.path.isfile(baseDir + '/accounts/' +
-                                      backgroundType +
-                                      '-background.' + ext):
+                                      backgroundType + '-background.' + ext):
                         try:
                             os.remove(baseDir + '/accounts/' +
-                                      backgroundType +
-                                      '-background.' + ext)
+                                      backgroundType + '-background.' + ext)
                         except BaseException:
                             pass
 
