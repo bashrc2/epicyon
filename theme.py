@@ -197,6 +197,21 @@ def setThemeFromDict(baseDir: str, name: str,
         with open(templateFilename, 'r') as cssfile:
             css = cssfile.read()
             for paramName, paramValue in themeParams.items():
+                if paramName == 'newswire-publish-icon':
+                    setNewswirePublishAsIcon(baseDir, bool(paramValue))
+                    continue
+                elif paramName == 'full-width-timeline-buttons':
+                    setFullWidthTimelineButtonHeader(baseDir, bool(paramValue))
+                    continue
+                elif paramName == 'icons-as-buttons':
+                    setIconsAsButtons(baseDir, bool(paramValue))
+                    continue
+                elif paramName == 'rss-icon-at-top':
+                    setRssIconAtTop(baseDir, bool(paramValue))
+                    continue
+                elif paramName == 'publish-button-at-top':
+                    setPublishButtonAtTop(baseDir, bool(paramValue))
+                    continue
                 css = setCSSparam(css, paramName, paramValue)
             filename = baseDir + '/' + filename
             with open(filename, 'w+') as cssfile:
@@ -330,11 +345,6 @@ def setThemeDefault(baseDir: str):
     name = 'default'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -342,6 +352,11 @@ def setThemeDefault(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "banner-height": "20vh",
         "banner-height-mobile": "10vh",
         "search-banner-height-mobile": "15vh"
@@ -353,11 +368,6 @@ def setThemeIndymediaClassic(baseDir: str):
     name = 'indymediaclassic'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, True)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, False)
-    setPublishButtonAtTop(baseDir, False)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -365,6 +375,11 @@ def setThemeIndymediaClassic(baseDir: str):
         "search": "jpg"
     }
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": True,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": False,
+        "publish-button-at-top": False,
         "container-button-padding": "0px",
         "hashtag-background-color": "darkred",
         "font-size-newswire": "18px",
@@ -439,12 +454,12 @@ def setThemeBlue(baseDir: str):
     name = 'blue'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "banner-height": "20vh",
         "banner-height-mobile": "10vh",
         "newswire-date-color": "blue",
@@ -483,16 +498,16 @@ def setThemeNight(baseDir: str):
     name = 'night'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
     fontStrItalic = \
         "url('./fonts/solidaric-italic.woff2') format('woff2')"
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "main-visited-color": "#0481f5",
         "post-separator-margin-top": "9%",
         "post-separator-margin-bottom": "9%",
@@ -556,12 +571,12 @@ def setThemeStarlight(baseDir: str):
     name = 'starlight'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "search-banner-height-mobile": "15vh",
         "column-left-header-background": "#69282c",
         "column-left-image-width-mobile": "40vw",
@@ -630,12 +645,12 @@ def setThemeHenge(baseDir: str):
     name = 'henge'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "banner-height": "25vh",
         "column-left-image-width-mobile": "40vw",
         "column-right-image-width-mobile": "40vw",
@@ -698,12 +713,12 @@ def setThemeZen(baseDir: str):
     name = 'zen'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "banner-height": "25vh",
         "banner-height-mobile": "10vh",
         "newswire-date-color": "yellow",
@@ -742,6 +757,11 @@ def setThemeZen(baseDir: str):
 def setThemeHighVis(baseDir: str):
     name = 'highvis'
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
         "font-size": "45px",
@@ -764,16 +784,16 @@ def setThemeHighVis(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
 
 
 def setThemeLCD(baseDir: str):
     name = 'lcd'
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "newswire-date-color": "#cfb42b",
         "column-left-header-background": "#9fb42b",
         "column-left-header-color": "#33390d",
@@ -847,11 +867,6 @@ def setThemeLCD(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
 
 
 def setThemePurple(baseDir: str):
@@ -859,6 +874,11 @@ def setThemePurple(baseDir: str):
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "search-banner-height": "25vh",
         "search-banner-height-mobile": "10vh",
         "font-size-button-mobile": "26px",
@@ -915,16 +935,16 @@ def setThemePurple(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
 
 
 def setThemeHacker(baseDir: str):
     name = 'hacker'
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "focus-color": "green",
         "main-bg-color": "black",
         "column-left-color": "black",
@@ -978,16 +998,16 @@ def setThemeHacker(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
 
 
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "newswire-item-moderated-color": "grey",
         "newswire-date-moderated-color": "grey",
         "newswire-date-color": "#0562bd",
@@ -1049,11 +1069,6 @@ def setThemeLight(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
 
 
 def setThemeIndymediaModern(baseDir: str):
@@ -1063,6 +1078,11 @@ def setThemeIndymediaModern(baseDir: str):
     fontStrItalic = \
         "url('./fonts/NimbusSanL-italic.otf') format('opentype')"
     themeParams = {
+        "newswire-publish-icon": False,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "follow-text-size1": "14px",
         "follow-text-size2": "30px",
         "hashtag-size1": "20px",
@@ -1181,16 +1201,16 @@ def setThemeIndymediaModern(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, False)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, True)
-    setRssIconAtTop(baseDir, False)
-    setPublishButtonAtTop(baseDir, True)
 
 
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "newswire-publish-icon": True,
+        "full-width-timeline-buttons": False,
+        "icons-as-buttons": False,
+        "rss-icon-at-top": True,
+        "publish-button-at-top": False,
         "font-size-pgp-key2": "18px",
         "button-corner-radius": "5px",
         "column-left-icons-margin": "15px",
@@ -1263,11 +1283,6 @@ def setThemeSolidaric(baseDir: str):
         "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
-    setNewswirePublishAsIcon(baseDir, True)
-    setFullWidthTimelineButtonHeader(baseDir, False)
-    setIconsAsButtons(baseDir, False)
-    setRssIconAtTop(baseDir, True)
-    setPublishButtonAtTop(baseDir, False)
 
 
 def setThemeImages(baseDir: str, name: str) -> None:
