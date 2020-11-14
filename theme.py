@@ -198,19 +198,22 @@ def setThemeFromDict(baseDir: str, name: str,
             css = cssfile.read()
             for paramName, paramValue in themeParams.items():
                 if paramName == 'newswire-publish-icon':
-                    setNewswirePublishAsIcon(baseDir, bool(paramValue))
+                    setNewswirePublishAsIcon(baseDir,
+                                             paramValue.lower() == 'true')
                     continue
                 elif paramName == 'full-width-timeline-buttons':
-                    setFullWidthTimelineButtonHeader(baseDir, bool(paramValue))
+                    paramBool = paramValue.lower() == 'true'
+                    setFullWidthTimelineButtonHeader(baseDir, paramBool)
                     continue
                 elif paramName == 'icons-as-buttons':
-                    setIconsAsButtons(baseDir, bool(paramValue))
+                    setIconsAsButtons(baseDir, paramValue.lower() == 'true')
                     continue
                 elif paramName == 'rss-icon-at-top':
-                    setRssIconAtTop(baseDir, bool(paramValue))
+                    setRssIconAtTop(baseDir, paramValue.lower() == 'true')
                     continue
                 elif paramName == 'publish-button-at-top':
-                    setPublishButtonAtTop(baseDir, bool(paramValue))
+                    setPublishButtonAtTop(baseDir,
+                                          paramValue.lower() == 'true')
                     continue
                 css = setCSSparam(css, paramName, paramValue)
             filename = baseDir + '/' + filename
