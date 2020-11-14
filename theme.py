@@ -310,6 +310,22 @@ def setCustomFont(baseDir: str):
                 cssfile.write(css)
 
 
+def readVariablesFile(baseDir: str, themeName: str,
+                      variablesFile: str) -> None:
+    """Reads variables from a file in the theme directory
+    """
+    themeParams = loadJson(variablesFile, 0)
+    if not themeParams:
+        return
+    bgParams = {
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
+    }
+    setThemeFromDict(baseDir, themeName, themeParams, bgParams)
+
+
 def setThemeDefault(baseDir: str):
     name = 'default'
     removeTheme(baseDir)
@@ -1404,15 +1420,10 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
     for themeName in themes:
         themeNameLower = themeName.lower()
         if name == themeNameLower:
-            themeFunctionExists = False
             try:
                 globals()['setTheme' + themeName](baseDir)
-                themeFunctionExists = True
             except BaseException:
                 pass
-
-            if not themeFunctionExists:
-                setThemeDefault(baseDir)
 
             if prevThemeName:
                 if prevThemeName.lower() != themeNameLower:
@@ -1425,6 +1436,10 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
         # default
         setThemeDefault(baseDir)
         result = True
+
+    variablesFile = baseDir + '/theme/' + themeName.lower() + '/theme.json'
+    if os.path.isfile(variablesFile):
+        readVariablesFile(baseDir, themeName.lower(), variablesFile)
 
     setCustomFont(baseDir)
 
