@@ -1404,7 +1404,16 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
     for themeName in themes:
         themeNameLower = themeName.lower()
         if name == themeNameLower:
-            globals()['setTheme' + themeName](baseDir)
+            themeFunctionExists = False
+            try:
+                globals()['setTheme' + themeName](baseDir)
+                themeFunctionExists = True
+            except BaseException:
+                pass
+
+            if not themeFunctionExists:
+                setThemeDefault(baseDir)
+
             if prevThemeName:
                 if prevThemeName.lower() != themeNameLower:
                     # change the banner and profile image
