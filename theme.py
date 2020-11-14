@@ -1430,6 +1430,7 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
     result = False
 
     prevThemeName = getTheme(baseDir)
+    removeTheme(baseDir)
 
     themes = getThemesList(baseDir)
     for themeName in themes:
