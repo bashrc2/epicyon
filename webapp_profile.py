@@ -1114,7 +1114,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 'style="height:200px">' + editors + '</textarea>'
             editorsStr += '</div>'
 
-            themes = getThemesList()
+            themes = getThemesList(baseDir)
             themesDropdown = '<div class="container">'
             themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
             grayscaleFilename = \

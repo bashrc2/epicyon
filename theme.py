@@ -1398,7 +1398,7 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
 
     prevThemeName = getTheme(baseDir)
 
-    themes = getThemesList()
+    themes = getThemesList(baseDir)
     for themeName in themes:
         themeNameLower = themeName.lower()
         if name == themeNameLower:
