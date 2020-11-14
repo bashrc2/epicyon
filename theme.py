@@ -1437,9 +1437,9 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
         setThemeDefault(baseDir)
         result = True
 
-    variablesFile = baseDir + '/theme/' + themeName.lower() + '/theme.json'
+    variablesFile = baseDir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variablesFile):
-        readVariablesFile(baseDir, themeName.lower(), variablesFile)
+        readVariablesFile(baseDir, name, variablesFile)
 
     setCustomFont(baseDir)
 
