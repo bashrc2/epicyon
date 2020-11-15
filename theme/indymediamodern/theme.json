@@ -1,4 +1,5 @@
 {
+    "verticals-width": "3px",
     "newswire-publish-icon": "False",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "True",
@@ -32,7 +33,7 @@
     "post-separator-margin-bottom": "1%",
     "post-separator-width": "95%",
     "post-separator-height": "1px",
-    "column-left-border-width": "1px",
+    "column-left-border-width": "0px",
     "column-right-border-width": "0px",
     "column-left-border-color": "black",
     "column-left-header-color": "black",

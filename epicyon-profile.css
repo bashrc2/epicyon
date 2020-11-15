@@ -132,6 +132,7 @@
     --header-vertical-offset: 0;
     --profile-background-height: 25vw;
     --profile-text-align: left;
+    --verticals-width: 0;
 }
 
 @font-face {
@@ -1038,6 +1039,10 @@ div.container {
     .col-center {
         width: var(--column-center-width);
         background-color: var(--main-bg-color);
+        border-bottom: var(--verticals-width) solid var(--tab-border-color);
+        border-top: none;
+        border-left: var(--verticals-width) solid var(--tab-border-color);
+        border-right: var(--verticals-width) solid var(--tab-border-color);
     }
     .col-right a:link {
         background: var(--column-left-color);
