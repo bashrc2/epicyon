@@ -1039,7 +1039,7 @@ div.container {
     .col-center {
         width: var(--column-center-width);
         background-color: var(--main-bg-color);
-        border-bottom: var(--verticals-width) solid var(--tab-border-color);
+        border-bottom: none;
         border-top: none;
         border-left: var(--verticals-width) solid var(--tab-border-color);
         border-right: var(--verticals-width) solid var(--tab-border-color);
