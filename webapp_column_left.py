@@ -124,13 +124,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     # if showHeaderImage:
     #     htmlStr += '<br>'
 
-    htmlStr += \
-        '<p class="login-text"><a href="/about">' + \
-        translate['About this Instance'] + '</a></p>'
-    htmlStr += \
-        '<p class="login-text"><a href="/terms">' + \
-        translate['Terms of Service'] + '</a></p>'
-
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
     if os.path.isfile(linksFilename):
@@ -179,8 +172,16 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p>' + lineStr + '</p>\n'
                     linksFileContainsEntries = True
 
+    htmlStr += \
+        '<p class="login-text"><a href="/about">' + \
+        translate['About this Instance'] + '</a></p>'
+    htmlStr += \
+        '<p class="login-text"><a href="/terms">' + \
+        translate['Terms of Service'] + '</a></p>'
+
     if linksFileContainsEntries and not rssIconAtTop:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
+
     return htmlStr
 
 
