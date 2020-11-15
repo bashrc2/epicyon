@@ -181,6 +181,28 @@ def dangerousMarkup(content: str) -> bool:
     return False
 
 
+def dangerousCSS(filename: str) -> bool:
+    """Returns true is the css file contains code which
+    can create security problems
+    """
+    if not os.path.isfile(filename):
+        return False
+
+    with open(filename, 'r') as fp:
+        content = fp.read()
+
+        cssMatches = ('behavior:', ':expression', '?php')
+        for match in cssMatches:
+            if match in content:
+                return True
+
+        # an attacker can include html inside of the css
+        # file as a comment and this may then be run from the html
+        if dangerousMarkup(content):
+            return True
+    return False
+
+
 def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """

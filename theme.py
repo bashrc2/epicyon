@@ -10,23 +10,7 @@ import os
 from utils import loadJson
 from utils import saveJson
 from shutil import copyfile
-
-
-def dangerousCSS(filename: str) -> bool:
-    """Returns true is the css file contains code which
-    can create security problems
-    """
-    if not os.path.isfile(filename):
-        return False
-
-    with open(filename, 'r') as fp:
-        css = fp.read()
-
-        cssMatches = ('behavior')
-        for match in cssMatches:
-            if match in css:
-                return True
-    return False
+from content import dangerousCSS
 
 
 def getThemeFiles() -> []:
