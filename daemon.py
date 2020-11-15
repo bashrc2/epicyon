@@ -4839,9 +4839,9 @@ class PubServer(BaseHTTPRequestHandler):
         if path.endswith('.png'):
             mediaStr = path.split('/icons/')[1]
             if '/' not in mediaStr:
-                self._404()
-                return
-            theme = mediaStr.split('/')[0]
+                theme = 'default'
+            else:
+                theme = mediaStr.split('/')[0]
             iconFilename = mediaStr.split('/')[1]
             mediaFilename = \
                 baseDir + '/theme/' + theme + '/icons/' + iconFilename
