@@ -1952,6 +1952,11 @@ def testDangerousMarkup():
         '.innerHTML = "evil";</script></p>'
     assert(dangerousMarkup(content))
 
+    content = '<p>This html contains more than you expected... ' + \
+        '<script language="javascript">document.getElementById("abc")' + \
+        '.innerHTML = "def";</script></p>'
+    assert(dangerousMarkup(content))
+
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
     assert(dangerousMarkup(content))
