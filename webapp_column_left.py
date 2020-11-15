@@ -172,6 +172,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p>' + lineStr + '</p>\n'
                     linksFileContainsEntries = True
 
+    htmlStr += separatorStr
     htmlStr += \
         '<p class="login-text"><a href="/about">' + \
         translate['About this Instance'] + '</a></p>'
