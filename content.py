@@ -189,9 +189,9 @@ def dangerousCSS(filename: str) -> bool:
         return False
 
     with open(filename, 'r') as fp:
-        content = fp.read()
+        content = fp.read().lower()
 
-        cssMatches = ('behavior:', ':expression', '?php')
+        cssMatches = ('behavior:', ':expression', '?php', '.php')
         for match in cssMatches:
             if match in content:
                 return True
