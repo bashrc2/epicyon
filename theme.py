@@ -12,6 +12,23 @@ from utils import saveJson
 from shutil import copyfile
 
 
+def dangerousCSS(filename: str) -> bool:
+    """Returns true is the css file contains code which
+    can create security problems
+    """
+    if not os.path.isfile(filename):
+        return False
+
+    with open(filename, 'r') as fp:
+        css = fp.read()
+
+        cssMatches = ('behavior')
+        for match in cssMatches:
+            if match in css:
+                return True
+    return False
+
+
 def getThemeFiles() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
@@ -186,7 +203,8 @@ def setThemeFromDict(baseDir: str, name: str,
             templateFilename = \
                 baseDir + '/theme/' + name + '/epicyon-profile.css'
 
-        if not os.path.isfile(templateFilename):
+        if dangerousCSS(templateFilename) or \
+           not os.path.isfile(templateFilename):
             # use default css
             templateFilename = baseDir + '/epicyon-' + filename
             if filename == 'epicyon.css':
