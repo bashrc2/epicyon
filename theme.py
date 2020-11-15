@@ -187,6 +187,8 @@ def setThemeFromDict(baseDir: str, name: str,
             templateFilename = \
                 baseDir + '/theme/' + name + '/epicyon-profile.css'
 
+        # Ensure that any custom CSS is mostly harmless.
+        # If not then just use the defaults
         if dangerousCSS(templateFilename) or \
            not os.path.isfile(templateFilename):
             # use default css
