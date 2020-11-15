@@ -4840,9 +4840,10 @@ class PubServer(BaseHTTPRequestHandler):
             mediaStr = path.split('/icons/')[1]
             if '/' not in mediaStr:
                 theme = 'default'
+                iconFilename = mediaStr
             else:
                 theme = mediaStr.split('/')[0]
-            iconFilename = mediaStr.split('/')[1]
+                iconFilename = mediaStr.split('/')[1]
             mediaFilename = \
                 baseDir + '/theme/' + theme + '/icons/' + iconFilename
             if self._etag_exists(mediaFilename):
