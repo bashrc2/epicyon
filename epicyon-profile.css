@@ -123,6 +123,7 @@
     --likes-count-offset: 5px;
     --likes-count-offset-mobile: 10px;
     --publish-button-vertical-offset: 10px;
+    --publish-button-bottom-offset: 10px;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
     --post-separator-margin-top: 0;
@@ -1289,6 +1290,7 @@ div.container {
         cursor: pointer;
         margin: 0 0px;
         margin-top: var(--publish-button-vertical-offset);
+	margin-bottom: var(--publish-button-bottom-offset);
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
