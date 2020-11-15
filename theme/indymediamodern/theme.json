@@ -1,8 +1,8 @@
 {
     "newswire-publish-icon": "False",
     "full-width-timeline-buttons": "False",
-    "icons-as-buttons": "False",
-    "rss-icon-at-top": "True",
+    "icons-as-buttons": "True",
+    "rss-icon-at-top": "False",
     "publish-button-at-top": "False",
     "follow-text-size1": "14px",
     "follow-text-size2": "30px",
