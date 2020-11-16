@@ -123,6 +123,7 @@
     --likes-count-offset: 5px;
     --likes-count-offset-mobile: 10px;
     --publish-button-vertical-offset: 10px;
+    --publish-button-bottom-offset: 10px;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
     --post-separator-margin-top: 0;
@@ -132,11 +133,14 @@
     --header-vertical-offset: 0;
     --profile-background-height: 25vw;
     --profile-text-align: left;
+    --verticals-width: 0;
+    --italic-font-style: italic;
+    --header-font: 'Bedstead';
 }
 
 @font-face {
   font-family: 'Bedstead';
-  font-style: italic;
+  font-style: var(--italic-font-style);
   font-weight: normal;
   font-display: block;
   src: url('./fonts/bedstead.otf') format('opentype');
@@ -218,6 +222,7 @@ blockquote p {
 }
 
 h1 {
+    font-family: var(--header-font);
     color: var(--title-color);
 }
 
@@ -391,7 +396,7 @@ a:focus {
 }
 
 .button span {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -399,7 +404,7 @@ a:focus {
 }
 
 .button span:after {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     content: '\00bb';
     position: absolute;
     opacity: 0;
@@ -419,7 +424,7 @@ a:focus {
 }
 
 .buttonselected span {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -427,7 +432,7 @@ a:focus {
 }
 
 .buttonselected span:after {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     content: '\00bb';
     position: absolute;
     opacity: 0;
@@ -752,6 +757,7 @@ input[type=submit]:hover {
   padding: 6px 0px;
   color: var(--dropdown-fg-color);
   font-size: var(--font-size-dropdown-header);
+  font-family: var(--header-font);
   line-height: 1.5em;
   text-decoration: none;
   border: 0;
@@ -945,6 +951,7 @@ div.container {
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
+        font-family: var(--header-font);
         font-size: var(--column-left-header-size);
         text-transform: var(--column-left-header-style);
         padding: 4px;
@@ -1038,6 +1045,10 @@ div.container {
     .col-center {
         width: var(--column-center-width);
         background-color: var(--main-bg-color);
+        border-bottom: none;
+        border-top: none;
+        border-left: var(--verticals-width) solid var(--tab-border-color);
+        border-right: var(--verticals-width) solid var(--tab-border-color);
     }
     .col-right a:link {
         background: var(--column-left-color);
@@ -1238,7 +1249,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         margin: 5px;
@@ -1256,7 +1267,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         margin: 5px;
@@ -1284,6 +1295,7 @@ div.container {
         cursor: pointer;
         margin: 0 0px;
         margin-top: var(--publish-button-vertical-offset);
+        margin-bottom: var(--publish-button-bottom-offset);
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1307,7 +1319,7 @@ div.container {
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         margin: 5px;
@@ -1326,7 +1338,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -1571,6 +1583,7 @@ div.container {
     h3.linksHeader {
         background-color: var(--column-left-header-background);
         color: var(--column-left-header-color);
+        font-family: var(--header-font);
         font-size: var(--column-left-header-size-mobile);
         text-transform: var(--column-left-header-style);
         padding: 4px;
@@ -1829,7 +1842,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -1921,7 +1934,7 @@ div.container {
         color: var(--button-selected-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         min-width: var(--button-width-chars);
@@ -1940,7 +1953,7 @@ div.container {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-        font-family: Arial, Helvetica, sans-serif;
+        font-family: var(--header-font);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;

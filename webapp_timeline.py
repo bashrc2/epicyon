@@ -312,6 +312,20 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 '<a href="' + usersPath + '/newevent">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
+    elif boxName == 'tlshares':
+        if not iconsAsButtons:
+            newPostButtonStr += \
+                '<a class="imageAnchor" href="' + usersPath + \
+                '/newshare"><img loading="lazy" src="/' + \
+                iconsPath + '/newpost.png" title="' + \
+                translate['Create a new shared item'] + '" alt="| ' + \
+                translate['Create a new shared item'] + \
+                '" class="timelineicon"/></a>\n'
+        else:
+            newPostButtonStr += \
+                '<a href="' + usersPath + '/newshare">' + \
+                '<button class="button"><span>' + \
+                translate['Post'] + '</span></button></a>'
     else:
         if not manuallyApproveFollowers:
             if not iconsAsButtons:
@@ -998,8 +1012,6 @@ def headerButtonsTimeline(defaultTimeline: str,
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
             '" class="timelineicon"/></a>'
-        # end of headericons div
-        tlStr += '</div>'
     else:
         # NOTE: deliberately no \n at end of line
         tlStr += \
@@ -1014,6 +1026,10 @@ def headerButtonsTimeline(defaultTimeline: str,
             '<a href="' + usersPath + '/editprofile">' + \
             '<button class="buttonDesktop">' + \
             '<span>' + translate['Settings'] + '</span></button></a>'
+
+    if not iconsAsButtons:
+        # end of headericons div
+        tlStr += '</div>'
 
     if not newsHeader:
         tlStr += followApprovals

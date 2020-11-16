@@ -21,11 +21,13 @@
     --font-size-calendar-day: 1rem;
     --font-size-calendar-cell: 2rem;
     --font-size-calendar-cell-mobile: 4rem;
+    --calendar-header-font: 'Montserrat';
+    --calendar-header-font-style: italic;
 }
 
 @font-face {
   font-family: 'Bedstead';
-  font-style: italic;
+  font-style: var(--calendar-header-font-style);
   font-weight: normal;
   font-display: block;
   src: url('./fonts/bedstead.otf') format('opentype');
@@ -95,6 +97,7 @@ a:focus {
     background-color: var(--title-background);
     color: var(--title-text);
     display: inline-block;
+    font-family: var(--calendar-header-font);
     font-size: var(--font-size-calendar-header);
     font-weight: 400;
     letter-spacing: 0.1em;

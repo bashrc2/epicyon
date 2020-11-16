@@ -140,7 +140,8 @@ a:focus {
     input[type=text] {
         width: var(--follow-text-entry-width);
         clear: both;
-	min-width: var(--petname-width-chars);
+        max-width: 30%;
+        min-width: var(--petname-width-chars);
         font-size: 24px;
         text-align: center;
         color: var(--text-entry-foreground);
@@ -218,7 +219,8 @@ a:focus {
         clear: both;
         font-size: 40px;
         text-align: center;
-	min-width: var(--petname-width-chars);
+        max-width: 50%;
+        min-width: var(--petname-width-chars);
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
         font-family: Arial, Helvetica, sans-serif;

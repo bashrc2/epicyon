@@ -124,12 +124,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     # if showHeaderImage:
     #     htmlStr += '<br>'
 
-    htmlStr += \
-        '<p class="login-text"><a href="/about">' + \
-        translate['About this Instance'] + '</a></p>'
-    htmlStr += \
-        '<p class="login-text"><a href="/terms">' + \
-        translate['Terms of Service'] + '</a></p>'
+    # flag used not to show the first separator
+    firstSeparatorAdded = False
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
@@ -170,7 +166,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 else:
                     if lineStr.startswith('#') or lineStr.startswith('*'):
                         lineStr = lineStr[1:].strip()
-                        htmlStr += separatorStr
+                        if firstSeparatorAdded:
+                            htmlStr += separatorStr
+                        firstSeparatorAdded = True
                         htmlStr += \
                             '      <h3 class="linksHeader">' + \
                             lineStr + '</h3>\n'
@@ -179,8 +177,18 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                             '      <p>' + lineStr + '</p>\n'
                     linksFileContainsEntries = True
 
+    if firstSeparatorAdded:
+        htmlStr += separatorStr
+    htmlStr += \
+        '<p class="login-text"><a href="/about">' + \
+        translate['About this Instance'] + '</a></p>'
+    htmlStr += \
+        '<p class="login-text"><a href="/terms">' + \
+        translate['Terms of Service'] + '</a></p>'
+
     if linksFileContainsEntries and not rssIconAtTop:
         htmlStr += '<br><div class="columnIcons">' + rssIconStr + '</div>'
+
     return htmlStr
 
 

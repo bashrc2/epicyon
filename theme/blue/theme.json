@@ -26,6 +26,7 @@
     "hashtag-vertical-spacing3": "100px",
     "hashtag-vertical-spacing4": "150px",
     "time-vertical-align": "-10px",
+    "header-font": "'Domestic_Manners'",
     "*font-family": "'Domestic_Manners'",
     "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
 }

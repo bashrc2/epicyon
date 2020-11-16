@@ -55,6 +55,7 @@
     "title-text": "#282c37",
     "title-background": "#ccc",
     "gallery-text-color": "black",
+    "header-font": "'ElectrumADFExp-Regular'",
     "*font-family": "'ElectrumADFExp-Regular'",
     "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
 }

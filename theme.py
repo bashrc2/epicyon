@@ -10,6 +10,7 @@ import os
 from utils import loadJson
 from utils import saveJson
 from shutil import copyfile
+from content import dangerousCSS
 
 
 def getThemeFiles() -> []:
@@ -27,9 +28,11 @@ def getThemesList(baseDir: str) -> []:
     themes = []
     for subdir, dirs, files in os.walk(baseDir + '/theme'):
         for themeName in dirs:
-            if '~' not in themeName and themeName != 'icons':
+            if '~' not in themeName and \
+               themeName != 'icons' and themeName != 'fonts':
                 themes.append(themeName.title())
         break
+    themes.sort()
     print('Themes available: ' + str(themes))
     return themes
 
@@ -157,6 +160,14 @@ def setCSSparam(css: str, param: str, value: str) -> str:
         s = css.split(searchStr)
     newcss = ''
     for sectionStr in s:
+        # handle font-family which is a variable
+        nextSection = sectionStr
+        if ';' in nextSection:
+            nextSection = nextSection.split(';')[0] + ';'
+        if searchStr == 'font-family:' and "var(--" in nextSection:
+            newcss += searchStr + ' ' + sectionStr
+            continue
+
         if not newcss:
             if sectionStr:
                 newcss = sectionStr
@@ -185,7 +196,10 @@ def setThemeFromDict(baseDir: str, name: str,
             templateFilename = \
                 baseDir + '/theme/' + name + '/epicyon-profile.css'
 
-        if not os.path.isfile(templateFilename):
+        # Ensure that any custom CSS is mostly harmless.
+        # If not then just use the defaults
+        if dangerousCSS(templateFilename) or \
+           not os.path.isfile(templateFilename):
             # use default css
             templateFilename = baseDir + '/epicyon-' + filename
             if filename == 'epicyon.css':
@@ -411,34 +425,46 @@ def setThemeHighVis(baseDir: str):
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
+def setThemeFonts(baseDir: str, themeName: str) -> None:
+    """Adds custom theme fonts
+    """
+    themeNameLower = themeName.lower()
+    fontsDir = baseDir + '/fonts'
+    themeFontsDir = \
+        baseDir + '/theme/' + themeNameLower + '/fonts'
+    if not os.path.isdir(themeFontsDir):
+        return
+    for subdir, dirs, files in os.walk(themeFontsDir):
+        for filename in files:
+            if filename.endswith('.woff2') or \
+               filename.endswith('.woff') or \
+               filename.endswith('.ttf') or \
+               filename.endswith('.otf'):
+                destFilename = fontsDir + '/' + filename
+                if os.path.isfile(destFilename):
+                    # font already exists in the destination location
+                    continue
+                copyfile(themeFontsDir + '/' + filename,
+                         destFilename)
+        break
+
+
 def setThemeImages(baseDir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
     """
     themeNameLower = name.lower()
 
-    if themeNameLower == 'default':
-        profileImageFilename = \
-            baseDir + '/theme/default/image.png'
-        bannerFilename = \
-            baseDir + '/theme/default/banner.png'
-        searchBannerFilename = \
-            baseDir + '/theme/default/search_banner.png'
-        leftColImageFilename = \
-            baseDir + '/theme/default/left_col_image.png'
-        rightColImageFilename = \
-            baseDir + '/theme/default/right_col_image.png'
-    else:
-        profileImageFilename = \
-            baseDir + '/theme/' + themeNameLower + '/image.png'
-        bannerFilename = \
-            baseDir + '/theme/' + themeNameLower + '/banner.png'
-        searchBannerFilename = \
-            baseDir + '/theme/' + themeNameLower + '/search_banner.png'
-        leftColImageFilename = \
-            baseDir + '/theme/' + themeNameLower + '/left_col_image.png'
-        rightColImageFilename = \
-            baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
+    profileImageFilename = \
+        baseDir + '/theme/' + themeNameLower + '/image.png'
+    bannerFilename = \
+        baseDir + '/theme/' + themeNameLower + '/banner.png'
+    searchBannerFilename = \
+        baseDir + '/theme/' + themeNameLower + '/search_banner.png'
+    leftColImageFilename = \
+        baseDir + '/theme/' + themeNameLower + '/left_col_image.png'
+    rightColImageFilename = \
+        baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
@@ -572,6 +598,7 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
                     # change the banner and profile image
                     # to the default for the theme
                     setThemeImages(baseDir, name)
+                    setThemeFonts(baseDir, name)
             result = True
 
     if not result:

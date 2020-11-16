@@ -67,6 +67,7 @@
     "time-color": "#33390d",
     "place-color": "#33390d",
     "event-color": "#33390d",
+    "header-font": "'LcdSolid'",
     "*font-family": "'LcdSolid'",
     "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
 }
