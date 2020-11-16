@@ -395,7 +395,7 @@ a:focus {
 }
 
 .button span {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -403,7 +403,7 @@ a:focus {
 }
 
 .button span:after {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     content: '\00bb';
     position: absolute;
     opacity: 0;
@@ -423,7 +423,7 @@ a:focus {
 }
 
 .buttonselected span {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -431,7 +431,7 @@ a:focus {
 }
 
 .buttonselected span:after {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--header-font);
     content: '\00bb';
     position: absolute;
     opacity: 0;
