@@ -1,4 +1,5 @@
 {
+    "search-banner-height": "50vh",
     "button-approve": "#160afe",
     "button-deny": "#fd294f",
     "button-highlighted": "#0481f5",
