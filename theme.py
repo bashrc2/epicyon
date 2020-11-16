@@ -160,6 +160,14 @@ def setCSSparam(css: str, param: str, value: str) -> str:
         s = css.split(searchStr)
     newcss = ''
     for sectionStr in s:
+        # handle font-family which is a variable
+        nextSection = sectionStr
+        if ';' in nextSection:
+            nextSection = nextSection.split(';')[0] + ';'
+        if searchStr == 'font-family:' and "var(--" in nextSection:
+            newcss += searchStr + ' ' + sectionStr
+            continue
+
         if not newcss:
             if sectionStr:
                 newcss = sectionStr
