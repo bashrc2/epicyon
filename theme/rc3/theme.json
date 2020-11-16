@@ -1,4 +1,6 @@
 {
+    "calendar-header-font-style": "normal",
+    "calendar-header-font": "Orbitron",
     "search-banner-height": "50vh",
     "button-approve": "#160afe",
     "button-deny": "#fd294f",
@@ -68,5 +70,7 @@
     "quote-right-margin": "0",
     "line-spacing": "150%",
     "*font-family": "'Montserrat-Regular'",
-    "*src": "url('./fonts/Montserrat-Regular.ttf') format('truetype')"
+    "*src": "url('./fonts/Montserrat-Regular.ttf') format('truetype')",
+    "**font-family": "'Orbitron'",
+    "**src": "url('./fonts/Orbitron.ttf') format('truetype')"
 }
