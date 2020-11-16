@@ -32,6 +32,7 @@ def getThemesList(baseDir: str) -> []:
                themeName != 'icons' and themeName != 'fonts':
                 themes.append(themeName.title())
         break
+    themes.sort()
     print('Themes available: ' + str(themes))
     return themes
 
