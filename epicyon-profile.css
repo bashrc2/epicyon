@@ -756,6 +756,7 @@ input[type=submit]:hover {
   padding: 6px 0px;
   color: var(--dropdown-fg-color);
   font-size: var(--font-size-dropdown-header);
+  font-family: var(--header-font);
   line-height: 1.5em;
   text-decoration: none;
   border: 0;
