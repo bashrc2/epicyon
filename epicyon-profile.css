@@ -222,6 +222,7 @@ blockquote p {
 }
 
 h1 {
+    font-family: var(--header-font);
     color: var(--title-color);
 }
 
@@ -1294,7 +1295,7 @@ div.container {
         cursor: pointer;
         margin: 0 0px;
         margin-top: var(--publish-button-vertical-offset);
-	margin-bottom: var(--publish-button-bottom-offset);
+        margin-bottom: var(--publish-button-bottom-offset);
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
