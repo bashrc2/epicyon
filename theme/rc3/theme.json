@@ -1,4 +1,9 @@
 {
+    "button-approve": "#160afe",
+    "button-deny": "#fd294f",
+    "button-highlighted": "#0481f5",
+    "button-selected-highlighted": "#0481f5",
+    "button-fg-highlighted": "white",
     "login-button-color": "#6800e7",
     "login-button-fg-color": "white",
     "verticals-width": "16px",
