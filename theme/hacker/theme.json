@@ -31,6 +31,7 @@
     "button-small-text": "#00ff00",
     "button-corner-radius": "4px",
     "timeline-border-radius": "4px",
+    "header-font": "'Bedstead'",
     "*font-family": "'Bedstead'",
     "*src": "url('./fonts/bedstead.otf') format('opentype')",
     "color: #FFFFFE;": "color: green;",

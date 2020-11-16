@@ -50,6 +50,7 @@
     "time-color": "#f98bb0",
     "place-color": "#f98bb0",
     "event-color": "#f98bb0",
+    "header-font": "'CheGuevaraTextSans-Regular'",
     "*font-family": "'CheGuevaraTextSans-Regular'",
     "*src": "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
 }

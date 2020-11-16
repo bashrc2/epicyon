@@ -50,6 +50,7 @@
     "timeline-border-radius": "20px",
     "image-corners": "8%",
     "quote-right-margin": "0.1em",
+    "header-font": "'bgrove'",
     "*font-family": "'bgrove'",
     "*src": "url('fonts/bgrove.woff2') format('woff2')"
 }
