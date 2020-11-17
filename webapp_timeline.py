@@ -1027,12 +1027,13 @@ def headerButtonsTimeline(defaultTimeline: str,
             '<button class="buttonDesktop">' + \
             '<span>' + translate['Settings'] + '</span></button></a>'
 
+    if not newsHeader:
+        tlStr += followApprovals
+
     if not iconsAsButtons:
         # end of headericons div
         tlStr += '</div>'
 
-    if not newsHeader:
-        tlStr += followApprovals
     # end of the button header with inbox, outbox, etc
     tlStr += '    </div>\n'
     return tlStr
