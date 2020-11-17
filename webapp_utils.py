@@ -808,3 +808,14 @@ def headerButtonsFrontScreen(translate: {},
             headerStr + \
             '      </div>\n'
     return headerStr
+
+
+def htmlHighlightLabel(label: str, highlight: bool) -> str:
+    """If the given text should be highlighted then return
+    the appropriate markup.
+    This is so that in shell browsers, like lynx, it's possible
+    to see if the replies or DM button are highlighted.
+    """
+    if not highlight:
+        return label
+    return '*' + str(label) + '*'
