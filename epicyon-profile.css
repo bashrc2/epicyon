@@ -217,6 +217,10 @@ blockquote p {
     margin: -4px 5px;
 }
 
+.imageAnchor {
+    font-family: var(--header-font);
+}
+
 .imageAnchor:focus img{
     border: 2px solid var(--focus-color);
 }
@@ -528,6 +532,10 @@ a:focus {
     font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
     background: var(--link-bg-color);
+}
+
+.announceOrReply {
+    font-family: var(--header-font);
 }
 
 .container img.announceOrReply {
