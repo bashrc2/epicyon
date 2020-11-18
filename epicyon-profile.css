@@ -3,6 +3,7 @@
 :root {
     --header-bg-color: #282c37;
     --main-bg-color: #282c37;
+    --post-bg-color: #282c37;
     --column-left-color: #282c37;
     --link-bg-color: #282c37;
     --dropdown-fg-color: #dddddd;
@@ -954,7 +955,7 @@ div.container {
     }
     .container {
         border: var(--border-width) solid var(--border-color);
-        background-color: var(--main-bg-color);
+        background-color: var(--post-bg-color);
         border-radius: var(--timeline-border-radius);
         padding-left: var(--container-padding);
         padding-right: var(--container-padding);
@@ -1587,7 +1588,7 @@ div.container {
     }
     .container {
         border: var(--border-width) solid var(--border-color);
-        background-color: var(--main-bg-color);
+        background-color: var(--post-bg-color);
         border-radius: var(--timeline-border-radius);
         padding-left: var(--container-padding);
         padding-right: var(--container-padding);
