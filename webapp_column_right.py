@@ -205,6 +205,8 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
     separatorStr = htmlPostSeparator(baseDir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
+        if not item[0].strip():
+            continue
         publishedDate = \
             datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
         dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
@@ -221,10 +223,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 totalVotesStr = \
                     votesIndicator(totalVotes, positiveVoting)
 
-            title = \
-                removeLongWords(item[0], 16, []).replace('\n', '<br>').strip()
-            if not title:
-                continue
+            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + item[1] + '">' + \
                 '<span class="newswireItemVotedOn">' + title + \
@@ -250,10 +249,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     totalVotesStr = \
                         votesIndicator(totalVotes, positiveVoting)
 
-            title = \
-                removeLongWords(item[0], 16, []).replace('\n', '<br>').strip()
-            if not title:
-                continue
+            title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + item[1] + '">' + \
@@ -352,6 +348,8 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if newswire:
         ctr = 0
         for dateStr, item in newswire.items():
+            if not item[0].strip():
+                continue
             # should this checkbox be selected?
             selectedStr = ''
             if dateStr in citationsSelected:
