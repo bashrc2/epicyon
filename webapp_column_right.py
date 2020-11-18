@@ -222,6 +222,8 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            if not title:
+                continue
             htmlStr += '<p class="newswireItemVotedOn">' + \
                 '<a href="' + item[1] + '">' + \
                 '<span class="newswireItemVotedOn">' + title + \
@@ -248,6 +250,8 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                         votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
+            if not title:
+                continue
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
                     '<a href="' + item[1] + '">' + \
