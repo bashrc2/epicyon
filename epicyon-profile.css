@@ -1514,7 +1514,7 @@ div.container {
         margin: 0% 1%;
         width: 10%;
     }
-    .donateButton {
+    .donateButton {	
         background-color: var(--button-background);
         color: var(--button-text);
         float: none;

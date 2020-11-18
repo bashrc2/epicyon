@@ -31,7 +31,7 @@
     "main-bg-color": "white",
     "post-bg-color": "white",
     "timeline-posts-background-color": "white",
-    "header-bg-color": "white",
+    "header-bg-color": "#ddd",
     "column-left-color": "white",
     "main-bg-color-dm": "white",
     "link-bg-color": "white",
