@@ -14,7 +14,7 @@
     "font-size-calendar-cell": "2rem",
     "calendar-horizontal-padding": "20%",
     "time-vertical-align": "10px",
-    "header-vertical-offset": "-10%",
+    "header-vertical-offset": "0",
     "publish-button-vertical-offset": "0",
     "vertical-between-posts-header": "0 0",
     "header-button-padding": "0 0",
