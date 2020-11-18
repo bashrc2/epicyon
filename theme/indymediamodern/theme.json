@@ -17,6 +17,7 @@
     "calendar-horizontal-padding": "20%",
     "time-vertical-align": "10px",
     "publish-button-vertical-offset": "10px",
+    "vertical-between-posts": "0",
     "vertical-between-posts-header": "0 0",
     "header-button-padding": "0 0",
     "containericons-horizontal-spacing": "0%",
