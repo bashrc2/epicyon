@@ -730,7 +730,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          False, False, False, True, False)
                 if postStr:
-                    profileStr += separatorStr + postStr
+                    profileStr += postStr + separatorStr
                     ctr += 1
                     if ctr >= maxItems:
                         break
