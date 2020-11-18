@@ -177,6 +177,7 @@ body, html {
 }
 
 .postSeparatorImage img {
+    background-color: var(--post-bg-color);
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--post-separator-width);
