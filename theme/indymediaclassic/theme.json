@@ -27,6 +27,7 @@
     "font-size4": "24px",
     "font-size5": "22px",
     "main-bg-color": "black",
+    "header-bg-color": "black",
     "column-left-header-color": "#fff",
     "column-left-header-background": "#555",
     "column-left-header-size": "20px",
