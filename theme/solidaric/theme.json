@@ -34,7 +34,7 @@
     "header-bg-color": "#ddd",
     "column-left-color": "white",
     "main-bg-color-dm": "white",
-    "link-bg-color": "white",
+    "link-bg-color": "transparent",
     "main-bg-color-reply": "white",
     "main-bg-color-report": "white",
     "main-header-color-roles": "#ebebf0",
