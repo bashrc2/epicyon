@@ -1021,8 +1021,6 @@ div.container {
     .timeline {
         border: 0;
         width: 100%;
-        table-layout: fixed;
-        overflow: hidden;
     }
     .col-left a:link {
         background: var(--column-left-color);
