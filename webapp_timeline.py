@@ -426,6 +426,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
 
+    tlStr += '  <div class="timeline-posts">\n'
+
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
         tlStr += \
@@ -596,6 +598,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
+
+    # end of timeline-posts
+    tlStr += '  </div>\n'
 
     # end of column-center
     tlStr += '  </td>\n'

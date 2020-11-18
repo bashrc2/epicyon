@@ -71,6 +71,7 @@
     --gallery-font-size-mobile: 35px;
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
+    --timeline-posts-background-color: #282c37;
     --icons-side: right;
     --title-color: #999;
     --focus-color: white;
@@ -381,6 +382,10 @@ a:focus {
 
 .timelineIcon {
     width: 10%;
+}
+
+.timeline-posts {
+    background-color: var(--timeline-posts-background-color);
 }
 
 .container img.timelineicon:hover {
@@ -1008,14 +1013,16 @@ div.container {
         display: none;
     }
     .timeline-banner {
-	vertical-align: top;
+        vertical-align: top;
         object-fit: cover;
-        width: 98vw;
+        width: 100%;
         max-height: var(--banner-height);
     }
     .timeline {
         border: 0;
-        width: 98vw;
+        width: 100%;
+        table-layout: fixed;
+        overflow: hidden;
     }
     .col-left a:link {
         background: var(--column-left-color);
@@ -1667,7 +1674,7 @@ div.container {
         display: inline;
     }
     .timeline-banner {
-	vertical-align: top;
+        vertical-align: top;
         object-fit: cover;
         width: 98vw;
         max-height: var(--banner-height-mobile);

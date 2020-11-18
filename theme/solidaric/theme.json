@@ -29,6 +29,7 @@
     "font-size5": "22px",
     "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
     "main-bg-color": "white",
+    "timeline-posts-background-color": "white",
     "header-bg-color": "white",
     "column-left-color": "white",
     "main-bg-color-dm": "white",
