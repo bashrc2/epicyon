@@ -954,7 +954,7 @@ div.container {
         padding: var(--header-button-padding);
         margin: var(--vertical-between-posts-header);
         transform: translateY(var(--header-vertical-offset));
-	margin-bottom: var(--button-bottom-margin);
+        margin-bottom: var(--button-bottom-margin);
     }
     .container {
         border: var(--border-width) solid var(--border-color);
@@ -1279,7 +1279,7 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
-	margin-bottom: var(--button-bottom-margin);
+        margin-bottom: var(--button-bottom-margin);
     }
     .buttonDesktop {
         border-radius: var(--button-corner-radius);
@@ -1298,6 +1298,7 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
+        margin-bottom: var(--button-bottom-margin);
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1350,7 +1351,7 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
-	margin-bottom: var(--button-bottom-margin);
+        margin-bottom: var(--button-bottom-margin);
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1515,7 +1516,7 @@ div.container {
         margin: 0% 1%;
         width: 10%;
     }
-    .donateButton {	
+    .donateButton {
         background-color: var(--button-background);
         color: var(--button-text);
         float: none;
@@ -1591,7 +1592,7 @@ div.container {
         padding: var(--header-button-padding);
         margin: var(--vertical-between-posts-header);
         transform: translateY(0%);
-	margin-bottom: var(--button-bottom-margin);
+        margin-bottom: var(--button-bottom-margin);
     }
     .container {
         border: var(--border-width) solid var(--border-color);
@@ -1877,7 +1878,7 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
-	margin-bottom: var(--button-bottom-margin);
+        margin-bottom: var(--button-bottom-margin);
     }
     .frontPageMobileButtons{
         display: block;
@@ -1911,6 +1912,7 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
+        margin-bottom: var(--button-bottom-margin);
     }
     .buttonDesktop {
         background: transparent;
@@ -1970,7 +1972,7 @@ div.container {
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
-	margin-bottom: var(--button-bottom-margin);
+        margin-bottom: var(--button-bottom-margin);
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
