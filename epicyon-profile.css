@@ -1397,6 +1397,7 @@ div.container {
     }
     .pageicon {
         width: 4%;
+        background-color: var(--post-bg-color);
     }
     .time-right {
         float: var(--icons-side);
@@ -2013,6 +2014,7 @@ div.container {
     }
     .pageicon {
         width: 14%;
+        background-color: var(--post-bg-color);
     }
     .time-right {
         float: var(--icons-side);
