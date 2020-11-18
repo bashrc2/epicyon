@@ -1,4 +1,6 @@
 {
+    "button-bottom-margin": "0",
+    "header-vertical-offset": "10px",
     "header-bg-color": "#efefef",
     "verticals-width": "0px",
     "newswire-publish-icon": "False",
@@ -14,7 +16,6 @@
     "font-size-calendar-cell": "2rem",
     "calendar-horizontal-padding": "20%",
     "time-vertical-align": "10px",
-    "header-vertical-offset": "0",
     "publish-button-vertical-offset": "0",
     "vertical-between-posts-header": "0 0",
     "header-button-padding": "0 0",
