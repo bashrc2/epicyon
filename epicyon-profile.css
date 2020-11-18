@@ -170,7 +170,7 @@ body, html {
 
 .leftColIcons {
     width: 100%;
-    background-color: var(--main-bg-color);
+    background-color: var(--column-left-color);
     float: right;
     display: block;
     padding-bottom: var(--column-left-icons-margin);
