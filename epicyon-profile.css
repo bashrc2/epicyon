@@ -185,6 +185,24 @@ body, html {
     display: block;
 }
 
+.postSeparatorImageLeft img {
+    background-color: var(--column-left-color);
+    padding-top: var(--post-separator-margin-top);
+    padding-bottom: var(--post-separator-margin-bottom);
+    width: var(--post-separator-width);
+    height: var(--post-separator-height);
+    display: block;
+}
+
+.postSeparatorImageRight img {
+    background-color: var(--column-left-color);
+    padding-top: var(--post-separator-margin-top);
+    padding-bottom: var(--post-separator-margin-bottom);
+    width: var(--post-separator-width);
+    height: var(--post-separator-height);
+    display: block;
+}
+
 .headericons {
     display: inline-block;
     float: right;

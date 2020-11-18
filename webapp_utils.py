@@ -728,13 +728,15 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     iconsPath = getIconsWebPath(baseDir)
     theme = getConfigParam(baseDir, 'theme')
     filename = 'separator.png'
+    separatorClass = "postSeparatorImage"
     if column:
+        separatorClass = "postSeparatorImage" + column.title()
         filename = 'separator_' + column + '.png'
     separatorImageFilename = baseDir + '/theme/' + theme + '/icons/' + filename
     separatorStr = ''
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
-            '<div class="postSeparatorImage"><center>' + \
+            '<div class="' + separatorClass + '"><center>' + \
             '<img src="/' + iconsPath + '/' + filename + '"/>' + \
             '</center></div>\n'
     return separatorStr
