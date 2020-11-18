@@ -581,9 +581,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 if currTlStr:
                     itemCtr += 1
+                    tlStr += currTlStr
                     if separatorStr:
                         tlStr += separatorStr
-                    tlStr += currTlStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
@@ -698,9 +698,10 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         showRemoveButton = False
         if item['actor'] == actor:
             showRemoveButton = True
-        timelineStr += separatorStr + \
+        timelineStr += \
             htmlIndividualShare(actor, item, translate,
                                 showContactButton, showRemoveButton)
+        timelineStr += separatorStr
 
     if not lastPage:
         iconsPath = getIconsWebPath(baseDir)
