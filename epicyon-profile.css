@@ -132,6 +132,8 @@
     --post-separator-margin-top: 0;
     --post-separator-margin-bottom: 0;
     --post-separator-width: 95%;
+    --separator-width-left: 95%;
+    --separator-width-right: 95%;
     --post-separator-height: 1px;
     --header-vertical-offset: 0;
     --profile-background-height: 25vw;
@@ -189,7 +191,7 @@ body, html {
     background-color: var(--column-left-color);
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
-    width: var(--post-separator-width);
+    width: var(--separator-width-left);
     height: var(--post-separator-height);
     display: block;
 }
@@ -198,7 +200,7 @@ body, html {
     background-color: var(--column-left-color);
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
-    width: var(--post-separator-width);
+    width: var(--separator-width-right);
     height: var(--post-separator-height);
     display: block;
 }
