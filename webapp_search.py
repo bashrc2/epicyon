@@ -28,7 +28,7 @@ from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_post import individualPostAsHtml
-from blocking import isBlockedHashtag
+from webapp_hashtagswarm import htmlHashTagSwarm
 
 
 def htmlSearchEmoji(cssCache: {}, translate: {},
@@ -372,7 +372,7 @@ def htmlSearch(cssCache: {}, translate: {},
         'name="submitSearch">' + translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
     followStr += '  <p class="hashtagswarm">' + \
-        htmlHashTagSwarm(baseDir, actor) + '</p>\n'
+        htmlHashTagSwarm(baseDir, actor, translate) + '</p>\n'
     followStr += '  </center>\n'
     followStr += '  </div>\n'
     followStr += '</div>\n'
@@ -380,79 +380,221 @@ def htmlSearch(cssCache: {}, translate: {},
     return followStr
 
 
-def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
-    """Returns a tag swarm of today's hashtags
+def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
+                     httpPrefix: str,
+                     skillsearch: str, instanceOnly: bool,
+                     postsPerPage: int) -> str:
+    """Show a page containing search results for a skill
     """
-    currTime = datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
-    daysSinceEpochStr = str(daysSinceEpoch) + ' '
-    tagSwarm = []
+    if skillsearch.startswith('*'):
+        skillsearch = skillsearch[1:].strip()
 
-    for subdir, dirs, files in os.walk(baseDir + '/tags'):
+    skillsearch = skillsearch.lower().strip('\n').strip('\r')
+
+    results = []
+    # search instance accounts
+    for subdir, dirs, files in os.walk(baseDir + '/accounts/'):
         for f in files:
-            tagsFilename = os.path.join(baseDir + '/tags', f)
-            if not os.path.isfile(tagsFilename):
+            if not f.endswith('.json'):
                 continue
-            # get last modified datetime
-            modTimesinceEpoc = os.path.getmtime(tagsFilename)
-            lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
-            fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
-            # check if the file was last modified today
-            if fileDaysSinceEpoch != daysSinceEpoch:
+            if '@' not in f:
                 continue
+            if f.startswith('inbox@'):
+                continue
+            actorFilename = os.path.join(subdir, f)
+            actorJson = loadJson(actorFilename)
+            if actorJson:
+                if actorJson.get('id') and \
+                   actorJson.get('skills') and \
+                   actorJson.get('name') and \
+                   actorJson.get('icon'):
+                    actor = actorJson['id']
+                    for skillName, skillLevel in actorJson['skills'].items():
+                        skillName = skillName.lower()
+                        if not (skillName in skillsearch or
+                                skillsearch in skillName):
+                            continue
+                        skillLevelStr = str(skillLevel)
+                        if skillLevel < 100:
+                            skillLevelStr = '0' + skillLevelStr
+                        if skillLevel < 10:
+                            skillLevelStr = '0' + skillLevelStr
+                        indexStr = \
+                            skillLevelStr + ';' + actor + ';' + \
+                            actorJson['name'] + \
+                            ';' + actorJson['icon']['url']
+                        if indexStr not in results:
+                            results.append(indexStr)
+    if not instanceOnly:
+        # search actor cache
+        for subdir, dirs, files in os.walk(baseDir + '/cache/actors/'):
+            for f in files:
+                if not f.endswith('.json'):
+                    continue
+                if '@' not in f:
+                    continue
+                if f.startswith('inbox@'):
+                    continue
+                actorFilename = os.path.join(subdir, f)
+                cachedActorJson = loadJson(actorFilename)
+                if cachedActorJson:
+                    if cachedActorJson.get('actor'):
+                        actorJson = cachedActorJson['actor']
+                        if actorJson.get('id') and \
+                           actorJson.get('skills') and \
+                           actorJson.get('name') and \
+                           actorJson.get('icon'):
+                            actor = actorJson['id']
+                            for skillName, skillLevel in \
+                                    actorJson['skills'].items():
+                                skillName = skillName.lower()
+                                if not (skillName in skillsearch or
+                                        skillsearch in skillName):
+                                    continue
+                                skillLevelStr = str(skillLevel)
+                                if skillLevel < 100:
+                                    skillLevelStr = '0' + skillLevelStr
+                                if skillLevel < 10:
+                                    skillLevelStr = '0' + skillLevelStr
+                                indexStr = \
+                                    skillLevelStr + ';' + actor + ';' + \
+                                    actorJson['name'] + \
+                                    ';' + actorJson['icon']['url']
+                                if indexStr not in results:
+                                    results.append(indexStr)
 
-            hashTagName = f.split('.')[0]
-            if isBlockedHashtag(baseDir, hashTagName):
-                continue
-            if daysSinceEpochStr not in open(tagsFilename).read():
-                continue
-            with open(tagsFilename, 'r') as tagsFile:
-                line = tagsFile.readline()
-                lineCtr = 1
-                tagCtr = 0
-                maxLineCtr = 1
-                while line:
-                    if '  ' not in line:
-                        line = tagsFile.readline()
-                        lineCtr += 1
-                        # don't read too many lines
-                        if lineCtr >= maxLineCtr:
-                            break
-                        continue
-                    postDaysSinceEpochStr = line.split('  ')[0]
-                    if not postDaysSinceEpochStr.isdigit():
-                        line = tagsFile.readline()
-                        lineCtr += 1
-                        # don't read too many lines
-                        if lineCtr >= maxLineCtr:
-                            break
-                        continue
-                    postDaysSinceEpoch = int(postDaysSinceEpochStr)
-                    if postDaysSinceEpoch < daysSinceEpoch:
-                        break
-                    if postDaysSinceEpoch == daysSinceEpoch:
-                        if tagCtr == 0:
-                            tagSwarm.append(hashTagName)
-                        tagCtr += 1
+    results.sort(reverse=True)
 
-                    line = tagsFile.readline()
-                    lineCtr += 1
-                    # don't read too many lines
-                    if lineCtr >= maxLineCtr:
-                        break
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
 
-    if not tagSwarm:
-        return ''
-    tagSwarm.sort()
-    tagSwarmStr = ''
-    ctr = 0
-    for tagName in tagSwarm:
-        tagSwarmStr += \
-            '<a href="' + actor + '/tags/' + tagName + \
-            '" class="hashtagswarm">' + tagName + '</a>\n'
-        ctr += 1
-    tagSwarmHtml = tagSwarmStr.strip() + '\n'
-    return tagSwarmHtml
+    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
+    skillSearchForm += \
+        '<center><h1>' + translate['Skills search'] + ': ' + \
+        skillsearch + '</h1></center>'
+
+    if len(results) == 0:
+        skillSearchForm += \
+            '<center><h5>' + translate['No results'] + \
+            '</h5></center>'
+    else:
+        skillSearchForm += '<center>'
+        ctr = 0
+        for skillMatch in results:
+            skillMatchFields = skillMatch.split(';')
+            if len(skillMatchFields) != 4:
+                continue
+            actor = skillMatchFields[1]
+            actorName = skillMatchFields[2]
+            avatarUrl = skillMatchFields[3]
+            skillSearchForm += \
+                '<div class="search-result""><a href="' + \
+                actor + '/skills">'
+            skillSearchForm += \
+                '<img loading="lazy" src="' + avatarUrl + \
+                '"/><span class="search-result-text">' + actorName + \
+                '</span></a></div>'
+            ctr += 1
+            if ctr >= postsPerPage:
+                break
+        skillSearchForm += '</center>'
+    skillSearchForm += htmlFooter()
+    return skillSearchForm
+
+
+def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
+                      httpPrefix: str,
+                      nickname: str, domain: str,
+                      historysearch: str,
+                      postsPerPage: int, pageNumber: int,
+                      projectVersion: str,
+                      recentPostsCache: {},
+                      maxRecentPosts: int,
+                      session,
+                      wfRequest,
+                      personCache: {},
+                      port: int,
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
+    """Show a page containing search results for your post history
+    """
+    if historysearch.startswith('!'):
+        historysearch = historysearch[1:].strip()
+
+    historysearch = historysearch.lower().strip('\n').strip('\r')
+
+    boxFilenames = \
+        searchBoxPosts(baseDir, nickname, domain,
+                       historysearch, postsPerPage)
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+
+    historySearchForm = \
+        htmlHeaderWithExternalStyle(cssFilename)
+
+    # add the page title
+    historySearchForm += \
+        '<center><h1>' + translate['Your Posts'] + '</h1></center>'
+
+    if len(boxFilenames) == 0:
+        historySearchForm += \
+            '<center><h5>' + translate['No results'] + \
+            '</h5></center>'
+        return historySearchForm
+
+    iconsPath = getIconsWebPath(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
+
+    # ensure that the page number is in bounds
+    if not pageNumber:
+        pageNumber = 1
+    elif pageNumber < 1:
+        pageNumber = 1
+
+    # get the start end end within the index file
+    startIndex = int((pageNumber - 1) * postsPerPage)
+    endIndex = startIndex + postsPerPage
+    noOfBoxFilenames = len(boxFilenames)
+    if endIndex >= noOfBoxFilenames and noOfBoxFilenames > 0:
+        endIndex = noOfBoxFilenames - 1
+
+    index = startIndex
+    while index <= endIndex:
+        postFilename = boxFilenames[index]
+        if not postFilename:
+            index += 1
+            continue
+        postJsonObject = loadJson(postFilename)
+        if not postJsonObject:
+            index += 1
+            continue
+        showIndividualPostIcons = True
+        allowDeletion = False
+        postStr = \
+            individualPostAsHtml(True, recentPostsCache,
+                                 maxRecentPosts,
+                                 iconsPath, translate, None,
+                                 baseDir, session, wfRequest,
+                                 personCache,
+                                 nickname, domain, port,
+                                 postJsonObject,
+                                 None, True, allowDeletion,
+                                 httpPrefix, projectVersion,
+                                 'search',
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly,
+                                 showIndividualPostIcons,
+                                 showIndividualPostIcons,
+                                 False, False, False)
+        if postStr:
+            historySearchForm += separatorStr + postStr
+        index += 1
+
+    historySearchForm += htmlFooter()
+    return historySearchForm
 
 
 def htmlHashtagSearch(cssCache: {},
@@ -711,220 +853,3 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
             break
 
     return hashtagFeed + rss2TagFooter()
-
-
-def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
-                     httpPrefix: str,
-                     skillsearch: str, instanceOnly: bool,
-                     postsPerPage: int) -> str:
-    """Show a page containing search results for a skill
-    """
-    if skillsearch.startswith('*'):
-        skillsearch = skillsearch[1:].strip()
-
-    skillsearch = skillsearch.lower().strip('\n').strip('\r')
-
-    results = []
-    # search instance accounts
-    for subdir, dirs, files in os.walk(baseDir + '/accounts/'):
-        for f in files:
-            if not f.endswith('.json'):
-                continue
-            if '@' not in f:
-                continue
-            if f.startswith('inbox@'):
-                continue
-            actorFilename = os.path.join(subdir, f)
-            actorJson = loadJson(actorFilename)
-            if actorJson:
-                if actorJson.get('id') and \
-                   actorJson.get('skills') and \
-                   actorJson.get('name') and \
-                   actorJson.get('icon'):
-                    actor = actorJson['id']
-                    for skillName, skillLevel in actorJson['skills'].items():
-                        skillName = skillName.lower()
-                        if not (skillName in skillsearch or
-                                skillsearch in skillName):
-                            continue
-                        skillLevelStr = str(skillLevel)
-                        if skillLevel < 100:
-                            skillLevelStr = '0' + skillLevelStr
-                        if skillLevel < 10:
-                            skillLevelStr = '0' + skillLevelStr
-                        indexStr = \
-                            skillLevelStr + ';' + actor + ';' + \
-                            actorJson['name'] + \
-                            ';' + actorJson['icon']['url']
-                        if indexStr not in results:
-                            results.append(indexStr)
-    if not instanceOnly:
-        # search actor cache
-        for subdir, dirs, files in os.walk(baseDir + '/cache/actors/'):
-            for f in files:
-                if not f.endswith('.json'):
-                    continue
-                if '@' not in f:
-                    continue
-                if f.startswith('inbox@'):
-                    continue
-                actorFilename = os.path.join(subdir, f)
-                cachedActorJson = loadJson(actorFilename)
-                if cachedActorJson:
-                    if cachedActorJson.get('actor'):
-                        actorJson = cachedActorJson['actor']
-                        if actorJson.get('id') and \
-                           actorJson.get('skills') and \
-                           actorJson.get('name') and \
-                           actorJson.get('icon'):
-                            actor = actorJson['id']
-                            for skillName, skillLevel in \
-                                    actorJson['skills'].items():
-                                skillName = skillName.lower()
-                                if not (skillName in skillsearch or
-                                        skillsearch in skillName):
-                                    continue
-                                skillLevelStr = str(skillLevel)
-                                if skillLevel < 100:
-                                    skillLevelStr = '0' + skillLevelStr
-                                if skillLevel < 10:
-                                    skillLevelStr = '0' + skillLevelStr
-                                indexStr = \
-                                    skillLevelStr + ';' + actor + ';' + \
-                                    actorJson['name'] + \
-                                    ';' + actorJson['icon']['url']
-                                if indexStr not in results:
-                                    results.append(indexStr)
-
-    results.sort(reverse=True)
-
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
-
-    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
-    skillSearchForm += \
-        '<center><h1>' + translate['Skills search'] + ': ' + \
-        skillsearch + '</h1></center>'
-
-    if len(results) == 0:
-        skillSearchForm += \
-            '<center><h5>' + translate['No results'] + \
-            '</h5></center>'
-    else:
-        skillSearchForm += '<center>'
-        ctr = 0
-        for skillMatch in results:
-            skillMatchFields = skillMatch.split(';')
-            if len(skillMatchFields) != 4:
-                continue
-            actor = skillMatchFields[1]
-            actorName = skillMatchFields[2]
-            avatarUrl = skillMatchFields[3]
-            skillSearchForm += \
-                '<div class="search-result""><a href="' + \
-                actor + '/skills">'
-            skillSearchForm += \
-                '<img loading="lazy" src="' + avatarUrl + \
-                '"/><span class="search-result-text">' + actorName + \
-                '</span></a></div>'
-            ctr += 1
-            if ctr >= postsPerPage:
-                break
-        skillSearchForm += '</center>'
-    skillSearchForm += htmlFooter()
-    return skillSearchForm
-
-
-def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
-                      httpPrefix: str,
-                      nickname: str, domain: str,
-                      historysearch: str,
-                      postsPerPage: int, pageNumber: int,
-                      projectVersion: str,
-                      recentPostsCache: {},
-                      maxRecentPosts: int,
-                      session,
-                      wfRequest,
-                      personCache: {},
-                      port: int,
-                      YTReplacementDomain: str,
-                      showPublishedDateOnly: bool) -> str:
-    """Show a page containing search results for your post history
-    """
-    if historysearch.startswith('!'):
-        historysearch = historysearch[1:].strip()
-
-    historysearch = historysearch.lower().strip('\n').strip('\r')
-
-    boxFilenames = \
-        searchBoxPosts(baseDir, nickname, domain,
-                       historysearch, postsPerPage)
-
-    cssFilename = baseDir + '/epicyon-profile.css'
-    if os.path.isfile(baseDir + '/epicyon.css'):
-        cssFilename = baseDir + '/epicyon.css'
-
-    historySearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename)
-
-    # add the page title
-    historySearchForm += \
-        '<center><h1>' + translate['Your Posts'] + '</h1></center>'
-
-    if len(boxFilenames) == 0:
-        historySearchForm += \
-            '<center><h5>' + translate['No results'] + \
-            '</h5></center>'
-        return historySearchForm
-
-    iconsPath = getIconsWebPath(baseDir)
-    separatorStr = htmlPostSeparator(baseDir, None)
-
-    # ensure that the page number is in bounds
-    if not pageNumber:
-        pageNumber = 1
-    elif pageNumber < 1:
-        pageNumber = 1
-
-    # get the start end end within the index file
-    startIndex = int((pageNumber - 1) * postsPerPage)
-    endIndex = startIndex + postsPerPage
-    noOfBoxFilenames = len(boxFilenames)
-    if endIndex >= noOfBoxFilenames and noOfBoxFilenames > 0:
-        endIndex = noOfBoxFilenames - 1
-
-    index = startIndex
-    while index <= endIndex:
-        postFilename = boxFilenames[index]
-        if not postFilename:
-            index += 1
-            continue
-        postJsonObject = loadJson(postFilename)
-        if not postJsonObject:
-            index += 1
-            continue
-        showIndividualPostIcons = True
-        allowDeletion = False
-        postStr = \
-            individualPostAsHtml(True, recentPostsCache,
-                                 maxRecentPosts,
-                                 iconsPath, translate, None,
-                                 baseDir, session, wfRequest,
-                                 personCache,
-                                 nickname, domain, port,
-                                 postJsonObject,
-                                 None, True, allowDeletion,
-                                 httpPrefix, projectVersion,
-                                 'search',
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly,
-                                 showIndividualPostIcons,
-                                 showIndividualPostIcons,
-                                 False, False, False)
-        if postStr:
-            historySearchForm += separatorStr + postStr
-        index += 1
-
-    historySearchForm += htmlFooter()
-    return historySearchForm

@@ -227,6 +227,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
+    htmlStr += '<div class="col-left-mobile">\n'
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
@@ -237,6 +238,10 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                              iconsPath, editor,
                              False, timelinePath,
                              rssIconAtTop, False, False)
+
+    # end of col-left-mobile
+    htmlStr += '</div>\n'
+
     htmlStr += '</div>\n' + htmlFooter()
     return htmlStr
 

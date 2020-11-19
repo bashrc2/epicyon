@@ -758,7 +758,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 iconsPath + '/repeat_inactive.png" ' + \
                                 'class="announceOrReply"/>\n' + \
                                 '        <a href="' + \
-                                postJsonObject['object']['id'] + '">' + \
+                                postJsonObject['object']['id'] + '" ' + \
+                                'class="announceOrReply">' + \
                                 announceDisplayName + '</a>\n'
                             # show avatar of person replied to
                             announceActor = \
@@ -804,7 +805,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '/repeat_inactive.png" ' + \
                                 'class="announceOrReply"/>\n' + \
                                 '      <a href="' + \
-                                postJsonObject['object']['id'] + '">@' + \
+                                postJsonObject['object']['id'] + '" ' + \
+                                'class="announceOrReply">@' + \
                                 announceNickname + '@' + \
                                 announceDomain + '</a>\n'
                     else:
@@ -816,7 +818,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             'class="announceOrReply"/>\n' + \
                             '      <a href="' + \
                             postJsonObject['object']['id'] + \
-                            '">@unattributed</a>\n'
+                            '" class="announceOrReply">@unattributed</a>\n'
             else:
                 titleStr += \
                     '    ' + \
@@ -826,7 +828,8 @@ def individualPostAsHtml(allowDownloads: bool,
                     '/repeat_inactive.png" ' + \
                     'class="announceOrReply"/>\n' + \
                     '      <a href="' + \
-                    postJsonObject['object']['id'] + '">@unattributed</a>\n'
+                    postJsonObject['object']['id'] + '" ' + \
+                    'class="announceOrReply">@unattributed</a>\n'
         else:
             if postJsonObject['object'].get('inReplyTo'):
                 containerClassIcons = 'containericons darker'
@@ -892,7 +895,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                         'class="announceOrReply"/>\n' + \
                                         '        ' + \
                                         '<a href="' + inReplyTo + \
-                                        '">' + replyDisplayName + '</a>\n'
+                                        '" class="announceOrReply">' + \
+                                        replyDisplayName + '</a>\n'
 
                                     # benchmark 13.7
                                     if not allowDownloads:
@@ -953,7 +957,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                         iconsPath + '/reply.png" ' + \
                                         'class="announceOrReply"/>\n' + \
                                         '        <a href="' + \
-                                        inReplyTo + '">@' + \
+                                        inReplyTo + '" ' + \
+                                        'class="announceOrReply">@' + \
                                         replyNickname + '@' + \
                                         replyDomain + '</a>\n'
                         else:
@@ -967,7 +972,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 '/reply.png" class="announceOrReply"/>\n' + \
                                 '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
-                                '">@unknown</a>\n'
+                                '" class="announceOrReply">@unknown</a>\n'
                     else:
                         postDomain = \
                             postJsonObject['object']['inReplyTo']
@@ -986,7 +991,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                 'class="announceOrReply"/>\n' + \
                                 '        <a href="' + \
                                 postJsonObject['object']['inReplyTo'] + \
-                                '">' + postDomain + '</a>\n'
+                                '" class="announceOrReply">' + \
+                                postDomain + '</a>\n'
 
     # benchmark 14
     if not allowDownloads:

@@ -614,9 +614,6 @@ def htmlProfile(rssIconAtTop: bool,
     if isSystemAccount(nickname):
         bannerFile, bannerFilename = \
             getBannerFile(baseDir, nickname, domain)
-        # profileStyle = \
-        #     profileStyle.replace('banner.png',
-        #                          '/users/' + nickname + '/' + bannerFile)
 
     licenseStr = \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
@@ -733,7 +730,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          False, False, False, True, False)
                 if postStr:
-                    profileStr += separatorStr + postStr
+                    profileStr += postStr + separatorStr
                     ctr += 1
                     if ctr >= maxItems:
                         break

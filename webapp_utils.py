@@ -728,13 +728,15 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     iconsPath = getIconsWebPath(baseDir)
     theme = getConfigParam(baseDir, 'theme')
     filename = 'separator.png'
+    separatorClass = "postSeparatorImage"
     if column:
+        separatorClass = "postSeparatorImage" + column.title()
         filename = 'separator_' + column + '.png'
     separatorImageFilename = baseDir + '/theme/' + theme + '/icons/' + filename
     separatorStr = ''
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
-            '<div class="postSeparatorImage"><center>' + \
+            '<div class="' + separatorClass + '"><center>' + \
             '<img src="/' + iconsPath + '/' + filename + '"/>' + \
             '</center></div>\n'
     return separatorStr
@@ -808,3 +810,14 @@ def headerButtonsFrontScreen(translate: {},
             headerStr + \
             '      </div>\n'
     return headerStr
+
+
+def htmlHighlightLabel(label: str, highlight: bool) -> str:
+    """If the given text should be highlighted then return
+    the appropriate markup.
+    This is so that in shell browsers, like lynx, it's possible
+    to see if the replies or DM button are highlighted.
+    """
+    if not highlight:
+        return label
+    return '*' + str(label) + '*'

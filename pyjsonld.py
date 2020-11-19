@@ -4474,6 +4474,8 @@ class JsonLdError(Exception):
         self.causeTrace = traceback.extract_tb(*sys.exc_info()[2:])
 
     def __str__(self):
+        if not hasattr(self, 'message'):
+            return 'Unknown exception'
         rval = repr(self.message)
         rval += '\nType: ' + self.type
         if self.code:

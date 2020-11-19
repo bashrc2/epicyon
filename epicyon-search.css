@@ -35,6 +35,8 @@
     --focus-color: white;
     --search-banner-height: 30vh;
     --search-banner-height-mobile: 20vh;
+    --title-color: #999;
+    --header-font: 'Arial, Helvetica, sans-serif';
 }
 
 @font-face {
@@ -60,6 +62,11 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
     max-width: 100%;
     min-width: 600px;
+}
+
+h1 {
+    font-family: var(--header-font);
+    color: var(--title-color);
 }
 
 a, u {
@@ -88,6 +95,13 @@ a:visited:hover {
 
 a:focus {
     border: 2px solid var(--focus-color);
+}
+
+.domainHistogramLeft {
+    float: right;
+}
+.domainHistogramRight {
+    float: left;
 }
 
 .follow {
@@ -192,6 +206,10 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
+    .domainHistogram {
+        border: 0;
+        font-size: var(--hashtag-size1);
+    }
     .timeline-banner {
         object-fit: cover;
         width: 98vw;
@@ -244,6 +262,10 @@ input[type=text] {
 }
 
 @media screen and (max-width: 1000px) {
+    .domainHistogram {
+        border: 0;
+        font-size: var(--hashtag-size2);
+    }
     .timeline-banner {
         object-fit: cover;
         width: 98vw;

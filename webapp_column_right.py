@@ -10,6 +10,7 @@ import os
 from datetime import datetime
 from shutil import copyfile
 from content import removeLongWords
+from utils import removeHtml
 from utils import locatePost
 from utils import loadJson
 from utils import getConfigParam
@@ -205,6 +206,14 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
     separatorStr = htmlPostSeparator(baseDir, 'right')
     htmlStr = ''
     for dateStr, item in newswire.items():
+        item[0] = removeHtml(item[0]).strip()
+        if not item[0]:
+            continue
+        # remove any CDATA
+        if 'CDATA[' in item[0]:
+            item[0] = item[0].split('CDATA[')[1]
+            if ']' in item[0]:
+                item[0] = item[0].split(']')[0]
         publishedDate = \
             datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
         dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
@@ -346,6 +355,14 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if newswire:
         ctr = 0
         for dateStr, item in newswire.items():
+            item[0] = removeHtml(item[0]).strip()
+            if not item[0]:
+                continue
+            # remove any CDATA
+            if 'CDATA[' in item[0]:
+                item[0] = item[0].split('CDATA[')[1]
+                if ']' in item[0]:
+                    item[0] = item[0].split(']')[0]
             # should this checkbox be selected?
             selectedStr = ''
             if dateStr in citationsSelected:
@@ -416,6 +433,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
+    htmlStr += '<div class="col-right-mobile">\n'
+
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
@@ -428,6 +447,9 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                               False, timelinePath, showPublishButton,
                               showPublishAsIcon, rssIconAtTop, False,
                               authorized, False)
+    # end of col-right-mobile
+    htmlStr += '</div\n>'
+
     htmlStr += htmlFooter()
     return htmlStr
 
