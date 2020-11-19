@@ -990,7 +990,6 @@ div.container {
         font-family: var(--header-font);
         font-size: var(--column-left-header-size);
         text-transform: var(--column-left-header-style);
-        padding: 4px;
         border: none;
     }
     .newswireItem {
@@ -1628,7 +1627,6 @@ div.container {
         font-family: var(--header-font);
         font-size: var(--column-left-header-size-mobile);
         text-transform: var(--column-left-header-style);
-        padding: 4px;
         border: none;
     }
     .leftColEditImage {

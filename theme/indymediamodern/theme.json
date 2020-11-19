@@ -4,6 +4,7 @@
     "header-bg-color": "#efefef",
     "verticals-width": "0px",
     "newswire-publish-icon": "False",
+    "line-spacing-newswire": "150%",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "True",
     "rss-icon-at-top": "False",
