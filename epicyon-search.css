@@ -35,6 +35,8 @@
     --focus-color: white;
     --search-banner-height: 30vh;
     --search-banner-height-mobile: 20vh;
+    --title-color: #999;
+    --header-font: 'Arial, Helvetica, sans-serif';
 }
 
 @font-face {
@@ -60,6 +62,11 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
     max-width: 100%;
     min-width: 600px;
+}
+
+h1 {
+    font-family: var(--header-font);
+    color: var(--title-color);
 }
 
 a, u {

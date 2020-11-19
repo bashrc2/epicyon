@@ -372,7 +372,7 @@ def htmlSearch(cssCache: {}, translate: {},
         'name="submitSearch">' + translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
     followStr += '  <p class="hashtagswarm">' + \
-        htmlHashTagSwarm(baseDir, actor) + '</p>\n'
+        htmlHashTagSwarm(baseDir, actor, translate) + '</p>\n'
     followStr += '  </center>\n'
     followStr += '  </div>\n'
     followStr += '</div>\n'

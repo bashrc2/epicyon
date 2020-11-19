@@ -23,7 +23,7 @@ def getHashtagDomainMax(domainHistogram: {}) -> str:
     return maxDomain
 
 
-def getHashtagDomainHistogram(domainHistogram: {}) -> str:
+def getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
     """Returns the html for a histogram of domains
     from which hashtags are coming
     """
@@ -35,6 +35,7 @@ def getHashtagDomainHistogram(domainHistogram: {}) -> str:
 
     htmlStr = ''
     histogramHeaderStr = '<br><center>\n'
+    histogramHeaderStr += '  <h1>' + translate['Hashtag origins'] + '</h1>\n'
     histogramHeaderStr += '  <table class="domainHistogram">\n'
     histogramHeaderStr += '    <colgroup>\n'
     histogramHeaderStr += '      <col span="1" class="domainHistogramLeft">\n'
@@ -69,7 +70,7 @@ def getHashtagDomainHistogram(domainHistogram: {}) -> str:
     return htmlStr
 
 
-def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
+def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     """Returns a tag swarm of today's hashtags
     """
     currTime = datetime.utcnow()
@@ -137,5 +138,5 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
             '" class="hashtagswarm">' + tagName + '</a>\n'
         ctr += 1
     tagSwarmHtml = tagSwarmStr.strip() + '\n'
-    tagSwarmHtml += getHashtagDomainHistogram(domainHistogram)
+    tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
     return tagSwarmHtml
