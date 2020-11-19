@@ -115,17 +115,18 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                         break
                     else:
                         postUrl = sections[2]
-                        if '##' in postUrl:
-                            postDomain = postUrl.split('##')[1]
-                            if '#' in postDomain:
-                                postDomain = postDomain.split('#')[0]
-                            if domainHistogram.get(postDomain):
-                                domainHistogram[postDomain] = \
-                                    domainHistogram[postDomain] + 1
-                            else:
-                                domainHistogram[postDomain] = 1
-                            tagSwarm.append(hashTagName)
+                        if '##' not in postUrl:
                             break
+                        postDomain = postUrl.split('##')[1]
+                        if '#' in postDomain:
+                            postDomain = postDomain.split('#')[0]
+                        if domainHistogram.get(postDomain):
+                            domainHistogram[postDomain] = \
+                                domainHistogram[postDomain] + 1
+                        else:
+                            domainHistogram[postDomain] = 1
+                        tagSwarm.append(hashTagName)
+                        break
 
     if not tagSwarm:
         return ''
