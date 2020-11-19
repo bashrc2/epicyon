@@ -34,7 +34,7 @@ def getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
         return ''
 
     htmlStr = ''
-    histogramHeaderStr = '<br><center>\n'
+    histogramHeaderStr = '<br><br><center>\n'
     histogramHeaderStr += '  <h1>' + translate['Hashtag origins'] + '</h1>\n'
     histogramHeaderStr += '  <table class="domainHistogram">\n'
     histogramHeaderStr += '    <colgroup>\n'
