@@ -88,6 +88,7 @@
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
+    --column-left-mobile-margin: 10px;
     --column-left-top-margin: 0;
     --column-left-header-style: uppercase;
     --column-left-header-background: #555;
@@ -1303,7 +1304,7 @@ div.container {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
-	margin-left: var(--button-left-margin);
+        margin-left: var(--button-left-margin);
     }
     .buttonDesktop {
         border-radius: var(--button-corner-radius);
@@ -1323,7 +1324,7 @@ div.container {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
-	margin-left: var(--button-left-margin);
+        margin-left: var(--button-left-margin);
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1377,7 +1378,7 @@ div.container {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
-	margin-left: var(--button-left-margin);
+        margin-left: var(--button-left-margin);
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1721,6 +1722,9 @@ div.container {
         display: none;
         width: 0%;
     }
+    .col-left-mobile {
+        margin-left: var(--column-left-mobile-margin);
+    }
     .col-left {
         float: left;
         width: 0%;
@@ -1728,6 +1732,9 @@ div.container {
     }
     .col-center {
         width: 100vw;
+    }
+    .col-right-mobile {
+        margin-left: var(--column-left-mobile-margin);
     }
     .col-right {
         float: right;

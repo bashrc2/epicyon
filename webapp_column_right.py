@@ -433,6 +433,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
+    htmlStr += '<div class="col-right-mobile">\n'
+
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
@@ -445,6 +447,9 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                               False, timelinePath, showPublishButton,
                               showPublishAsIcon, rssIconAtTop, False,
                               authorized, False)
+    # end of col-right-mobile
+    htmlStr += '</div\n>'
+
     htmlStr += htmlFooter()
     return htmlStr
 
