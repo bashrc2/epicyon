@@ -48,6 +48,8 @@
     --time-vertical-align: 4px;
     --time-vertical-align-mobile: 25px;
     --publish-button-text: #FFFFFF;
+    --button-margin: 5px;
+    --button-left-margin: none;
     --button-text: #FFFFFF;
     --button-selected-text: #FFFFFF;
     --publish-button-background: #999;
@@ -1292,7 +1294,7 @@ div.container {
         font-family: var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
-        margin: 5px;
+        margin: var(--button-margin);
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
@@ -1301,6 +1303,7 @@ div.container {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
+	margin-left: var(--button-left-margin);
     }
     .buttonDesktop {
         border-radius: var(--button-corner-radius);
@@ -1320,6 +1323,7 @@ div.container {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
+	margin-left: var(--button-left-margin);
     }
     .publishbtn {
         border-radius: var(--button-corner-radius);
@@ -1364,7 +1368,7 @@ div.container {
         font-family: var(--header-font);
         padding: var(--button-height-padding);
         width: 10%;
-        margin: 5px;
+        margin: var(--button-margin);
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
@@ -1373,6 +1377,7 @@ div.container {
         border-left: var(--tab-border-width) solid var(--tab-border-color);
         border-right: var(--tab-border-width) solid var(--tab-border-color);
         margin-bottom: var(--button-bottom-margin);
+	margin-left: var(--button-left-margin);
     }
     .buttonselectedhighlighted {
         border-radius: var(--button-corner-radius);
@@ -1893,7 +1898,7 @@ div.container {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 5px;
+        margin: var(--button-margin);
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
@@ -1927,7 +1932,7 @@ div.container {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 5px;
+        margin: var(--button-margin);
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
@@ -1987,7 +1992,7 @@ div.container {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 5px;
+        margin: var(--button-margin);
         border-top: var(--tab-border-width) solid var(--tab-border-color);
         border-bottom: none;
         border-left: var(--tab-border-width) solid var(--tab-border-color);
