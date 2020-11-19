@@ -90,9 +90,6 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
-.domainHistogram {
-    border: 0;
-}
 .domainHistogramLeft {
     float: right;
 }
@@ -202,6 +199,10 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
+    .domainHistogram {
+        border: 0;
+        font-size: var(--hashtag-size1);
+    }
     .timeline-banner {
         object-fit: cover;
         width: 98vw;
@@ -254,6 +255,10 @@ input[type=text] {
 }
 
 @media screen and (max-width: 1000px) {
+    .domainHistogram {
+        border: 0;
+        font-size: var(--hashtag-size2);
+    }
     .timeline-banner {
         object-fit: cover;
         width: 98vw;
