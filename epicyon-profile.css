@@ -1970,7 +1970,7 @@ div.container {
         min-width: var(--button-width-chars);
         transition: all 0.5s;
         cursor: pointer;
-        margin: 15px;
+        margin: 15px 0px;
     }
     .buttonhighlighted {
         border-radius: var(--button-corner-radius);
