@@ -38,26 +38,21 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
             if daysSinceEpochStr not in open(tagsFilename).read():
                 continue
             with open(tagsFilename, 'r') as tagsFile:
-                line = tagsFile.readline()
-                tagCtr = 0
-                while line:
-                    if '  ' not in line:
-                        line = tagsFile.readline()
+                while True:
+                    line = tagsFile.readline()
+                    if not line:
+                        break
+                    elif '  ' not in line:
                         break
                     postDaysSinceEpochStr = line.split('  ')[0]
                     if not postDaysSinceEpochStr.isdigit():
-                        line = tagsFile.readline()
                         break
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
                     if postDaysSinceEpoch < daysSinceEpoch:
                         break
-                    if postDaysSinceEpoch == daysSinceEpoch:
-                        if tagCtr == 0:
-                            tagSwarm.append(hashTagName)
-                        tagCtr += 1
-
-                    line = tagsFile.readline()
-                    break
+                    elif postDaysSinceEpoch == daysSinceEpoch:
+                        tagSwarm.append(hashTagName)
+                        break
 
     if not tagSwarm:
         return ''
