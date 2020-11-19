@@ -124,8 +124,8 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                                     domainHistogram[postDomain] + 1
                             else:
                                 domainHistogram[postDomain] = 1
-                        tagSwarm.append(hashTagName)
-                        break
+                            tagSwarm.append(hashTagName)
+                            break
 
     if not tagSwarm:
         return ''
