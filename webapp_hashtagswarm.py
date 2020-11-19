@@ -11,6 +11,64 @@ from blocking import isBlockedHashtag
 from datetime import datetime
 
 
+def getHashtagDomainMax(domainHistogram: {}) -> str:
+    """Returns the domain with the maximum number of hashtags
+    """
+    maxCount = 1
+    maxDomain = None
+    for domain, count in domainHistogram.items():
+        if count > maxCount:
+            maxDomain = domain
+            maxCount = count
+    return maxDomain
+
+
+def getHashtagDomainHistogram(domainHistogram: {}) -> str:
+    """Returns the html for a histogram of domains
+    from which hashtags are coming
+    """
+    totalCount = 0
+    for domain, count in domainHistogram.items():
+        totalCount += count
+    if totalCount == 0:
+        return ''
+
+    htmlStr = ''
+    histogramHeaderStr = '<br><center>\n'
+    histogramHeaderStr += '  <table class="domainHistogram">\n'
+    histogramHeaderStr += '    <colgroup>\n'
+    histogramHeaderStr += '      <col span="1" class="domainHistogramLeft">\n'
+    histogramHeaderStr += '      <col span="1" class="domainHistogramRight">\n'
+    histogramHeaderStr += '    </colgroup>\n'
+    histogramHeaderStr += '    <tbody>\n'
+    histogramHeaderStr += '      <tr>\n'
+
+    leftColStr = ''
+    rightColStr = ''
+
+    for i in range(len(domainHistogram)):
+        domain = getHashtagDomainMax(domainHistogram)
+        if not domain:
+            break
+        percent = int(domainHistogram[domain] * 100 / totalCount)
+        if histogramHeaderStr:
+            htmlStr += histogramHeaderStr
+            histogramHeaderStr = None
+        leftColStr += str(percent) + '%<br>'
+        rightColStr += domain + '<br>'
+        del domainHistogram[domain]
+
+    if htmlStr:
+        htmlStr += '        <td>' + leftColStr + '</td>\n'
+        htmlStr += '        <td>' + rightColStr + '</td>\n'
+        htmlStr += '      </tr>\n'
+        htmlStr += '    </tbody>\n'
+        htmlStr += '  </table>\n'
+        htmlStr += '</center>\n'
+
+    return htmlStr
+
+
 def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
     """Returns a tag swarm of today's hashtags
     """
@@ -18,6 +76,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
     daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
     daysSinceEpochStr = str(daysSinceEpoch) + ' '
     tagSwarm = []
+    domainHistogram = {}
 
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
@@ -44,13 +103,26 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                         break
                     elif '  ' not in line:
                         break
-                    postDaysSinceEpochStr = line.split('  ')[0]
+                    sections = line.split('  ')
+                    if len(sections) != 3:
+                        break
+                    postDaysSinceEpochStr = sections[0]
                     if not postDaysSinceEpochStr.isdigit():
                         break
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
                     if postDaysSinceEpoch < daysSinceEpoch:
                         break
                     elif postDaysSinceEpoch == daysSinceEpoch:
+                        postUrl = sections[2]
+                        if '##' in postUrl:
+                            postDomain = postUrl.split('##')[1]
+                            if '#' in postDomain:
+                                postDomain = postDomain.split('#')[0]
+                            if domainHistogram.get(postDomain):
+                                domainHistogram[postDomain] = \
+                                    domainHistogram[postDomain] + 1
+                            else:
+                                domainHistogram[postDomain] = 1
                         tagSwarm.append(hashTagName)
                         break
 
@@ -65,4 +137,5 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
             '" class="hashtagswarm">' + tagName + '</a>\n'
         ctr += 1
     tagSwarmHtml = tagSwarmStr.strip() + '\n'
+    tagSwarmHtml += getHashtagDomainHistogram(domainHistogram)
     return tagSwarmHtml

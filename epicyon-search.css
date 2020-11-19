@@ -90,6 +90,16 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
+.domainHistogram {
+    border: 0;
+}
+.domainHistogramLeft {
+    float: right;
+}
+.domainHistogramRight {
+    float: left;
+}
+
 .follow {
     background-image: url("follow-background.jpg");
     background-size: cover;
