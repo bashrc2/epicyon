@@ -39,25 +39,15 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                 continue
             with open(tagsFilename, 'r') as tagsFile:
                 line = tagsFile.readline()
-                lineCtr = 1
                 tagCtr = 0
-                maxLineCtr = 1
                 while line:
                     if '  ' not in line:
                         line = tagsFile.readline()
-                        lineCtr += 1
-                        # don't read too many lines
-                        if lineCtr >= maxLineCtr:
-                            break
-                        continue
+                        break
                     postDaysSinceEpochStr = line.split('  ')[0]
                     if not postDaysSinceEpochStr.isdigit():
                         line = tagsFile.readline()
-                        lineCtr += 1
-                        # don't read too many lines
-                        if lineCtr >= maxLineCtr:
-                            break
-                        continue
+                        break
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
                     if postDaysSinceEpoch < daysSinceEpoch:
                         break
@@ -67,10 +57,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                         tagCtr += 1
 
                     line = tagsFile.readline()
-                    lineCtr += 1
-                    # don't read too many lines
-                    if lineCtr >= maxLineCtr:
-                        break
+                    break
 
     if not tagSwarm:
         return ''
