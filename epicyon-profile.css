@@ -86,6 +86,7 @@
     --column-left-width: 10vw;
     --column-center-width: 80vw;
     --column-right-width: 10vw;
+    --column-left-top-margin: 0;
     --column-left-header-style: uppercase;
     --column-left-header-background: #555;
     --column-left-header-color: #fff;
@@ -1056,6 +1057,7 @@ div.container {
         width: var(--column-left-width);
     }
     .col-left {
+        margin-top: var(--column-left-top-margin);
         border: var(--column-left-border-width) solid var(--column-left-border-color);
         color: var(--column-left-fg-color);
         font-size: var(--font-size-links);
