@@ -113,7 +113,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
                     if postDaysSinceEpoch < daysSinceEpoch - 1:
                         break
-                    elif postDaysSinceEpoch >= daysSinceEpoch -1:
+                    else:
                         postUrl = sections[2]
                         if '##' in postUrl:
                             postDomain = postUrl.split('##')[1]
