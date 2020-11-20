@@ -265,6 +265,7 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
+    avatarLink = ''
     if '/users/news/' not in avatarUrl:
         avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
         avatarLink += \
