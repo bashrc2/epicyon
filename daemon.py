@@ -3663,7 +3663,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
-                                 domain.
+                                 domain,
                                  allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
