@@ -2066,6 +2066,11 @@ class PubServer(BaseHTTPRequestHandler):
                followingPort == port:
                 if debug:
                     print('You cannot follow yourself!')
+            elif followingrNickname == 'news' and \
+               followingDomain == domain and \
+               followingPort == port:
+                if debug:
+                    print('You cannot follow the news actor')
             else:
                 if debug:
                     print('Sending follow request from ' +
