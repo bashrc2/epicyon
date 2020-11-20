@@ -225,25 +225,29 @@ def htmlProfileAfterSearch(cssCache: {},
                                     profileDescriptionShort,
                                     avatarUrl, imageUrl)
 
-    profileStr += '<div class="container">\n'
-    profileStr += '  <form method="POST" action="' + \
-        backUrl + '/followconfirm">\n'
-    profileStr += '    <center>\n'
-    profileStr += \
-        '      <input type="hidden" name="actor" value="' + \
-        personUrl + '">\n'
-    # profileStr += \
-    #     '      <a href="' + backUrl + '"><button class="button">' + \
-    #     translate['Go Back'] + '</button></a>\n'
-    profileStr += \
-        '      <button type="submit" class="button" name="submitYes">' + \
-        translate['Follow'] + '</button>\n'
-    profileStr += \
-        '      <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>\n'
-    profileStr += '    </center>\n'
-    profileStr += '  </form>\n'
-    profileStr += '</div>\n'
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    # only show follow and view buttons if this is not the news actor
+    if not (searchNickname == 'news' and searchDomainFull == domainFull):
+        profileStr += '<div class="container">\n'
+        profileStr += '  <form method="POST" action="' + \
+            backUrl + '/followconfirm">\n'
+        profileStr += '    <center>\n'
+        profileStr += \
+            '      <input type="hidden" name="actor" value="' + \
+            personUrl + '">\n'
+        profileStr += \
+            '      <button type="submit" class="button" name="submitYes">' + \
+            translate['Follow'] + '</button>\n'
+        profileStr += \
+            '      <button type="submit" class="button" name="submitView">' + \
+            translate['View'] + '</button>\n'
+        profileStr += '    </center>\n'
+        profileStr += '  </form>\n'
+        profileStr += '</div>\n'
 
     iconsPath = getIconsWebPath(baseDir)
     i = 0
