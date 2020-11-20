@@ -2917,7 +2917,10 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname == adminNickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
-                    if not dangerousMarkup(aboutStr):
+                    allowLocalNetworkAccess = \
+                        self.server.allowLocalNetworkAccess
+                    if not dangerousMarkup(aboutStr,
+                                           allowLocalNetworkAccess):
                         aboutFile = open(aboutFilename, "w+")
                         if aboutFile:
                             aboutFile.write(aboutStr)
@@ -2928,7 +2931,10 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
-                    if not dangerousMarkup(TOSStr):
+                    allowLocalNetworkAccess = \
+                        self.server.allowLocalNetworkAccess
+                    if not dangerousMarkup(TOSStr,
+                                           allowLocalNetworkAccess):
                         TOSFile = open(TOSFilename, "w+")
                         if TOSFile:
                             TOSFile.write(TOSStr)
@@ -3655,7 +3661,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
-                                 domain)
+                                 domain.
+                                 self.server.allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
                                            'showPublishAsIcon')
@@ -4014,7 +4021,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
-                                setTheme(baseDir, currTheme, domain)
+                                setTheme(baseDir, currTheme, domain,
+                                         self.server.allowLocalNetworkAccess)
                                 self.server.showPublishAsIcon = \
                                     getConfigParam(self.server.baseDir,
                                                    'showPublishAsIcon')
@@ -12374,7 +12382,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(maxFeedItemSizeKb: int,
+def runDaemon(allowLocalNetworkAccess: bool,
+              maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
               rssIconAtTop: bool,
               iconsAsButtons: bool,
@@ -12439,6 +12448,10 @@ def runDaemon(maxFeedItemSizeKb: int,
         return False
 
     httpd.unitTest = unitTest
+    httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
+    if unitTest:
+        # unit tests are run on the local network with LAN addresses
+        httpd.allowLocalNetworkAccess = True
     httpd.YTReplacementDomain = YTReplacementDomain
 
     # newswire storing rss feeds
@@ -12702,7 +12715,8 @@ def runDaemon(maxFeedItemSizeKb: int,
                               httpd.YTReplacementDomain,
                               httpd.showPublishedDateOnly,
                               httpd.allowNewsFollowers,
-                              httpd.maxFollowers), daemon=True)
+                              httpd.maxFollowers,
+                              httpd.allowLocalNetworkAccess), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

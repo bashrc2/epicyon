@@ -183,7 +183,8 @@ def setCSSparam(css: str, param: str, value: str) -> str:
 
 
 def setThemeFromDict(baseDir: str, name: str,
-                     themeParams: {}, bgParams: {}) -> None:
+                     themeParams: {}, bgParams: {},
+                     allowLocalNetworkAccess: bool) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
@@ -198,7 +199,7 @@ def setThemeFromDict(baseDir: str, name: str,
 
         # Ensure that any custom CSS is mostly harmless.
         # If not then just use the defaults
-        if dangerousCSS(templateFilename) or \
+        if dangerousCSS(templateFilename, allowLocalNetworkAccess) or \
            not os.path.isfile(templateFilename):
             # use default css
             templateFilename = baseDir + '/epicyon-' + filename
@@ -355,7 +356,8 @@ def setCustomFont(baseDir: str):
 
 
 def readVariablesFile(baseDir: str, themeName: str,
-                      variablesFile: str) -> None:
+                      variablesFile: str,
+                      allowLocalNetworkAccess: bool) -> None:
     """Reads variables from a file in the theme directory
     """
     themeParams = loadJson(variablesFile, 0)
@@ -367,10 +369,11 @@ def readVariablesFile(baseDir: str, themeName: str,
         "options": "jpg",
         "search": "jpg"
     }
-    setThemeFromDict(baseDir, themeName, themeParams, bgParams)
+    setThemeFromDict(baseDir, themeName, themeParams, bgParams,
+                     allowLocalNetworkAccess)
 
 
-def setThemeDefault(baseDir: str):
+def setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
     name = 'default'
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
@@ -390,10 +393,11 @@ def setThemeDefault(baseDir: str):
         "banner-height-mobile": "10vh",
         "search-banner-height-mobile": "15vh"
     }
-    setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setThemeFromDict(baseDir, name, themeParams, bgParams,
+                     allowLocalNetworkAccess)
 
 
-def setThemeHighVis(baseDir: str):
+def setThemeHighVis(baseDir: str, allowLocalNetworkAccess: bool):
     name = 'highvis'
     themeParams = {
         "newswire-publish-icon": True,
@@ -422,7 +426,8 @@ def setThemeHighVis(baseDir: str):
         "options": "jpg",
         "search": "jpg"
     }
-    setThemeFromDict(baseDir, name, themeParams, bgParams)
+    setThemeFromDict(baseDir, name, themeParams, bgParams,
+                     allowLocalNetworkAccess)
 
 
 def setThemeFonts(baseDir: str, themeName: str) -> None:
@@ -578,7 +583,8 @@ def setNewsAvatar(baseDir: str, name: str,
              nickname + '@' + domain + '/avatar.png')
 
 
-def setTheme(baseDir: str, name: str, domain: str) -> bool:
+def setTheme(baseDir: str, name: str, domain: str,
+             allowLocalNetworkAccess: bool) -> bool:
     result = False
 
     prevThemeName = getTheme(baseDir)
@@ -589,7 +595,8 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
         themeNameLower = themeName.lower()
         if name == themeNameLower:
             try:
-                globals()['setTheme' + themeName](baseDir)
+                globals()['setTheme' + themeName](baseDir,
+                                                  allowLocalNetworkAccess)
             except BaseException:
                 pass
 
@@ -608,7 +615,8 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
 
     variablesFile = baseDir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variablesFile):
-        readVariablesFile(baseDir, name, variablesFile)
+        readVariablesFile(baseDir, name, variablesFile,
+                          allowLocalNetworkAccess)
 
     setCustomFont(baseDir)
 

@@ -1565,7 +1565,8 @@ def estimateNumberOfEmoji(content: str) -> int:
 
 
 def validPostContent(baseDir: str, nickname: str, domain: str,
-                     messageJson: {}, maxMentions: int, maxEmoji: int) -> bool:
+                     messageJson: {}, maxMentions: int, maxEmoji: int,
+                     allowLocalNetworkAccess: bool) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1600,7 +1601,8 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         return True
 
-    if dangerousMarkup(messageJson['object']['content']):
+    if dangerousMarkup(messageJson['object']['content'],
+                       allowLocalNetworkAccess):
         if messageJson['object'].get('id'):
             print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
         print('REJECT ARBITRARY HTML: bad string in post - ' +
@@ -2030,7 +2032,8 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                       maxReplies: int, allowDeletion: bool,
                       maxMentions: int, maxEmoji: int, translate: {},
                       unitTest: bool, YTReplacementDomain: str,
-                      showPublishedDateOnly: bool) -> bool:
+                      showPublishedDateOnly: bool,
+                      allowLocalNetworkAccess: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2155,7 +2158,8 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
     nickname = handle.split('@')[0]
     if validPostContent(baseDir, nickname, domain,
-                        postJsonObject, maxMentions, maxEmoji):
+                        postJsonObject, maxMentions, maxEmoji,
+                        allowLocalNetworkAccess):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -2438,7 +2442,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   YTReplacementDomain: str,
                   showPublishedDateOnly: bool,
                   allowNewsFollowers: bool,
-                  maxFollowers: int) -> None:
+                  maxFollowers: int, allowLocalNetworkAccess: bool) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2853,7 +2857,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                               maxMentions, maxEmoji,
                               translate, unitTest,
                               YTReplacementDomain,
-                              showPublishedDateOnly)
+                              showPublishedDateOnly,
+                              allowLocalNetworkAccess)
             if debug:
                 pprint(queueJson['post'])
 

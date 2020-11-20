@@ -151,7 +151,7 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     return newContent
 
 
-def dangerousMarkup(content: str) -> bool:
+def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
     if '<' not in content:
@@ -159,7 +159,9 @@ def dangerousMarkup(content: str) -> bool:
     if '>' not in content:
         return False
     contentSections = content.split('<')
-    invalidPartials = ('127.0.', '192.168', '10.0.')
+    invalidPartials = ()
+    if not allowLocalNetworkAccess:
+        invalidPartials = ('127.0.', '192.168', '10.0.')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
                       'hr')
@@ -181,7 +183,7 @@ def dangerousMarkup(content: str) -> bool:
     return False
 
 
-def dangerousCSS(filename: str) -> bool:
+def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true is the css file contains code which
     can create security problems
     """
@@ -199,7 +201,7 @@ def dangerousCSS(filename: str) -> bool:
 
         # an attacker can include html inside of the css
         # file as a comment and this may then be run from the html
-        if dangerousMarkup(content):
+        if dangerousMarkup(content, allowLocalNetworkAccess):
             return True
     return False
 
