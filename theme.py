@@ -615,10 +615,11 @@ def setTheme(baseDir: str, name: str, domain: str) -> bool:
     # set the news avatar
     newsAvatarThemeFilename = \
         baseDir + '/theme/' + name + '/icons/avatar_news.png'
-    if os.path.isfile(newsAvatarThemeFilename):
-        newsAvatarFilename = \
-            baseDir + '/accounts/news@' + domain + '/avatar.png'
-        copyfile(newsAvatarThemeFilename, newsAvatarFilename)
+    if os.path.isdir(baseDir + '/accounts/news@' + domain):
+        if os.path.isfile(newsAvatarThemeFilename):
+            newsAvatarFilename = \
+                baseDir + '/accounts/news@' + domain + '/avatar.png'
+            copyfile(newsAvatarThemeFilename, newsAvatarFilename)
 
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
