@@ -230,8 +230,15 @@ def htmlProfileAfterSearch(cssCache: {},
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    # only show follow and view buttons if this is not the news actor
-    if not (searchNickname == 'news' and searchDomainFull == domainFull):
+    followIsPermitted = True
+    if searchNickname == 'news' and searchDomainFull == domainFull:
+        # currently the news actor is not something you can follow
+        followIsPermitted = False
+    elif searchNickname == nickname and searchDomainFull == domainFull:
+        # don't follow yourself!
+        followIsPermitted = False
+
+    if followIsPermitted:
         profileStr += '<div class="container">\n'
         profileStr += '  <form method="POST" action="' + \
             backUrl + '/followconfirm">\n'
