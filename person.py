@@ -234,9 +234,6 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         approveFollowers = True
         personType = 'Application'
     elif nickname == 'news':
-        # shared inbox
-        inboxStr = httpPrefix + '://' + domain + '/actor/news'
-        personId = httpPrefix + '://' + domain + '/actor'
         personUrl = httpPrefix + '://' + domain + \
             '/about/more?news_actor=true'
         personName = originalDomain

@@ -291,8 +291,10 @@ def createServerAlice(path: str, domain: str, port: int,
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
+    allowLocalNetworkAccess = True
     print('Server running: Alice')
-    runDaemon(2048, False, True, False, False, True, 10, False,
+    runDaemon(allowLocalNetworkAccess,
+              2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
               5, True, True, 'en', __version__,
@@ -356,8 +358,10 @@ def createServerBob(path: str, domain: str, port: int,
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
+    allowLocalNetworkAccess = True
     print('Server running: Bob')
-    runDaemon(2048, False, True, False, False, True, 10, False,
+    runDaemon(allowLocalNetworkAccess,
+              2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
               5, True, True, 'en', __version__,
@@ -395,8 +399,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxEmoji = 10
     onionDomain = None
     i2pDomain = None
+    allowLocalNetworkAccess = True
     print('Server running: Eve')
-    runDaemon(2048, False, True, False, False, True, 10, False,
+    runDaemon(allowLocalNetworkAccess,
+              2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
               5, True, True, 'en', __version__,
@@ -1941,58 +1947,59 @@ def testRemoveHtml():
 
 def testDangerousMarkup():
     print('testDangerousMarkup')
+    allowLocalNetworkAccess = False
     content = '<p>This is a valid message</p>'
-    assert(not dangerousMarkup(content))
+    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = 'This is a valid message without markup'
-    assert(not dangerousMarkup(content))
+    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script>document.getElementById("concentrated")' + \
         '.innerHTML = "evil";</script></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This html contains more than you expected... ' + \
         '<script language="javascript">document.getElementById("abc")' + \
         '.innerHTML = "def";</script></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This is a valid-looking message. But wait... ' + \
         '<script src="https://evilsite/payload.js" /></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message embeds an evil frame.' + \
         '<iframe src="somesite"></iframe></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message tries to obfuscate an evil frame.' + \
         '<  iframe     src = "somesite"></    iframe  ></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message is not necessarily evil, but annoying.' + \
         '<hr><br><br><br><br><br><br><br><hr><hr></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/index.html">valid link.</a></p>'
-    assert(not dangerousMarkup(content))
+    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message contans a ' + \
         '<a href="https://validsite/iframe.html">' + \
         'valid link having invalid but harmless name.</a></p>'
-    assert(not dangerousMarkup(content))
+    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message which <a href="127.0.0.1:8736">' + \
         'tries to access the local network</a></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>This message which <a href="http://192.168.5.10:7235">' + \
         'tries to access the local network</a></p>'
-    assert(dangerousMarkup(content))
+    assert(dangerousMarkup(content, allowLocalNetworkAccess))
 
     content = '<p>127.0.0.1 This message which does not access ' + \
         'the local network</a></p>'
-    assert(not dangerousMarkup(content))
+    assert(not dangerousMarkup(content, allowLocalNetworkAccess))
 
 
 def runHtmlReplaceQuoteMarks():

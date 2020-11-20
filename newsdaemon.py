@@ -469,7 +469,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                             personCache: {},
                             federationList: [],
                             sendThreads: [], postLog: [],
-                            maxMirroredArticles: int) -> None:
+                            maxMirroredArticles: int,
+                            allowLocalNetworkAccess: bool) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -512,7 +513,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         rssTitle = removeControlCharacters(item[0])
         url = item[1]
-        if dangerousMarkup(url) or dangerousMarkup(rssTitle):
+        if dangerousMarkup(url, allowLocalNetworkAccess) or \
+           dangerousMarkup(rssTitle, allowLocalNetworkAccess):
             continue
         rssDescription = ''
 
@@ -537,7 +539,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 postUrl += '/index.html'
 
         # add the off-site link to the description
-        if rssDescription and not dangerousMarkup(rssDescription):
+        if rssDescription and \
+           not dangerousMarkup(rssDescription, allowLocalNetworkAccess):
             rssDescription += \
                 '<br><a href="' + postUrl + '">' + \
                 translate['Read more...'] + '</a>'
@@ -743,7 +746,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.federationList,
                                 httpd.sendThreads,
                                 httpd.postLog,
-                                httpd.maxMirroredArticles)
+                                httpd.maxMirroredArticles,
+                                httpd.allowLocalNetworkAccess)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.maxNewsPosts > 0:

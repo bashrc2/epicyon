@@ -2066,6 +2066,11 @@ class PubServer(BaseHTTPRequestHandler):
                followingPort == port:
                 if debug:
                     print('You cannot follow yourself!')
+            elif (followingNickname == 'news' and
+                  followingDomain == domain and
+                  followingPort == port):
+                if debug:
+                    print('You cannot follow the news actor')
             else:
                 if debug:
                     print('Sending follow request from ' +
@@ -2822,7 +2827,8 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str, debug: bool,
-                     defaultTimeline: str) -> None:
+                     defaultTimeline: str,
+                     allowLocalNetworkAccess: bool) -> None:
         """Updates the left links column of the timeline
         """
         usersPath = path.replace('/linksdata', '')
@@ -2917,7 +2923,8 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname == adminNickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
-                    if not dangerousMarkup(aboutStr):
+                    if not dangerousMarkup(aboutStr,
+                                           allowLocalNetworkAccess):
                         aboutFile = open(aboutFilename, "w+")
                         if aboutFile:
                             aboutFile.write(aboutStr)
@@ -2928,7 +2935,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
-                    if not dangerousMarkup(TOSStr):
+                    if not dangerousMarkup(TOSStr,
+                                           allowLocalNetworkAccess):
                         TOSFile = open(TOSFilename, "w+")
                         if TOSFile:
                             TOSFile.write(TOSStr)
@@ -3342,7 +3350,7 @@ class PubServer(BaseHTTPRequestHandler):
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
-                       debug: bool) -> None:
+                       debug: bool, allowLocalNetworkAccess: bool) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -3655,7 +3663,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('themeDropdown'):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
-                                 domain)
+                                 domain.
+                                 allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
                                            'showPublishAsIcon')
@@ -4014,7 +4023,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
-                                setTheme(baseDir, currTheme, domain)
+                                setTheme(baseDir, currTheme, domain,
+                                         self.server.allowLocalNetworkAccess)
                                 self.server.showPublishAsIcon = \
                                     getConfigParam(self.server.baseDir,
                                                    'showPublishAsIcon')
@@ -11755,7 +11765,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.onionDomain,
-                                self.server.i2pDomain, self.server.debug)
+                                self.server.i2pDomain, self.server.debug,
+                                self.server.allowLocalNetworkAccess)
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -11765,7 +11776,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domainFull,
                               self.server.onionDomain,
                               self.server.i2pDomain, self.server.debug,
-                              self.server.defaultTimeline)
+                              self.server.defaultTimeline,
+                              self.server.allowLocalNetworkAccess)
             return
 
         if authorized and self.path.endswith('/newswiredata'):
@@ -12374,7 +12386,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(maxFeedItemSizeKb: int,
+def runDaemon(allowLocalNetworkAccess: bool,
+              maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
               rssIconAtTop: bool,
               iconsAsButtons: bool,
@@ -12439,6 +12452,10 @@ def runDaemon(maxFeedItemSizeKb: int,
         return False
 
     httpd.unitTest = unitTest
+    httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
+    if unitTest:
+        # unit tests are run on the local network with LAN addresses
+        httpd.allowLocalNetworkAccess = True
     httpd.YTReplacementDomain = YTReplacementDomain
 
     # newswire storing rss feeds
@@ -12702,7 +12719,8 @@ def runDaemon(maxFeedItemSizeKb: int,
                               httpd.YTReplacementDomain,
                               httpd.showPublishedDateOnly,
                               httpd.allowNewsFollowers,
-                              httpd.maxFollowers), daemon=True)
+                              httpd.maxFollowers,
+                              httpd.allowLocalNetworkAccess), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

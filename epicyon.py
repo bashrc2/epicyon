@@ -249,6 +249,13 @@ parser.add_argument("--publishButtonAtTop",
                     const=True, default=False,
                     help="Whether to show the publish button at the top of " +
                     "the newswire column")
+parser.add_argument("--allowLocalNetworkAccess",
+                    dest='allowLocalNetworkAccess',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to allow access to local network " +
+                    "addresses. This might be useful when deploying in " +
+                    "a mesh network")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -2050,6 +2057,11 @@ fullWidthTimelineButtonHeader = \
 if fullWidthTimelineButtonHeader is not None:
     args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
 
+allowLocalNetworkAccess = \
+    getConfigParam(baseDir, 'allowLocalNetworkAccess')
+if allowLocalNetworkAccess is not None:
+    args.allowLocalNetworkAccess = bool(allowLocalNetworkAccess)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2059,11 +2071,12 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
-if setTheme(baseDir, themeName, domain):
+if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxFeedItemSizeKb,
+    runDaemon(args.allowLocalNetworkAccess,
+              args.maxFeedItemSizeKb,
               args.publishButtonAtTop,
               args.rssIconAtTop,
               args.iconsAsButtons,
