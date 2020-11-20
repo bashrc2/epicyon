@@ -2057,6 +2057,11 @@ fullWidthTimelineButtonHeader = \
 if fullWidthTimelineButtonHeader is not None:
     args.fullWidthTimelineButtonHeader = bool(fullWidthTimelineButtonHeader)
 
+allowLocalNetworkAccess = \
+    getConfigParam(baseDir, 'allowLocalNetworkAccess')
+if allowLocalNetworkAccess is not None:
+    args.allowLocalNetworkAccess = bool(allowLocalNetworkAccess)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:

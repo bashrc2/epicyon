@@ -2822,7 +2822,8 @@ class PubServer(BaseHTTPRequestHandler):
                      baseDir: str, httpPrefix: str,
                      domain: str, domainFull: str,
                      onionDomain: str, i2pDomain: str, debug: bool,
-                     defaultTimeline: str) -> None:
+                     defaultTimeline: str,
+                     allowLocalNetworkAccess: bool) -> None:
         """Updates the left links column of the timeline
         """
         usersPath = path.replace('/linksdata', '')
@@ -2917,8 +2918,6 @@ class PubServer(BaseHTTPRequestHandler):
             if nickname == adminNickname:
                 if fields.get('editedAbout'):
                     aboutStr = fields['editedAbout']
-                    allowLocalNetworkAccess = \
-                        self.server.allowLocalNetworkAccess
                     if not dangerousMarkup(aboutStr,
                                            allowLocalNetworkAccess):
                         aboutFile = open(aboutFilename, "w+")
@@ -2931,8 +2930,6 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if fields.get('editedTOS'):
                     TOSStr = fields['editedTOS']
-                    allowLocalNetworkAccess = \
-                        self.server.allowLocalNetworkAccess
                     if not dangerousMarkup(TOSStr,
                                            allowLocalNetworkAccess):
                         TOSFile = open(TOSFilename, "w+")
@@ -3348,7 +3345,7 @@ class PubServer(BaseHTTPRequestHandler):
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
-                       debug: bool) -> None:
+                       debug: bool, allowLocalNetworkAccess: bool) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -3662,7 +3659,7 @@ class PubServer(BaseHTTPRequestHandler):
                         setTheme(baseDir,
                                  fields['themeDropdown'],
                                  domain.
-                                 self.server.allowLocalNetworkAccess)
+                                 allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
                                            'showPublishAsIcon')
@@ -11763,7 +11760,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domain,
                                 self.server.domainFull,
                                 self.server.onionDomain,
-                                self.server.i2pDomain, self.server.debug)
+                                self.server.i2pDomain, self.server.debug,
+                                self.server.allowLocalNetworkAccess)
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -11773,7 +11771,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.domainFull,
                               self.server.onionDomain,
                               self.server.i2pDomain, self.server.debug,
-                              self.server.defaultTimeline)
+                              self.server.defaultTimeline,
+                              self.server.allowLocalNetworkAccess)
             return
 
         if authorized and self.path.endswith('/newswiredata'):
