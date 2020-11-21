@@ -1174,9 +1174,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '    <h1>' + translate['Profile for'] + \
         ' ' + nickname + '@' + domainFull + '</h1>'
     editProfileForm += '    <div class="container">\n'
-    # editProfileForm += \
-    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-    #     translate['Go Back'] + '</button></a>\n'
     editProfileForm += \
         '      <center>\n' + \
         '        <input type="submit" name="submitProfile" value="' + \
