@@ -93,7 +93,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
 
             # check if the file was last modified within the previous
             # two days
-            if fileDaysSinceEpoch >= recently:
+            if fileDaysSinceEpoch < recently:
                 continue
 
             hashTagName = f.split('.')[0]
