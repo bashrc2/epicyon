@@ -248,6 +248,11 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
         if '<summary>' in rssItem and '</summary>' in rssItem:
             description = rssItem.split('<summary>')[1]
             description = description.split('</summary>')[0]
+        else:
+            if '<media:description>' in rssItem and \
+               '</media:description>' in rssItem:
+                description = rssItem.split('<media:description>')[1]
+                description = description.split('</media:description>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
