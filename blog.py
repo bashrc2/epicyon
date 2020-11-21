@@ -724,12 +724,11 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     iconsPath = getIconsWebPath(baseDir)
 
-    editBlogText = '<p class="new-post-text">' + \
-        translate['Write your post text below.'] + '</p>'
+    editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
         with open(baseDir + '/accounts/newpost.txt', 'r') as file:
-            editBlogText = '<p class="new-post-text">' + file.read() + '</p>'
+            editBlogText = '<p>' + file.read() + '</p>'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):

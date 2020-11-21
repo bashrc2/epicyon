@@ -1171,8 +1171,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
     editProfileForm += '  <div class="vertical-center">\n'
     editProfileForm += \
-        '    <p class="new-post-text">' + translate['Profile for'] + \
-        ' ' + nickname + '@' + domainFull + '</p>'
+        '    <h1>' + translate['Profile for'] + \
+        ' ' + nickname + '@' + domainFull + '</h1>'
     editProfileForm += '    <div class="container">\n'
     # editProfileForm += \
     #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \

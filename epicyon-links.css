@@ -219,12 +219,6 @@ h1 {
     font-family: var(--header-font);
 }
 
-.new-post-text {
-    font-size: var(--font-size2);
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 4px 0;
-}
-
 .new-post-subtext {
     font-size: var(--font-size-header);
     font-family: Arial, Helvetica, sans-serif;

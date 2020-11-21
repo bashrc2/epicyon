@@ -605,7 +605,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewsPostForm += \
         '  <div class="vertical-center">\n'
     editNewsPostForm += \
-        '    <p class="new-post-text">' + translate['Edit News Post'] + '</p>'
+        '    <h1>' + translate['Edit News Post'] + '</h1>'
     editNewsPostForm += \
         '    <div class="container">\n'
     editNewsPostForm += \
