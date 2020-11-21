@@ -66,6 +66,7 @@
     --column-right-width: 10vw;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
+    --header-font: 'Arial, Helvetica, sans-serif';
 }
 
 @font-face {
@@ -212,6 +213,10 @@ a:focus {
     width: 10%;
     -ms-transform: translateY(30%) scaleX(-1);
     transform: translateY(30%) scaleX(-1);
+}
+
+h1 {
+    font-family: var(--header-font);
 }
 
 .new-post-text {
