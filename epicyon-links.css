@@ -130,10 +130,6 @@ blockquote p {
     border: 2px solid var(--focus-color);
 }
 
-h1 {
-    color: var(--title-color);
-}
-
 a, u {
     color: var(--main-fg-color);
 }
@@ -217,6 +213,7 @@ a:focus {
 
 h1 {
     font-family: var(--header-font);
+    color: var(--title-color);
 }
 
 .new-post-subtext {
