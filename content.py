@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import email.parser
 from shutil import copyfile
+from utils import getImageExtensions
 from utils import loadJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
@@ -939,7 +940,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 break
 
     # remove any existing image files with a different format
-    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
+    extensionTypes = getImageExtensions()
     for ex in extensionTypes:
         if ex == detectedExtension:
             continue

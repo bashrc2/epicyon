@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getImageExtensions
 from utils import mediaFileMimeType
 from utils import getCSS
 from utils import firstParagraphFromString
@@ -8412,7 +8413,8 @@ class PubServer(BaseHTTPRequestHandler):
                              GETstartTime, GETtimings: {}) -> bool:
         """Show a background image
         """
-        for ext in ('webp', 'gif', 'jpg', 'png', 'avif'):
+        imageExtensions = getImageExtensions()
+        for ext in imageExtensions:
             for bg in ('follow', 'options', 'login'):
                 # follow screen background image
                 if path.endswith('/' + bg + '-background.' + ext):

@@ -25,6 +25,24 @@ def getImageExtensions() -> []:
     return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
 
 
+def getVideoExtensions() -> []:
+    """Returns a list of the possible video file extensions
+    """
+    return ('mp4', 'webm', 'ogv')
+
+
+def getAudioExtensions() -> []:
+    """Returns a list of the possible audio file extensions
+    """
+    return ('mp3', 'ogg')
+
+
+def getMediaExtensions() -> []:
+    """Returns a list of the possible media file extensions
+    """
+    return getImageExtensions() + getVideoExtensions() + getAudioExtensions()
+
+
 def getImageFormats() -> str:
     """Returns a string of permissable image formats
     used when selecting an image for a new post
@@ -37,6 +55,20 @@ def getImageFormats() -> str:
             imageFormats += ', '
         imageFormats += '.' + ext
     return imageFormats
+
+
+def getMediaFormats() -> str:
+    """Returns a string of permissable media formats
+    used when selecting an attachment for a new post
+    """
+    mediaExt = getMediaExtensions()
+
+    mediaFormats = ''
+    for ext in mediaExt:
+        if mediaFormats:
+            mediaFormats += ', '
+        mediaFormats += '.' + ext
+    return mediaFormats
 
 
 def removeHtml(content: str) -> str:
@@ -213,7 +245,7 @@ def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions
     """
-    avatarFilenameExtensions = ('png', 'jpg', 'gif', 'webp', 'avif')
+    avatarFilenameExtensions = getImageExtensions()
     for extension in avatarFilenameExtensions:
         avatarFilename = \
             baseDir + '/cache/avatars/' + actorStr + '.' + extension

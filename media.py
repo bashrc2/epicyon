@@ -13,6 +13,10 @@ import os
 import datetime
 from hashlib import sha1
 from auth import createPassword
+from utils import getImageExtensions
+from utils import getVideoExtensions
+from utils import getAudioExtensions
+from utils import getMediaExtensions
 from shutil import copyfile
 from shutil import rmtree
 from shutil import move
@@ -56,8 +60,7 @@ def getImageHash(imageFilename: str) -> str:
 
 
 def isMedia(imageFilename: str) -> bool:
-    permittedMedia = ('png', 'jpg', 'gif', 'webp', 'avif',
-                      'mp4', 'ogv', 'mp3', 'ogg')
+    permittedMedia = getMediaExtensions()
     for m in permittedMedia:
         if imageFilename.endswith('.' + m):
             return True
@@ -83,16 +86,15 @@ def getAttachmentMediaType(filename: str) -> str:
     image, video or audio
     """
     mediaType = None
-    imageTypes = ('png', 'jpg', 'jpeg',
-                  'gif', 'webp', 'avif')
+    imageTypes = getImageExtensions()
     for mType in imageTypes:
         if filename.endswith('.' + mType):
             return 'image'
-    videoTypes = ('mp4', 'webm', 'ogv')
+    videoTypes = getVideoExtensions()
     for mType in videoTypes:
         if filename.endswith('.' + mType):
             return 'video'
-    audioTypes = ('mp3', 'ogg')
+    audioTypes = getAudioExtensions()
     for mType in audioTypes:
         if filename.endswith('.' + mType):
             return 'audio'
@@ -143,8 +145,7 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
         return postJson
 
     fileExtension = None
-    acceptedTypes = ('png', 'jpg', 'gif', 'webp', 'avif',
-                     'mp4', 'webm', 'ogv', 'mp3', 'ogg')
+    acceptedTypes = getMediaExtensions()
     for mType in acceptedTypes:
         if imageFilename.endswith('.' + mType):
             if mType == 'jpg':

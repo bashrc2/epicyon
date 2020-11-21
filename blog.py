@@ -15,6 +15,7 @@ from webapp import htmlHeaderWithExternalStyle
 from webapp import htmlFooter
 from webapp_media import addEmbeddedElements
 from webapp_utils import getPostAttachmentsAsHtml
+from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -745,8 +746,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
     editBlogImageSection += \
-        '            accept=".png, .jpg, .jpeg, .gif, .webp, .avif, ' + \
-        '.mp4, .webm, .ogv, .mp3, .ogg">'
+        '            accept="' + getMediaFormats() + '">'
     editBlogImageSection += '    </div>'
 
     placeholderMessage = translate['Write something'] + '...'

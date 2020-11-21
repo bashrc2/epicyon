@@ -10,6 +10,8 @@ import os
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import getImageFormats
+from utils import getMediaFormats
 from webapp_utils import getIconsWebPath
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -280,13 +282,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         newPostImageSection += \
             '      <input type="file" id="attachpic" name="attachpic"'
         newPostImageSection += \
-            '            accept=".png, .jpg, .jpeg, .gif, .webp, .avif">\n'
+            '            accept="' + getImageFormats() + '">\n'
     else:
         newPostImageSection += \
             '      <input type="file" id="attachpic" name="attachpic"'
         newPostImageSection += \
-            '            accept=".png, .jpg, .jpeg, .gif, ' + \
-            '.webp, .avif, .mp4, .webm, .ogv, .mp3, .ogg">\n'
+            '            accept="' + getMediaFormats() + '">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'

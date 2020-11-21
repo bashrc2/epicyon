@@ -16,6 +16,7 @@ from session import postImage
 from utils import validNickname
 from utils import loadJson
 from utils import saveJson
+from utils import getImageExtensions
 from media import removeMetaData
 
 
@@ -54,7 +55,7 @@ def removeShare(baseDir: str, nickname: str, domain: str,
         # remove any image for the item
         itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
         if sharesJson[itemID]['imageUrl']:
-            formats = ('png', 'jpg', 'gif', 'webp', 'avif')
+            formats = getImageExtensions()
             for ext in formats:
                 if sharesJson[itemID]['imageUrl'].endswith('.' + ext):
                     if os.path.isfile(itemIDfile + '.' + ext):
@@ -108,7 +109,7 @@ def addShare(baseDir: str,
     if not imageFilename:
         sharesImageFilename = \
             baseDir + '/accounts/' + nickname + '@' + domain + '/upload'
-        formats = ('png', 'jpg', 'gif', 'webp', 'avif')
+        formats = getImageExtensions()
         for ext in formats:
             if os.path.isfile(sharesImageFilename + '.' + ext):
                 imageFilename = sharesImageFilename + '.' + ext
@@ -128,7 +129,7 @@ def addShare(baseDir: str,
             if not os.path.isdir(baseDir + '/sharefiles/' + nickname):
                 os.mkdir(baseDir + '/sharefiles/' + nickname)
             itemIDfile = baseDir + '/sharefiles/' + nickname + '/' + itemID
-            formats = ('png', 'jpg', 'gif', 'webp', 'avif')
+            formats = getImageExtensions()
             for ext in formats:
                 if imageFilename.endswith('.' + ext):
                     removeMetaData(imageFilename, itemIDfile + '.' + ext)
@@ -202,7 +203,7 @@ def expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
                     # remove any associated images
                     itemIDfile = \
                         baseDir + '/sharefiles/' + nickname + '/' + itemID
-                    formats = ('png', 'jpg', 'gif', 'webp', 'avif')
+                    formats = getImageExtensions()
                     for ext in formats:
                         if os.path.isfile(itemIDfile + '.' + ext):
                             os.remove(itemIDfile + '.' + ext)
