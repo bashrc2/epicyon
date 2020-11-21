@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from collections import OrderedDict
 from session import getJson
+from utils import getImageExtensions
 from utils import getProtocolPrefixes
 from utils import loadJson
 from utils import getCachedPostFilename
@@ -246,12 +247,6 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                                       allowDownloads)
         return None
     return avatarImageFilename.replace(baseDir + '/cache', '')
-
-
-def getImageExtensions() -> []:
-    """Returns a list of the possible image file extensions
-    """
-    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
 
 
 def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},

@@ -14,6 +14,7 @@ from utils import isSystemAccount
 from utils import removeHtml
 from utils import loadJson
 from utils import getConfigParam
+from utils import getImageFormats
 from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson
@@ -851,7 +852,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     defaultTimeline: str) -> str:
     """Shows the edit profile screen
     """
-    imageFormats = '.png, .jpg, .jpeg, .gif, .webp, .avif'
+    imageFormats = getImageFormats()
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)

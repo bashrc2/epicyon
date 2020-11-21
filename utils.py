@@ -19,6 +19,26 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getImageExtensions() -> []:
+    """Returns a list of the possible image file extensions
+    """
+    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
+
+
+def getImageFormats() -> str:
+    """Returns a string of permissable image formats
+    used when selecting an image for a new post
+    """
+    imageExt = getImageExtensions()
+
+    imageFormats = ''
+    for ext in imageExt:
+        if imageFormats:
+            imageFormats += ', '
+        imageFormats += '.' + ext
+    return imageFormats
+
+
 def removeHtml(content: str) -> str:
     """Removes html links from the given content.
     Used to ensure that profile descriptions don't contain dubious content
