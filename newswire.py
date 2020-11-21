@@ -159,6 +159,11 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
             description = description.split('</description>')[0]
+        else:
+            if '<media:description>' in rssItem and \
+               '</media:description>' in rssItem:
+                description = rssItem.split('<media:description>')[1]
+                description = description.split('</media:description>')[0]
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
