@@ -76,6 +76,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     currTime = datetime.utcnow()
     daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
     daysSinceEpochStr = str(daysSinceEpoch) + ' '
+    daysSinceEpochStr2 = str(daysSinceEpoch - 1) + ' '
     recently = daysSinceEpoch - 1
     tagSwarm = []
     domainHistogram = {}
@@ -99,8 +100,12 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
             hashTagName = f.split('.')[0]
             if isBlockedHashtag(baseDir, hashTagName):
                 continue
-            if daysSinceEpochStr not in open(tagsFilename).read():
-                continue
+            with open(tagsFilename, 'r') as fp:
+                # only read one line, which saves time and memory
+                lastTag = fp.readline()
+                if not lastTag.startswith(daysSinceEpochStr):
+                    if not lastTag.startswith(daysSinceEpochStr2):
+                        continue
             with open(tagsFilename, 'r') as tagsFile:
                 while True:
                     line = tagsFile.readline()
