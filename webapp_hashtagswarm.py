@@ -76,6 +76,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     currTime = datetime.utcnow()
     daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
     daysSinceEpochStr = str(daysSinceEpoch) + ' '
+    recently = daysSinceEpoch - 1
     tagSwarm = []
     domainHistogram = {}
 
@@ -84,12 +85,15 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
             tagsFilename = os.path.join(baseDir + '/tags', f)
             if not os.path.isfile(tagsFilename):
                 continue
+
             # get last modified datetime
             modTimesinceEpoc = os.path.getmtime(tagsFilename)
             lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
             fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
-            # check if the file was last modified today
-            if fileDaysSinceEpoch != daysSinceEpoch:
+
+            # check if the file was last modified within the previous
+            # two days
+            if fileDaysSinceEpoch >= recently:
                 continue
 
             hashTagName = f.split('.')[0]
@@ -111,7 +115,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                     if not postDaysSinceEpochStr.isdigit():
                         break
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
-                    if postDaysSinceEpoch < daysSinceEpoch - 1:
+                    if postDaysSinceEpoch < recently:
                         break
                     else:
                         postUrl = sections[2]
