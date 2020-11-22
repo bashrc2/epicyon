@@ -477,7 +477,12 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                  maxFeedItemSizeKb: int) -> {}:
     """Converts an xml string to a dictionary
     """
-    if 'rss version="2.0"' in xmlStr:
+    if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
+        print('YouTube feed: reading')
+        return atomFeedYTToDict(baseDir, domain,
+                                xmlStr, moderated, mirrored,
+                                maxPostsPerSource, maxFeedItemSizeKb)
+    elif 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(baseDir, domain,
                              xmlStr, moderated, mirrored,
                              maxPostsPerSource, maxFeedItemSizeKb)
@@ -485,11 +490,6 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
         return atomFeedToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb)
-    elif '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
-        print('YouTube feed: reading')
-        return atomFeedYTToDict(baseDir, domain,
-                                xmlStr, moderated, mirrored,
-                                maxPostsPerSource, maxFeedItemSizeKb)
     return {}
 
 
