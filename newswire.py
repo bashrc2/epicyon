@@ -243,7 +243,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
 
         publishedDate = parseFeedDate(pubDate)
         if publishedDate:
-            pubDateStr = str(publishedDate) + '+00:00'
+            pubDateStr = str(publishedDate)
             if not pubDateStr.endswith('+00:00'):
                 pubDateStr += '+00:00'
             postFilename = ''
