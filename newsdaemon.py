@@ -711,8 +711,6 @@ def runNewswireDaemon(baseDir: str, httpd,
                 print('Newswire daemon session established')
 
         # try to update the feeds
-        newNewswire = None
-        # try:
         newNewswire = \
             getDictFromNewswire(httpd.session, baseDir, domain,
                                 httpd.maxNewswirePostsPerSource,
@@ -720,10 +718,6 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.maxTags,
                                 httpd.maxFeedItemSizeKb,
                                 httpd.maxNewswirePosts)
-        # except Exception as e:
-        #     print('WARN: unable to update newswire ' + str(e))
-        #     time.sleep(120)
-        #     continue
 
         if not httpd.newswire:
             if os.path.isfile(newswireStateFilename):
