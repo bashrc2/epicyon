@@ -136,8 +136,8 @@ def addNewswireDictEntry(baseDir: str, domain: str,
     ]
 
 
-def parseFeedDate(pubDate: str):
-    """Returns a date object based on the given date string
+def parseFeedDate(pubDate: str) -> str:
+    """Returns a UTC date string based on the given date string
     This tries a number of formats to see which work
     """
     formats = ("%a, %d %b %Y %H:%M:%S %z",
@@ -186,7 +186,14 @@ def parseFeedDate(pubDate: str):
                 hoursAdded = timedelta(hours=5)
                 publishedDate = publishedDate + hoursAdded
             break
-    return publishedDate
+
+    pubDateStr = None
+    if publishedDate:
+        pubDateStr = str(publishedDate)
+        if not pubDateStr.endswith('+00:00'):
+            pubDateStr += '+00:00'
+
+    return pubDateStr
 
 
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
@@ -241,11 +248,8 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
 
-        publishedDate = parseFeedDate(pubDate)
-        if publishedDate:
-            pubDateStr = str(publishedDate)
-            if not pubDateStr.endswith('+00:00'):
-                pubDateStr += '+00:00'
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -311,11 +315,8 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
         pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
 
-        publishedDate = parseFeedDate(pubDate)
-        if publishedDate:
-            pubDateStr = str(publishedDate)
-            if not pubDateStr.endswith('+00:00'):
-                pubDateStr += '+00:00'
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -378,11 +379,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
         pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
 
-        publishedDate = parseFeedDate(pubDate)
-        if publishedDate:
-            pubDateStr = str(publishedDate)
-            if not pubDateStr.endswith('+00:00'):
-                pubDateStr += '+00:00'
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,

@@ -2391,7 +2391,11 @@ def testParseFeedDate():
     pubDate = "2020-08-27T16:12:34+00:00"
     publishedDate = parseFeedDate(pubDate)
     assert publishedDate
-    print(str(publishedDate))
+
+    pubDate = "Sun, 22 Nov 2020 19:51:33 +0100"
+    publishedDate = parseFeedDate(pubDate)
+    # print(str(publishedDate))
+    assert publishedDate
 
 
 def runAllTests():
