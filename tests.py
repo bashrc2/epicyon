@@ -2400,7 +2400,6 @@ def testParseFeedDate():
 def runAllTests():
     print('Running tests...')
     testParseFeedDate()
-    return
     testFirstParagraphFromString()
     testGetNewswireTags()
     testHashtagRuleTree()
