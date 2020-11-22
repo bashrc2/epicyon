@@ -302,6 +302,89 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
+def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
+                     moderated: bool, mirrored: bool,
+                     maxPostsPerSource: int,
+                     maxFeedItemSizeKb: int) -> {}:
+    """Converts an atom-style YouTube feed string to a dictionary
+    """
+    if '<entry>' not in xmlStr:
+        return {}
+    if isBlockedDomain(baseDir, 'www.youtube.com'):
+        return {}
+    result = {}
+    rssItems = xmlStr.split('<entry>')
+    postCtr = 0
+    maxBytes = maxFeedItemSizeKb * 1024
+    for rssItem in rssItems:
+        if len(rssItem) > maxBytes:
+            print('WARN: atom feed item is too big')
+            continue
+        if '<title>' not in rssItem:
+            continue
+        if '</title>' not in rssItem:
+            continue
+        if '<updated>' not in rssItem:
+            continue
+        if '</updated>' not in rssItem:
+            continue
+        if '<yt:videoId>' not in rssItem:
+            continue
+        if '</yt:videoId>' not in rssItem:
+            continue
+        title = rssItem.split('<title>')[1]
+        title = title.split('</title>')[0]
+        description = ''
+        if '<media:description>' in rssItem and \
+           '</media:description>' in rssItem:
+            description = rssItem.split('<media:description>')[1]
+            description = description.split('</media:description>')[0]
+        elif '<summary>' in rssItem and '</summary>' in rssItem:
+            description = rssItem.split('<summary>')[1]
+            description = description.split('</summary>')[0]
+        link = rssItem.split('<yt:videoId>')[1]
+        link = link.split('</yt:videoId>')[0]
+        link = 'https://www.youtube.com/watch?v=' + link.strip()
+        pubDate = rssItem.split('<updated>')[1]
+        pubDate = pubDate.split('</updated>')[0]
+        parsed = False
+        try:
+            publishedDate = \
+                datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
+            postFilename = ''
+            votesStatus = []
+            addNewswireDictEntry(baseDir, domain,
+                                 result, str(publishedDate),
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated, mirrored)
+            postCtr += 1
+            if postCtr >= maxPostsPerSource:
+                break
+            parsed = True
+        except BaseException:
+            pass
+        if not parsed:
+            try:
+                publishedDate = \
+                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
+                postFilename = ''
+                votesStatus = []
+                addNewswireDictEntry(baseDir, domain, result,
+                                     str(publishedDate) + '+00:00',
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
+                parsed = True
+            except BaseException:
+                print('WARN: unrecognized atom feed date format: ' + pubDate)
+                pass
+    return result
+
+
 def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                  moderated: bool, mirrored: bool,
                  maxPostsPerSource: int,
@@ -316,6 +399,10 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
         return atomFeedToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb)
+    elif '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
+        return atomFeedYTToDict(baseDir, domain,
+                                xmlStr, moderated, mirrored,
+                                maxPostsPerSource, maxFeedItemSizeKb)
     return {}
 
 
