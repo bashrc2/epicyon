@@ -356,7 +356,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format EST: ' + pubDate)
+                print('WARN: unrecognized atom date format EST: ' + pubDate)
                 pass
     return result
 
