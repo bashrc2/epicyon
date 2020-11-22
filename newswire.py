@@ -186,6 +186,7 @@ def parseFeedDate(pubDate: str):
                 hoursAdded = timedelta(hours=5)
                 publishedDate = publishedDate + hoursAdded
             break
+    print('Feed date: ' + pubDate + ' ' + str(publishedDate))
     return publishedDate
 
 
