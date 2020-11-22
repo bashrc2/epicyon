@@ -12388,7 +12388,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(allowLocalNetworkAccess: bool,
+def runDaemon(maxNewswirePosts: int,
+              allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
               rssIconAtTop: bool,
@@ -12462,6 +12463,9 @@ def runDaemon(allowLocalNetworkAccess: bool,
 
     # newswire storing rss feeds
     httpd.newswire = {}
+
+    # maximum number of posts to appear in the newswire on the right column
+    httpd.maxNewswirePosts = maxNewswirePosts
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance

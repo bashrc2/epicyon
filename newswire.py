@@ -677,7 +677,8 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
 
 def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
-                        maxTags: int, maxFeedItemSizeKb: int) -> {}:
+                        maxTags: int, maxFeedItemSizeKb: int,
+                        maxNewswirePosts: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -728,4 +729,11 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
+
+    # are there too many posts? If so then remove the oldest ones
+    noOfPosts = len(sortedResult.items())
+    if noOfPosts > maxNewswirePosts:
+        for n in range(noOfPosts - maxNewswirePosts):
+            sortedResult.pop()
+
     return sortedResult

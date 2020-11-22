@@ -292,8 +292,9 @@ def createServerAlice(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
     print('Server running: Alice')
-    runDaemon(allowLocalNetworkAccess,
+    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
@@ -359,8 +360,9 @@ def createServerBob(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
     print('Server running: Bob')
-    runDaemon(allowLocalNetworkAccess,
+    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -400,8 +402,9 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     onionDomain = None
     i2pDomain = None
     allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
     print('Server running: Eve')
-    runDaemon(allowLocalNetworkAccess,
+    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,

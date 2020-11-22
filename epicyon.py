@@ -116,6 +116,10 @@ parser.add_argument('--postsPerSource',
                     dest='maxNewswirePostsPerSource', type=int,
                     default=4,
                     help='Maximum newswire posts per feed or account')
+parser.add_argument('--maxNewswirePosts',
+                    dest='maxNewswirePosts', type=int,
+                    default=20,
+                    help='Maximum newswire posts in the right column')
 parser.add_argument('--maxFeedSize',
                     dest='maxNewswireFeedSizeKb', type=int,
                     default=10240,
@@ -2001,6 +2005,12 @@ maxNewswirePostsPerSource = \
 if maxNewswirePostsPerSource:
     args.maxNewswirePostsPerSource = int(maxNewswirePostsPerSource)
 
+# set the maximum number of newswire posts appearing in the right column
+maxNewswirePosts = \
+    getConfigParam(baseDir, 'maxNewswirePosts')
+if maxNewswirePosts:
+    args.maxNewswirePosts = int(maxNewswirePosts)
+
 # set the maximum size of a newswire rss/atom feed in Kilobytes
 maxNewswireFeedSizeKb = \
     getConfigParam(baseDir, 'maxNewswireFeedSizeKb')
@@ -2075,7 +2085,8 @@ if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.allowLocalNetworkAccess,
+    runDaemon(args.maxNewswirePosts,
+              args.allowLocalNetworkAccess,
               args.maxFeedItemSizeKb,
               args.publishButtonAtTop,
               args.rssIconAtTop,
