@@ -136,6 +136,59 @@ def addNewswireDictEntry(baseDir: str, domain: str,
     ]
 
 
+def parseFeedDate(pubDate: str):
+    """Returns a date object based on the given date string
+    This tries a number of formats to see which work
+    """
+    formats = ("%a, %d %b %Y %H:%M:%S %z",
+               "%a, %d %b %Y %H:%M:%S EST",
+               "%a, %d %b %Y %H:%M:%S UT",
+               "%Y-%m-%dT%H:%M:%SZ",
+               "%Y-%m-%dT%H:%M:%S%z")
+
+    publishedDate = None
+    for dateFormat in formats:
+        if ',' in pubDate and ',' not in dateFormat:
+            continue
+        if ',' not in pubDate and ',' in dateFormat:
+            continue
+        if '-' in pubDate and '-' not in dateFormat:
+            continue
+        if '-' not in pubDate and '-' in dateFormat:
+            continue
+        if 'T' in pubDate and 'T' not in dateFormat:
+            continue
+        if 'T' not in pubDate and 'T' in dateFormat:
+            continue
+        if 'Z' in pubDate and 'Z' not in dateFormat:
+            continue
+        if 'Z' not in pubDate and 'Z' in dateFormat:
+            continue
+        if 'EST' not in pubDate and 'EST' in dateFormat:
+            continue
+        if 'EST' in pubDate and 'EST' not in dateFormat:
+            continue
+        if 'UT' not in pubDate and 'UT' in dateFormat:
+            continue
+        if 'UT' in pubDate and 'UT' not in dateFormat:
+            continue
+
+        try:
+            publishedDate = \
+                datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S EST")
+        except BaseException:
+            print('WARN: unrecognized date format: ' +
+                  pubDate + ' ' + dateFormat)
+            continue
+
+        if publishedDate:
+            if pubDate.endswith(' EST'):
+                hoursAdded = timedelta(hours=5)
+                publishedDate = publishedDate + hoursAdded
+            break
+    return publishedDate
+
+
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
@@ -187,10 +240,9 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
-        parsed = False
-        try:
-            publishedDate = \
-                datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
+
+        publishedDate = parseFeedDate(pubDate)
+        if publishedDate:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -201,51 +253,6 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
-            parsed = True
-        except BaseException:
-            pass
-
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S EST")
-                hoursAdded = timedelta(hours=5)
-                publishedDate = publishedDate + hoursAdded
-                postFilename = ''
-                votesStatus = []
-                pubDateStr = str(publishedDate) + '+00:00'
-                addNewswireDictEntry(baseDir, domain,
-                                     result, pubDateStr,
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized RSS date format EST: ' + pubDate)
-                pass
-
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                postFilename = ''
-                votesStatus = []
-                addNewswireDictEntry(baseDir, domain,
-                                     result,
-                                     str(publishedDate) + '+00:00',
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized RSS date format UT: ' + pubDate)
-                pass
     return result
 
 
@@ -300,10 +307,9 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
-        parsed = False
-        try:
-            publishedDate = \
-                datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
+
+        publishedDate = parseFeedDate(pubDate)
+        if publishedDate:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -314,51 +320,6 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
-            parsed = True
-        except BaseException:
-            print('WARN: unrecognized atom date format UT: ' + pubDate)
-            pass
-
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%S%z")
-                postFilename = ''
-                votesStatus = []
-                addNewswireDictEntry(baseDir, domain, result,
-                                     str(publishedDate),
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized atom feed date format z: ' + pubDate)
-                pass
-
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S EST")
-                hoursAdded = timedelta(hours=5)
-                publishedDate = publishedDate + hoursAdded
-                postFilename = ''
-                votesStatus = []
-                pubDateStr = str(publishedDate) + '+00:00'
-                addNewswireDictEntry(baseDir, domain,
-                                     result, pubDateStr,
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized atom date format EST: ' + pubDate)
-                pass
     return result
 
 
@@ -410,10 +371,9 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
         link = 'https://www.youtube.com/watch?v=' + link.strip()
         pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
-        parsed = False
-        try:
-            publishedDate = \
-                datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
+
+        publishedDate = parseFeedDate(pubDate)
+        if publishedDate:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -424,50 +384,6 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
-            parsed = True
-        except BaseException:
-            print('WARN: unrecognized YT atom date format UT: ' + pubDate)
-            pass
-
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%S%z")
-                postFilename = ''
-                votesStatus = []
-                addNewswireDictEntry(baseDir, domain, result,
-                                     str(publishedDate),
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized YT atom feed date format z: ' +
-                      pubDate)
-                pass
-
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                postFilename = ''
-                votesStatus = []
-                addNewswireDictEntry(baseDir, domain, result,
-                                     str(publishedDate) + '+00:00',
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized YT atom feed date format UT: ' +
-                      pubDate)
-                pass
     return result
 
 
