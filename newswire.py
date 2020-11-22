@@ -213,9 +213,9 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                 publishedDate = publishedDate + hoursAdded
                 postFilename = ''
                 votesStatus = []
+                pubDateStr = str(publishedDate) + '+00:00'
                 addNewswireDictEntry(baseDir, domain,
-                                     result,
-                                     str(publishedDate) + '00:00',
+                                     result, pubDateStr,
                                      title, link,
                                      votesStatus, postFilename,
                                      description, moderated, mirrored)
@@ -346,9 +346,9 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                 publishedDate = publishedDate + hoursAdded
                 postFilename = ''
                 votesStatus = []
+                pubDateStr = str(publishedDate) + '+00:00'
                 addNewswireDictEntry(baseDir, domain,
-                                     result,
-                                     str(publishedDate) + '00:00',
+                                     result, pubDateStr,
                                      title, link,
                                      votesStatus, postFilename,
                                      description, moderated, mirrored)
