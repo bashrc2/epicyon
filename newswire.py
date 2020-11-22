@@ -234,38 +234,38 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     if '<entry>' not in xmlStr:
         return {}
     result = {}
-    rssItems = xmlStr.split('<entry>')
+    atomItems = xmlStr.split('<entry>')
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
-    for rssItem in rssItems:
-        if len(rssItem) > maxBytes:
+    for atomItem in atomItems:
+        if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
-        if '<title>' not in rssItem:
+        if '<title>' not in atomItem:
             continue
-        if '</title>' not in rssItem:
+        if '</title>' not in atomItem:
             continue
-        if '<link>' not in rssItem:
+        if '<link>' not in atomItem:
             continue
-        if '</link>' not in rssItem:
+        if '</link>' not in atomItem:
             continue
-        if '<updated>' not in rssItem:
+        if '<updated>' not in atomItem:
             continue
-        if '</updated>' not in rssItem:
+        if '</updated>' not in atomItem:
             continue
-        title = rssItem.split('<title>')[1]
+        title = atomItem.split('<title>')[1]
         title = removeCDATA(title.split('</title>')[0])
         description = ''
-        if '<summary>' in rssItem and '</summary>' in rssItem:
-            description = rssItem.split('<summary>')[1]
+        if '<summary>' in atomItem and '</summary>' in atomItem:
+            description = atomItem.split('<summary>')[1]
             description = removeCDATA(description.split('</summary>')[0])
         else:
-            if '<media:description>' in rssItem and \
-               '</media:description>' in rssItem:
-                description = rssItem.split('<media:description>')[1]
+            if '<media:description>' in atomItem and \
+               '</media:description>' in atomItem:
+                description = atomItem.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
                 description = removeCDATA(description)
-        link = rssItem.split('<link>')[1]
+        link = atomItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
@@ -274,7 +274,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             itemDomain = itemDomain.split('/')[0]
         if isBlockedDomain(baseDir, itemDomain):
             continue
-        pubDate = rssItem.split('<updated>')[1]
+        pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
         parsed = False
         try:
@@ -325,42 +325,42 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
     if isBlockedDomain(baseDir, 'www.youtube.com'):
         return {}
     result = {}
-    rssItems = xmlStr.split('<entry>')
+    atomItems = xmlStr.split('<entry>')
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
-    for rssItem in rssItems:
-        print('YouTube feed item: ' + rssItem)
-        if len(rssItem) > maxBytes:
+    for atomItem in atomItems:
+        print('YouTube feed item: ' + atomItem)
+        if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
-        if '<title>' not in rssItem:
+        if '<title>' not in atomItem:
             continue
-        if '</title>' not in rssItem:
+        if '</title>' not in atomItem:
             continue
-        if '<updated>' not in rssItem:
+        if '<updated>' not in atomItem:
             continue
-        if '</updated>' not in rssItem:
+        if '</updated>' not in atomItem:
             continue
-        if '<yt:videoId>' not in rssItem:
+        if '<yt:videoId>' not in atomItem:
             continue
-        if '</yt:videoId>' not in rssItem:
+        if '</yt:videoId>' not in atomItem:
             continue
-        title = rssItem.split('<title>')[1]
+        title = atomItem.split('<title>')[1]
         title = removeCDATA(title.split('</title>')[0])
         description = ''
-        if '<media:description>' in rssItem and \
-           '</media:description>' in rssItem:
-            description = rssItem.split('<media:description>')[1]
+        if '<media:description>' in atomItem and \
+           '</media:description>' in atomItem:
+            description = atomItem.split('<media:description>')[1]
             description = description.split('</media:description>')[0]
             description = removeCDATA(description)
-        elif '<summary>' in rssItem and '</summary>' in rssItem:
-            description = rssItem.split('<summary>')[1]
+        elif '<summary>' in atomItem and '</summary>' in atomItem:
+            description = atomItem.split('<summary>')[1]
             description = description.split('</summary>')[0]
             description = removeCDATA(description)
-        link = rssItem.split('<yt:videoId>')[1]
+        link = atomItem.split('<yt:videoId>')[1]
         link = link.split('</yt:videoId>')[0]
         link = 'https://www.youtube.com/watch?v=' + link.strip()
-        pubDate = rssItem.split('<updated>')[1]
+        pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
         parsed = False
         try:
@@ -417,7 +417,7 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb)
     elif '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
-        print ('YouTube feed: reading')
+        print('YouTube feed: reading')
         return atomFeedYTToDict(baseDir, domain,
                                 xmlStr, moderated, mirrored,
                                 maxPostsPerSource, maxFeedItemSizeKb)
