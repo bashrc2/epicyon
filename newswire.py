@@ -425,7 +425,7 @@ def YTchannelToAtomFeed(url: str) -> str:
     """
     if 'youtube.com/channel/' not in url:
         return url
-    channelId = url.split('youtube.com/channel/')[1]
+    channelId = url.split('youtube.com/channel/')[1].strip()
     return 'https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId
 
 
