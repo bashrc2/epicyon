@@ -313,10 +313,13 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
 
         publishedDate = parseFeedDate(pubDate)
         if publishedDate:
+            pubDateStr = str(publishedDate)
+            if not pubDateStr.endswith('+00:00'):
+                pubDateStr += '+00:00'
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
-                                 result, str(publishedDate),
+                                 result, pubDateStr,
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated, mirrored)
@@ -377,10 +380,13 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
 
         publishedDate = parseFeedDate(pubDate)
         if publishedDate:
+            pubDateStr = str(publishedDate)
+            if not pubDateStr.endswith('+00:00'):
+                pubDateStr += '+00:00'
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
-                                 result, str(publishedDate),
+                                 result, pubDateStr,
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated, mirrored)
