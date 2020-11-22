@@ -246,6 +246,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             pubDateStr = str(publishedDate)
             if not pubDateStr.endswith('+00:00'):
                 pubDateStr += '+00:00'
+            print('Feed date: ' + pubDateStr)
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -316,6 +317,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             pubDateStr = str(publishedDate)
             if not pubDateStr.endswith('+00:00'):
                 pubDateStr += '+00:00'
+            print('Feed date: ' + pubDateStr)
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
@@ -383,6 +385,7 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             pubDateStr = str(publishedDate)
             if not pubDateStr.endswith('+00:00'):
                 pubDateStr += '+00:00'
+            print('Feed date: ' + pubDateStr)
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
