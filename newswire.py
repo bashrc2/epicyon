@@ -406,6 +406,15 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
     return {}
 
 
+def YTchannelToAtomFeed(url: str) -> str:
+    """Converts a YouTube channel url into an atom feed url
+    """
+    if 'youtube.com/channel/' not in url:
+        return url
+    channelId = url.split('youtube.com/channel/')[1]
+    return 'https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId
+
+
 def getRSS(baseDir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
            maxPostsPerSource: int, maxFeedSizeKb: int,
@@ -430,6 +439,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         'Mozilla/5.0 (X11; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0'
     if not session:
         print('WARN: no session specified for getRSS')
+    url = YTchannelToAtomFeed(url)
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         if result:
