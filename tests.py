@@ -86,6 +86,7 @@ from jsonldsig import jsonldVerify
 from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
 from newswire import getNewswireTags
+from newswire import parseFeedDate
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -2385,8 +2386,17 @@ def testFirstParagraphFromString():
     assert resultStr == testStr
 
 
+def testParseFeedDate():
+    print('testParseFeedDate')
+    pubDate = "2020-08-27T16:12:34+00:00"
+    publishedDate = parseFeedDate(pubDate)
+    assert publishedDate
+    print(str(publishedDate))
+
+
 def runAllTests():
     print('Running tests...')
+    testParseFeedDate()
     testFirstParagraphFromString()
     testGetNewswireTags()
     testHashtagRuleTree()

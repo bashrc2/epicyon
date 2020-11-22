@@ -175,7 +175,7 @@ def parseFeedDate(pubDate: str):
 
         try:
             publishedDate = \
-                datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S EST")
+                datetime.strptime(pubDate, dateFormat)
         except BaseException:
             print('WARN: unrecognized date format: ' +
                   pubDate + ' ' + dateFormat)
