@@ -329,6 +329,7 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for rssItem in rssItems:
+        print('YouTube feed item: ' + rssItem)
         if len(rssItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
@@ -377,6 +378,7 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                 break
             parsed = True
         except BaseException:
+            print('YouTube feed: failed to parse published date ' + pubDate)
             pass
         if not parsed:
             try:
@@ -394,7 +396,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized atom feed date format: ' + pubDate)
+                print('YouTube feed: failed to parse published date ' +
+                      pubDate)
                 pass
     return result
 
@@ -414,6 +417,7 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb)
     elif '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
+        print ('YouTube feed: reading')
         return atomFeedYTToDict(baseDir, domain,
                                 xmlStr, moderated, mirrored,
                                 maxPostsPerSource, maxFeedItemSizeKb)
