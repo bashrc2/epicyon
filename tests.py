@@ -2394,13 +2394,14 @@ def testParseFeedDate():
 
     pubDate = "Sun, 22 Nov 2020 19:51:33 +0100"
     publishedDate = parseFeedDate(pubDate)
-    # print(str(publishedDate))
+    print(str(publishedDate))
     assert publishedDate
 
 
 def runAllTests():
     print('Running tests...')
     testParseFeedDate()
+    return
     testFirstParagraphFromString()
     testGetNewswireTags()
     testHashtagRuleTree()

@@ -12,6 +12,7 @@ from socket import error as SocketError
 import errno
 from datetime import datetime
 from datetime import timedelta
+from datetime import timezone
 from collections import OrderedDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -189,6 +190,8 @@ def parseFeedDate(pubDate: str) -> str:
 
     pubDateStr = None
     if publishedDate:
+        # convert local date to UTC
+        publishedDate = publishedDate.replace(tzinfo=timezone.utc)
         pubDateStr = str(publishedDate)
         if not pubDateStr.endswith('+00:00'):
             pubDateStr += '+00:00'
