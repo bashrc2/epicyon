@@ -223,7 +223,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format: ' + pubDate)
+                print('WARN: unrecognized RSS date format 1: ' + pubDate)
                 pass
 
         if not parsed:
@@ -243,7 +243,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format: ' + pubDate)
+                print('WARN: unrecognized RSS date format 2: ' + pubDate)
                 pass
     return result
 
@@ -333,7 +333,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized atom feed date format: ' + pubDate)
+                print('WARN: unrecognized atom feed date format 1: ' + pubDate)
                 pass
 
         if not parsed:
@@ -355,7 +355,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format: ' + pubDate)
+                print('WARN: unrecognized RSS date format 3: ' + pubDate)
                 pass
     return result
 
@@ -443,7 +443,7 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized atom feed date format: ' + pubDate)
+                print('WARN: unrecognized atom feed date format 2: ' + pubDate)
                 pass
 
         if not parsed:
