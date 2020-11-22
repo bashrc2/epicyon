@@ -733,7 +733,13 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
     # are there too many posts? If so then remove the oldest ones
     noOfPosts = len(sortedResult.items())
     if noOfPosts > maxNewswirePosts:
-        for n in range(noOfPosts - maxNewswirePosts):
-            sortedResult.pop()
+        ctr = 0
+        removals = []
+        for dateStr, item in sortedResult.items():
+            ctr += 1
+            if ctr >= maxNewswirePosts:
+                removals.append(dateStr)
+        for r in removals:
+            sortedResult.pop(r)
 
     return sortedResult
