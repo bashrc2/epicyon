@@ -430,7 +430,10 @@ def YTchannelToAtomFeed(url: str) -> str:
     if 'youtube.com/channel/' not in url:
         return url
     channelId = url.split('youtube.com/channel/')[1].strip()
-    return 'https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId
+    channelUrl = \
+        'https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId
+    print('YouTube feed: ' + channelUrl)
+    return channelUrl
 
 
 def getRSS(baseDir: str, domain: str, session, url: str,
