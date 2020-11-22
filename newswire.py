@@ -191,7 +191,8 @@ def parseFeedDate(pubDate: str) -> str:
     pubDateStr = None
     if publishedDate:
         offset = publishedDate.utcoffset()
-        publishedDate = publishedDate - offset
+        if offset:
+            publishedDate = publishedDate - offset
         # convert local date to UTC
         publishedDate = publishedDate.replace(tzinfo=timezone.utc)
         pubDateStr = str(publishedDate)
