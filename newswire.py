@@ -752,7 +752,7 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
         removals = []
         for dateStr, item in sortedResult.items():
             ctr += 1
-            if ctr >= maxNewswirePosts:
+            if ctr > maxNewswirePosts:
                 removals.append(dateStr)
         for r in removals:
             sortedResult.pop(r)
