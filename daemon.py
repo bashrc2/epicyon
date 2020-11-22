@@ -166,6 +166,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getImageExtensions
 from utils import mediaFileMimeType
 from utils import getCSS
 from utils import firstParagraphFromString
@@ -8412,7 +8413,8 @@ class PubServer(BaseHTTPRequestHandler):
                              GETstartTime, GETtimings: {}) -> bool:
         """Show a background image
         """
-        for ext in ('webp', 'gif', 'jpg', 'png', 'avif'):
+        imageExtensions = getImageExtensions()
+        for ext in imageExtensions:
             for bg in ('follow', 'options', 'login'):
                 # follow screen background image
                 if path.endswith('/' + bg + '-background.' + ext):
@@ -12386,7 +12388,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(allowLocalNetworkAccess: bool,
+def runDaemon(maxNewswirePosts: int,
+              allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
               rssIconAtTop: bool,
@@ -12460,6 +12463,9 @@ def runDaemon(allowLocalNetworkAccess: bool,
 
     # newswire storing rss feeds
     httpd.newswire = {}
+
+    # maximum number of posts to appear in the newswire on the right column
+    httpd.maxNewswirePosts = maxNewswirePosts
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance

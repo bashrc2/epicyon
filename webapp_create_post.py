@@ -10,6 +10,8 @@ import os
 from utils import isPublicPostFromUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import getImageFormats
+from utils import getMediaFormats
 from webapp_utils import getIconsWebPath
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -183,8 +185,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
-                newPostText = '<p class="new-post-text">' + \
-                    translate['Write your post text below.'] + '</p>\n'
+                newPostText = '<h1>' + \
+                    translate['Write your post text below.'] + '</h1>\n'
             else:
                 newPostText = \
                     '<p class="new-post-text">' + \
@@ -208,8 +210,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                     showPublicOnDropdown = False
         else:
             newPostText = \
-                '<p class="new-post-text">' + \
-                translate['Write your report below.'] + '</p>\n'
+                '<h1>' + \
+                translate['Write your report below.'] + '</h1>\n'
 
             # custom report header with any additional instructions
             if os.path.isfile(baseDir + '/accounts/report.txt'):
@@ -233,20 +235,20 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 translate['Terms of Service'] + '</a></p>\n'
     else:
         newPostText = \
-            '<p class="new-post-text">' + \
+            '<h1>' + \
             translate['Enter the details for your shared item below.'] + \
-            '</p>\n'
+            '</h1>\n'
 
     if path.endswith('/newquestion'):
         newPostText = \
-            '<p class="new-post-text">' + \
+            '<h1>' + \
             translate['Enter the choices for your question below.'] + \
-            '</p>\n'
+            '</h1>\n'
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
         with open(baseDir + '/accounts/newpost.txt', 'r') as file:
             newPostText = \
-                '<p class="new-post-text">' + file.read() + '</p>\n'
+                '<p>' + file.read() + '</p>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -280,13 +282,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         newPostImageSection += \
             '      <input type="file" id="attachpic" name="attachpic"'
         newPostImageSection += \
-            '            accept=".png, .jpg, .jpeg, .gif, .webp, .avif">\n'
+            '            accept="' + getImageFormats() + '">\n'
     else:
         newPostImageSection += \
             '      <input type="file" id="attachpic" name="attachpic"'
         newPostImageSection += \
-            '            accept=".png, .jpg, .jpeg, .gif, ' + \
-            '.webp, .avif, .mp4, .webm, .ogv, .mp3, .ogg">\n'
+            '            accept="' + getMediaFormats() + '">\n'
     newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'

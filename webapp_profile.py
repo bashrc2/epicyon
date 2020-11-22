@@ -14,6 +14,7 @@ from utils import isSystemAccount
 from utils import removeHtml
 from utils import loadJson
 from utils import getConfigParam
+from utils import getImageFormats
 from skills import getSkills
 from theme import getThemesList
 from person import personBoxJson
@@ -851,7 +852,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     defaultTimeline: str) -> str:
     """Shows the edit profile screen
     """
-    imageFormats = '.png, .jpg, .jpeg, .gif, .webp, .avif'
+    imageFormats = getImageFormats()
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
     nickname = getNicknameFromActor(path)
@@ -1171,12 +1172,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
     editProfileForm += '  <div class="vertical-center">\n'
     editProfileForm += \
-        '    <p class="new-post-text">' + translate['Profile for'] + \
-        ' ' + nickname + '@' + domainFull + '</p>'
+        '    <h1>' + translate['Profile for'] + \
+        ' ' + nickname + '@' + domainFull + '</h1>'
     editProfileForm += '    <div class="container">\n'
-    # editProfileForm += \
-    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-    #     translate['Go Back'] + '</button></a>\n'
     editProfileForm += \
         '      <center>\n' + \
         '        <input type="submit" name="submitProfile" value="' + \

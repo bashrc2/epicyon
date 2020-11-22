@@ -214,8 +214,12 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             item[0] = item[0].split('CDATA[')[1]
             if ']' in item[0]:
                 item[0] = item[0].split(']')[0]
-        publishedDate = \
-            datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+        try:
+            publishedDate = \
+                datetime.strptime(dateStr, "%Y-%m-%d %H:%M:%S%z")
+        except BaseException:
+            print('WARN: bad date format ' + dateStr)
+            continue
         dateShown = publishedDate.strftime("%Y-%m-%d %H:%M")
 
         dateStrLink = dateStr.replace('T', ' ')
@@ -495,7 +499,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += \
         '  <div class="vertical-center">\n'
     editNewswireForm += \
-        '    <p class="new-post-text">' + translate['Edit newswire'] + '</p>'
+        '    <h1>' + translate['Edit newswire'] + '</h1>'
     editNewswireForm += \
         '    <div class="container">\n'
     # editNewswireForm += \
@@ -605,7 +609,7 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewsPostForm += \
         '  <div class="vertical-center">\n'
     editNewsPostForm += \
-        '    <p class="new-post-text">' + translate['Edit News Post'] + '</p>'
+        '    <h1>' + translate['Edit News Post'] + '</h1>'
     editNewsPostForm += \
         '    <div class="container">\n'
     editNewsPostForm += \

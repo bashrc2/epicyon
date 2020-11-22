@@ -11,6 +11,8 @@ import requests
 from socket import error as SocketError
 import errno
 from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
 from collections import OrderedDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -23,6 +25,16 @@ from utils import removeHtml
 from blocking import isBlockedDomain
 from blocking import isBlockedHashtag
 from filters import isFiltered
+
+
+def removeCDATA(text: str) -> str:
+    """Removes any CDATA from the given text
+    """
+    if 'CDATA[' in text:
+        text = text.split('CDATA[')[1]
+        if ']' in text:
+            text = text.split(']')[0]
+    return text
 
 
 def rss2Header(httpPrefix: str,
@@ -125,6 +137,71 @@ def addNewswireDictEntry(baseDir: str, domain: str,
     ]
 
 
+def parseFeedDate(pubDate: str) -> str:
+    """Returns a UTC date string based on the given date string
+    This tries a number of formats to see which work
+    """
+    formats = ("%a, %d %b %Y %H:%M:%S %z",
+               "%a, %d %b %Y %H:%M:%S EST",
+               "%a, %d %b %Y %H:%M:%S UT",
+               "%Y-%m-%dT%H:%M:%SZ",
+               "%Y-%m-%dT%H:%M:%S%z")
+
+    publishedDate = None
+    for dateFormat in formats:
+        if ',' in pubDate and ',' not in dateFormat:
+            continue
+        if ',' not in pubDate and ',' in dateFormat:
+            continue
+        if '-' in pubDate and '-' not in dateFormat:
+            continue
+        if '-' not in pubDate and '-' in dateFormat:
+            continue
+        if 'T' in pubDate and 'T' not in dateFormat:
+            continue
+        if 'T' not in pubDate and 'T' in dateFormat:
+            continue
+        if 'Z' in pubDate and 'Z' not in dateFormat:
+            continue
+        if 'Z' not in pubDate and 'Z' in dateFormat:
+            continue
+        if 'EST' not in pubDate and 'EST' in dateFormat:
+            continue
+        if 'EST' in pubDate and 'EST' not in dateFormat:
+            continue
+        if 'UT' not in pubDate and 'UT' in dateFormat:
+            continue
+        if 'UT' in pubDate and 'UT' not in dateFormat:
+            continue
+
+        try:
+            publishedDate = \
+                datetime.strptime(pubDate, dateFormat)
+        except BaseException:
+            print('WARN: unrecognized date format: ' +
+                  pubDate + ' ' + dateFormat)
+            continue
+
+        if publishedDate:
+            if pubDate.endswith(' EST'):
+                hoursAdded = timedelta(hours=5)
+                publishedDate = publishedDate + hoursAdded
+            break
+
+    pubDateStr = None
+    if publishedDate:
+        offset = publishedDate.utcoffset()
+        if offset:
+            publishedDate = publishedDate - offset
+        # convert local date to UTC
+        publishedDate = publishedDate.replace(tzinfo=timezone.utc)
+        pubDateStr = str(publishedDate)
+        if not pubDateStr.endswith('+00:00'):
+            pubDateStr += '+00:00'
+
+    return pubDateStr
+
+
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
@@ -154,11 +231,17 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         if '</pubDate>' not in rssItem:
             continue
         title = rssItem.split('<title>')[1]
-        title = title.split('</title>')[0]
+        title = removeCDATA(title.split('</title>')[0])
         description = ''
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
-            description = description.split('</description>')[0]
+            description = removeCDATA(description.split('</description>')[0])
+        else:
+            if '<media:description>' in rssItem and \
+               '</media:description>' in rssItem:
+                description = rssItem.split('<media:description>')[1]
+                description = description.split('</media:description>')[0]
+                description = removeCDATA(description)
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
@@ -170,42 +253,19 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         pubDate = rssItem.split('<pubDate>')[1]
         pubDate = pubDate.split('</pubDate>')[0]
-        parsed = False
-        try:
-            publishedDate = \
-                datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S %z")
+
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
-                                 result, str(publishedDate),
+                                 result, pubDateStr,
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated, mirrored)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
-            parsed = True
-        except BaseException:
-            pass
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                postFilename = ''
-                votesStatus = []
-                addNewswireDictEntry(baseDir, domain,
-                                     result,
-                                     str(publishedDate) + '+00:00',
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized RSS date format: ' + pubDate)
-                pass
     return result
 
 
@@ -218,32 +278,38 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     if '<entry>' not in xmlStr:
         return {}
     result = {}
-    rssItems = xmlStr.split('<entry>')
+    atomItems = xmlStr.split('<entry>')
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
-    for rssItem in rssItems:
-        if len(rssItem) > maxBytes:
+    for atomItem in atomItems:
+        if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
-        if '<title>' not in rssItem:
+        if '<title>' not in atomItem:
             continue
-        if '</title>' not in rssItem:
+        if '</title>' not in atomItem:
             continue
-        if '<link>' not in rssItem:
+        if '<link>' not in atomItem:
             continue
-        if '</link>' not in rssItem:
+        if '</link>' not in atomItem:
             continue
-        if '<updated>' not in rssItem:
+        if '<updated>' not in atomItem:
             continue
-        if '</updated>' not in rssItem:
+        if '</updated>' not in atomItem:
             continue
-        title = rssItem.split('<title>')[1]
-        title = title.split('</title>')[0]
+        title = atomItem.split('<title>')[1]
+        title = removeCDATA(title.split('</title>')[0])
         description = ''
-        if '<summary>' in rssItem and '</summary>' in rssItem:
-            description = rssItem.split('<summary>')[1]
-            description = description.split('</summary>')[0]
-        link = rssItem.split('<link>')[1]
+        if '<summary>' in atomItem and '</summary>' in atomItem:
+            description = atomItem.split('<summary>')[1]
+            description = removeCDATA(description.split('</summary>')[0])
+        else:
+            if '<media:description>' in atomItem and \
+               '</media:description>' in atomItem:
+                description = atomItem.split('<media:description>')[1]
+                description = description.split('</media:description>')[0]
+                description = removeCDATA(description)
+        link = atomItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
             continue
@@ -252,43 +318,85 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             itemDomain = itemDomain.split('/')[0]
         if isBlockedDomain(baseDir, itemDomain):
             continue
-        pubDate = rssItem.split('<updated>')[1]
+        pubDate = atomItem.split('<updated>')[1]
         pubDate = pubDate.split('</updated>')[0]
-        parsed = False
-        try:
-            publishedDate = \
-                datetime.strptime(pubDate, "%Y-%m-%dT%H:%M:%SZ")
+
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
             postFilename = ''
             votesStatus = []
             addNewswireDictEntry(baseDir, domain,
-                                 result, str(publishedDate),
+                                 result, pubDateStr,
                                  title, link,
                                  votesStatus, postFilename,
                                  description, moderated, mirrored)
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
-            parsed = True
-        except BaseException:
-            pass
-        if not parsed:
-            try:
-                publishedDate = \
-                    datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S UT")
-                postFilename = ''
-                votesStatus = []
-                addNewswireDictEntry(baseDir, domain, result,
-                                     str(publishedDate) + '+00:00',
-                                     title, link,
-                                     votesStatus, postFilename,
-                                     description, moderated, mirrored)
-                postCtr += 1
-                if postCtr >= maxPostsPerSource:
-                    break
-                parsed = True
-            except BaseException:
-                print('WARN: unrecognized atom feed date format: ' + pubDate)
-                pass
+    return result
+
+
+def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
+                     moderated: bool, mirrored: bool,
+                     maxPostsPerSource: int,
+                     maxFeedItemSizeKb: int) -> {}:
+    """Converts an atom-style YouTube feed string to a dictionary
+    """
+    if '<entry>' not in xmlStr:
+        return {}
+    if isBlockedDomain(baseDir, 'www.youtube.com'):
+        return {}
+    result = {}
+    atomItems = xmlStr.split('<entry>')
+    postCtr = 0
+    maxBytes = maxFeedItemSizeKb * 1024
+    for atomItem in atomItems:
+        print('YouTube feed item: ' + atomItem)
+        if len(atomItem) > maxBytes:
+            print('WARN: atom feed item is too big')
+            continue
+        if '<title>' not in atomItem:
+            continue
+        if '</title>' not in atomItem:
+            continue
+        if '<updated>' not in atomItem:
+            continue
+        if '</updated>' not in atomItem:
+            continue
+        if '<yt:videoId>' not in atomItem:
+            continue
+        if '</yt:videoId>' not in atomItem:
+            continue
+        title = atomItem.split('<title>')[1]
+        title = removeCDATA(title.split('</title>')[0])
+        description = ''
+        if '<media:description>' in atomItem and \
+           '</media:description>' in atomItem:
+            description = atomItem.split('<media:description>')[1]
+            description = description.split('</media:description>')[0]
+            description = removeCDATA(description)
+        elif '<summary>' in atomItem and '</summary>' in atomItem:
+            description = atomItem.split('<summary>')[1]
+            description = description.split('</summary>')[0]
+            description = removeCDATA(description)
+        link = atomItem.split('<yt:videoId>')[1]
+        link = link.split('</yt:videoId>')[0]
+        link = 'https://www.youtube.com/watch?v=' + link.strip()
+        pubDate = atomItem.split('<updated>')[1]
+        pubDate = pubDate.split('</updated>')[0]
+
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
+            postFilename = ''
+            votesStatus = []
+            addNewswireDictEntry(baseDir, domain,
+                                 result, pubDateStr,
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated, mirrored)
+            postCtr += 1
+            if postCtr >= maxPostsPerSource:
+                break
     return result
 
 
@@ -298,7 +406,12 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                  maxFeedItemSizeKb: int) -> {}:
     """Converts an xml string to a dictionary
     """
-    if 'rss version="2.0"' in xmlStr:
+    if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
+        print('YouTube feed: reading')
+        return atomFeedYTToDict(baseDir, domain,
+                                xmlStr, moderated, mirrored,
+                                maxPostsPerSource, maxFeedItemSizeKb)
+    elif 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(baseDir, domain,
                              xmlStr, moderated, mirrored,
                              maxPostsPerSource, maxFeedItemSizeKb)
@@ -307,6 +420,18 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                               xmlStr, moderated, mirrored,
                               maxPostsPerSource, maxFeedItemSizeKb)
     return {}
+
+
+def YTchannelToAtomFeed(url: str) -> str:
+    """Converts a YouTube channel url into an atom feed url
+    """
+    if 'youtube.com/channel/' not in url:
+        return url
+    channelId = url.split('youtube.com/channel/')[1].strip()
+    channelUrl = \
+        'https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId
+    print('YouTube feed: ' + channelUrl)
+    return channelUrl
 
 
 def getRSS(baseDir: str, domain: str, session, url: str,
@@ -333,6 +458,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         'Mozilla/5.0 (X11; Linux x86_64; rv:81.0) Gecko/20100101 Firefox/81.0'
     if not session:
         print('WARN: no session specified for getRSS')
+    url = YTchannelToAtomFeed(url)
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         if result:
@@ -343,7 +469,10 @@ def getRSS(baseDir: str, domain: str, session, url: str,
                                     maxPostsPerSource,
                                     maxFeedItemSizeKb)
             else:
-                print('WARN: feed is too large: ' + url)
+                print('WARN: feed is too large, ' +
+                      'or contains invalid characters: ' + url)
+        else:
+            print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as e:
         print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
@@ -387,7 +516,7 @@ def getRSSfromDict(baseDir: str, newswire: {},
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
-        description = firstParagraphFromString(fields[4])
+        description = removeCDATA(firstParagraphFromString(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
         if '://' not in url:
@@ -507,6 +636,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                         votes = loadJson(fullPostFilename + '.votes')
                     content = postJsonObject['object']['content']
                     description = firstParagraphFromString(content)
+                    description = removeCDATA(description)
                     addNewswireDictEntry(baseDir, domain,
                                          newswire, published,
                                          postJsonObject['object']['summary'],
@@ -570,7 +700,8 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
 
 def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
-                        maxTags: int, maxFeedItemSizeKb: int) -> {}:
+                        maxTags: int, maxFeedItemSizeKb: int,
+                        maxNewswirePosts: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -621,4 +752,17 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
 
     # sort into chronological order, latest first
     sortedResult = OrderedDict(sorted(result.items(), reverse=True))
+
+    # are there too many posts? If so then remove the oldest ones
+    noOfPosts = len(sortedResult.items())
+    if noOfPosts > maxNewswirePosts:
+        ctr = 0
+        removals = []
+        for dateStr, item in sortedResult.items():
+            ctr += 1
+            if ctr > maxNewswirePosts:
+                removals.append(dateStr)
+        for r in removals:
+            sortedResult.pop(r)
+
     return sortedResult

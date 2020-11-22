@@ -86,6 +86,7 @@ from jsonldsig import jsonldVerify
 from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
 from newswire import getNewswireTags
+from newswire import parseFeedDate
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -292,8 +293,9 @@ def createServerAlice(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
     print('Server running: Alice')
-    runDaemon(allowLocalNetworkAccess,
+    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
@@ -359,8 +361,9 @@ def createServerBob(path: str, domain: str, port: int,
     onionDomain = None
     i2pDomain = None
     allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
     print('Server running: Bob')
-    runDaemon(allowLocalNetworkAccess,
+    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -400,8 +403,9 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     onionDomain = None
     i2pDomain = None
     allowLocalNetworkAccess = True
+    maxNewswirePosts = 20
     print('Server running: Eve')
-    runDaemon(allowLocalNetworkAccess,
+    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -2382,8 +2386,20 @@ def testFirstParagraphFromString():
     assert resultStr == testStr
 
 
+def testParseFeedDate():
+    print('testParseFeedDate')
+    pubDate = "2020-08-27T16:12:34+00:00"
+    publishedDate = parseFeedDate(pubDate)
+    assert publishedDate == "2020-08-27 16:12:34+00:00"
+
+    pubDate = "Sun, 22 Nov 2020 19:51:33 +0100"
+    publishedDate = parseFeedDate(pubDate)
+    assert publishedDate == "2020-11-22 18:51:33+00:00"
+
+
 def runAllTests():
     print('Running tests...')
+    testParseFeedDate()
     testFirstParagraphFromString()
     testGetNewswireTags()
     testHashtagRuleTree()

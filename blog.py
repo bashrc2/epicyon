@@ -15,6 +15,7 @@ from webapp import htmlHeaderWithExternalStyle
 from webapp import htmlFooter
 from webapp_media import addEmbeddedElements
 from webapp_utils import getPostAttachmentsAsHtml
+from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -724,12 +725,11 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     iconsPath = getIconsWebPath(baseDir)
 
-    editBlogText = '<p class="new-post-text">' + \
-        translate['Write your post text below.'] + '</p>'
+    editBlogText = '<h1">' + translate['Write your post text below.'] + '</h1>'
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
         with open(baseDir + '/accounts/newpost.txt', 'r') as file:
-            editBlogText = '<p class="new-post-text">' + file.read() + '</p>'
+            editBlogText = '<p>' + file.read() + '</p>'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -746,8 +746,7 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
     editBlogImageSection += \
-        '            accept=".png, .jpg, .jpeg, .gif, .webp, .avif, ' + \
-        '.mp4, .webm, .ogv, .mp3, .ogg">'
+        '            accept="' + getMediaFormats() + '">'
     editBlogImageSection += '    </div>'
 
     placeholderMessage = translate['Write something'] + '...'

@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from utils import loadJson
 from utils import saveJson
+from utils import getImageExtensions
 from shutil import copyfile
 from content import dangerousCSS
 
@@ -473,7 +474,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
-    extensions = ('webp', 'gif', 'jpg', 'png', 'avif')
+    extensions = getImageExtensions()
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:

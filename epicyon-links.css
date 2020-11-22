@@ -66,6 +66,7 @@
     --column-right-width: 10vw;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
+    --header-font: 'Arial, Helvetica, sans-serif';
 }
 
 @font-face {
@@ -127,10 +128,6 @@ blockquote p {
 
 .imageAnchor:focus img{
     border: 2px solid var(--focus-color);
-}
-
-h1 {
-    color: var(--title-color);
 }
 
 a, u {
@@ -214,10 +211,9 @@ a:focus {
     transform: translateY(30%) scaleX(-1);
 }
 
-.new-post-text {
-    font-size: var(--font-size2);
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 4px 0;
+h1 {
+    font-family: var(--header-font);
+    color: var(--title-color);
 }
 
 .new-post-subtext {
