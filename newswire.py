@@ -473,6 +473,8 @@ def getRSS(baseDir: str, domain: str, session, url: str,
             else:
                 print('WARN: feed is too large, ' +
                       'or contains invalid characters: ' + url)
+        else:
+            print('WARN: no result returned for feed ' + url)
     except requests.exceptions.RequestException as e:
         print('ERROR: getRSS failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
