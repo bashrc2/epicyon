@@ -223,7 +223,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format 1: ' + pubDate)
+                print('WARN: unrecognized RSS date format EST: ' + pubDate)
                 pass
 
         if not parsed:
@@ -243,7 +243,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format 2: ' + pubDate)
+                print('WARN: unrecognized RSS date format UT: ' + pubDate)
                 pass
     return result
 
@@ -315,6 +315,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                 break
             parsed = True
         except BaseException:
+            print('WARN: unrecognized atom date format UT: ' + pubDate)
             pass
 
         if not parsed:
@@ -333,7 +334,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized atom feed date format 1: ' + pubDate)
+                print('WARN: unrecognized atom feed date format z: ' + pubDate)
                 pass
 
         if not parsed:
@@ -355,7 +356,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized RSS date format 3: ' + pubDate)
+                print('WARN: unrecognized RSS date format EST: ' + pubDate)
                 pass
     return result
 
@@ -424,7 +425,7 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                 break
             parsed = True
         except BaseException:
-            print('YouTube feed: failed to parse published date ' + pubDate)
+            print('WARN: unrecognized YT atom date format UT: ' + pubDate)
             pass
 
         if not parsed:
@@ -443,7 +444,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('WARN: unrecognized atom feed date format 2: ' + pubDate)
+                print('WARN: unrecognized YT atom feed date format z: ' +
+                      pubDate)
                 pass
 
         if not parsed:
@@ -462,7 +464,7 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
                     break
                 parsed = True
             except BaseException:
-                print('YouTube feed: failed to parse published date ' +
+                print('WARN: unrecognized YT atom feed date format UT: ' +
                       pubDate)
                 pass
     return result
