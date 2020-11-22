@@ -25,6 +25,16 @@ from blocking import isBlockedHashtag
 from filters import isFiltered
 
 
+def removeCDATA(text: str) -> str:
+    """Removes any CDATA from the given text
+    """
+    if 'CDATA[' in text:
+        text = text.split('CDATA[')[1]
+        if ']' in text:
+            text = text.split(']')[0]
+    return text
+
+
 def rss2Header(httpPrefix: str,
                nickname: str, domainFull: str,
                title: str, translate: {}) -> str:
@@ -154,16 +164,17 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         if '</pubDate>' not in rssItem:
             continue
         title = rssItem.split('<title>')[1]
-        title = title.split('</title>')[0]
+        title = removeCDATA(title.split('</title>')[0])
         description = ''
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
-            description = description.split('</description>')[0]
+            description = removeCDATA(description.split('</description>')[0])
         else:
             if '<media:description>' in rssItem and \
                '</media:description>' in rssItem:
                 description = rssItem.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
+                description = removeCDATA(description)
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
@@ -243,16 +254,17 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
         if '</updated>' not in rssItem:
             continue
         title = rssItem.split('<title>')[1]
-        title = title.split('</title>')[0]
+        title = removeCDATA(title.split('</title>')[0])
         description = ''
         if '<summary>' in rssItem and '</summary>' in rssItem:
             description = rssItem.split('<summary>')[1]
-            description = description.split('</summary>')[0]
+            description = removeCDATA(description.split('</summary>')[0])
         else:
             if '<media:description>' in rssItem and \
                '</media:description>' in rssItem:
                 description = rssItem.split('<media:description>')[1]
                 description = description.split('</media:description>')[0]
+                description = removeCDATA(description)
         link = rssItem.split('<link>')[1]
         link = link.split('</link>')[0]
         if '://' not in link:
@@ -333,15 +345,17 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
         if '</yt:videoId>' not in rssItem:
             continue
         title = rssItem.split('<title>')[1]
-        title = title.split('</title>')[0]
+        title = removeCDATA(title.split('</title>')[0])
         description = ''
         if '<media:description>' in rssItem and \
            '</media:description>' in rssItem:
             description = rssItem.split('<media:description>')[1]
             description = description.split('</media:description>')[0]
+            description = removeCDATA(description)
         elif '<summary>' in rssItem and '</summary>' in rssItem:
             description = rssItem.split('<summary>')[1]
             description = description.split('</summary>')[0]
+            description = removeCDATA(description)
         link = rssItem.split('<yt:videoId>')[1]
         link = link.split('</yt:videoId>')[0]
         link = 'https://www.youtube.com/watch?v=' + link.strip()
@@ -494,7 +508,7 @@ def getRSSfromDict(baseDir: str, newswire: {},
             continue
         rssStr += '<item>\n'
         rssStr += '  <title>' + fields[0] + '</title>\n'
-        description = firstParagraphFromString(fields[4])
+        description = removeCDATA(firstParagraphFromString(fields[4]))
         rssStr += '  <description>' + description + '</description>\n'
         url = fields[1]
         if '://' not in url:
@@ -614,6 +628,7 @@ def addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                         votes = loadJson(fullPostFilename + '.votes')
                     content = postJsonObject['object']['content']
                     description = firstParagraphFromString(content)
+                    description = removeCDATA(description)
                     addNewswireDictEntry(baseDir, domain,
                                          newswire, published,
                                          postJsonObject['object']['summary'],
