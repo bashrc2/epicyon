@@ -11,6 +11,7 @@ import requests
 from socket import error as SocketError
 import errno
 from datetime import datetime
+from datetime import timedelta
 from collections import OrderedDict
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -208,7 +209,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             try:
                 publishedDate = \
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S EST")
-                hoursAdded = datetime.timedelta(hours=5)
+                hoursAdded = timedelta(hours=5)
                 publishedDate = publishedDate + hoursAdded
                 postFilename = ''
                 votesStatus = []
@@ -341,7 +342,7 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             try:
                 publishedDate = \
                     datetime.strptime(pubDate, "%a, %d %b %Y %H:%M:%S EST")
-                hoursAdded = datetime.timedelta(hours=5)
+                hoursAdded = timedelta(hours=5)
                 publishedDate = publishedDate + hoursAdded
                 postFilename = ''
                 votesStatus = []
