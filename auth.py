@@ -112,7 +112,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     plain = base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
         if debug:
-            print('DEBUG: basic Auth header does not contain a ":" ' +
+            print('DEBUG: basic auth header does not contain a ":" ' +
                   'separator for username:password')
         return False
     nickname = plain.split(':')[0]
