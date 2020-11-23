@@ -1145,13 +1145,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
-        # basic auth
+        # basic auth for c2s
         if self.headers.get('Authorization'):
             if authorize(self.server.baseDir, self.path,
                          self.headers['Authorization'],
                          self.server.debug):
                 return True
-            print('AUTH: Basic auth did not authorize ' +
+            print('AUTH: C2S Basic auth did not authorize ' +
                   self.headers['Authorization'])
         return False
 
