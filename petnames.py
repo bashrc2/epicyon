@@ -29,7 +29,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(petnamesFilename):
         with open(petnamesFilename, 'r') as petnamesFile:
             petnamesStr = petnamesFile.read()
-            if entry in petnamesStr:
+            if petnamesStr.startswith(petname + ' '):
                 return True
             if ' ' + handle + '\n' in petnamesStr:
                 petnamesList = petnamesStr.split('\n')
