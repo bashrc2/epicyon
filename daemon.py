@@ -1120,21 +1120,22 @@ class PubServer(BaseHTTPRequestHandler):
                     tokenStr = tokenStr.split(';')[0].strip()
                 if self.server.tokensLookup.get(tokenStr):
                     nickname = self.server.tokensLookup[tokenStr]
-                    self.authorizedNickname = nickname
-                    # default to the inbox of the person
-                    if self.path == '/':
-                        self.path = '/users/' + nickname + '/inbox'
-                    # check that the path contains the same nickname
-                    # as the cookie otherwise it would be possible
-                    # to be authorized to use an account you don't own
-                    if '/' + nickname + '/' in self.path:
-                        return True
-                    elif '/' + nickname + '?' in self.path:
-                        return True
-                    elif self.path.endswith('/' + nickname):
-                        return True
-                    print('AUTH: nickname ' + nickname +
-                          ' was not found in path ' + self.path)
+                    if not isSystemAccount(nickname):
+                        self.authorizedNickname = nickname
+                        # default to the inbox of the person
+                        if self.path == '/':
+                            self.path = '/users/' + nickname + '/inbox'
+                        # check that the path contains the same nickname
+                        # as the cookie otherwise it would be possible
+                        # to be authorized to use an account you don't own
+                        if '/' + nickname + '/' in self.path:
+                            return True
+                        elif '/' + nickname + '?' in self.path:
+                            return True
+                        elif self.path.endswith('/' + nickname):
+                            return True
+                        print('AUTH: nickname ' + nickname +
+                              ' was not found in path ' + self.path)
                     return False
                 print('AUTH: epicyon cookie ' +
                       'authorization failed, header=' +
