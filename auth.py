@@ -11,6 +11,7 @@ import hashlib
 import binascii
 import os
 import secrets
+from utils import isSystemAccount
 
 
 def hashPassword(password: str) -> str:
@@ -85,7 +86,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     """
     if ' ' not in authHeader:
         if debug:
-            print('DEBUG: Authorixation header does not ' +
+            print('DEBUG: basic auth - Authorixation header does not ' +
                   'contain a space character')
         return False
     if '/users/' not in path and \
@@ -93,23 +94,32 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
        '/channel/' not in path and \
        '/profile/' not in path:
         if debug:
-            print('DEBUG: Path for Authorization does not contain a user')
+            print('DEBUG: basic auth - ' +
+                  'path for Authorization does not contain a user')
         return False
     pathUsersSection = path.split('/users/')[1]
     if '/' not in pathUsersSection:
         if debug:
-            print('DEBUG: This is not a users endpoint')
+            print('DEBUG: basic auth - this is not a users endpoint')
         return False
     nicknameFromPath = pathUsersSection.split('/')[0]
+    if isSystemAccount(nicknameFromPath):
+        print('basic auth - attempted login using system account ' +
+              nicknameFromPath + ' in path')
+        return False
     base64Str = \
         authHeader.split(' ')[1].replace('\n', '').replace('\r', '')
     plain = base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
         if debug:
-            print('DEBUG: Basic Auth header does not contain a ":" ' +
+            print('DEBUG: basic Auth header does not contain a ":" ' +
                   'separator for username:password')
         return False
     nickname = plain.split(':')[0]
+    if isSystemAccount(nickname):
+        print('basic auth - attempted login using system account ' + nickname +
+              ' in Auth header')
+        return False
     if nickname != nicknameFromPath:
         if debug:
             print('DEBUG: Nickname given in the path (' + nicknameFromPath +
