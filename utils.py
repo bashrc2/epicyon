@@ -522,6 +522,37 @@ def getDomainFromActor(actor: str) -> (str, int):
     return domain, port
 
 
+def setDefaultPetName(baseDir: str, nickname: str, domain: str,
+                      followNickname: str, followDomain: str) -> None:
+    """Sets a default petname
+    This helps especially when using onion or i2p address
+    """
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    userPath = baseDir + '/accounts/' + nickname + '@' + domain
+    petnamesFilename = userPath + '/petnames.txt'
+
+    petnameLookupEntry = followNickname + ' ' + \
+        followNickname + '@' + followDomain + '\n'
+    if not os.path.isfile(petnamesFilename):
+        # if there is no existing petnames lookup file
+        with open(petnamesFilename, 'w+') as petnamesFile:
+            petnamesFile.write(petnameLookupEntry)
+        return
+
+    with open(petnamesFilename, 'r') as petnamesFile:
+        petnamesStr = petnamesFile.read()
+        if petnamesStr:
+            petnamesList = petnamesStr.split('\n')
+            for pet in petnamesList:
+                if pet.startswith(followNickname + ' '):
+                    # petname already exists
+                    return
+    # petname doesn't already exist
+    with open(petnamesFilename, 'a+') as petnamesFile:
+        petnamesFile.write(petnameLookupEntry)
+
+
 def followPerson(baseDir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federationList: [], debug: bool,
@@ -593,9 +624,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         with open(filename, 'w+') as f:
             f.write(handleToFollow + '\n')
 
-    # Default to adding new follows to the calendar.
-    # Possibly this could be made optional
     if followFile.endswith('following.txt'):
+        # Default to adding new follows to the calendar.
+        # Possibly this could be made optional
         # if following a person add them to the list of
         # calendar follows
         print('DEBUG: adding ' +
@@ -603,6 +634,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
               nickname + '@' + domain)
         addPersonToCalendar(baseDir, nickname, domain,
                             followNickname, followDomain)
+        # add a default petname
+        setDefaultPetName(baseDir, nickname, domain,
+                          followNickname, followDomain)
     return True
 
 

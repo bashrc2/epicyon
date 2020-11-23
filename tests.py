@@ -1387,6 +1387,8 @@ def testClientToServer():
                                httpPrefix,
                                cachedWebfingers, personCache,
                                True, __version__)
+    alicePetnamesFilename = aliceDir + '/accounts/' + \
+        'alice@' + aliceDomain + '/petnames.txt'
     aliceFollowingFilename = \
         aliceDir + '/accounts/alice@' + aliceDomain + '/following.txt'
     bobFollowersFilename = \
@@ -1395,7 +1397,8 @@ def testClientToServer():
         if os.path.isfile(bobFollowersFilename):
             if 'alice@' + aliceDomain + ':' + str(alicePort) in \
                open(bobFollowersFilename).read():
-                if os.path.isfile(aliceFollowingFilename):
+                if os.path.isfile(aliceFollowingFilename) and \
+                   os.path.isfile(alicePetnamesFilename):
                     if 'bob@' + bobDomain + ':' + str(bobPort) in \
                        open(aliceFollowingFilename).read():
                         break
@@ -1403,6 +1406,9 @@ def testClientToServer():
 
     assert os.path.isfile(bobFollowersFilename)
     assert os.path.isfile(aliceFollowingFilename)
+    assert os.path.isfile(alicePetnamesFilename)
+    assert 'bob bob@' + bobDomain in \
+        open(alicePetnamesFilename).read()
     print('alice@' + aliceDomain + ':' + str(alicePort) + ' in ' +
           bobFollowersFilename)
     assert 'alice@' + aliceDomain + ':' + str(alicePort) in \
