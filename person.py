@@ -236,7 +236,6 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
     elif nickname == 'news':
         personUrl = httpPrefix + '://' + domain + \
             '/about/more?news_actor=true'
-        personName = originalDomain
         approveFollowers = True
         personType = 'Application'
 
