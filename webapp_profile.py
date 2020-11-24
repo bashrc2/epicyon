@@ -772,7 +772,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
             profileStr += \
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
-                '?page=' + str(pageNumber - 1) + \
+                '?page=' + str(pageNumber - 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsPath + '/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
@@ -792,7 +792,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
             profileStr += \
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
-                '?page=' + str(pageNumber + 1) + \
+                '?page=' + str(pageNumber + 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsPath + '/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
