@@ -484,7 +484,8 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
     defaultProfileImageFilename = baseDir + '/theme/default/image.png'
     if theme:
         if os.path.isfile(baseDir + '/theme/' + theme + '/image.png'):
-            defaultBannerFilename = baseDir + '/theme/' + theme + '/image.png'
+            defaultProfileImageFilename = \
+                baseDir + '/theme/' + theme + '/image.png'
     if os.path.isfile(defaultProfileImageFilename):
         copyfile(defaultProfileImageFilename, baseDir +
                  '/accounts/' + nickname + '@' + domain + '/image.png')
