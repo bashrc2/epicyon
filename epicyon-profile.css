@@ -317,8 +317,6 @@ a:focus {
 .profileHeader * {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    -webkit-transition: all 0.25s ease;
-    transition: all 0.25s ease;
 }
 
 .profileHeader img.profileBackground {
@@ -437,17 +435,7 @@ a:focus {
     cursor: pointer;
     display: inline-block;
     position: relative;
-    transition: 0.5s;
-}
-
-.button span:after {
-    font-family: var(--header-font);
-    content: '\00bb';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: -20px;
-    transition: 0.5s;
+    transition: 2.0s;
 }
 
 .button:hover {
@@ -465,17 +453,7 @@ a:focus {
     cursor: pointer;
     display: inline-block;
     position: relative;
-    transition: 0.5s;
-}
-
-.buttonselected span:after {
-    font-family: var(--header-font);
-    content: '\00bb';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: -20px;
-    transition: 0.5s;
+    transition: 2.0s;
 }
 
 .buttonselected:hover {
@@ -940,14 +918,6 @@ div.gallery img {
 li { list-style:none;}
 /***********BUTTON CODE ******************************************************/
 
-a, button, input:focus, input[type='button'], input[type='reset'], input[type='submit'], textarea:focus, .button {
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
-    text-decoration: none;
-}
 .btn {
     margin: -3px 0 0 0;
 }
