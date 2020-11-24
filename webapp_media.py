@@ -103,7 +103,7 @@ def addEmbeddedVideoFromSites(translate: {}, content: str,
                          'tube.piweb.be', 'pe.ertu.be', 'peertube.social',
                          'videos.lescommuns.org', 'peertube.nogafa.org',
                          'skeptikon.fr', 'video.tedomum.net',
-                         'tube.p2p.legal',
+                         'tube.p2p.legal', 'tilvids.com',
                          'sikke.fi', 'exode.me', 'peertube.video')
         for site in peerTubeSites:
             if '"https://' + site in content:
