@@ -330,5 +330,9 @@
     "RSS feed for your blog": "Feed RSS per il tuo blog",
     "Create a new shared item": "Crea un nuovo elemento condiviso",
     "Rc3": "Rc3",
-    "Hashtag origins": "Origini hashtag"
+    "Hashtag origins": "Origini hashtag",
+    "admin": "admin",
+    "moderator": "moderatore",
+    "editor": "editore",
+    "delegator": "delegatore"
 }

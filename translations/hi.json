@@ -330,5 +330,9 @@
     "RSS feed for your blog": "RSS आपके ब्लॉग के लिए फ़ीड करता है",
     "Create a new shared item": "एक नया साझा आइटम बनाएं",
     "Rc3": "Rc3",
-    "Hashtag origins": "हैशटैग की उत्पत्ति"
+    "Hashtag origins": "हैशटैग की उत्पत्ति",
+    "admin": "व्यवस्थापक",
+    "moderator": "मध्यस्थ",
+    "editor": "संपादक",
+    "delegator": "डैलिगेटर"
 }

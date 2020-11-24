@@ -330,5 +330,9 @@
     "RSS feed for your blog": "RSS-канал для вашего блога",
     "Create a new shared item": "Создать новый общий элемент",
     "Rc3": "Rc3",
-    "Hashtag origins": "Происхождение хэштегов"
+    "Hashtag origins": "Происхождение хэштегов",
+    "admin": "админ",
+    "moderator": "Модератор",
+    "editor": "редактор",
+    "delegator": "делегат"
 }

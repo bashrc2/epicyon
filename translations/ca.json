@@ -330,5 +330,9 @@
     "RSS feed for your blog": "Feed RSS del vostre bloc",
     "Create a new shared item": "Creeu un element compartit nou",
     "Rc3": "Rc3",
-    "Hashtag origins": "Orígens de hashtag"
+    "Hashtag origins": "Orígens de hashtag",
+    "admin": "administrador",
+    "moderator": "moderador",
+    "editor": "editor",
+    "delegator": "delegador"
 }

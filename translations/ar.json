@@ -330,5 +330,9 @@
     "RSS feed for your blog": "تغذية RSS لمدونتك",
     "Create a new shared item": "إنشاء عنصر مشترك جديد",
     "Rc3": "Rc3",
-    "Hashtag origins": "أصول الهاشتاق"
+    "Hashtag origins": "أصول الهاشتاق",
+    "admin": "مشرف",
+    "moderator": "الوسيط",
+    "editor": "محرر",
+    "delegator": "المفوض"
 }

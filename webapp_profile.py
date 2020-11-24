@@ -664,7 +664,8 @@ def htmlProfile(rssIconAtTop: bool,
                                  maxItemsPerPage)
     if selected == 'roles':
         profileStr += \
-            htmlProfileRoles(translate, nickname, domainFull, extraJson)
+            htmlProfileRoles(translate, nickname, domainFull,
+                             extraJson)
     if selected == 'skills':
         profileStr += \
             htmlProfileSkills(translate, nickname, domainFull, extraJson)
@@ -811,7 +812,10 @@ def htmlProfileRoles(translate: {}, nickname: str, domain: str,
             '<div class="roles">\n<h2>' + project + \
             '</h2>\n<div class="roles-inner">\n'
         for role in rolesList:
-            profileStr += '<h3>' + role + '</h3>\n'
+            if translate.get(role):
+                profileStr += '<h3>' + translate[role] + '</h3>\n'
+            else:
+                profileStr += '<h3>' + role + '</h3>\n'
         profileStr += '</div></div>\n'
     if len(profileStr) == 0:
         profileStr += \

@@ -330,5 +330,9 @@
     "RSS feed for your blog": "Fotha RSS do do bhlag",
     "Create a new shared item": "Cruthaigh mír nua roinnte",
     "Rc3": "Rc3",
-    "Hashtag origins": "Bunús Hashtag"
+    "Hashtag origins": "Bunús Hashtag",
+    "admin": "admin",
+    "moderator": "modhnóir",
+    "editor": "eagarthóir",
+    "delegator": "toscaire"
 }
