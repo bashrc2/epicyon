@@ -436,10 +436,16 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
 
     # If a config.json file doesn't exist then don't decrement
     # remaining registrations counter
-    remainingConfigExists = getConfigParam(baseDir, 'registrationsRemaining')
-    if remainingConfigExists:
-        registrationsRemaining = int(remainingConfigExists)
-        if registrationsRemaining <= 0:
+    if nickname != 'news':
+        remainingConfigExists = \
+            getConfigParam(baseDir, 'registrationsRemaining')
+        if remainingConfigExists:
+            registrationsRemaining = int(remainingConfigExists)
+            if registrationsRemaining <= 0:
+                return None, None, None, None
+    else:
+        if os.path.isdir(baseDir + '/accounts/news@' + domain):
+            # news account already exists
             return None, None, None, None
 
     (privateKeyPem, publicKeyPem,
@@ -450,12 +456,13 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                                                       manualFollowerApproval,
                                                       password)
     if not getConfigParam(baseDir, 'admin'):
-        # print(nickname+' becomes the instance admin and a moderator')
-        setConfigParam(baseDir, 'admin', nickname)
-        setRole(baseDir, nickname, domain, 'instance', 'admin')
-        setRole(baseDir, nickname, domain, 'instance', 'moderator')
-        setRole(baseDir, nickname, domain, 'instance', 'editor')
-        setRole(baseDir, nickname, domain, 'instance', 'delegator')
+        if nickname != 'news':
+            # print(nickname+' becomes the instance admin and a moderator')
+            setConfigParam(baseDir, 'admin', nickname)
+            setRole(baseDir, nickname, domain, 'instance', 'admin')
+            setRole(baseDir, nickname, domain, 'instance', 'moderator')
+            setRole(baseDir, nickname, domain, 'instance', 'editor')
+            setRole(baseDir, nickname, domain, 'instance', 'delegator')
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
@@ -469,18 +476,28 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
             fFile.write('\n')
 
     # notify when posts are liked
-    notifyLikesFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.notifyLikes'
-    with open(notifyLikesFilename, 'w+') as nFile:
-        nFile.write('\n')
+    if nickname != 'news':
+        notifyLikesFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.notifyLikes'
+        with open(notifyLikesFilename, 'w+') as nFile:
+            nFile.write('\n')
 
-    if os.path.isfile(baseDir + '/img/default-avatar.png'):
-        copyfile(baseDir + '/img/default-avatar.png',
-                 baseDir + '/accounts/' + nickname + '@' + domain +
-                 '/avatar.png')
     theme = getConfigParam(baseDir, 'theme')
     if not theme:
         theme = 'default'
+
+    if nickname != 'news':
+        if os.path.isfile(baseDir + '/img/default-avatar.png'):
+            copyfile(baseDir + '/img/default-avatar.png',
+                     baseDir + '/accounts/' + nickname + '@' + domain +
+                     '/avatar.png')
+    else:
+        newsAvatar = baseDir + '/theme/' + theme + '/icons/avatar_news.png'
+        if os.path.isfile(newsAvatar):
+            copyfile(newsAvatar,
+                     baseDir + '/accounts/' + nickname + '@' + domain +
+                     '/avatar.png')
+
     defaultProfileImageFilename = baseDir + '/theme/default/image.png'
     if theme:
         if os.path.isfile(baseDir + '/theme/' + theme + '/image.png'):
@@ -496,7 +513,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
     if os.path.isfile(defaultBannerFilename):
         copyfile(defaultBannerFilename, baseDir + '/accounts/' +
                  nickname + '@' + domain + '/banner.png')
-    if remainingConfigExists:
+    if nickname != 'news' and remainingConfigExists:
         registrationsRemaining -= 1
         setConfigParam(baseDir, 'registrationsRemaining',
                        str(registrationsRemaining))
@@ -516,8 +533,8 @@ def createNewsInbox(baseDir: str, domain: str, port: int,
                     httpPrefix: str) -> (str, str, {}, {}):
     """Generates the news inbox
     """
-    return createPersonBase(baseDir, 'news', domain, port, httpPrefix,
-                            True, True, None)
+    return createPerson(baseDir, 'news', domain, port,
+                        httpPrefix, True, True, None)
 
 
 def personUpgradeActor(baseDir: str, personJson: {},
