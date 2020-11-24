@@ -86,13 +86,11 @@ a:link {
 }
 
 a:link:hover {
-    font-weight: bold;
     color: var(--main-link-color-hover);
 }
 
 a:visited:hover {
     color: var(--main-link-color-hover);
-    font-weight: bold;
 }
 
 a:focus {

@@ -74,12 +74,10 @@ a:link {
 
 a:link:hover {
     color: var(--main-link-color-hover);
-    font-weight: bold;
 }
 
 a:visited:hover {
     color: var(--main-link-color-hover);
-    font-weight: bold;
 }
 
 a:focus {
