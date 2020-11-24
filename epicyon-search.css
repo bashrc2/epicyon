@@ -76,21 +76,23 @@ a, u {
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
 }
 
 a:link:hover {
+    font-weight: bold;
     color: var(--main-link-color-hover);
 }
 
 a:visited:hover {
     color: var(--main-link-color-hover);
+    font-weight: bold;
 }
 
 a:focus {

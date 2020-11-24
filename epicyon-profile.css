@@ -263,20 +263,21 @@ a, u {
     color: var(--main-fg-color);
 }
 
-a:visited{
+a:visited {
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
 }
 
 a:link:hover {
     color: var(--main-link-color-hover);
+    font-weight: bold;
 }
 
 a:visited:hover {

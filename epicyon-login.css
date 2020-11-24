@@ -22,6 +22,7 @@
     --focus-color: white;
     --line-spacing: 130%;
     --login-logo-width: 20%;
+    --main-link-color-hover: #bbb;
 }
 
 @font-face {
@@ -65,12 +66,22 @@ a, u {
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
+    font-weight: normal;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
+    font-weight: bold;
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
     font-weight: bold;
 }
 

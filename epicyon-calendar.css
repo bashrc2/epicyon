@@ -23,6 +23,7 @@
     --font-size-calendar-cell-mobile: 4rem;
     --calendar-header-font: 'Montserrat';
     --calendar-header-font-style: italic;
+    --main-link-color-hover: #bbb;
 }
 
 @font-face {
@@ -59,6 +60,7 @@ a:visited{
     z-index: 1;
     padding: 1rem;
     margin: -1rem;
+    font-weight: normal;
 }
 
 a:link {
@@ -67,6 +69,17 @@ a:link {
     z-index: 1;
     padding: 1rem;
     margin: -1rem;
+    font-weight: normal;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
+    font-weight: bold;
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
+    font-weight: bold;
 }
 
 a:focus {
