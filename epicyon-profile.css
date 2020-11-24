@@ -284,7 +284,7 @@ a:visited:hover {
 }
 
 .buttonevent:hover {
-    filter: brightness(var(----icon-brightness-change));
+    filter: brightness(var(--icon-brightness-change));
 }
 
 a:focus {
@@ -631,7 +631,7 @@ a:focus {
 }
 
 .containericons img:hover {
-    filter: brightness(var(----icon-brightness-change));
+    filter: brightness(var(--icon-brightness-change));
 }
 
 .post-title {
