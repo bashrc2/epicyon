@@ -1067,6 +1067,9 @@ div.container {
         float: left;
         width: var(--column-left-width);
     }
+    .col-left img:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
     .col-left img.leftColEdit {
         background: var(--column-left-color);
         width: var(--column-left-icon-size);
@@ -1111,6 +1114,9 @@ div.container {
         font-size: var(--font-size-links);
         width: var(--column-right-width);
         overflow: hidden;
+    }
+    .col-right img:hover {
+        filter: brightness(var(--icon-brightness-change));
     }
     .col-right img.rightColEdit {
         background: var(--column-left-color);
