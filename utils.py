@@ -969,6 +969,7 @@ def validNickname(domain: str, nickname: str) -> bool:
     for c in forbiddenChars:
         if c in nickname:
             return False
+    # this should only apply for the shared inbox
     if nickname == domain:
         return False
     reservedNames = ('inbox', 'dm', 'outbox', 'following',
