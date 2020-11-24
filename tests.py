@@ -32,6 +32,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
 from utils import siteIsActive
@@ -2403,8 +2404,26 @@ def testParseFeedDate():
     assert publishedDate == "2020-11-22 18:51:33+00:00"
 
 
+def testValidNickname():
+    print('testValidNickname')
+    domain = 'somedomain.net'
+
+    nickname = 'myvalidnick'
+    assert validNickname(domain, nickname)
+
+    nickname = 'my.invalid.nick'
+    assert not validNickname(domain, nickname)
+
+    nickname = 'myinvalidnick?'
+    assert not validNickname(domain, nickname)
+
+    nickname = 'my invalid nick?'
+    assert not validNickname(domain, nickname)
+
+
 def runAllTests():
     print('Running tests...')
+    testValidNickname()
     testParseFeedDate()
     testFirstParagraphFromString()
     testGetNewswireTags()
