@@ -84,12 +84,14 @@ a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);
     font-weight: normal;
+    text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: normal;
+    text-decoration: none;
 }
 
 a:link:hover {
