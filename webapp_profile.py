@@ -627,11 +627,13 @@ def htmlProfile(rssIconAtTop: bool,
         bannerFile, bannerFilename = \
             getBannerFile(baseDir, nickname, domain)
 
-    licenseStr = \
-        '<a href="https://gitlab.com/bashrc2/epicyon">' + \
-        '<img loading="lazy" class="license" alt="' + \
-        translate['Get the source code'] + '" title="' + \
-        translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
+    licenseStr = ''
+    if not isSystemAccount(nickname):
+        licenseStr = \
+            '<a href="https://gitlab.com/bashrc2/epicyon">' + \
+            '<img loading="lazy" class="license" alt="' + \
+            translate['Get the source code'] + '" title="' + \
+            translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
     if selected == 'posts':
         profileStr += \
