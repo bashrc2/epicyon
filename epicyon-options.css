@@ -137,18 +137,13 @@ a:focus {
     width: 15%;
 }
 
-textarea {
-    color: var(--text-entry-foreground);
-    background-color: var(--text-entry-background);
-}
-
 @media screen and (min-width: 400px) {
     textarea {
         font-family: Arial, Helvetica, sans-serif;
         font-size: var(--font-size4);
         width: 90%;
         background-color: var(--text-entry-background);
-        color: white;
+	color: var(--text-entry-foreground);
     }
     .followText {
         font-size: var(--follow-text-size1);
@@ -225,7 +220,7 @@ textarea {
         font-size: var(--font-size);
         width: 90%;
         background-color: var(--text-entry-background);
-        color: white;
+	color: var(--text-entry-foreground);
     }
     .followText {
         font-size: var(--follow-text-size2);
