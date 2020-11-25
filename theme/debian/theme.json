@@ -1,4 +1,7 @@
 {
+    "button-highlighted": "#2b5c6d",
+    "button-selected-highlighted": "#2b5c6d",
+    "button-approve": "#2b5c6d",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "vertical-between-posts": "10px",
