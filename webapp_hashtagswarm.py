@@ -80,6 +80,8 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     tagSwarm = []
     domainHistogram = {}
 
+    # Load the blocked hashtags into memory.
+    # This avoids needing to repeatedly load the blocked file for each hashtag
     blockedStr = ''
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(globalBlockingFilename):
