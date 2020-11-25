@@ -4931,6 +4931,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
         if isBlockedHashtag(baseDir, hashtag):
+            print('BLOCK: hashtag #' + hashtag)
             msg = htmlHashtagBlocked(self.server.cssCache, baseDir,
                                      self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
