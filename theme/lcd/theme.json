@@ -21,6 +21,7 @@
     "main-bg-color-dm": "#5fb42b",
     "main-header-color-roles": "#9fb42b",
     "main-fg-color": "#33390d",
+    "login-fg-color": "#33390d",
     "border-color": "#33390d",
     "border-width": "5px",
     "border-width-header": "5px",

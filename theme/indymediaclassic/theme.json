@@ -40,6 +40,7 @@
     "main-link-color-hover": "#d09338",
     "main-visited-color": "#ffb900",
     "main-fg-color": "white",
+    "login-fg-color": "white",
     "column-left-fg-color": "white",
     "main-bg-color-dm": "#0b0a0a",
     "border-color": "#003366",
