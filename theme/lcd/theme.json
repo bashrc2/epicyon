@@ -22,6 +22,7 @@
     "main-header-color-roles": "#9fb42b",
     "main-fg-color": "#33390d",
     "login-fg-color": "#33390d",
+    "options-fg-color": "#33390d",
     "border-color": "#33390d",
     "border-width": "5px",
     "border-width-header": "5px",

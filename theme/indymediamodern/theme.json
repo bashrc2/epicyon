@@ -97,6 +97,7 @@
     "main-header-color-roles": "#ebebf0",
     "main-fg-color": "black",
     "login-fg-color": "black",
+    "options-fg-color": "black",
     "column-left-fg-color": "#25408f",
     "border-color": "#c0cdd9",
     "main-link-color": "#25408f",

@@ -3,7 +3,7 @@
 :root {
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
-    --main-fg-color: #dddddd;
+    --options-fg-color: #dddddd;
     --main-link-color: #999;
     --main-visited-color: #888;
     --border-color: #505050;
@@ -60,7 +60,7 @@ body, html {
     background-repeat: no-repeat;
     background-position: center;
     background-color: var(--main-bg-color);
-    color: var(--main-fg-color);
+    color: var(--options-fg-color);
 
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
@@ -69,7 +69,7 @@ body, html {
 }
 
 a, u {
-    color: var(--main-fg-color);
+    color: var(--options-fg-color);
 }
 
 a:visited{

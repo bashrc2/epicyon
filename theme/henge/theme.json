@@ -26,6 +26,7 @@
     "main-visited-color": "#e1c4bc",
     "main-fg-color": "white",
     "login-fg-color": "white",
+    "options-fg-color": "white",
     "column-left-fg-color": "white",
     "main-bg-color-dm": "#343335",
     "border-color": "#222",
