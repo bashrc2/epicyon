@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from blocking import isBlockedHashtag
 from datetime import datetime
 
 
@@ -81,6 +80,12 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     tagSwarm = []
     domainHistogram = {}
 
+    blockedStr = ''
+    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+    if os.path.isfile(globalBlockingFilename):
+        with open(globalBlockingFilename, 'r') as fp:
+            blockedStr = fp.read()
+
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
             tagsFilename = os.path.join(baseDir + '/tags', f)
@@ -98,7 +103,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                 continue
 
             hashTagName = f.split('.')[0]
-            if isBlockedHashtag(baseDir, hashTagName):
+            if '#' + hashTagName + '\n' in blockedStr:
                 continue
             with open(tagsFilename, 'r') as fp:
                 # only read one line, which saves time and memory
@@ -129,6 +134,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                         postDomain = postUrl.split('##')[1]
                         if '#' in postDomain:
                             postDomain = postDomain.split('#')[0]
+
                         if domainHistogram.get(postDomain):
                             domainHistogram[postDomain] = \
                                 domainHistogram[postDomain] + 1
