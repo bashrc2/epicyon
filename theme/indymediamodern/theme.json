@@ -88,6 +88,7 @@
     "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
     "column-left-color": "#efefef",
     "main-bg-color": "#efefef",
+    "options-bg-color": "#efefef",
     "post-bg-color": "white",
     "timeline-posts-background-color": "white",
     "main-bg-color-dm": "white",

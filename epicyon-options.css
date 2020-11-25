@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 :root {
-    --main-bg-color: #282c37;
+    --options-bg-color: #282c37;
     --link-bg-color: #282c37;
     --options-fg-color: #dddddd;
     --main-link-color: #999;
@@ -59,7 +59,7 @@ body, html {
     -moz-background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: var(--main-bg-color);
+    background-color: var(--options-bg-color);
     color: var(--options-fg-color);
 
     height: 100%;
@@ -101,7 +101,7 @@ a:focus {
 .follow {
     height: 100%;
     position: relative;
-    background-color: var(--main-bg-color);
+    background-color: var(--options-bg-color);
 }
 
 .followAvatar {
@@ -134,6 +134,7 @@ a:focus {
 }
 
 .options img {
+    background-color: var(--options-bg-color);
     width: 15%;
 }
 

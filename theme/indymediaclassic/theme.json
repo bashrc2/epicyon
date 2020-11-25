@@ -27,6 +27,7 @@
     "font-size4": "24px",
     "font-size5": "22px",
     "main-bg-color": "black",
+    "options-bg-color": "black",
     "post-bg-color": "black",
     "timeline-posts-background-color": "black",
     "header-bg-color": "black",

@@ -25,6 +25,7 @@
     "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
     "column-left-color": "#e6ebf0",
     "main-bg-color": "#e6ebf0",
+    "options-bg-color": "black",
     "post-bg-color": "#e6ebf0",
     "timeline-posts-background-color": "#e6ebf0",
     "header-bg-color": "#e6ebf0",
