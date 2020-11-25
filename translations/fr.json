@@ -334,5 +334,6 @@
     "admin": "admin",
     "moderator": "modérateur",
     "editor": "éditeur",
-    "delegator": "délégant"
+    "delegator": "délégant",
+    "debian": "debian"
 }

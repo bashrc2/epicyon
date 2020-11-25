@@ -334,5 +334,6 @@
     "admin": "admin",
     "moderator": "modhnóir",
     "editor": "eagarthóir",
-    "delegator": "toscaire"
+    "delegator": "toscaire",
+    "debian": "debian"
 }
