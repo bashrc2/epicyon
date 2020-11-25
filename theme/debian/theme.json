@@ -1,4 +1,5 @@
 {
+    "vertical-between-posts": "10px",
     "button-corner-radius": "5px",
     "timeline-border-radius": "5px",
     "newswire-publish-icon": "True",
