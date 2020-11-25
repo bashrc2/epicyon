@@ -137,6 +137,11 @@ a:focus {
     width: 15%;
 }
 
+textarea {
+    color: var(--text-entry-foreground);
+    background-color: var(--text-entry-background);
+}
+
 @media screen and (min-width: 400px) {
     textarea {
         font-family: Arial, Helvetica, sans-serif;
