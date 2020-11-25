@@ -1,4 +1,6 @@
 {
+    "button-corner-radius": "5px",
+    "timeline-border-radius": "5px",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
@@ -33,6 +35,8 @@
     "main-fg-color": "#2d2c37",
     "column-left-fg-color": "#2d2c37",
     "border-color": "#c0cdd9",
+    "border-width": "1px",
+    "border-width-header": "1px",
     "main-link-color": "#2a2c37",
     "main-link-color-hover": "#aa2c37",
     "title-color": "#2a2c37",
