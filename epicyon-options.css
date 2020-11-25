@@ -2,7 +2,7 @@
 
 :root {
     --options-bg-color: #282c37;
-    --link-bg-color: #282c37;
+    --options-link-bg-color: transparent;
     --options-fg-color: #dddddd;
     --main-link-color: #999;
     --main-visited-color: #888;
@@ -74,14 +74,14 @@ a, u {
 
 a:visited{
     color: var(--main-visited-color);
-    background: var(--link-bg-color);
+    background: var(--options-link-bg-color);
     font-weight: normal;
     text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
-    background: var(--link-bg-color);
+    background: var(--options-link-bg-color);
     font-weight: normal;
     text-decoration: none;
 }
@@ -122,7 +122,7 @@ a:focus {
 .pgp {
     font-size: var(--font-size5);
     color: var(--main-link-color);
-    background: var(--link-bg-color);
+    background: var(--options-link-bg-color);
 }
 
 .button:hover {
@@ -144,7 +144,7 @@ a:focus {
         font-size: var(--font-size4);
         width: 90%;
         background-color: var(--text-entry-background);
-	color: var(--text-entry-foreground);
+        color: var(--text-entry-foreground);
     }
     .followText {
         font-size: var(--follow-text-size1);
@@ -221,7 +221,7 @@ a:focus {
         font-size: var(--font-size);
         width: 90%;
         background-color: var(--text-entry-background);
-	color: var(--text-entry-foreground);
+        color: var(--text-entry-foreground);
     }
     .followText {
         font-size: var(--follow-text-size2);
