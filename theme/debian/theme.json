@@ -29,7 +29,7 @@
     "header-bg-color": "#e6ebf0",
     "main-bg-color-dm": "#e3dbf0",
     "link-bg-color": "#e6ebf0",
-    "main-bg-color-reply": "#e0dbf0",
+    "main-bg-color-reply": "white",
     "main-bg-color-report": "#e3dbf0",
     "main-header-color-roles": "#ebebf0",
     "main-fg-color": "#2d2c37",
