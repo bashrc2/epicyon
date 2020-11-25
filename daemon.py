@@ -4930,6 +4930,7 @@ class PubServer(BaseHTTPRequestHandler):
         hashtag = path.split('/tags/')[1]
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
+        hashtag = urllib.parse.unquote_plus(hashtag)
         if isBlockedHashtag(baseDir, hashtag):
             print('BLOCK: hashtag #' + hashtag)
             msg = htmlHashtagBlocked(self.server.cssCache, baseDir,
