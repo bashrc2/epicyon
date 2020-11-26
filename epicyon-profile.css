@@ -433,7 +433,7 @@ a:focus {
     cursor: pointer;
     display: inline-block;
     position: relative;
-    transition: 2.0s;
+    transition: 1.0s;
 }
 
 .button:hover {
@@ -451,7 +451,7 @@ a:focus {
     cursor: pointer;
     display: inline-block;
     position: relative;
-    transition: 2.0s;
+    transition: 1.0s;
 }
 
 .buttonselected:hover {
