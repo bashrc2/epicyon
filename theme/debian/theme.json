@@ -56,7 +56,7 @@
     "border-color": "#c0cdd9",
     "border-width": "1px",
     "border-width-header": "1px",
-    "main-link-color": "#2a2c37",
+    "main-link-color": "darkblue",
     "title-color": "#2a2c37",
     "main-visited-color": "#232c37",
     "text-entry-foreground": "#111",
