@@ -186,7 +186,7 @@ body, html {
 }
 
 .postSeparatorImage img {
-    background-color: var(--post-bg-color);
+    background-color: transparent;
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--post-separator-width);
@@ -195,7 +195,7 @@ body, html {
 }
 
 .postSeparatorImageLeft img {
-    background-color: var(--column-left-color);
+    background-color: transparent;
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--separator-width-left);
@@ -204,7 +204,7 @@ body, html {
 }
 
 .postSeparatorImageRight img {
-    background-color: var(--column-left-color);
+    background-color: transparent;
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--separator-width-right);
@@ -1094,11 +1094,11 @@ div.container {
         filter: brightness(var(--icon-brightness-change));
     }
     .col-right img.rightColEdit {
-        background: var(--column-left-color);
+        background: transparent;
         width: var(--column-right-icon-size);
     }
     .col-right img.rightColEditImage {
-        background: var(--column-left-color);
+        background: transparent;
         width: var(--column-right-icon-size);
         float: right;
     }
