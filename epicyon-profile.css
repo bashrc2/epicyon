@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 :root {
+    --timeline-icon-width: 50px;
+    --timeline-icon-width-mobile: 100px;
     --header-bg-color: #282c37;
     --main-bg-color: #282c37;
     --post-bg-color: #282c37;
@@ -1191,7 +1193,7 @@ div.container {
         margin-right: 0px;
         padding: 0px 0px;
         margin: 0px 0px;
-        width: 50px;
+        width: var(--timeline-icon-width);
     }
     .containerHeader img.timelineicon {
         float: var(--icons-side);
@@ -1199,7 +1201,7 @@ div.container {
         margin-right:0;
         padding: 0 0;
         margin: 0 0;
-        width: 50px;
+        width: var(--timeline-icon-width);
     }
     .container img.emojiheader {
         float: none;
@@ -1816,7 +1818,7 @@ div.container {
         margin-right: 0px;
         padding: 0px 0px;
         margin: 0px 0px;
-        width: 100px;
+        width: var(--timeline-icon-width-mobile);
     }
     .containerHeader img.timelineicon {
         float: var(--icons-side);
@@ -1824,7 +1826,7 @@ div.container {
         margin-right:0;
         padding: 0 0;
         margin: 0 0;
-        width: 100px;
+        width: var(--timeline-icon-width-mobile);
     }
     .container img.emojiheader {
         float: none;

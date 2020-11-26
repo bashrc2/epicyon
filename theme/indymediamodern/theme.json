@@ -1,4 +1,6 @@
 {
+    "timeline-icon-width": "30px",
+    "timeline-icon-width-mobile": "60px",
     "button-bottom-margin": "0",
     "header-vertical-offset": "10px",
     "header-bg-color": "#efefef",
