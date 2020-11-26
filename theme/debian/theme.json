@@ -1,4 +1,6 @@
 {
+    "today-circle": "#03a494",
+    "main-link-color-hover": "#03a494",
     "font-size-newswire-mobile": "32px",
     "newswire-date-color": "#00a594",
     "column-right-fg-color": "black",
@@ -55,7 +57,6 @@
     "border-width": "1px",
     "border-width-header": "1px",
     "main-link-color": "#2a2c37",
-    "main-link-color-hover": "#aa2c37",
     "title-color": "#2a2c37",
     "main-visited-color": "#232c37",
     "text-entry-foreground": "#111",
@@ -73,7 +74,6 @@
     "place-color": "black",
     "event-color": "#282c37",
     "today-foreground": "white",
-    "today-circle": "red",
     "event-background": "lightgrey",
     "event-foreground": "white",
     "title-text": "white",
