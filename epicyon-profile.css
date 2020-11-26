@@ -1042,7 +1042,7 @@ div.container {
         float: left;
         width: var(--column-left-width);
     }
-    .col-left img:hover {
+    .col-left img.leftColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
     }
     .col-left img.leftColEdit {
@@ -1090,7 +1090,7 @@ div.container {
         width: var(--column-right-width);
         overflow: hidden;
     }
-    .col-right img:hover {
+    .col-right img.rightColEditImage:hover {
         filter: brightness(var(--icon-brightness-change));
     }
     .col-right img.rightColEdit {
