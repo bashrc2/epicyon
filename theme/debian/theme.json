@@ -1,6 +1,6 @@
 {
     "today-circle": "#03a494",
-    "main-link-color-hover": "#03a494",
+    "main-link-color-hover": "blue",
     "font-size-newswire-mobile": "32px",
     "newswire-date-color": "#00a594",
     "column-right-fg-color": "black",
