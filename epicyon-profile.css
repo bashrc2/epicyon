@@ -33,6 +33,7 @@
     --font-size-newswire: 18px;
     --font-size-newswire-mobile: 40px;
     --font-size-dropdown-header: 40px;
+    --font-size-mobile: 40px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -252,12 +253,6 @@ blockquote p {
 
 .imageAnchor:focus img{
     border: 2px solid var(--focus-color);
-}
-
-h1 {
-    font-family: var(--header-font);
-    font-size: var(--font-size);
-    color: var(--title-color);
 }
 
 a, u {
@@ -944,6 +939,11 @@ div.container {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    h1 {
+        font-family: var(--header-font);
+        font-size: var(--font-size);
+        color: var(--title-color);
+    }
     .containerHeader {
         border: var(--border-width-header) solid var(--border-color);
         background-color: var(--header-bg-color);
@@ -1590,6 +1590,11 @@ div.container {
         margin-left: 0;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    h1 {
+        font-family: var(--header-font);
+        font-size: var(--font-size-mobile);
+        color: var(--title-color);
     }
     .containerHeader {
         border: var(--border-width-header) solid var(--border-color);
