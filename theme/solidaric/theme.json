@@ -29,6 +29,7 @@
     "font-size5": "22px",
     "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
     "main-bg-color": "white",
+    "login-bg-color": "white",
     "options-bg-color": "white",
     "post-bg-color": "white",
     "timeline-posts-background-color": "white",
