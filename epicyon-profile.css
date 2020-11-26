@@ -1050,7 +1050,6 @@ div.container {
         width: var(--column-left-icon-size);
     }
     .col-left img.leftColEditImage {
-        background: var(--column-left-color);
         width: var(--column-left-icon-size);
         float: right;
     }
