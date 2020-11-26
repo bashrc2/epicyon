@@ -256,6 +256,7 @@ blockquote p {
 
 h1 {
     font-family: var(--header-font);
+    font-size: var(--font-size);
     color: var(--title-color);
 }
 

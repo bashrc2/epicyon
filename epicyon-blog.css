@@ -3,6 +3,7 @@
 :root {
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
+    --title-color: #999;
     --dropdown-bg-color: #111;
     --dropdown-bg-color-hover: #333;
     --main-bg-color-reply: #212c37;
@@ -108,6 +109,8 @@ a:focus {
 
 h1 {
     font-family: var(--header-font);
+    font-size: var(--font-size);
+    color: var(--title-color);
 }
 
 .cwText {
