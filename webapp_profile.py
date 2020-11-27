@@ -627,14 +627,15 @@ def htmlProfile(rssIconAtTop: bool,
         licenseStr = ''
         bannerFile, bannerFilename = \
             getBannerFile(baseDir, nickname, domain)
-        htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
-                             translate,
-                             baseDir, httpPrefix,
-                             nickname, domain, port,
-                             session, wfRequest, personCache,
-                             projectVersion,
-                             YTReplacementDomain,
-                             showPublishedDateOnly) + licenseStr
+        profileStr += \
+            htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
+                                 translate,
+                                 baseDir, httpPrefix,
+                                 nickname, domain, port,
+                                 session, wfRequest, personCache,
+                                 projectVersion,
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly) + licenseStr
     else:
         licenseStr = \
             '<a href="https://gitlab.com/bashrc2/epicyon">' + \
