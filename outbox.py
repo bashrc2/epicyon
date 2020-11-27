@@ -188,11 +188,20 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
             savePostToBox(baseDir,
                           httpPrefix,
                           postId,
-                          postToNickname,
-                          domainFull, messageJson, outboxName)
+                          postToNickname, domainFull,
+                          messageJson, outboxName)
         if not savedFilename:
             print('WARN: post not saved to outbox ' + outboxName)
             return False
+
+        # save all instance blogs to the news actor
+        if postToNickname != 'news' and outboxName == 'tlblogs':
+            savePostToBox(baseDir,
+                          httpPrefix,
+                          postId,
+                          'news', domainFull,
+                          messageJson, 'tblogs')
+
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
            messageJson['type'] == 'Note' or \
