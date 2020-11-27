@@ -65,6 +65,12 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + usersPath + \
             '/tlnews"><button class="' + \
+            newsButton + '"><span>' + translate['News'] + \
+            '</span></button></a>'
+    elif defaultTimeline == 'tlfeatures':
+        tlStr += \
+            '<a href="' + usersPath + \
+            '/tlfeatures"><button class="' + \
             newsButton + '"><span>' + translate['Features'] + \
             '</span></button></a>'
     else:
