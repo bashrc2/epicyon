@@ -512,6 +512,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show the posts
     itemCtr = 0
     if timelineJson:
+        # if this is the features timeline then use the news actor
+        timelineNickname = nickname
+        if boxName == 'tlfeatures':
+            timelineNickname = 'news'
+            
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
             if pageNumber > 1:
@@ -567,7 +572,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              iconsPath, translate, pageNumber,
                                              baseDir, session, wfRequest,
                                              personCache,
-                                             nickname, domain, port,
+                                             timelineNickname, domain, port,
                                              item, None, True,
                                              allowDeletion,
                                              httpPrefix, projectVersion,
@@ -1025,7 +1030,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
-                        'news', domain, port, inboxJson, 'tlfeatures',
+                        nickname, domain, port, inboxJson, 'tlfeatures',
                         allowDeletion, httpPrefix, projectVersion, False,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,
