@@ -627,6 +627,14 @@ def htmlProfile(rssIconAtTop: bool,
         licenseStr = ''
         bannerFile, bannerFilename = \
             getBannerFile(baseDir, nickname, domain)
+        htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
+                             translate,
+                             baseDir, httpPrefix, authorized,
+                             nickname, domain, port,
+                             session, wfRequest, personCache,
+                             projectVersion,
+                             YTReplacementDomain,
+                             showPublishedDateOnly) + licenseStr
     else:
         licenseStr = \
             '<a href="https://gitlab.com/bashrc2/epicyon">' + \
@@ -722,6 +730,62 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
             personBoxJson({}, session, baseDir, domain,
                           port,
                           '/users/' + nickname + '/' + boxName + '?page=' +
+                          str(currPage),
+                          httpPrefix,
+                          10, boxName,
+                          authorized, 0, False, 0)
+        if not outboxFeed:
+            break
+        if len(outboxFeed['orderedItems']) == 0:
+            break
+        for item in outboxFeed['orderedItems']:
+            if item['type'] == 'Create':
+                postStr = \
+                    individualPostAsHtml(True, recentPostsCache,
+                                         maxRecentPosts,
+                                         iconsPath, translate, None,
+                                         baseDir, session, wfRequest,
+                                         personCache,
+                                         nickname, domain, port, item,
+                                         None, True, False,
+                                         httpPrefix, projectVersion, 'inbox',
+                                         YTReplacementDomain,
+                                         showPublishedDateOnly,
+                                         False, False, False, True, False)
+                if postStr:
+                    profileStr += postStr + separatorStr
+                    ctr += 1
+                    if ctr >= maxItems:
+                        break
+        currPage += 1
+    return profileStr
+
+
+def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
+                         translate: {},
+                         baseDir: str, httpPrefix: str,
+                         authorized: bool,
+                         nickname: str, domain: str, port: int,
+                         session, wfRequest: {}, personCache: {},
+                         projectVersion: str,
+                         YTReplacementDomain: str,
+                         showPublishedDateOnly: bool) -> str:
+    """Shows posts on the front screen of a news instance
+    These should only be public blog posts from the features timeline
+    which is the blog timeline of the news actor
+    """
+    iconsPath = getIconsWebPath(baseDir)
+    separatorStr = htmlPostSeparator(baseDir, None)
+    profileStr = ''
+    maxItems = 4
+    ctr = 0
+    currPage = 1
+    boxName = 'tlblogs'
+    while ctr < maxItems and currPage < 4:
+        outboxFeed = \
+            personBoxJson({}, session, baseDir, domain,
+                          port,
+                          '/users/news/' + boxName + '?page=' +
                           str(currPage),
                           httpPrefix,
                           10, boxName,
