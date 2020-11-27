@@ -262,7 +262,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # if this is a news instance and we are viewing the news timeline
     newsHeader = False
-    if defaultTimeline == 'tlnews' and boxName == 'tlnews':
+    if defaultTimeline == 'tlfeatures' and boxName == 'tlfeatures':
         newsHeader = True
 
     newPostButtonStr = ''
