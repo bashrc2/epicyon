@@ -514,6 +514,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if timelineJson:
         # if this is the features timeline then use the news actor
         timelineNickname = nickname
+        timelineBoxName = boxName
         if boxName == 'tlfeatures':
             # use the blog timeline of the news actor
             timelineNickname = 'news'
