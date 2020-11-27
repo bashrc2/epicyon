@@ -132,6 +132,7 @@ from webapp_timeline import htmlInboxReplies
 from webapp_timeline import htmlInboxMedia
 from webapp_timeline import htmlInboxBlogs
 from webapp_timeline import htmlInboxNews
+from webapp_timeline import htmlInboxFeatures
 from webapp_timeline import htmlOutbox
 from webapp_moderation import htmlModeration
 from webapp_moderation import htmlModerationInfo
@@ -3632,7 +3633,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.newsInstance = True
                             self.server.blogsInstance = False
                             self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'tlnews'
+                            self.server.defaultTimeline = 'tlfeatures'
                         setConfigParam(baseDir,
                                        "mediaInstance",
                                        self.server.mediaInstance)
@@ -4774,7 +4775,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if '/users/news/' in path:
-            self._redirect_headers(originPathStr + '/tlnews',
+            self._redirect_headers(originPathStr + '/tlfeatures',
                                    cookie, callingDomain)
             return
 
@@ -7317,6 +7318,130 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _showFeaturesTimeline(self, authorized: bool,
+                              callingDomain: str, path: str,
+                              baseDir: str, httpPrefix: str,
+                              domain: str, domainFull: str, port: int,
+                              onionDomain: str, i2pDomain: str,
+                              GETstartTime, GETtimings: {},
+                              proxyType: str, cookie: str,
+                              debug: str) -> bool:
+        """Shows the features timeline (all local blogs)
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxFeaturesFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInNewsFeed, 'tlfeatures',
+                                  True,
+                                  self.server.newswireVotesThreshold,
+                                  self.server.positiveVoting,
+                                  self.server.votingTimeMins)
+                if not inboxFeaturesFeed:
+                    inboxFeaturesFeed = []
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlfeatures', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxFeaturesFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          path + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInBlogsFeed, 'tlfeatures',
+                                          True,
+                                          self.server.newswireVotesThreshold,
+                                          self.server.positiveVoting,
+                                          self.server.votingTimeMins)
+                    currNickname = path.split('/users/')[1]
+                    if '/' in currNickname:
+                        currNickname = currNickname.split('/')[0]
+                    moderator = isModerator(baseDir, currNickname)
+                    editor = isEditor(baseDir, currNickname)
+                    fullWidthTimelineButtonHeader = \
+                        self.server.fullWidthTimelineButtonHeader
+                    msg = \
+                        htmlInboxFeatures(self.server.cssCache,
+                                          self.server.defaultTimeline,
+                                          self.server.recentPostsCache,
+                                          self.server.maxRecentPosts,
+                                          self.server.translate,
+                                          pageNumber, maxPostsInNewsFeed,
+                                          self.server.session,
+                                          baseDir,
+                                          self.server.cachedWebfingers,
+                                          self.server.personCache,
+                                          nickname,
+                                          domain,
+                                          port,
+                                          inboxFeaturesFeed,
+                                          self.server.allowDeletion,
+                                          httpPrefix,
+                                          self.server.projectVersion,
+                                          self._isMinimal(nickname),
+                                          self.server.YTReplacementDomain,
+                                          self.server.showPublishedDateOnly,
+                                          self.server.newswire,
+                                          moderator, editor,
+                                          self.server.positiveVoting,
+                                          self.server.showPublishAsIcon,
+                                          fullWidthTimelineButtonHeader,
+                                          self.server.iconsAsButtons,
+                                          self.server.rssIconAtTop,
+                                          self.server.publishButtonAtTop,
+                                          authorized)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show news 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxFeaturesFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json',
+                                      len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = 'news'
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlfeatures':
+            # not the features inbox
+            if debug:
+                print('DEBUG: GET access to features is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
     def _showSharesTimeline(self, authorized: bool,
                             callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str,
@@ -9790,7 +9915,7 @@ class PubServer(BaseHTTPRequestHandler):
                     elif self.server.mediaInstance:
                         self.path = '/users/' + nickname + '/tlmedia'
                     else:
-                        self.path = '/users/' + nickname + '/tlnews'
+                        self.path = '/users/' + nickname + '/tlfeatures'
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
@@ -10543,6 +10668,23 @@ class PubServer(BaseHTTPRequestHandler):
                                       GETstartTime, GETtimings,
                                       self.server.proxyType,
                                       cookie, self.server.debug):
+                return
+
+        # get features (local blogs) for a given person
+        if self.path.endswith('/tlfeatures') or \
+           '/tlfeatures?page=' in self.path:
+            if self._showFeaturesTimeline(authorized,
+                                          callingDomain, self.path,
+                                          self.server.baseDir,
+                                          self.server.httpPrefix,
+                                          self.server.domain,
+                                          self.server.domainFull,
+                                          self.server.port,
+                                          self.server.onionDomain,
+                                          self.server.i2pDomain,
+                                          GETstartTime, GETtimings,
+                                          self.server.proxyType,
+                                          cookie, self.server.debug):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -12511,7 +12653,7 @@ def runDaemon(maxNewswirePosts: int,
     if blogsInstance:
         httpd.defaultTimeline = 'tlblogs'
     if newsInstance:
-        httpd.defaultTimeline = 'tlnews'
+        httpd.defaultTimeline = 'tlfeatures'
 
     # load translations dictionary
     httpd.translate = {}

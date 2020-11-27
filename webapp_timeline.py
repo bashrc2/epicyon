@@ -996,6 +996,39 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         authorized)
 
 
+def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
+                      recentPostsCache: {}, maxRecentPosts: int,
+                      translate: {}, pageNumber: int, itemsPerPage: int,
+                      session, baseDir: str, wfRequest: {}, personCache: {},
+                      nickname: str, domain: str, port: int, inboxJson: {},
+                      allowDeletion: bool,
+                      httpPrefix: str, projectVersion: str,
+                      minimal: bool, YTReplacementDomain: str,
+                      showPublishedDateOnly: bool,
+                      newswire: {}, positiveVoting: bool,
+                      showPublishAsIcon: bool,
+                      fullWidthTimelineButtonHeader: bool,
+                      iconsAsButtons: bool,
+                      rssIconAtTop: bool,
+                      publishButtonAtTop: bool,
+                      authorized: bool) -> str:
+    """Show the features timeline as html
+    """
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        'news', domain, port, inboxJson, 'tlblogs',
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting, showPublishAsIcon,
+                        fullWidthTimelineButtonHeader,
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop,
+                        authorized)
+
+
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   recentPostsCache: {}, maxRecentPosts: int,
                   translate: {}, pageNumber: int, itemsPerPage: int,
