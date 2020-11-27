@@ -2888,7 +2888,9 @@ def addPostStringToTimeline(postStr: str, boxname: str,
         elif boxname == 'tlreplies':
             if boxActor not in postStr:
                 return False
-        elif boxname == 'tlblogs' or boxname == 'tlnews':
+        elif (boxname == 'tlblogs' or
+              boxname == 'tlnews' or
+              boxname == 'tlfeatures'):
             if '"Create"' not in postStr:
                 return False
             if '"Article"' not in postStr:
@@ -2927,6 +2929,7 @@ def createBoxIndexed(recentPostsCache: {},
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks' and \
        boxname != 'tlevents':
@@ -2937,6 +2940,9 @@ def createBoxIndexed(recentPostsCache: {},
     indexBoxName = boxname
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
+        indexBoxName = boxname
+    elif boxname == "tlfeatures":
+        boxname = "tlblogs"
         indexBoxName = boxname
 
     if port:
