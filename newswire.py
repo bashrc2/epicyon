@@ -215,6 +215,8 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for rssItem in rssItems:
+        if not rssItem:
+            continue
         if len(rssItem) > maxBytes:
             print('WARN: rss feed item is too big')
             continue
@@ -266,6 +268,8 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' rss feed items to newswire')
     return result
 
 
@@ -282,6 +286,8 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for atomItem in atomItems:
+        if not atomItem:
+            continue
         if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
@@ -333,6 +339,8 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' atom feed items to newswire')
     return result
 
 
@@ -351,7 +359,10 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for atomItem in atomItems:
-        print('YouTube feed item: ' + atomItem)
+        if not atomItem:
+            continue
+        if not atomItem.strip():
+            continue
         if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
@@ -397,6 +408,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' YouTube feed items to newswire')
     return result
 
 
