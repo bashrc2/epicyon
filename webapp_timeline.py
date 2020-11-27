@@ -518,7 +518,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlfeatures':
             # use the blog timeline of the news actor
             timelineNickname = 'news'
-            timelineBoxName = 'tlblog'
+            timelineBoxName = 'tlblogs'
 
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
