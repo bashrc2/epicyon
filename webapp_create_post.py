@@ -92,7 +92,7 @@ def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             iconsPath + '/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
-        if defaultTimeline == 'tlnews':
+        if defaultTimeline == 'tlfeatures':
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
                 '"><img loading="lazy" alt="" title="" src="/' + \
@@ -305,7 +305,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     if path.endswith('/newblog'):
         placeholderSubject = translate['Title']
         scopeIcon = 'scope_blog.png'
-        if defaultTimeline != 'tlnews':
+        if defaultTimeline != 'tlfeatures':
             scopeDescription = translate['Blog']
         else:
             scopeDescription = translate['Article']

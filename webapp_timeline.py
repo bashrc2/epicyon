@@ -286,7 +286,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 '<a href="' + usersPath + '/newdm">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
-    elif boxName == 'tlblogs' or boxName == 'tlnews':
+    elif (boxName == 'tlblogs' or
+          boxName == 'tlnews' or
+          boxName == 'tlfeatures'):
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
