@@ -2593,8 +2593,7 @@ def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
     return createBoxIndexed({}, session, baseDir, 'tlblogs', 'news',
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
-                            newswireVotesThreshold, positiveVoting,
-                            votingTimeMins, pageNumber)
+                            0, False, 0, pageNumber)
 
 
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
