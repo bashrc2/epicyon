@@ -196,11 +196,15 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
         # save all instance blogs to the news actor
         if postToNickname != 'news' and outboxName == 'tlblogs':
-            savePostToBox(baseDir,
-                          httpPrefix,
-                          postId,
-                          'news', domainFull,
-                          messageJson, 'tlblogs')
+            savedFeatureFilename = \
+                savePostToBox(baseDir,
+                              httpPrefix,
+                              postId,
+                              'news', domainFull,
+                              messageJson, 'tlblogs')
+            inboxUpdateIndex('tlblogs', baseDir,
+                             'news@' + domain,
+                             savedFeatureFilename, debug)
 
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \

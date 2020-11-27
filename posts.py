@@ -2590,7 +2590,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
 def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str, itemsPerPage: int,
                            headerOnly: bool, pageNumber=None) -> {}:
-    return createBoxIndexed({}, session, baseDir, 'tlblogs', 'news',
+    return createBoxIndexed({}, session, baseDir, 'tlfeatures', 'news',
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
                             0, False, 0, pageNumber)
