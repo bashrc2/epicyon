@@ -518,7 +518,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             # use the blog timeline of the news actor
             timelineNickname = 'news'
             timelineBoxName = 'tlblog'
-            
+
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
             if pageNumber > 1:

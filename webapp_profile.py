@@ -634,45 +634,45 @@ def htmlProfile(rssIconAtTop: bool,
             translate['Get the source code'] + '" title="' + \
             translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
 
-    if selected == 'posts':
-        profileStr += \
-            htmlProfilePosts(recentPostsCache, maxRecentPosts,
-                             translate,
-                             baseDir, httpPrefix, authorized,
-                             nickname, domain, port,
-                             session, wfRequest, personCache,
-                             projectVersion,
-                             YTReplacementDomain,
-                             showPublishedDateOnly) + licenseStr
-    if selected == 'following':
-        profileStr += \
-            htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                 authorized, nickname,
-                                 domain, port, session,
-                                 wfRequest, personCache, extraJson,
-                                 projectVersion, ["unfollow"], selected,
-                                 usersPath, pageNumber, maxItemsPerPage)
-    if selected == 'followers':
-        profileStr += \
-            htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                 authorized, nickname,
-                                 domain, port, session,
-                                 wfRequest, personCache, extraJson,
-                                 projectVersion, ["block"],
-                                 selected, usersPath, pageNumber,
-                                 maxItemsPerPage)
-    if selected == 'roles':
-        profileStr += \
-            htmlProfileRoles(translate, nickname, domainFull,
-                             extraJson)
-    if selected == 'skills':
-        profileStr += \
-            htmlProfileSkills(translate, nickname, domainFull, extraJson)
-    if selected == 'shares':
-        profileStr += \
-            htmlProfileShares(actor, translate,
-                              nickname, domainFull,
-                              extraJson) + licenseStr
+        if selected == 'posts':
+            profileStr += \
+                htmlProfilePosts(recentPostsCache, maxRecentPosts,
+                                 translate,
+                                 baseDir, httpPrefix, authorized,
+                                 nickname, domain, port,
+                                 session, wfRequest, personCache,
+                                 projectVersion,
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly) + licenseStr
+        elif selected == 'following':
+            profileStr += \
+                htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                     authorized, nickname,
+                                     domain, port, session,
+                                     wfRequest, personCache, extraJson,
+                                     projectVersion, ["unfollow"], selected,
+                                     usersPath, pageNumber, maxItemsPerPage)
+        elif selected == 'followers':
+            profileStr += \
+                htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                     authorized, nickname,
+                                     domain, port, session,
+                                     wfRequest, personCache, extraJson,
+                                     projectVersion, ["block"],
+                                     selected, usersPath, pageNumber,
+                                     maxItemsPerPage)
+        elif selected == 'roles':
+            profileStr += \
+                htmlProfileRoles(translate, nickname, domainFull,
+                                 extraJson)
+        elif selected == 'skills':
+            profileStr += \
+                htmlProfileSkills(translate, nickname, domainFull, extraJson)
+        elif selected == 'shares':
+            profileStr += \
+                htmlProfileShares(actor, translate,
+                                  nickname, domainFull,
+                                  extraJson) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = ''
