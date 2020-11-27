@@ -629,7 +629,7 @@ def htmlProfile(rssIconAtTop: bool,
             getBannerFile(baseDir, nickname, domain)
         htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
                              translate,
-                             baseDir, httpPrefix, authorized,
+                             baseDir, httpPrefix,
                              nickname, domain, port,
                              session, wfRequest, personCache,
                              projectVersion,
@@ -764,7 +764,6 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
 def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                          translate: {},
                          baseDir: str, httpPrefix: str,
-                         authorized: bool,
                          nickname: str, domain: str, port: int,
                          session, wfRequest: {}, personCache: {},
                          projectVersion: str,
@@ -781,14 +780,13 @@ def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
     ctr = 0
     currPage = 1
     boxName = 'tlfeatures'
+    authorized = True
     while ctr < maxItems and currPage < 4:
         outboxFeed = \
-            personBoxJson({}, session, baseDir, domain,
-                          port,
-                          '/users/' + nickname + '/' + boxName + '?page=' +
-                          str(currPage),
-                          httpPrefix,
-                          10, boxName,
+            personBoxJson({}, session, baseDir, domain, port,
+                          '/users/' + nickname + '/' + boxName +
+                          '?page=' + str(currPage),
+                          httpPrefix, 10, boxName,
                           authorized, 0, False, 0)
         if not outboxFeed:
             break
