@@ -2748,7 +2748,7 @@ class PubServer(BaseHTTPRequestHandler):
                     domain: str, domainFull: str,
                     onionDomain: str, i2pDomain: str,
                     debug: bool) -> None:
-        """Endpoint for removing posts
+        """Endpoint for removing posts after confirmation
         """
         pageNumber = 1
         usersPath = path.split('/rmpost')[0]
@@ -2812,7 +2812,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'actor': removePostActor,
                     'object': removeMessageId,
                     'to': toList,
-                    'cc': [removePostActor+'/followers'],
+                    'cc': [removePostActor + '/followers'],
                     'type': 'Delete'
                 }
                 self.postToNickname = getNicknameFromActor(removePostActor)
@@ -5809,7 +5809,7 @@ class PubServer(BaseHTTPRequestHandler):
                       GETstartTime, GETtimings: {},
                       proxyType: str, cookie: str,
                       debug: str):
-        """Delete button is pressed
+        """Delete button is pressed on a post
         """
         if not cookie:
             print('ERROR: no cookie given when deleting')
