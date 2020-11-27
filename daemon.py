@@ -11129,6 +11129,13 @@ class PubServer(BaseHTTPRequestHandler):
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain)
                         saveJson(postJsonObject, postFilename)
+                        # also save to the news actor
+                        if nickname != 'news':
+                            postFilename = \
+                                postFilename.replace('#users#' +
+                                                     nickname + '#',
+                                                     '#users#news#')
+                            saveJson(postJsonObject, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
                         return 1
                     else:
