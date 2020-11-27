@@ -1519,9 +1519,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        moderationText)
                         if postFilename:
                             if canRemovePost(baseDir,
-                                             nickname,
-                                             domain,
-                                             port,
+                                             nickname, domain, port,
                                              moderationText):
                                 deletePost(baseDir,
                                            httpPrefix,
@@ -1529,6 +1527,23 @@ class PubServer(BaseHTTPRequestHandler):
                                            postFilename,
                                            debug,
                                            self.server.recentPostsCache)
+                        if nickname != 'news':
+                            # if this is a local blog post then also remove it
+                            # from the news actor
+                            postFilename = \
+                                locatePost(baseDir, 'news', domain,
+                                           moderationText)
+                            if postFilename:
+                                if canRemovePost(baseDir,
+                                                 'news', domain, port,
+                                                 moderationText):
+                                    deletePost(baseDir,
+                                               httpPrefix,
+                                               'news', domain,
+                                               postFilename,
+                                               debug,
+                                               self.server.recentPostsCache)
+
         if callingDomain.endswith('.onion') and onionDomain:
             actorStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
