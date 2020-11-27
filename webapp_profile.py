@@ -1111,6 +1111,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     moderatorsStr = ''
     themesDropdown = ''
     instanceStr = ''
+    editorsStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
