@@ -1174,7 +1174,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # show blog citations
     citationsStr = ''
-    if boxName == 'tlblog':
+    if boxName == 'tlblog' or boxName == 'tlfeatures':
         if postJsonObject['object'].get('tag'):
             for tagJson in postJsonObject['object']['tag']:
                 if not isinstance(tagJson, dict):
