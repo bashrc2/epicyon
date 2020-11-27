@@ -25,6 +25,7 @@ from posts import createRepliesTimeline
 from posts import createMediaTimeline
 from posts import createNewsTimeline
 from posts import createBlogsTimeline
+from posts import createFeaturesTimeline
 from posts import createBookmarksTimeline
 from posts import createEventsTimeline
 from posts import createInbox
@@ -628,6 +629,7 @@ def personBoxJson(recentPostsCache: {},
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'moderation' and \
        boxname != 'tlbookmarks' and boxname != 'bookmarks' and \
        boxname != 'tlevents':
@@ -700,6 +702,10 @@ def personBoxJson(recentPostsCache: {},
                                   httpPrefix, noOfItems, headerOnly,
                                   newswireVotesThreshold, positiveVoting,
                                   votingTimeMins, pageNumber)
+    elif boxname == 'tlfeatures':
+        return createFeaturesTimeline(session, baseDir, nickname, domain, port,
+                                      httpPrefix, noOfItems, headerOnly,
+                                      pageNumber)
     elif boxname == 'tlblogs':
         return createBlogsTimeline(session, baseDir, nickname, domain, port,
                                    httpPrefix, noOfItems, headerOnly,

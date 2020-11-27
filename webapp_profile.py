@@ -624,11 +624,10 @@ def htmlProfile(rssIconAtTop: bool,
         cssFilename = baseDir + '/epicyon.css'
 
     if isSystemAccount(nickname):
+        licenseStr = ''
         bannerFile, bannerFilename = \
             getBannerFile(baseDir, nickname, domain)
-
-    licenseStr = ''
-    if not isSystemAccount(nickname):
+    else:
         licenseStr = \
             '<a href="https://gitlab.com/bashrc2/epicyon">' + \
             '<img loading="lazy" class="license" alt="' + \
@@ -717,14 +716,15 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     maxItems = 4
     ctr = 0
     currPage = 1
+    boxName = 'outbox'
     while ctr < maxItems and currPage < 4:
         outboxFeed = \
             personBoxJson({}, session, baseDir, domain,
                           port,
-                          '/users/' + nickname + '/outbox?page=' +
+                          '/users/' + nickname + '/' + boxName + '?page=' +
                           str(currPage),
                           httpPrefix,
-                          10, 'outbox',
+                          10, boxName,
                           authorized, 0, False, 0)
         if not outboxFeed:
             break
