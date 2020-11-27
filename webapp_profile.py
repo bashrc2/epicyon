@@ -780,12 +780,12 @@ def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
     maxItems = 4
     ctr = 0
     currPage = 1
-    boxName = 'tlblogs'
+    boxName = 'tlfeatures'
     while ctr < maxItems and currPage < 4:
         outboxFeed = \
             personBoxJson({}, session, baseDir, domain,
                           port,
-                          '/users/news/' + boxName + '?page=' +
+                          '/users/' + nickname + '/' + boxName + '?page=' +
                           str(currPage),
                           httpPrefix,
                           10, boxName,
