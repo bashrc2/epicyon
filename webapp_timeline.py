@@ -135,6 +135,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
     blogsButton = 'button'
+    featuresButton = 'button'
     newsButton = 'button'
     dmButton = 'button'
     if newDM:
@@ -156,6 +157,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         inboxButton = 'buttonselected'
     elif boxName == 'tlblogs':
         blogsButton = 'buttonselected'
+    elif boxName == 'tlfeatures':
+        featuresButton = 'buttonselected'
     elif boxName == 'tlnews':
         newsButton = 'buttonselected'
     elif boxName == 'dm':
@@ -374,7 +377,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += \
             headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
                                   translate, usersPath, mediaButton,
-                                  blogsButton, newsButton, inboxButton,
+                                  blogsButton, featuresButton,
+                                  newsButton, inboxButton,
                                   dmButton, newDM, repliesButton,
                                   newReply, minimal, sentButton,
                                   sharesButtonStr, bookmarksButtonStr,
@@ -415,7 +419,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += \
             headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
                                   translate, usersPath, mediaButton,
-                                  blogsButton, newsButton, inboxButton,
+                                  blogsButton, featuresButton,
+                                  newsButton, inboxButton,
                                   dmButton, newDM, repliesButton,
                                   newReply, minimal, sentButton,
                                   sharesButtonStr, bookmarksButtonStr,

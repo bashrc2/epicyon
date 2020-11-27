@@ -21,6 +21,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                           usersPath: str,
                           mediaButton: str,
                           blogsButton: str,
+                          featuresButton: str,
                           newsButton: str,
                           inboxButton: str,
                           dmButton: str,
@@ -71,7 +72,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + usersPath + \
             '/tlfeatures"><button class="' + \
-            newsButton + '"><span>' + translate['Features'] + \
+            featuresButton + '"><span>' + translate['Features'] + \
             '</span></button></a>'
     else:
         tlStr += \
