@@ -7374,8 +7374,6 @@ class PubServer(BaseHTTPRequestHandler):
                     currNickname = path.split('/users/')[1]
                     if '/' in currNickname:
                         currNickname = currNickname.split('/')[0]
-                    moderator = isModerator(baseDir, currNickname)
-                    editor = isEditor(baseDir, currNickname)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
                     msg = \
