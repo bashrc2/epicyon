@@ -200,7 +200,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                           httpPrefix,
                           postId,
                           'news', domainFull,
-                          messageJson, 'tblogs')
+                          messageJson, 'tlblogs')
 
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
