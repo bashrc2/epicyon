@@ -113,13 +113,14 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import htmlHashtagBlocked
+from webapp_utils import htmlFollowingList
 from webapp_utils import setBlogAddress
 from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
 from webapp_confirm import htmlConfirmDelete
-from webapp import htmlFollowingList
 from webapp_confirm import htmlConfirmRemoveSharedItem
 from webapp_confirm import htmlConfirmUnblock
 from webapp_person_options import htmlPersonOptions
@@ -143,7 +144,6 @@ from webapp_suspended import htmlSuspended
 from webapp_tos import htmlTermsOfService
 from webapp_confirm import htmlConfirmFollow
 from webapp_confirm import htmlConfirmUnfollow
-from webapp import htmlHashtagBlocked
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
 from webapp_profile import htmlEditProfile
