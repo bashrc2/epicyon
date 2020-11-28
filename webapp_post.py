@@ -1026,6 +1026,10 @@ def individualPostAsHtml(allowDownloads: bool,
             publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
         else:
             publishedStr = datetimeObject.strftime("%a %b %d")
+        # if the post has replies then append a symbol to indicate this
+        if postJsonObject.get('hasReplies'):
+            if postJsonObject['hasReplies'] is True:
+                publishedStr += '↲'
 
     # benchmark 15
     if not allowDownloads:

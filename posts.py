@@ -2912,6 +2912,13 @@ def addPostToTimeline(filePath: str, boxname: str,
     """
     with open(filePath, 'r') as postFile:
         postStr = postFile.read()
+
+        if filePath.endswith('.json'):
+            repliesFilename = filePath.replace('.json', '.replies')
+            if os.path.isfile(repliesFilename):
+                # append a replies identifier, which will later be removed
+                postStr += '<hasReplies>'
+
         return addPostStringToTimeline(postStr, boxname, postsInBox, boxActor)
     return False
 
@@ -3109,11 +3116,23 @@ def createBoxIndexed(recentPostsCache: {},
         return boxHeader
 
     for postStr in postsInBox:
+        # Check if the post has replies
+        hasReplies = False
+        if postStr.endswith('<hasReplies>'):
+            hasReplies = True
+            # remove the replies identifier
+            postStr = postStr.replace('<hasReplies>', '')
+
         p = None
         try:
             p = json.loads(postStr)
         except BaseException:
             continue
+
+        # Does this post have replies?
+        # This will be used to indicate that replies exist within the html
+        # created by individualPostAsHtml
+        p['hasReplies'] = hasReplies
 
         # Don't show likes, replies or shares (announces) to
         # unauthorized viewers
