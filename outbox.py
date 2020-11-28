@@ -197,20 +197,22 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
         # save all instance blogs to the news actor
         if postToNickname != 'news' and outboxName == 'tlblogs':
-            blogsDir = baseDir + '/accounts/news@' + domain + '/tlblogs'
-            if not os.path.isdir(blogsDir):
-                os.mkdir(blogsDir)
-            copyfile(savedFilename, blogsDir)
-            inboxUpdateIndex('tlblogs', baseDir,
-                             'news@' + domain,
-                             savedFilename, debug)
+            if '/' in savedFilename:
+                savedPostId = savedFilename.split('/')[-1]
+                blogsDir = baseDir + '/accounts/news@' + domain + '/tlblogs'
+                if not os.path.isdir(blogsDir):
+                    os.mkdir(blogsDir)
+                copyfile(savedFilename, blogsDir + '/' + savedPostId)
+                inboxUpdateIndex('tlblogs', baseDir,
+                                 'news@' + domain,
+                                 savedFilename, debug)
 
-            # clear the citations file if it exists
-            citationsFilename = \
-                baseDir + '/accounts/' + \
-                postToNickname + '@' + domain + '/.citations.txt'
-            if os.path.isfile(citationsFilename):
-                os.remove(citationsFilename)
+                # clear the citations file if it exists
+                citationsFilename = \
+                    baseDir + '/accounts/' + \
+                    postToNickname + '@' + domain + '/.citations.txt'
+                if os.path.isfile(citationsFilename):
+                    os.remove(citationsFilename)
 
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
