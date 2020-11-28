@@ -20,6 +20,76 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 
 
+def headerButtonsFrontScreen(translate: {},
+                             nickname: str, boxName: str,
+                             authorized: bool,
+                             iconsAsButtons: bool,
+                             iconsPath: bool) -> str:
+    """Returns the header buttons for the front page of a news instance
+    """
+    headerStr = ''
+    if nickname == 'news':
+        buttonFeatures = 'buttonMobile'
+        buttonNewswire = 'buttonMobile'
+        buttonLinks = 'buttonMobile'
+        if boxName == 'features':
+            buttonFeatures = 'buttonselected'
+        elif boxName == 'newswire':
+            buttonNewswire = 'buttonselected'
+        elif boxName == 'links':
+            buttonLinks = 'buttonselected'
+
+        headerStr += \
+            '        <a href="/">' + \
+            '<button class="' + buttonFeatures + '">' + \
+            '<span>' + translate['Features'] + \
+            '</span></button></a>'
+        if not authorized:
+            headerStr += \
+                '        <a href="/login">' + \
+                '<button class="buttonMobile">' + \
+                '<span>' + translate['Login'] + \
+                '</span></button></a>'
+        if iconsAsButtons:
+            headerStr += \
+                '        <a href="/users/news/newswiremobile">' + \
+                '<button class="' + buttonNewswire + '">' + \
+                '<span>' + translate['Newswire'] + \
+                '</span></button></a>'
+            headerStr += \
+                '        <a href="/users/news/linksmobile">' + \
+                '<button class="' + buttonLinks + '">' + \
+                '<span>' + translate['Links'] + \
+                '</span></button></a>'
+        else:
+            headerStr += \
+                '        <a href="' + \
+                '/users/news/newswiremobile">' + \
+                '<img loading="lazy" src="/' + iconsPath + \
+                '/newswire.png" title="' + translate['Newswire'] + \
+                '" alt="| ' + translate['Newswire'] + '"/></a>\n'
+            headerStr += \
+                '        <a href="' + \
+                '/users/news/linksmobile">' + \
+                '<img loading="lazy" src="/' + iconsPath + \
+                '/links.png" title="' + translate['Links'] + \
+                '" alt="| ' + translate['Links'] + '"/></a>\n'
+    else:
+        if not authorized:
+            headerStr += \
+                '        <a href="/login">' + \
+                '<button class="buttonMobile">' + \
+                '<span>' + translate['Login'] + \
+                '</span></button></a>'
+
+    if headerStr:
+        headerStr = \
+            '\n      <div class="frontPageMobileButtons">\n' + \
+            headerStr + \
+            '      </div>\n'
+    return headerStr
+
+
 def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
     """Returns alternate path from the actor
     eg. https://clearnetdomain/path becomes http://oniondomain/path
