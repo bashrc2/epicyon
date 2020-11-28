@@ -31,19 +31,17 @@ from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
+from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
-from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBlogAddress
 from webapp_post import individualPostAsHtml
-from webapp_column_left import getLeftColumnContent
-from webapp_column_right import getRightColumnContent
 from webapp_timeline import htmlIndividualShare
 
 
@@ -374,6 +372,20 @@ def htmlProfile(rssIconAtTop: bool,
     nickname = profileJson['preferredUsername']
     if not nickname:
         return ""
+    if isSystemAccount(nickname):
+        return htmlFrontScreen(rssIconAtTop,
+                               cssCache, iconsAsButtons,
+                               defaultTimeline,
+                               recentPostsCache, maxRecentPosts,
+                               translate, projectVersion,
+                               baseDir, httpPrefix, authorized,
+                               profileJson, selected,
+                               session, wfRequest, personCache,
+                               YTReplacementDomain,
+                               showPublishedDateOnly,
+                               newswire, extraJson,
+                               pageNumber, maxItemsPerPage)
+
     domain, port = getDomainFromActor(profileJson['id'])
     if not domain:
         return ""
@@ -464,11 +476,7 @@ def htmlProfile(rssIconAtTop: bool,
         donateSection += '</div>\n'
 
     iconsPath = getIconsWebPath(baseDir)
-    if not authorized:
-        loginButton = headerButtonsFrontScreen(translate, nickname,
-                                               'features', authorized,
-                                               iconsAsButtons, iconsPath)
-    else:
+    if authorized:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
             '<img loading="lazy" src="/' + iconsPath + \
@@ -547,75 +555,46 @@ def htmlProfile(rssIconAtTop: bool,
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
 
-    # If this is the news account then show a different banner
-    if isSystemAccount(nickname):
-        bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
-        profileHeaderStr = \
-            '<img loading="lazy" class="timeline-banner" ' + \
-            'src="/users/' + nickname + '/' + bannerFile + '" />\n'
-        if loginButton:
-            profileHeaderStr += '<center>' + loginButton + '</center>\n'
-
-        profileHeaderStr += '<table class="timeline">\n'
-        profileHeaderStr += '  <colgroup>\n'
-        profileHeaderStr += '    <col span="1" class="column-left">\n'
-        profileHeaderStr += '    <col span="1" class="column-center">\n'
-        profileHeaderStr += '    <col span="1" class="column-right">\n'
-        profileHeaderStr += '  </colgroup>\n'
-        profileHeaderStr += '  <tbody>\n'
-        profileHeaderStr += '    <tr>\n'
-        profileHeaderStr += '      <td valign="top" class="col-left">\n'
-        iconsPath = getIconsWebPath(baseDir)
-        profileHeaderStr += \
-            getLeftColumnContent(baseDir, 'news', domainFull,
-                                 httpPrefix, translate,
-                                 iconsPath, False,
-                                 False, None, rssIconAtTop, True,
-                                 True)
-        profileHeaderStr += '      </td>\n'
-        profileHeaderStr += '      <td valign="top" class="col-center">\n'
-    else:
-        avatarUrl = profileJson['icon']['url']
-        profileHeaderStr = \
-            getProfileHeader(baseDir, nickname, domain,
-                             domainFull, translate, iconsPath,
-                             defaultTimeline, displayName,
-                             avatarDescription,
-                             profileDescriptionShort,
-                             loginButton, avatarUrl)
+    avatarUrl = profileJson['icon']['url']
+    profileHeaderStr = \
+        getProfileHeader(baseDir, nickname, domain,
+                         domainFull, translate, iconsPath,
+                         defaultTimeline, displayName,
+                         avatarDescription,
+                         profileDescriptionShort,
+                         loginButton, avatarUrl)
 
     profileStr = profileHeaderStr + donateSection
-    if not isSystemAccount(nickname):
-        profileStr += '<div class="container" id="buttonheader">\n'
-        profileStr += '  <center>'
-        profileStr += \
-            '    <a href="' + usersPath + '#buttonheader"><button class="' + \
-            postsButton + '"><span>' + translate['Posts'] + \
-            ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/following#buttonheader">' + \
-            '<button class="' + followingButton + '"><span>' + \
-            translate['Following'] + ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/followers#buttonheader">' + \
-            '<button class="' + followersButton + \
-            '"><span>' + translate['Followers'] + ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/roles#buttonheader">' + \
-            '<button class="' + rolesButton + '"><span>' + \
-            translate['Roles'] + \
-            ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/skills#buttonheader">' + \
-            '<button class="' + skillsButton + '"><span>' + \
-            translate['Skills'] + ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/shares#buttonheader">' + \
-            '<button class="' + sharesButton + '"><span>' + \
-            translate['Shares'] + ' </span></button></a>'
-        profileStr += logoutStr + editProfileStr
-        profileStr += '  </center>'
-        profileStr += '</div>'
+    profileStr += '<div class="container" id="buttonheader">\n'
+    profileStr += '  <center>'
+    profileStr += \
+        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+        postsButton + '"><span>' + translate['Posts'] + \
+        ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/following#buttonheader">' + \
+        '<button class="' + followingButton + '"><span>' + \
+        translate['Following'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/followers#buttonheader">' + \
+        '<button class="' + followersButton + \
+        '"><span>' + translate['Followers'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/roles#buttonheader">' + \
+        '<button class="' + rolesButton + '"><span>' + \
+        translate['Roles'] + \
+        ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/skills#buttonheader">' + \
+        '<button class="' + skillsButton + '"><span>' + \
+        translate['Skills'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+        '<button class="' + sharesButton + '"><span>' + \
+        translate['Shares'] + ' </span></button></a>'
+    profileStr += logoutStr + editProfileStr
+    profileStr += '  </center>'
+    profileStr += '</div>'
 
     profileStr += followApprovalsSection
 
@@ -623,87 +602,55 @@ def htmlProfile(rssIconAtTop: bool,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    if isSystemAccount(nickname):
-        licenseStr = ''
-        bannerFile, bannerFilename = \
-            getBannerFile(baseDir, nickname, domain)
+    licenseStr = \
+        '<a href="https://gitlab.com/bashrc2/epicyon">' + \
+        '<img loading="lazy" class="license" alt="' + \
+        translate['Get the source code'] + '" title="' + \
+        translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
+
+    if selected == 'posts':
         profileStr += \
-            htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
-                                 translate,
-                                 baseDir, httpPrefix,
-                                 nickname, domain, port,
-                                 session, wfRequest, personCache,
-                                 projectVersion,
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly) + licenseStr
-    else:
-        licenseStr = \
-            '<a href="https://gitlab.com/bashrc2/epicyon">' + \
-            '<img loading="lazy" class="license" alt="' + \
-            translate['Get the source code'] + '" title="' + \
-            translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
-
-        if selected == 'posts':
-            profileStr += \
-                htmlProfilePosts(recentPostsCache, maxRecentPosts,
-                                 translate,
-                                 baseDir, httpPrefix, authorized,
-                                 nickname, domain, port,
-                                 session, wfRequest, personCache,
-                                 projectVersion,
-                                 YTReplacementDomain,
-                                 showPublishedDateOnly) + licenseStr
-        elif selected == 'following':
-            profileStr += \
-                htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, nickname,
-                                     domain, port, session,
-                                     wfRequest, personCache, extraJson,
-                                     projectVersion, ["unfollow"], selected,
-                                     usersPath, pageNumber, maxItemsPerPage)
-        elif selected == 'followers':
-            profileStr += \
-                htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                     authorized, nickname,
-                                     domain, port, session,
-                                     wfRequest, personCache, extraJson,
-                                     projectVersion, ["block"],
-                                     selected, usersPath, pageNumber,
-                                     maxItemsPerPage)
-        elif selected == 'roles':
-            profileStr += \
-                htmlProfileRoles(translate, nickname, domainFull,
-                                 extraJson)
-        elif selected == 'skills':
-            profileStr += \
-                htmlProfileSkills(translate, nickname, domainFull, extraJson)
-        elif selected == 'shares':
-            profileStr += \
-                htmlProfileShares(actor, translate,
-                                  nickname, domainFull,
-                                  extraJson) + licenseStr
-
-    # Footer which is only used for system accounts
-    profileFooterStr = ''
-    if isSystemAccount(nickname):
-        profileFooterStr = '      </td>\n'
-        profileFooterStr += '      <td valign="top" class="col-right">\n'
-        iconsPath = getIconsWebPath(baseDir)
-        profileFooterStr += \
-            getRightColumnContent(baseDir, 'news', domainFull,
-                                  httpPrefix, translate,
-                                  iconsPath, False, False,
-                                  newswire, False,
-                                  False, None, False, False,
-                                  False, True, authorized, True)
-        profileFooterStr += '      </td>\n'
-        profileFooterStr += '  </tr>\n'
-        profileFooterStr += '  </tbody>\n'
-        profileFooterStr += '</table>\n'
+            htmlProfilePosts(recentPostsCache, maxRecentPosts,
+                             translate,
+                             baseDir, httpPrefix, authorized,
+                             nickname, domain, port,
+                             session, wfRequest, personCache,
+                             projectVersion,
+                             YTReplacementDomain,
+                             showPublishedDateOnly) + licenseStr
+    elif selected == 'following':
+        profileStr += \
+            htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                 authorized, nickname,
+                                 domain, port, session,
+                                 wfRequest, personCache, extraJson,
+                                 projectVersion, ["unfollow"], selected,
+                                 usersPath, pageNumber, maxItemsPerPage)
+    elif selected == 'followers':
+        profileStr += \
+            htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                 authorized, nickname,
+                                 domain, port, session,
+                                 wfRequest, personCache, extraJson,
+                                 projectVersion, ["block"],
+                                 selected, usersPath, pageNumber,
+                                 maxItemsPerPage)
+    elif selected == 'roles':
+        profileStr += \
+            htmlProfileRoles(translate, nickname, domainFull,
+                             extraJson)
+    elif selected == 'skills':
+        profileStr += \
+            htmlProfileSkills(translate, nickname, domainFull, extraJson)
+    elif selected == 'shares':
+        profileStr += \
+            htmlProfileShares(actor, translate,
+                              nickname, domainFull,
+                              extraJson) + licenseStr
 
     profileStr = \
         htmlHeaderWithExternalStyle(cssFilename) + \
-        profileStr + profileFooterStr + htmlFooter()
+        profileStr + htmlFooter()
     return profileStr
 
 
@@ -734,60 +681,6 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                           str(currPage),
                           httpPrefix,
                           10, boxName,
-                          authorized, 0, False, 0)
-        if not outboxFeed:
-            break
-        if len(outboxFeed['orderedItems']) == 0:
-            break
-        for item in outboxFeed['orderedItems']:
-            if item['type'] == 'Create':
-                postStr = \
-                    individualPostAsHtml(True, recentPostsCache,
-                                         maxRecentPosts,
-                                         iconsPath, translate, None,
-                                         baseDir, session, wfRequest,
-                                         personCache,
-                                         nickname, domain, port, item,
-                                         None, True, False,
-                                         httpPrefix, projectVersion, 'inbox',
-                                         YTReplacementDomain,
-                                         showPublishedDateOnly,
-                                         False, False, False, True, False)
-                if postStr:
-                    profileStr += postStr + separatorStr
-                    ctr += 1
-                    if ctr >= maxItems:
-                        break
-        currPage += 1
-    return profileStr
-
-
-def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
-                         translate: {},
-                         baseDir: str, httpPrefix: str,
-                         nickname: str, domain: str, port: int,
-                         session, wfRequest: {}, personCache: {},
-                         projectVersion: str,
-                         YTReplacementDomain: str,
-                         showPublishedDateOnly: bool) -> str:
-    """Shows posts on the front screen of a news instance
-    These should only be public blog posts from the features timeline
-    which is the blog timeline of the news actor
-    """
-    iconsPath = getIconsWebPath(baseDir)
-    separatorStr = htmlPostSeparator(baseDir, None)
-    profileStr = ''
-    maxItems = 4
-    ctr = 0
-    currPage = 1
-    boxName = 'tlfeatures'
-    authorized = True
-    while ctr < maxItems and currPage < 4:
-        outboxFeed = \
-            personBoxJson({}, session, baseDir, domain, port,
-                          '/users/' + nickname + '/' + boxName +
-                          '?page=' + str(currPage),
-                          httpPrefix, 10, boxName,
                           authorized, 0, False, 0)
         if not outboxFeed:
             break
