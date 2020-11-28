@@ -56,8 +56,8 @@ from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
 from posts import sendToFollowersThread
-from webapp import individualPostAsHtml
-from webapp import getIconsWebPath
+from webapp_utils import getIconsWebPath
+from webapp_post import individualPostAsHtml
 from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch

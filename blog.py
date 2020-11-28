@@ -10,11 +10,11 @@ import os
 from datetime import datetime
 
 from content import replaceEmojiFromTags
-from webapp import getIconsWebPath
-from webapp import htmlHeaderWithExternalStyle
-from webapp import htmlFooter
-from webapp_media import addEmbeddedElements
+from webapp_utils import getIconsWebPath
+from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
+from webapp_media import addEmbeddedElements
 from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
