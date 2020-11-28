@@ -512,14 +512,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # show the posts
     itemCtr = 0
     if timelineJson:
-        # if this is the features timeline then use the news actor
-        timelineNickname = nickname
-        timelineBoxName = boxName
-        if boxName == 'tlfeatures':
-            # use the blog timeline of the news actor
-            timelineNickname = 'news'
-            timelineBoxName = 'tlblogs'
-
         # if this is the media timeline then add an extra gallery container
         if boxName == 'tlmedia':
             if pageNumber > 1:
@@ -575,11 +567,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              iconsPath, translate, pageNumber,
                                              baseDir, session, wfRequest,
                                              personCache,
-                                             timelineNickname, domain, port,
+                                             nickname, domain, port,
                                              item, None, True,
                                              allowDeletion,
                                              httpPrefix, projectVersion,
-                                             timelineBoxName,
+                                             boxName,
                                              YTReplacementDomain,
                                              showPublishedDateOnly,
                                              boxName != 'dm',
