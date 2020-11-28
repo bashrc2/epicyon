@@ -118,8 +118,8 @@ from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
+from webapp_deleteconfirm import htmlDeletePost
 from webapp import htmlFollowingList
-from webapp import htmlDeletePost
 from webapp import htmlRemoveSharedItem
 from webapp import htmlUnblockConfirm
 from webapp_person_options import htmlPersonOptions
