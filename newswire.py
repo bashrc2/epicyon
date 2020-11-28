@@ -370,9 +370,9 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         if '</title>' not in atomItem:
             continue
-        if '<updated>' not in atomItem:
+        if '<published>' not in atomItem:
             continue
-        if '</updated>' not in atomItem:
+        if '</published>' not in atomItem:
             continue
         if '<yt:videoId>' not in atomItem:
             continue
@@ -393,8 +393,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
         link = atomItem.split('<yt:videoId>')[1]
         link = link.split('</yt:videoId>')[0]
         link = 'https://www.youtube.com/watch?v=' + link.strip()
-        pubDate = atomItem.split('<updated>')[1]
-        pubDate = pubDate.split('</updated>')[0]
+        pubDate = atomItem.split('<published>')[1]
+        pubDate = pubDate.split('</published>')[0]
 
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
