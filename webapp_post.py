@@ -1029,7 +1029,7 @@ def individualPostAsHtml(allowDownloads: bool,
         # if the post has replies then append a symbol to indicate this
         if postJsonObject.get('hasReplies'):
             if postJsonObject['hasReplies'] is True:
-                publishedStr += '🡢'
+                publishedStr = '[' + publishedStr + ']'
 
     # benchmark 15
     if not allowDownloads:
