@@ -81,7 +81,7 @@ body, html {
 a, u {
     color: var(--main-fg-color);
 }
-  
+
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);

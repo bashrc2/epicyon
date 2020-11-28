@@ -580,13 +580,6 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
             postJsonObject['object']['id'] = postId
             postJsonObject['object']['atomUri'] = postId
 
-            # for blog posts set the news flag
-            if postId and postJsonObject['object'].get('type'):
-                if boxname == 'tlblogs' and \
-                   postJsonObject['object']['type'] == 'Article':
-                    if '://' + originalDomain + '/' in postId:
-                        postJsonObject['news'] = True
-
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     filename = boxDir + '/' + postId.replace('/', '#') + '.json'
 
