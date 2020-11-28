@@ -1,4 +1,6 @@
 {
+    "time-color": "grey",
+    "event-color": "white",
     "login-bg-color": "#567726",
     "login-fg-color": "black",
     "options-bg-color": "black",
