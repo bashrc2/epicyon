@@ -1,4 +1,7 @@
 {
+    "login-bg-color": "#567726",
+    "login-fg-color": "#0481f5",
+    "options-bg-color": "black",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
