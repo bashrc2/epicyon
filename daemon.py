@@ -118,10 +118,10 @@ from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
-from webapp_deleteconfirm import htmlDeletePost
+from webapp_confirm import htmlConfirmDelete
 from webapp import htmlFollowingList
-from webapp import htmlRemoveSharedItem
-from webapp import htmlUnblockConfirm
+from webapp_confirm import htmlRemoveSharedItem
+from webapp_confirm import htmlUnblockConfirm
 from webapp_person_options import htmlPersonOptions
 from webapp_timeline import htmlShares
 from webapp_timeline import htmlInbox
@@ -141,8 +141,8 @@ from webapp_login import htmlLogin
 from webapp_login import htmlGetLoginCredentials
 from webapp_suspended import htmlSuspended
 from webapp_tos import htmlTermsOfService
-from webapp import htmlFollowConfirm
-from webapp import htmlUnfollowConfirm
+from webapp_confirm import htmlFollowConfirm
+from webapp_confirm import htmlUnfollowConfirm
 from webapp import htmlHashtagBlocked
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
@@ -5874,16 +5874,16 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             deleteStr = \
-                htmlDeletePost(self.server.cssCache,
-                               self.server.recentPostsCache,
-                               self.server.maxRecentPosts,
-                               self.server.translate, pageNumber,
-                               self.server.session, baseDir,
-                               deleteUrl, httpPrefix,
-                               __version__, self.server.cachedWebfingers,
-                               self.server.personCache, callingDomain,
-                               self.server.YTReplacementDomain,
-                               self.server.showPublishedDateOnly)
+                htmlConfirmDelete(self.server.cssCache,
+                                  self.server.recentPostsCache,
+                                  self.server.maxRecentPosts,
+                                  self.server.translate, pageNumber,
+                                  self.server.session, baseDir,
+                                  deleteUrl, httpPrefix,
+                                  __version__, self.server.cachedWebfingers,
+                                  self.server.personCache, callingDomain,
+                                  self.server.YTReplacementDomain,
+                                  self.server.showPublishedDateOnly)
             if deleteStr:
                 self._set_headers('text/html', len(deleteStr),
                                   cookie, callingDomain)
