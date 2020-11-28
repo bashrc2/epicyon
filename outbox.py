@@ -117,24 +117,23 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                 fileExtension = 'png'
                 mediaTypeStr = \
                     attach['mediaType']
-                if mediaTypeStr.endswith('jpeg'):
-                    fileExtension = 'jpg'
-                elif mediaTypeStr.endswith('gif'):
-                    fileExtension = 'gif'
-                elif mediaTypeStr.endswith('webp'):
-                    fileExtension = 'webp'
-                elif mediaTypeStr.endswith('avif'):
-                    fileExtension = 'avif'
-                elif mediaTypeStr.endswith('audio/mpeg'):
-                    fileExtension = 'mp3'
-                elif mediaTypeStr.endswith('ogg'):
-                    fileExtension = 'ogg'
-                elif mediaTypeStr.endswith('mp4'):
-                    fileExtension = 'mp4'
-                elif mediaTypeStr.endswith('webm'):
-                    fileExtension = 'webm'
-                elif mediaTypeStr.endswith('ogv'):
-                    fileExtension = 'ogv'
+
+                extensions = {
+                    "jpeg": "jpg",
+                    "gif": "gif",
+                    "webp": "webp",
+                    "avif": "avif",
+                    "audio/mpeg": "mp3",
+                    "ogg": "ogg",
+                    "mp4": "mp4",
+                    "webm": "webm",
+                    "ogv": "ogv"
+                }
+                for matchExt, ext in extensions.items():
+                    if mediaTypeStr.endswith(matchExt):
+                        fileExtension = ext
+                        break
+
                 mediaDir = \
                     baseDir + '/accounts/' + \
                     postToNickname + '@' + domain
