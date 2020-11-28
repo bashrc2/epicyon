@@ -3224,7 +3224,7 @@ class PubServer(BaseHTTPRequestHandler):
                       domain: str, domainFull: str,
                       onionDomain: str, i2pDomain: str, debug: bool,
                       defaultTimeline: str) -> None:
-        """edits a news post
+        """edits a news post after receiving POST
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
@@ -3252,8 +3252,12 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not an editor' + actorStr)
-                self._redirect_headers(actorStr + '/tlnews',
-                                       cookie, callingDomain)
+                if self.server.newsInstance:
+                    self._redirect_headers(actorStr + '/tlfeatures',
+                                           cookie, callingDomain)
+                else:
+                    self._redirect_headers(actorStr + '/tlnews',
+                                           cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
 
@@ -3270,8 +3274,12 @@ class PubServer(BaseHTTPRequestHandler):
                     actorStr = \
                         'http://' + i2pDomain + usersPath
                 print('Maximum news data length exceeded ' + str(length))
-                self._redirect_headers(actorStr + 'tlnews',
-                                       cookie, callingDomain)
+                if self.server.newsInstance:
+                    self._redirect_headers(actorStr + '/tlfeatures',
+                                           cookie, callingDomain)
+                else:
+                    self._redirect_headers(actorStr + '/tlnews',
+                                           cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
 
@@ -3359,8 +3367,12 @@ class PubServer(BaseHTTPRequestHandler):
               i2pDomain):
             actorStr = \
                 'http://' + i2pDomain + usersPath
-        self._redirect_headers(actorStr + '/tlnews',
-                               cookie, callingDomain)
+        if self.server.newsInstance:
+            self._redirect_headers(actorStr + '/tlfeatures',
+                                   cookie, callingDomain)
+        else:
+            self._redirect_headers(actorStr + '/tlnews',
+                                   cookie, callingDomain)
         self.server.POSTbusy = False
 
     def _profileUpdate(self, callingDomain: str, cookie: str,
