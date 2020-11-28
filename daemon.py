@@ -8870,11 +8870,16 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the edit screen for a news post
         """
         if '/users/' in path and '/editnewspost=' in path:
+            postActor = 'news'
+            if '?actor=' in path:
+                postActor = path.split('?actor=')[1]
+                if '?' in postActor:
+                    postActor = postActor.split('?')[0]
             postId = path.split('/editnewspost=')[1]
             if '?' in postId:
                 postId = postId.split('?')[0]
             postUrl = httpPrefix + '://' + domainFull + \
-                '/users/news/statuses/' + postId
+                '/users/' + postActor + '/statuses/' + postId
             path = path.split('/editnewspost=')[0]
             msg = htmlEditNewsPost(self.server.cssCache,
                                    translate, baseDir,
