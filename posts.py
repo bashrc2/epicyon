@@ -2598,7 +2598,7 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
 def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
                            port: int, httpPrefix: str, itemsPerPage: int,
                            headerOnly: bool, pageNumber=None) -> {}:
-    return createBoxIndexed({}, session, baseDir, 'tlfeatures', 'news',
+    return createBoxIndexed({}, session, baseDir, 'tlfeatures', nickname,
                             domain, port, httpPrefix,
                             itemsPerPage, headerOnly, True,
                             0, False, 0, pageNumber)
@@ -2946,12 +2946,14 @@ def createBoxIndexed(recentPostsCache: {},
     # bookmarks and events timelines are like the inbox
     # but have their own separate index
     indexBoxName = boxname
+    timelineNickname = nickname
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
         indexBoxName = boxname
     elif boxname == "tlfeatures":
         boxname = "tlblogs"
         indexBoxName = boxname
+        timelineNickname = 'news'
 
     if port:
         if port != 80 and port != 443:
@@ -2989,7 +2991,7 @@ def createBoxIndexed(recentPostsCache: {},
     postsInBox = []
 
     indexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        baseDir + '/accounts/' + timelineNickname + '@' + domain + \
         '/' + indexBoxName + '.index'
     postsCtr = 0
     if os.path.isfile(indexFilename):
@@ -3074,7 +3076,18 @@ def createBoxIndexed(recentPostsCache: {},
                     addPostToTimeline(fullPostFilename, boxname,
                                       postsInBox, boxActor)
                 else:
-                    print('WARN: unable to locate post ' + postUrl)
+                    # if this is the features timeline
+                    if timelineNickname != nickname:
+                        fullPostFilename = \
+                            locatePost(baseDir, timelineNickname,
+                                       domain, postUrl, False)
+                        if fullPostFilename:
+                            addPostToTimeline(fullPostFilename, boxname,
+                                              postsInBox, boxActor)
+                        else:
+                            print('WARN: unable to locate post ' + postUrl)
+                    else:
+                        print('WARN: unable to locate post ' + postUrl)
 
                 postsCtr += 1
 
