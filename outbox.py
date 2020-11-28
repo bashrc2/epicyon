@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from shutil import copyfile
 from session import createSession
 from auth import createPassword
 from posts import outboxMessageCreateWrap
@@ -196,15 +197,20 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
 
         # save all instance blogs to the news actor
         if postToNickname != 'news' and outboxName == 'tlblogs':
-            savedFeatureFilename = \
-                savePostToBox(baseDir,
-                              httpPrefix,
-                              postId,
-                              'news', domainFull,
-                              messageJson, 'tlblogs')
+            blogsDir = baseDir + '/accounts/news@' + domain + '/tlblogs'
+            if not os.path.isdir(blogsDir):
+                os.mkdir(blogsDir)
+            copyfile(savedFilename, blogsDir)
             inboxUpdateIndex('tlblogs', baseDir,
                              'news@' + domain,
-                             savedFeatureFilename, debug)
+                             savedFilename, debug)
+
+            # clear the citations file if it exists
+            citationsFilename = \
+                baseDir + '/accounts/' + \
+                postToNickname + '@' + domain + '/.citations.txt'
+            if os.path.isfile(citationsFilename):
+                os.remove(citationsFilename)
 
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
