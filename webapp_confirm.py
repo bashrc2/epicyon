@@ -97,9 +97,9 @@ def htmlConfirmDelete(cssCache: {},
     return deletePostStr
 
 
-def htmlRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
-                         actor: str, shareName: str,
-                         callingDomain: str) -> str:
+def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
+                                actor: str, shareName: str,
+                                callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
     itemID = getValidSharedItemID(shareName)
@@ -165,7 +165,7 @@ def htmlRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     return sharesStr
 
 
-def htmlFollowConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
                       originPathStr: str,
                       followActor: str,
                       followProfileUrl: str) -> str:
@@ -209,7 +209,7 @@ def htmlFollowConfirm(cssCache: {}, translate: {}, baseDir: str,
     return followStr
 
 
-def htmlUnfollowConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
                         originPathStr: str,
                         followActor: str,
                         followProfileUrl: str) -> str:
@@ -254,7 +254,7 @@ def htmlUnfollowConfirm(cssCache: {}, translate: {}, baseDir: str,
     return followStr
 
 
-def htmlUnblockConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
                        originPathStr: str,
                        blockActor: str,
                        blockProfileUrl: str) -> str:

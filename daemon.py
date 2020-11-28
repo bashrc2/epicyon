@@ -120,8 +120,8 @@ from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
 from webapp_confirm import htmlConfirmDelete
 from webapp import htmlFollowingList
-from webapp_confirm import htmlRemoveSharedItem
-from webapp_confirm import htmlUnblockConfirm
+from webapp_confirm import htmlConfirmRemoveSharedItem
+from webapp_confirm import htmlConfirmUnblock
 from webapp_person_options import htmlPersonOptions
 from webapp_timeline import htmlShares
 from webapp_timeline import htmlInbox
@@ -141,8 +141,8 @@ from webapp_login import htmlLogin
 from webapp_login import htmlGetLoginCredentials
 from webapp_suspended import htmlSuspended
 from webapp_tos import htmlTermsOfService
-from webapp_confirm import htmlFollowConfirm
-from webapp_confirm import htmlUnfollowConfirm
+from webapp_confirm import htmlConfirmFollow
+from webapp_confirm import htmlConfirmUnfollow
 from webapp import htmlHashtagBlocked
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
@@ -1790,7 +1790,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Unblocking ' + optionsActor)
             msg = \
-                htmlUnblockConfirm(self.server.cssCache,
+                htmlConfirmUnblock(self.server.cssCache,
                                    self.server.translate,
                                    baseDir,
                                    usersPath,
@@ -1808,7 +1808,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Following ' + optionsActor)
             msg = \
-                htmlFollowConfirm(self.server.cssCache,
+                htmlConfirmFollow(self.server.cssCache,
                                   self.server.translate,
                                   baseDir,
                                   usersPath,
@@ -1825,7 +1825,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitUnfollow=' in optionsConfirmParams:
             print('Unfollowing ' + optionsActor)
             msg = \
-                htmlUnfollowConfirm(self.server.cssCache,
+                htmlConfirmUnfollow(self.server.cssCache,
                                     self.server.translate,
                                     baseDir,
                                     usersPath,
@@ -9318,11 +9318,11 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
-            msg = htmlRemoveSharedItem(self.server.cssCache,
-                                       self.server.translate,
-                                       self.server.baseDir,
-                                       actor, shareName,
-                                       callingDomain).encode('utf-8')
+            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+                                              self.server.translate,
+                                              self.server.baseDir,
+                                              actor, shareName,
+                                              callingDomain).encode('utf-8')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
