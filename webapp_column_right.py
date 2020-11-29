@@ -443,14 +443,21 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
                                  iconsAsButtons, iconsPath) + '</center>'
-    htmlStr += \
-        getRightColumnContent(baseDir, nickname, domainFull,
-                              httpPrefix, translate,
-                              iconsPath, moderator, editor,
-                              newswire, positiveVoting,
-                              False, timelinePath, showPublishButton,
-                              showPublishAsIcon, rssIconAtTop, False,
-                              authorized, False)
+    if newswire:
+        htmlStr += \
+            getRightColumnContent(baseDir, nickname, domainFull,
+                                  httpPrefix, translate,
+                                  iconsPath, moderator, editor,
+                                  newswire, positiveVoting,
+                                  False, timelinePath, showPublishButton,
+                                  showPublishAsIcon, rssIconAtTop, False,
+                                  authorized, False)
+    else:
+        if editor:
+            htmlStr += '<br><br><br>\n'
+            htmlStr += '<center>\n  '
+            htmlStr += translate['Select the edit icon to add RSS feeds']
+            htmlStr += '\n</center>\n'
     # end of col-right-mobile
     htmlStr += '</div\n>'
 
