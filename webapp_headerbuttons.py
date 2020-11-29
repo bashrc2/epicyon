@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 
+import os
 import time
 from datetime import datetime
 from happening import todaysEventsCheck
@@ -87,11 +88,15 @@ def headerButtonsTimeline(defaultTimeline: str,
             '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
             '</span></button></a>'
 
-        tlStr += \
-            '<a href="' + usersPath + '/tlreplies"><button class="' + \
-            repliesButton + '"><span>' + \
-            htmlHighlightLabel(translate['Replies'], newReply) + \
-            '</span></button></a>'
+        repliesIndexFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/tlreplies.index'
+        if os.path.isfile(repliesIndexFilename):
+            tlStr += \
+                '<a href="' + usersPath + '/tlreplies"><button class="' + \
+                repliesButton + '"><span>' + \
+                htmlHighlightLabel(translate['Replies'], newReply) + \
+                '</span></button></a>'
 
     # typically the media button
     if defaultTimeline != 'tlmedia':
