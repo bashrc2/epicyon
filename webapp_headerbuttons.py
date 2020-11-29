@@ -82,11 +82,11 @@ def headerButtonsTimeline(defaultTimeline: str,
             translate['Inbox'] + '</span></button></a>'
 
     # if this is a news instance and we are viewing the news timeline
-    newsHeader = False
+    featuresHeader = False
     if defaultTimeline == 'tlfeatures' and boxName == 'tlfeatures':
-        newsHeader = True
+        featuresHeader = True
 
-    if not newsHeader:
+    if not featuresHeader:
         tlStr += \
             '<a href="' + usersPath + \
             '/dm"><button class="' + dmButton + \
@@ -101,7 +101,7 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     # typically the media button
     if defaultTimeline != 'tlmedia':
-        if not minimal and not newsHeader:
+        if not minimal and not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \
                 '/tlmedia"><button class="' + \
@@ -148,7 +148,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             newsButton + '"><span>' + translate['News'] + \
             '</span></button></a>'
     else:
-        if not newsHeader:
+        if not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \
                 '/inbox"><button class="' + \
@@ -203,7 +203,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                         '/calendar"><button class="button">' + \
                         translate['Happening This Week'] + '</button></a>'
 
-    if not newsHeader:
+    if not featuresHeader:
         # button for the outbox
         tlStr += \
             '<a href="' + usersPath + \
@@ -216,7 +216,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             sharesButtonStr + bookmarksButtonStr + eventsButtonStr + \
             moderationButtonStr + happeningStr + newPostButtonStr
 
-    if not newsHeader:
+    if not featuresHeader:
         if not iconsAsButtons:
             # the search icon
             tlStr += \
@@ -260,7 +260,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '<span>' + translate['Calendar'] + \
                 '</span></button></a>'
 
-    if not newsHeader:
+    if not featuresHeader:
         # the show/hide button, for a simpler header appearance
         if not iconsAsButtons:
             tlStr += \
@@ -277,7 +277,7 @@ def headerButtonsTimeline(defaultTimeline: str,
                 '<span>' + translate['Show/Hide Buttons'] + \
                 '</span></button></a>'
 
-    if newsHeader:
+    if featuresHeader:
         tlStr += \
             '<a href="' + usersPath + '/inbox">' + \
             '<button class="button">' + \
@@ -319,13 +319,13 @@ def headerButtonsTimeline(defaultTimeline: str,
             '<span>' + translate['Links'] + \
             '</span></button></a>'
 
-    if newsHeader:
+    if featuresHeader:
         tlStr += \
             '<a href="' + usersPath + '/editprofile">' + \
             '<button class="buttonDesktop">' + \
             '<span>' + translate['Settings'] + '</span></button></a>'
 
-    if not newsHeader:
+    if not featuresHeader:
         tlStr += followApprovals
 
     if not iconsAsButtons:
