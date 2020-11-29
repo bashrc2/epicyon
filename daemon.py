@@ -40,6 +40,8 @@ from ssb import getSSBAddress
 from ssb import setSSBAddress
 from tox import getToxAddress
 from tox import setToxAddress
+from jami import getJamiAddress
+from jami import setJamiAddress
 from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
@@ -3787,6 +3789,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setToxAddress(actorJson, '')
                             actorChanged = True
 
+                    # change jami address
+                    currentJamiAddress = getJamiAddress(actorJson)
+                    if fields.get('jamiAddress'):
+                        if fields['jamiAddress'] != currentJamiAddress:
+                            setJamiAddress(actorJson,
+                                           fields['jamiAddress'])
+                            actorChanged = True
+                    else:
+                        if currentJamiAddress:
+                            setJamiAddress(actorJson, '')
+                            actorChanged = True
+
                     # change PGP public key
                     currentPGPpubKey = getPGPpubKey(actorJson)
                     if fields.get('pgp'):
@@ -4747,6 +4761,7 @@ class PubServer(BaseHTTPRequestHandler):
             matrixAddress = None
             blogAddress = None
             toxAddress = None
+            jamiAddress = None
             ssbAddress = None
             emailAddress = None
             actorJson = getPersonFromCache(baseDir,
@@ -4760,6 +4775,7 @@ class PubServer(BaseHTTPRequestHandler):
                 ssbAddress = getSSBAddress(actorJson)
                 blogAddress = getBlogAddress(actorJson)
                 toxAddress = getToxAddress(actorJson)
+                jamiAddress = getJamiAddress(actorJson)
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
@@ -4775,7 +4791,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber, donateUrl,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
-                                    toxAddress,
+                                    toxAddress, jamiAddress,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress).encode('utf-8')
             self._set_headers('text/html', len(msg),

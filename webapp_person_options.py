@@ -34,6 +34,7 @@ def htmlPersonOptions(defaultTimeline: str,
                       ssbAddress: str,
                       blogAddress: str,
                       toxAddress: str,
+                      jamiAddress: str,
                       PGPpubKey: str,
                       PGPfingerprint: str,
                       emailAddress) -> str:
@@ -131,6 +132,9 @@ def htmlPersonOptions(defaultTimeline: str,
     if toxAddress:
         optionsStr += \
             '<p class="imText">Tox: ' + toxAddress + '</p>\n'
+    if jamiAddress:
+        optionsStr += \
+            '<p class="imText">Jami: ' + jamiAddress + '</p>\n'
     if PGPfingerprint:
         optionsStr += '<p class="pgp">PGP: ' + \
             PGPfingerprint.replace('\n', '<br>') + '</p>\n'

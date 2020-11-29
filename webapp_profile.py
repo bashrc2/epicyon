@@ -31,6 +31,7 @@ from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
+from jami import getJamiAddress
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
@@ -436,8 +437,9 @@ def htmlProfile(rssIconAtTop: bool,
     matrixAddress = getMatrixAddress(profileJson)
     ssbAddress = getSSBAddress(profileJson)
     toxAddress = getToxAddress(profileJson)
+    jamiAddress = getJamiAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or PGPpubKey or \
+       ssbAddress or toxAddress or jamiAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -465,6 +467,10 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
+        if jamiAddress:
+            donateSection += \
+                '<p>Jami: <label class="toxaddr">' + \
+                jamiAddress + '</label></p>\n'
         if PGPfingerprint:
             donateSection += \
                 '<p class="pgp">PGP: ' + \
@@ -863,6 +869,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         ssbAddress = getSSBAddress(actorJson)
         blogAddress = getBlogAddress(actorJson)
         toxAddress = getToxAddress(actorJson)
+        jamiAddress = getJamiAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
@@ -1194,6 +1201,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
         toxAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Jami</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="jamiAddress" value="' + \
+        jamiAddress + '">\n'
+
     editProfileForm += '<label class="labels">' + \
         translate['Email'] + '</label><br>\n'
     editProfileForm += \
