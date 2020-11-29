@@ -62,12 +62,6 @@ def headerButtonsTimeline(defaultTimeline: str,
             '/tlblogs"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>'
-    elif defaultTimeline == 'tlnews':
-        tlStr += \
-            '<a href="' + usersPath + \
-            '/tlnews"><button class="' + \
-            newsButton + '"><span>' + translate['News'] + \
-            '</span></button></a>'
     elif defaultTimeline == 'tlfeatures':
         tlStr += \
             '<a href="' + usersPath + \
@@ -141,13 +135,7 @@ def headerButtonsTimeline(defaultTimeline: str,
 
     # typically the news button
     # but may change if this is a news oriented instance
-    if defaultTimeline != 'tlfeatures':
-        tlStr += \
-            '<a href="' + usersPath + \
-            '/tlnews"><button class="' + \
-            newsButton + '"><span>' + translate['News'] + \
-            '</span></button></a>'
-    else:
+    if defaultTimeline == 'tlfeatures':
         if not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \
