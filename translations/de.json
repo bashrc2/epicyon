@@ -336,5 +336,6 @@
     "editor": "Editor",
     "delegator": "Delegator",
     "Debian": "Debian",
-    "Select the edit icon to add RSS feeds": "Wählen Sie das Bearbeitungssymbol, um RSS-Feeds hinzuzufügen"
+    "Select the edit icon to add RSS feeds": "Wählen Sie das Bearbeitungssymbol, um RSS-Feeds hinzuzufügen",
+    "Select the edit icon to add web links": "Wählen Sie das Bearbeitungssymbol, um Weblinks hinzuzufügen"
 }

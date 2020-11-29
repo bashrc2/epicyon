@@ -336,5 +336,6 @@
     "editor": "golygydd",
     "delegator": "dirprwy",
     "Debian": "Debian",
-    "Select the edit icon to add RSS feeds": "Dewiswch yr eicon golygu i ychwanegu porthwyr RSS"
+    "Select the edit icon to add RSS feeds": "Dewiswch yr eicon golygu i ychwanegu porthwyr RSS",
+    "Select the edit icon to add web links": "Dewiswch yr eicon golygu i ychwanegu dolenni gwe"
 }
