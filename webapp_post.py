@@ -457,6 +457,46 @@ def getLikeIconHtml(nickname: str, domainFull: str,
     return likeStr
 
 
+def getBookmarkIconHtml(nickname: str, domainFull: str,
+                        postJsonObject: {},
+                        isModerationPost: bool,
+                        translate: {},
+                        enableTimingLog: bool,
+                        postStartTime, boxName: str,
+                        pageNumberParam: str,
+                        timelinePostBookmark: str,
+                        iconsPath: str) -> str:
+    """Returns html for bookmark icon/button
+    """
+    bookmarkStr = ''
+    if not isModerationPost:
+        bookmarkIcon = 'bookmark_inactive.png'
+        bookmarkLink = 'bookmark'
+        bookmarkTitle = translate['Bookmark this post']
+        if bookmarkedByPerson(postJsonObject, nickname, domainFull):
+            bookmarkIcon = 'bookmark.png'
+            bookmarkLink = 'unbookmark'
+            bookmarkTitle = translate['Undo the bookmark']
+        # benchmark 12.6
+        if enableTimingLog:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
+        bookmarkStr = \
+            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
+            bookmarkLink + '=' + postJsonObject['object']['id'] + \
+            pageNumberParam + \
+            '?actor=' + postJsonObject['actor'] + \
+            '?bm=' + timelinePostBookmark + \
+            '?tl=' + boxName + '" title="' + bookmarkTitle + '">\n'
+        bookmarkStr += \
+            '        ' + \
+            '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
+            bookmarkTitle + ' |" src="/' + iconsPath + \
+            '/' + bookmarkIcon + '"/></a>\n'
+    return bookmarkStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -768,32 +808,16 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 12.5 = ' + str(timeDiff))
 
-    bookmarkStr = ''
-    if not isModerationPost:
-        bookmarkIcon = 'bookmark_inactive.png'
-        bookmarkLink = 'bookmark'
-        bookmarkTitle = translate['Bookmark this post']
-        if bookmarkedByPerson(postJsonObject, nickname, domainFull):
-            bookmarkIcon = 'bookmark.png'
-            bookmarkLink = 'unbookmark'
-            bookmarkTitle = translate['Undo the bookmark']
-        # benchmark 12.6
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
-        bookmarkStr = \
-            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-            bookmarkLink + '=' + postJsonObject['object']['id'] + \
-            pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + bookmarkTitle + '">\n'
-        bookmarkStr += \
-            '        ' + \
-            '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
-            bookmarkTitle + ' |" src="/' + iconsPath + \
-            '/' + bookmarkIcon + '"/></a>\n'
+    bookmarkStr = \
+        getBookmarkIconHtml(nickname, domainFull,
+                            postJsonObject,
+                            isModerationPost,
+                            translate,
+                            enableTimingLog,
+                            postStartTime, boxName,
+                            pageNumberParam,
+                            timelinePostBookmark,
+                            iconsPath)
 
     # benchmark 12.9
     if enableTimingLog:
