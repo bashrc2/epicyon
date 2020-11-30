@@ -137,6 +137,10 @@ def individualPostAsHtml(allowDownloads: bool,
     if isPersonSnoozed(baseDir, nickname, domain, postActor):
         return ''
 
+    # if downloads of avatar images aren't enabled then we can do more
+    # accurate timing of different parts of the code
+    enableTimingLog = not allowDownloads
+
     # benchmark 1
     timeDiff = int((time.time() - postStartTime) * 1000)
     if timeDiff > 100:
@@ -177,7 +181,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                    allowDownloads)
 
             # benchmark 2.1
-            if not allowDownloads:
+            if enableTimingLog:
                 timeDiff = int((time.time() - postStartTime) * 1000)
                 if timeDiff > 100:
                     print('TIMING INDIV ' + boxName +
@@ -188,7 +192,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                allowDownloads)
 
         # benchmark 2.2
-        if not allowDownloads:
+        if enableTimingLog:
             timeDiff = int((time.time() - postStartTime) * 1000)
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName +
@@ -202,7 +206,7 @@ def individualPostAsHtml(allowDownloads: bool,
             updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                    postJsonObject, postHtml)
             # benchmark 3
-            if not allowDownloads:
+            if enableTimingLog:
                 timeDiff = int((time.time() - postStartTime) * 1000)
                 if timeDiff > 100:
                     print('TIMING INDIV ' + boxName +
@@ -210,7 +214,7 @@ def individualPostAsHtml(allowDownloads: bool,
             return postHtml
 
     # benchmark 4
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 4 = ' + str(timeDiff))
@@ -229,7 +233,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                allowDownloads)
 
     # benchmark 5
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 5 = ' + str(timeDiff))
@@ -245,7 +249,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                  projectVersion, httpPrefix,
                                                  nickname, domain, 'outbox')
         # benchmark 6
-        if not allowDownloads:
+        if enableTimingLog:
             timeDiff = int((time.time() - postStartTime) * 1000)
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 6 = ' + str(timeDiff))
@@ -260,7 +264,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                           displayName, False)
 
     # benchmark 7
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
@@ -329,7 +333,7 @@ def individualPostAsHtml(allowDownloads: bool,
         isAnnounced = True
 
     # benchmark 8
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 8 = ' + str(timeDiff))
@@ -383,7 +387,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
 
     # benchmark 9
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 9 = ' + str(timeDiff))
@@ -449,7 +453,7 @@ def individualPostAsHtml(allowDownloads: bool,
             ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
 
     # benchmark 10
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 10 = ' + str(timeDiff))
@@ -457,7 +461,7 @@ def individualPostAsHtml(allowDownloads: bool,
     isEvent = isEventPost(postJsonObject)
 
     # benchmark 11
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
@@ -535,7 +539,7 @@ def individualPostAsHtml(allowDownloads: bool,
             ' |" src="/' + iconsPath + '/' + announceIcon + '"/></a>\n'
 
     # benchmark 12
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 12 = ' + str(timeDiff))
@@ -555,7 +559,7 @@ def individualPostAsHtml(allowDownloads: bool,
         likeCount = noOfLikes(postJsonObject)
 
         # benchmark 12.1
-        if not allowDownloads:
+        if enableTimingLog:
             timeDiff = int((time.time() - postStartTime) * 1000)
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.1 = ' + str(timeDiff))
@@ -575,7 +579,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 likeTitle = translate['Undo the like']
 
         # benchmark 12.2
-        if not allowDownloads:
+        if enableTimingLog:
             timeDiff = int((time.time() - postStartTime) * 1000)
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
@@ -601,7 +605,7 @@ def individualPostAsHtml(allowDownloads: bool,
             ' |" src="/' + iconsPath + '/' + likeIcon + '"/></a>\n'
 
     # benchmark 12.5
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 12.5 = ' + str(timeDiff))
@@ -616,7 +620,7 @@ def individualPostAsHtml(allowDownloads: bool,
             bookmarkLink = 'unbookmark'
             bookmarkTitle = translate['Undo the bookmark']
         # benchmark 12.6
-        if not allowDownloads:
+        if enableTimingLog:
             timeDiff = int((time.time() - postStartTime) * 1000)
             if timeDiff > 100:
                 print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
@@ -634,7 +638,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '/' + bookmarkIcon + '"/></a>\n'
 
     # benchmark 12.9
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 12.9 = ' + str(timeDiff))
@@ -642,7 +646,7 @@ def individualPostAsHtml(allowDownloads: bool,
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
 
     # benchmark 13
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 13 = ' + str(timeDiff))
@@ -692,7 +696,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 '" src="/' + iconsPath+'/unmute.png"/></a>\n'
 
     # benchmark 13.1
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 13.1 = ' + str(timeDiff))
@@ -713,7 +717,7 @@ def individualPostAsHtml(allowDownloads: bool,
                         '/repeat_inactive.png" class="announceOrReply"/>\n'
                 else:
                     # benchmark 13.2
-                    if not allowDownloads:
+                    if enableTimingLog:
                         timeDiff = int((time.time() - postStartTime) * 1000)
                         if timeDiff > 100:
                             print('TIMING INDIV ' + boxName +
@@ -730,7 +734,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             getDisplayName(baseDir, attributedTo, personCache)
                         if announceDisplayName:
                             # benchmark 13.3
-                            if not allowDownloads:
+                            if enableTimingLog:
                                 timeDiff = \
                                     int((time.time() - postStartTime) * 1000)
                                 if timeDiff > 100:
@@ -744,7 +748,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                           announceDisplayName,
                                                           False)
                             # benchmark 13.3.1
-                            if not allowDownloads:
+                            if enableTimingLog:
                                 timeDiff = \
                                     int((time.time() - postStartTime) * 1000)
                                 if timeDiff > 100:
@@ -770,7 +774,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                    personCache, allowDownloads)
 
                             # benchmark 13.4
-                            if not allowDownloads:
+                            if enableTimingLog:
                                 timeDiff = \
                                     int((time.time() - postStartTime) * 1000)
                                 if timeDiff > 100:
@@ -860,7 +864,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 if replyDisplayName:
                                     if ':' in replyDisplayName:
                                         # benchmark 13.5
-                                        if not allowDownloads:
+                                        if enableTimingLog:
                                             timeDiff = \
                                                 int((time.time() -
                                                      postStartTime) * 1000)
@@ -877,7 +881,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                                   repDisp,
                                                                   False)
                                         # benchmark 13.6
-                                        if not allowDownloads:
+                                        if enableTimingLog:
                                             timeDiff = \
                                                 int((time.time() -
                                                      postStartTime) * 1000)
@@ -900,7 +904,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                         replyDisplayName + '</a>\n'
 
                                     # benchmark 13.7
-                                    if not allowDownloads:
+                                    if enableTimingLog:
                                         timeDiff = int((time.time() -
                                                         postStartTime) * 1000)
                                         if timeDiff > 100:
@@ -915,7 +919,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                            allowDownloads)
 
                                     # benchmark 13.8
-                                    if not allowDownloads:
+                                    if enableTimingLog:
                                         timeDiff = int((time.time() -
                                                         postStartTime) * 1000)
                                         if timeDiff > 100:
@@ -996,7 +1000,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                 postDomain + '</a>\n'
 
     # benchmark 14
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 14 = ' + str(timeDiff))
@@ -1032,7 +1036,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 publishedStr = '[' + publishedStr + ']'
 
     # benchmark 15
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 15 = ' + str(timeDiff))
@@ -1106,7 +1110,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          postJsonObject['object']['content'])
 
     # benchmark 16
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 16 = ' + str(timeDiff))
@@ -1153,7 +1157,7 @@ def individualPostAsHtml(allowDownloads: bool,
             contentStr += cwContentStr
 
     # benchmark 17
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 17 = ' + str(timeDiff))
@@ -1213,7 +1217,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postHtml = galleryStr
 
     # benchmark 18
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 18 = ' + str(timeDiff))
@@ -1227,7 +1231,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                postJsonObject, postHtml)
 
     # benchmark 19
-    if not allowDownloads:
+    if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 19 = ' + str(timeDiff))
