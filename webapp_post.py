@@ -106,6 +106,81 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,
     return False
 
 
+def getPostFromRecent(session,
+                      baseDir: str,
+                      httpPrefix: str,
+                      nickname: str, domain: str,
+                      postJsonObject: {},
+                      postActor: str,
+                      personCache: {},
+                      allowDownloads: bool,
+                      showPublicOnly: bool,
+                      storeToCache: bool,
+                      boxName: str,
+                      avatarUrl: str,
+                      enableTimingLog: bool,
+                      postStartTime,
+                      pageNumber: int,
+                      recentPostsCache: {},
+                      maxRecentPosts: int) -> str:
+    """Attempts to get the html post from the recent posts cache in memory
+    """
+    if boxName == 'tlmedia':
+        return None
+
+    if showPublicOnly:
+        return None
+
+    tryCache = False
+    bmTimeline = boxName == 'bookmarks' or boxName == 'tlbookmarks'
+    if storeToCache or bmTimeline:
+        tryCache = True
+
+    if not tryCache:
+        return None
+
+    # update avatar if needed
+    if not avatarUrl:
+        avatarUrl = \
+            getPersonAvatarUrl(baseDir, postActor, personCache,
+                               allowDownloads)
+
+        # benchmark 2.1
+        if enableTimingLog:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName +
+                      ' 2.1 = ' + str(timeDiff))
+
+    updateAvatarImageCache(session, baseDir, httpPrefix,
+                           postActor, avatarUrl, personCache,
+                           allowDownloads)
+
+    # benchmark 2.2
+    if enableTimingLog:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName +
+                  ' 2.2 = ' + str(timeDiff))
+
+    postHtml = \
+        loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
+                                          postJsonObject)
+    if not postHtml:
+        return None
+
+    postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
+    updateRecentPostsCache(recentPostsCache, maxRecentPosts,
+                           postJsonObject, postHtml)
+    # benchmark 3
+    if enableTimingLog:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName +
+                  ' 3 = ' + str(timeDiff))
+    return postHtml
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -170,48 +245,24 @@ def individualPostAsHtml(allowDownloads: bool,
     if pageNumber:
         pageNumberParam = '?page=' + str(pageNumber)
 
-    if (not showPublicOnly and
-        (storeToCache or boxName == 'bookmarks' or
-         boxName == 'tlbookmarks') and
-       boxName != 'tlmedia'):
-        # update avatar if needed
-        if not avatarUrl:
-            avatarUrl = \
-                getPersonAvatarUrl(baseDir, postActor, personCache,
-                                   allowDownloads)
-
-            # benchmark 2.1
-            if enableTimingLog:
-                timeDiff = int((time.time() - postStartTime) * 1000)
-                if timeDiff > 100:
-                    print('TIMING INDIV ' + boxName +
-                          ' 2.1 = ' + str(timeDiff))
-
-        updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache,
-                               allowDownloads)
-
-        # benchmark 2.2
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName +
-                      ' 2.2 = ' + str(timeDiff))
-
-        postHtml = \
-            loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
-                                              postJsonObject)
-        if postHtml:
-            postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
-            updateRecentPostsCache(recentPostsCache, maxRecentPosts,
-                                   postJsonObject, postHtml)
-            # benchmark 3
-            if enableTimingLog:
-                timeDiff = int((time.time() - postStartTime) * 1000)
-                if timeDiff > 100:
-                    print('TIMING INDIV ' + boxName +
-                          ' 3 = ' + str(timeDiff))
-            return postHtml
+    postHtml = \
+        getPostFromRecent(session, baseDir,
+                          httpPrefix, nickname, domain,
+                          postJsonObject,
+                          postActor,
+                          personCache,
+                          allowDownloads,
+                          showPublicOnly,
+                          storeToCache,
+                          boxName,
+                          avatarUrl,
+                          enableTimingLog,
+                          postStartTime,
+                          pageNumber,
+                          recentPostsCache,
+                          maxRecentPosts)
+    if postHtml:
+        return postHtml
 
     # benchmark 4
     if enableTimingLog:
