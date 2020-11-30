@@ -391,6 +391,72 @@ def getAnnounceIconHtml(nickname: str, domainFull: str,
     return announceStr
 
 
+def getLikeIconHtml(nickname: str, domainFull: str,
+                    isModerationPost: bool,
+                    showLikeButton: bool,
+                    postJsonObject: {},
+                    enableTimingLog: bool,
+                    postStartTime,
+                    translate: {}, pageNumberParam: str,
+                    timelinePostBookmark: str,
+                    boxName: str, iconsPath: str) -> str:
+    """Returns html for like icon/button
+    """
+    likeStr = ''
+    if not isModerationPost and showLikeButton:
+        likeIcon = 'like_inactive.png'
+        likeLink = 'like'
+        likeTitle = translate['Like this post']
+        likeCount = noOfLikes(postJsonObject)
+
+        # benchmark 12.1
+        if enableTimingLog:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 12.1 = ' + str(timeDiff))
+
+        likeCountStr = ''
+        if likeCount > 0:
+            if likeCount <= 10:
+                likeCountStr = ' (' + str(likeCount) + ')'
+            else:
+                likeCountStr = ' (10+)'
+            if likedByPerson(postJsonObject, nickname, domainFull):
+                if likeCount == 1:
+                    # liked by the reader only
+                    likeCountStr = ''
+                likeIcon = 'like.png'
+                likeLink = 'unlike'
+                likeTitle = translate['Undo the like']
+
+        # benchmark 12.2
+        if enableTimingLog:
+            timeDiff = int((time.time() - postStartTime) * 1000)
+            if timeDiff > 100:
+                print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
+
+        likeStr = ''
+        if likeCountStr:
+            # show the number of likes next to icon
+            likeStr += '<label class="likesCount">'
+            likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
+            likeStr += '</label>\n'
+        likeStr += \
+            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
+            likeLink + '=' + postJsonObject['object']['id'] + \
+            pageNumberParam + \
+            '?actor=' + postJsonObject['actor'] + \
+            '?bm=' + timelinePostBookmark + \
+            '?tl=' + boxName + '" title="' + \
+            likeTitle + likeCountStr + '">\n'
+        likeStr += \
+            '          ' + \
+            '<img loading="lazy" title="' + likeTitle + likeCountStr + \
+            '" alt="' + likeTitle + \
+            ' |" src="/' + iconsPath + '/' + likeIcon + '"/></a>\n'
+    return likeStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -686,58 +752,15 @@ def individualPostAsHtml(allowDownloads: bool,
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False
 
-    likeStr = ''
-    if not isModerationPost and showLikeButton:
-        likeIcon = 'like_inactive.png'
-        likeLink = 'like'
-        likeTitle = translate['Like this post']
-        likeCount = noOfLikes(postJsonObject)
-
-        # benchmark 12.1
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 12.1 = ' + str(timeDiff))
-
-        likeCountStr = ''
-        if likeCount > 0:
-            if likeCount <= 10:
-                likeCountStr = ' (' + str(likeCount) + ')'
-            else:
-                likeCountStr = ' (10+)'
-            if likedByPerson(postJsonObject, nickname, domainFull):
-                if likeCount == 1:
-                    # liked by the reader only
-                    likeCountStr = ''
-                likeIcon = 'like.png'
-                likeLink = 'unlike'
-                likeTitle = translate['Undo the like']
-
-        # benchmark 12.2
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
-
-        likeStr = ''
-        if likeCountStr:
-            # show the number of likes next to icon
-            likeStr += '<label class="likesCount">'
-            likeStr += likeCountStr.replace('(', '').replace(')', '').strip()
-            likeStr += '</label>\n'
-        likeStr += \
-            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-            likeLink + '=' + postJsonObject['object']['id'] + \
-            pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + \
-            likeTitle + likeCountStr + '">\n'
-        likeStr += \
-            '          ' + \
-            '<img loading="lazy" title="' + likeTitle + likeCountStr + \
-            '" alt="' + likeTitle + \
-            ' |" src="/' + iconsPath + '/' + likeIcon + '"/></a>\n'
+    likeStr = getLikeIconHtml(nickname, domainFull,
+                              isModerationPost,
+                              showLikeButton,
+                              postJsonObject,
+                              enableTimingLog,
+                              postStartTime,
+                              translate, pageNumberParam,
+                              timelinePostBookmark,
+                              boxName, iconsPath)
 
     # benchmark 12.5
     if enableTimingLog:
