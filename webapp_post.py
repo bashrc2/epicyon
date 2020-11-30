@@ -873,8 +873,8 @@ def individualPostAsHtml(allowDownloads: bool,
     editStr = getEditIconHtml(baseDir, nickname, domainFull,
                               postJsonObject, actorNickname,
                               translate, iconsPath, isEvent)
-
-    announceStr = getAnnounceIconHtml(nickname,
+    
+    announceStr = getAnnounceIconHtml(nickname, domainFull,
                                       postJsonObject,
                                       isPublicRepeat,
                                       isModerationPost,
@@ -1310,6 +1310,7 @@ def individualPostAsHtml(allowDownloads: bool,
         containerClassIcons = 'containericons dm'
         containerClass = 'container dm'
 
+    # add icons to the bottom of the post
     if showIcons:
         footerStr = '\n      <div class="' + containerClassIcons + '">\n'
         footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
