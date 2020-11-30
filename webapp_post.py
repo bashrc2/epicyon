@@ -352,6 +352,45 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     return editStr
 
 
+def getAnnounceIconHtml(nickname: str, domainFull: str,
+                        postJsonObject: {},
+                        isPublicRepeat: bool,
+                        isModerationPost: bool,
+                        showRepeatIcon: bool,
+                        translate: {},
+                        pageNumberParam: str,
+                        timelinePostBookmark: str,
+                        boxName: str, iconsPath: str) -> str:
+    """Returns html for announce icon/button
+    """
+    announceStr = ''
+    if not isModerationPost and showRepeatIcon:
+        # don't allow announce/repeat of your own posts
+        announceIcon = 'repeat_inactive.png'
+        announceLink = 'repeat'
+        if not isPublicRepeat:
+            announceLink = 'repeatprivate'
+        announceTitle = translate['Repeat this post']
+        if announcedByPerson(postJsonObject, nickname, domainFull):
+            announceIcon = 'repeat.png'
+            if not isPublicRepeat:
+                announceLink = 'unrepeatprivate'
+            announceTitle = translate['Undo the repeat']
+        announceStr = \
+            '        <a class="imageAnchor" href="/users/' + \
+            nickname + '?' + announceLink + \
+            '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            '?actor=' + postJsonObject['actor'] + \
+            '?bm=' + timelinePostBookmark + \
+            '?tl=' + boxName + '" title="' + announceTitle + '">\n'
+        announceStr += \
+            '          ' + \
+            '<img loading="lazy" title="' + translate['Repeat this post'] + \
+            '" alt="' + translate['Repeat this post'] + \
+            ' |" src="/' + iconsPath + '/' + announceIcon + '"/></a>\n'
+    return announceStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -624,31 +663,15 @@ def individualPostAsHtml(allowDownloads: bool,
                               postJsonObject, actorNickname,
                               translate, iconsPath, isEvent)
 
-    announceStr = ''
-    if not isModerationPost and showRepeatIcon:
-        # don't allow announce/repeat of your own posts
-        announceIcon = 'repeat_inactive.png'
-        announceLink = 'repeat'
-        if not isPublicRepeat:
-            announceLink = 'repeatprivate'
-        announceTitle = translate['Repeat this post']
-        if announcedByPerson(postJsonObject, nickname, domainFull):
-            announceIcon = 'repeat.png'
-            if not isPublicRepeat:
-                announceLink = 'unrepeatprivate'
-            announceTitle = translate['Undo the repeat']
-        announceStr = \
-            '        <a class="imageAnchor" href="/users/' + \
-            nickname + '?' + announceLink + \
-            '=' + postJsonObject['object']['id'] + pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + announceTitle + '">\n'
-        announceStr += \
-            '          ' + \
-            '<img loading="lazy" title="' + translate['Repeat this post'] + \
-            '" alt="' + translate['Repeat this post'] + \
-            ' |" src="/' + iconsPath + '/' + announceIcon + '"/></a>\n'
+    announceStr = getAnnounceIconHtml(nickname,
+                                      postJsonObject,
+                                      isPublicRepeat,
+                                      isModerationPost,
+                                      showRepeatIcon,
+                                      translate,
+                                      pageNumberParam,
+                                      timelinePostBookmark,
+                                      boxName, iconsPath)
 
     # benchmark 12
     if enableTimingLog:
