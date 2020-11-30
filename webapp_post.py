@@ -207,6 +207,41 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
+def getAvatarLink(showAvatarOptions: bool,
+                  nickname: str, domainFull: str,
+                  avatarUrl: str, postActor: str,
+                  translate: {}, avatarPosition: str,
+                  pageNumber: int, messageIdStr: str) -> str:
+    """Get html for the avatar image
+    """
+    avatarLink = ''
+    if '/users/news/' not in avatarUrl:
+        avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
+        avatarLink += \
+            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
+            translate['Show profile'] + '" alt=" "' + avatarPosition + \
+            '/></a>\n'
+
+    if showAvatarOptions and \
+       domainFull + '/users/' + nickname not in postActor:
+        if '/users/news/' not in avatarUrl:
+            avatarLink = \
+                '        <a class="imageAnchor" href="/users/' + \
+                nickname + '?options=' + postActor + \
+                ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
+            avatarLink += \
+                '        <img loading="lazy" title="' + \
+                translate['Show options for this person'] + \
+                '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
+        else:
+            # don't link to the person options for the news account
+            avatarLink += \
+                '        <img loading="lazy" title="' + \
+                translate['Show options for this person'] + \
+                '" src="' + avatarUrl + '" ' + avatarPosition + '/>\n'
+    return avatarLink.strip()
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -261,11 +296,11 @@ def individualPostAsHtml(allowDownloads: bool,
     if messageId:
         messageIdStr = ';' + messageId
 
-    fullDomain = domain
+    domainFull = domain
     if port:
         if port != 80 and port != 443:
             if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+                domainFull = domain + ':' + str(port)
 
     pageNumberParam = ''
     if pageNumber:
@@ -309,7 +344,8 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 5 = ' + str(timeDiff))
 
-    if fullDomain not in postActor:
+    # get the display name
+    if domainFull not in postActor:
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
@@ -325,6 +361,7 @@ def individualPostAsHtml(allowDownloads: bool,
         if avatarUrl2:
             avatarUrl = avatarUrl2
         if displayName:
+            # add any emoji to the display name
             if ':' in displayName:
                 displayName = \
                     addEmojiToDisplayName(baseDir, httpPrefix,
@@ -337,33 +374,15 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
-    avatarLink = ''
-    if '/users/news/' not in avatarUrl:
-        avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
-        avatarLink += \
-            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
-            translate['Show profile'] + '" alt=" "' + avatarPosition + \
-            '/></a>\n'
+    avatarLink = \
+        getAvatarLink(showAvatarOptions,
+                      nickname, domainFull,
+                      avatarUrl, postActor,
+                      translate, avatarPosition,
+                      pageNumber, messageIdStr)
 
-    if showAvatarOptions and \
-       fullDomain + '/users/' + nickname not in postActor:
-        if '/users/news/' not in avatarUrl:
-            avatarLink = \
-                '        <a class="imageAnchor" href="/users/' + \
-                nickname + '?options=' + postActor + \
-                ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
-            avatarLink += \
-                '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + \
-                '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
-        else:
-            # don't link to the person options for the news account
-            avatarLink += \
-                '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + \
-                '" src="' + avatarUrl + '" ' + avatarPosition + '/>\n'
     avatarImageInPost = \
-        '      <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
+        '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -535,9 +554,9 @@ def individualPostAsHtml(allowDownloads: bool,
             print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
 
     editStr = ''
-    if (postJsonObject['actor'].endswith(fullDomain + '/users/' + nickname) or
+    if (postJsonObject['actor'].endswith(domainFull + '/users/' + nickname) or
         (isEditor(baseDir, nickname) and
-         postJsonObject['actor'].endswith(fullDomain + '/users/news'))):
+         postJsonObject['actor'].endswith(domainFull + '/users/news'))):
         if '/statuses/' in postJsonObject['object']['id']:
             if isBlogPost(postJsonObject):
                 blogPostId = postJsonObject['object']['id']
@@ -588,7 +607,7 @@ def individualPostAsHtml(allowDownloads: bool,
         if not isPublicRepeat:
             announceLink = 'repeatprivate'
         announceTitle = translate['Repeat this post']
-        if announcedByPerson(postJsonObject, nickname, fullDomain):
+        if announcedByPerson(postJsonObject, nickname, domainFull):
             announceIcon = 'repeat.png'
             if not isPublicRepeat:
                 announceLink = 'unrepeatprivate'
@@ -638,7 +657,7 @@ def individualPostAsHtml(allowDownloads: bool,
                 likeCountStr = ' (' + str(likeCount) + ')'
             else:
                 likeCountStr = ' (10+)'
-            if likedByPerson(postJsonObject, nickname, fullDomain):
+            if likedByPerson(postJsonObject, nickname, domainFull):
                 if likeCount == 1:
                     # liked by the reader only
                     likeCountStr = ''
@@ -683,7 +702,7 @@ def individualPostAsHtml(allowDownloads: bool,
         bookmarkIcon = 'bookmark_inactive.png'
         bookmarkLink = 'bookmark'
         bookmarkTitle = translate['Bookmark this post']
-        if bookmarkedByPerson(postJsonObject, nickname, fullDomain):
+        if bookmarkedByPerson(postJsonObject, nickname, domainFull):
             bookmarkIcon = 'bookmark.png'
             bookmarkLink = 'unbookmark'
             bookmarkTitle = translate['Undo the bookmark']
@@ -722,7 +741,7 @@ def individualPostAsHtml(allowDownloads: bool,
     deleteStr = ''
     muteStr = ''
     if (allowDeletion or
-        ('/' + fullDomain + '/' in postActor and
+        ('/' + domainFull + '/' in postActor and
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             if not isNewsPost(postJsonObject):
@@ -1075,7 +1094,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
-                                 isMuted, avatarLink.strip(),
+                                 isMuted, avatarLink,
                                  replyStr, announceStr, likeStr,
                                  bookmarkStr, deleteStr, muteStr)
 
