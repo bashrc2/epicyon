@@ -702,42 +702,44 @@ def htmlHashtagSearch(cssCache: {},
             index += 1
             continue
         postJsonObject = loadJson(postFilename)
-        if postJsonObject:
-            if not isPublicPost(postJsonObject):
-                index += 1
-                continue
-            showIndividualPostIcons = False
-            if nickname:
-                showIndividualPostIcons = True
-            allowDeletion = False
-            showRepeats = showIndividualPostIcons
-            showIcons = showIndividualPostIcons
-            manuallyApprovesFollowers = False
-            showPublicOnly = False
-            storeToCache = False
-            allowDownloads = True
-            avatarUrl = None
-            showAvatarOptions = True
-            postStr = \
-                individualPostAsHtml(allowDownloads, recentPostsCache,
-                                     maxRecentPosts,
-                                     iconsPath, translate, None,
-                                     baseDir, session, wfRequest,
-                                     personCache,
-                                     nickname, domain, port,
-                                     postJsonObject,
-                                     avatarUrl, showAvatarOptions,
-                                     allowDeletion,
-                                     httpPrefix, projectVersion,
-                                     'search',
-                                     YTReplacementDomain,
-                                     showPublishedDateOnly,
-                                     showRepeats, showIcons,
-                                     manuallyApprovesFollowers,
-                                     showPublicOnly,
-                                     storeToCache)
-            if postStr:
-                hashtagSearchForm += separatorStr + postStr
+        if not postJsonObject:
+            index += 1
+            continue
+        if not isPublicPost(postJsonObject):
+            index += 1
+            continue
+        showIndividualPostIcons = False
+        if nickname:
+            showIndividualPostIcons = True
+        allowDeletion = False
+        showRepeats = showIndividualPostIcons
+        showIcons = showIndividualPostIcons
+        manuallyApprovesFollowers = False
+        showPublicOnly = False
+        storeToCache = False
+        allowDownloads = True
+        avatarUrl = None
+        showAvatarOptions = True
+        postStr = \
+            individualPostAsHtml(allowDownloads, recentPostsCache,
+                                 maxRecentPosts,
+                                 iconsPath, translate, None,
+                                 baseDir, session, wfRequest,
+                                 personCache,
+                                 nickname, domain, port,
+                                 postJsonObject,
+                                 avatarUrl, showAvatarOptions,
+                                 allowDeletion,
+                                 httpPrefix, projectVersion,
+                                 'search',
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly,
+                                 showRepeats, showIcons,
+                                 manuallyApprovesFollowers,
+                                 showPublicOnly,
+                                 storeToCache)
+        if postStr:
+            hashtagSearchForm += separatorStr + postStr
         index += 1
 
     if endIndex < noOfLines - 1:
