@@ -715,15 +715,20 @@ def htmlHashtagSearch(cssCache: {},
             manuallyApprovesFollowers = False
             showPublicOnly = False
             storeToCache = False
+            allowDownloads = True
+            pageNumber = None
+            avatarUrl = None
+            showAvatarOptions = True
             postStr = \
-                individualPostAsHtml(True, recentPostsCache,
+                individualPostAsHtml(allowDownloads, recentPostsCache,
                                      maxRecentPosts,
-                                     iconsPath, translate, None,
+                                     iconsPath, translate, pageNumber,
                                      baseDir, session, wfRequest,
                                      personCache,
                                      nickname, domain, port,
                                      postJsonObject,
-                                     None, True, allowDeletion,
+                                     avatarUrl, showAvatarOptions,
+                                     allowDeletion,
                                      httpPrefix, projectVersion,
                                      'search',
                                      YTReplacementDomain,
