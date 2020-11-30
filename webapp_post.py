@@ -181,6 +181,32 @@ def getPostFromRecent(session,
     return postHtml
 
 
+def getAvatarImageUrl(session,
+                      baseDir: str, httpPrefix: str,
+                      postActor: str, personCache: {},
+                      avatarUrl: str, allowDownloads: bool) -> str:
+    """Returns the avatar image url
+    """
+    # get the avatar image url for the post actor
+    if not avatarUrl:
+        avatarUrl = \
+            getPersonAvatarUrl(baseDir, postActor, personCache,
+                               allowDownloads)
+        avatarUrl = \
+            updateAvatarImageCache(session, baseDir, httpPrefix,
+                                   postActor, avatarUrl, personCache,
+                                   allowDownloads)
+    else:
+        updateAvatarImageCache(session, baseDir, httpPrefix,
+                               postActor, avatarUrl, personCache,
+                               allowDownloads)
+
+    if not avatarUrl:
+        avatarUrl = postActor + '/avatar.png'
+
+    return avatarUrl
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -245,6 +271,7 @@ def individualPostAsHtml(allowDownloads: bool,
     if pageNumber:
         pageNumberParam = '?page=' + str(pageNumber)
 
+    # get the html post from the recent posts cache if it exists there
     postHtml = \
         getPostFromRecent(session, baseDir,
                           httpPrefix, nickname, domain,
@@ -270,27 +297,17 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 4 = ' + str(timeDiff))
 
-    if not avatarUrl:
-        avatarUrl = \
-            getPersonAvatarUrl(baseDir, postActor, personCache,
-                               allowDownloads)
-        avatarUrl = \
-            updateAvatarImageCache(session, baseDir, httpPrefix,
-                                   postActor, avatarUrl, personCache,
-                                   allowDownloads)
-    else:
-        updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache,
-                               allowDownloads)
+    avatarUrl = \
+        getAvatarImageUrl(session,
+                          baseDir, httpPrefix,
+                          postActor, personCache,
+                          avatarUrl, allowDownloads)
 
     # benchmark 5
     if enableTimingLog:
         timeDiff = int((time.time() - postStartTime) * 1000)
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 5 = ' + str(timeDiff))
-
-    if not avatarUrl:
-        avatarUrl = postActor + '/avatar.png'
 
     if fullDomain not in postActor:
         (inboxUrl, pubKeyId, pubKey,
