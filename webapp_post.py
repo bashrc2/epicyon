@@ -208,10 +208,10 @@ def getAvatarImageUrl(session,
 
 
 def getAvatarImageHtml(showAvatarOptions: bool,
-                  nickname: str, domainFull: str,
-                  avatarUrl: str, postActor: str,
-                  translate: {}, avatarPosition: str,
-                  pageNumber: int, messageIdStr: str) -> str:
+                       nickname: str, domainFull: str,
+                       avatarUrl: str, postActor: str,
+                       translate: {}, avatarPosition: str,
+                       pageNumber: int, messageIdStr: str) -> str:
     """Get html for the avatar image
     """
     avatarLink = ''
@@ -240,6 +240,63 @@ def getAvatarImageHtml(showAvatarOptions: bool,
                 translate['Show options for this person'] + \
                 '" src="' + avatarUrl + '" ' + avatarPosition + '/>\n'
     return avatarLink.strip()
+
+
+def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
+                     showIcons: bool, commentsEnabled: bool,
+                     postJsonObject: {}, pageNumberParam: str,
+                     iconsPath: str, translate: {}) -> str:
+    """Returns html for the reply icon/button
+    """
+    replyStr = ''
+    if showIcons and commentsEnabled:
+        # reply is permitted - create reply icon
+        replyToLink = postJsonObject['object']['id']
+        if postJsonObject['object'].get('attributedTo'):
+            if isinstance(postJsonObject['object']['attributedTo'], str):
+                replyToLink += \
+                    '?mention=' + postJsonObject['object']['attributedTo']
+        if postJsonObject['object'].get('content'):
+            mentionedActors = \
+                getMentionsFromHtml(postJsonObject['object']['content'])
+            if mentionedActors:
+                for actorUrl in mentionedActors:
+                    if '?mention=' + actorUrl not in replyToLink:
+                        replyToLink += '?mention=' + actorUrl
+                        if len(replyToLink) > 500:
+                            break
+        replyToLink += pageNumberParam
+
+        replyStr = ''
+        if isPublicRepeat:
+            replyStr += \
+                '        <a class="imageAnchor" href="/users/' + \
+                nickname + '?replyto=' + replyToLink + \
+                '?actor=' + postJsonObject['actor'] + \
+                '" title="' + translate['Reply to this post'] + '">\n'
+        else:
+            if isDM(postJsonObject):
+                replyStr += \
+                    '        ' + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
+                    '?replydm=' + replyToLink + \
+                    '?actor=' + postJsonObject['actor'] + \
+                    '" title="' + translate['Reply to this post'] + '">\n'
+            else:
+                replyStr += \
+                    '        ' + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
+                    '?replyfollowers=' + replyToLink + \
+                    '?actor=' + postJsonObject['actor'] + \
+                    '" title="' + translate['Reply to this post'] + '">\n'
+
+        replyStr += \
+            '        ' + \
+            '<img loading="lazy" title="' + \
+            translate['Reply to this post'] + '" alt="' + \
+            translate['Reply to this post'] + \
+            ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
+    return replyStr
 
 
 def individualPostAsHtml(allowDownloads: bool,
@@ -485,59 +542,16 @@ def individualPostAsHtml(allowDownloads: bool,
             titleStr + ' <img loading="lazy" src="/' + \
             iconsPath + '/dm.png" class="DMicon"/>\n'
 
-    replyStr = ''
     # check if replying is permitted
     commentsEnabled = True
     if 'commentsEnabled' in postJsonObject['object']:
         if postJsonObject['object']['commentsEnabled'] is False:
             commentsEnabled = False
-    if showIcons and commentsEnabled:
-        # reply is permitted - create reply icon
-        replyToLink = postJsonObject['object']['id']
-        if postJsonObject['object'].get('attributedTo'):
-            if isinstance(postJsonObject['object']['attributedTo'], str):
-                replyToLink += \
-                    '?mention=' + postJsonObject['object']['attributedTo']
-        if postJsonObject['object'].get('content'):
-            mentionedActors = \
-                getMentionsFromHtml(postJsonObject['object']['content'])
-            if mentionedActors:
-                for actorUrl in mentionedActors:
-                    if '?mention=' + actorUrl not in replyToLink:
-                        replyToLink += '?mention=' + actorUrl
-                        if len(replyToLink) > 500:
-                            break
-        replyToLink += pageNumberParam
 
-        replyStr = ''
-        if isPublicRepeat:
-            replyStr += \
-                '        <a class="imageAnchor" href="/users/' + \
-                nickname + '?replyto=' + replyToLink + \
-                '?actor=' + postJsonObject['actor'] + \
-                '" title="' + translate['Reply to this post'] + '">\n'
-        else:
-            if isDM(postJsonObject):
-                replyStr += \
-                    '        ' + \
-                    '<a class="imageAnchor" href="/users/' + nickname + \
-                    '?replydm=' + replyToLink + \
-                    '?actor=' + postJsonObject['actor'] + \
-                    '" title="' + translate['Reply to this post'] + '">\n'
-            else:
-                replyStr += \
-                    '        ' + \
-                    '<a class="imageAnchor" href="/users/' + nickname + \
-                    '?replyfollowers=' + replyToLink + \
-                    '?actor=' + postJsonObject['actor'] + \
-                    '" title="' + translate['Reply to this post'] + '">\n'
-
-        replyStr += \
-            '        ' + \
-            '<img loading="lazy" title="' + \
-            translate['Reply to this post'] + '" alt="' + \
-            translate['Reply to this post'] + \
-            ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
+    replyStr = getReplyIconHtml(nickname, isPublicRepeat,
+                                showIcons, commentsEnabled,
+                                postJsonObject, pageNumberParam,
+                                iconsPath, translate)
 
     # benchmark 10
     if enableTimingLog:
