@@ -497,6 +497,51 @@ def getBookmarkIconHtml(nickname: str, domainFull: str,
     return bookmarkStr
 
 
+def getMuteIconHtml(isMuted: bool,
+                    postActor: str,
+                    messageId: str,
+                    nickname: str, domainFull: str,
+                    allowDeletion: bool,
+                    pageNumberParam: str,
+                    iconsPath: str,
+                    boxName: str,
+                    timelinePostBookmark: str,
+                    translate: {}) -> str:
+    """Returns html for mute icon/button
+    """
+    muteStr = ''
+    if (allowDeletion or
+        ('/' + domainFull + '/' in postActor and
+         messageId.startswith(postActor))):
+        return muteStr
+
+    if not isMuted:
+        muteStr = \
+            '        <a class="imageAnchor" href="/users/' + nickname + \
+            '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
+            '?bm=' + timelinePostBookmark + \
+            '" title="' + translate['Mute this post'] + '">\n'
+        muteStr += \
+            '          ' + \
+            '<img loading="lazy" alt="' + \
+            translate['Mute this post'] + \
+            ' |" title="' + translate['Mute this post'] + \
+            '" src="/' + iconsPath + '/mute.png"/></a>\n'
+    else:
+        muteStr = \
+            '        <a class="imageAnchor" href="/users/' + \
+            nickname + '?unmute=' + messageId + \
+            pageNumberParam + '?tl=' + boxName + '?bm=' + \
+            timelinePostBookmark + '" title="' + \
+            translate['Undo mute'] + '">\n'
+        muteStr += \
+            '          ' + \
+            '<img loading="lazy" alt="' + translate['Undo mute'] + \
+            ' |" title="' + translate['Undo mute'] + \
+            '" src="/' + iconsPath + '/unmute.png"/></a>\n'
+    return muteStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -833,8 +878,19 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 13 = ' + str(timeDiff))
 
+    muteStr = \
+        getMuteIconHtml(isMuted,
+                        postActor,
+                        messageId,
+                        nickname, domainFull,
+                        allowDeletion,
+                        pageNumberParam,
+                        iconsPath,
+                        boxName,
+                        timelinePostBookmark,
+                        translate)
+
     deleteStr = ''
-    muteStr = ''
     if (allowDeletion or
         ('/' + domainFull + '/' in postActor and
          messageId.startswith(postActor))):
@@ -851,31 +907,6 @@ def individualPostAsHtml(allowDownloads: bool,
                     translate['Delete this post'] + \
                     ' |" title="' + translate['Delete this post'] + \
                     '" src="/' + iconsPath + '/delete.png"/></a>\n'
-    else:
-        if not isMuted:
-            muteStr = \
-                '        <a class="imageAnchor" href="/users/' + nickname + \
-                '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
-                '?bm=' + timelinePostBookmark + \
-                '" title="' + translate['Mute this post'] + '">\n'
-            muteStr += \
-                '          ' + \
-                '<img loading="lazy" alt="' + \
-                translate['Mute this post'] + \
-                ' |" title="' + translate['Mute this post'] + \
-                '" src="/' + iconsPath + '/mute.png"/></a>\n'
-        else:
-            muteStr = \
-                '        <a class="imageAnchor" href="/users/' + \
-                nickname + '?unmute=' + messageId + \
-                pageNumberParam + '?tl=' + boxName + '?bm=' + \
-                timelinePostBookmark + '" title="' + \
-                translate['Undo mute'] + '">\n'
-            muteStr += \
-                '          ' + \
-                '<img loading="lazy" alt="' + translate['Undo mute'] + \
-                ' |" title="' + translate['Undo mute'] + \
-                '" src="/' + iconsPath+'/unmute.png"/></a>\n'
 
     # benchmark 13.1
     if enableTimingLog:
