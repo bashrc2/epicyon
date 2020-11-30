@@ -207,7 +207,7 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
-def getAvatarLink(showAvatarOptions: bool,
+def getAvatarImageHtml(showAvatarOptions: bool,
                   nickname: str, domainFull: str,
                   avatarUrl: str, postActor: str,
                   translate: {}, avatarPosition: str,
@@ -375,11 +375,11 @@ def individualPostAsHtml(allowDownloads: bool,
             print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
 
     avatarLink = \
-        getAvatarLink(showAvatarOptions,
-                      nickname, domainFull,
-                      avatarUrl, postActor,
-                      translate, avatarPosition,
-                      pageNumber, messageIdStr)
+        getAvatarImageHtml(showAvatarOptions,
+                           nickname, domainFull,
+                           avatarUrl, postActor,
+                           translate, avatarPosition,
+                           pageNumber, messageIdStr)
 
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
