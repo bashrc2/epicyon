@@ -710,6 +710,7 @@ def htmlHashtagSearch(cssCache: {},
             if nickname:
                 showIndividualPostIcons = True
             allowDeletion = False
+            showRepeats = True
             postStr = \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
@@ -723,7 +724,7 @@ def htmlHashtagSearch(cssCache: {},
                                      'search',
                                      YTReplacementDomain,
                                      showPublishedDateOnly,
-                                     showIndividualPostIcons,
+                                     showRepeats,
                                      showIndividualPostIcons,
                                      False, False, False)
             if postStr:
