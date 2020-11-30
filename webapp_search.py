@@ -710,7 +710,11 @@ def htmlHashtagSearch(cssCache: {},
             if nickname:
                 showIndividualPostIcons = True
             allowDeletion = False
-            showRepeats = True
+            showRepeats = showIndividualPostIcons
+            showIcons = showIndividualPostIcons
+            manuallyApprovesFollowers = False
+            showPublicOnly = False
+            storeToCache = False
             postStr = \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
@@ -724,9 +728,10 @@ def htmlHashtagSearch(cssCache: {},
                                      'search',
                                      YTReplacementDomain,
                                      showPublishedDateOnly,
-                                     showRepeats,
-                                     showIndividualPostIcons,
-                                     False, False, False)
+                                     showRepeats, showIcons,
+                                     manuallyApprovesFollowers,
+                                     showPublicOnly,
+                                     storeToCache)
             if postStr:
                 hashtagSearchForm += separatorStr + postStr
         index += 1
