@@ -542,6 +542,66 @@ def getMuteIconHtml(isMuted: bool,
     return muteStr
 
 
+def getDeleteIconHtml(nickname: str, domainFull: str,
+                      allowDeletion: bool,
+                      postActor: str,
+                      messageId: str,
+                      postJsonObject: {},
+                      pageNumberParam: str,
+                      iconsPath: str,
+                      translate: {}) -> str:
+    """Returns html for delete icon/button
+    """
+    deleteStr = ''
+    if (allowDeletion or
+        ('/' + domainFull + '/' in postActor and
+         messageId.startswith(postActor))):
+        if '/users/' + nickname + '/' in messageId:
+            if not isNewsPost(postJsonObject):
+                deleteStr = \
+                    '        <a class="imageAnchor" href="/users/' + \
+                    nickname + \
+                    '?delete=' + messageId + pageNumberParam + \
+                    '" title="' + translate['Delete this post'] + '">\n'
+                deleteStr += \
+                    '          ' + \
+                    '<img loading="lazy" alt="' + \
+                    translate['Delete this post'] + \
+                    ' |" title="' + translate['Delete this post'] + \
+                    '" src="/' + iconsPath + '/delete.png"/></a>\n'
+    return deleteStr
+
+
+def getPublishedDateStr(postJsonObject: {},
+                        showPublishedDateOnly: bool) -> str:
+    """Return the html for the published date on a post
+    """
+    publishedStr = ''
+    if postJsonObject['object'].get('published'):
+        publishedStr = postJsonObject['object']['published']
+        if '.' not in publishedStr:
+            if '+' not in publishedStr:
+                datetimeObject = \
+                    datetime.strptime(publishedStr, "%Y-%m-%dT%H:%M:%SZ")
+            else:
+                datetimeObject = \
+                    datetime.strptime(publishedStr.split('+')[0] + 'Z',
+                                      "%Y-%m-%dT%H:%M:%SZ")
+        else:
+            publishedStr = \
+                publishedStr.replace('T', ' ').split('.')[0]
+            datetimeObject = parse(publishedStr)
+        if not showPublishedDateOnly:
+            publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+        else:
+            publishedStr = datetimeObject.strftime("%a %b %d")
+        # if the post has replies then append a symbol to indicate this
+        if postJsonObject.get('hasReplies'):
+            if postJsonObject['hasReplies'] is True:
+                publishedStr = '[' + publishedStr + ']'
+    return publishedStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -890,23 +950,15 @@ def individualPostAsHtml(allowDownloads: bool,
                         timelinePostBookmark,
                         translate)
 
-    deleteStr = ''
-    if (allowDeletion or
-        ('/' + domainFull + '/' in postActor and
-         messageId.startswith(postActor))):
-        if '/users/' + nickname + '/' in messageId:
-            if not isNewsPost(postJsonObject):
-                deleteStr = \
-                    '        <a class="imageAnchor" href="/users/' + \
-                    nickname + \
-                    '?delete=' + messageId + pageNumberParam + \
-                    '" title="' + translate['Delete this post'] + '">\n'
-                deleteStr += \
-                    '          ' + \
-                    '<img loading="lazy" alt="' + \
-                    translate['Delete this post'] + \
-                    ' |" title="' + translate['Delete this post'] + \
-                    '" src="/' + iconsPath + '/delete.png"/></a>\n'
+    deleteStr = \
+        getDeleteIconHtml(nickname, domainFull,
+                          allowDeletion,
+                          postActor,
+                          messageId,
+                          postJsonObject,
+                          pageNumberParam,
+                          iconsPath,
+                          translate)
 
     # benchmark 13.1
     if enableTimingLog:
@@ -1224,29 +1276,8 @@ def individualPostAsHtml(allowDownloads: bool,
                                  replyStr, announceStr, likeStr,
                                  bookmarkStr, deleteStr, muteStr)
 
-    publishedStr = ''
-    if postJsonObject['object'].get('published'):
-        publishedStr = postJsonObject['object']['published']
-        if '.' not in publishedStr:
-            if '+' not in publishedStr:
-                datetimeObject = \
-                    datetime.strptime(publishedStr, "%Y-%m-%dT%H:%M:%SZ")
-            else:
-                datetimeObject = \
-                    datetime.strptime(publishedStr.split('+')[0] + 'Z',
-                                      "%Y-%m-%dT%H:%M:%SZ")
-        else:
-            publishedStr = \
-                publishedStr.replace('T', ' ').split('.')[0]
-            datetimeObject = parse(publishedStr)
-        if not showPublishedDateOnly:
-            publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
-        else:
-            publishedStr = datetimeObject.strftime("%a %b %d")
-        # if the post has replies then append a symbol to indicate this
-        if postJsonObject.get('hasReplies'):
-            if postJsonObject['hasReplies'] is True:
-                publishedStr = '[' + publishedStr + ']'
+    publishedStr = \
+        getPublishedDateStr(postJsonObject, showPublishedDateOnly)
 
     # benchmark 15
     if enableTimingLog:
