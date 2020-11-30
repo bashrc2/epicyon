@@ -716,13 +716,12 @@ def htmlHashtagSearch(cssCache: {},
             showPublicOnly = False
             storeToCache = False
             allowDownloads = True
-            pageNumber = None
             avatarUrl = None
             showAvatarOptions = True
             postStr = \
                 individualPostAsHtml(allowDownloads, recentPostsCache,
                                      maxRecentPosts,
-                                     iconsPath, translate, pageNumber,
+                                     iconsPath, translate, None,
                                      baseDir, session, wfRequest,
                                      personCache,
                                      nickname, domain, port,
