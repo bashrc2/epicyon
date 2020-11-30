@@ -602,6 +602,36 @@ def getPublishedDateStr(postJsonObject: {},
     return publishedStr
 
 
+def getBlogCitationsHtml(boxName: str,
+                         postJsonObject: {},
+                         translate: {}) -> str:
+    """Returns blog citations as html
+    """
+    # show blog citations
+    citationsStr = ''
+    if boxName == 'tlblogs' or boxName == 'tlfeatures':
+        if postJsonObject['object'].get('tag'):
+            for tagJson in postJsonObject['object']['tag']:
+                if not isinstance(tagJson, dict):
+                    continue
+                if not tagJson.get('type'):
+                    continue
+                if tagJson['type'] != 'Article':
+                    continue
+                if not tagJson.get('name'):
+                    continue
+                if not tagJson.get('url'):
+                    continue
+                citationsStr += \
+                    '<li><a href="' + tagJson['url'] + '">' + \
+                    '<cite>' + tagJson['name'] + '</cite></a></li>\n'
+            if citationsStr:
+                citationsStr = '<p><b>' + translate['Citations'] + \
+                    ':</b></p>' + \
+                    '<ul>\n' + citationsStr + '</ul>\n'
+    return citationsStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -873,16 +903,17 @@ def individualPostAsHtml(allowDownloads: bool,
     editStr = getEditIconHtml(baseDir, nickname, domainFull,
                               postJsonObject, actorNickname,
                               translate, iconsPath, isEvent)
-    
-    announceStr = getAnnounceIconHtml(nickname, domainFull,
-                                      postJsonObject,
-                                      isPublicRepeat,
-                                      isModerationPost,
-                                      showRepeatIcon,
-                                      translate,
-                                      pageNumberParam,
-                                      timelinePostBookmark,
-                                      boxName, iconsPath)
+
+    announceStr = \
+        getAnnounceIconHtml(nickname, domainFull,
+                            postJsonObject,
+                            isPublicRepeat,
+                            isModerationPost,
+                            showRepeatIcon,
+                            translate,
+                            pageNumberParam,
+                            timelinePostBookmark,
+                            boxName, iconsPath)
 
     # benchmark 12
     if enableTimingLog:
@@ -1426,27 +1457,8 @@ def individualPostAsHtml(allowDownloads: bool,
                 '</code></pre></div>\n'
 
     # show blog citations
-    citationsStr = ''
-    if boxName == 'tlblogs' or boxName == 'tlfeatures':
-        if postJsonObject['object'].get('tag'):
-            for tagJson in postJsonObject['object']['tag']:
-                if not isinstance(tagJson, dict):
-                    continue
-                if not tagJson.get('type'):
-                    continue
-                if tagJson['type'] != 'Article':
-                    continue
-                if not tagJson.get('name'):
-                    continue
-                if not tagJson.get('url'):
-                    continue
-                citationsStr += \
-                    '<li><a href="' + tagJson['url'] + '">' + \
-                    '<cite>' + tagJson['name'] + '</cite></a></li>\n'
-            if citationsStr:
-                citationsStr = '<p><b>' + translate['Citations'] + \
-                    ':</b></p>' + \
-                    '<ul>\n' + citationsStr + '</ul>\n'
+    citationsStr = \
+        getBlogCitationsHtml(boxName, postJsonObject, translate)
 
     postHtml = ''
     if boxName != 'tlmedia':
@@ -1467,6 +1479,7 @@ def individualPostAsHtml(allowDownloads: bool,
         if timeDiff > 100:
             print('TIMING INDIV ' + boxName + ' 18 = ' + str(timeDiff))
 
+    # save the created html to the recent posts cache
     if not showPublicOnly and storeToCache and \
        boxName != 'tlmedia' and boxName != 'tlbookmarks' and \
        boxName != 'bookmarks':
