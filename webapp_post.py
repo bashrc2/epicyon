@@ -270,12 +270,13 @@ def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
     replyToLink += pageNumberParam
 
     replyStr = ''
+    replyToThisPostStr = translate['Reply to this post']
     if isPublicRepeat:
         replyStr += \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?replyto=' + replyToLink + \
             '?actor=' + postJsonObject['actor'] + \
-            '" title="' + translate['Reply to this post'] + '">\n'
+            '" title="' + replyToThisPostStr + '">\n'
     else:
         if isDM(postJsonObject):
             replyStr += \
@@ -283,20 +284,19 @@ def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replydm=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
-                '" title="' + translate['Reply to this post'] + '">\n'
+                '" title="' + replyToThisPostStr + '">\n'
         else:
             replyStr += \
                 '        ' + \
                 '<a class="imageAnchor" href="/users/' + nickname + \
                 '?replyfollowers=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
-                '" title="' + translate['Reply to this post'] + '">\n'
+                '" title="' + replyToThisPostStr + '">\n'
 
     replyStr += \
         '        ' + \
         '<img loading="lazy" title="' + \
-        translate['Reply to this post'] + '" alt="' + \
-        translate['Reply to this post'] + \
+        replyToThisPostStr + '" alt="' + replyToThisPostStr + \
         ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
     return replyStr
 
