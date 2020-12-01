@@ -1131,20 +1131,14 @@ def individualPostAsHtml(allowDownloads: bool,
     # accurate timing of different parts of the code
     enableTimingLog = not allowDownloads
 
-    # benchmark 1
-    timeDiff = int((time.time() - postStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMING INDIV ' + boxName + ' 1 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '1')
 
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
         messageId = removeIdEnding(postJsonObject['id'])
 
-    # benchmark 2
-    timeDiff = int((time.time() - postStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMING INDIV ' + boxName + ' 2 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '2')
 
     messageIdStr = ''
     if messageId:
