@@ -249,53 +249,55 @@ def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
     """Returns html for the reply icon/button
     """
     replyStr = ''
-    if showIcons and commentsEnabled:
-        # reply is permitted - create reply icon
-        replyToLink = postJsonObject['object']['id']
-        if postJsonObject['object'].get('attributedTo'):
-            if isinstance(postJsonObject['object']['attributedTo'], str):
-                replyToLink += \
-                    '?mention=' + postJsonObject['object']['attributedTo']
-        if postJsonObject['object'].get('content'):
-            mentionedActors = \
-                getMentionsFromHtml(postJsonObject['object']['content'])
-            if mentionedActors:
-                for actorUrl in mentionedActors:
-                    if '?mention=' + actorUrl not in replyToLink:
-                        replyToLink += '?mention=' + actorUrl
-                        if len(replyToLink) > 500:
-                            break
-        replyToLink += pageNumberParam
+    if not (showIcons and commentsEnabled):
+        return replyStr
 
-        replyStr = ''
-        if isPublicRepeat:
+    # reply is permitted - create reply icon
+    replyToLink = postJsonObject['object']['id']
+    if postJsonObject['object'].get('attributedTo'):
+        if isinstance(postJsonObject['object']['attributedTo'], str):
+            replyToLink += \
+                '?mention=' + postJsonObject['object']['attributedTo']
+    if postJsonObject['object'].get('content'):
+        mentionedActors = \
+            getMentionsFromHtml(postJsonObject['object']['content'])
+        if mentionedActors:
+            for actorUrl in mentionedActors:
+                if '?mention=' + actorUrl not in replyToLink:
+                    replyToLink += '?mention=' + actorUrl
+                    if len(replyToLink) > 500:
+                        break
+    replyToLink += pageNumberParam
+
+    replyStr = ''
+    if isPublicRepeat:
+        replyStr += \
+            '        <a class="imageAnchor" href="/users/' + \
+            nickname + '?replyto=' + replyToLink + \
+            '?actor=' + postJsonObject['actor'] + \
+            '" title="' + translate['Reply to this post'] + '">\n'
+    else:
+        if isDM(postJsonObject):
             replyStr += \
-                '        <a class="imageAnchor" href="/users/' + \
-                nickname + '?replyto=' + replyToLink + \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + nickname + \
+                '?replydm=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
                 '" title="' + translate['Reply to this post'] + '">\n'
         else:
-            if isDM(postJsonObject):
-                replyStr += \
-                    '        ' + \
-                    '<a class="imageAnchor" href="/users/' + nickname + \
-                    '?replydm=' + replyToLink + \
-                    '?actor=' + postJsonObject['actor'] + \
-                    '" title="' + translate['Reply to this post'] + '">\n'
-            else:
-                replyStr += \
-                    '        ' + \
-                    '<a class="imageAnchor" href="/users/' + nickname + \
-                    '?replyfollowers=' + replyToLink + \
-                    '?actor=' + postJsonObject['actor'] + \
-                    '" title="' + translate['Reply to this post'] + '">\n'
+            replyStr += \
+                '        ' + \
+                '<a class="imageAnchor" href="/users/' + nickname + \
+                '?replyfollowers=' + replyToLink + \
+                '?actor=' + postJsonObject['actor'] + \
+                '" title="' + translate['Reply to this post'] + '">\n'
 
-        replyStr += \
-            '        ' + \
-            '<img loading="lazy" title="' + \
-            translate['Reply to this post'] + '" alt="' + \
-            translate['Reply to this post'] + \
-            ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
+    replyStr += \
+        '        ' + \
+        '<img loading="lazy" title="' + \
+        translate['Reply to this post'] + '" alt="' + \
+        translate['Reply to this post'] + \
+        ' |" src="/' + iconsPath + '/reply.png"/></a>\n'
     return replyStr
 
 
