@@ -106,23 +106,23 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,
     return False
 
 
-def getPostFromRecent(session,
-                      baseDir: str,
-                      httpPrefix: str,
-                      nickname: str, domain: str,
-                      postJsonObject: {},
-                      postActor: str,
-                      personCache: {},
-                      allowDownloads: bool,
-                      showPublicOnly: bool,
-                      storeToCache: bool,
-                      boxName: str,
-                      avatarUrl: str,
-                      enableTimingLog: bool,
-                      postStartTime,
-                      pageNumber: int,
-                      recentPostsCache: {},
-                      maxRecentPosts: int) -> str:
+def getPostFromRecentCache(session,
+                           baseDir: str,
+                           httpPrefix: str,
+                           nickname: str, domain: str,
+                           postJsonObject: {},
+                           postActor: str,
+                           personCache: {},
+                           allowDownloads: bool,
+                           showPublicOnly: bool,
+                           storeToCache: bool,
+                           boxName: str,
+                           avatarUrl: str,
+                           enableTimingLog: bool,
+                           postStartTime,
+                           pageNumber: int,
+                           recentPostsCache: {},
+                           maxRecentPosts: int) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if boxName == 'tlmedia':
@@ -1022,21 +1022,21 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # get the html post from the recent posts cache if it exists there
     postHtml = \
-        getPostFromRecent(session, baseDir,
-                          httpPrefix, nickname, domain,
-                          postJsonObject,
-                          postActor,
-                          personCache,
-                          allowDownloads,
-                          showPublicOnly,
-                          storeToCache,
-                          boxName,
-                          avatarUrl,
-                          enableTimingLog,
-                          postStartTime,
-                          pageNumber,
-                          recentPostsCache,
-                          maxRecentPosts)
+        getPostFromRecentCache(session, baseDir,
+                               httpPrefix, nickname, domain,
+                               postJsonObject,
+                               postActor,
+                               personCache,
+                               allowDownloads,
+                               showPublicOnly,
+                               storeToCache,
+                               boxName,
+                               avatarUrl,
+                               enableTimingLog,
+                               postStartTime,
+                               pageNumber,
+                               recentPostsCache,
+                               maxRecentPosts)
     if postHtml:
         return postHtml
 
