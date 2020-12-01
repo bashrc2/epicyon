@@ -1070,6 +1070,33 @@ def getPostTitleHtml(baseDir: str,
                                  containerClass)
 
 
+def getFooterWithIcons(showIcons: bool,
+                       containerClassIcons: str,
+                       replyStr: str, announceStr: str,
+                       likeStr: str, bookmarkStr: str,
+                       deleteStr: str, muteStr: str, editStr: str,
+                       postJsonObject: {}, publishedLink: str,
+                       timeClass: str, publishedStr: str) -> str:
+    """Returns the html for a post footer containing icons
+    """
+    if not showIcons:
+        return None
+
+    footerStr = '\n      <div class="' + containerClassIcons + '">\n'
+    footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
+        deleteStr + muteStr + editStr
+    if not isNewsPost(postJsonObject):
+        footerStr += '        <a href="' + publishedLink + '" class="' + \
+            timeClass + '">' + publishedStr + '</a>\n'
+    else:
+        footerStr += '        <a href="' + \
+            publishedLink.replace('/news/', '/news/statuses/') + \
+            '" class="' + \
+            timeClass + '">' + publishedStr + '</a>\n'
+    footerStr += '      </div>\n'
+    return footerStr
+
+
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          iconsPath: str, translate: {},
@@ -1447,20 +1474,15 @@ def individualPostAsHtml(allowDownloads: bool,
         containerClassIcons = 'containericons dm'
         containerClass = 'container dm'
 
-    # add icons to the bottom of the post
-    if showIcons:
-        footerStr = '\n      <div class="' + containerClassIcons + '">\n'
-        footerStr += replyStr + announceStr + likeStr + bookmarkStr + \
-            deleteStr + muteStr + editStr
-        if not isNewsPost(postJsonObject):
-            footerStr += '        <a href="' + publishedLink + '" class="' + \
-                timeClass + '">' + publishedStr + '</a>\n'
-        else:
-            footerStr += '        <a href="' + \
-                publishedLink.replace('/news/', '/news/statuses/') + \
-                '" class="' + \
-                timeClass + '">' + publishedStr + '</a>\n'
-        footerStr += '      </div>\n'
+    newFooterStr = getFooterWithIcons(showIcons,
+                                      containerClassIcons,
+                                      replyStr, announceStr,
+                                      likeStr, bookmarkStr,
+                                      deleteStr, muteStr, editStr,
+                                      postJsonObject, publishedLink,
+                                      timeClass, publishedStr)
+    if newFooterStr:
+        footerStr = newFooterStr
 
     postIsSensitive = False
     if postJsonObject['object'].get('sensitive'):
