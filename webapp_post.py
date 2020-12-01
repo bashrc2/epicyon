@@ -588,28 +588,32 @@ def getPublishedDateStr(postJsonObject: {},
     """Return the html for the published date on a post
     """
     publishedStr = ''
-    if postJsonObject['object'].get('published'):
-        publishedStr = postJsonObject['object']['published']
-        if '.' not in publishedStr:
-            if '+' not in publishedStr:
-                datetimeObject = \
-                    datetime.strptime(publishedStr, "%Y-%m-%dT%H:%M:%SZ")
-            else:
-                datetimeObject = \
-                    datetime.strptime(publishedStr.split('+')[0] + 'Z',
-                                      "%Y-%m-%dT%H:%M:%SZ")
+
+    if not postJsonObject['object'].get('published'):
+        return publishedStr
+
+    publishedStr = postJsonObject['object']['published']
+    if '.' not in publishedStr:
+        if '+' not in publishedStr:
+            datetimeObject = \
+                datetime.strptime(publishedStr, "%Y-%m-%dT%H:%M:%SZ")
         else:
-            publishedStr = \
-                publishedStr.replace('T', ' ').split('.')[0]
-            datetimeObject = parse(publishedStr)
-        if not showPublishedDateOnly:
-            publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
-        else:
-            publishedStr = datetimeObject.strftime("%a %b %d")
-        # if the post has replies then append a symbol to indicate this
-        if postJsonObject.get('hasReplies'):
-            if postJsonObject['hasReplies'] is True:
-                publishedStr = '[' + publishedStr + ']'
+            datetimeObject = \
+                datetime.strptime(publishedStr.split('+')[0] + 'Z',
+                                  "%Y-%m-%dT%H:%M:%SZ")
+    else:
+        publishedStr = \
+            publishedStr.replace('T', ' ').split('.')[0]
+        datetimeObject = parse(publishedStr)
+    if not showPublishedDateOnly:
+        publishedStr = datetimeObject.strftime("%a %b %d, %H:%M")
+    else:
+        publishedStr = datetimeObject.strftime("%a %b %d")
+
+    # if the post has replies then append a symbol to indicate this
+    if postJsonObject.get('hasReplies'):
+        if postJsonObject['hasReplies'] is True:
+            publishedStr = '[' + publishedStr + ']'
     return publishedStr
 
 
@@ -620,26 +624,31 @@ def getBlogCitationsHtml(boxName: str,
     """
     # show blog citations
     citationsStr = ''
-    if boxName == 'tlblogs' or boxName == 'tlfeatures':
-        if postJsonObject['object'].get('tag'):
-            for tagJson in postJsonObject['object']['tag']:
-                if not isinstance(tagJson, dict):
-                    continue
-                if not tagJson.get('type'):
-                    continue
-                if tagJson['type'] != 'Article':
-                    continue
-                if not tagJson.get('name'):
-                    continue
-                if not tagJson.get('url'):
-                    continue
-                citationsStr += \
-                    '<li><a href="' + tagJson['url'] + '">' + \
-                    '<cite>' + tagJson['name'] + '</cite></a></li>\n'
-            if citationsStr:
-                citationsStr = '<p><b>' + translate['Citations'] + \
-                    ':</b></p>' + \
-                    '<ul>\n' + citationsStr + '</ul>\n'
+    if not (boxName == 'tlblogs' or boxName == 'tlfeatures'):
+        return citationsStr
+
+    if not postJsonObject['object'].get('tag'):
+        return citationsStr
+
+    for tagJson in postJsonObject['object']['tag']:
+        if not isinstance(tagJson, dict):
+            continue
+        if not tagJson.get('type'):
+            continue
+        if tagJson['type'] != 'Article':
+            continue
+        if not tagJson.get('name'):
+            continue
+        if not tagJson.get('url'):
+            continue
+        citationsStr += \
+            '<li><a href="' + tagJson['url'] + '">' + \
+            '<cite>' + tagJson['name'] + '</cite></a></li>\n'
+
+    if citationsStr:
+        citationsStr = '<p><b>' + translate['Citations'] + \
+            ':</b></p>' + \
+            '<ul>\n' + citationsStr + '</ul>\n'
     return citationsStr
 
 
