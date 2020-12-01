@@ -651,6 +651,173 @@ def getBlogCitationsHtml(boxName: str,
     return citationsStr
 
 
+def boostOwnTootHtml(translate: {}, iconsPath) -> str:
+    """The html title for announcing your own post
+    """
+    return '        <img loading="lazy" title="' + \
+        translate['announces'] + \
+        '" alt="' + translate['announces'] + \
+        '" src="/' + iconsPath + \
+        '/repeat_inactive.png" class="announceOrReply"/>\n'
+
+
+def announceUnattributedHtml(translate: {}, iconsPath: str) -> str:
+    """Returns the html for an announce title where there
+    is no attribution on the announced post
+    """
+    return '    <img loading="lazy" title="' + \
+        translate['announces'] + '" alt="' + \
+        translate['announces'] + '" src="/' + iconsPath + \
+        '/repeat_inactive.png" ' + \
+        'class="announceOrReply"/>\n' + \
+        '      <a href="' + \
+        postJsonObject['object']['id'] + \
+        '" class="announceOrReply">@unattributed</a>\n'
+
+
+def getPostTitleAnnounceHtml(baseDir: str,
+                             httpPrefix: str,
+                             nickname: str, domain: str,
+                             showRepeatIcon: bool,
+                             isAnnounced: bool,
+                             postJsonObject: {},
+                             postActor: str,
+                             translate: {},
+                             iconsPath: str,
+                             enableTimingLog: bool,
+                             postStartTime,
+                             boxName: str,
+                             personCache: {},
+                             allowDownloads: bool,
+                             avatarPosition: str,
+                             pageNumber: int,
+                             messageIdStr: str,
+                             containerClassIcons: str,
+                             containerClass: str) -> (str, str, str, str):
+    """Returns the announce title of a post containing names of participants
+    x announces y
+    """
+    titleStr = ''
+    replyAvatarImageInPost = ''
+
+    if postJsonObject['object'].get('attributedTo'):
+        attributedTo = ''
+        if isinstance(postJsonObject['object']['attributedTo'], str):
+            attributedTo = postJsonObject['object']['attributedTo']
+
+        if attributedTo.startswith(postActor):
+            titleStr += boostOwnTootHtml(translate, iconsPath)
+        else:
+            # boosting another person's post
+            # benchmark 13.2
+            if enableTimingLog:
+                timeDiff = int((time.time() - postStartTime) * 1000)
+                if timeDiff > 100:
+                    print('TIMING INDIV ' + boxName +
+                          ' 13.2 = ' + str(timeDiff))
+            announceNickname = None
+            if attributedTo:
+                announceNickname = getNicknameFromActor(attributedTo)
+            if announceNickname:
+                announceDomain, announcePort = \
+                    getDomainFromActor(attributedTo)
+                getPersonFromCache(baseDir, attributedTo,
+                                   personCache, allowDownloads)
+                announceDisplayName = \
+                    getDisplayName(baseDir, attributedTo, personCache)
+                if announceDisplayName:
+                    # benchmark 13.3
+                    if enableTimingLog:
+                        timeDiff = \
+                            int((time.time() - postStartTime) * 1000)
+                        if timeDiff > 100:
+                            print('TIMING INDIV ' + boxName +
+                                  ' 13.3 = ' + str(timeDiff))
+
+                    if ':' in announceDisplayName:
+                        announceDisplayName = \
+                            addEmojiToDisplayName(baseDir, httpPrefix,
+                                                  nickname, domain,
+                                                  announceDisplayName,
+                                                  False)
+                    # benchmark 13.3.1
+                    if enableTimingLog:
+                        timeDiff = \
+                            int((time.time() - postStartTime) * 1000)
+                        if timeDiff > 100:
+                            print('TIMING INDIV ' + boxName +
+                                  ' 13.3.1 = ' + str(timeDiff))
+
+                    titleStr += \
+                        '          ' + \
+                        '<img loading="lazy" title="' + \
+                        translate['announces'] + '" alt="' + \
+                        translate['announces'] + '" src="/' + \
+                        iconsPath + '/repeat_inactive.png" ' + \
+                        'class="announceOrReply"/>\n' + \
+                        '        <a href="' + \
+                        postJsonObject['object']['id'] + '" ' + \
+                        'class="announceOrReply">' + \
+                        announceDisplayName + '</a>\n'
+                    # show avatar of person replied to
+                    announceActor = \
+                        postJsonObject['object']['attributedTo']
+                    announceAvatarUrl = \
+                        getPersonAvatarUrl(baseDir, announceActor,
+                                           personCache, allowDownloads)
+
+                    # benchmark 13.4
+                    if enableTimingLog:
+                        timeDiff = \
+                            int((time.time() - postStartTime) * 1000)
+                        if timeDiff > 100:
+                            print('TIMING INDIV ' + boxName +
+                                  ' 13.4 = ' + str(timeDiff))
+
+                    if announceAvatarUrl:
+                        idx = 'Show options for this person'
+                        if '/users/news/' not in announceAvatarUrl:
+                            replyAvatarImageInPost = \
+                                '        ' \
+                                '<div class=' + \
+                                '"timeline-avatar-reply">\n' \
+                                '            ' + \
+                                '<a class="imageAnchor" ' + \
+                                'href="/users/' + nickname + \
+                                '?options=' + \
+                                announceActor + ';' + \
+                                str(pageNumber) + \
+                                ';' + announceAvatarUrl + \
+                                messageIdStr + '">' \
+                                '<img loading="lazy" src="' + \
+                                announceAvatarUrl + '" ' \
+                                'title="' + translate[idx] + \
+                                '" alt=" "' + avatarPosition + \
+                                '/></a>\n    </div>\n'
+                else:
+                    titleStr += \
+                        '    <img loading="lazy" title="' + \
+                        translate['announces'] + \
+                        '" alt="' + translate['announces'] + \
+                        '" src="/' + iconsPath + \
+                        '/repeat_inactive.png" ' + \
+                        'class="announceOrReply"/>\n' + \
+                        '      <a href="' + \
+                        postJsonObject['object']['id'] + '" ' + \
+                        'class="announceOrReply">@' + \
+                        announceNickname + '@' + \
+                        announceDomain + '</a>\n'
+            else:
+                titleStr += \
+                    announceUnattributedHtml(translate, iconsPath)
+    else:
+        titleStr += \
+            announceUnattributedHtml(translate, iconsPath)
+
+    return (titleStr, replyAvatarImageInPost,
+            containerClassIcons, containerClass)
+
+
 def getPostTitleHtml(baseDir: str,
                      httpPrefix: str,
                      nickname: str, domain: str,
@@ -669,7 +836,7 @@ def getPostTitleHtml(baseDir: str,
                      pageNumber: int,
                      messageIdStr: str,
                      containerClassIcons: str,
-                     containerClass: str) -> (str, str):
+                     containerClass: str) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -680,137 +847,25 @@ def getPostTitleHtml(baseDir: str,
                 containerClassIcons, containerClass)
 
     if isAnnounced:
-        if postJsonObject['object'].get('attributedTo'):
-            attributedTo = ''
-            if isinstance(postJsonObject['object']['attributedTo'], str):
-                attributedTo = postJsonObject['object']['attributedTo']
-            if attributedTo.startswith(postActor):
-                titleStr += \
-                    '        <img loading="lazy" title="' + \
-                    translate['announces'] + \
-                    '" alt="' + translate['announces'] + \
-                    '" src="/' + iconsPath + \
-                    '/repeat_inactive.png" class="announceOrReply"/>\n'
-            else:
-                # benchmark 13.2
-                if enableTimingLog:
-                    timeDiff = int((time.time() - postStartTime) * 1000)
-                    if timeDiff > 100:
-                        print('TIMING INDIV ' + boxName +
-                              ' 13.2 = ' + str(timeDiff))
-                announceNickname = None
-                if attributedTo:
-                    announceNickname = getNicknameFromActor(attributedTo)
-                if announceNickname:
-                    announceDomain, announcePort = \
-                        getDomainFromActor(attributedTo)
-                    getPersonFromCache(baseDir, attributedTo,
-                                       personCache, allowDownloads)
-                    announceDisplayName = \
-                        getDisplayName(baseDir, attributedTo, personCache)
-                    if announceDisplayName:
-                        # benchmark 13.3
-                        if enableTimingLog:
-                            timeDiff = \
-                                int((time.time() - postStartTime) * 1000)
-                            if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName +
-                                      ' 13.3 = ' + str(timeDiff))
-
-                        if ':' in announceDisplayName:
-                            announceDisplayName = \
-                                addEmojiToDisplayName(baseDir, httpPrefix,
-                                                      nickname, domain,
-                                                      announceDisplayName,
-                                                      False)
-                        # benchmark 13.3.1
-                        if enableTimingLog:
-                            timeDiff = \
-                                int((time.time() - postStartTime) * 1000)
-                            if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName +
-                                      ' 13.3.1 = ' + str(timeDiff))
-
-                        titleStr += \
-                            '          ' + \
-                            '<img loading="lazy" title="' + \
-                            translate['announces'] + '" alt="' + \
-                            translate['announces'] + '" src="/' + \
-                            iconsPath + '/repeat_inactive.png" ' + \
-                            'class="announceOrReply"/>\n' + \
-                            '        <a href="' + \
-                            postJsonObject['object']['id'] + '" ' + \
-                            'class="announceOrReply">' + \
-                            announceDisplayName + '</a>\n'
-                        # show avatar of person replied to
-                        announceActor = \
-                            postJsonObject['object']['attributedTo']
-                        announceAvatarUrl = \
-                            getPersonAvatarUrl(baseDir, announceActor,
-                                               personCache, allowDownloads)
-
-                        # benchmark 13.4
-                        if enableTimingLog:
-                            timeDiff = \
-                                int((time.time() - postStartTime) * 1000)
-                            if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName +
-                                      ' 13.4 = ' + str(timeDiff))
-
-                        if announceAvatarUrl:
-                            idx = 'Show options for this person'
-                            if '/users/news/' not in announceAvatarUrl:
-                                replyAvatarImageInPost = \
-                                    '        ' \
-                                    '<div class=' + \
-                                    '"timeline-avatar-reply">\n' \
-                                    '            ' + \
-                                    '<a class="imageAnchor" ' + \
-                                    'href="/users/' + nickname + \
-                                    '?options=' + \
-                                    announceActor + ';' + \
-                                    str(pageNumber) + \
-                                    ';' + announceAvatarUrl + \
-                                    messageIdStr + '">' \
-                                    '<img loading="lazy" src="' + \
-                                    announceAvatarUrl + '" ' \
-                                    'title="' + translate[idx] + \
-                                    '" alt=" "' + avatarPosition + \
-                                    '/></a>\n    </div>\n'
-                    else:
-                        titleStr += \
-                            '    <img loading="lazy" title="' + \
-                            translate['announces'] + \
-                            '" alt="' + translate['announces'] + \
-                            '" src="/' + iconsPath + \
-                            '/repeat_inactive.png" ' + \
-                            'class="announceOrReply"/>\n' + \
-                            '      <a href="' + \
-                            postJsonObject['object']['id'] + '" ' + \
-                            'class="announceOrReply">@' + \
-                            announceNickname + '@' + \
-                            announceDomain + '</a>\n'
-                else:
-                    titleStr += \
-                        '    <img loading="lazy" title="' + \
-                        translate['announces'] + '" alt="' + \
-                        translate['announces'] + '" src="/' + iconsPath + \
-                        '/repeat_inactive.png" ' + \
-                        'class="announceOrReply"/>\n' + \
-                        '      <a href="' + \
-                        postJsonObject['object']['id'] + \
-                        '" class="announceOrReply">@unattributed</a>\n'
-        else:
-            titleStr += \
-                '    ' + \
-                '<img loading="lazy" title="' + translate['announces'] + \
-                '" alt="' + translate['announces'] + \
-                '" src="/' + iconsPath + \
-                '/repeat_inactive.png" ' + \
-                'class="announceOrReply"/>\n' + \
-                '      <a href="' + \
-                postJsonObject['object']['id'] + '" ' + \
-                'class="announceOrReply">@unattributed</a>\n'
+        return getPostTitleAnnounceHtml(baseDir,
+                                        httpPrefix,
+                                        nickname, domain,
+                                        showRepeatIcon,
+                                        isAnnounced,
+                                        postJsonObject,
+                                        postActor,
+                                        translate,
+                                        iconsPath,
+                                        enableTimingLog,
+                                        postStartTime,
+                                        boxName,
+                                        personCache,
+                                        allowDownloads,
+                                        avatarPosition,
+                                        pageNumber,
+                                        messageIdStr,
+                                        containerClassIcons,
+                                        containerClass)
     else:
         if postJsonObject['object'].get('inReplyTo'):
             containerClassIcons = 'containericons darker'
