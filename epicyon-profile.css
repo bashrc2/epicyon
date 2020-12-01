@@ -1431,9 +1431,6 @@ div.container {
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
-    input[type=text], hashtagCategory {
-        width: 20ch;
-    }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
@@ -2065,9 +2062,6 @@ div.container {
         font-family: Arial, Helvetica, sans-serif;
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
-    }
-    input[type=text], hashtagCategory {
-        width: 20ch;
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
