@@ -316,6 +316,7 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
 
         if '/statuses/' in postId:
             if isBlogPost(postJsonObject):
+                editBlogPostStr = translate['Edit blog post']
                 if not isNewsPost(postJsonObject):
                     editStr += \
                         '        ' + \
@@ -324,10 +325,9 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                         '/tlblogs?editblogpost=' + \
                         postId.split('/statuses/')[1] + \
                         '?actor=' + actorNickname + \
-                        '" title="' + translate['Edit blog post'] + '">' + \
+                        '" title="' + editBlogPostStr + '">' + \
                         '<img loading="lazy" title="' + \
-                        translate['Edit blog post'] + '" alt="' + \
-                        translate['Edit blog post'] + \
+                        editBlogPostStr + '" alt="' + editBlogPostStr + \
                         ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
                 else:
                     editStr += \
@@ -336,22 +336,21 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                         nickname + '/editnewspost=' + \
                         postId.split('/statuses/')[1] + \
                         '?actor=' + actorNickname + \
-                        '" title="' + translate['Edit blog post'] + '">' + \
+                        '" title="' + editBlogPostStr + '">' + \
                         '<img loading="lazy" title="' + \
-                        translate['Edit blog post'] + '" alt="' + \
-                        translate['Edit blog post'] + \
+                        editBlogPostStr + '" alt="' + editBlogPostStr + \
                         ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
             elif isEvent:
+                editEventStr = translate['Edit event']
                 editStr += \
                     '        ' + \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editeventpost=' + \
                     postId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
-                    '" title="' + translate['Edit event'] + '">' + \
+                    '" title="' + editEventStr + '">' + \
                     '<img loading="lazy" title="' + \
-                    translate['Edit event'] + '" alt="' + \
-                    translate['Edit event'] + \
+                    editEventStr + '" alt="' + editEventStr + \
                     ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
     return editStr
 
