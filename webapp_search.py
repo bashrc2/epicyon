@@ -668,7 +668,7 @@ def htmlHashtagSearch(cssCache: {},
     # edit the category for this hashtag
     if isEditor(baseDir, nickname):
         category = getHashtagCategory(baseDir, hashtag)
-        # hashtagSearchForm += '<div class="container">\n'
+        hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
         hashtagSearchForm += '  <form method="POST" action="' + \
             '/users/' + nickname + '/sethashtagcategory">\n'
         hashtagSearchForm += '    <center>\n'
@@ -682,21 +682,16 @@ def htmlHashtagSearch(cssCache: {},
         hashtagSearchForm += \
             '      <button type="submit" class="button" name="submitYes">' + \
             translate['Submit'] + '</button>\n'
-        hashtagSearchForm += '      <a href="/tags/rss2/' + hashtag + '">'
-        hashtagSearchForm += \
-            '<img style="width:3%;min-width:50px" ' + \
-            'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
-            iconsPath + '/logorss.png" /></a>\n'
         hashtagSearchForm += '    </center>\n'
         hashtagSearchForm += '  </form>\n'
-        # hashtagSearchForm += '</div>\n'
-    else:
-        # RSS link for hashtag feed
-        hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
-        hashtagSearchForm += \
-            '<img style="width:3%;min-width:50px" ' + \
-            'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
-            iconsPath + '/logorss.png" /></a></center>\n'
+        hashtagSearchForm += '</div>\n'
+
+    # RSS link for hashtag feed
+    hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
+    hashtagSearchForm += \
+        '<img style="width:3%;min-width:50px" ' + \
+        'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+        iconsPath + '/logorss.png" /></a></center>\n'
 
     if startIndex > 0:
         # previous page link
