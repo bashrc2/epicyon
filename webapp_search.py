@@ -684,8 +684,8 @@ def htmlHashtagSearch(cssCache: {},
             hashtag + '">\n'
         hashtagSearchForm += translate['Category']
         hashtagSearchForm += \
-            '      <input type="text" name="hashtagCategory" value="' + \
-            category + '">\n'
+            '      <input type="text" style="width=20ch" ' + \
+            'name="hashtagCategory" value="' + category + '">\n'
         hashtagSearchForm += \
             '      <button type="submit" class="button" name="submitYes">' + \
             translate['Submit'] + '</button>\n'
