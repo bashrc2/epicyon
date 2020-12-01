@@ -307,19 +307,22 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     """Returns html for the edit icon/button
     """
     editStr = ''
-    if (postJsonObject['actor'].endswith(domainFull + '/users/' + nickname) or
+    actor = postJsonObject['actor']
+    if (actor.endswith(domainFull + '/users/' + nickname) or
         (isEditor(baseDir, nickname) and
-         postJsonObject['actor'].endswith(domainFull + '/users/news'))):
-        if '/statuses/' in postJsonObject['object']['id']:
+         actor.endswith(domainFull + '/users/news'))):
+
+        postId = postJsonObject['object']['id']
+
+        if '/statuses/' in postId:
             if isBlogPost(postJsonObject):
-                blogPostId = postJsonObject['object']['id']
                 if not isNewsPost(postJsonObject):
                     editStr += \
                         '        ' + \
                         '<a class="imageAnchor" href="/users/' + \
                         nickname + \
                         '/tlblogs?editblogpost=' + \
-                        blogPostId.split('/statuses/')[1] + \
+                        postId.split('/statuses/')[1] + \
                         '?actor=' + actorNickname + \
                         '" title="' + translate['Edit blog post'] + '">' + \
                         '<img loading="lazy" title="' + \
@@ -331,7 +334,7 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                         '        ' + \
                         '<a class="imageAnchor" href="/users/' + \
                         nickname + '/editnewspost=' + \
-                        blogPostId.split('/statuses/')[1] + \
+                        postId.split('/statuses/')[1] + \
                         '?actor=' + actorNickname + \
                         '" title="' + translate['Edit blog post'] + '">' + \
                         '<img loading="lazy" title="' + \
@@ -339,12 +342,11 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                         translate['Edit blog post'] + \
                         ' |" src="/' + iconsPath + '/edit.png"/></a>\n'
             elif isEvent:
-                eventPostId = postJsonObject['object']['id']
                 editStr += \
                     '        ' + \
                     '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editeventpost=' + \
-                    eventPostId.split('/statuses/')[1] + \
+                    postId.split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
                     '" title="' + translate['Edit event'] + '">' + \
                     '<img loading="lazy" title="' + \
