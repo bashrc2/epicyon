@@ -692,6 +692,22 @@ def announceWithoutDisplayNameHtml(translate: {}, iconsPath: str,
         announceNickname + '@' + announceDomain + '</a>\n'
 
 
+def announceWithDisplayNameHtml(translate: {},
+                                iconsPath: str,
+                                postJsonObject: {},
+                                announceDisplayName: str) -> str:
+    """Returns html for an announce having a display name
+    """
+    return '          <img loading="lazy" title="' + \
+        translate['announces'] + '" alt="' + \
+        translate['announces'] + '" src="/' + \
+        iconsPath + '/repeat_inactive.png" ' + \
+        'class="announceOrReply"/>\n' + \
+        '        <a href="' + \
+        postJsonObject['object']['id'] + '" ' + \
+        'class="announceOrReply">' + announceDisplayName + '</a>\n'
+
+
 def getPostTitleAnnounceHtml(baseDir: str,
                              httpPrefix: str,
                              nickname: str, domain: str,
@@ -767,16 +783,10 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                   ' 13.3.1 = ' + str(timeDiff))
 
                     titleStr += \
-                        '          ' + \
-                        '<img loading="lazy" title="' + \
-                        translate['announces'] + '" alt="' + \
-                        translate['announces'] + '" src="/' + \
-                        iconsPath + '/repeat_inactive.png" ' + \
-                        'class="announceOrReply"/>\n' + \
-                        '        <a href="' + \
-                        postJsonObject['object']['id'] + '" ' + \
-                        'class="announceOrReply">' + \
-                        announceDisplayName + '</a>\n'
+                        announceWithDisplayNameHtml(translate,
+                                                    iconsPath,
+                                                    postJsonObject,
+                                                    announceDisplayName)
                     # show avatar of person replied to
                     announceActor = \
                         postJsonObject['object']['attributedTo']
