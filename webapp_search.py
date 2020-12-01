@@ -660,10 +660,17 @@ def htmlHashtagSearch(cssCache: {},
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
-            hashtag + '</a></h1>\n' + '</center>\n'
+            hashtag + '</a></h1>\n'
     else:
         hashtagSearchForm += '<center>\n' + \
-            '<h1>#' + hashtag + '</h1>\n' + '</center>\n'
+            '<h1>#' + hashtag + '</h1>\n'
+
+    # RSS link for hashtag feed
+    hashtagSearchForm += '<a href="/tags/rss2/' + hashtag + '">'
+    hashtagSearchForm += \
+        '<img style="width:3%;min-width:50px" ' + \
+        'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+        iconsPath + '/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
     if isEditor(baseDir, nickname):
@@ -685,13 +692,6 @@ def htmlHashtagSearch(cssCache: {},
         hashtagSearchForm += '    </center>\n'
         hashtagSearchForm += '  </form>\n'
         hashtagSearchForm += '</div>\n'
-
-    # RSS link for hashtag feed
-    hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
-    hashtagSearchForm += \
-        '<img style="width:3%;min-width:50px" ' + \
-        'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
-        iconsPath + '/logorss.png" /></a></center>\n'
 
     if startIndex > 0:
         # previous page link
