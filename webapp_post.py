@@ -847,6 +847,8 @@ def getReplyHtml(translate: {}, iconsPath: str,
 
 
 def logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
+    """Create a log of timings for performance tuning
+    """
     if not enableTimingLog:
         return
     timeDiff = int((time.time() - postStartTime) * 1000)
