@@ -864,6 +864,24 @@ def replyToUnknownHtml(translate: {}, iconsPath: str,
         '" class="announceOrReply">@unknown</a>\n'
 
 
+def replyWithUnknownPath(translate: {}, iconsPath: str,
+                         postJsonObject: {},
+                         postDomain: str) -> str:
+    """Returns html title for a reply with an unknown path
+    eg. does not contain /statuses/
+    """
+    return '        <img loading="lazy" title="' + \
+        translate['replying to'] + \
+        '" alt="' + translate['replying to'] + \
+        '" src="/' + \
+        iconsPath + '/reply.png" ' + \
+        'class="announceOrReply"/>\n' + \
+        '        <a href="' + \
+        postJsonObject['object']['inReplyTo'] + \
+        '" class="announceOrReply">' + \
+        postDomain + '</a>\n'
+
+
 def getPostTitleReplyHtml(baseDir: str,
                           httpPrefix: str,
                           nickname: str, domain: str,
@@ -1032,16 +1050,8 @@ def getPostTitleReplyHtml(baseDir: str,
             postDomain = postDomain.split('/', 1)[0]
         if postDomain:
             titleStr += \
-                '        <img loading="lazy" title="' + \
-                translate['replying to'] + \
-                '" alt="' + translate['replying to'] + \
-                '" src="/' + \
-                iconsPath + '/reply.png" ' + \
-                'class="announceOrReply"/>\n' + \
-                '        <a href="' + \
-                postJsonObject['object']['inReplyTo'] + \
-                '" class="announceOrReply">' + \
-                postDomain + '</a>\n'
+                replyWithUnknownPath(translate, iconsPath,
+                                     postJsonObject, postDomain)
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
