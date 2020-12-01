@@ -661,7 +661,8 @@ def boostOwnTootHtml(translate: {}, iconsPath) -> str:
         '/repeat_inactive.png" class="announceOrReply"/>\n'
 
 
-def announceUnattributedHtml(translate: {}, iconsPath: str) -> str:
+def announceUnattributedHtml(translate: {}, iconsPath: str,
+                             postJsonObject: {}) -> str:
     """Returns the html for an announce title where there
     is no attribution on the announced post
     """
@@ -673,6 +674,22 @@ def announceUnattributedHtml(translate: {}, iconsPath: str) -> str:
         '      <a href="' + \
         postJsonObject['object']['id'] + \
         '" class="announceOrReply">@unattributed</a>\n'
+
+
+def announceWithoutDisplayNameHtml(translate: {}, iconsPath: str,
+                                   announceNickname: str,
+                                   announceDomain: str,
+                                   postJsonObject: {}) -> str:
+    """Returns html for an announce title where there is no display name
+    only a handle nick@domain
+    """
+    return '    <img loading="lazy" title="' + \
+        translate['announces'] + '" alt="' + translate['announces'] + \
+        '" src="/' + iconsPath + '/repeat_inactive.png" ' + \
+        'class="announceOrReply"/>\n' + \
+        '      <a href="' + postJsonObject['object']['id'] + '" ' + \
+        'class="announceOrReply">@' + \
+        announceNickname + '@' + announceDomain + '</a>\n'
 
 
 def getPostTitleAnnounceHtml(baseDir: str,
@@ -734,6 +751,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                             print('TIMING INDIV ' + boxName +
                                   ' 13.3 = ' + str(timeDiff))
 
+                    # add any emoji to the display name
                     if ':' in announceDisplayName:
                         announceDisplayName = \
                             addEmojiToDisplayName(baseDir, httpPrefix,
@@ -796,23 +814,17 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                 '/></a>\n    </div>\n'
                 else:
                     titleStr += \
-                        '    <img loading="lazy" title="' + \
-                        translate['announces'] + \
-                        '" alt="' + translate['announces'] + \
-                        '" src="/' + iconsPath + \
-                        '/repeat_inactive.png" ' + \
-                        'class="announceOrReply"/>\n' + \
-                        '      <a href="' + \
-                        postJsonObject['object']['id'] + '" ' + \
-                        'class="announceOrReply">@' + \
-                        announceNickname + '@' + \
-                        announceDomain + '</a>\n'
+                        announceWithoutDisplayNameHtml(translate, iconsPath,
+                                                       announceNickname,
+                                                       announceDomain,
+                                                       postJsonObject)
             else:
                 titleStr += \
-                    announceUnattributedHtml(translate, iconsPath)
+                    announceUnattributedHtml(translate, iconsPath,
+                                             postJsonObject)
     else:
         titleStr += \
-            announceUnattributedHtml(translate, iconsPath)
+            announceUnattributedHtml(translate, iconsPath, postJsonObject)
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
