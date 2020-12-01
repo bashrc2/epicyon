@@ -61,6 +61,16 @@ from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 
 
+def logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
+    """Create a log of timings for performance tuning
+    """
+    if not enableTimingLog:
+        return
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + debugId + ' = ' + str(timeDiff))
+
+
 def preparePostFromHtmlCache(postHtml: str, boxName: str,
                              pageNumber: int) -> str:
     """Sets the page number on a cached html post
@@ -859,16 +869,6 @@ def getReplyWithoutDisplayName(translate: {}, iconsPath: str,
         'class="announceOrReply"/>\n' + '        <a href="' + \
         inReplyTo + '" class="announceOrReply">@' + \
         replyNickname + '@' + replyDomain + '</a>\n'
-
-
-def logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
-    """Create a log of timings for performance tuning
-    """
-    if not enableTimingLog:
-        return
-    timeDiff = int((time.time() - postStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMING INDIV ' + debugId + ' = ' + str(timeDiff))
 
 
 def getPostTitleReplyHtml(baseDir: str,
