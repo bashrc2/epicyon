@@ -376,11 +376,13 @@ def getAnnounceIconHtml(nickname: str, domainFull: str,
         if not isPublicRepeat:
             announceLink = 'repeatprivate'
         announceTitle = translate['Repeat this post']
+
         if announcedByPerson(postJsonObject, nickname, domainFull):
             announceIcon = 'repeat.png'
             if not isPublicRepeat:
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
+
         announceStr = \
             '        <a class="imageAnchor" href="/users/' + \
             nickname + '?' + announceLink + \
@@ -388,6 +390,7 @@ def getAnnounceIconHtml(nickname: str, domainFull: str,
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
             '?tl=' + boxName + '" title="' + announceTitle + '">\n'
+
         announceStr += \
             '          ' + \
             '<img loading="lazy" title="' + translate['Repeat this post'] + \
@@ -474,31 +477,34 @@ def getBookmarkIconHtml(nickname: str, domainFull: str,
     """Returns html for bookmark icon/button
     """
     bookmarkStr = ''
-    if not isModerationPost:
-        bookmarkIcon = 'bookmark_inactive.png'
-        bookmarkLink = 'bookmark'
-        bookmarkTitle = translate['Bookmark this post']
-        if bookmarkedByPerson(postJsonObject, nickname, domainFull):
-            bookmarkIcon = 'bookmark.png'
-            bookmarkLink = 'unbookmark'
-            bookmarkTitle = translate['Undo the bookmark']
-        # benchmark 12.6
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
-        bookmarkStr = \
-            '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
-            bookmarkLink + '=' + postJsonObject['object']['id'] + \
-            pageNumberParam + \
-            '?actor=' + postJsonObject['actor'] + \
-            '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + bookmarkTitle + '">\n'
-        bookmarkStr += \
-            '        ' + \
-            '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
-            bookmarkTitle + ' |" src="/' + iconsPath + \
-            '/' + bookmarkIcon + '"/></a>\n'
+
+    if isModerationPost:
+        return bookmarkStr
+
+    bookmarkIcon = 'bookmark_inactive.png'
+    bookmarkLink = 'bookmark'
+    bookmarkTitle = translate['Bookmark this post']
+    if bookmarkedByPerson(postJsonObject, nickname, domainFull):
+        bookmarkIcon = 'bookmark.png'
+        bookmarkLink = 'unbookmark'
+        bookmarkTitle = translate['Undo the bookmark']
+    # benchmark 12.6
+    if enableTimingLog:
+        timeDiff = int((time.time() - postStartTime) * 1000)
+        if timeDiff > 100:
+            print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
+    bookmarkStr = \
+        '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
+        bookmarkLink + '=' + postJsonObject['object']['id'] + \
+        pageNumberParam + \
+        '?actor=' + postJsonObject['actor'] + \
+        '?bm=' + timelinePostBookmark + \
+        '?tl=' + boxName + '" title="' + bookmarkTitle + '">\n'
+    bookmarkStr += \
+        '        ' + \
+        '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
+        bookmarkTitle + ' |" src="/' + iconsPath + \
+        '/' + bookmarkIcon + '"/></a>\n'
     return bookmarkStr
 
 
