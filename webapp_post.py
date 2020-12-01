@@ -840,6 +840,208 @@ def getPostTitleAnnounceHtml(baseDir: str,
             containerClassIcons, containerClass)
 
 
+def replyToYourselfHtml(translate: {}, iconsPath: str) -> str:
+    """Returns html for a title which is a reply to yourself
+    """
+    return '    <img loading="lazy" title="' + \
+        translate['replying to themselves'] + \
+        '" alt="' + translate['replying to themselves'] + \
+        '" src="/' + iconsPath + \
+        '/reply.png" class="announceOrReply"/>\n'
+
+
+def getPostTitleReplyHtml(baseDir: str,
+                          httpPrefix: str,
+                          nickname: str, domain: str,
+                          showRepeatIcon: bool,
+                          isAnnounced: bool,
+                          postJsonObject: {},
+                          postActor: str,
+                          translate: {},
+                          iconsPath: str,
+                          enableTimingLog: bool,
+                          postStartTime,
+                          boxName: str,
+                          personCache: {},
+                          allowDownloads: bool,
+                          avatarPosition: str,
+                          pageNumber: int,
+                          messageIdStr: str,
+                          containerClassIcons: str,
+                          containerClass: str) -> (str, str, str, str):
+    """Returns the reply title of a post containing names of participants
+    x replies to y
+    """
+    titleStr = ''
+    replyAvatarImageInPost = ''
+
+    if not postJsonObject['object'].get('inReplyTo'):
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    containerClassIcons = 'containericons darker'
+    containerClass = 'container darker'
+    if postJsonObject['object']['inReplyTo'].startswith(postActor):
+        titleStr += replyToYourselfHtml(translate, iconsPath)
+        return (titleStr, replyAvatarImageInPost,
+                containerClassIcons, containerClass)
+
+    if '/statuses/' in postJsonObject['object']['inReplyTo']:
+        inReplyTo = postJsonObject['object']['inReplyTo']
+        replyActor = inReplyTo.split('/statuses/')[0]
+        replyNickname = getNicknameFromActor(replyActor)
+        if replyNickname:
+            replyDomain, replyPort = \
+                getDomainFromActor(replyActor)
+            if replyNickname and replyDomain:
+                getPersonFromCache(baseDir, replyActor,
+                                   personCache,
+                                   allowDownloads)
+                replyDisplayName = \
+                    getDisplayName(baseDir, replyActor,
+                                   personCache)
+                if replyDisplayName:
+                    if ':' in replyDisplayName:
+                        # benchmark 13.5
+                        if enableTimingLog:
+                            timeDiff = \
+                                int((time.time() -
+                                     postStartTime) * 1000)
+                            if timeDiff > 100:
+                                print('TIMING INDIV ' +
+                                      boxName + ' 13.5 = ' +
+                                      str(timeDiff))
+                        repDisp = replyDisplayName
+                        replyDisplayName = \
+                            addEmojiToDisplayName(baseDir,
+                                                  httpPrefix,
+                                                  nickname,
+                                                  domain,
+                                                  repDisp,
+                                                  False)
+                        # benchmark 13.6
+                        if enableTimingLog:
+                            timeDiff = \
+                                int((time.time() -
+                                     postStartTime) * 1000)
+                            if timeDiff > 100:
+                                print('TIMING INDIV ' +
+                                      boxName + ' 13.6 = ' +
+                                      str(timeDiff))
+                    titleStr += \
+                        '        ' + \
+                        '<img loading="lazy" title="' + \
+                        translate['replying to'] + \
+                        '" alt="' + \
+                        translate['replying to'] + \
+                        '" src="/' + \
+                        iconsPath + '/reply.png" ' + \
+                        'class="announceOrReply"/>\n' + \
+                        '        ' + \
+                        '<a href="' + inReplyTo + \
+                        '" class="announceOrReply">' + \
+                        replyDisplayName + '</a>\n'
+
+                    # benchmark 13.7
+                    if enableTimingLog:
+                        timeDiff = int((time.time() -
+                                        postStartTime) * 1000)
+                        if timeDiff > 100:
+                            print('TIMING INDIV ' + boxName +
+                                  ' 13.7 = ' + str(timeDiff))
+
+                    # show avatar of person replied to
+                    replyAvatarUrl = \
+                        getPersonAvatarUrl(baseDir,
+                                           replyActor,
+                                           personCache,
+                                           allowDownloads)
+
+                    # benchmark 13.8
+                    if enableTimingLog:
+                        timeDiff = int((time.time() -
+                                        postStartTime) * 1000)
+                        if timeDiff > 100:
+                            print('TIMING INDIV ' + boxName +
+                                  ' 13.8 = ' + str(timeDiff))
+
+                    if replyAvatarUrl:
+                        replyAvatarImageInPost = \
+                            '        <div class=' + \
+                            '"timeline-avatar-reply">\n'
+                        replyAvatarImageInPost += \
+                            '          ' + \
+                            '<a class="imageAnchor" ' + \
+                            'href="/users/' + nickname + \
+                            '?options=' + replyActor + \
+                            ';' + str(pageNumber) + ';' + \
+                            replyAvatarUrl + \
+                            messageIdStr + '">\n'
+                        replyAvatarImageInPost += \
+                            '          ' + \
+                            '<img loading="lazy" src="' + \
+                            replyAvatarUrl + '" '
+                        replyAvatarImageInPost += \
+                            'title="' + \
+                            translate['Show profile']
+                        replyAvatarImageInPost += \
+                            '" alt=" "' + \
+                            avatarPosition + '/></a>\n' + \
+                            '        </div>\n'
+                else:
+                    inReplyTo = \
+                        postJsonObject['object']['inReplyTo']
+                    titleStr += \
+                        '        ' + \
+                        '<img loading="lazy" title="' + \
+                        translate['replying to'] + \
+                        '" alt="' + \
+                        translate['replying to'] + \
+                        '" src="/' + \
+                        iconsPath + '/reply.png" ' + \
+                        'class="announceOrReply"/>\n' + \
+                        '        <a href="' + \
+                        inReplyTo + '" ' + \
+                        'class="announceOrReply">@' + \
+                        replyNickname + '@' + \
+                        replyDomain + '</a>\n'
+        else:
+            titleStr += \
+                '        <img loading="lazy" title="' + \
+                translate['replying to'] + \
+                '" alt="' + \
+                translate['replying to'] + \
+                '" src="/' + \
+                iconsPath + \
+                '/reply.png" class="announceOrReply"/>\n' + \
+                '        <a href="' + \
+                postJsonObject['object']['inReplyTo'] + \
+                '" class="announceOrReply">@unknown</a>\n'
+    else:
+        postDomain = \
+            postJsonObject['object']['inReplyTo']
+        prefixes = getProtocolPrefixes()
+        for prefix in prefixes:
+            postDomain = postDomain.replace(prefix, '')
+        if '/' in postDomain:
+            postDomain = postDomain.split('/', 1)[0]
+        if postDomain:
+            titleStr += \
+                '        <img loading="lazy" title="' + \
+                translate['replying to'] + \
+                '" alt="' + translate['replying to'] + \
+                '" src="/' + \
+                iconsPath + '/reply.png" ' + \
+                'class="announceOrReply"/>\n' + \
+                '        <a href="' + \
+                postJsonObject['object']['inReplyTo'] + \
+                '" class="announceOrReply">' + \
+                postDomain + '</a>\n'
+
+    return (titleStr, replyAvatarImageInPost,
+            containerClassIcons, containerClass)
+
+
 def getPostTitleHtml(baseDir: str,
                      httpPrefix: str,
                      nickname: str, domain: str,
@@ -888,171 +1090,26 @@ def getPostTitleHtml(baseDir: str,
                                         messageIdStr,
                                         containerClassIcons,
                                         containerClass)
-    else:
-        if postJsonObject['object'].get('inReplyTo'):
-            containerClassIcons = 'containericons darker'
-            containerClass = 'container darker'
-            if postJsonObject['object']['inReplyTo'].startswith(postActor):
-                titleStr += \
-                    '    <img loading="lazy" title="' + \
-                    translate['replying to themselves'] + \
-                    '" alt="' + translate['replying to themselves'] + \
-                    '" src="/' + iconsPath + \
-                    '/reply.png" class="announceOrReply"/>\n'
-            else:
-                if '/statuses/' in postJsonObject['object']['inReplyTo']:
-                    inReplyTo = postJsonObject['object']['inReplyTo']
-                    replyActor = inReplyTo.split('/statuses/')[0]
-                    replyNickname = getNicknameFromActor(replyActor)
-                    if replyNickname:
-                        replyDomain, replyPort = \
-                            getDomainFromActor(replyActor)
-                        if replyNickname and replyDomain:
-                            getPersonFromCache(baseDir, replyActor,
-                                               personCache,
-                                               allowDownloads)
-                            replyDisplayName = \
-                                getDisplayName(baseDir, replyActor,
-                                               personCache)
-                            if replyDisplayName:
-                                if ':' in replyDisplayName:
-                                    # benchmark 13.5
-                                    if enableTimingLog:
-                                        timeDiff = \
-                                            int((time.time() -
-                                                 postStartTime) * 1000)
-                                        if timeDiff > 100:
-                                            print('TIMING INDIV ' +
-                                                  boxName + ' 13.5 = ' +
-                                                  str(timeDiff))
-                                    repDisp = replyDisplayName
-                                    replyDisplayName = \
-                                        addEmojiToDisplayName(baseDir,
-                                                              httpPrefix,
-                                                              nickname,
-                                                              domain,
-                                                              repDisp,
-                                                              False)
-                                    # benchmark 13.6
-                                    if enableTimingLog:
-                                        timeDiff = \
-                                            int((time.time() -
-                                                 postStartTime) * 1000)
-                                        if timeDiff > 100:
-                                            print('TIMING INDIV ' +
-                                                  boxName + ' 13.6 = ' +
-                                                  str(timeDiff))
-                                titleStr += \
-                                    '        ' + \
-                                    '<img loading="lazy" title="' + \
-                                    translate['replying to'] + \
-                                    '" alt="' + \
-                                    translate['replying to'] + \
-                                    '" src="/' + \
-                                    iconsPath + '/reply.png" ' + \
-                                    'class="announceOrReply"/>\n' + \
-                                    '        ' + \
-                                    '<a href="' + inReplyTo + \
-                                    '" class="announceOrReply">' + \
-                                    replyDisplayName + '</a>\n'
 
-                                # benchmark 13.7
-                                if enableTimingLog:
-                                    timeDiff = int((time.time() -
-                                                    postStartTime) * 1000)
-                                    if timeDiff > 100:
-                                        print('TIMING INDIV ' + boxName +
-                                              ' 13.7 = ' + str(timeDiff))
-
-                                # show avatar of person replied to
-                                replyAvatarUrl = \
-                                    getPersonAvatarUrl(baseDir,
-                                                       replyActor,
-                                                       personCache,
-                                                       allowDownloads)
-
-                                # benchmark 13.8
-                                if enableTimingLog:
-                                    timeDiff = int((time.time() -
-                                                    postStartTime) * 1000)
-                                    if timeDiff > 100:
-                                        print('TIMING INDIV ' + boxName +
-                                              ' 13.8 = ' + str(timeDiff))
-
-                                if replyAvatarUrl:
-                                    replyAvatarImageInPost = \
-                                        '        <div class=' + \
-                                        '"timeline-avatar-reply">\n'
-                                    replyAvatarImageInPost += \
-                                        '          ' + \
-                                        '<a class="imageAnchor" ' + \
-                                        'href="/users/' + nickname + \
-                                        '?options=' + replyActor + \
-                                        ';' + str(pageNumber) + ';' + \
-                                        replyAvatarUrl + \
-                                        messageIdStr + '">\n'
-                                    replyAvatarImageInPost += \
-                                        '          ' + \
-                                        '<img loading="lazy" src="' + \
-                                        replyAvatarUrl + '" '
-                                    replyAvatarImageInPost += \
-                                        'title="' + \
-                                        translate['Show profile']
-                                    replyAvatarImageInPost += \
-                                        '" alt=" "' + \
-                                        avatarPosition + '/></a>\n' + \
-                                        '        </div>\n'
-                            else:
-                                inReplyTo = \
-                                    postJsonObject['object']['inReplyTo']
-                                titleStr += \
-                                    '        ' + \
-                                    '<img loading="lazy" title="' + \
-                                    translate['replying to'] + \
-                                    '" alt="' + \
-                                    translate['replying to'] + \
-                                    '" src="/' + \
-                                    iconsPath + '/reply.png" ' + \
-                                    'class="announceOrReply"/>\n' + \
-                                    '        <a href="' + \
-                                    inReplyTo + '" ' + \
-                                    'class="announceOrReply">@' + \
-                                    replyNickname + '@' + \
-                                    replyDomain + '</a>\n'
-                    else:
-                        titleStr += \
-                            '        <img loading="lazy" title="' + \
-                            translate['replying to'] + \
-                            '" alt="' + \
-                            translate['replying to'] + \
-                            '" src="/' + \
-                            iconsPath + \
-                            '/reply.png" class="announceOrReply"/>\n' + \
-                            '        <a href="' + \
-                            postJsonObject['object']['inReplyTo'] + \
-                            '" class="announceOrReply">@unknown</a>\n'
-                else:
-                    postDomain = \
-                        postJsonObject['object']['inReplyTo']
-                    prefixes = getProtocolPrefixes()
-                    for prefix in prefixes:
-                        postDomain = postDomain.replace(prefix, '')
-                    if '/' in postDomain:
-                        postDomain = postDomain.split('/', 1)[0]
-                    if postDomain:
-                        titleStr += \
-                            '        <img loading="lazy" title="' + \
-                            translate['replying to'] + \
-                            '" alt="' + translate['replying to'] + \
-                            '" src="/' + \
-                            iconsPath + '/reply.png" ' + \
-                            'class="announceOrReply"/>\n' + \
-                            '        <a href="' + \
-                            postJsonObject['object']['inReplyTo'] + \
-                            '" class="announceOrReply">' + \
-                            postDomain + '</a>\n'
-    return (titleStr, replyAvatarImageInPost,
-            containerClassIcons, containerClass)
+    return getPostTitleReplyHtml(baseDir,
+                                 httpPrefix,
+                                 nickname, domain,
+                                 showRepeatIcon,
+                                 isAnnounced,
+                                 postJsonObject,
+                                 postActor,
+                                 translate,
+                                 iconsPath,
+                                 enableTimingLog,
+                                 postStartTime,
+                                 boxName,
+                                 personCache,
+                                 allowDownloads,
+                                 avatarPosition,
+                                 pageNumber,
+                                 messageIdStr,
+                                 containerClassIcons,
+                                 containerClass)
 
 
 def individualPostAsHtml(allowDownloads: bool,
