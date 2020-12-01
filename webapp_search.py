@@ -675,6 +675,7 @@ def htmlHashtagSearch(cssCache: {},
         hashtagSearchForm += \
             '      <input type="hidden" name="hashtagName" value="' + \
             hashtag + '">\n'
+        hashtagSearchForm += translate['Category']
         hashtagSearchForm += \
             '      <input type="text" name="hashtagCategory" value="' + \
             category + '">\n'
