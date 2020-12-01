@@ -864,9 +864,9 @@ def replyToUnknownHtml(translate: {}, iconsPath: str,
         '" class="announceOrReply">@unknown</a>\n'
 
 
-def replyWithUnknownPath(translate: {}, iconsPath: str,
-                         postJsonObject: {},
-                         postDomain: str) -> str:
+def replyWithUnknownPathHtml(translate: {}, iconsPath: str,
+                             postJsonObject: {},
+                             postDomain: str) -> str:
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/
     """
@@ -880,6 +880,21 @@ def replyWithUnknownPath(translate: {}, iconsPath: str,
         postJsonObject['object']['inReplyTo'] + \
         '" class="announceOrReply">' + \
         postDomain + '</a>\n'
+
+
+def getReplyHtml(translate: {}, iconsPath: str,
+                 inReplyTo: str, replyDisplayName: str) -> str:
+    """Returns html title for a reply
+    """
+    return '        ' + \
+        '<img loading="lazy" title="' + \
+        translate['replying to'] + '" alt="' + \
+        translate['replying to'] + '" src="/' + \
+        iconsPath + '/reply.png" ' + \
+        'class="announceOrReply"/>\n' + \
+        '        <a href="' + inReplyTo + \
+        '" class="announceOrReply">' + \
+        replyDisplayName + '</a>\n'
 
 
 def getPostTitleReplyHtml(baseDir: str,
@@ -933,6 +948,7 @@ def getPostTitleReplyHtml(baseDir: str,
                     getDisplayName(baseDir, replyActor,
                                    personCache)
                 if replyDisplayName:
+                    # add emoji to the display name
                     if ':' in replyDisplayName:
                         # benchmark 13.5
                         if enableTimingLog:
@@ -940,16 +956,14 @@ def getPostTitleReplyHtml(baseDir: str,
                                 int((time.time() -
                                      postStartTime) * 1000)
                             if timeDiff > 100:
-                                print('TIMING INDIV ' +
-                                      boxName + ' 13.5 = ' +
+                                print('TIMING INDIV ' + boxName + ' 13.5 = ' +
                                       str(timeDiff))
-                        repDisp = replyDisplayName
                         replyDisplayName = \
                             addEmojiToDisplayName(baseDir,
                                                   httpPrefix,
                                                   nickname,
                                                   domain,
-                                                  repDisp,
+                                                  replyDisplayName,
                                                   False)
                         # benchmark 13.6
                         if enableTimingLog:
@@ -957,22 +971,12 @@ def getPostTitleReplyHtml(baseDir: str,
                                 int((time.time() -
                                      postStartTime) * 1000)
                             if timeDiff > 100:
-                                print('TIMING INDIV ' +
-                                      boxName + ' 13.6 = ' +
+                                print('TIMING INDIV ' + boxName + ' 13.6 = ' +
                                       str(timeDiff))
+
                     titleStr += \
-                        '        ' + \
-                        '<img loading="lazy" title="' + \
-                        translate['replying to'] + \
-                        '" alt="' + \
-                        translate['replying to'] + \
-                        '" src="/' + \
-                        iconsPath + '/reply.png" ' + \
-                        'class="announceOrReply"/>\n' + \
-                        '        ' + \
-                        '<a href="' + inReplyTo + \
-                        '" class="announceOrReply">' + \
-                        replyDisplayName + '</a>\n'
+                        getReplyHtml(translate, iconsPath,
+                                     inReplyTo, replyDisplayName)
 
                     # benchmark 13.7
                     if enableTimingLog:
@@ -1050,8 +1054,8 @@ def getPostTitleReplyHtml(baseDir: str,
             postDomain = postDomain.split('/', 1)[0]
         if postDomain:
             titleStr += \
-                replyWithUnknownPath(translate, iconsPath,
-                                     postJsonObject, postDomain)
+                replyWithUnknownPathHtml(translate, iconsPath,
+                                         postJsonObject, postDomain)
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
