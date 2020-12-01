@@ -850,6 +850,20 @@ def replyToYourselfHtml(translate: {}, iconsPath: str) -> str:
         '/reply.png" class="announceOrReply"/>\n'
 
 
+def replyToUnknownHtml(translate: {}, iconsPath: str,
+                       postJsonObject: {}) -> str:
+    """Returns the html title for a reply to an unknown handle
+    """
+    return '        <img loading="lazy" title="' + \
+        translate['replying to'] + '" alt="' + \
+        translate['replying to'] + '" src="/' + \
+        iconsPath + \
+        '/reply.png" class="announceOrReply"/>\n' + \
+        '        <a href="' + \
+        postJsonObject['object']['inReplyTo'] + \
+        '" class="announceOrReply">@unknown</a>\n'
+
+
 def getPostTitleReplyHtml(baseDir: str,
                           httpPrefix: str,
                           nickname: str, domain: str,
@@ -1007,16 +1021,7 @@ def getPostTitleReplyHtml(baseDir: str,
                         replyDomain + '</a>\n'
         else:
             titleStr += \
-                '        <img loading="lazy" title="' + \
-                translate['replying to'] + \
-                '" alt="' + \
-                translate['replying to'] + \
-                '" src="/' + \
-                iconsPath + \
-                '/reply.png" class="announceOrReply"/>\n' + \
-                '        <a href="' + \
-                postJsonObject['object']['inReplyTo'] + \
-                '" class="announceOrReply">@unknown</a>\n'
+                replyToUnknownHtml(translate, iconsPath, postJsonObject)
     else:
         postDomain = \
             postJsonObject['object']['inReplyTo']
