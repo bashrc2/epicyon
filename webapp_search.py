@@ -668,7 +668,7 @@ def htmlHashtagSearch(cssCache: {},
     # edit the category for this hashtag
     if isEditor(baseDir, nickname):
         category = getHashtagCategory(baseDir, hashtag)
-        hashtagSearchForm += '<div class="container">\n'
+        # hashtagSearchForm += '<div class="container">\n'
         hashtagSearchForm += '  <form method="POST" action="' + \
             '/users/' + nickname + '/sethashtagcategory">\n'
         hashtagSearchForm += '    <center>\n'
@@ -689,7 +689,7 @@ def htmlHashtagSearch(cssCache: {},
             iconsPath + '/logorss.png" /></a>\n'
         hashtagSearchForm += '    </center>\n'
         hashtagSearchForm += '  </form>\n'
-        hashtagSearchForm += '</div>\n'
+        # hashtagSearchForm += '</div>\n'
     else:
         # RSS link for hashtag feed
         hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
