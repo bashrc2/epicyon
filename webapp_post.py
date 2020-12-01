@@ -846,6 +846,21 @@ def getReplyHtml(translate: {}, iconsPath: str,
         replyDisplayName + '</a>\n'
 
 
+def getReplyWithoutDisplayName(translate: {}, iconsPath: str,
+                               inReplyTo: str,
+                               replyNickname: str, replyDomain: str) -> str:
+    """Returns html for a reply without a display name,
+    only a handle nick@domain
+    """
+    return '        ' + \
+        '<img loading="lazy" title="' + translate['replying to'] + \
+        '" alt="' + translate['replying to'] + \
+        '" src="/' + iconsPath + '/reply.png" ' + \
+        'class="announceOrReply"/>\n' + '        <a href="' + \
+        inReplyTo + '" class="announceOrReply">@' + \
+        replyNickname + '@' + replyDomain + '</a>\n'
+
+
 def logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
     """Create a log of timings for performance tuning
     """
@@ -962,19 +977,9 @@ def getPostTitleReplyHtml(baseDir: str,
                     inReplyTo = \
                         postJsonObject['object']['inReplyTo']
                     titleStr += \
-                        '        ' + \
-                        '<img loading="lazy" title="' + \
-                        translate['replying to'] + \
-                        '" alt="' + \
-                        translate['replying to'] + \
-                        '" src="/' + \
-                        iconsPath + '/reply.png" ' + \
-                        'class="announceOrReply"/>\n' + \
-                        '        <a href="' + \
-                        inReplyTo + '" ' + \
-                        'class="announceOrReply">@' + \
-                        replyNickname + '@' + \
-                        replyDomain + '</a>\n'
+                        getReplyWithoutDisplayName(translate, iconsPath,
+                                                   inReplyTo,
+                                                   replyNickname, replyDomain)
         else:
             titleStr += \
                 replyToUnknownHtml(translate, iconsPath, postJsonObject)
