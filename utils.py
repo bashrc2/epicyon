@@ -19,6 +19,60 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getHashtagCategory(baseDir: str, hashtag: str) -> str:
+    """Returns the category for the hashtag
+    """
+    categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+    if os.path.isfile(categoryFilename):
+        with open(categoryFilename, 'r') as fp:
+            categoryStr = fp.read()
+            if categoryStr:
+                return categoryStr
+    return ''
+
+
+def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
+    """Sets the category for the hashtag
+    """
+    hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagFilename):
+        return False
+    categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+    if os.path.isfile(categoryFilename):
+        with open(categoryFilename, 'w+') as fp:
+            fp.write(category)
+            return True
+    return False
+
+
+def isEditor(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is an editor
+    """
+    editorsFile = baseDir + '/accounts/editors.txt'
+
+    if not os.path.isfile(editorsFile):
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
+            return True
+        return False
+
+    with open(editorsFile, "r") as f:
+        lines = f.readlines()
+        if len(lines) == 0:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
+                return True
+        for editor in lines:
+            editor = editor.strip('\n').strip('\r')
+            if editor == nickname:
+                return True
+    return False
+
+
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """

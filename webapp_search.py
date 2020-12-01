@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import isEditor
 from utils import loadJson
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -18,6 +19,7 @@ from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
+from utils import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
@@ -663,13 +665,37 @@ def htmlHashtagSearch(cssCache: {},
         hashtagSearchForm += '<center>\n' + \
             '<h1>#' + hashtag + '</h1>\n' + '</center>\n'
 
-    # RSS link for hashtag feed
-    hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
-    hashtagSearchForm += \
-        '<img style="width:3%;min-width:50px" ' + \
-        'loading="lazy" alt="RSS 2.0" ' + \
-        'title="RSS 2.0" src="/' + \
-        iconsPath + '/logorss.png" /></a></center>'
+    # edit the category for this hashtag
+    if isEditor(baseDir, nickname):
+        category = getHashtagCategory(baseDir, hashtag)
+        hashtagSearchForm += '<div class="container">\n'
+        hashtagSearchForm += '  <form method="POST" action="' + \
+            '/users/' + nickname + '/sethashtagcategory">\n'
+        hashtagSearchForm += '    <center>\n'
+        hashtagSearchForm += \
+            '      <input type="hidden" name="hashtagName" value="' + \
+            hashtag + '">\n'
+        hashtagSearchForm += \
+            '      <input type="text" name="hashtagCategory" value="' + \
+            category + '">\n'
+        hashtagSearchForm += \
+            '      <button type="submit" class="button" name="submitYes">' + \
+            translate['Submit'] + '</button>\n'
+        hashtagSearchForm += '      <a href="/tags/rss2/' + hashtag + '">'
+        hashtagSearchForm += \
+            '<img style="width:3%;min-width:50px" ' + \
+            'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+            iconsPath + '/logorss.png" /></a>\n'
+        hashtagSearchForm += '    </center>\n'
+        hashtagSearchForm += '  </form>\n'
+        hashtagSearchForm += '</div>\n'
+    else:
+        # RSS link for hashtag feed
+        hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
+        hashtagSearchForm += \
+            '<img style="width:3%;min-width:50px" ' + \
+            'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+            iconsPath + '/logorss.png" /></a></center>\n'
 
     if startIndex > 0:
         # previous page link

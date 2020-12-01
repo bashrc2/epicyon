@@ -16,7 +16,7 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
-from posts import isEditor
+from utils import isEditor
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import getImageFile

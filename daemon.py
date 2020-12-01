@@ -65,7 +65,6 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import isModerator
-from posts import isEditor
 from posts import mutePost
 from posts import unmutePost
 from posts import createQuestionPost
@@ -169,6 +168,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import isEditor
 from utils import getImageExtensions
 from utils import mediaFileMimeType
 from utils import getCSS

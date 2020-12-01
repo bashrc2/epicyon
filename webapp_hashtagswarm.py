@@ -90,6 +90,8 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
 
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
+            if not f.endswith('.txt'):
+                continue
             tagsFilename = os.path.join(baseDir + '/tags', f)
             if not os.path.isfile(tagsFilename):
                 continue

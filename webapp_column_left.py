@@ -10,7 +10,7 @@ import os
 from shutil import copyfile
 from utils import getConfigParam
 from utils import getNicknameFromActor
-from posts import isEditor
+from utils import isEditor
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile

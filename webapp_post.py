@@ -17,12 +17,12 @@ from bookmarks import bookmarkedByPerson
 from like import likedByPerson
 from like import noOfLikes
 from follow import isFollowingActor
-from posts import isEditor
 from posts import postIsMuted
 from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import isEditor
 from utils import locatePost
 from utils import loadJson
 from utils import getCachedPostDirectory

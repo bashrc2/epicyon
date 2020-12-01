@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import time
+from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
@@ -24,7 +25,6 @@ from webapp_column_left import getLeftColumnContent
 from webapp_column_right import getRightColumnContent
 from webapp_headerbuttons import headerButtonsTimeline
 from posts import isModerator
-from posts import isEditor
 
 
 def logTimelineTiming(enableTimingLog: bool, timelineStartTime,
