@@ -145,23 +145,13 @@ def getPostFromRecentCache(session,
             getPersonAvatarUrl(baseDir, postActor, personCache,
                                allowDownloads)
 
-        # benchmark 2.1
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName +
-                      ' 2.1 = ' + str(timeDiff))
+        logPostTiming(enableTimingLog, postStartTime, '2.1')
 
     updateAvatarImageCache(session, baseDir, httpPrefix,
                            postActor, avatarUrl, personCache,
                            allowDownloads)
 
-    # benchmark 2.2
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName +
-                  ' 2.2 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '2.2')
 
     postHtml = \
         loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
@@ -172,12 +162,7 @@ def getPostFromRecentCache(session,
     postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
     updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                            postJsonObject, postHtml)
-    # benchmark 3
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName +
-                  ' 3 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '3')
     return postHtml
 
 
@@ -417,11 +402,7 @@ def getLikeIconHtml(nickname: str, domainFull: str,
         likeTitle = translate['Like this post']
         likeCount = noOfLikes(postJsonObject)
 
-        # benchmark 12.1
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 12.1 = ' + str(timeDiff))
+        logPostTiming(enableTimingLog, postStartTime, '12.1')
 
         likeCountStr = ''
         if likeCount > 0:
@@ -437,11 +418,7 @@ def getLikeIconHtml(nickname: str, domainFull: str,
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
 
-        # benchmark 12.2
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 12.2 = ' + str(timeDiff))
+        logPostTiming(enableTimingLog, postStartTime, '12.2')
 
         likeStr = ''
         if likeCountStr:
@@ -488,11 +465,7 @@ def getBookmarkIconHtml(nickname: str, domainFull: str,
         bookmarkIcon = 'bookmark.png'
         bookmarkLink = 'unbookmark'
         bookmarkTitle = translate['Undo the bookmark']
-    # benchmark 12.6
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 12.6 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '12.6')
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmarkLink + '=' + postJsonObject['object']['id'] + \
@@ -742,12 +715,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
             titleStr += boostOwnTootHtml(translate, iconsPath)
         else:
             # boosting another person's post
-            # benchmark 13.2
-            if enableTimingLog:
-                timeDiff = int((time.time() - postStartTime) * 1000)
-                if timeDiff > 100:
-                    print('TIMING INDIV ' + boxName +
-                          ' 13.2 = ' + str(timeDiff))
+            logPostTiming(enableTimingLog, postStartTime, '13.2')
             announceNickname = None
             if attributedTo:
                 announceNickname = getNicknameFromActor(attributedTo)
@@ -759,13 +727,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                 announceDisplayName = \
                     getDisplayName(baseDir, attributedTo, personCache)
                 if announceDisplayName:
-                    # benchmark 13.3
-                    if enableTimingLog:
-                        timeDiff = \
-                            int((time.time() - postStartTime) * 1000)
-                        if timeDiff > 100:
-                            print('TIMING INDIV ' + boxName +
-                                  ' 13.3 = ' + str(timeDiff))
+                    logPostTiming(enableTimingLog, postStartTime, '13.3')
 
                     # add any emoji to the display name
                     if ':' in announceDisplayName:
@@ -774,14 +736,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                                   nickname, domain,
                                                   announceDisplayName,
                                                   False)
-                    # benchmark 13.3.1
-                    if enableTimingLog:
-                        timeDiff = \
-                            int((time.time() - postStartTime) * 1000)
-                        if timeDiff > 100:
-                            print('TIMING INDIV ' + boxName +
-                                  ' 13.3.1 = ' + str(timeDiff))
-
+                    logPostTiming(enableTimingLog, postStartTime, '13.3.1')
                     titleStr += \
                         announceWithDisplayNameHtml(translate,
                                                     iconsPath,
@@ -794,13 +749,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                         getPersonAvatarUrl(baseDir, announceActor,
                                            personCache, allowDownloads)
 
-                    # benchmark 13.4
-                    if enableTimingLog:
-                        timeDiff = \
-                            int((time.time() - postStartTime) * 1000)
-                        if timeDiff > 100:
-                            print('TIMING INDIV ' + boxName +
-                                  ' 13.4 = ' + str(timeDiff))
+                    logPostTiming(enableTimingLog, postStartTime, '13.4')
 
                     if announceAvatarUrl:
                         idx = 'Show options for this person'
@@ -897,6 +846,14 @@ def getReplyHtml(translate: {}, iconsPath: str,
         replyDisplayName + '</a>\n'
 
 
+def logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
+    if not enableTimingLog:
+        return
+    timeDiff = int((time.time() - postStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMING INDIV ' + debugId + ' = ' + str(timeDiff))
+
+
 def getPostTitleReplyHtml(baseDir: str,
                           httpPrefix: str,
                           nickname: str, domain: str,
@@ -950,14 +907,8 @@ def getPostTitleReplyHtml(baseDir: str,
                 if replyDisplayName:
                     # add emoji to the display name
                     if ':' in replyDisplayName:
-                        # benchmark 13.5
-                        if enableTimingLog:
-                            timeDiff = \
-                                int((time.time() -
-                                     postStartTime) * 1000)
-                            if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName + ' 13.5 = ' +
-                                      str(timeDiff))
+                        logPostTiming(enableTimingLog, postStartTime, '13.5')
+
                         replyDisplayName = \
                             addEmojiToDisplayName(baseDir,
                                                   httpPrefix,
@@ -965,26 +916,13 @@ def getPostTitleReplyHtml(baseDir: str,
                                                   domain,
                                                   replyDisplayName,
                                                   False)
-                        # benchmark 13.6
-                        if enableTimingLog:
-                            timeDiff = \
-                                int((time.time() -
-                                     postStartTime) * 1000)
-                            if timeDiff > 100:
-                                print('TIMING INDIV ' + boxName + ' 13.6 = ' +
-                                      str(timeDiff))
+                        logPostTiming(enableTimingLog, postStartTime, '13.6')
 
                     titleStr += \
                         getReplyHtml(translate, iconsPath,
                                      inReplyTo, replyDisplayName)
 
-                    # benchmark 13.7
-                    if enableTimingLog:
-                        timeDiff = int((time.time() -
-                                        postStartTime) * 1000)
-                        if timeDiff > 100:
-                            print('TIMING INDIV ' + boxName +
-                                  ' 13.7 = ' + str(timeDiff))
+                    logPostTiming(enableTimingLog, postStartTime, '13.7')
 
                     # show avatar of person replied to
                     replyAvatarUrl = \
@@ -993,13 +931,7 @@ def getPostTitleReplyHtml(baseDir: str,
                                            personCache,
                                            allowDownloads)
 
-                    # benchmark 13.8
-                    if enableTimingLog:
-                        timeDiff = int((time.time() -
-                                        postStartTime) * 1000)
-                        if timeDiff > 100:
-                            print('TIMING INDIV ' + boxName +
-                                  ' 13.8 = ' + str(timeDiff))
+                    logPostTiming(enableTimingLog, postStartTime, '13.8')
 
                     if replyAvatarUrl:
                         replyAvatarImageInPost = \
@@ -1215,11 +1147,7 @@ def individualPostAsHtml(allowDownloads: bool,
     if postHtml:
         return postHtml
 
-    # benchmark 4
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 4 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '4')
 
     avatarUrl = \
         getAvatarImageUrl(session,
@@ -1227,11 +1155,7 @@ def individualPostAsHtml(allowDownloads: bool,
                           postActor, personCache,
                           avatarUrl, allowDownloads)
 
-    # benchmark 5
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 5 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '5')
 
     # get the display name
     if domainFull not in postActor:
@@ -1241,11 +1165,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                  personCache,
                                                  projectVersion, httpPrefix,
                                                  nickname, domain, 'outbox')
-        # benchmark 6
-        if enableTimingLog:
-            timeDiff = int((time.time() - postStartTime) * 1000)
-            if timeDiff > 100:
-                print('TIMING INDIV ' + boxName + ' 6 = ' + str(timeDiff))
+        logPostTiming(enableTimingLog, postStartTime, '6')
 
         if avatarUrl2:
             avatarUrl = avatarUrl2
@@ -1257,11 +1177,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                           nickname, domain,
                                           displayName, False)
 
-    # benchmark 7
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 7 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '7')
 
     avatarLink = \
         getAvatarImageHtml(showAvatarOptions,
@@ -1308,11 +1224,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postJsonObject = postJsonAnnounce
         isAnnounced = True
 
-    # benchmark 8
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 8 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '8')
 
     if not isinstance(postJsonObject['object'], dict):
         return ''
@@ -1363,10 +1275,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
 
     # benchmark 9
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 9 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '9')
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
@@ -1385,19 +1294,11 @@ def individualPostAsHtml(allowDownloads: bool,
                                 postJsonObject, pageNumberParam,
                                 iconsPath, translate)
 
-    # benchmark 10
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 10 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '10')
 
     isEvent = isEventPost(postJsonObject)
 
-    # benchmark 11
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 11 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '11')
 
     editStr = getEditIconHtml(baseDir, nickname, domainFull,
                               postJsonObject, actorNickname,
@@ -1414,11 +1315,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             timelinePostBookmark,
                             boxName, iconsPath)
 
-    # benchmark 12
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 12 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '12')
 
     # whether to show a like button
     hideLikeButtonFile = \
@@ -1437,11 +1334,7 @@ def individualPostAsHtml(allowDownloads: bool,
                               timelinePostBookmark,
                               boxName, iconsPath)
 
-    # benchmark 12.5
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 12.5 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '12.5')
 
     bookmarkStr = \
         getBookmarkIconHtml(nickname, domainFull,
@@ -1454,19 +1347,11 @@ def individualPostAsHtml(allowDownloads: bool,
                             timelinePostBookmark,
                             iconsPath)
 
-    # benchmark 12.9
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 12.9 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '12.9')
 
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
 
-    # benchmark 13
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 13 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '13')
 
     muteStr = \
         getMuteIconHtml(isMuted,
@@ -1490,11 +1375,7 @@ def individualPostAsHtml(allowDownloads: bool,
                           iconsPath,
                           translate)
 
-    # benchmark 13.1
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 13.1 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '13.1')
 
     # get the title: x replies to y, x announces y, etc
     (titleStr2,
@@ -1521,11 +1402,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                         containerClass)
     titleStr += titleStr2
 
-    # benchmark 14
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 14 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '14')
 
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
@@ -1536,11 +1413,7 @@ def individualPostAsHtml(allowDownloads: bool,
     publishedStr = \
         getPublishedDateStr(postJsonObject, showPublishedDateOnly)
 
-    # benchmark 15
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 15 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '15')
 
     publishedLink = messageId
     # blog posts should have no /statuses/ in their link
@@ -1611,11 +1484,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          postJsonObject['object']['summary'],
                          postJsonObject['object']['content'])
 
-    # benchmark 16
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 16 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '16')
 
     if not isPatch:
         objectContent = \
@@ -1658,11 +1527,7 @@ def individualPostAsHtml(allowDownloads: bool,
         else:
             contentStr += cwContentStr
 
-    # benchmark 17
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 17 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '17')
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
@@ -1699,11 +1564,7 @@ def individualPostAsHtml(allowDownloads: bool,
     else:
         postHtml = galleryStr
 
-    # benchmark 18
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 18 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '18')
 
     # save the created html to the recent posts cache
     if not showPublicOnly and storeToCache and \
@@ -1714,11 +1575,7 @@ def individualPostAsHtml(allowDownloads: bool,
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                postJsonObject, postHtml)
 
-    # benchmark 19
-    if enableTimingLog:
-        timeDiff = int((time.time() - postStartTime) * 1000)
-        if timeDiff > 100:
-            print('TIMING INDIV ' + boxName + ' 19 = ' + str(timeDiff))
+    logPostTiming(enableTimingLog, postStartTime, '19')
 
     return postHtml
 
