@@ -676,13 +676,11 @@ def htmlHashtagSearch(cssCache: {},
     if isEditor(baseDir, nickname):
         category = getHashtagCategory(baseDir, hashtag)
         hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
-        hashtagSearchForm += '  <form method="POST" action="' + \
+        hashtagSearchForm += '  <form enctype="multipart/form-data" ' + \
+            'method="POST" accept-charset="UTF-8" action="' + \
             '/users/' + nickname + '/tags/' + hashtag + \
             '/sethashtagcategory">\n'
         hashtagSearchForm += '    <center>\n'
-        hashtagSearchForm += \
-            '      <input type="hidden" name="hashtagName" value="' + \
-            hashtag + '">\n'
         hashtagSearchForm += translate['Category']
         hashtagSearchForm += \
             '      <input type="text" style="width: 20ch" ' + \

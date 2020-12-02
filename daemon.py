@@ -3019,7 +3019,7 @@ class PubServer(BaseHTTPRequestHandler):
             editor = None
             if nickname:
                 editor = isEditor(baseDir, nickname)
-            if not hashtag or not nickname or not editor:
+            if not hashtag or not editor:
                 if callingDomain.endswith('.onion') and \
                    onionDomain:
                     actorStr = \
