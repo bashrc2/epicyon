@@ -164,6 +164,7 @@ from webapp_search import htmlSearchEmoji
 from webapp_search import htmlSearchSharedItems
 from webapp_search import htmlSearchEmojiTextEntry
 from webapp_search import htmlSearch
+from webapp_hashtagswarm import getHashtagCategoriesFeed
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -4810,6 +4811,41 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + callingDomain)
         self._404()
 
+    def _getHashtagCategoriesFeed(self, authorized: bool,
+                                  callingDomain: str, path: str,
+                                  baseDir: str, httpPrefix: str,
+                                  domain: str, port: int, proxyType: str,
+                                  GETstartTime, GETtimings: {},
+                                  debug: bool) -> None:
+        """Returns the hashtag categories feed
+        """
+        if not self.server.session:
+            print('Starting new session during RSS categories request')
+            self.server.session = \
+                createSession(proxyType)
+        if not self.server.session:
+            print('ERROR: GET failed to create session ' +
+                  'during RSS categories request')
+            self._404()
+            return
+
+        hashtagCategories = None
+        msg = \
+            getHashtagCategoriesFeed(baseDir, hashtagCategories)
+        if msg:
+            msg = msg.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if debug:
+                print('Sent rss2 categories feed: ' +
+                      path + ' ' + callingDomain)
+            return
+        if debug:
+            print('Failed to get rss2 categories feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
     def _getRSS3feed(self, authorized: bool,
                      callingDomain: str, path: str,
                      baseDir: str, httpPrefix: str,
@@ -9275,6 +9311,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'fonts', 'sharedInbox enabled')
+
+        if self.path == '/categories.xml':
+            self._getHashtagCategoriesFeed(authorized,
+                                           callingDomain, self.path,
+                                           self.server.baseDir,
+                                           self.server.httpPrefix,
+                                           self.server.domain,
+                                           self.server.port,
+                                           self.server.proxyType,
+                                           GETstartTime, GETtimings,
+                                           self.server.debug)
+            return
 
         if self.path == '/newswire.xml':
             self._getNewswireFeed(authorized,

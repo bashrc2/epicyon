@@ -8,6 +8,40 @@ __status__ = "Production"
 
 import os
 from datetime import datetime
+from utils import getHashtagCategories
+
+
+def getHashtagCategoriesFeed(baseDir: str,
+                             hashtagCategories=None) -> str:
+    """Returns an rss feed for hashtag categories
+    """
+    if not hashtagCategories:
+        hashtagCategories = getHashtagCategories(baseDir)
+    if not hashtagCategories:
+        return None
+
+    rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
+    rssStr += "<rss version=\"2.0\">\n"
+    rssStr += '<channel>\n'
+    rssStr += '    <title>#categories</title>\n'
+
+    rssDateStr = \
+        datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UT")
+
+    for categoryStr, hashtagList in hashtagCategories.items():
+        rssStr += '<item>\n'
+        rssStr += '  <title>' + categoryStr + '</title>\n'
+        listStr = ''
+        for hashtag in hashtagList:
+            listStr += hashtag + ' '
+        rssStr += '  <description>' + listStr.strip() + '</description>\n'
+        rssStr += '  <link></link>\n'
+        rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
+        rssStr += '</item>\n'
+
+    rssStr = '</channel>'
+    rssStr += '</rss>'
+    return rssStr
 
 
 def getHashtagDomainMax(domainHistogram: {}) -> str:

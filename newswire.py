@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
+from utils import setHashtagCategory
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
@@ -202,15 +203,53 @@ def parseFeedDate(pubDate: str) -> str:
     return pubDateStr
 
 
+def xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
+                               maxCategoriesFeedItemSizeKb: int) -> None:
+    """Updates hashtag categories based upon an rss feed
+    """
+    rssItems = xmlStr.split('<item>')
+    maxBytes = maxCategoriesFeedItemSizeKb * 1024
+    for rssItem in rssItems:
+        if not rssItem:
+            continue
+        if len(rssItem) > maxBytes:
+            print('WARN: rss categories feed item is too big')
+            continue
+        if '<title>' not in rssItem:
+            continue
+        if '</title>' not in rssItem:
+            continue
+        if '<description>' not in rssItem:
+            continue
+        if '</description>' not in rssItem:
+            continue
+        categoryStr = rssItem.split('<title>')[1]
+        categoryStr = categoryStr.split('</title>')[0].strip()
+        if not categoryStr:
+            continue
+        hashtagListStr = rssItem.split('<description>')[1]
+        hashtagListStr = hashtagListStr.split('</description>')[0].strip()
+        if not hashtagListStr:
+            continue
+        hashtagList = hashtagListStr.split(' ')
+        for hashtag in hashtagList:
+            setHashtagCategory(baseDir, hashtag, categoryStr)
+
+
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
-                  maxFeedItemSizeKb: int) -> {}:
+                  maxFeedItemSizeKb: int,
+                  maxCategoriesFeedItemSizeKb: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
         return {}
     result = {}
+    if '<title>#categories</title>' in xmlStr:
+        xml2StrToHashtagCategories(baseDir, xmlStr,
+                                   maxCategoriesFeedItemSizeKb)
+        return {}
     rssItems = xmlStr.split('<item>')
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
