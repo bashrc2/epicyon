@@ -47,6 +47,9 @@ def getHashtagCategories(baseDir: str, category=None) -> None:
             with open(categoryFilename, 'r') as fp:
                 categoryStr = fp.read()
 
+                if not categoryStr:
+                    continue
+
                 if category:
                     # only return a dictionary for a specific category
                     if categoryStr != category:
