@@ -246,7 +246,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     htmlStr += '<div class="follow">'
-    htmlStr += '<center>'
+    htmlStr += '<center><br><br><br>'
     htmlStr += '<h1><a href="' + actor + '/search"><b>'
     htmlStr +=  translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
 
