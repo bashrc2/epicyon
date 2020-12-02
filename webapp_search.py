@@ -677,7 +677,8 @@ def htmlHashtagSearch(cssCache: {},
         category = getHashtagCategory(baseDir, hashtag)
         hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
         hashtagSearchForm += '  <form method="POST" action="' + \
-            '/users/' + nickname + '/sethashtagcategory">\n'
+            '/users/' + nickname + '/tags/' + hashtag + \
+            '/sethashtagcategory">\n'
         hashtagSearchForm += '    <center>\n'
         hashtagSearchForm += \
             '      <input type="hidden" name="hashtagName" value="' + \

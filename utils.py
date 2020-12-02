@@ -1033,7 +1033,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'tlevents', 'tlblogs', 'tlfeatures',
                      'moderation', 'activity', 'undo',
                      'reply', 'replies', 'question', 'like',
-                     'likes', 'users', 'statuses',
+                     'likes', 'users', 'statuses', 'tags',
                      'accounts', 'channels', 'profile',
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars')

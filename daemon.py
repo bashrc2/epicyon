@@ -168,6 +168,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import setHashtagCategory
 from utils import isEditor
 from utils import getImageExtensions
 from utils import mediaFileMimeType
@@ -230,6 +231,7 @@ from newswire import rss2Header
 from newswire import rss2Footer
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
+from filters import isFiltered
 import os
 
 
@@ -2975,6 +2977,128 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr = \
                 'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _setHashtagCategory(self, callingDomain: str, cookie: str,
+                            authorized: bool, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str,
+                            onionDomain: str, i2pDomain: str, debug: bool,
+                            defaultTimeline: str,
+                            allowLocalNetworkAccess: bool) -> None:
+        """On the screen after selecting a hashtag from the swarm, this sets
+        the category for that tag
+        """
+        usersPath = path.replace('/sethashtagcategory', '')
+        hashtag = ''
+        if '/tags/' not in usersPath:
+            # no hashtag is specified within the path
+            self._404()
+            return
+        hashtag = usersPath.split('/tags/')[1].strip()
+        if not hashtag:
+            # no hashtag was given in the path
+            self._404()
+            return
+        hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+        if not os.path.isfile(hashtagFilename):
+            # the hashtag does not exist
+            self._404()
+            return
+        usersPath = usersPath.split('/tags/')[0]
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        tagScreenStr = actorStr + '/tags/' + hashtag
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            editor = None
+            if nickname:
+                editor = isEditor(baseDir, nickname)
+            if not hashtag or not nickname or not editor:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not a moderator' + actorStr)
+                self._redirect_headers(tagScreenStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum links data length exceeded ' + str(length))
+                self._redirect_headers(tagScreenStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+
+            if fields.get('hashtagCategory'):
+                categoryStr = fields['hashtagCategory'].lower()
+                if not isBlockedHashtag(baseDir, categoryStr) and \
+                   not isFiltered(baseDir, nickname, domain, categoryStr):
+                    setHashtagCategory(baseDir, hashtag, categoryStr)
+            else:
+                categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+                if os.path.isfile(categoryFilename):
+                    os.remove(categoryFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(tagScreenStr,
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -11955,6 +12079,20 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 2)
+
+        if authorized and self.path.endswith('/sethashtagcategory'):
+            self._setHashtagCategory(callingDomain, cookie,
+                                     authorized, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     self.server.debug,
+                                     self.server.defaultTimeline,
+                                     self.server.allowLocalNetworkAccess)
+            return
 
         # update of profile/avatar from web interface,
         # after selecting Edit button then Submit
