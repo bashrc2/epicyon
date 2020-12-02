@@ -38,10 +38,9 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
     if not os.path.isfile(hashtagFilename):
         return False
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
-    if os.path.isfile(categoryFilename):
-        with open(categoryFilename, 'w+') as fp:
-            fp.write(category)
-            return True
+    with open(categoryFilename, 'w+') as fp:
+        fp.write(category)
+        return True
     return False
 
 
