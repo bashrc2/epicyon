@@ -203,7 +203,7 @@ def parseFeedDate(pubDate: str) -> str:
     return pubDateStr
 
 
-def xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
+def xml2StrToHashtagCategories(baseDir: str, domain: str, xmlStr: str,
                                maxCategoriesFeedItemSizeKb: int) -> None:
     """Updates hashtag categories based upon an rss feed
     """
@@ -232,8 +232,9 @@ def xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
         if not hashtagListStr:
             continue
         hashtagList = hashtagListStr.split(' ')
-        for hashtag in hashtagList:
-            setHashtagCategory(baseDir, hashtag, categoryStr)
+        if not isBlockedHashtag(baseDir, categoryStr):
+            for hashtag in hashtagList:
+                setHashtagCategory(baseDir, hashtag, categoryStr)
 
 
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
@@ -247,7 +248,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         return {}
     result = {}
     if '<title>#categories</title>' in xmlStr:
-        xml2StrToHashtagCategories(baseDir, xmlStr,
+        xml2StrToHashtagCategories(baseDir, domain, xmlStr,
                                    maxCategoriesFeedItemSizeKb)
         return {}
     rssItems = xmlStr.split('<item>')
