@@ -10147,8 +10147,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlSearchHashtagCategory(self.server.cssCache,
                                             self.server.translate,
                                             self.server.baseDir, self.path,
-                                            self.server.domain,
-                                            self.server.defaultTimeline)
+                                            self.server.domain)
             if msg:
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
