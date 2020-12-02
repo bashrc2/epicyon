@@ -717,7 +717,8 @@ def runNewswireDaemon(baseDir: str, httpd,
                                 httpd.maxNewswireFeedSizeKb,
                                 httpd.maxTags,
                                 httpd.maxFeedItemSizeKb,
-                                httpd.maxNewswirePosts)
+                                httpd.maxNewswirePosts,
+                                httpd.maxCategoriesFeedItemSizeKb)
 
         if not httpd.newswire:
             if os.path.isfile(newswireStateFilename):

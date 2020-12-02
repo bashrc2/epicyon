@@ -455,7 +455,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
 def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                  moderated: bool, mirrored: bool,
                  maxPostsPerSource: int,
-                 maxFeedItemSizeKb: int) -> {}:
+                 maxFeedItemSizeKb: int,
+                 maxCategoriesFeedItemSizeKb: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
@@ -466,7 +467,8 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
     elif 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(baseDir, domain,
                              xmlStr, moderated, mirrored,
-                             maxPostsPerSource, maxFeedItemSizeKb)
+                             maxPostsPerSource, maxFeedItemSizeKb,
+                             maxCategoriesFeedItemSizeKb)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return atomFeedToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
@@ -489,7 +491,8 @@ def YTchannelToAtomFeed(url: str) -> str:
 def getRSS(baseDir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
            maxPostsPerSource: int, maxFeedSizeKb: int,
-           maxFeedItemSizeKb: int) -> {}:
+           maxFeedItemSizeKb: int,
+           maxCategoriesFeedItemSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -519,7 +522,8 @@ def getRSS(baseDir: str, domain: str, session, url: str,
                 return xmlStrToDict(baseDir, domain, result.text,
                                     moderated, mirrored,
                                     maxPostsPerSource,
-                                    maxFeedItemSizeKb)
+                                    maxFeedItemSizeKb,
+                                    maxCategoriesFeedItemSizeKb)
             else:
                 print('WARN: feed is too large, ' +
                       'or contains invalid characters: ' + url)
@@ -753,7 +757,8 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
 def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
                         maxTags: int, maxFeedItemSizeKb: int,
-                        maxNewswirePosts: int) -> {}:
+                        maxNewswirePosts: int,
+                        maxCategoriesFeedItemSizeKb: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -793,7 +798,8 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
         itemsList = getRSS(baseDir, domain, session, url,
                            moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb,
-                           maxFeedItemSizeKb)
+                           maxFeedItemSizeKb,
+                           maxCategoriesFeedItemSizeKb)
         if itemsList:
             for dateStr, item in itemsList.items():
                 result[dateStr] = item

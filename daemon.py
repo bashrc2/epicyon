@@ -12962,6 +12962,9 @@ def runDaemon(maxNewswirePosts: int,
     # maximum size of individual RSS feed items, in K
     httpd.maxFeedItemSizeKb = maxFeedItemSizeKb
 
+    # maximum size of a hashtag category, in K
+    httpd.maxCategoriesFeedItemSizeKb = 256
+
     if registration == 'open':
         httpd.registration = True
     else:
