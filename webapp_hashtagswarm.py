@@ -218,5 +218,5 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
             getContentWarningButton('alltags', translate, tagSwarmStr)
 
     tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
-    tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
+    # tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
     return tagSwarmHtml

@@ -209,6 +209,9 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
+    details {
+        font-size: var(--hashtag-size1);
+    }
     .domainHistogram {
         border: 0;
         font-size: var(--hashtag-size1);
@@ -265,6 +268,9 @@ input[type=text] {
 }
 
 @media screen and (max-width: 1000px) {
+    details {
+        font-size: var(--hashtag-size2);
+    }
     .domainHistogram {
         border: 0;
         font-size: var(--hashtag-size2);
