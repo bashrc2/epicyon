@@ -246,7 +246,8 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     htmlStr += '<center>'
-    htmlStr += '<h1><a href="/search">' + categoryStr + '</a></h1>'
+    htmlStr += '<h1><a href="' + actor + '/search">'
+    htmlStr +=  categoryStr + '</a></h1>'
 
     hashtagsDict = getHashtagCategories(baseDir, categoryStr)
     if hashtagsDict:
