@@ -31,6 +31,51 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     return ''
 
 
+def getHashtagCategories(baseDir: str, category=None) -> None:
+    """Returns a dictionary containing hashtag categories
+    """
+    hashtagCategories = {}
+
+    for subdir, dirs, files in os.walk(baseDir + '/tags'):
+        for f in files:
+            if not f.endswith('.category'):
+                continue
+            categoryFilename = os.path.join(baseDir + '/tags', f)
+            if not os.path.isfile(categoryFilename):
+                continue
+            hashtag = f.split('.')[0]
+            with open(categoryFilename, 'r') as fp:
+                categoryStr = fp.read()
+
+                if category:
+                    # only return a dictionary for a specific category
+                    if categoryStr != category:
+                        continue
+
+                if not hashtagCategories.get(categoryStr):
+                    hashtagCategories[categoryStr] = [hashtag]
+                else:
+                    if hashtag not in hashtagCategories[categoryStr]:
+                        hashtagCategories[categoryStr].append(hashtag)
+    return hashtagCategories
+
+
+def updateHashtagCategories(baseDir: str) -> None:
+    """Regenerates the list of hashtag categories
+    """
+    hashtagCategories = getHashtagCategories(baseDir)
+
+    categoryListStr = ''
+    for categoryStr, hashtagList in hashtagCategories.items():
+        categoryListStr += categoryStr + '\n'
+
+    if not hashtagCategories:
+        return
+    # save a list of available categories for quick lookup
+    with open(baseDir + '/accounts/categoryList.txt', 'w+') as fp:
+        fp.write(categoryListStr)
+
+
 def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
     """Sets the category for the hashtag
     """
@@ -40,6 +85,7 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
     with open(categoryFilename, 'w+') as fp:
         fp.write(category)
+        updateHashtagCategories(baseDir)
         return True
     return False
 
