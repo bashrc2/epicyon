@@ -689,12 +689,6 @@ if args.json:
     pprint(testJson)
     sys.exit()
 
-if args.rss:
-    session = createSession(None)
-    testRSS = getRSS(session, args.rss)
-    pprint(testRSS)
-    sys.exit()
-
 # create cache for actors
 if not os.path.isdir(baseDir + '/cache'):
     os.mkdir(baseDir + '/cache')
@@ -755,6 +749,13 @@ if not descShort:
 if args.domain:
     domain = args.domain
     setConfigParam(baseDir, 'domain', domain)
+
+if args.rss:
+    session = createSession(None)
+    testRSS = getRSS(baseDir, domain, session, args.rss,
+                     False, False, 1000, 1000, 1000, 1000)
+    pprint(testRSS)
+    sys.exit()
 
 if args.onion:
     if not args.onion.endswith('.onion'):
