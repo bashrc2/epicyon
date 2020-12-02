@@ -10,6 +10,7 @@ import os
 from datetime import datetime
 from utils import getHashtagCategories
 from utils import getHashtagCategory
+from webapp_utils import getContentWarningButton
 
 
 def getHashtagCategoriesFeed(baseDir: str,
@@ -197,12 +198,13 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     # swarm of categories
     categorySwarmStr = ''
     if categorySwarm:
-        categorySwarm.sort()
-        for categoryStr in categorySwarm:
-            categorySwarmStr += \
-                '<a href="' + actor + '/category/' + categoryStr + \
-                '" class="hashtagswarm"><b>' + categoryStr + '</b></a>\n'
-        categorySwarmStr += '<br><br>\n'
+        if len(categorySwarm) > 3:
+            categorySwarm.sort()
+            for categoryStr in categorySwarm:
+                categorySwarmStr += \
+                    '<a href="' + actor + '/category/' + categoryStr + \
+                    '" class="hashtagswarm"><b>' + categoryStr + '</b></a>\n'
+            categorySwarmStr += '<br><br>\n'
 
     # swarm of tags
     tagSwarmStr = ''
@@ -210,6 +212,10 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
         tagSwarmStr += \
             '<a href="' + actor + '/tags/' + tagName + \
             '" class="hashtagswarm">' + tagName + '</a>\n'
+
+    if categorySwarmStr:
+        tagSwarmStr = \
+            getContentWarningButton('alltags', translate, tagSwarmStr)
 
     tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
     tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
