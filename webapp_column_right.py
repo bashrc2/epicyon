@@ -155,8 +155,15 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 translate['Edit newswire'] + '" src="/' + \
                 iconsPath + '/edit.png" /></a>\n'
 
-    # show the RSS icon
+    # show the RSS icons
     rssIconStr = \
+        '        <a href="/categories.xml">' + \
+        '<img class="' + editImageClass + \
+        '" loading="lazy" alt="' + \
+        translate['Hashtag Categories RSS Feed'] + '" title="' + \
+        translate['Hashtag Categories RSS Feed'] + '" src="/' + \
+        iconsPath + '/categoriesrss.png" /></a>\n'
+    rssIconStr += \
         '        <a href="/newswire.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
