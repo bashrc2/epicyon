@@ -248,7 +248,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     htmlStr += '<div class="follow">'
     htmlStr += '<center>'
     htmlStr += '<h1><a href="' + actor + '/search">'
-    htmlStr +=  categoryStr + '</a></h1>'
+    htmlStr +=  translate['Category'] + ': ' + categoryStr + '</a></h1>'
 
     hashtagsDict = getHashtagCategories(baseDir, categoryStr)
     if hashtagsDict:
