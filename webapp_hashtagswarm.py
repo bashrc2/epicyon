@@ -7,10 +7,14 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from shutil import copyfile
 from datetime import datetime
+# from utils import getNicknameFromActor
 from utils import getHashtagCategories
 from utils import getHashtagCategory
 from webapp_utils import getContentWarningButton
+from webapp_utils import htmlHeaderWithExternalStyle
+from webapp_utils import htmlFooter
 
 
 def getHashtagCategoriesFeed(baseDir: str,
@@ -220,3 +224,37 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
     # tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
     return tagSwarmHtml
+
+
+def htmlSearchHashtagCategory(cssCache: {}, translate: {},
+                              baseDir: str, path: str, domain: str) -> str:
+    """Show hashtags after selecting a category on the main search screen
+    """
+    actor = path.split('/category/')[0]
+    categoryStr = path.split('/category/')[1].strip()
+    # searchNickname = getNicknameFromActor(actor)
+
+    if os.path.isfile(baseDir + '/img/search-background.png'):
+        if not os.path.isfile(baseDir + '/accounts/search-background.png'):
+            copyfile(baseDir + '/img/search-background.png',
+                     baseDir + '/accounts/search-background.png')
+
+    cssFilename = baseDir + '/epicyon-search.css'
+    if os.path.isfile(baseDir + '/search.css'):
+        cssFilename = baseDir + '/search.css'
+
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
+
+    htmlStr += '<h1><a href="/search">' + categoryStr + '</a></h1>'
+
+    hashtagsDict = getHashtagCategories(baseDir, categoryStr)
+    if hashtagsDict:
+        for categoryStr2, hashtagList in hashtagsDict.items():
+            hashtagList.sort()
+            for tagName in hashtagList:
+                htmlStr += \
+                    '<a href="' + actor + '/tags/' + tagName + \
+                    '" class="hashtagswarm">' + tagName + '</a>\n'
+
+    htmlStr += htmlFooter()
+    return htmlStr

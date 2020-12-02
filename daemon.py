@@ -165,6 +165,7 @@ from webapp_search import htmlSearchSharedItems
 from webapp_search import htmlSearchEmojiTextEntry
 from webapp_search import htmlSearch
 from webapp_hashtagswarm import getHashtagCategoriesFeed
+from webapp_hashtagswarm import htmlSearchHashtagCategory
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -10140,6 +10141,23 @@ class PubServer(BaseHTTPRequestHandler):
                                           'hashtag search done',
                                           'search screen shown')
                 return
+
+        # show a hashtag category from the search screen
+        if htmlGET and '/category/' in self.path:
+            msg = htmlSearchHashtagCategory(self.server.cssCache,
+                                            self.server.translate,
+                                            self.server.baseDir, self.path,
+                                            self.server.domain,
+                                            self.server.defaultTimeline)
+            if msg:
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg), cookie, callingDomain)
+                self._write(msg)
+            self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'hashtag category done',
+                                      'hashtag category screen shown')
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'hashtag search done',

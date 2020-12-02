@@ -1083,7 +1083,7 @@ def validNickname(domain: str, nickname: str) -> bool:
     if nickname == domain:
         return False
     reservedNames = ('inbox', 'dm', 'outbox', 'following',
-                     'public', 'followers',
+                     'public', 'followers', 'category',
                      'channel', 'calendar',
                      'tlreplies', 'tlmedia', 'tlblogs',
                      'tlevents', 'tlblogs', 'tlfeatures',
