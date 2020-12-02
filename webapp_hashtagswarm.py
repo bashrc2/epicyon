@@ -204,7 +204,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                 categorySwarmStr += \
                     '<a href="' + actor + '/category/' + categoryStr + \
                     '" class="hashtagswarm"><b>' + categoryStr + '</b></a>\n'
-            categorySwarmStr += '<br><br>\n'
+            categorySwarmStr += '<br>\n'
 
     # swarm of tags
     tagSwarmStr = ''
