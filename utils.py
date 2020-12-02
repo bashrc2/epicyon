@@ -66,16 +66,24 @@ def getHashtagCategories(baseDir: str, category=None) -> None:
 def updateHashtagCategories(baseDir: str) -> None:
     """Regenerates the list of hashtag categories
     """
+    categoryListFilename = baseDir + '/accounts/categoryList.txt'
     hashtagCategories = getHashtagCategories(baseDir)
+    if not hashtagCategories:
+        if os.path.isfile(categoryListFilename):
+            os.remove(categoryListFilename)
+        return
+
+    categoryList = []
+    for categoryStr, hashtagList in hashtagCategories.items():
+        categoryList.append(categoryStr)
+    categoryList.sort()
 
     categoryListStr = ''
-    for categoryStr, hashtagList in hashtagCategories.items():
+    for categoryStr in categoryList:
         categoryListStr += categoryStr + '\n'
 
-    if not hashtagCategories:
-        return
     # save a list of available categories for quick lookup
-    with open(baseDir + '/accounts/categoryList.txt', 'w+') as fp:
+    with open(categoryListFilename, 'w+') as fp:
         fp.write(categoryListStr)
 
 
