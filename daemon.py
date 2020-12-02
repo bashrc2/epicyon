@@ -1115,6 +1115,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico') or \
+           self.path.startswith('/categories.xml') or \
            self.path.startswith('/newswire.xml'):
             return False
 
