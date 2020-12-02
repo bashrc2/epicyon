@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from datetime import datetime
 from utils import getHashtagCategories
+from utils import getHashtagCategory
 
 
 def getHashtagCategoriesFeed(baseDir: str,
@@ -112,6 +113,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     daysSinceEpochStr2 = str(daysSinceEpoch - 1) + ' '
     recently = daysSinceEpoch - 1
     tagSwarm = []
+    categorySwarm = []
     domainHistogram = {}
 
     # Load the blocked hashtags into memory.
@@ -179,18 +181,36 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                         else:
                             domainHistogram[postDomain] = 1
                         tagSwarm.append(hashTagName)
+                        categoryFilename = \
+                            tagsFilename.replace('.txt', '.category')
+                        if os.path.isfile(categoryFilename):
+                            categoryStr = \
+                                getHashtagCategory(baseDir, hashTagName)
+                            if categoryStr not in categorySwarm:
+                                categorySwarm.append(categoryStr)
                         break
 
     if not tagSwarm:
         return ''
     tagSwarm.sort()
+
+    # swarm of categories
+    categorySwarmStr = ''
+    if categorySwarm:
+        categorySwarm.sort()
+        for categoryStr in categorySwarm:
+            categorySwarmStr += \
+                '<a href="' + actor + '/category/' + categoryStr + \
+                '" class="hashtagswarm">' + categoryStr + '</a>\n'
+        categorySwarmStr += '<br><br><br>\n'
+
+    # swarm of tags
     tagSwarmStr = ''
-    ctr = 0
     for tagName in tagSwarm:
         tagSwarmStr += \
             '<a href="' + actor + '/tags/' + tagName + \
             '" class="hashtagswarm">' + tagName + '</a>\n'
-        ctr += 1
-    tagSwarmHtml = tagSwarmStr.strip() + '\n'
+
+    tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
     tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
     return tagSwarmHtml
