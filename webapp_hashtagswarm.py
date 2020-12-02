@@ -9,9 +9,12 @@ __status__ = "Production"
 import os
 from shutil import copyfile
 from datetime import datetime
-# from utils import getNicknameFromActor
+from utils import getConfigParam
+from utils import getNicknameFromActor
 from utils import getHashtagCategories
 from utils import getHashtagCategory
+from webapp_utils import getSearchBannerFile
+from webapp_utils import getImageFile
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -232,7 +235,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     """
     actor = path.split('/category/')[0]
     categoryStr = path.split('/category/')[1].strip()
-    # searchNickname = getNicknameFromActor(actor)
+    searchNickname = getNicknameFromActor(actor)
 
     if os.path.isfile(baseDir + '/img/search-background.png'):
         if not os.path.isfile(baseDir + '/accounts/search-background.png'):
@@ -245,10 +248,36 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
 
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
+    # show a banner above the search box
+    searchBannerFile, searchBannerFilename = \
+        getSearchBannerFile(baseDir, searchNickname, domain)
+    if not os.path.isfile(searchBannerFilename):
+        # get the default search banner for the theme
+        theme = getConfigParam(baseDir, 'theme').lower()
+        if theme == 'default':
+            theme = ''
+        else:
+            theme = '_' + theme
+        themeSearchImageFile, themeSearchBannerFilename = \
+            getImageFile(baseDir, 'search_banner', baseDir + '/img',
+                         searchNickname, domain)
+        if os.path.isfile(themeSearchBannerFilename):
+            searchBannerFilename = \
+                baseDir + '/accounts/' + \
+                searchNickname + '@' + domain + '/' + themeSearchImageFile
+            copyfile(themeSearchBannerFilename,
+                     searchBannerFilename)
+            searchBannerFile = themeSearchImageFile
+
+    if os.path.isfile(searchBannerFilename):
+        htmlStr += '<a href="' + actor + '/search">\n'
+        htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
+            actor + '/' + searchBannerFile + '" /></a>\n'
+
     htmlStr += '<div class="follow">'
     htmlStr += '<center><br><br><br>'
     htmlStr += '<h1><a href="' + actor + '/search"><b>'
-    htmlStr +=  translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
+    htmlStr += translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
 
     hashtagsDict = getHashtagCategories(baseDir, categoryStr)
     if hashtagsDict:
