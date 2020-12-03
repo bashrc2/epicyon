@@ -3000,6 +3000,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
         hashtag = usersPath.split('/tags/')[1].strip()
+        hashtag = urllib.parse.unquote_plus(hashtag)
         if not hashtag:
             # no hashtag was given in the path
             self._404()
