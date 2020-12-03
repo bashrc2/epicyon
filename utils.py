@@ -87,17 +87,40 @@ def updateHashtagCategories(baseDir: str) -> None:
         fp.write(categoryListStr)
 
 
+def validHashtagCategory(category: str) -> bool:
+    """Returns true if the category name is valid
+    """
+    if not category:
+        return False
+
+    invalidChars = (',', ' ', '<', ';', '\\')
+    for ch in invalidChars:
+        if ch in category:
+            return False
+
+    # too long
+    if len(category) > 40:
+        return False
+
+    return True
+
+
 def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
     """Sets the category for the hashtag
     """
+    if not validHashtagCategory(category):
+        return False
+
     hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagFilename):
         return False
+
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
     with open(categoryFilename, 'w+') as fp:
         fp.write(category)
         updateHashtagCategories(baseDir)
         return True
+
     return False
 
 
