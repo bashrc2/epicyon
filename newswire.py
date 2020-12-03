@@ -227,9 +227,13 @@ def xml2StrToHashtagCategories(baseDir: str, domain: str, xmlStr: str,
         categoryStr = categoryStr.split('</title>')[0].strip()
         if not categoryStr:
             continue
+        if 'CDATA' in categoryStr:
+            continue
         hashtagListStr = rssItem.split('<description>')[1]
         hashtagListStr = hashtagListStr.split('</description>')[0].strip()
         if not hashtagListStr:
+            continue
+        if 'CDATA' in hashtagListStr:
             continue
         hashtagList = hashtagListStr.split(' ')
         if not isBlockedHashtag(baseDir, categoryStr):
