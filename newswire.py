@@ -123,7 +123,7 @@ def addNewswireDictEntry(baseDir: str, domain: str,
 
     # check that no tags are blocked
     for tag in postTags:
-        if isBlockedHashtag(baseDir, tag.replace('#', '')):
+        if isBlockedHashtag(baseDir, tag):
             return
 
     newswire[dateStr] = [
