@@ -23,11 +23,18 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     """Returns the category for the hashtag
     """
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
-    if os.path.isfile(categoryFilename):
-        with open(categoryFilename, 'r') as fp:
-            categoryStr = fp.read()
-            if categoryStr:
-                return categoryStr
+    if not os.path.isfile(categoryFilename):
+        categoryFilename = baseDir + '/tags/' + hashtag.title() + '.category'
+        if not os.path.isfile(categoryFilename):
+            categoryFilename = \
+                baseDir + '/tags/' + hashtag.upper() + '.category'
+            if not os.path.isfile(categoryFilename):
+                return ''
+
+    with open(categoryFilename, 'r') as fp:
+        categoryStr = fp.read()
+        if categoryStr:
+            return categoryStr
     return ''
 
 
