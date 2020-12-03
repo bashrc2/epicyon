@@ -114,14 +114,11 @@ def headerButtonsTimeline(defaultTimeline: str,
                 inboxButton+'"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
-    isFeaturesTimeline = \
-        defaultTimeline == 'tlfeatures' and boxName == 'tlfeatures'
-
-    if not isFeaturesTimeline:
+    if not featuresHeader:
         # typically the blogs button
         # but may change if this is a blogging oriented instance
         if defaultTimeline != 'tlblogs':
-            if not minimal and not isFeaturesTimeline:
+            if not minimal:
                 titleStr = translate['Blogs']
                 if defaultTimeline == 'tlfeatures':
                     titleStr = translate['Article']
@@ -233,7 +230,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         print('TIMELINE TIMING ' + boxName + ' 5 = ' + str(timeDiff))
 
     # the calendar button
-    if not isFeaturesTimeline:
+    if not featuresHeader:
         calendarAltText = translate['Calendar']
         if newCalendarEvent:
             # indicate that the calendar icon is highlighted
