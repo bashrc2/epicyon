@@ -48,8 +48,8 @@ def getHashtagCategoriesFeed(baseDir: str,
         rssStr += '  <pubDate>' + rssDateStr + '</pubDate>\n'
         rssStr += '</item>\n'
 
-    rssStr += '</channel>'
-    rssStr += '</rss>'
+    rssStr += '</channel>\n'
+    rssStr += '</rss>\n'
     return rssStr
 
 
