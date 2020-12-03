@@ -10,7 +10,7 @@ import os
 from shutil import copyfile
 from utils import getConfigParam
 from utils import getNicknameFromActor
-from posts import isEditor
+from utils import isEditor
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
@@ -19,6 +19,13 @@ from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
+
+
+def linksExist(baseDir: str) -> bool:
+    """Returns true if links have been created
+    """
+    linksFilename = baseDir + '/accounts/links.txt'
+    return os.path.isfile(linksFilename)
 
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
@@ -232,12 +239,19 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
                                  iconsAsButtons, iconsPath) + '</center>'
-    htmlStr += \
-        getLeftColumnContent(baseDir, nickname, domainFull,
-                             httpPrefix, translate,
-                             iconsPath, editor,
-                             False, timelinePath,
-                             rssIconAtTop, False, False)
+    if linksExist(baseDir):
+        htmlStr += \
+            getLeftColumnContent(baseDir, nickname, domainFull,
+                                 httpPrefix, translate,
+                                 iconsPath, editor,
+                                 False, timelinePath,
+                                 rssIconAtTop, False, False)
+    else:
+        if editor:
+            htmlStr += '<br><br><br>\n'
+            htmlStr += '<center>\n  '
+            htmlStr += translate['Select the edit icon to add web links']
+            htmlStr += '\n</center>\n'
 
     # end of col-left-mobile
     htmlStr += '</div>\n'

@@ -98,12 +98,12 @@ def addEmbeddedVideoFromSites(translate: {}, content: str,
                          'vault.mle.party', 'hostyour.tv',
                          'diode.zone', 'visionon.tv',
                          'artitube.artifaille.fr', 'peertube.fr',
-                         'peertube.live',
+                         'peertube.live', 'kolektiva.media',
                          'tube.ac-lyon.fr', 'www.yiny.org', 'betamax.video',
                          'tube.piweb.be', 'pe.ertu.be', 'peertube.social',
                          'videos.lescommuns.org', 'peertube.nogafa.org',
                          'skeptikon.fr', 'video.tedomum.net',
-                         'tube.p2p.legal',
+                         'tube.p2p.legal', 'tilvids.com',
                          'sikke.fi', 'exode.me', 'peertube.video')
         for site in peerTubeSites:
             if '"https://' + site in content:

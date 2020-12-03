@@ -66,6 +66,7 @@ body, html {
 
 h1 {
     font-family: var(--header-font);
+    font-size: var(--font-size);
     color: var(--title-color);
 }
 
@@ -76,13 +77,15 @@ a, u {
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link:hover {
@@ -206,6 +209,9 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
+    details {
+        font-size: var(--hashtag-size1);
+    }
     .domainHistogram {
         border: 0;
         font-size: var(--hashtag-size1);
@@ -262,6 +268,9 @@ input[type=text] {
 }
 
 @media screen and (max-width: 1000px) {
+    details {
+        font-size: var(--hashtag-size2);
+    }
     .domainHistogram {
         border: 0;
         font-size: var(--hashtag-size2);

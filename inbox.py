@@ -56,8 +56,8 @@ from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
 from posts import sendToFollowersThread
-from webapp import individualPostAsHtml
-from webapp import getIconsWebPath
+from webapp_utils import getIconsWebPath
+from webapp_post import individualPostAsHtml
 from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
@@ -1251,18 +1251,31 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
     # if this post in the outbox of the person?
     messageId = removeIdEnding(messageJson['object'])
     removeModerationPostFromIndex(baseDir, messageId, debug)
-    postFilename = locatePost(baseDir, handle.split('@')[0],
-                              handle.split('@')[1], messageId)
+    handleNickname = handle.split('@')[0]
+    handleDomain = handle.split('@')[1]
+    postFilename = locatePost(baseDir, handleNickname,
+                              handleDomain, messageId)
     if not postFilename:
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageId)
         return True
-    deletePost(baseDir, httpPrefix, handle.split('@')[0],
-               handle.split('@')[1], postFilename, debug,
+    deletePost(baseDir, httpPrefix, handleNickname,
+               handleDomain, postFilename, debug,
                recentPostsCache)
     if debug:
         print('DEBUG: post deleted - ' + postFilename)
+
+    # also delete any local blogs saved to the news actor
+    if handleNickname != 'news' and handleDomain == domainFull:
+        postFilename = locatePost(baseDir, 'news',
+                                  handleDomain, messageId)
+        if postFilename:
+            deletePost(baseDir, httpPrefix, 'news',
+                       handleDomain, postFilename, debug,
+                       recentPostsCache)
+            if debug:
+                print('DEBUG: blog post deleted - ' + postFilename)
     return True
 
 

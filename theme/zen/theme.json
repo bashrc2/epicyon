@@ -8,6 +8,8 @@
     "banner-height-mobile": "10vh",
     "newswire-date-color": "yellow",
     "main-bg-color": "#5c4e41",
+    "login-bg-color": "#5c4e41",
+    "options-bg-color": "#5c4e41",
     "post-bg-color": "#5c4e41",
     "timeline-posts-background-color": "#5c4e41",
     "header-bg-color": "#5c4e41",

@@ -330,5 +330,13 @@
     "RSS feed for your blog": "RSS-канал для вашего блога",
     "Create a new shared item": "Создать новый общий элемент",
     "Rc3": "Rc3",
-    "Hashtag origins": "Происхождение хэштегов"
+    "Hashtag origins": "Происхождение хэштегов",
+    "admin": "админ",
+    "moderator": "Модератор",
+    "editor": "редактор",
+    "delegator": "делегат",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "Щелкните значок редактирования, чтобы добавить RSS-каналы",
+    "Select the edit icon to add web links": "Щелкните значок редактирования, чтобы добавить веб-ссылки",
+    "Hashtag Categories RSS Feed": "RSS-канал категорий хэштегов"
 }

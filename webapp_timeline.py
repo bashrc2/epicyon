@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import time
+from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
@@ -24,7 +25,18 @@ from webapp_column_left import getLeftColumnContent
 from webapp_column_right import getRightColumnContent
 from webapp_headerbuttons import headerButtonsTimeline
 from posts import isModerator
-from posts import isEditor
+
+
+def logTimelineTiming(enableTimingLog: bool, timelineStartTime,
+                      boxName: str, debugId: str) -> None:
+    """Create a log of timings for performance tuning
+    """
+    if not enableTimingLog:
+        return
+    timeDiff = int((time.time() - timelineStartTime) * 1000)
+    if timeDiff > 100:
+        print('TIMELINE TIMING ' +
+              boxName + ' ' + debugId + ' = ' + str(timeDiff))
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
@@ -50,6 +62,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  authorized: bool) -> str:
     """Show the timeline as html
     """
+    enableTimingLog = False
+
     timelineStartTime = time.time()
 
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
@@ -114,10 +128,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # filename of the banner shown at the top
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
 
-    # benchmark 1
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 1 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
 
     # is the user a moderator?
     if not moderator:
@@ -127,14 +138,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if not editor:
         editor = isEditor(baseDir, nickname)
 
-    # benchmark 2
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 2 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '2')
 
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
     blogsButton = 'button'
+    featuresButton = 'button'
     newsButton = 'button'
     dmButton = 'button'
     if newDM:
@@ -156,6 +165,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         inboxButton = 'buttonselected'
     elif boxName == 'tlblogs':
         blogsButton = 'buttonselected'
+    elif boxName == 'tlfeatures':
+        featuresButton = 'buttonselected'
     elif boxName == 'tlnews':
         newsButton = 'buttonselected'
     elif boxName == 'dm':
@@ -214,10 +225,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                         '" src="/' + iconsPath + '/person.png"/></a>\n'
                     break
 
-    # benchmark 3
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 3 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '3')
 
     # moderation / reports button
     moderationButtonStr = ''
@@ -252,14 +260,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     tlStr = htmlHeaderWithExternalStyle(cssFilename)
 
-    # benchmark 4
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 4 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
 
     # if this is a news instance and we are viewing the news timeline
     newsHeader = False
-    if defaultTimeline == 'tlnews' and boxName == 'tlnews':
+    if defaultTimeline == 'tlfeatures' and boxName == 'tlfeatures':
         newsHeader = True
 
     newPostButtonStr = ''
@@ -283,7 +288,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 '<a href="' + usersPath + '/newdm">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
-    elif boxName == 'tlblogs' or boxName == 'tlnews':
+    elif (boxName == 'tlblogs' or
+          boxName == 'tlnews' or
+          boxName == 'tlfeatures'):
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
@@ -374,7 +381,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += \
             headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
                                   translate, usersPath, mediaButton,
-                                  blogsButton, newsButton, inboxButton,
+                                  blogsButton, featuresButton,
+                                  newsButton, inboxButton,
                                   dmButton, newDM, repliesButton,
                                   newReply, minimal, sentButton,
                                   sharesButtonStr, bookmarksButtonStr,
@@ -415,7 +423,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += \
             headerButtonsTimeline(defaultTimeline, boxName, pageNumber,
                                   translate, usersPath, mediaButton,
-                                  blogsButton, newsButton, inboxButton,
+                                  blogsButton, featuresButton,
+                                  newsButton, inboxButton,
                                   dmButton, newDM, repliesButton,
                                   newReply, minimal, sentButton,
                                   sharesButtonStr, bookmarksButtonStr,
@@ -467,10 +476,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '" name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += '</div>\n</form>\n'
 
-    # benchmark 6
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 6 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
 
     if boxName == 'tlshares':
         maxSharesPerAccount = itemsPerPage
@@ -480,15 +486,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                    maxSharesPerAccount, httpPrefix) +
                 htmlFooter())
 
-    # benchmark 7
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 7 = ' + str(timeDiff))
-
-    # benchmark 8
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 8 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
 
     # page up arrow
     if pageNumber > 1:
@@ -513,8 +511,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
         # show each post in the timeline
         for item in timelineJson['orderedItems']:
-            timelinePostStartTime = time.time()
-
             if item['type'] == 'Create' or \
                item['type'] == 'Announce' or \
                item['type'] == 'Update':
@@ -536,22 +532,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     preparePostFromHtmlCache(currTlStr,
                                                              boxName,
                                                              pageNumber)
-                                # benchmark cache post
-                                timeDiff = \
-                                    int((time.time() -
-                                         timelinePostStartTime) * 1000)
-                                if timeDiff > 100:
-                                    print('TIMELINE POST CACHE TIMING ' +
-                                          boxName + ' = ' + str(timeDiff))
+                                logTimelineTiming(enableTimingLog,
+                                                  timelineStartTime,
+                                                  boxName, '10')
 
                 if not currTlStr:
-                    # benchmark cache post
-                    timeDiff = \
-                        int((time.time() -
-                             timelinePostStartTime) * 1000)
-                    if timeDiff > 100:
-                        print('TIMELINE POST DISK TIMING START ' +
-                              boxName + ' = ' + str(timeDiff))
+                    logTimelineTiming(enableTimingLog,
+                                      timelineStartTime,
+                                      boxName, '11')
 
                     # read the post from disk
                     currTlStr = \
@@ -571,13 +559,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
                                              False, True)
-                    # benchmark cache post
-                    timeDiff = \
-                        int((time.time() -
-                             timelinePostStartTime) * 1000)
-                    if timeDiff > 100:
-                        print('TIMELINE POST DISK TIMING ' +
-                              boxName + ' = ' + str(timeDiff))
+                    logTimelineTiming(enableTimingLog,
+                                      timelineStartTime, boxName, '12')
 
                 if currTlStr:
                     itemCtr += 1
@@ -618,10 +601,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
 
-    # benchmark 9
-    timeDiff = int((time.time() - timelineStartTime) * 1000)
-    if timeDiff > 100:
-        print('TIMELINE TIMING ' + boxName + ' 9 = ' + str(timeDiff))
+    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
 
     tlStr += '  </tbody>\n'
     tlStr += '</table>\n'
@@ -986,6 +966,39 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal, YTReplacementDomain,
+                        showPublishedDateOnly,
+                        newswire, False, False,
+                        positiveVoting, showPublishAsIcon,
+                        fullWidthTimelineButtonHeader,
+                        iconsAsButtons, rssIconAtTop, publishButtonAtTop,
+                        authorized)
+
+
+def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
+                      recentPostsCache: {}, maxRecentPosts: int,
+                      translate: {}, pageNumber: int, itemsPerPage: int,
+                      session, baseDir: str, wfRequest: {}, personCache: {},
+                      nickname: str, domain: str, port: int, inboxJson: {},
+                      allowDeletion: bool,
+                      httpPrefix: str, projectVersion: str,
+                      minimal: bool, YTReplacementDomain: str,
+                      showPublishedDateOnly: bool,
+                      newswire: {}, positiveVoting: bool,
+                      showPublishAsIcon: bool,
+                      fullWidthTimelineButtonHeader: bool,
+                      iconsAsButtons: bool,
+                      rssIconAtTop: bool,
+                      publishButtonAtTop: bool,
+                      authorized: bool) -> str:
+    """Show the features timeline as html
+    """
+    return htmlTimeline(cssCache, defaultTimeline,
+                        recentPostsCache, maxRecentPosts,
+                        translate, pageNumber,
+                        itemsPerPage, session, baseDir, wfRequest, personCache,
+                        nickname, domain, port, inboxJson, 'tlfeatures',
                         allowDeletion, httpPrefix, projectVersion, False,
                         minimal, YTReplacementDomain,
                         showPublishedDateOnly,

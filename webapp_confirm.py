@@ -1,4 +1,4 @@
-__filename__ = "webapp.py"
+__filename__ = "webapp_confirm.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.1.0"
@@ -12,136 +12,23 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
-from shares import getValidSharedItemID
 from webapp_utils import getAltPath
 from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
+from shares import getValidSharedItemID
 
 
-def htmlFollowingList(cssCache: {}, baseDir: str,
-                      followingFilename: str) -> str:
-    """Returns a list of handles being followed
-    """
-    with open(followingFilename, 'r') as followingFile:
-        msg = followingFile.read()
-        followingList = msg.split('\n')
-        followingList.sort()
-        if followingList:
-            cssFilename = baseDir + '/epicyon-profile.css'
-            if os.path.isfile(baseDir + '/epicyon.css'):
-                cssFilename = baseDir + '/epicyon.css'
-
-            followingListHtml = htmlHeaderWithExternalStyle(cssFilename)
-            for followingAddress in followingList:
-                if followingAddress:
-                    followingListHtml += \
-                        '<h3>@' + followingAddress + '</h3>'
-            followingListHtml += htmlFooter()
-            msg = followingListHtml
-        return msg
-    return ''
-
-
-def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
-    """Show the screen for a blocked hashtag
-    """
-    blockedHashtagForm = ''
-    cssFilename = baseDir + '/epicyon-suspended.css'
-    if os.path.isfile(baseDir + '/suspended.css'):
-        cssFilename = baseDir + '/suspended.css'
-
-    blockedHashtagForm = htmlHeaderWithExternalStyle(cssFilename)
-    blockedHashtagForm += '<div><center>\n'
-    blockedHashtagForm += \
-        '  <p class="screentitle">' + \
-        translate['Hashtag Blocked'] + '</p>\n'
-    blockedHashtagForm += \
-        '  <p>See <a href="/terms">' + \
-        translate['Terms of Service'] + '</a></p>\n'
-    blockedHashtagForm += '</center></div>\n'
-    blockedHashtagForm += htmlFooter()
-    return blockedHashtagForm
-
-
-def htmlRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
-                         actor: str, shareName: str,
-                         callingDomain: str) -> str:
-    """Shows a screen asking to confirm the removal of a shared item
-    """
-    itemID = getValidSharedItemID(shareName)
-    nickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
-    sharesFile = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/shares.json'
-    if not os.path.isfile(sharesFile):
-        print('ERROR: no shares file ' + sharesFile)
-        return None
-    sharesJson = loadJson(sharesFile)
-    if not sharesJson:
-        print('ERROR: unable to load shares.json')
-        return None
-    if not sharesJson.get(itemID):
-        print('ERROR: share named "' + itemID + '" is not in ' + sharesFile)
-        return None
-    sharedItemDisplayName = sharesJson[itemID]['displayName']
-    sharedItemImageUrl = None
-    if sharesJson[itemID].get('imageUrl'):
-        sharedItemImageUrl = sharesJson[itemID]['imageUrl']
-
-    if os.path.isfile(baseDir + '/img/shares-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/shares-background.png'):
-            copyfile(baseDir + '/img/shares-background.png',
-                     baseDir + '/accounts/shares-background.png')
-
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
-
-    sharesStr = htmlHeaderWithExternalStyle(cssFilename)
-    sharesStr += '<div class="follow">\n'
-    sharesStr += '  <div class="followAvatar">\n'
-    sharesStr += '  <center>\n'
-    if sharedItemImageUrl:
-        sharesStr += '  <img loading="lazy" src="' + \
-            sharedItemImageUrl + '"/>\n'
-    sharesStr += \
-        '  <p class="followText">' + translate['Remove'] + \
-        ' ' + sharedItemDisplayName + ' ?</p>\n'
-    postActor = getAltPath(actor, domainFull, callingDomain)
-    sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">\n'
-    sharesStr += \
-        '    <input type="hidden" name="actor" value="' + actor + '">\n'
-    sharesStr += '    <input type="hidden" name="shareName" value="' + \
-        shareName + '">\n'
-    sharesStr += \
-        '    <button type="submit" class="button" name="submitYes">' + \
-        translate['Yes'] + '</button>\n'
-    sharesStr += \
-        '    <a href="' + actor + '/inbox' + '"><button class="button">' + \
-        translate['No'] + '</button></a>\n'
-    sharesStr += '  </form>\n'
-    sharesStr += '  </center>\n'
-    sharesStr += '  </div>\n'
-    sharesStr += '</div>\n'
-    sharesStr += htmlFooter()
-    return sharesStr
-
-
-def htmlDeletePost(cssCache: {},
-                   recentPostsCache: {}, maxRecentPosts: int,
-                   translate, pageNumber: int,
-                   session, baseDir: str, messageId: str,
-                   httpPrefix: str, projectVersion: str,
-                   wfRequest: {}, personCache: {},
-                   callingDomain: str,
-                   YTReplacementDomain: str,
-                   showPublishedDateOnly: bool) -> str:
+def htmlConfirmDelete(cssCache: {},
+                      recentPostsCache: {}, maxRecentPosts: int,
+                      translate, pageNumber: int,
+                      session, baseDir: str, messageId: str,
+                      httpPrefix: str, projectVersion: str,
+                      wfRequest: {}, personCache: {},
+                      callingDomain: str,
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -210,7 +97,75 @@ def htmlDeletePost(cssCache: {},
     return deletePostStr
 
 
-def htmlFollowConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
+                                actor: str, shareName: str,
+                                callingDomain: str) -> str:
+    """Shows a screen asking to confirm the removal of a shared item
+    """
+    itemID = getValidSharedItemID(shareName)
+    nickname = getNicknameFromActor(actor)
+    domain, port = getDomainFromActor(actor)
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+    sharesFile = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/shares.json'
+    if not os.path.isfile(sharesFile):
+        print('ERROR: no shares file ' + sharesFile)
+        return None
+    sharesJson = loadJson(sharesFile)
+    if not sharesJson:
+        print('ERROR: unable to load shares.json')
+        return None
+    if not sharesJson.get(itemID):
+        print('ERROR: share named "' + itemID + '" is not in ' + sharesFile)
+        return None
+    sharedItemDisplayName = sharesJson[itemID]['displayName']
+    sharedItemImageUrl = None
+    if sharesJson[itemID].get('imageUrl'):
+        sharedItemImageUrl = sharesJson[itemID]['imageUrl']
+
+    if os.path.isfile(baseDir + '/img/shares-background.png'):
+        if not os.path.isfile(baseDir + '/accounts/shares-background.png'):
+            copyfile(baseDir + '/img/shares-background.png',
+                     baseDir + '/accounts/shares-background.png')
+
+    cssFilename = baseDir + '/epicyon-follow.css'
+    if os.path.isfile(baseDir + '/follow.css'):
+        cssFilename = baseDir + '/follow.css'
+
+    sharesStr = htmlHeaderWithExternalStyle(cssFilename)
+    sharesStr += '<div class="follow">\n'
+    sharesStr += '  <div class="followAvatar">\n'
+    sharesStr += '  <center>\n'
+    if sharedItemImageUrl:
+        sharesStr += '  <img loading="lazy" src="' + \
+            sharedItemImageUrl + '"/>\n'
+    sharesStr += \
+        '  <p class="followText">' + translate['Remove'] + \
+        ' ' + sharedItemDisplayName + ' ?</p>\n'
+    postActor = getAltPath(actor, domainFull, callingDomain)
+    sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">\n'
+    sharesStr += \
+        '    <input type="hidden" name="actor" value="' + actor + '">\n'
+    sharesStr += '    <input type="hidden" name="shareName" value="' + \
+        shareName + '">\n'
+    sharesStr += \
+        '    <button type="submit" class="button" name="submitYes">' + \
+        translate['Yes'] + '</button>\n'
+    sharesStr += \
+        '    <a href="' + actor + '/inbox' + '"><button class="button">' + \
+        translate['No'] + '</button></a>\n'
+    sharesStr += '  </form>\n'
+    sharesStr += '  </center>\n'
+    sharesStr += '  </div>\n'
+    sharesStr += '</div>\n'
+    sharesStr += htmlFooter()
+    return sharesStr
+
+
+def htmlConfirmFollow(cssCache: {}, translate: {}, baseDir: str,
                       originPathStr: str,
                       followActor: str,
                       followProfileUrl: str) -> str:
@@ -254,7 +209,7 @@ def htmlFollowConfirm(cssCache: {}, translate: {}, baseDir: str,
     return followStr
 
 
-def htmlUnfollowConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmUnfollow(cssCache: {}, translate: {}, baseDir: str,
                         originPathStr: str,
                         followActor: str,
                         followProfileUrl: str) -> str:
@@ -299,7 +254,7 @@ def htmlUnfollowConfirm(cssCache: {}, translate: {}, baseDir: str,
     return followStr
 
 
-def htmlUnblockConfirm(cssCache: {}, translate: {}, baseDir: str,
+def htmlConfirmUnblock(cssCache: {}, translate: {}, baseDir: str,
                        originPathStr: str,
                        blockActor: str,
                        blockProfileUrl: str) -> str:

@@ -330,5 +330,13 @@
     "RSS feed for your blog": "Porthiant RSS ar gyfer eich blog",
     "Create a new shared item": "Creu eitem newydd a rennir",
     "Rc3": "Rc3",
-    "Hashtag origins": "Gwreiddiau Hashtag"
+    "Hashtag origins": "Gwreiddiau Hashtag",
+    "admin": "admin",
+    "moderator": "cymedrolwr",
+    "editor": "golygydd",
+    "delegator": "dirprwy",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "Dewiswch yr eicon golygu i ychwanegu porthwyr RSS",
+    "Select the edit icon to add web links": "Dewiswch yr eicon golygu i ychwanegu dolenni gwe",
+    "Hashtag Categories RSS Feed": "Categorïau Hashtag RSS Feed"
 }

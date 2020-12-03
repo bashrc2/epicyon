@@ -31,19 +31,18 @@ from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
+from jami import getJamiAddress
+from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
-from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBlogAddress
 from webapp_post import individualPostAsHtml
-from webapp_column_left import getLeftColumnContent
-from webapp_column_right import getRightColumnContent
 from webapp_timeline import htmlIndividualShare
 
 
@@ -374,6 +373,20 @@ def htmlProfile(rssIconAtTop: bool,
     nickname = profileJson['preferredUsername']
     if not nickname:
         return ""
+    if isSystemAccount(nickname):
+        return htmlFrontScreen(rssIconAtTop,
+                               cssCache, iconsAsButtons,
+                               defaultTimeline,
+                               recentPostsCache, maxRecentPosts,
+                               translate, projectVersion,
+                               baseDir, httpPrefix, authorized,
+                               profileJson, selected,
+                               session, wfRequest, personCache,
+                               YTReplacementDomain,
+                               showPublishedDateOnly,
+                               newswire, extraJson,
+                               pageNumber, maxItemsPerPage)
+
     domain, port = getDomainFromActor(profileJson['id'])
     if not domain:
         return ""
@@ -424,8 +437,9 @@ def htmlProfile(rssIconAtTop: bool,
     matrixAddress = getMatrixAddress(profileJson)
     ssbAddress = getSSBAddress(profileJson)
     toxAddress = getToxAddress(profileJson)
+    jamiAddress = getJamiAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or PGPpubKey or \
+       ssbAddress or toxAddress or jamiAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -453,6 +467,10 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
+        if jamiAddress:
+            donateSection += \
+                '<p>Jami: <label class="toxaddr">' + \
+                jamiAddress + '</label></p>\n'
         if PGPfingerprint:
             donateSection += \
                 '<p class="pgp">PGP: ' + \
@@ -464,11 +482,7 @@ def htmlProfile(rssIconAtTop: bool,
         donateSection += '</div>\n'
 
     iconsPath = getIconsWebPath(baseDir)
-    if not authorized:
-        loginButton = headerButtonsFrontScreen(translate, nickname,
-                                               'features', authorized,
-                                               iconsAsButtons, iconsPath)
-    else:
+    if authorized:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
             '<img loading="lazy" src="/' + iconsPath + \
@@ -547,85 +561,52 @@ def htmlProfile(rssIconAtTop: bool,
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
 
-    # If this is the news account then show a different banner
-    if isSystemAccount(nickname):
-        bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
-        profileHeaderStr = \
-            '<img loading="lazy" class="timeline-banner" ' + \
-            'src="/users/' + nickname + '/' + bannerFile + '" />\n'
-        if loginButton:
-            profileHeaderStr += '<center>' + loginButton + '</center>\n'
-
-        profileHeaderStr += '<table class="timeline">\n'
-        profileHeaderStr += '  <colgroup>\n'
-        profileHeaderStr += '    <col span="1" class="column-left">\n'
-        profileHeaderStr += '    <col span="1" class="column-center">\n'
-        profileHeaderStr += '    <col span="1" class="column-right">\n'
-        profileHeaderStr += '  </colgroup>\n'
-        profileHeaderStr += '  <tbody>\n'
-        profileHeaderStr += '    <tr>\n'
-        profileHeaderStr += '      <td valign="top" class="col-left">\n'
-        iconsPath = getIconsWebPath(baseDir)
-        profileHeaderStr += \
-            getLeftColumnContent(baseDir, 'news', domainFull,
-                                 httpPrefix, translate,
-                                 iconsPath, False,
-                                 False, None, rssIconAtTop, True,
-                                 True)
-        profileHeaderStr += '      </td>\n'
-        profileHeaderStr += '      <td valign="top" class="col-center">\n'
-    else:
-        avatarUrl = profileJson['icon']['url']
-        profileHeaderStr = \
-            getProfileHeader(baseDir, nickname, domain,
-                             domainFull, translate, iconsPath,
-                             defaultTimeline, displayName,
-                             avatarDescription,
-                             profileDescriptionShort,
-                             loginButton, avatarUrl)
+    avatarUrl = profileJson['icon']['url']
+    profileHeaderStr = \
+        getProfileHeader(baseDir, nickname, domain,
+                         domainFull, translate, iconsPath,
+                         defaultTimeline, displayName,
+                         avatarDescription,
+                         profileDescriptionShort,
+                         loginButton, avatarUrl)
 
     profileStr = profileHeaderStr + donateSection
-    if not isSystemAccount(nickname):
-        profileStr += '<div class="container" id="buttonheader">\n'
-        profileStr += '  <center>'
-        profileStr += \
-            '    <a href="' + usersPath + '#buttonheader"><button class="' + \
-            postsButton + '"><span>' + translate['Posts'] + \
-            ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/following#buttonheader">' + \
-            '<button class="' + followingButton + '"><span>' + \
-            translate['Following'] + ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/followers#buttonheader">' + \
-            '<button class="' + followersButton + \
-            '"><span>' + translate['Followers'] + ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/roles#buttonheader">' + \
-            '<button class="' + rolesButton + '"><span>' + \
-            translate['Roles'] + \
-            ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/skills#buttonheader">' + \
-            '<button class="' + skillsButton + '"><span>' + \
-            translate['Skills'] + ' </span></button></a>'
-        profileStr += \
-            '    <a href="' + usersPath + '/shares#buttonheader">' + \
-            '<button class="' + sharesButton + '"><span>' + \
-            translate['Shares'] + ' </span></button></a>'
-        profileStr += logoutStr + editProfileStr
-        profileStr += '  </center>'
-        profileStr += '</div>'
+    profileStr += '<div class="container" id="buttonheader">\n'
+    profileStr += '  <center>'
+    profileStr += \
+        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+        postsButton + '"><span>' + translate['Posts'] + \
+        ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/following#buttonheader">' + \
+        '<button class="' + followingButton + '"><span>' + \
+        translate['Following'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/followers#buttonheader">' + \
+        '<button class="' + followersButton + \
+        '"><span>' + translate['Followers'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/roles#buttonheader">' + \
+        '<button class="' + rolesButton + '"><span>' + \
+        translate['Roles'] + \
+        ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/skills#buttonheader">' + \
+        '<button class="' + skillsButton + '"><span>' + \
+        translate['Skills'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+        '<button class="' + sharesButton + '"><span>' + \
+        translate['Shares'] + ' </span></button></a>'
+    profileStr += logoutStr + editProfileStr
+    profileStr += '  </center>'
+    profileStr += '</div>'
 
     profileStr += followApprovalsSection
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-
-    if isSystemAccount(nickname):
-        bannerFile, bannerFilename = \
-            getBannerFile(baseDir, nickname, domain)
 
     licenseStr = \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
@@ -643,7 +624,7 @@ def htmlProfile(rssIconAtTop: bool,
                              projectVersion,
                              YTReplacementDomain,
                              showPublishedDateOnly) + licenseStr
-    if selected == 'following':
+    elif selected == 'following':
         profileStr += \
             htmlProfileFollowing(translate, baseDir, httpPrefix,
                                  authorized, nickname,
@@ -651,7 +632,7 @@ def htmlProfile(rssIconAtTop: bool,
                                  wfRequest, personCache, extraJson,
                                  projectVersion, ["unfollow"], selected,
                                  usersPath, pageNumber, maxItemsPerPage)
-    if selected == 'followers':
+    elif selected == 'followers':
         profileStr += \
             htmlProfileFollowing(translate, baseDir, httpPrefix,
                                  authorized, nickname,
@@ -660,39 +641,22 @@ def htmlProfile(rssIconAtTop: bool,
                                  projectVersion, ["block"],
                                  selected, usersPath, pageNumber,
                                  maxItemsPerPage)
-    if selected == 'roles':
+    elif selected == 'roles':
         profileStr += \
-            htmlProfileRoles(translate, nickname, domainFull, extraJson)
-    if selected == 'skills':
+            htmlProfileRoles(translate, nickname, domainFull,
+                             extraJson)
+    elif selected == 'skills':
         profileStr += \
             htmlProfileSkills(translate, nickname, domainFull, extraJson)
-    if selected == 'shares':
+    elif selected == 'shares':
         profileStr += \
             htmlProfileShares(actor, translate,
                               nickname, domainFull,
                               extraJson) + licenseStr
 
-    # Footer which is only used for system accounts
-    profileFooterStr = ''
-    if isSystemAccount(nickname):
-        profileFooterStr = '      </td>\n'
-        profileFooterStr += '      <td valign="top" class="col-right">\n'
-        iconsPath = getIconsWebPath(baseDir)
-        profileFooterStr += \
-            getRightColumnContent(baseDir, 'news', domainFull,
-                                  httpPrefix, translate,
-                                  iconsPath, False, False,
-                                  newswire, False,
-                                  False, None, False, False,
-                                  False, True, authorized, True)
-        profileFooterStr += '      </td>\n'
-        profileFooterStr += '  </tr>\n'
-        profileFooterStr += '  </tbody>\n'
-        profileFooterStr += '</table>\n'
-
     profileStr = \
         htmlHeaderWithExternalStyle(cssFilename) + \
-        profileStr + profileFooterStr + htmlFooter()
+        profileStr + htmlFooter()
     return profileStr
 
 
@@ -714,14 +678,15 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     maxItems = 4
     ctr = 0
     currPage = 1
+    boxName = 'outbox'
     while ctr < maxItems and currPage < 4:
         outboxFeed = \
             personBoxJson({}, session, baseDir, domain,
                           port,
-                          '/users/' + nickname + '/outbox?page=' +
+                          '/users/' + nickname + '/' + boxName + '?page=' +
                           str(currPage),
                           httpPrefix,
-                          10, 'outbox',
+                          10, boxName,
                           authorized, 0, False, 0)
         if not outboxFeed:
             break
@@ -770,7 +735,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
             profileStr += \
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
-                '?page=' + str(pageNumber - 1) + \
+                '?page=' + str(pageNumber - 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsPath + '/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
@@ -790,7 +755,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
             profileStr += \
                 '  <center>\n' + \
                 '    <a href="' + actor + '/' + feedName + \
-                '?page=' + str(pageNumber + 1) + \
+                '?page=' + str(pageNumber + 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsPath + '/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
@@ -809,7 +774,10 @@ def htmlProfileRoles(translate: {}, nickname: str, domain: str,
             '<div class="roles">\n<h2>' + project + \
             '</h2>\n<div class="roles-inner">\n'
         for role in rolesList:
-            profileStr += '<h3>' + role + '</h3>\n'
+            if translate.get(role):
+                profileStr += '<h3>' + translate[role] + '</h3>\n'
+            else:
+                profileStr += '<h3>' + role + '</h3>\n'
         profileStr += '</div></div>\n'
     if len(profileStr) == 0:
         profileStr += \
@@ -901,6 +869,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         ssbAddress = getSSBAddress(actorJson)
         blogAddress = getBlogAddress(actorJson)
         toxAddress = getToxAddress(actorJson)
+        jamiAddress = getJamiAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
@@ -1041,6 +1010,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     moderatorsStr = ''
     themesDropdown = ''
     instanceStr = ''
+    editorsStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
@@ -1231,6 +1201,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
         toxAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Jami</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="jamiAddress" value="' + \
+        jamiAddress + '">\n'
+
     editProfileForm += '<label class="labels">' + \
         translate['Email'] + '</label><br>\n'
     editProfileForm += \

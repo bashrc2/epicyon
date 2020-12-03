@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
 :root {
-    --main-bg-color: #282c37;
-    --link-bg-color: #282c37;
-    --main-fg-color: #dddddd;
+    --options-bg-color: #282c37;
+    --options-link-bg-color: transparent;
+    --options-fg-color: #dddddd;
     --main-link-color: #999;
     --main-visited-color: #888;
     --border-color: #505050;
@@ -34,6 +34,7 @@
     --follow-text-entry-width: 90%;
     --focus-color: white;
     --petname-width-chars: 16ch;
+    --main-link-color-hover: #bbb;
 }
 
 @font-face {
@@ -58,8 +59,8 @@ body, html {
     -moz-background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-color: var(--main-bg-color);
-    color: var(--main-fg-color);
+    background-color: var(--options-bg-color);
+    color: var(--options-fg-color);
 
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
@@ -68,19 +69,29 @@ body, html {
 }
 
 a, u {
-    color: var(--main-fg-color);
+    color: var(--options-fg-color);
 }
 
 a:visited{
     color: var(--main-visited-color);
-    background: var(--link-bg-color);
-    font-weight: bold;
+    background: var(--options-link-bg-color);
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
-    background: var(--link-bg-color);
-    font-weight: bold;
+    background: var(--options-link-bg-color);
+    font-weight: normal;
+    text-decoration: none;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
 }
 
 a:focus {
@@ -90,7 +101,7 @@ a:focus {
 .follow {
     height: 100%;
     position: relative;
-    background-color: var(--main-bg-color);
+    background-color: var(--options-bg-color);
 }
 
 .followAvatar {
@@ -111,7 +122,7 @@ a:focus {
 .pgp {
     font-size: var(--font-size5);
     color: var(--main-link-color);
-    background: var(--link-bg-color);
+    background: var(--options-link-bg-color);
 }
 
 .button:hover {
@@ -123,6 +134,7 @@ a:focus {
 }
 
 .options img {
+    background-color: var(--options-bg-color);
     width: 15%;
 }
 
@@ -132,7 +144,7 @@ a:focus {
         font-size: var(--font-size4);
         width: 90%;
         background-color: var(--text-entry-background);
-        color: white;
+        color: var(--text-entry-foreground);
     }
     .followText {
         font-size: var(--follow-text-size1);
@@ -209,7 +221,7 @@ a:focus {
         font-size: var(--font-size);
         width: 90%;
         background-color: var(--text-entry-background);
-        color: white;
+        color: var(--text-entry-foreground);
     }
     .followText {
         font-size: var(--follow-text-size2);

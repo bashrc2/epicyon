@@ -92,34 +92,6 @@ def isModerator(baseDir: str, nickname: str) -> bool:
     return False
 
 
-def isEditor(baseDir: str, nickname: str) -> bool:
-    """Returns true if the given nickname is an editor
-    """
-    editorsFile = baseDir + '/accounts/editors.txt'
-
-    if not os.path.isfile(editorsFile):
-        adminName = getConfigParam(baseDir, 'admin')
-        if not adminName:
-            return False
-        if adminName == nickname:
-            return True
-        return False
-
-    with open(editorsFile, "r") as f:
-        lines = f.readlines()
-        if len(lines) == 0:
-            adminName = getConfigParam(baseDir, 'admin')
-            if not adminName:
-                return False
-            if adminName == nickname:
-                return True
-        for editor in lines:
-            editor = editor.strip('\n').strip('\r')
-            if editor == nickname:
-                return True
-    return False
-
-
 def noOfFollowersOnDomain(baseDir: str, handle: str,
                           domain: str, followFile='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
@@ -582,6 +554,7 @@ def savePostToBox(baseDir: str, httpPrefix: str, postId: str,
 
     boxDir = createPersonDir(nickname, domain, baseDir, boxname)
     filename = boxDir + '/' + postId.replace('/', '#') + '.json'
+
     saveJson(postJsonObject, filename)
     return filename
 
@@ -2587,6 +2560,15 @@ def createBlogsTimeline(session, baseDir: str, nickname: str, domain: str,
                             0, False, 0, pageNumber)
 
 
+def createFeaturesTimeline(session, baseDir: str, nickname: str, domain: str,
+                           port: int, httpPrefix: str, itemsPerPage: int,
+                           headerOnly: bool, pageNumber=None) -> {}:
+    return createBoxIndexed({}, session, baseDir, 'tlfeatures', nickname,
+                            domain, port, httpPrefix,
+                            itemsPerPage, headerOnly, True,
+                            0, False, 0, pageNumber)
+
+
 def createMediaTimeline(session, baseDir: str, nickname: str, domain: str,
                         port: int, httpPrefix: str, itemsPerPage: int,
                         headerOnly: bool, pageNumber=None) -> {}:
@@ -2879,7 +2861,9 @@ def addPostStringToTimeline(postStr: str, boxname: str,
         elif boxname == 'tlreplies':
             if boxActor not in postStr:
                 return False
-        elif boxname == 'tlblogs' or boxname == 'tlnews':
+        elif (boxname == 'tlblogs' or
+              boxname == 'tlnews' or
+              boxname == 'tlfeatures'):
             if '"Create"' not in postStr:
                 return False
             if '"Article"' not in postStr:
@@ -2900,6 +2884,13 @@ def addPostToTimeline(filePath: str, boxname: str,
     """
     with open(filePath, 'r') as postFile:
         postStr = postFile.read()
+
+        if filePath.endswith('.json'):
+            repliesFilename = filePath.replace('.json', '.replies')
+            if os.path.isfile(repliesFilename):
+                # append a replies identifier, which will later be removed
+                postStr += '<hasReplies>'
+
         return addPostStringToTimeline(postStr, boxname, postsInBox, boxActor)
     return False
 
@@ -2918,6 +2909,7 @@ def createBoxIndexed(recentPostsCache: {},
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and boxname != 'tlnews' and \
+       boxname != 'tlfeatures' and \
        boxname != 'outbox' and boxname != 'tlbookmarks' and \
        boxname != 'bookmarks' and \
        boxname != 'tlevents':
@@ -2926,9 +2918,14 @@ def createBoxIndexed(recentPostsCache: {},
     # bookmarks and events timelines are like the inbox
     # but have their own separate index
     indexBoxName = boxname
+    timelineNickname = nickname
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
         indexBoxName = boxname
+    elif boxname == "tlfeatures":
+        boxname = "tlblogs"
+        indexBoxName = boxname
+        timelineNickname = 'news'
 
     if port:
         if port != 80 and port != 443:
@@ -2966,7 +2963,7 @@ def createBoxIndexed(recentPostsCache: {},
     postsInBox = []
 
     indexFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
+        baseDir + '/accounts/' + timelineNickname + '@' + domain + \
         '/' + indexBoxName + '.index'
     postsCtr = 0
     if os.path.isfile(indexFilename):
@@ -3051,7 +3048,18 @@ def createBoxIndexed(recentPostsCache: {},
                     addPostToTimeline(fullPostFilename, boxname,
                                       postsInBox, boxActor)
                 else:
-                    print('WARN: unable to locate post ' + postUrl)
+                    # if this is the features timeline
+                    if timelineNickname != nickname:
+                        fullPostFilename = \
+                            locatePost(baseDir, timelineNickname,
+                                       domain, postUrl, False)
+                        if fullPostFilename:
+                            addPostToTimeline(fullPostFilename, boxname,
+                                              postsInBox, boxActor)
+                        else:
+                            print('WARN: unable to locate post ' + postUrl)
+                    else:
+                        print('WARN: unable to locate post ' + postUrl)
 
                 postsCtr += 1
 
@@ -3080,11 +3088,23 @@ def createBoxIndexed(recentPostsCache: {},
         return boxHeader
 
     for postStr in postsInBox:
+        # Check if the post has replies
+        hasReplies = False
+        if postStr.endswith('<hasReplies>'):
+            hasReplies = True
+            # remove the replies identifier
+            postStr = postStr.replace('<hasReplies>', '')
+
         p = None
         try:
             p = json.loads(postStr)
         except BaseException:
             continue
+
+        # Does this post have replies?
+        # This will be used to indicate that replies exist within the html
+        # created by individualPostAsHtml
+        p['hasReplies'] = hasReplies
 
         # Don't show likes, replies or shares (announces) to
         # unauthorized viewers

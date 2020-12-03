@@ -330,5 +330,13 @@
     "RSS feed for your blog": "ブログのRSSフィード",
     "Create a new shared item": "新しい共有アイテムを作成する",
     "Rc3": "Rc3",
-    "Hashtag origins": "ハッシュタグの起源"
+    "Hashtag origins": "ハッシュタグの起源",
+    "admin": "管理者",
+    "moderator": "モデレータ",
+    "editor": "編集者",
+    "delegator": "委任者",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "編集アイコンを選択してRSSフィードを追加します",
+    "Select the edit icon to add web links": "編集アイコンを選択してWebリンクを追加します",
+    "Hashtag Categories RSS Feed": "ハッシュタグカテゴリRSSフィード"
 }

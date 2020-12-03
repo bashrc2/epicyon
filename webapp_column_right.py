@@ -16,7 +16,7 @@ from utils import loadJson
 from utils import getConfigParam
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
-from posts import isEditor
+from utils import isEditor
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import getImageFile
@@ -155,8 +155,15 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 translate['Edit newswire'] + '" src="/' + \
                 iconsPath + '/edit.png" /></a>\n'
 
-    # show the RSS icon
+    # show the RSS icons
     rssIconStr = \
+        '        <a href="/categories.xml">' + \
+        '<img class="' + editImageClass + \
+        '" loading="lazy" alt="' + \
+        translate['Hashtag Categories RSS Feed'] + '" title="' + \
+        translate['Hashtag Categories RSS Feed'] + '" src="/' + \
+        iconsPath + '/categoriesrss.png" /></a>\n'
+    rssIconStr += \
         '        <a href="/newswire.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
@@ -443,14 +450,21 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
                                  iconsAsButtons, iconsPath) + '</center>'
-    htmlStr += \
-        getRightColumnContent(baseDir, nickname, domainFull,
-                              httpPrefix, translate,
-                              iconsPath, moderator, editor,
-                              newswire, positiveVoting,
-                              False, timelinePath, showPublishButton,
-                              showPublishAsIcon, rssIconAtTop, False,
-                              authorized, False)
+    if newswire:
+        htmlStr += \
+            getRightColumnContent(baseDir, nickname, domainFull,
+                                  httpPrefix, translate,
+                                  iconsPath, moderator, editor,
+                                  newswire, positiveVoting,
+                                  False, timelinePath, showPublishButton,
+                                  showPublishAsIcon, rssIconAtTop, False,
+                                  authorized, False)
+    else:
+        if editor:
+            htmlStr += '<br><br><br>\n'
+            htmlStr += '<center>\n  '
+            htmlStr += translate['Select the edit icon to add RSS feeds']
+            htmlStr += '\n</center>\n'
     # end of col-right-mobile
     htmlStr += '</div\n>'
 

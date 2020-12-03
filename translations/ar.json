@@ -330,5 +330,13 @@
     "RSS feed for your blog": "تغذية RSS لمدونتك",
     "Create a new shared item": "إنشاء عنصر مشترك جديد",
     "Rc3": "Rc3",
-    "Hashtag origins": "أصول الهاشتاق"
+    "Hashtag origins": "أصول الهاشتاق",
+    "admin": "مشرف",
+    "moderator": "الوسيط",
+    "editor": "محرر",
+    "delegator": "المفوض",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "حدد رمز التحرير لإضافة موجز ويب لـ RSS",
+    "Select the edit icon to add web links": "حدد رمز التحرير لإضافة روابط الويب",
+    "Hashtag Categories RSS Feed": "Hashtag Categories RSS Feed"
 }

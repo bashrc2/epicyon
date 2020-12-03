@@ -330,5 +330,13 @@
     "RSS feed for your blog": "RSS-Feed für Ihr Blog",
     "Create a new shared item": "Erstellen Sie ein neues freigegebenes Element",
     "Rc3": "Rc3",
-    "Hashtag origins": "Hashtag-Ursprünge"
+    "Hashtag origins": "Hashtag-Ursprünge",
+    "admin": "Administrator",
+    "moderator": "Moderator",
+    "editor": "Editor",
+    "delegator": "Delegator",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "Wählen Sie das Bearbeitungssymbol, um RSS-Feeds hinzuzufügen",
+    "Select the edit icon to add web links": "Wählen Sie das Bearbeitungssymbol, um Weblinks hinzuzufügen",
+    "Hashtag Categories RSS Feed": "Hashtag Kategorien RSS Feed"
 }

@@ -3,6 +3,7 @@
 :root {
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
+    --title-color: #999;
     --dropdown-bg-color: #111;
     --dropdown-bg-color-hover: #333;
     --main-bg-color-reply: #212c37;
@@ -16,6 +17,7 @@
     --font-size-header: 18px;
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
+    --font-size-mobile: 50px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -45,6 +47,7 @@
     --focus-color: white;
     --line-spacing: 130%;
     --header-font: 'Bedstead';
+    --main-link-color-hover: #bbb;
 }
 
 @font-face {
@@ -78,25 +81,31 @@ body, html {
 a, u {
     color: var(--main-fg-color);
 }
-  
+
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
 }
 
 a:focus {
     border: 2px solid var(--focus-color);
-}
-
-h1 {
-    font-family: var(--header-font);
 }
 
 .cwText {
@@ -689,6 +698,11 @@ div.gallery img {
         font-size: var(--font-size4);
         font-family: "Times New Roman", Roman, serif;
     }
+    h1 {
+        font-family: var(--header-font);
+        font-size: var(--font-size);
+        color: var(--title-color);
+    }
     .galleryContainer {
         display: grid;
         grid-template-columns: 50% 50%;
@@ -1040,6 +1054,11 @@ div.gallery img {
     body, html {
         font-size: var(--font-size3);
         font-family: "Times New Roman", Roman, serif;
+    }
+    h1 {
+        font-family: var(--header-font);
+        font-size: var(--font-size-mobile);
+        color: var(--title-color);
     }
     div.gallerytext {
         color: var(--gallery-text-color);

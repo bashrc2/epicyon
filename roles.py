@@ -46,15 +46,20 @@ def clearEditorStatus(baseDir: str) -> None:
     for f in os.scandir(directory):
         f = f.name
         filename = os.fsdecode(f)
-        if filename.endswith(".json") and '@' in filename:
-            filename = os.path.join(baseDir + '/accounts/', filename)
-            if '"editor"' in open(filename).read():
-                actorJson = loadJson(filename)
-                if actorJson:
-                    if actorJson['roles'].get('instance'):
-                        if 'editor' in actorJson['roles']['instance']:
-                            actorJson['roles']['instance'].remove('editor')
-                            saveJson(actorJson, filename)
+        if '@' not in filename:
+            continue
+        if not filename.endswith(".json"):
+            continue
+        filename = os.path.join(baseDir + '/accounts/', filename)
+        if '"editor"' not in open(filename).read():
+            continue
+        actorJson = loadJson(filename)
+        if not actorJson:
+            continue
+        if actorJson['roles'].get('instance'):
+            if 'editor' in actorJson['roles']['instance']:
+                actorJson['roles']['instance'].remove('editor')
+                saveJson(actorJson, filename)
 
 
 def addModerator(baseDir: str, nickname: str, domain: str) -> None:

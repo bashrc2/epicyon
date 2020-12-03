@@ -131,6 +131,8 @@ def isBlockedHashtag(baseDir: str, hashtag: str) -> bool:
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(globalBlockingFilename):
         hashtag = hashtag.strip('\n').strip('\r')
+        if not hashtag.startswith('#'):
+            hashtag = '#' + hashtag
         if hashtag + '\n' in open(globalBlockingFilename).read():
             return True
     return False

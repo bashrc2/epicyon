@@ -330,5 +330,13 @@
     "RSS feed for your blog": "Fotha RSS do do bhlag",
     "Create a new shared item": "Cruthaigh mír nua roinnte",
     "Rc3": "Rc3",
-    "Hashtag origins": "Bunús Hashtag"
+    "Hashtag origins": "Bunús Hashtag",
+    "admin": "admin",
+    "moderator": "modhnóir",
+    "editor": "eagarthóir",
+    "delegator": "toscaire",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "Roghnaigh an deilbhín eagar chun fothaí RSS a chur leis",
+    "Select the edit icon to add web links": "Roghnaigh an deilbhín eagar chun naisc ghréasáin a chur leis",
+    "Hashtag Categories RSS Feed": "Catagóirí Hashtag RSS Feed"
 }

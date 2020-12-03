@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
+from utils import setHashtagCategory
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost
@@ -122,7 +123,7 @@ def addNewswireDictEntry(baseDir: str, domain: str,
 
     # check that no tags are blocked
     for tag in postTags:
-        if isBlockedHashtag(baseDir, tag.replace('#', '')):
+        if isBlockedHashtag(baseDir, tag):
             return
 
     newswire[dateStr] = [
@@ -202,19 +203,64 @@ def parseFeedDate(pubDate: str) -> str:
     return pubDateStr
 
 
+def xml2StrToHashtagCategories(baseDir: str, domain: str, xmlStr: str,
+                               maxCategoriesFeedItemSizeKb: int) -> None:
+    """Updates hashtag categories based upon an rss feed
+    """
+    rssItems = xmlStr.split('<item>')
+    maxBytes = maxCategoriesFeedItemSizeKb * 1024
+    for rssItem in rssItems:
+        if not rssItem:
+            continue
+        if len(rssItem) > maxBytes:
+            print('WARN: rss categories feed item is too big')
+            continue
+        if '<title>' not in rssItem:
+            continue
+        if '</title>' not in rssItem:
+            continue
+        if '<description>' not in rssItem:
+            continue
+        if '</description>' not in rssItem:
+            continue
+        categoryStr = rssItem.split('<title>')[1]
+        categoryStr = categoryStr.split('</title>')[0].strip()
+        if not categoryStr:
+            continue
+        if 'CDATA' in categoryStr:
+            continue
+        hashtagListStr = rssItem.split('<description>')[1]
+        hashtagListStr = hashtagListStr.split('</description>')[0].strip()
+        if not hashtagListStr:
+            continue
+        if 'CDATA' in hashtagListStr:
+            continue
+        hashtagList = hashtagListStr.split(' ')
+        if not isBlockedHashtag(baseDir, categoryStr):
+            for hashtag in hashtagList:
+                setHashtagCategory(baseDir, hashtag, categoryStr)
+
+
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                   moderated: bool, mirrored: bool,
                   maxPostsPerSource: int,
-                  maxFeedItemSizeKb: int) -> {}:
+                  maxFeedItemSizeKb: int,
+                  maxCategoriesFeedItemSizeKb: int) -> {}:
     """Converts an xml 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
         return {}
     result = {}
+    if '<title>#categories</title>' in xmlStr:
+        xml2StrToHashtagCategories(baseDir, domain, xmlStr,
+                                   maxCategoriesFeedItemSizeKb)
+        return {}
     rssItems = xmlStr.split('<item>')
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for rssItem in rssItems:
+        if not rssItem:
+            continue
         if len(rssItem) > maxBytes:
             print('WARN: rss feed item is too big')
             continue
@@ -266,6 +312,8 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' rss feed items to newswire')
     return result
 
 
@@ -282,6 +330,8 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for atomItem in atomItems:
+        if not atomItem:
+            continue
         if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
@@ -333,6 +383,8 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' atom feed items to newswire')
     return result
 
 
@@ -351,7 +403,10 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for atomItem in atomItems:
-        print('YouTube feed item: ' + atomItem)
+        if not atomItem:
+            continue
+        if not atomItem.strip():
+            continue
         if len(atomItem) > maxBytes:
             print('WARN: atom feed item is too big')
             continue
@@ -359,9 +414,9 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         if '</title>' not in atomItem:
             continue
-        if '<updated>' not in atomItem:
+        if '<published>' not in atomItem:
             continue
-        if '</updated>' not in atomItem:
+        if '</published>' not in atomItem:
             continue
         if '<yt:videoId>' not in atomItem:
             continue
@@ -382,8 +437,8 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
         link = atomItem.split('<yt:videoId>')[1]
         link = link.split('</yt:videoId>')[0]
         link = 'https://www.youtube.com/watch?v=' + link.strip()
-        pubDate = atomItem.split('<updated>')[1]
-        pubDate = pubDate.split('</updated>')[0]
+        pubDate = atomItem.split('<published>')[1]
+        pubDate = pubDate.split('</published>')[0]
 
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
@@ -397,13 +452,16 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
             postCtr += 1
             if postCtr >= maxPostsPerSource:
                 break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' YouTube feed items to newswire')
     return result
 
 
 def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                  moderated: bool, mirrored: bool,
                  maxPostsPerSource: int,
-                 maxFeedItemSizeKb: int) -> {}:
+                 maxFeedItemSizeKb: int,
+                 maxCategoriesFeedItemSizeKb: int) -> {}:
     """Converts an xml string to a dictionary
     """
     if '<yt:videoId>' in xmlStr and '<yt:channelId>' in xmlStr:
@@ -414,7 +472,8 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
     elif 'rss version="2.0"' in xmlStr:
         return xml2StrToDict(baseDir, domain,
                              xmlStr, moderated, mirrored,
-                             maxPostsPerSource, maxFeedItemSizeKb)
+                             maxPostsPerSource, maxFeedItemSizeKb,
+                             maxCategoriesFeedItemSizeKb)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return atomFeedToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
@@ -437,7 +496,8 @@ def YTchannelToAtomFeed(url: str) -> str:
 def getRSS(baseDir: str, domain: str, session, url: str,
            moderated: bool, mirrored: bool,
            maxPostsPerSource: int, maxFeedSizeKb: int,
-           maxFeedItemSizeKb: int) -> {}:
+           maxFeedItemSizeKb: int,
+           maxCategoriesFeedItemSizeKb: int) -> {}:
     """Returns an RSS url as a dict
     """
     if not isinstance(url, str):
@@ -467,7 +527,8 @@ def getRSS(baseDir: str, domain: str, session, url: str,
                 return xmlStrToDict(baseDir, domain, result.text,
                                     moderated, mirrored,
                                     maxPostsPerSource,
-                                    maxFeedItemSizeKb)
+                                    maxFeedItemSizeKb,
+                                    maxCategoriesFeedItemSizeKb)
             else:
                 print('WARN: feed is too large, ' +
                       'or contains invalid characters: ' + url)
@@ -701,7 +762,8 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
 def getDictFromNewswire(session, baseDir: str, domain: str,
                         maxPostsPerSource: int, maxFeedSizeKb: int,
                         maxTags: int, maxFeedItemSizeKb: int,
-                        maxNewswirePosts: int) -> {}:
+                        maxNewswirePosts: int,
+                        maxCategoriesFeedItemSizeKb: int) -> {}:
     """Gets rss feeds as a dictionary from newswire file
     """
     subscriptionsFilename = baseDir + '/accounts/newswire.txt'
@@ -741,7 +803,8 @@ def getDictFromNewswire(session, baseDir: str, domain: str,
         itemsList = getRSS(baseDir, domain, session, url,
                            moderated, mirrored,
                            maxPostsPerSource, maxFeedSizeKb,
-                           maxFeedItemSizeKb)
+                           maxFeedItemSizeKb,
+                           maxCategoriesFeedItemSizeKb)
         if itemsList:
             for dateStr, item in itemsList.items():
                 result[dateStr] = item

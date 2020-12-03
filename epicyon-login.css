@@ -1,9 +1,9 @@
 @charset "UTF-8";
 
 :root {
-    --main-bg-color: #282c37;
+    --login-bg-color: #282c37;
     --link-bg-color: #282c37;
-    --main-fg-color: #dddddd;
+    --login-fg-color: #dddddd;
     --main-link-color: #999;
     --main-visited-color: #888;
     --border-color: #505050;
@@ -22,6 +22,7 @@
     --focus-color: white;
     --line-spacing: 130%;
     --login-logo-width: 20%;
+    --main-link-color-hover: #bbb;
 }
 
 @font-face {
@@ -40,8 +41,8 @@
 }
 
 body, html {
-    background-color: var(--main-bg-color);
-    color: var(--main-fg-color);
+    background-color: var(--login-bg-color);
+    color: var(--login-fg-color);
 
     background-image: url("/login-background.jpg");
     background-size: cover;
@@ -59,19 +60,29 @@ body, html {
 }
 
 a, u {
-    color: var(--main-fg-color);
+    color: var(--login-fg-color);
 }
 
 a:visited{
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+a:link:hover {
+    color: var(--main-link-color-hover);
+}
+
+a:visited:hover {
+    color: var(--main-link-color-hover);
 }
 
 a:focus {
@@ -146,8 +157,8 @@ span.psw {
 
 @media screen and (min-width: 400px) {
     body, html {
-        background-color: var(--main-bg-color);
-        color: var(--main-fg-color);
+        background-color: var(--login-bg-color);
+        color: var(--login-fg-color);
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
         max-width: 60%;
@@ -186,8 +197,8 @@ span.psw {
 
 @media screen and (max-width: 1000px) {
     body, html {
-        background-color: var(--main-bg-color);
-        color: var(--main-fg-color);
+        background-color: var(--login-bg-color);
+        color: var(--login-fg-color);
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
         max-width: 95%;

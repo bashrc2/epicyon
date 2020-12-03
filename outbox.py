@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from shutil import copyfile
 from session import createSession
 from auth import createPassword
 from posts import outboxMessageCreateWrap
@@ -116,24 +117,23 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                 fileExtension = 'png'
                 mediaTypeStr = \
                     attach['mediaType']
-                if mediaTypeStr.endswith('jpeg'):
-                    fileExtension = 'jpg'
-                elif mediaTypeStr.endswith('gif'):
-                    fileExtension = 'gif'
-                elif mediaTypeStr.endswith('webp'):
-                    fileExtension = 'webp'
-                elif mediaTypeStr.endswith('avif'):
-                    fileExtension = 'avif'
-                elif mediaTypeStr.endswith('audio/mpeg'):
-                    fileExtension = 'mp3'
-                elif mediaTypeStr.endswith('ogg'):
-                    fileExtension = 'ogg'
-                elif mediaTypeStr.endswith('mp4'):
-                    fileExtension = 'mp4'
-                elif mediaTypeStr.endswith('webm'):
-                    fileExtension = 'webm'
-                elif mediaTypeStr.endswith('ogv'):
-                    fileExtension = 'ogv'
+
+                extensions = {
+                    "jpeg": "jpg",
+                    "gif": "gif",
+                    "webp": "webp",
+                    "avif": "avif",
+                    "audio/mpeg": "mp3",
+                    "ogg": "ogg",
+                    "mp4": "mp4",
+                    "webm": "webm",
+                    "ogv": "ogv"
+                }
+                for matchExt, ext in extensions.items():
+                    if mediaTypeStr.endswith(matchExt):
+                        fileExtension = ext
+                        break
+
                 mediaDir = \
                     baseDir + '/accounts/' + \
                     postToNickname + '@' + domain
@@ -188,11 +188,31 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
             savePostToBox(baseDir,
                           httpPrefix,
                           postId,
-                          postToNickname,
-                          domainFull, messageJson, outboxName)
+                          postToNickname, domainFull,
+                          messageJson, outboxName)
         if not savedFilename:
             print('WARN: post not saved to outbox ' + outboxName)
             return False
+
+        # save all instance blogs to the news actor
+        if postToNickname != 'news' and outboxName == 'tlblogs':
+            if '/' in savedFilename:
+                savedPostId = savedFilename.split('/')[-1]
+                blogsDir = baseDir + '/accounts/news@' + domain + '/tlblogs'
+                if not os.path.isdir(blogsDir):
+                    os.mkdir(blogsDir)
+                copyfile(savedFilename, blogsDir + '/' + savedPostId)
+                inboxUpdateIndex('tlblogs', baseDir,
+                                 'news@' + domain,
+                                 savedFilename, debug)
+
+                # clear the citations file if it exists
+                citationsFilename = \
+                    baseDir + '/accounts/' + \
+                    postToNickname + '@' + domain + '/.citations.txt'
+                if os.path.isfile(citationsFilename):
+                    os.remove(citationsFilename)
+
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
            messageJson['type'] == 'Note' or \

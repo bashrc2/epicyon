@@ -330,5 +330,13 @@
     "RSS feed for your blog": "您博客的RSS供稿",
     "Create a new shared item": "创建一个新的共享项目",
     "Rc3": "Rc3",
-    "Hashtag origins": "标签起源"
+    "Hashtag origins": "标签起源",
+    "admin": "管理员",
+    "moderator": "主持人",
+    "editor": "编辑",
+    "delegator": "委托人",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "选择编辑图标以添加RSS feed",
+    "Select the edit icon to add web links": "选择编辑图标以添加Web链接",
+    "Hashtag Categories RSS Feed": "标签类别RSS提要"
 }

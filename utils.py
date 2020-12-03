@@ -19,6 +19,152 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getHashtagCategory(baseDir: str, hashtag: str) -> str:
+    """Returns the category for the hashtag
+    """
+    categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+    if not os.path.isfile(categoryFilename):
+        categoryFilename = baseDir + '/tags/' + hashtag.title() + '.category'
+        if not os.path.isfile(categoryFilename):
+            categoryFilename = \
+                baseDir + '/tags/' + hashtag.upper() + '.category'
+            if not os.path.isfile(categoryFilename):
+                return ''
+
+    with open(categoryFilename, 'r') as fp:
+        categoryStr = fp.read()
+        if categoryStr:
+            return categoryStr
+    return ''
+
+
+def getHashtagCategories(baseDir: str, category=None) -> None:
+    """Returns a dictionary containing hashtag categories
+    """
+    hashtagCategories = {}
+
+    for subdir, dirs, files in os.walk(baseDir + '/tags'):
+        for f in files:
+            if not f.endswith('.category'):
+                continue
+            categoryFilename = os.path.join(baseDir + '/tags', f)
+            if not os.path.isfile(categoryFilename):
+                continue
+            hashtag = f.split('.')[0]
+            with open(categoryFilename, 'r') as fp:
+                categoryStr = fp.read()
+
+                if not categoryStr:
+                    continue
+
+                if category:
+                    # only return a dictionary for a specific category
+                    if categoryStr != category:
+                        continue
+
+                if not hashtagCategories.get(categoryStr):
+                    hashtagCategories[categoryStr] = [hashtag]
+                else:
+                    if hashtag not in hashtagCategories[categoryStr]:
+                        hashtagCategories[categoryStr].append(hashtag)
+    return hashtagCategories
+
+
+def updateHashtagCategories(baseDir: str) -> None:
+    """Regenerates the list of hashtag categories
+    """
+    categoryListFilename = baseDir + '/accounts/categoryList.txt'
+    hashtagCategories = getHashtagCategories(baseDir)
+    if not hashtagCategories:
+        if os.path.isfile(categoryListFilename):
+            os.remove(categoryListFilename)
+        return
+
+    categoryList = []
+    for categoryStr, hashtagList in hashtagCategories.items():
+        categoryList.append(categoryStr)
+    categoryList.sort()
+
+    categoryListStr = ''
+    for categoryStr in categoryList:
+        categoryListStr += categoryStr + '\n'
+
+    # save a list of available categories for quick lookup
+    with open(categoryListFilename, 'w+') as fp:
+        fp.write(categoryListStr)
+
+
+def validHashtagCategory(category: str) -> bool:
+    """Returns true if the category name is valid
+    """
+    if not category:
+        return False
+
+    invalidChars = (',', ' ', '<', ';', '\\')
+    for ch in invalidChars:
+        if ch in category:
+            return False
+
+    # too long
+    if len(category) > 40:
+        return False
+
+    return True
+
+
+def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
+    """Sets the category for the hashtag
+    """
+    if not validHashtagCategory(category):
+        return False
+
+    hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagFilename):
+        hashtag = hashtag.title()
+        hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+        if not os.path.isfile(hashtagFilename):
+            hashtag = hashtag.upper()
+            hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+            if not os.path.isfile(hashtagFilename):
+                return False
+
+    categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+    with open(categoryFilename, 'w+') as fp:
+        fp.write(category)
+        updateHashtagCategories(baseDir)
+        return True
+
+    return False
+
+
+def isEditor(baseDir: str, nickname: str) -> bool:
+    """Returns true if the given nickname is an editor
+    """
+    editorsFile = baseDir + '/accounts/editors.txt'
+
+    if not os.path.isfile(editorsFile):
+        adminName = getConfigParam(baseDir, 'admin')
+        if not adminName:
+            return False
+        if adminName == nickname:
+            return True
+        return False
+
+    with open(editorsFile, "r") as f:
+        lines = f.readlines()
+        if len(lines) == 0:
+            adminName = getConfigParam(baseDir, 'admin')
+            if not adminName:
+                return False
+            if adminName == nickname:
+                return True
+        for editor in lines:
+            editor = editor.strip('\n').strip('\r')
+            if editor == nickname:
+                return True
+    return False
+
+
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """
@@ -522,6 +668,37 @@ def getDomainFromActor(actor: str) -> (str, int):
     return domain, port
 
 
+def setDefaultPetName(baseDir: str, nickname: str, domain: str,
+                      followNickname: str, followDomain: str) -> None:
+    """Sets a default petname
+    This helps especially when using onion or i2p address
+    """
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    userPath = baseDir + '/accounts/' + nickname + '@' + domain
+    petnamesFilename = userPath + '/petnames.txt'
+
+    petnameLookupEntry = followNickname + ' ' + \
+        followNickname + '@' + followDomain + '\n'
+    if not os.path.isfile(petnamesFilename):
+        # if there is no existing petnames lookup file
+        with open(petnamesFilename, 'w+') as petnamesFile:
+            petnamesFile.write(petnameLookupEntry)
+        return
+
+    with open(petnamesFilename, 'r') as petnamesFile:
+        petnamesStr = petnamesFile.read()
+        if petnamesStr:
+            petnamesList = petnamesStr.split('\n')
+            for pet in petnamesList:
+                if pet.startswith(followNickname + ' '):
+                    # petname already exists
+                    return
+    # petname doesn't already exist
+    with open(petnamesFilename, 'a+') as petnamesFile:
+        petnamesFile.write(petnameLookupEntry)
+
+
 def followPerson(baseDir: str, nickname: str, domain: str,
                  followNickname: str, followDomain: str,
                  federationList: [], debug: bool,
@@ -593,9 +770,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         with open(filename, 'w+') as f:
             f.write(handleToFollow + '\n')
 
-    # Default to adding new follows to the calendar.
-    # Possibly this could be made optional
     if followFile.endswith('following.txt'):
+        # Default to adding new follows to the calendar.
+        # Possibly this could be made optional
         # if following a person add them to the list of
         # calendar follows
         print('DEBUG: adding ' +
@@ -603,6 +780,9 @@ def followPerson(baseDir: str, nickname: str, domain: str,
               nickname + '@' + domain)
         addPersonToCalendar(baseDir, nickname, domain,
                             followNickname, followDomain)
+        # add a default petname
+        setDefaultPetName(baseDir, nickname, domain,
+                          followNickname, followDomain)
     return True
 
 
@@ -935,16 +1115,17 @@ def validNickname(domain: str, nickname: str) -> bool:
     for c in forbiddenChars:
         if c in nickname:
             return False
+    # this should only apply for the shared inbox
     if nickname == domain:
         return False
     reservedNames = ('inbox', 'dm', 'outbox', 'following',
-                     'public', 'followers',
+                     'public', 'followers', 'category',
                      'channel', 'calendar',
                      'tlreplies', 'tlmedia', 'tlblogs',
-                     'tlevents', 'tlblogs',
+                     'tlevents', 'tlblogs', 'tlfeatures',
                      'moderation', 'activity', 'undo',
                      'reply', 'replies', 'question', 'like',
-                     'likes', 'users', 'statuses',
+                     'likes', 'users', 'statuses', 'tags',
                      'accounts', 'channels', 'profile',
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars')

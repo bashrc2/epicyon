@@ -330,5 +330,13 @@
     "RSS feed for your blog": "Feed RSS para o seu blog",
     "Create a new shared item": "Crie um novo item compartilhado",
     "Rc3": "Rc3",
-    "Hashtag origins": "Origens de hashtag"
+    "Hashtag origins": "Origens de hashtag",
+    "admin": "admin",
+    "moderator": "moderador",
+    "editor": "editor",
+    "delegator": "delegador",
+    "Debian": "Debian",
+    "Select the edit icon to add RSS feeds": "Selecione o ícone de edição para adicionar feeds RSS",
+    "Select the edit icon to add web links": "Selecione o ícone de edição para adicionar links da web",
+    "Hashtag Categories RSS Feed": "Feed RSS das categorias de hashtag"
 }

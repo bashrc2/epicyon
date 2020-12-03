@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import email.parser
+import urllib.parse
 from shutil import copyfile
 from utils import getImageExtensions
 from utils import loadJson
@@ -991,5 +992,5 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool) -> {}:
                 if line > 2:
                     postValue += '\n'
                 postValue += postLines[line]
-        fields[postKey] = postValue
+        fields[postKey] = urllib.parse.unquote_plus(postValue)
     return fields

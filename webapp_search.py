@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import isEditor
 from utils import loadJson
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -18,6 +19,7 @@ from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
+from utils import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
@@ -658,18 +660,37 @@ def htmlHashtagSearch(cssCache: {},
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \
-            hashtag + '</a></h1>\n' + '</center>\n'
+            hashtag + '</a></h1>\n'
     else:
         hashtagSearchForm += '<center>\n' + \
-            '<h1>#' + hashtag + '</h1>\n' + '</center>\n'
+            '<h1>#' + hashtag + '</h1>\n'
 
     # RSS link for hashtag feed
-    hashtagSearchForm += '<center><a href="/tags/rss2/' + hashtag + '">'
+    hashtagSearchForm += '<a href="/tags/rss2/' + hashtag + '">'
     hashtagSearchForm += \
         '<img style="width:3%;min-width:50px" ' + \
-        'loading="lazy" alt="RSS 2.0" ' + \
-        'title="RSS 2.0" src="/' + \
-        iconsPath + '/logorss.png" /></a></center>'
+        'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+        iconsPath + '/logorss.png" /></a></center>\n'
+
+    # edit the category for this hashtag
+    if isEditor(baseDir, nickname):
+        category = getHashtagCategory(baseDir, hashtag)
+        hashtagSearchForm += '<div class="hashtagCategoryContainer">\n'
+        hashtagSearchForm += '  <form enctype="multipart/form-data" ' + \
+            'method="POST" accept-charset="UTF-8" action="' + \
+            '/users/' + nickname + '/tags/' + hashtag + \
+            '/sethashtagcategory">\n'
+        hashtagSearchForm += '    <center>\n'
+        hashtagSearchForm += translate['Category']
+        hashtagSearchForm += \
+            '      <input type="text" style="width: 20ch" ' + \
+            'name="hashtagCategory" value="' + category + '">\n'
+        hashtagSearchForm += \
+            '      <button type="submit" class="button" name="submitYes">' + \
+            translate['Submit'] + '</button>\n'
+        hashtagSearchForm += '    </center>\n'
+        hashtagSearchForm += '  </form>\n'
+        hashtagSearchForm += '</div>\n'
 
     if startIndex > 0:
         # previous page link
@@ -702,32 +723,44 @@ def htmlHashtagSearch(cssCache: {},
             index += 1
             continue
         postJsonObject = loadJson(postFilename)
-        if postJsonObject:
-            if not isPublicPost(postJsonObject):
-                index += 1
-                continue
-            showIndividualPostIcons = False
-            if nickname:
-                showIndividualPostIcons = True
-            allowDeletion = False
-            postStr = \
-                individualPostAsHtml(True, recentPostsCache,
-                                     maxRecentPosts,
-                                     iconsPath, translate, None,
-                                     baseDir, session, wfRequest,
-                                     personCache,
-                                     nickname, domain, port,
-                                     postJsonObject,
-                                     None, True, allowDeletion,
-                                     httpPrefix, projectVersion,
-                                     'search',
-                                     YTReplacementDomain,
-                                     showPublishedDateOnly,
-                                     showIndividualPostIcons,
-                                     showIndividualPostIcons,
-                                     False, False, False)
-            if postStr:
-                hashtagSearchForm += separatorStr + postStr
+        if not postJsonObject:
+            index += 1
+            continue
+        if not isPublicPost(postJsonObject):
+            index += 1
+            continue
+        showIndividualPostIcons = False
+        if nickname:
+            showIndividualPostIcons = True
+        allowDeletion = False
+        showRepeats = showIndividualPostIcons
+        showIcons = showIndividualPostIcons
+        manuallyApprovesFollowers = False
+        showPublicOnly = False
+        storeToCache = False
+        allowDownloads = True
+        avatarUrl = None
+        showAvatarOptions = True
+        postStr = \
+            individualPostAsHtml(allowDownloads, recentPostsCache,
+                                 maxRecentPosts,
+                                 iconsPath, translate, None,
+                                 baseDir, session, wfRequest,
+                                 personCache,
+                                 nickname, domain, port,
+                                 postJsonObject,
+                                 avatarUrl, showAvatarOptions,
+                                 allowDeletion,
+                                 httpPrefix, projectVersion,
+                                 'search',
+                                 YTReplacementDomain,
+                                 showPublishedDateOnly,
+                                 showRepeats, showIcons,
+                                 manuallyApprovesFollowers,
+                                 showPublicOnly,
+                                 storeToCache)
+        if postStr:
+            hashtagSearchForm += separatorStr + postStr
         index += 1
 
     if endIndex < noOfLines - 1:

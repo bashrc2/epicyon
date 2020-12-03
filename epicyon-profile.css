@@ -1,6 +1,8 @@
 @charset "UTF-8";
 
 :root {
+    --timeline-icon-width: 50px;
+    --timeline-icon-width-mobile: 100px;
     --header-bg-color: #282c37;
     --main-bg-color: #282c37;
     --post-bg-color: #282c37;
@@ -31,8 +33,9 @@
     --font-size-links: 18px;
     --font-size-publish-button: 18px;
     --font-size-newswire: 18px;
-    --font-size-newswire-mobile: 40px;
+    --font-size-newswire-mobile: 38px;
     --font-size-dropdown-header: 40px;
+    --font-size-mobile: 50px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -183,7 +186,7 @@ body, html {
 }
 
 .postSeparatorImage img {
-    background-color: var(--post-bg-color);
+    background-color: transparent;
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--post-separator-width);
@@ -192,7 +195,7 @@ body, html {
 }
 
 .postSeparatorImageLeft img {
-    background-color: var(--column-left-color);
+    background-color: transparent;
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--separator-width-left);
@@ -201,7 +204,7 @@ body, html {
 }
 
 .postSeparatorImageRight img {
-    background-color: var(--column-left-color);
+    background-color: transparent;
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--separator-width-right);
@@ -254,25 +257,22 @@ blockquote p {
     border: 2px solid var(--focus-color);
 }
 
-h1 {
-    font-family: var(--header-font);
-    color: var(--title-color);
-}
-
 a, u {
     color: var(--main-fg-color);
 }
 
-a:visited{
+a:visited {
     color: var(--main-visited-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-weight: bold;
+    font-weight: normal;
+    text-decoration: none;
 }
 
 a:link:hover {
@@ -284,7 +284,7 @@ a:visited:hover {
 }
 
 .buttonevent:hover {
-    filter: brightness(var(----icon-brightness-change));
+    filter: brightness(var(--icon-brightness-change));
 }
 
 a:focus {
@@ -317,8 +317,6 @@ a:focus {
 .profileHeader * {
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
-    -webkit-transition: all 0.25s ease;
-    transition: all 0.25s ease;
 }
 
 .profileHeader img.profileBackground {
@@ -437,17 +435,7 @@ a:focus {
     cursor: pointer;
     display: inline-block;
     position: relative;
-    transition: 0.5s;
-}
-
-.button span:after {
-    font-family: var(--header-font);
-    content: '\00bb';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: -20px;
-    transition: 0.5s;
+    transition: 1.0s;
 }
 
 .button:hover {
@@ -465,17 +453,7 @@ a:focus {
     cursor: pointer;
     display: inline-block;
     position: relative;
-    transition: 0.5s;
-}
-
-.buttonselected span:after {
-    font-family: var(--header-font);
-    content: '\00bb';
-    position: absolute;
-    opacity: 0;
-    top: 0;
-    right: -20px;
-    transition: 0.5s;
+    transition: 1.0s;
 }
 
 .buttonselected:hover {
@@ -631,7 +609,7 @@ a:focus {
 }
 
 .containericons img:hover {
-    filter: brightness(var(----icon-brightness-change));
+    filter: brightness(var(--icon-brightness-change));
 }
 
 .post-title {
@@ -940,14 +918,6 @@ div.gallery img {
 li { list-style:none;}
 /***********BUTTON CODE ******************************************************/
 
-a, button, input:focus, input[type='button'], input[type='reset'], input[type='submit'], textarea:focus, .button {
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
-    text-decoration: none;
-}
 .btn {
     margin: -3px 0 0 0;
 }
@@ -970,6 +940,11 @@ div.container {
         min-width: 950px;
         font-size: var(--font-size);
         line-height: var(--line-spacing);
+    }
+    h1 {
+        font-family: var(--header-font);
+        font-size: var(--font-size);
+        color: var(--title-color);
     }
     .containerHeader {
         border: var(--border-width-header) solid var(--border-color);
@@ -1067,12 +1042,14 @@ div.container {
         float: left;
         width: var(--column-left-width);
     }
+    .col-left img.leftColEditImage:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
     .col-left img.leftColEdit {
         background: var(--column-left-color);
         width: var(--column-left-icon-size);
     }
     .col-left img.leftColEditImage {
-        background: var(--column-left-color);
         width: var(--column-left-icon-size);
         float: right;
     }
@@ -1112,12 +1089,15 @@ div.container {
         width: var(--column-right-width);
         overflow: hidden;
     }
+    .col-right img.rightColEditImage:hover {
+        filter: brightness(var(--icon-brightness-change));
+    }
     .col-right img.rightColEdit {
-        background: var(--column-left-color);
+        background: transparent;
         width: var(--column-right-icon-size);
     }
     .col-right img.rightColEditImage {
-        background: var(--column-left-color);
+        background: transparent;
         width: var(--column-right-icon-size);
         float: right;
     }
@@ -1212,7 +1192,7 @@ div.container {
         margin-right: 0px;
         padding: 0px 0px;
         margin: 0px 0px;
-        width: 50px;
+        width: var(--timeline-icon-width);
     }
     .containerHeader img.timelineicon {
         float: var(--icons-side);
@@ -1220,7 +1200,7 @@ div.container {
         margin-right:0;
         padding: 0 0;
         margin: 0 0;
-        width: 50px;
+        width: var(--timeline-icon-width);
     }
     .container img.emojiheader {
         float: none;
@@ -1612,6 +1592,11 @@ div.container {
         font-size: var(--font-size);
         line-height: var(--line-spacing);
     }
+    h1 {
+        font-family: var(--header-font);
+        font-size: var(--font-size-mobile);
+        color: var(--title-color);
+    }
     .containerHeader {
         border: var(--border-width-header) solid var(--border-color);
         background-color: var(--header-bg-color);
@@ -1832,7 +1817,7 @@ div.container {
         margin-right: 0px;
         padding: 0px 0px;
         margin: 0px 0px;
-        width: 100px;
+        width: var(--timeline-icon-width-mobile);
     }
     .containerHeader img.timelineicon {
         float: var(--icons-side);
@@ -1840,7 +1825,7 @@ div.container {
         margin-right:0;
         padding: 0 0;
         margin: 0 0;
-        width: 100px;
+        width: var(--timeline-icon-width-mobile);
     }
     .container img.emojiheader {
         float: none;

@@ -40,6 +40,8 @@ from ssb import getSSBAddress
 from ssb import setSSBAddress
 from tox import getToxAddress
 from tox import setToxAddress
+from jami import getJamiAddress
+from jami import setJamiAddress
 from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
@@ -63,7 +65,6 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import isModerator
-from posts import isEditor
 from posts import mutePost
 from posts import unmutePost
 from posts import createQuestionPost
@@ -113,15 +114,16 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import htmlHashtagBlocked
+from webapp_utils import htmlFollowingList
 from webapp_utils import setBlogAddress
 from webapp_utils import getBlogAddress
 from webapp_calendar import htmlCalendarDeleteConfirm
 from webapp_calendar import htmlCalendar
 from webapp_about import htmlAbout
-from webapp import htmlFollowingList
-from webapp import htmlDeletePost
-from webapp import htmlRemoveSharedItem
-from webapp import htmlUnblockConfirm
+from webapp_confirm import htmlConfirmDelete
+from webapp_confirm import htmlConfirmRemoveSharedItem
+from webapp_confirm import htmlConfirmUnblock
 from webapp_person_options import htmlPersonOptions
 from webapp_timeline import htmlShares
 from webapp_timeline import htmlInbox
@@ -132,6 +134,7 @@ from webapp_timeline import htmlInboxReplies
 from webapp_timeline import htmlInboxMedia
 from webapp_timeline import htmlInboxBlogs
 from webapp_timeline import htmlInboxNews
+from webapp_timeline import htmlInboxFeatures
 from webapp_timeline import htmlOutbox
 from webapp_moderation import htmlModeration
 from webapp_moderation import htmlModerationInfo
@@ -140,9 +143,8 @@ from webapp_login import htmlLogin
 from webapp_login import htmlGetLoginCredentials
 from webapp_suspended import htmlSuspended
 from webapp_tos import htmlTermsOfService
-from webapp import htmlFollowConfirm
-from webapp import htmlUnfollowConfirm
-from webapp import htmlHashtagBlocked
+from webapp_confirm import htmlConfirmFollow
+from webapp_confirm import htmlConfirmUnfollow
 from webapp_post import htmlPostReplies
 from webapp_post import htmlIndividualPost
 from webapp_profile import htmlEditProfile
@@ -162,10 +164,14 @@ from webapp_search import htmlSearchEmoji
 from webapp_search import htmlSearchSharedItems
 from webapp_search import htmlSearchEmojiTextEntry
 from webapp_search import htmlSearch
+from webapp_hashtagswarm import getHashtagCategoriesFeed
+from webapp_hashtagswarm import htmlSearchHashtagCategory
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import setHashtagCategory
+from utils import isEditor
 from utils import getImageExtensions
 from utils import mediaFileMimeType
 from utils import getCSS
@@ -227,6 +233,7 @@ from newswire import rss2Header
 from newswire import rss2Footer
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
+from filters import isFiltered
 import os
 
 
@@ -1109,6 +1116,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico') or \
+           self.path.startswith('/categories.xml') or \
            self.path.startswith('/newswire.xml'):
             return False
 
@@ -1120,21 +1128,22 @@ class PubServer(BaseHTTPRequestHandler):
                     tokenStr = tokenStr.split(';')[0].strip()
                 if self.server.tokensLookup.get(tokenStr):
                     nickname = self.server.tokensLookup[tokenStr]
-                    self.authorizedNickname = nickname
-                    # default to the inbox of the person
-                    if self.path == '/':
-                        self.path = '/users/' + nickname + '/inbox'
-                    # check that the path contains the same nickname
-                    # as the cookie otherwise it would be possible
-                    # to be authorized to use an account you don't own
-                    if '/' + nickname + '/' in self.path:
-                        return True
-                    elif '/' + nickname + '?' in self.path:
-                        return True
-                    elif self.path.endswith('/' + nickname):
-                        return True
-                    print('AUTH: nickname ' + nickname +
-                          ' was not found in path ' + self.path)
+                    if not isSystemAccount(nickname):
+                        self.authorizedNickname = nickname
+                        # default to the inbox of the person
+                        if self.path == '/':
+                            self.path = '/users/' + nickname + '/inbox'
+                        # check that the path contains the same nickname
+                        # as the cookie otherwise it would be possible
+                        # to be authorized to use an account you don't own
+                        if '/' + nickname + '/' in self.path:
+                            return True
+                        elif '/' + nickname + '?' in self.path:
+                            return True
+                        elif self.path.endswith('/' + nickname):
+                            return True
+                        print('AUTH: nickname ' + nickname +
+                              ' was not found in path ' + self.path)
                     return False
                 print('AUTH: epicyon cookie ' +
                       'authorization failed, header=' +
@@ -1144,13 +1153,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
-        # basic auth
+        # basic auth for c2s
         if self.headers.get('Authorization'):
             if authorize(self.server.baseDir, self.path,
                          self.headers['Authorization'],
                          self.server.debug):
                 return True
-            print('AUTH: Basic auth did not authorize ' +
+            print('AUTH: C2S Basic auth did not authorize ' +
                   self.headers['Authorization'])
         return False
 
@@ -1518,9 +1527,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        moderationText)
                         if postFilename:
                             if canRemovePost(baseDir,
-                                             nickname,
-                                             domain,
-                                             port,
+                                             nickname, domain, port,
                                              moderationText):
                                 deletePost(baseDir,
                                            httpPrefix,
@@ -1528,6 +1535,23 @@ class PubServer(BaseHTTPRequestHandler):
                                            postFilename,
                                            debug,
                                            self.server.recentPostsCache)
+                        if nickname != 'news':
+                            # if this is a local blog post then also remove it
+                            # from the news actor
+                            postFilename = \
+                                locatePost(baseDir, 'news', domain,
+                                           moderationText)
+                            if postFilename:
+                                if canRemovePost(baseDir,
+                                                 'news', domain, port,
+                                                 moderationText):
+                                    deletePost(baseDir,
+                                               httpPrefix,
+                                               'news', domain,
+                                               postFilename,
+                                               debug,
+                                               self.server.recentPostsCache)
+
         if callingDomain.endswith('.onion') and onionDomain:
             actorStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
@@ -1773,7 +1797,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Unblocking ' + optionsActor)
             msg = \
-                htmlUnblockConfirm(self.server.cssCache,
+                htmlConfirmUnblock(self.server.cssCache,
                                    self.server.translate,
                                    baseDir,
                                    usersPath,
@@ -1791,7 +1815,7 @@ class PubServer(BaseHTTPRequestHandler):
             if debug:
                 print('Following ' + optionsActor)
             msg = \
-                htmlFollowConfirm(self.server.cssCache,
+                htmlConfirmFollow(self.server.cssCache,
                                   self.server.translate,
                                   baseDir,
                                   usersPath,
@@ -1808,7 +1832,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '&submitUnfollow=' in optionsConfirmParams:
             print('Unfollowing ' + optionsActor)
             msg = \
-                htmlUnfollowConfirm(self.server.cssCache,
+                htmlConfirmUnfollow(self.server.cssCache,
                                     self.server.translate,
                                     baseDir,
                                     usersPath,
@@ -2732,7 +2756,7 @@ class PubServer(BaseHTTPRequestHandler):
                     domain: str, domainFull: str,
                     onionDomain: str, i2pDomain: str,
                     debug: bool) -> None:
-        """Endpoint for removing posts
+        """Endpoint for removing posts after confirmation
         """
         pageNumber = 1
         usersPath = path.split('/rmpost')[0]
@@ -2796,7 +2820,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'actor': removePostActor,
                     'object': removeMessageId,
                     'to': toList,
-                    'cc': [removePostActor+'/followers'],
+                    'cc': [removePostActor + '/followers'],
                     'type': 'Delete'
                 }
                 self.postToNickname = getNicknameFromActor(removePostActor)
@@ -2956,6 +2980,129 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr = \
                 'http://' + i2pDomain + usersPath
         self._redirect_headers(actorStr + '/' + defaultTimeline,
+                               cookie, callingDomain)
+        self.server.POSTbusy = False
+
+    def _setHashtagCategory(self, callingDomain: str, cookie: str,
+                            authorized: bool, path: str,
+                            baseDir: str, httpPrefix: str,
+                            domain: str, domainFull: str,
+                            onionDomain: str, i2pDomain: str, debug: bool,
+                            defaultTimeline: str,
+                            allowLocalNetworkAccess: bool) -> None:
+        """On the screen after selecting a hashtag from the swarm, this sets
+        the category for that tag
+        """
+        usersPath = path.replace('/sethashtagcategory', '')
+        hashtag = ''
+        if '/tags/' not in usersPath:
+            # no hashtag is specified within the path
+            self._404()
+            return
+        hashtag = usersPath.split('/tags/')[1].strip()
+        hashtag = urllib.parse.unquote_plus(hashtag)
+        if not hashtag:
+            # no hashtag was given in the path
+            self._404()
+            return
+        hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+        if not os.path.isfile(hashtagFilename):
+            # the hashtag does not exist
+            self._404()
+            return
+        usersPath = usersPath.split('/tags/')[0]
+        actorStr = httpPrefix + '://' + domainFull + usersPath
+        tagScreenStr = actorStr + '/tags/' + hashtag
+        if ' boundary=' in self.headers['Content-type']:
+            boundary = self.headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary = boundary.split(';')[0]
+
+            # get the nickname
+            nickname = getNicknameFromActor(actorStr)
+            editor = None
+            if nickname:
+                editor = isEditor(baseDir, nickname)
+            if not hashtag or not editor:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                if not nickname:
+                    print('WARN: nickname not found in ' + actorStr)
+                else:
+                    print('WARN: nickname is not a moderator' + actorStr)
+                self._redirect_headers(tagScreenStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            length = int(self.headers['Content-length'])
+
+            # check that the POST isn't too large
+            if length > self.server.maxPostLength:
+                if callingDomain.endswith('.onion') and \
+                   onionDomain:
+                    actorStr = \
+                        'http://' + onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      i2pDomain):
+                    actorStr = \
+                        'http://' + i2pDomain + usersPath
+                print('Maximum links data length exceeded ' + str(length))
+                self._redirect_headers(tagScreenStr, cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+
+            try:
+                # read the bytes of the http form POST
+                postBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: connection was reset while ' +
+                          'reading bytes from http form POST')
+                else:
+                    print('WARN: error while reading bytes ' +
+                          'from http form POST')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+            except ValueError as e:
+                print('ERROR: failed to read bytes for POST')
+                print(e)
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
+            # extract all of the text fields into a dict
+            fields = \
+                extractTextFieldsInPOST(postBytes, boundary, debug)
+
+            if fields.get('hashtagCategory'):
+                categoryStr = fields['hashtagCategory'].lower()
+                if not isBlockedHashtag(baseDir, categoryStr) and \
+                   not isFiltered(baseDir, nickname, domain, categoryStr):
+                    setHashtagCategory(baseDir, hashtag, categoryStr)
+            else:
+                categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+                if os.path.isfile(categoryFilename):
+                    os.remove(categoryFilename)
+
+        # redirect back to the default timeline
+        if callingDomain.endswith('.onion') and \
+           onionDomain:
+            actorStr = \
+                'http://' + onionDomain + usersPath
+        elif (callingDomain.endswith('.i2p') and
+              i2pDomain):
+            actorStr = \
+                'http://' + i2pDomain + usersPath
+        self._redirect_headers(tagScreenStr,
                                cookie, callingDomain)
         self.server.POSTbusy = False
 
@@ -3207,7 +3354,7 @@ class PubServer(BaseHTTPRequestHandler):
                       domain: str, domainFull: str,
                       onionDomain: str, i2pDomain: str, debug: bool,
                       defaultTimeline: str) -> None:
-        """edits a news post
+        """edits a news post after receiving POST
         """
         usersPath = path.replace('/newseditdata', '')
         usersPath = usersPath.replace('/editnewspost', '')
@@ -3235,8 +3382,12 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in ' + actorStr)
                 else:
                     print('WARN: nickname is not an editor' + actorStr)
-                self._redirect_headers(actorStr + '/tlnews',
-                                       cookie, callingDomain)
+                if self.server.newsInstance:
+                    self._redirect_headers(actorStr + '/tlfeatures',
+                                           cookie, callingDomain)
+                else:
+                    self._redirect_headers(actorStr + '/tlnews',
+                                           cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
 
@@ -3253,8 +3404,12 @@ class PubServer(BaseHTTPRequestHandler):
                     actorStr = \
                         'http://' + i2pDomain + usersPath
                 print('Maximum news data length exceeded ' + str(length))
-                self._redirect_headers(actorStr + 'tlnews',
-                                       cookie, callingDomain)
+                if self.server.newsInstance:
+                    self._redirect_headers(actorStr + '/tlfeatures',
+                                           cookie, callingDomain)
+                else:
+                    self._redirect_headers(actorStr + '/tlnews',
+                                           cookie, callingDomain)
                 self.server.POSTbusy = False
                 return
 
@@ -3342,8 +3497,12 @@ class PubServer(BaseHTTPRequestHandler):
               i2pDomain):
             actorStr = \
                 'http://' + i2pDomain + usersPath
-        self._redirect_headers(actorStr + '/tlnews',
-                               cookie, callingDomain)
+        if self.server.newsInstance:
+            self._redirect_headers(actorStr + '/tlfeatures',
+                                   cookie, callingDomain)
+        else:
+            self._redirect_headers(actorStr + '/tlnews',
+                                   cookie, callingDomain)
         self.server.POSTbusy = False
 
     def _profileUpdate(self, callingDomain: str, cookie: str,
@@ -3616,7 +3775,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.newsInstance = True
                             self.server.blogsInstance = False
                             self.server.mediaInstance = False
-                            self.server.defaultTimeline = 'tlnews'
+                            self.server.defaultTimeline = 'tlfeatures'
                         setConfigParam(baseDir,
                                        "mediaInstance",
                                        self.server.mediaInstance)
@@ -3756,6 +3915,18 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if currentToxAddress:
                             setToxAddress(actorJson, '')
+                            actorChanged = True
+
+                    # change jami address
+                    currentJamiAddress = getJamiAddress(actorJson)
+                    if fields.get('jamiAddress'):
+                        if fields['jamiAddress'] != currentJamiAddress:
+                            setJamiAddress(actorJson,
+                                           fields['jamiAddress'])
+                            actorChanged = True
+                    else:
+                        if currentJamiAddress:
+                            setJamiAddress(actorJson, '')
                             actorChanged = True
 
                     # change PGP public key
@@ -4643,6 +4814,41 @@ class PubServer(BaseHTTPRequestHandler):
                   path + ' ' + callingDomain)
         self._404()
 
+    def _getHashtagCategoriesFeed(self, authorized: bool,
+                                  callingDomain: str, path: str,
+                                  baseDir: str, httpPrefix: str,
+                                  domain: str, port: int, proxyType: str,
+                                  GETstartTime, GETtimings: {},
+                                  debug: bool) -> None:
+        """Returns the hashtag categories feed
+        """
+        if not self.server.session:
+            print('Starting new session during RSS categories request')
+            self.server.session = \
+                createSession(proxyType)
+        if not self.server.session:
+            print('ERROR: GET failed to create session ' +
+                  'during RSS categories request')
+            self._404()
+            return
+
+        hashtagCategories = None
+        msg = \
+            getHashtagCategoriesFeed(baseDir, hashtagCategories)
+        if msg:
+            msg = msg.encode('utf-8')
+            self._set_headers('text/xml', len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if debug:
+                print('Sent rss2 categories feed: ' +
+                      path + ' ' + callingDomain)
+            return
+        if debug:
+            print('Failed to get rss2 categories feed: ' +
+                  path + ' ' + callingDomain)
+        self._404()
+
     def _getRSS3feed(self, authorized: bool,
                      callingDomain: str, path: str,
                      baseDir: str, httpPrefix: str,
@@ -4718,6 +4924,7 @@ class PubServer(BaseHTTPRequestHandler):
             matrixAddress = None
             blogAddress = None
             toxAddress = None
+            jamiAddress = None
             ssbAddress = None
             emailAddress = None
             actorJson = getPersonFromCache(baseDir,
@@ -4731,6 +4938,7 @@ class PubServer(BaseHTTPRequestHandler):
                 ssbAddress = getSSBAddress(actorJson)
                 blogAddress = getBlogAddress(actorJson)
                 toxAddress = getToxAddress(actorJson)
+                jamiAddress = getJamiAddress(actorJson)
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
@@ -4746,7 +4954,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber, donateUrl,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
-                                    toxAddress,
+                                    toxAddress, jamiAddress,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress).encode('utf-8')
             self._set_headers('text/html', len(msg),
@@ -4758,7 +4966,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if '/users/news/' in path:
-            self._redirect_headers(originPathStr + '/tlnews',
+            self._redirect_headers(originPathStr + '/tlfeatures',
                                    cookie, callingDomain)
             return
 
@@ -4929,7 +5137,9 @@ class PubServer(BaseHTTPRequestHandler):
         hashtag = path.split('/tags/')[1]
         if '?page=' in hashtag:
             hashtag = hashtag.split('?page=')[0]
+        hashtag = urllib.parse.unquote_plus(hashtag)
         if isBlockedHashtag(baseDir, hashtag):
+            print('BLOCK: hashtag #' + hashtag)
             msg = htmlHashtagBlocked(self.server.cssCache, baseDir,
                                      self.server.translate).encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
@@ -5791,7 +6001,7 @@ class PubServer(BaseHTTPRequestHandler):
                       GETstartTime, GETtimings: {},
                       proxyType: str, cookie: str,
                       debug: str):
-        """Delete button is pressed
+        """Delete button is pressed on a post
         """
         if not cookie:
             print('ERROR: no cookie given when deleting')
@@ -5855,16 +6065,16 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             deleteStr = \
-                htmlDeletePost(self.server.cssCache,
-                               self.server.recentPostsCache,
-                               self.server.maxRecentPosts,
-                               self.server.translate, pageNumber,
-                               self.server.session, baseDir,
-                               deleteUrl, httpPrefix,
-                               __version__, self.server.cachedWebfingers,
-                               self.server.personCache, callingDomain,
-                               self.server.YTReplacementDomain,
-                               self.server.showPublishedDateOnly)
+                htmlConfirmDelete(self.server.cssCache,
+                                  self.server.recentPostsCache,
+                                  self.server.maxRecentPosts,
+                                  self.server.translate, pageNumber,
+                                  self.server.session, baseDir,
+                                  deleteUrl, httpPrefix,
+                                  __version__, self.server.cachedWebfingers,
+                                  self.server.personCache, callingDomain,
+                                  self.server.YTReplacementDomain,
+                                  self.server.showPublishedDateOnly)
             if deleteStr:
                 self._set_headers('text/html', len(deleteStr),
                                   cookie, callingDomain)
@@ -7293,6 +7503,127 @@ class PubServer(BaseHTTPRequestHandler):
             # not the news inbox
             if debug:
                 print('DEBUG: GET access to news is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy = False
+            return True
+        return False
+
+    def _showFeaturesTimeline(self, authorized: bool,
+                              callingDomain: str, path: str,
+                              baseDir: str, httpPrefix: str,
+                              domain: str, domainFull: str, port: int,
+                              onionDomain: str, i2pDomain: str,
+                              GETstartTime, GETtimings: {},
+                              proxyType: str, cookie: str,
+                              debug: str) -> bool:
+        """Shows the features timeline (all local blogs)
+        """
+        if '/users/' in path:
+            if authorized:
+                inboxFeaturesFeed = \
+                    personBoxJson(self.server.recentPostsCache,
+                                  self.server.session,
+                                  baseDir,
+                                  domain,
+                                  port,
+                                  path,
+                                  httpPrefix,
+                                  maxPostsInNewsFeed, 'tlfeatures',
+                                  True,
+                                  self.server.newswireVotesThreshold,
+                                  self.server.positiveVoting,
+                                  self.server.votingTimeMins)
+                if not inboxFeaturesFeed:
+                    inboxFeaturesFeed = []
+                if self._requestHTTP():
+                    nickname = path.replace('/users/', '')
+                    nickname = nickname.replace('/tlfeatures', '')
+                    pageNumber = 1
+                    if '?page=' in nickname:
+                        pageNumber = nickname.split('?page=')[1]
+                        nickname = nickname.split('?page=')[0]
+                        if pageNumber.isdigit():
+                            pageNumber = int(pageNumber)
+                        else:
+                            pageNumber = 1
+                    if 'page=' not in path:
+                        # if no page was specified then show the first
+                        inboxFeaturesFeed = \
+                            personBoxJson(self.server.recentPostsCache,
+                                          self.server.session,
+                                          baseDir,
+                                          domain,
+                                          port,
+                                          path + '?page=1',
+                                          httpPrefix,
+                                          maxPostsInBlogsFeed, 'tlfeatures',
+                                          True,
+                                          self.server.newswireVotesThreshold,
+                                          self.server.positiveVoting,
+                                          self.server.votingTimeMins)
+                    currNickname = path.split('/users/')[1]
+                    if '/' in currNickname:
+                        currNickname = currNickname.split('/')[0]
+                    fullWidthTimelineButtonHeader = \
+                        self.server.fullWidthTimelineButtonHeader
+                    msg = \
+                        htmlInboxFeatures(self.server.cssCache,
+                                          self.server.defaultTimeline,
+                                          self.server.recentPostsCache,
+                                          self.server.maxRecentPosts,
+                                          self.server.translate,
+                                          pageNumber, maxPostsInBlogsFeed,
+                                          self.server.session,
+                                          baseDir,
+                                          self.server.cachedWebfingers,
+                                          self.server.personCache,
+                                          nickname,
+                                          domain,
+                                          port,
+                                          inboxFeaturesFeed,
+                                          self.server.allowDeletion,
+                                          httpPrefix,
+                                          self.server.projectVersion,
+                                          self._isMinimal(nickname),
+                                          self.server.YTReplacementDomain,
+                                          self.server.showPublishedDateOnly,
+                                          self.server.newswire,
+                                          self.server.positiveVoting,
+                                          self.server.showPublishAsIcon,
+                                          fullWidthTimelineButtonHeader,
+                                          self.server.iconsAsButtons,
+                                          self.server.rssIconAtTop,
+                                          self.server.publishButtonAtTop,
+                                          authorized)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                    self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                              'show blogs 2 done',
+                                              'show news 2')
+                else:
+                    # don't need authenticated fetch here because there is
+                    # already the authorization check
+                    msg = json.dumps(inboxFeaturesFeed,
+                                     ensure_ascii=False)
+                    msg = msg.encode('utf-8')
+                    self._set_headers('application/json',
+                                      len(msg),
+                                      None, callingDomain)
+                    self._write(msg)
+                self.server.GETbusy = False
+                return True
+            else:
+                if debug:
+                    nickname = 'news'
+                    print('DEBUG: ' + nickname +
+                          ' was not authorized to access ' + path)
+        if path != '/tlfeatures':
+            # not the features inbox
+            if debug:
+                print('DEBUG: GET access to features is unauthorized')
             self.send_response(405)
             self.end_headers()
             self.server.GETbusy = False
@@ -8730,11 +9061,16 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the edit screen for a news post
         """
         if '/users/' in path and '/editnewspost=' in path:
+            postActor = 'news'
+            if '?actor=' in path:
+                postActor = path.split('?actor=')[1]
+                if '?' in postActor:
+                    postActor = postActor.split('?')[0]
             postId = path.split('/editnewspost=')[1]
             if '?' in postId:
                 postId = postId.split('?')[0]
             postUrl = httpPrefix + '://' + domainFull + \
-                '/users/news/statuses/' + postId
+                '/users/' + postActor + '/statuses/' + postId
             path = path.split('/editnewspost=')[0]
             msg = htmlEditNewsPost(self.server.cssCache,
                                    translate, baseDir,
@@ -8979,6 +9315,18 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'fonts', 'sharedInbox enabled')
 
+        if self.path == '/categories.xml':
+            self._getHashtagCategoriesFeed(authorized,
+                                           callingDomain, self.path,
+                                           self.server.baseDir,
+                                           self.server.httpPrefix,
+                                           self.server.domain,
+                                           self.server.port,
+                                           self.server.proxyType,
+                                           GETstartTime, GETtimings,
+                                           self.server.debug)
+            return
+
         if self.path == '/newswire.xml':
             self._getNewswireFeed(authorized,
                                   callingDomain, self.path,
@@ -9178,11 +9526,11 @@ class PubServer(BaseHTTPRequestHandler):
             actor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
-            msg = htmlRemoveSharedItem(self.server.cssCache,
-                                       self.server.translate,
-                                       self.server.baseDir,
-                                       actor, shareName,
-                                       callingDomain).encode('utf-8')
+            msg = htmlConfirmRemoveSharedItem(self.server.cssCache,
+                                              self.server.translate,
+                                              self.server.baseDir,
+                                              actor, shareName,
+                                              callingDomain).encode('utf-8')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -9772,7 +10120,7 @@ class PubServer(BaseHTTPRequestHandler):
                     elif self.server.mediaInstance:
                         self.path = '/users/' + nickname + '/tlmedia'
                     else:
-                        self.path = '/users/' + nickname + '/tlnews'
+                        self.path = '/users/' + nickname + '/tlfeatures'
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
@@ -9794,6 +10142,22 @@ class PubServer(BaseHTTPRequestHandler):
                                           'hashtag search done',
                                           'search screen shown')
                 return
+
+        # show a hashtag category from the search screen
+        if htmlGET and '/category/' in self.path:
+            msg = htmlSearchHashtagCategory(self.server.cssCache,
+                                            self.server.translate,
+                                            self.server.baseDir, self.path,
+                                            self.server.domain)
+            if msg:
+                msg = msg.encode('utf-8')
+                self._set_headers('text/html', len(msg), cookie, callingDomain)
+                self._write(msg)
+            self.server.GETbusy = False
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'hashtag category done',
+                                      'hashtag category screen shown')
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'hashtag search done',
@@ -10527,6 +10891,23 @@ class PubServer(BaseHTTPRequestHandler):
                                       cookie, self.server.debug):
                 return
 
+        # get features (local blogs) for a given person
+        if self.path.endswith('/tlfeatures') or \
+           '/tlfeatures?page=' in self.path:
+            if self._showFeaturesTimeline(authorized,
+                                          callingDomain, self.path,
+                                          self.server.baseDir,
+                                          self.server.httpPrefix,
+                                          self.server.domain,
+                                          self.server.domainFull,
+                                          self.server.port,
+                                          self.server.onionDomain,
+                                          self.server.i2pDomain,
+                                          GETstartTime, GETtimings,
+                                          self.server.proxyType,
+                                          cookie, self.server.debug):
+                return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show blogs 2 done',
                                   'show news 2 done')
@@ -11111,6 +11492,13 @@ class PubServer(BaseHTTPRequestHandler):
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain)
                         saveJson(postJsonObject, postFilename)
+                        # also save to the news actor
+                        if nickname != 'news':
+                            postFilename = \
+                                postFilename.replace('#users#' +
+                                                     nickname + '#',
+                                                     '#users#news#')
+                            saveJson(postJsonObject, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
                         return 1
                     else:
@@ -11758,6 +12146,20 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 2)
+
+        if authorized and self.path.endswith('/sethashtagcategory'):
+            self._setHashtagCategory(callingDomain, cookie,
+                                     authorized, self.path,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domain,
+                                     self.server.domainFull,
+                                     self.server.onionDomain,
+                                     self.server.i2pDomain,
+                                     self.server.debug,
+                                     self.server.defaultTimeline,
+                                     self.server.allowLocalNetworkAccess)
+            return
 
         # update of profile/avatar from web interface,
         # after selecting Edit button then Submit
@@ -12486,7 +12888,7 @@ def runDaemon(maxNewswirePosts: int,
     if blogsInstance:
         httpd.defaultTimeline = 'tlblogs'
     if newsInstance:
-        httpd.defaultTimeline = 'tlnews'
+        httpd.defaultTimeline = 'tlfeatures'
 
     # load translations dictionary
     httpd.translate = {}
@@ -12578,6 +12980,9 @@ def runDaemon(maxNewswirePosts: int,
 
     # maximum size of individual RSS feed items, in K
     httpd.maxFeedItemSizeKb = maxFeedItemSizeKb
+
+    # maximum size of a hashtag category, in K
+    httpd.maxCategoriesFeedItemSizeKb = 256
 
     if registration == 'open':
         httpd.registration = True

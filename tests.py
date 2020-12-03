@@ -32,6 +32,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
 from utils import siteIsActive
@@ -1387,6 +1388,8 @@ def testClientToServer():
                                httpPrefix,
                                cachedWebfingers, personCache,
                                True, __version__)
+    alicePetnamesFilename = aliceDir + '/accounts/' + \
+        'alice@' + aliceDomain + '/petnames.txt'
     aliceFollowingFilename = \
         aliceDir + '/accounts/alice@' + aliceDomain + '/following.txt'
     bobFollowersFilename = \
@@ -1395,7 +1398,8 @@ def testClientToServer():
         if os.path.isfile(bobFollowersFilename):
             if 'alice@' + aliceDomain + ':' + str(alicePort) in \
                open(bobFollowersFilename).read():
-                if os.path.isfile(aliceFollowingFilename):
+                if os.path.isfile(aliceFollowingFilename) and \
+                   os.path.isfile(alicePetnamesFilename):
                     if 'bob@' + bobDomain + ':' + str(bobPort) in \
                        open(aliceFollowingFilename).read():
                         break
@@ -1403,6 +1407,9 @@ def testClientToServer():
 
     assert os.path.isfile(bobFollowersFilename)
     assert os.path.isfile(aliceFollowingFilename)
+    assert os.path.isfile(alicePetnamesFilename)
+    assert 'bob bob@' + bobDomain in \
+        open(alicePetnamesFilename).read()
     print('alice@' + aliceDomain + ':' + str(alicePort) + ' in ' +
           bobFollowersFilename)
     assert 'alice@' + aliceDomain + ':' + str(alicePort) in \
@@ -2397,8 +2404,26 @@ def testParseFeedDate():
     assert publishedDate == "2020-11-22 18:51:33+00:00"
 
 
+def testValidNickname():
+    print('testValidNickname')
+    domain = 'somedomain.net'
+
+    nickname = 'myvalidnick'
+    assert validNickname(domain, nickname)
+
+    nickname = 'my.invalid.nick'
+    assert not validNickname(domain, nickname)
+
+    nickname = 'myinvalidnick?'
+    assert not validNickname(domain, nickname)
+
+    nickname = 'my invalid nick?'
+    assert not validNickname(domain, nickname)
+
+
 def runAllTests():
     print('Running tests...')
+    testValidNickname()
     testParseFeedDate()
     testFirstParagraphFromString()
     testGetNewswireTags()
