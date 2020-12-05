@@ -69,16 +69,17 @@ def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
 
                 if recent:
                     tagsFilename = baseDir + '/tags/' + hashtag + '.txt'
-                    if os.path.isfile(tagsFilename):
-                        modTimesinceEpoc = \
-                            os.path.getmtime(tagsFilename)
-                        lastModifiedDate = \
-                            datetime.datetime.fromtimestamp(modTimesinceEpoc)
-                        fileDaysSinceEpoch = \
-                            (lastModifiedDate -
-                             datetime.datetime(1970, 1, 1)).days
-                        if fileDaysSinceEpoch < recently:
-                            continue
+                    if not os.path.isfile(tagsFilename):
+                        continue
+                    modTimesinceEpoc = \
+                        os.path.getmtime(tagsFilename)
+                    lastModifiedDate = \
+                        datetime.datetime.fromtimestamp(modTimesinceEpoc)
+                    fileDaysSinceEpoch = \
+                        (lastModifiedDate -
+                         datetime.datetime(1970, 1, 1)).days
+                    if fileDaysSinceEpoch < recently:
+                        continue
 
                 if not hashtagCategories.get(categoryStr):
                     hashtagCategories[categoryStr] = [hashtag]
