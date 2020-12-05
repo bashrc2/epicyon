@@ -30,6 +30,8 @@ from utils import loadJson
 from utils import saveJson
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
+from utils import getHashtagCategories
+from utils import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -68,6 +70,28 @@ from happening import saveEventPost
 from delete import removeOldHashtags
 
 
+def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
+    """Tries to guess a category for the given hashtag.
+    This works by trying to find the longest similar hashtag
+    """
+    categoryMatched = ''
+    tagMatchedLen = 0
+
+    for categoryStr, hashtagList in hashtagCategories.items():
+        for hashtag in hashtagList:
+            if hashtag in tagName or tagName in hashtag:
+                if not categoryMatched:
+                    tagMatchedLen = len(hashtag)
+                    categoryMatched = categoryStr
+                else:
+                    # match the longest tag
+                    if len(hashtag) > tagMatchedLen:
+                        categoryMatched = categoryStr
+    if not categoryMatched:
+        return
+    return categoryMatched
+
+
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
@@ -90,6 +114,8 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     if not os.path.isdir(tagsDir):
         print('Creating tags directory')
         os.mkdir(tagsDir)
+
+    hashtagCategories = getHashtagCategories(baseDir)
 
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
@@ -121,6 +147,14 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
                     print('WARN: Failed to write entry to tags file ' +
                           tagsFilename + ' ' + str(e))
                 removeOldHashtags(baseDir, 3)
+
+        # automatically assign a category to the tag if possible
+        categoryFilename = tagsDir + '/' + tagName + '.category'
+        if not os.path.isfile(categoryFilename):
+            categoryStr = \
+                guessHashtagCategory(tagName, hashtagCategories)
+            if categoryStr:
+                setHashtagCategory(baseDir, tagName, categoryStr)
 
 
 def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,

@@ -279,7 +279,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     htmlStr += '<h1><a href="' + actor + '/search"><b>'
     htmlStr += translate['Category'] + ': ' + categoryStr + '</b></a></h1>'
 
-    hashtagsDict = getHashtagCategories(baseDir, categoryStr)
+    hashtagsDict = getHashtagCategories(baseDir, True, categoryStr)
     if hashtagsDict:
         for categoryStr2, hashtagList in hashtagsDict.items():
             hashtagList.sort()

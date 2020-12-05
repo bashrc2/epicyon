@@ -38,10 +38,15 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     return ''
 
 
-def getHashtagCategories(baseDir: str, category=None) -> None:
+def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
     """Returns a dictionary containing hashtag categories
     """
     hashtagCategories = {}
+
+    if recent:
+        currTime = datetime.datetime.utcnow()
+        daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+        recently = daysSinceEpoch - 1
 
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
@@ -60,6 +65,20 @@ def getHashtagCategories(baseDir: str, category=None) -> None:
                 if category:
                     # only return a dictionary for a specific category
                     if categoryStr != category:
+                        continue
+
+                if recent:
+                    tagsFilename = baseDir + '/tags/' + hashtag + '.txt'
+                    if not os.path.isfile(tagsFilename):
+                        continue
+                    modTimesinceEpoc = \
+                        os.path.getmtime(tagsFilename)
+                    lastModifiedDate = \
+                        datetime.datetime.fromtimestamp(modTimesinceEpoc)
+                    fileDaysSinceEpoch = \
+                        (lastModifiedDate -
+                         datetime.datetime(1970, 1, 1)).days
+                    if fileDaysSinceEpoch < recently:
                         continue
 
                 if not hashtagCategories.get(categoryStr):
@@ -112,23 +131,29 @@ def validHashtagCategory(category: str) -> bool:
     return True
 
 
-def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
+def setHashtagCategory(baseDir: str, hashtag: str, category: str,
+                       force=False) -> bool:
     """Sets the category for the hashtag
     """
     if not validHashtagCategory(category):
         return False
 
-    hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtagFilename):
-        hashtag = hashtag.title()
+    if not force:
         hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
         if not os.path.isfile(hashtagFilename):
-            hashtag = hashtag.upper()
+            hashtag = hashtag.title()
             hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
             if not os.path.isfile(hashtagFilename):
-                return False
+                hashtag = hashtag.upper()
+                hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+                if not os.path.isfile(hashtagFilename):
+                    return False
 
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+    if force:
+        # don't overwrite any existing categories
+        if os.path.isfile(categoryFilename):
+            return False
     with open(categoryFilename, 'w+') as fp:
         fp.write(category)
         updateHashtagCategories(baseDir)
