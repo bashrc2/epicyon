@@ -75,20 +75,17 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
     This works by trying to find the longest similar hashtag
     """
     categoryMatched = ''
-    tagMatched = ''
     tagMatchedLen = 0
 
     for categoryStr, hashtagList in hashtagCategories.items():
         for hashtag in hashtagList:
-            if hashtag in tagName:
-                if not tagMatched:
-                    tagMatched = hashtag
-                    tagMatchedLen = len(tagMatched)
+            if hashtag in tagName or tagName in hashtag:
+                if not categoryMatched:
+                    tagMatchedLen = len(hashtag)
                     categoryMatched = categoryStr
                 else:
                     # match the longest tag
                     if len(hashtag) > tagMatchedLen:
-                        tagMatched = hashtag
                         categoryMatched = categoryStr
     if not categoryMatched:
         return
