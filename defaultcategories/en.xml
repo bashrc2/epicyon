@@ -34,7 +34,7 @@
 </item>
 <item>
   <title>security</title>
-  <description>encrypt password cryptography infosec gchq cryptowars UseAMaskUseTor cyberattack security tor vpn openssh openssl crypto opsec nsa protonvpn nitrokey openpgp gpg cybersecurity signal noscript openvpn</description>
+  <description>password encrypt password cryptography infosec gchq cryptowars UseAMaskUseTor cyberattack security tor vpn openssh openssl crypto opsec nsa protonvpn nitrokey openpgp gpg cybersecurity signal noscript openvpn</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -52,7 +52,7 @@
 </item>
 <item>
   <title>conferences</title>
-  <description>debconf talk FreedomBoxSummit summit minidebconf flossevent conf rC3 flossconf</description>
+  <description>schmoocon defcon C3 fossdem debconf talk FreedomBoxSummit summit minidebconf flossevent conf rC3 flossconf conference</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -82,13 +82,7 @@
 </item>
 <item>
   <title>games</title>
-  <description>minecraft TetrisGore gaming</description>
-  <link/>
-  <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
-</item>
-<item>
-  <title>cats</title>
-  <description>dailycatpic DailyCatVid</description>
+  <description>mud dnd rpg minetest game chess minecraft TetrisGore gaming</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -124,31 +118,31 @@
 </item>
 <item>
   <title>ethics</title>
-  <description>digitalethics</description>
+  <description>digitalethics ethics ethical</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>internet</title>
-  <description>redecentralize rtmp decentralization decentralize w3c torrent data icann dns openstandards oauth SmallWeb xmpp semanticweb ntp socialnetworks jabber decentralized darknet cookies darkweb server browser p2p web twitch domain browsers openculture internet openweb socialweb cloudflare</description>
+  <description>cyberspace www w3c redecentralize rtmp decentralization decentralize w3c torrent data icann dns openstandards oauth SmallWeb xmpp semanticweb ntp socialnetworks jabber decentralized darknet cookies darkweb server browser p2p web twitch domain browsers openculture internet openweb socialweb cloudflare</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>retro</title>
-  <description>atarist teletext floppydisk retrocomputing 80s z80 amiga</description>
+  <description>microcomputer microcomputing commodore C64 A500 8bit retro bbcmicro atari atarist teletext floppydisk retrocomputing 80s z80 amiga</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>years</title>
-  <description>Year2020</description>
+  <description>year Year2020</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>pets</title>
-  <description>catofmastodon catbehaviour cats kittens dog caturday catsofmastodon cute dogs cat catcontent</description>
+  <description>dailycatpic DailyCatVid dogsofmastodon catofmastodon catbehaviour cats kittens dog caturday catsofmastodon cute dogs cat catcontent pet</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -160,7 +154,7 @@
 </item>
 <item>
   <title>events</title>
-  <description>live followfriday livestream InternationalCheetahDay</description>
+  <description>meetup live followfriday livestream festival concert InternationalCheetahDay</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -172,13 +166,13 @@
 </item>
 <item>
   <title>hardware</title>
-  <description>keyboards modem keyboard cybredeck thinkpad</description>
+  <description>keyboards modem keyboard cyberdeck cybredeck thinkpad lenovo arm</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>linux</title>
-  <description>mobian openwrt distros wireguard linuxaudio gtk debian trisquel ubuntu xubuntu fedora distro qubesos linux btrfs</description>
+  <description>mobian openwrt distros wireguard linuxaudio gtk debian trisquel gentoo archlinux ubuntu xubuntu fedora systemd distro qubesos linux btrfs</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -202,19 +196,19 @@
 </item>
 <item>
   <title>climate</title>
-  <description>clouds weather</description>
+  <description>clouds weather climate</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>books</title>
-  <description>earthsea ebooks ebook epub</description>
+  <description>earthsea ebooks ebook epub book</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>scifi</title>
-  <description>startrek starwars</description>
+  <description>startrek starwars cyberpunk</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -268,13 +262,7 @@
 </item>
 <item>
   <title>election</title>
-  <description>voted vote</description>
-  <link/>
-  <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
-</item>
-<item>
-  <title>#music</title>
-  <description>trance</description>
+  <description>voted vote election</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -286,7 +274,7 @@
 </item>
 <item>
   <title>crafts</title>
-  <description>knitting makers</description>
+  <description>knitting makers jewelry quilt</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
@@ -304,19 +292,19 @@
 </item>
 <item>
   <title>seasons</title>
-  <description>winter</description>
+  <description>winter summer spring autumn</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>radio</title>
-  <description>hamradio</description>
+  <description>hamradio radio</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
 <item>
   <title>microcontroller</title>
-  <description>microcontroller</description>
+  <description>microcontroller arduino esp32</description>
   <link/>
   <pubDate>Sat, 05 Dec 2020 13:30:17 UT</pubDate>
 </item>
