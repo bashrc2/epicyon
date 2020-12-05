@@ -38,10 +38,15 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     return ''
 
 
-def getHashtagCategories(baseDir: str, category=None) -> None:
+def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
     """Returns a dictionary containing hashtag categories
     """
     hashtagCategories = {}
+
+    if recent:
+        currTime = datetime.datetime.utcnow()
+        daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+        recently = daysSinceEpoch - 1
 
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
@@ -61,6 +66,19 @@ def getHashtagCategories(baseDir: str, category=None) -> None:
                     # only return a dictionary for a specific category
                     if categoryStr != category:
                         continue
+
+                if recent:
+                    tagsFilename = baseDir + '/tags/' + hashtag + '.txt'
+                    if os.path.isfile(tagsFilename):
+                        modTimesinceEpoc = \
+                            os.path.getmtime(tagsFilename)
+                        lastModifiedDate = \
+                            datetime.datetime.fromtimestamp(modTimesinceEpoc)
+                        fileDaysSinceEpoch = \
+                            (lastModifiedDate -
+                             datetime.datetime(1970, 1, 1)).days
+                        if fileDaysSinceEpoch < recently:
+                            continue
 
                 if not hashtagCategories.get(categoryStr):
                     hashtagCategories[categoryStr] = [hashtag]
