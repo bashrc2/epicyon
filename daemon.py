@@ -231,6 +231,7 @@ from devices import E2EEaddDevice
 from newswire import getRSSfromDict
 from newswire import rss2Header
 from newswire import rss2Footer
+from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
 from filters import isFiltered
@@ -13148,6 +13149,9 @@ def runDaemon(maxNewswirePosts: int,
     # flags used when restarting the inbox queue
     httpd.restartInboxQueueInProgress = False
     httpd.restartInboxQueue = False
+
+    print('Adding hashtag categories for language ' + httpd.systemLanguage)
+    loadHashtagCategories(baseDir, httpd.systemLanguage)
 
     if not unitTest:
         print('Creating inbox queue watchdog')

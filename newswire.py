@@ -203,7 +203,22 @@ def parseFeedDate(pubDate: str) -> str:
     return pubDateStr
 
 
-def xml2StrToHashtagCategories(baseDir: str, domain: str, xmlStr: str,
+def loadHashtagCategories(baseDir: str, language: str) -> None:
+    """Loads an rss file containing hashtag categories
+    """
+    hashtagCategoriesFilename = baseDir + '/categories.xml'
+    if not os.path.isfile(hashtagCategoriesFilename):
+        hashtagCategoriesFilename = \
+            baseDir + '/defaultcategories/' + language + '.xml'
+        if not os.path.isfile(hashtagCategoriesFilename):
+            return
+
+    with open(hashtagCategoriesFilename, 'r') as fp:
+        xmlStr = fp.read()
+        xml2StrToHashtagCategories(baseDir, xmlStr, 1024)
+
+
+def xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
                                maxCategoriesFeedItemSizeKb: int) -> None:
     """Updates hashtag categories based upon an rss feed
     """
@@ -252,7 +267,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
         return {}
     result = {}
     if '<title>#categories</title>' in xmlStr:
-        xml2StrToHashtagCategories(baseDir, domain, xmlStr,
+        xml2StrToHashtagCategories(baseDir, xmlStr,
                                    maxCategoriesFeedItemSizeKb)
         return {}
     rssItems = xmlStr.split('<item>')
