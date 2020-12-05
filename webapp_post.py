@@ -206,16 +206,22 @@ def getAvatarImageHtml(showAvatarOptions: bool,
                        nickname: str, domainFull: str,
                        avatarUrl: str, postActor: str,
                        translate: {}, avatarPosition: str,
-                       pageNumber: int, messageIdStr: str) -> str:
+                       pageNumber: int, messageIdStr: str,
+                       iconsPath: str) -> str:
     """Get html for the avatar image
     """
+    # if the image link is broken then this provides a local substitute
+    brokenLinkSubstitute = \
+        " onerror=\"this.onerror=null; this.src='" + \
+        iconsPath + "/avatar_default.png'\""
+
     avatarLink = ''
     if '/users/news/' not in avatarUrl:
         avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
         avatarLink += \
             '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
             translate['Show profile'] + '" alt=" "' + avatarPosition + \
-            '/></a>\n'
+            brokenLinkSubstitute + '/></a>\n'
 
     if showAvatarOptions and \
        domainFull + '/users/' + nickname not in postActor:
@@ -227,13 +233,15 @@ def getAvatarImageHtml(showAvatarOptions: bool,
             avatarLink += \
                 '        <img loading="lazy" title="' + \
                 translate['Show options for this person'] + \
-                '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
+                '" src="' + avatarUrl + '" ' + avatarPosition + \
+                brokenLinkSubstitute + '/></a>\n'
         else:
             # don't link to the person options for the news account
             avatarLink += \
                 '        <img loading="lazy" title="' + \
                 translate['Show options for this person'] + \
-                '" src="' + avatarUrl + '" ' + avatarPosition + '/>\n'
+                '" src="' + avatarUrl + '" ' + avatarPosition + \
+                brokenLinkSubstitute + '/>\n'
     return avatarLink.strip()
 
 
@@ -1211,7 +1219,8 @@ def individualPostAsHtml(allowDownloads: bool,
                            nickname, domainFull,
                            avatarUrl, postActor,
                            translate, avatarPosition,
-                           pageNumber, messageIdStr)
+                           pageNumber, messageIdStr,
+                           iconsPath)
 
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
