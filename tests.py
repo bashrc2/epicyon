@@ -71,6 +71,7 @@ from delete import sendDeleteViaServer
 from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
+from inbox import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
@@ -2421,8 +2422,22 @@ def testValidNickname():
     assert not validNickname(domain, nickname)
 
 
+def testGuessHashtagCategory() -> None:
+    print('testGuessHashtagCategory')
+    hashtagCategories = {
+        "foo": ["swan", "goose"],
+        "bar": ["cat", "mouse"]
+    }
+    guess = guessHashtagCategory("unspecifiedgoose", hashtagCategories)
+    assert guess == "foo"
+
+    guess = guessHashtagCategory("catpic", hashtagCategories)
+    assert guess == "bar"
+
+
 def runAllTests():
     print('Running tests...')
+    testGuessHashtagCategory()
     testValidNickname()
     testParseFeedDate()
     testFirstParagraphFromString()
