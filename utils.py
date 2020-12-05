@@ -112,23 +112,29 @@ def validHashtagCategory(category: str) -> bool:
     return True
 
 
-def setHashtagCategory(baseDir: str, hashtag: str, category: str) -> bool:
+def setHashtagCategory(baseDir: str, hashtag: str, category: str,
+                       force=False) -> bool:
     """Sets the category for the hashtag
     """
     if not validHashtagCategory(category):
         return False
 
-    hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
-    if not os.path.isfile(hashtagFilename):
-        hashtag = hashtag.title()
+    if not force:
         hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
         if not os.path.isfile(hashtagFilename):
-            hashtag = hashtag.upper()
+            hashtag = hashtag.title()
             hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
             if not os.path.isfile(hashtagFilename):
-                return False
+                hashtag = hashtag.upper()
+                hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
+                if not os.path.isfile(hashtagFilename):
+                    return False
 
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
+    if force:
+        # don't overwrite any existing categories
+        if os.path.isfile(categoryFilename):
+            return False
     with open(categoryFilename, 'w+') as fp:
         fp.write(category)
         updateHashtagCategories(baseDir)

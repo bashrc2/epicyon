@@ -215,11 +215,12 @@ def loadHashtagCategories(baseDir: str, language: str) -> None:
 
     with open(hashtagCategoriesFilename, 'r') as fp:
         xmlStr = fp.read()
-        xml2StrToHashtagCategories(baseDir, xmlStr, 1024)
+        xml2StrToHashtagCategories(baseDir, xmlStr, 1024, True)
 
 
 def xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
-                               maxCategoriesFeedItemSizeKb: int) -> None:
+                               maxCategoriesFeedItemSizeKb: int,
+                               force=False) -> None:
     """Updates hashtag categories based upon an rss feed
     """
     rssItems = xmlStr.split('<item>')
@@ -253,7 +254,7 @@ def xml2StrToHashtagCategories(baseDir: str, xmlStr: str,
         hashtagList = hashtagListStr.split(' ')
         if not isBlockedHashtag(baseDir, categoryStr):
             for hashtag in hashtagList:
-                setHashtagCategory(baseDir, hashtag, categoryStr)
+                setHashtagCategory(baseDir, hashtag, categoryStr, force)
 
 
 def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
