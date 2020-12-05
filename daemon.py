@@ -12983,7 +12983,7 @@ def runDaemon(maxNewswirePosts: int,
     httpd.maxFeedItemSizeKb = maxFeedItemSizeKb
 
     # maximum size of a hashtag category, in K
-    httpd.maxCategoriesFeedItemSizeKb = 256
+    httpd.maxCategoriesFeedItemSizeKb = 1024
 
     if registration == 'open':
         httpd.registration = True
