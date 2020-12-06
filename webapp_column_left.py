@@ -176,14 +176,15 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         with open(linksFilename, "r") as f:
             linksList = f.readlines()
 
-    # show a number of shares
-    maxSharesInLeftColumn = 3
-    sharesList = \
-        getLeftColumnShares(baseDir,
-                            httpPrefix, domainFull, nickname,
-                            maxSharesInLeftColumn, translate)
-    if linksList and sharesList:
-        linksList += sharesList
+    if not frontPage:
+        # show a number of shares
+        maxSharesInLeftColumn = 3
+        sharesList = \
+            getLeftColumnShares(baseDir,
+                                httpPrefix, domainFull, nickname,
+                                maxSharesInLeftColumn, translate)
+        if linksList and sharesList:
+            linksList += sharesList
 
     if linksList:
         for lineStr in linksList:
