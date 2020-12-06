@@ -772,6 +772,10 @@ def getPostTitleAnnounceHtml(baseDir: str,
                     if announceAvatarUrl:
                         idx = 'Show options for this person'
                         if '/users/news/' not in announceAvatarUrl:
+                            brokenLinkSubstitute = \
+                                " onerror=\"this.onerror=null; this.src='" + \
+                                iconsPath + "/avatar_default.png'\""
+
                             replyAvatarImageInPost = \
                                 '        ' \
                                 '<div class=' + \
@@ -785,9 +789,10 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                 ';' + announceAvatarUrl + \
                                 messageIdStr + '">' \
                                 '<img loading="lazy" src="' + \
-                                announceAvatarUrl + '" ' \
+                                announceAvatarUrl + '" ' + \
                                 'title="' + translate[idx] + \
                                 '" alt=" "' + avatarPosition + \
+                                brokenLinkSubstitute + \
                                 '/></a>\n    </div>\n'
                 else:
                     titleStr += \
@@ -959,6 +964,10 @@ def getPostTitleReplyHtml(baseDir: str,
                     logPostTiming(enableTimingLog, postStartTime, '13.8')
 
                     if replyAvatarUrl:
+                        brokenLinkSubstitute = \
+                            " onerror=\"this.onerror=null; this.src='" + \
+                            iconsPath + "/avatar_default.png'\""
+
                         replyAvatarImageInPost = \
                             '        <div class=' + \
                             '"timeline-avatar-reply">\n'
@@ -979,8 +988,8 @@ def getPostTitleReplyHtml(baseDir: str,
                             translate['Show profile']
                         replyAvatarImageInPost += \
                             '" alt=" "' + \
-                            avatarPosition + '/></a>\n' + \
-                            '        </div>\n'
+                            avatarPosition + brokenLinkSubstitute + \
+                            '/></a>\n        </div>\n'
                 else:
                     inReplyTo = \
                         postJsonObject['object']['inReplyTo']
