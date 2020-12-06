@@ -10543,21 +10543,22 @@ class PubServer(BaseHTTPRequestHandler):
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyHandle = m.replace('mention=', '')
-                            if m.replace('mention=', '') not in replyToList:
-                                replyToList.append(m.replace('mention=', ''))
-                        if m.startswith('page='):
+                            inReplyToUrl = replyHandle
+                            if replyHandle not in replyToList:
+                                replyToList.append(replyHandle)
+                        elif m.startswith('page='):
                             replyPageStr = m.replace('page=', '')
                             if replyPageStr.isdigit():
                                 replyPageNumber = int(replyPageStr)
-#                        if m.startswith('actor='):
-#                            replytoActor = m.replace('actor=', '')
-                    inReplyToUrl = mentionsList[0]
-                    if inReplyToUrl.startswith('sharedesc:'):
-                        shareDescription = \
-                            inReplyToUrl.replace('sharedesc:', '')
-                        shareDescription = \
-                            urllib.parse.unquote_plus(shareDescription.strip())
-                        shareDescription = shareDescription.replace('_', ' ')
+                        elif m.startswith('sharedesc:'):
+                            # get the title for the shared item
+                            shareDescription = \
+                                m.replace('sharedesc:', '').strip()
+                            shareDescription = \
+                                urllib.parse.unquote_plus(shareDescription)
+                            shareDescription = \
+                                shareDescription.replace('_', ' ')
+
                 self.path = self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)
