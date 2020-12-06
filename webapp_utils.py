@@ -422,24 +422,26 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     allSharesJson = {}
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' in handle:
-                accountDir = baseDir + '/accounts/' + handle
-                sharesFilename = accountDir + '/shares.json'
-                if os.path.isfile(sharesFilename):
-                    sharesJson = loadJson(sharesFilename)
-                    if not sharesJson:
-                        continue
-                    nickname = handle.split('@')[0]
-                    # actor who owns this share
-                    owner = actor.split('/users/')[0] + '/users/' + nickname
-                    ctr = 0
-                    for itemID, item in sharesJson.items():
-                        # assign owner to the item
-                        item['actor'] = owner
-                        allSharesJson[str(item['published'])] = item
-                        ctr += 1
-                        if ctr >= maxSharesPerAccount:
-                            break
+            if '@' not in handle:
+                continue
+            accountDir = baseDir + '/accounts/' + handle
+            sharesFilename = accountDir + '/shares.json'
+            if not os.path.isfile(sharesFilename):
+                continue
+            sharesJson = loadJson(sharesFilename)
+            if not sharesJson:
+                continue
+            nickname = handle.split('@')[0]
+            # actor who owns this share
+            owner = actor.split('/users/')[0] + '/users/' + nickname
+            ctr = 0
+            for itemID, item in sharesJson.items():
+                # assign owner to the item
+                item['actor'] = owner
+                allSharesJson[str(item['published'])] = item
+                ctr += 1
+                if ctr >= maxSharesPerAccount:
+                    break
     # sort the shared items in descending order of publication date
     sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
     lastPage = False
