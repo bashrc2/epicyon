@@ -10538,7 +10538,9 @@ class PubServer(BaseHTTPRequestHandler):
             # for moderation posts or the dm timeline
             if '?replydm=' in self.path:
                 inReplyToUrl = self.path.split('?replydm=')[1]
+                inReplyToUrl = urllib.parse.unquote_plus(inReplyToUrl)
                 if '?' in inReplyToUrl:
+                    # multiple parameters
                     mentionsList = inReplyToUrl.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
@@ -10555,11 +10557,22 @@ class PubServer(BaseHTTPRequestHandler):
                             shareDescription = \
                                 m.replace('sharedesc:', '').strip()
                             shareDescription = \
-                                urllib.parse.unquote_plus(shareDescription)
-                            shareDescription = \
                                 shareDescription.replace('_', ' ')
+                else:
+                    # single parameter
+                    if inReplyToUrl.startswith('mention='):
+                        replyHandle = inReplyToUrl.replace('mention=', '')
+                        inReplyToUrl = replyHandle
+                        if replyHandle not in replyToList:
+                            replyToList.append(replyHandle)
+                    elif inReplyToUrl.startswith('sharedesc:'):
+                        # get the title for the shared item
+                        shareDescription = \
+                            inReplyToUrl.replace('sharedesc:', '').strip()
+                        shareDescription = \
+                            shareDescription.replace('_', ' ')
 
-                self.path = self.path.split('?replydm=')[0]+'/newdm'
+                self.path = self.path.split('?replydm=')[0] + '/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)
 
