@@ -11,6 +11,7 @@ from shutil import copyfile
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
+from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
@@ -26,6 +27,40 @@ def linksExist(baseDir: str) -> bool:
     """
     linksFilename = baseDir + '/accounts/links.txt'
     return os.path.isfile(linksFilename)
+
+
+def getLeftColumnShares(baseDir: str,
+                        httpPrefix: str, domainFull: str,
+                        nickname: str,
+                        maxSharesInLeftColumn: int,
+                        translate: {}) -> []:
+    """get any shares and turn them into the left column links format
+    """
+    pageNumber = 1
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    sharesJson, lastPage = \
+        sharesTimelineJson(actor, pageNumber,
+                           maxSharesInLeftColumn,
+                           baseDir, maxSharesInLeftColumn)
+    if not sharesJson:
+        return []
+
+    linksList = []
+    ctr = 0
+    for published, item in sharesJson.items():
+        sharedesc = item['displayName']
+        contactActor = item['actor']
+        shareLink = actor + \
+            '?replydm=sharedesc:' + sharedesc + \
+            '?mention=' + contactActor
+        linksList.append(sharedesc + ' ' + shareLink)
+        ctr += 1
+        if ctr >= maxSharesInLeftColumn:
+            break
+
+    if linksList:
+        linksList = ['* ' + translate['Shares']] + linksList
+    return linksList
 
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
@@ -136,53 +171,63 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
+    linksList = None
     if os.path.isfile(linksFilename):
-        linksList = None
         with open(linksFilename, "r") as f:
             linksList = f.readlines()
-        if linksList:
-            for lineStr in linksList:
-                if ' ' not in lineStr:
-                    if '#' not in lineStr:
-                        if '*' not in lineStr:
-                            continue
-                lineStr = lineStr.strip()
-                words = lineStr.split(' ')
-                # get the link
-                linkStr = None
-                for word in words:
-                    if word == '#':
+
+    # show a number of shares
+    maxSharesInLeftColumn = 3
+    sharesList = \
+        getLeftColumnShares(baseDir,
+                            httpPrefix, domainFull, nickname,
+                            maxSharesInLeftColumn, translate)
+    if linksList and sharesList:
+        linksList += sharesList
+
+    if linksList:
+        for lineStr in linksList:
+            if ' ' not in lineStr:
+                if '#' not in lineStr:
+                    if '*' not in lineStr:
                         continue
-                    if word == '*':
-                        continue
-                    if '://' in word:
-                        linkStr = word
-                        break
-                if linkStr:
-                    lineStr = lineStr.replace(linkStr, '').strip()
-                    # avoid any dubious scripts being added
-                    if '<' not in lineStr:
-                        # remove trailing comma if present
-                        if lineStr.endswith(','):
-                            lineStr = lineStr[:len(lineStr)-1]
-                        # add link to the returned html
-                        htmlStr += \
-                            '      <p><a href="' + linkStr + '">' + \
-                            lineStr + '</a></p>\n'
-                        linksFileContainsEntries = True
-                else:
-                    if lineStr.startswith('#') or lineStr.startswith('*'):
-                        lineStr = lineStr[1:].strip()
-                        if firstSeparatorAdded:
-                            htmlStr += separatorStr
-                        firstSeparatorAdded = True
-                        htmlStr += \
-                            '      <h3 class="linksHeader">' + \
-                            lineStr + '</h3>\n'
-                    else:
-                        htmlStr += \
-                            '      <p>' + lineStr + '</p>\n'
+            lineStr = lineStr.strip()
+            words = lineStr.split(' ')
+            # get the link
+            linkStr = None
+            for word in words:
+                if word == '#':
+                    continue
+                if word == '*':
+                    continue
+                if '://' in word:
+                    linkStr = word
+                    break
+            if linkStr:
+                lineStr = lineStr.replace(linkStr, '').strip()
+                # avoid any dubious scripts being added
+                if '<' not in lineStr:
+                    # remove trailing comma if present
+                    if lineStr.endswith(','):
+                        lineStr = lineStr[:len(lineStr)-1]
+                    # add link to the returned html
+                    htmlStr += \
+                        '      <p><a href="' + linkStr + '">' + \
+                        lineStr + '</a></p>\n'
                     linksFileContainsEntries = True
+            else:
+                if lineStr.startswith('#') or lineStr.startswith('*'):
+                    lineStr = lineStr[1:].strip()
+                    if firstSeparatorAdded:
+                        htmlStr += separatorStr
+                    firstSeparatorAdded = True
+                    htmlStr += \
+                        '      <h3 class="linksHeader">' + \
+                        lineStr + '</h3>\n'
+                else:
+                    htmlStr += \
+                        '      <p>' + lineStr + '</p>\n'
+                linksFileContainsEntries = True
 
     if firstSeparatorAdded:
         htmlStr += separatorStr
