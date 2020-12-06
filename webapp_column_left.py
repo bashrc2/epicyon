@@ -49,9 +49,12 @@ def getLeftColumnShares(baseDir: str,
     ctr = 0
     for published, item in sharesJson.items():
         sharedesc = item['displayName']
+        if '<' in sharedesc or '?' in sharedesc:
+            continue
         contactActor = item['actor']
         shareLink = actor + \
-            '?replydm=sharedesc:' + sharedesc + \
+            '?replydm=sharedesc:' + \
+            sharedesc.replace(' ', '_') + \
             '?mention=' + contactActor
         linksList.append(sharedesc + ' ' + shareLink)
         ctr += 1

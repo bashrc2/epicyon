@@ -10557,6 +10557,7 @@ class PubServer(BaseHTTPRequestHandler):
                             inReplyToUrl.replace('sharedesc:', '')
                         shareDescription = \
                             urllib.parse.unquote_plus(shareDescription.strip())
+                        shareDescription = shareDescription.replace('_', ' ')
                 self.path = self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)

@@ -627,18 +627,20 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
         '<b>' + translate['Category'] + ':</b> ' + item['category'] + ' '
     profileStr += \
         '<b>' + translate['Location'] + ':</b> ' + item['location'] + '</p>\n'
-    if showContact:
-        contactActor = item['actor']
-        profileStr += \
-            '<p><a href="' + actor + \
-            '?replydm=sharedesc:' + item['displayName'] + \
-            '?mention=' + contactActor + '"><button class="button">' + \
-            translate['Contact'] + '</button></a>\n'
-    if removeButton:
-        profileStr += \
-            ' <a href="' + actor + '?rmshare=' + item['displayName'] + \
-            '"><button class="button">' + \
-            translate['Remove'] + '</button></a>\n'
+    sharedesc = item['displayName']
+    if '<' not in sharedesc and '?' not in sharedesc:
+        if showContact:
+            contactActor = item['actor']
+            profileStr += \
+                '<p><a href="' + actor + \
+                '?replydm=sharedesc:' + sharedesc + \
+                '?mention=' + contactActor + '"><button class="button">' + \
+                translate['Contact'] + '</button></a>\n'
+        if removeButton:
+            profileStr += \
+                ' <a href="' + actor + '?rmshare=' + sharedesc + \
+                '"><button class="button">' + \
+                translate['Remove'] + '</button></a>\n'
     profileStr += '</div>\n'
     return profileStr
 
