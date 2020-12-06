@@ -547,6 +547,20 @@ def testPostMessageBetweenServers():
                             break
         time.sleep(1)
 
+    # check that a news account exists
+    newsActorDir = aliceDir + '/accounts/news@' + aliceDomain
+    print("newsActorDir: " + newsActorDir)
+    assert os.path.isdir(newsActorDir)
+    newsActorFile = newsActorDir + '.json'
+    assert os.path.isfile(newsActorFile)
+    newsActorJson = loadJson(newsActorFile)
+    assert newsActorJson
+    assert newsActorJson.get("id")
+    # check the id of the news actor
+    print('News actor Id: ' + newsActorJson["id"])
+    assert (newsActorJson["id"] ==
+            httpPrefix + '://' + aliceAddress + '/users/news')
+
     # Image attachment created
     assert len([name for name in os.listdir(mediaPath)
                 if os.path.isfile(os.path.join(mediaPath, name))]) > 0
