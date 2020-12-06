@@ -202,6 +202,14 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
+def getBrokenLinkSubstitute(iconsPath: str) -> str:
+    """Returns html used to show a default image if the link to
+    an image is broken
+    """
+    return " onerror=\"this.onerror=null; this.src='" + \
+        iconsPath + "/avatar_default.png'\""
+
+
 def getAvatarImageHtml(showAvatarOptions: bool,
                        nickname: str, domainFull: str,
                        avatarUrl: str, postActor: str,
@@ -210,18 +218,13 @@ def getAvatarImageHtml(showAvatarOptions: bool,
                        iconsPath: str) -> str:
     """Get html for the avatar image
     """
-    # if the image link is broken then this provides a local substitute
-    brokenLinkSubstitute = \
-        " onerror=\"this.onerror=null; this.src='" + \
-        iconsPath + "/avatar_default.png'\""
-
     avatarLink = ''
     if '/users/news/' not in avatarUrl:
         avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
         avatarLink += \
             '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
             translate['Show profile'] + '" alt=" "' + avatarPosition + \
-            brokenLinkSubstitute + '/></a>\n'
+            getBrokenLinkSubstitute(iconsPath) + '/></a>\n'
 
     if showAvatarOptions and \
        domainFull + '/users/' + nickname not in postActor:
@@ -234,14 +237,14 @@ def getAvatarImageHtml(showAvatarOptions: bool,
                 '        <img loading="lazy" title="' + \
                 translate['Show options for this person'] + \
                 '" src="' + avatarUrl + '" ' + avatarPosition + \
-                brokenLinkSubstitute + '/></a>\n'
+                getBrokenLinkSubstitute(iconsPath) + '/></a>\n'
         else:
             # don't link to the person options for the news account
             avatarLink += \
                 '        <img loading="lazy" title="' + \
                 translate['Show options for this person'] + \
                 '" src="' + avatarUrl + '" ' + avatarPosition + \
-                brokenLinkSubstitute + '/>\n'
+                getBrokenLinkSubstitute(iconsPath) + '/>\n'
     return avatarLink.strip()
 
 
@@ -772,10 +775,6 @@ def getPostTitleAnnounceHtml(baseDir: str,
                     if announceAvatarUrl:
                         idx = 'Show options for this person'
                         if '/users/news/' not in announceAvatarUrl:
-                            brokenLinkSubstitute = \
-                                " onerror=\"this.onerror=null; this.src='" + \
-                                iconsPath + "/avatar_default.png'\""
-
                             replyAvatarImageInPost = \
                                 '        ' \
                                 '<div class=' + \
@@ -792,7 +791,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                 announceAvatarUrl + '" ' + \
                                 'title="' + translate[idx] + \
                                 '" alt=" "' + avatarPosition + \
-                                brokenLinkSubstitute + \
+                                getBrokenLinkSubstitute(iconsPath) + \
                                 '/></a>\n    </div>\n'
                 else:
                     titleStr += \
@@ -964,10 +963,6 @@ def getPostTitleReplyHtml(baseDir: str,
                     logPostTiming(enableTimingLog, postStartTime, '13.8')
 
                     if replyAvatarUrl:
-                        brokenLinkSubstitute = \
-                            " onerror=\"this.onerror=null; this.src='" + \
-                            iconsPath + "/avatar_default.png'\""
-
                         replyAvatarImageInPost = \
                             '        <div class=' + \
                             '"timeline-avatar-reply">\n'
@@ -988,7 +983,8 @@ def getPostTitleReplyHtml(baseDir: str,
                             translate['Show profile']
                         replyAvatarImageInPost += \
                             '" alt=" "' + \
-                            avatarPosition + brokenLinkSubstitute + \
+                            avatarPosition + \
+                            getBrokenLinkSubstitute(iconsPath) + \
                             '/></a>\n        </div>\n'
                 else:
                     inReplyTo = \
