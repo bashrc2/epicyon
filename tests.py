@@ -1747,6 +1747,11 @@ def testWebLinks():
            '<p>Test1 test2 '
            '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
 
+    exampleText = \
+        "<p>Don't remove a p2p link rad:git:hwd1yrerc3mcgn8ga9rho3dqi4w33nep7kxmqezss4topyfgmexihp33xcw</p>"
+    resultText = removeLongWords(addWebLinks(exampleText), 40, [])
+    assert resultText == exampleText
+
 
 def testAddEmoji():
     print('testAddEmoji')
