@@ -184,7 +184,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                                 httpPrefix, domainFull, nickname,
                                 maxSharesInLeftColumn, translate)
         if linksList and sharesList:
-            linksList += sharesList
+            linksList = sharesList + linksList
 
     if linksList:
         for lineStr in linksList:
