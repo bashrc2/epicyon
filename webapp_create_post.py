@@ -167,6 +167,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 baseDir: str, httpPrefix: str,
                 path: str, inReplyTo: str,
                 mentions: [],
+                shareDescription: str,
                 reportUrl: str, pageNumber: int,
                 nickname: str, domain: str,
                 domainFull: str,
@@ -612,7 +613,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         dropdownReportSuffix += '?mention=' + mentionedActor
 
     dropDownContent = ''
-    if not reportUrl:
+    if not reportUrl and not shareDescription:
         dropDownContent = \
             htmlNewPostDropDown(scopeIcon, scopeDescription,
                                 replyStr,
@@ -630,7 +631,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                 dropdownEventSuffix,
                                 dropdownReportSuffix)
     else:
-        mentionsStr = 'Re: ' + reportUrl + '\n\n' + mentionsStr
+        if not shareDescription:
+            # reporting a post to moderator
+            mentionsStr = 'Re: ' + reportUrl + '\n\n' + mentionsStr
 
     newPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
@@ -678,7 +681,11 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <label class="labels">' + placeholderSubject + '</label><br>'
-    newPostForm += '    <input type="text" name="subject">'
+    if not shareDescription:
+        shareDescription = ''
+    newPostForm += \
+        '    <input type="text" name="subject" value="' + \
+        shareDescription + '">'
     newPostForm += ''
 
     selectedStr = ' selected'
