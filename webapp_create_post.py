@@ -187,7 +187,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
                 newPostText = '<h1>' + \
-                    translate['Ask about a shared item.'] + '</h1>\n'
+                    translate['Write your post text below.'] + '</h1>\n'
             else:
                 newPostText = \
                     '<p class="new-post-text">' + \
@@ -246,11 +246,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             translate['Enter the choices for your question below.'] + \
             '</h1>\n'
 
-    if shareDescription:
-        newPostText = '<h1>' + \
-            translate['Write your post text below.'] + '</h1>\n'
-
-
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
         with open(baseDir + '/accounts/newpost.txt', 'r') as file:
             newPostText = \
@@ -298,8 +293,11 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     scopeIcon = 'scope_public.png'
     scopeDescription = translate['Public']
-    placeholderSubject = \
-        translate['Subject or Content Warning (optional)'] + '...'
+    if shareDescription:
+        placeholderSubject = translate['Ask about a shared item.'] + '..'
+    else:
+        placeholderSubject = \
+            translate['Subject or Content Warning (optional)'] + '...'
     placeholderMentions = ''
     if inReplyTo:
         # mentionsAndContent = getMentionsString(content)
