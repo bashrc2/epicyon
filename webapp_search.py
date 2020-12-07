@@ -116,8 +116,10 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     sharedItemsForm = \
         htmlHeaderWithExternalStyle(cssFilename)
     sharedItemsForm += \
-        '<center><h1>' + translate['Shared Items Search'] + \
-        '</h1></center>'
+        '<center><h1>' + \
+        '<a href="' + actor + '/search">' + \
+        translate['Shared Items Search'] + \
+        '</a></h1></center>'
     resultsExist = False
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
