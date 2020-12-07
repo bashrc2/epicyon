@@ -2392,7 +2392,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # skill search
                 searchStr = searchStr.replace('*', '').strip()
                 skillStr = \
-                    htmlSkillsSearch(self.server.cssCache,
+                    htmlSkillsSearch(actorStr,
+                                     self.server.cssCache,
                                      self.server.translate,
                                      baseDir,
                                      httpPrefix,

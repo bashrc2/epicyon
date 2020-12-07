@@ -384,7 +384,8 @@ def htmlSearch(cssCache: {}, translate: {},
     return followStr
 
 
-def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
+def htmlSkillsSearch(actor: str,
+                     cssCache: {}, translate: {}, baseDir: str,
                      httpPrefix: str,
                      skillsearch: str, instanceOnly: bool,
                      postsPerPage: int) -> str:
@@ -475,8 +476,10 @@ def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
 
     skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
     skillSearchForm += \
-        '<center><h1>' + translate['Skills search'] + ': ' + \
-        skillsearch + '</h1></center>'
+        '<center><h1><a href = "' + actor + '/search">' \
+        translate['Skills search'] + ': ' + \
+        skillsearch + \
+        '</a></h1></center>'
 
     if len(results) == 0:
         skillSearchForm += \
