@@ -476,7 +476,7 @@ def htmlSkillsSearch(actor: str,
 
     skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
     skillSearchForm += \
-        '<center><h1><a href = "' + actor + '/search">' \
+        '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
         skillsearch + \
         '</a></h1></center>'
