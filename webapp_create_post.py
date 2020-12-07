@@ -187,8 +187,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         if not path.endswith('/newreport'):
             if not inReplyTo or shareDescription or \
                path.endswith('/newreminder'):
-                newPostText = '<h1>' + \
-                    translate['Write your post text below.'] + '</h1>\n'
+                if shareDescription:
+                    newPostText = '<h1>' + \
+                        translate['Write your post text below.'] + '</h1>\n'
+                else:
+                    newPostText = '<h1>' + \
+                        translate['Ask about a shared item.'] + '</h1>\n'
             else:
                 newPostText = \
                     '<p class="new-post-text">' + \
