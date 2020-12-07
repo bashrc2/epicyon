@@ -220,7 +220,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '"/></a>\n'
                             sharedItemsForm += '  </center>\n'
                             sharedItemsForm += '</form>\n'
-                            resultsExist = True
+                        resultsExist = True
                     ctr += 1
                     if ctr >= resultsPerPage:
                         currPage += 1
