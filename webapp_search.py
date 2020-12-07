@@ -540,8 +540,15 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         htmlHeaderWithExternalStyle(cssFilename)
 
     # add the page title
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     historySearchForm += \
-        '<center><h1>' + translate['Your Posts'] + '</h1></center>'
+        '<center><h1><a href="' + actor + '/search">' + \
+        translate['Your Posts'] + \
+        '</a></h1></center>'
 
     if len(boxFilenames) == 0:
         historySearchForm += \
