@@ -185,14 +185,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
-            if not inReplyTo or shareDescription or \
-               path.endswith('/newreminder'):
-                if shareDescription:
-                    newPostText = '<h1>' + \
-                        translate['Write your post text below.'] + '</h1>\n'
-                else:
-                    newPostText = '<h1>' + \
-                        translate['Ask about a shared item.'] + '</h1>\n'
+            if not inReplyTo or path.endswith('/newreminder'):
+                newPostText = '<h1>' + \
+                    translate['Ask about a shared item.'] + '</h1>\n'
             else:
                 newPostText = \
                     '<p class="new-post-text">' + \
@@ -250,6 +245,11 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             '<h1>' + \
             translate['Enter the choices for your question below.'] + \
             '</h1>\n'
+
+    if shareDescription:
+        newPostText = '<h1>' + \
+            translate['Write your post text below.'] + '</h1>\n'
+
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
         with open(baseDir + '/accounts/newpost.txt', 'r') as file:
