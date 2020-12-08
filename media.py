@@ -199,9 +199,12 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
 def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
     """Any media older than the given number of weeks gets archived
     """
+    if maxWeeks == 0:
+        return
+
     currTime = datetime.datetime.utcnow()
     weeksSinceEpoch = int((currTime - datetime.datetime(1970, 1, 1)).days/7)
-    minWeek = weeksSinceEpoch-maxWeeks
+    minWeek = weeksSinceEpoch - maxWeeks
 
     if archiveDirectory:
         if not os.path.isdir(archiveDirectory):

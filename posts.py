@@ -3144,9 +3144,13 @@ def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
                  maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
     """
+    if maxPostsInBox == 0:
+        return
+
     if archiveDir:
         if not os.path.isdir(archiveDir):
             os.mkdir(archiveDir)
+
     if archiveDir:
         if not os.path.isdir(archiveDir + '/accounts'):
             os.mkdir(archiveDir + '/accounts')

@@ -326,12 +326,12 @@ parser.add_argument('--image', '--background', dest='backgroundImage',
 parser.add_argument('--archive', dest='archive', type=str,
                     default=None,
                     help='Archive old files to the given directory')
-parser.add_argument('--archiveweeks', dest='archiveWeeks', type=str,
-                    default=None,
+parser.add_argument('--archiveweeks', dest='archiveWeeks', type=int,
+                    default=4,
                     help='Specify the number of weeks after which ' +
-                    'data will be archived')
-parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,
-                    default=None,
+                    'media will be archived')
+parser.add_argument('--maxposts', dest='archiveMaxPosts', type=int,
+                    default=32000,
                     help='Maximum number of posts in in/outbox')
 parser.add_argument('--minimumvotes', dest='minimumvotes', type=int,
                     default=1,
@@ -1574,13 +1574,6 @@ if args.changepassword:
         print('Passwords file not found')
     sys.exit()
 
-archiveWeeks = 4
-if args.archiveWeeks:
-    archiveWeeks = args.archiveWeeks
-archiveMaxPosts = 32000
-if args.archiveMaxPosts:
-    archiveMaxPosts = args.archiveMaxPosts
-
 if args.archive:
     if args.archive.lower().endswith('null') or \
        args.archive.lower().endswith('delete') or \
@@ -1589,8 +1582,8 @@ if args.archive:
         print('Archiving with deletion of old posts...')
     else:
         print('Archiving to ' + args.archive + '...')
-    archiveMedia(baseDir, args.archive, archiveWeeks)
-    archivePosts(baseDir, httpPrefix, args.archive, {}, archiveMaxPosts)
+    archiveMedia(baseDir, args.archive, args.archiveWeeks)
+    archivePosts(baseDir, httpPrefix, args.archive, {}, args.archiveMaxPosts)
     print('Archiving complete')
     sys.exit()
 
