@@ -88,7 +88,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     for postDomain in domainList:
         infoForm += '<a href="' + \
             httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
-        if isBlockedDomain(postDomain):
+        if isBlockedDomain(baseDir, postDomain):
             infoForm += \
                 '<a href="' + usersPath + '?unblockdomain=' + postDomain + '">'
             infoForm += '<button class="buttonhighlighted"><span>' + \
