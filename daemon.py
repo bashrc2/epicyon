@@ -4569,10 +4569,11 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.themeName:
             self.themeName = getConfigParam(baseDir, 'theme')
         if not self.server.themeName:
-            themeName = 'default'
+            self.server.themeName = 'default'
         # custom favicon
         faviconFilename = \
-            baseDir + '/theme/' + self.server.themeName + '/icons/' + favFilename
+            baseDir + '/theme/' + self.server.themeName + \
+            '/icons/' + favFilename
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
