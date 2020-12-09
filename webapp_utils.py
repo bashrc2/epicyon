@@ -393,12 +393,13 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
 def getIconsWebPath(baseDir: str) -> str:
     """Returns the web path where icons exist
     """
-    iconsPath = 'icons'
-    theme = getConfigParam(baseDir, 'theme')
-    if theme:
-        if os.path.isdir(baseDir + '/theme/' + theme + '/icons'):
-            iconsPath = 'icons/' + theme
-    return iconsPath
+    return 'icons'
+#    iconsPath = 'icons'
+#    theme = getConfigParam(baseDir, 'theme')
+#    if theme:
+#        if os.path.isdir(baseDir + '/theme/' + theme + '/icons'):
+#            iconsPath = 'icons/' + theme
+#    return iconsPath
 
 
 def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:

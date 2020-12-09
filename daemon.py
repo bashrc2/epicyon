@@ -3823,9 +3823,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change theme
                     if fields.get('themeDropdown'):
-                        setTheme(baseDir,
-                                 fields['themeDropdown'],
-                                 domain,
+                        self.themeName = fields['themeDropdown']
+                        setTheme(baseDir, self.themeName, domain,
                                  allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
@@ -4197,6 +4196,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
+                                self.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
                                 self.server.showPublishAsIcon = \
@@ -5060,8 +5060,11 @@ class PubServer(BaseHTTPRequestHandler):
         if path.endswith('.png'):
             mediaStr = path.split('/icons/')[1]
             if '/' not in mediaStr:
-                theme = 'default'
-                iconFilename = mediaStr
+                if not self.themeName:
+                    theme = 'default'
+                else:
+                    theme = self.themeName
+                iconFilename = mediaStr                
             else:
                 theme = mediaStr.split('/')[0]
                 iconFilename = mediaStr.split('/')[1]
@@ -13112,6 +13115,11 @@ def runDaemon(maxNewswirePosts: int,
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
+
+    # get the current theme
+    httpd.themeName = getConfigParam(baseDir, 'theme')
+    if not httpd.themeName:
+        httpd.themeName = 'default'
 
     print('Creating expire thread for shared items')
     httpd.thrSharesExpire = \
