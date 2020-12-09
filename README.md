@@ -222,7 +222,8 @@ To run a security audit:
 ./security_audit
 ```
 
-Note that not all of the issues identified will necessarily be relevant to this project.
+Note that not all of the issues identified will necessarily be relevant to this project. Consider its output as a list of things which potentially can be investigated but usually will turn out not to be relevant.
+
 
 ## Installing on Onion or i2p domains
 
