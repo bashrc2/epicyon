@@ -5333,6 +5333,9 @@ class PubServer(BaseHTTPRequestHandler):
                            debug,
                            self.server.projectVersion)
         if announceJson:
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('repeat.png'):
+                del self.server.iconsCache['repeat.png']
             self._postToOutboxThread(announceJson)
         self.server.GETbusy = False
         actorAbsolute = httpPrefix + '://' + domainFull + actor
@@ -5423,6 +5426,9 @@ class PubServer(BaseHTTPRequestHandler):
                 'type': 'Announce'
             }
         }
+        # clear the icon from the cache so that it gets updated
+        if self.server.iconsCache.get('repeat_inactive.png'):
+            del self.server.iconsCache['repeat_inactive.png']
         self._postToOutboxThread(newUndoAnnounce)
         self.server.GETbusy = False
         actorAbsolute = httpPrefix + '://' + domainFull + actor
@@ -5707,8 +5713,6 @@ class PubServer(BaseHTTPRequestHandler):
             # clear the icon from the cache so that it gets updated
             if self.server.iconsCache.get('like.png'):
                 del self.server.iconsCache['like.png']
-            if self.server.iconsCache.get('like_inactive.png'):
-                del self.server.iconsCache['like_inactive.png']
         else:
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
@@ -5814,8 +5818,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug)
             # clear the icon from the cache so that it gets updated
-            if self.server.iconsCache.get('like.png'):
-                del self.server.iconsCache['like.png']
             if self.server.iconsCache.get('like_inactive.png'):
                 del self.server.iconsCache['like_inactive.png']
         # send out the undo like to followers
@@ -5909,6 +5911,9 @@ class PubServer(BaseHTTPRequestHandler):
                  self.server.cachedWebfingers,
                  self.server.debug,
                  self.server.projectVersion)
+        # clear the icon from the cache so that it gets updated
+        if self.server.iconsCache.get('bookmark.png'):
+            del self.server.iconsCache['bookmark.png']
         # self._postToOutbox(bookmarkJson, self.server.projectVersion)
         self.server.GETbusy = False
         actorAbsolute = \
@@ -5999,6 +6004,9 @@ class PubServer(BaseHTTPRequestHandler):
                      self.server.cachedWebfingers,
                      debug,
                      self.server.projectVersion)
+        # clear the icon from the cache so that it gets updated
+        if self.server.iconsCache.get('bookmark_inactive.png'):
+            del self.server.iconsCache['bookmark_inactive.png']
         # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
         self.server.GETbusy = False
         actorAbsolute = \
