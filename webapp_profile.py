@@ -266,7 +266,7 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                 'icons', translate, None, baseDir,
+                                 translate, None, baseDir,
                                  session, cachedWebfingers, personCache,
                                  nickname, domain, port,
                                  item, avatarUrl, False, False,
@@ -282,7 +282,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
 
 def getProfileHeader(baseDir: str, nickname: str, domain: str,
-                     domainFull: str, translate: {}, iconsPath: str,
+                     domainFull: str, translate: {},
                      defaultTimeline: str,
                      displayName: str,
                      avatarDescription: str,
@@ -561,7 +561,7 @@ def htmlProfile(rssIconAtTop: bool,
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
         getProfileHeader(baseDir, nickname, domain,
-                         domainFull, translate, 'icons',
+                         domainFull, translate,
                          defaultTimeline, displayName,
                          avatarDescription,
                          profileDescriptionShort,
@@ -693,7 +693,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         'icons', translate, None,
+                                         translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,

@@ -61,7 +61,7 @@ def htmlConfirmDelete(cssCache: {},
     deletePostStr = htmlHeaderWithExternalStyle(cssFilename)
     deletePostStr += \
         individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                             'icons', translate, pageNumber,
+                             translate, pageNumber,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,

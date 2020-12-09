@@ -383,7 +383,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   sharesButtonStr, bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
                                   newPostButtonStr, baseDir, nickname,
-                                  domain, 'icons', timelineStartTime,
+                                  domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
@@ -406,7 +406,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # left column
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
-                             httpPrefix, translate, 'icons',
+                             httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
                              True, False)
     tlStr += '  <td valign="top" class="col-left">' + \
@@ -425,7 +425,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   sharesButtonStr, bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
                                   newPostButtonStr, baseDir, nickname,
-                                  domain, 'icons', timelineStartTime,
+                                  domain, timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
@@ -540,7 +540,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     currTlStr = \
                         individualPostAsHtml(False, recentPostsCache,
                                              maxRecentPosts,
-                                             'icons', translate, pageNumber,
+                                             translate, pageNumber,
                                              baseDir, session, wfRequest,
                                              personCache,
                                              nickname, domain, port,
@@ -585,7 +585,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
-                                           httpPrefix, translate, 'icons',
+                                           httpPrefix, translate,
                                            moderator, editor,
                                            newswire, positiveVoting,
                                            False, None, True,

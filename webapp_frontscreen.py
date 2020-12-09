@@ -55,7 +55,7 @@ def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         'icons', translate, None,
+                                         translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,
@@ -101,7 +101,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
 
     loginButton = headerButtonsFrontScreen(translate, nickname,
                                            'features', authorized,
-                                           iconsAsButtons, 'icons')
+                                           iconsAsButtons)
 
     # If this is the news account then show a different banner
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
@@ -123,8 +123,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
     profileHeaderStr += \
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
-                             'icons', False,
-                             False, None, rssIconAtTop, True,
+                             False, False, None, rssIconAtTop, True,
                              True)
     profileHeaderStr += '      </td>\n'
     profileHeaderStr += '      <td valign="top" class="col-center">\n'
@@ -154,8 +153,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
     profileFooterStr += \
         getRightColumnContent(baseDir, 'news', domainFull,
                               httpPrefix, translate,
-                              'icons', False, False,
-                              newswire, False,
+                              False, False, newswire, False,
                               False, None, False, False,
                               False, True, authorized, True)
     profileFooterStr += '      </td>\n'

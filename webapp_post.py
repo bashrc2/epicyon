@@ -201,7 +201,7 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
-def getBrokenLinkSubstitute(iconsPath: str) -> str:
+def getBrokenLinkSubstitute() -> str:
     """Returns html used to show a default image if the link to
     an image is broken
     """
@@ -213,8 +213,7 @@ def getAvatarImageHtml(showAvatarOptions: bool,
                        nickname: str, domainFull: str,
                        avatarUrl: str, postActor: str,
                        translate: {}, avatarPosition: str,
-                       pageNumber: int, messageIdStr: str,
-                       iconsPath: str) -> str:
+                       pageNumber: int, messageIdStr: str) -> str:
     """Get html for the avatar image
     """
     avatarLink = ''
@@ -223,7 +222,7 @@ def getAvatarImageHtml(showAvatarOptions: bool,
         avatarLink += \
             '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
             translate['Show profile'] + '" alt=" "' + avatarPosition + \
-            getBrokenLinkSubstitute('icons') + '/></a>\n'
+            getBrokenLinkSubstitute() + '/></a>\n'
 
     if showAvatarOptions and \
        domainFull + '/users/' + nickname not in postActor:
@@ -236,21 +235,21 @@ def getAvatarImageHtml(showAvatarOptions: bool,
                 '        <img loading="lazy" title="' + \
                 translate['Show options for this person'] + \
                 '" src="' + avatarUrl + '" ' + avatarPosition + \
-                getBrokenLinkSubstitute('icons') + '/></a>\n'
+                getBrokenLinkSubstitute() + '/></a>\n'
         else:
             # don't link to the person options for the news account
             avatarLink += \
                 '        <img loading="lazy" title="' + \
                 translate['Show options for this person'] + \
                 '" src="' + avatarUrl + '" ' + avatarPosition + \
-                getBrokenLinkSubstitute('icons') + '/>\n'
+                getBrokenLinkSubstitute() + '/>\n'
     return avatarLink.strip()
 
 
 def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
                      showIcons: bool, commentsEnabled: bool,
                      postJsonObject: {}, pageNumberParam: str,
-                     iconsPath: str, translate: {}) -> str:
+                     translate: {}) -> str:
     """Returns html for the reply icon/button
     """
     replyStr = ''
@@ -308,7 +307,7 @@ def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
 
 def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
                     postJsonObject: {}, actorNickname: str,
-                    translate: {}, iconsPath: str, isEvent: bool) -> str:
+                    translate: {}, isEvent: bool) -> str:
     """Returns html for the edit icon/button
     """
     editStr = ''
@@ -370,7 +369,7 @@ def getAnnounceIconHtml(nickname: str, domainFull: str,
                         translate: {},
                         pageNumberParam: str,
                         timelinePostBookmark: str,
-                        boxName: str, iconsPath: str) -> str:
+                        boxName: str) -> str:
     """Returns html for announce icon/button
     """
     announceStr = ''
@@ -412,7 +411,7 @@ def getLikeIconHtml(nickname: str, domainFull: str,
                     postStartTime,
                     translate: {}, pageNumberParam: str,
                     timelinePostBookmark: str,
-                    boxName: str, iconsPath: str) -> str:
+                    boxName: str) -> str:
     """Returns html for like icon/button
     """
     likeStr = ''
@@ -469,8 +468,7 @@ def getBookmarkIconHtml(nickname: str, domainFull: str,
                         enableTimingLog: bool,
                         postStartTime, boxName: str,
                         pageNumberParam: str,
-                        timelinePostBookmark: str,
-                        iconsPath: str) -> str:
+                        timelinePostBookmark: str) -> str:
     """Returns html for bookmark icon/button
     """
     bookmarkStr = ''
@@ -507,7 +505,6 @@ def getMuteIconHtml(isMuted: bool,
                     nickname: str, domainFull: str,
                     allowDeletion: bool,
                     pageNumberParam: str,
-                    iconsPath: str,
                     boxName: str,
                     timelinePostBookmark: str,
                     translate: {}) -> str:
@@ -552,7 +549,6 @@ def getDeleteIconHtml(nickname: str, domainFull: str,
                       messageId: str,
                       postJsonObject: {},
                       pageNumberParam: str,
-                      iconsPath: str,
                       translate: {}) -> str:
     """Returns html for delete icon/button
     """
@@ -644,7 +640,7 @@ def getBlogCitationsHtml(boxName: str,
     return citationsStr
 
 
-def boostOwnTootHtml(translate: {}, iconsPath) -> str:
+def boostOwnTootHtml(translate: {}) -> str:
     """The html title for announcing your own post
     """
     return '        <img loading="lazy" title="' + \
@@ -654,7 +650,7 @@ def boostOwnTootHtml(translate: {}, iconsPath) -> str:
         '/repeat_inactive.png" class="announceOrReply"/>\n'
 
 
-def announceUnattributedHtml(translate: {}, iconsPath: str,
+def announceUnattributedHtml(translate: {},
                              postJsonObject: {}) -> str:
     """Returns the html for an announce title where there
     is no attribution on the announced post
@@ -669,7 +665,7 @@ def announceUnattributedHtml(translate: {}, iconsPath: str,
         '" class="announceOrReply">@unattributed</a>\n'
 
 
-def announceWithoutDisplayNameHtml(translate: {}, iconsPath: str,
+def announceWithoutDisplayNameHtml(translate: {},
                                    announceNickname: str,
                                    announceDomain: str,
                                    postJsonObject: {}) -> str:
@@ -686,7 +682,6 @@ def announceWithoutDisplayNameHtml(translate: {}, iconsPath: str,
 
 
 def announceWithDisplayNameHtml(translate: {},
-                                iconsPath: str,
                                 postJsonObject: {},
                                 announceDisplayName: str) -> str:
     """Returns html for an announce having a display name
@@ -709,7 +704,6 @@ def getPostTitleAnnounceHtml(baseDir: str,
                              postJsonObject: {},
                              postActor: str,
                              translate: {},
-                             iconsPath: str,
                              enableTimingLog: bool,
                              postStartTime,
                              boxName: str,
@@ -732,7 +726,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
             attributedTo = postJsonObject['object']['attributedTo']
 
         if attributedTo.startswith(postActor):
-            titleStr += boostOwnTootHtml(translate, 'icons')
+            titleStr += boostOwnTootHtml(translate)
         else:
             # boosting another person's post
             logPostTiming(enableTimingLog, postStartTime, '13.2')
@@ -759,7 +753,6 @@ def getPostTitleAnnounceHtml(baseDir: str,
                     logPostTiming(enableTimingLog, postStartTime, '13.3.1')
                     titleStr += \
                         announceWithDisplayNameHtml(translate,
-                                                    'icons',
                                                     postJsonObject,
                                                     announceDisplayName)
                     # show avatar of person replied to
@@ -790,27 +783,27 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                 announceAvatarUrl + '" ' + \
                                 'title="' + translate[idx] + \
                                 '" alt=" "' + avatarPosition + \
-                                getBrokenLinkSubstitute('icons') + \
+                                getBrokenLinkSubstitute() + \
                                 '/></a>\n    </div>\n'
                 else:
                     titleStr += \
-                        announceWithoutDisplayNameHtml(translate, 'icons',
+                        announceWithoutDisplayNameHtml(translate,
                                                        announceNickname,
                                                        announceDomain,
                                                        postJsonObject)
             else:
                 titleStr += \
-                    announceUnattributedHtml(translate, 'icons',
+                    announceUnattributedHtml(translate,
                                              postJsonObject)
     else:
         titleStr += \
-            announceUnattributedHtml(translate, 'icons', postJsonObject)
+            announceUnattributedHtml(translate, postJsonObject)
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
 
 
-def replyToYourselfHtml(translate: {}, iconsPath: str) -> str:
+def replyToYourselfHtml(translate: {}, ) -> str:
     """Returns html for a title which is a reply to yourself
     """
     return '    <img loading="lazy" title="' + \
@@ -820,7 +813,7 @@ def replyToYourselfHtml(translate: {}, iconsPath: str) -> str:
         '/reply.png" class="announceOrReply"/>\n'
 
 
-def replyToUnknownHtml(translate: {}, iconsPath: str,
+def replyToUnknownHtml(translate: {},
                        postJsonObject: {}) -> str:
     """Returns the html title for a reply to an unknown handle
     """
@@ -833,7 +826,7 @@ def replyToUnknownHtml(translate: {}, iconsPath: str,
         '" class="announceOrReply">@unknown</a>\n'
 
 
-def replyWithUnknownPathHtml(translate: {}, iconsPath: str,
+def replyWithUnknownPathHtml(translate: {},
                              postJsonObject: {},
                              postDomain: str) -> str:
     """Returns html title for a reply with an unknown path
@@ -850,7 +843,7 @@ def replyWithUnknownPathHtml(translate: {}, iconsPath: str,
         postDomain + '</a>\n'
 
 
-def getReplyHtml(translate: {}, iconsPath: str,
+def getReplyHtml(translate: {},
                  inReplyTo: str, replyDisplayName: str) -> str:
     """Returns html title for a reply
     """
@@ -865,7 +858,7 @@ def getReplyHtml(translate: {}, iconsPath: str,
         replyDisplayName + '</a>\n'
 
 
-def getReplyWithoutDisplayName(translate: {}, iconsPath: str,
+def getReplyWithoutDisplayName(translate: {},
                                inReplyTo: str,
                                replyNickname: str, replyDomain: str) -> str:
     """Returns html for a reply without a display name,
@@ -888,7 +881,6 @@ def getPostTitleReplyHtml(baseDir: str,
                           postJsonObject: {},
                           postActor: str,
                           translate: {},
-                          iconsPath: str,
                           enableTimingLog: bool,
                           postStartTime,
                           boxName: str,
@@ -912,7 +904,7 @@ def getPostTitleReplyHtml(baseDir: str,
     containerClassIcons = 'containericons darker'
     containerClass = 'container darker'
     if postJsonObject['object']['inReplyTo'].startswith(postActor):
-        titleStr += replyToYourselfHtml(translate, 'icons')
+        titleStr += replyToYourselfHtml(translate)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
@@ -945,8 +937,7 @@ def getPostTitleReplyHtml(baseDir: str,
                         logPostTiming(enableTimingLog, postStartTime, '13.6')
 
                     titleStr += \
-                        getReplyHtml(translate, 'icons',
-                                     inReplyTo, replyDisplayName)
+                        getReplyHtml(translate, inReplyTo, replyDisplayName)
 
                     logPostTiming(enableTimingLog, postStartTime, '13.7')
 
@@ -981,18 +972,18 @@ def getPostTitleReplyHtml(baseDir: str,
                         replyAvatarImageInPost += \
                             '" alt=" "' + \
                             avatarPosition + \
-                            getBrokenLinkSubstitute('icons') + \
+                            getBrokenLinkSubstitute() + \
                             '/></a>\n        </div>\n'
                 else:
                     inReplyTo = \
                         postJsonObject['object']['inReplyTo']
                     titleStr += \
-                        getReplyWithoutDisplayName(translate, 'icons',
+                        getReplyWithoutDisplayName(translate,
                                                    inReplyTo,
                                                    replyNickname, replyDomain)
         else:
             titleStr += \
-                replyToUnknownHtml(translate, 'icons', postJsonObject)
+                replyToUnknownHtml(translate, postJsonObject)
     else:
         postDomain = \
             postJsonObject['object']['inReplyTo']
@@ -1003,7 +994,7 @@ def getPostTitleReplyHtml(baseDir: str,
             postDomain = postDomain.split('/', 1)[0]
         if postDomain:
             titleStr += \
-                replyWithUnknownPathHtml(translate, 'icons',
+                replyWithUnknownPathHtml(translate,
                                          postJsonObject, postDomain)
 
     return (titleStr, replyAvatarImageInPost,
@@ -1018,7 +1009,6 @@ def getPostTitleHtml(baseDir: str,
                      postJsonObject: {},
                      postActor: str,
                      translate: {},
-                     iconsPath: str,
                      enableTimingLog: bool,
                      postStartTime,
                      boxName: str,
@@ -1047,7 +1037,6 @@ def getPostTitleHtml(baseDir: str,
                                         postJsonObject,
                                         postActor,
                                         translate,
-                                        'icons',
                                         enableTimingLog,
                                         postStartTime,
                                         boxName,
@@ -1067,7 +1056,6 @@ def getPostTitleHtml(baseDir: str,
                                  postJsonObject,
                                  postActor,
                                  translate,
-                                 'icons',
                                  enableTimingLog,
                                  postStartTime,
                                  boxName,
@@ -1108,7 +1096,7 @@ def getFooterWithIcons(showIcons: bool,
 
 def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
-                         iconsPath: str, translate: {},
+                         translate: {},
                          pageNumber: int, baseDir: str,
                          session, wfRequest: {}, personCache: {},
                          nickname: str, domain: str, port: int,
@@ -1221,8 +1209,7 @@ def individualPostAsHtml(allowDownloads: bool,
                            nickname, domainFull,
                            avatarUrl, postActor,
                            translate, avatarPosition,
-                           pageNumber, messageIdStr,
-                           'icons')
+                           pageNumber, messageIdStr)
 
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
@@ -1330,7 +1317,7 @@ def individualPostAsHtml(allowDownloads: bool,
     replyStr = getReplyIconHtml(nickname, isPublicRepeat,
                                 showIcons, commentsEnabled,
                                 postJsonObject, pageNumberParam,
-                                'icons', translate)
+                                translate)
 
     logPostTiming(enableTimingLog, postStartTime, '10')
 
@@ -1340,7 +1327,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     editStr = getEditIconHtml(baseDir, nickname, domainFull,
                               postJsonObject, actorNickname,
-                              translate, 'icons', isEvent)
+                              translate, isEvent)
 
     announceStr = \
         getAnnounceIconHtml(nickname, domainFull,
@@ -1351,7 +1338,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             translate,
                             pageNumberParam,
                             timelinePostBookmark,
-                            boxName, 'icons')
+                            boxName)
 
     logPostTiming(enableTimingLog, postStartTime, '12')
 
@@ -1370,7 +1357,7 @@ def individualPostAsHtml(allowDownloads: bool,
                               postStartTime,
                               translate, pageNumberParam,
                               timelinePostBookmark,
-                              boxName, 'icons')
+                              boxName)
 
     logPostTiming(enableTimingLog, postStartTime, '12.5')
 
@@ -1382,8 +1369,7 @@ def individualPostAsHtml(allowDownloads: bool,
                             enableTimingLog,
                             postStartTime, boxName,
                             pageNumberParam,
-                            timelinePostBookmark,
-                            'icons')
+                            timelinePostBookmark)
 
     logPostTiming(enableTimingLog, postStartTime, '12.9')
 
@@ -1398,7 +1384,6 @@ def individualPostAsHtml(allowDownloads: bool,
                         nickname, domainFull,
                         allowDeletion,
                         pageNumberParam,
-                        'icons',
                         boxName,
                         timelinePostBookmark,
                         translate)
@@ -1410,7 +1395,6 @@ def individualPostAsHtml(allowDownloads: bool,
                           messageId,
                           postJsonObject,
                           pageNumberParam,
-                          'icons',
                           translate)
 
     logPostTiming(enableTimingLog, postStartTime, '13.1')
@@ -1427,7 +1411,6 @@ def individualPostAsHtml(allowDownloads: bool,
                                         postJsonObject,
                                         postActor,
                                         translate,
-                                        'icons',
                                         enableTimingLog,
                                         postStartTime,
                                         boxName,
@@ -1659,7 +1642,7 @@ def htmlIndividualPost(cssCache: {},
 
     postStr += \
         individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                             'icons', translate, None,
+                             translate, None,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
@@ -1682,7 +1665,7 @@ def htmlIndividualPost(cssCache: {},
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         'icons', translate, None,
+                                         translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port,
@@ -1711,7 +1694,7 @@ def htmlIndividualPost(cssCache: {},
                 postStr += \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         'icons', translate, None,
+                                         translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,
@@ -1744,7 +1727,7 @@ def htmlPostReplies(cssCache: {},
             repliesStr += \
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
-                                     'icons', translate, None,
+                                     translate, None,
                                      baseDir, session, wfRequest, personCache,
                                      nickname, domain, port, item,
                                      None, True, False,

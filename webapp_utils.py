@@ -68,8 +68,7 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
 def headerButtonsFrontScreen(translate: {},
                              nickname: str, boxName: str,
                              authorized: bool,
-                             iconsAsButtons: bool,
-                             iconsPath: bool) -> str:
+                             iconsAsButtons: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
     headerStr = ''

@@ -67,7 +67,7 @@ def getLeftColumnShares(baseDir: str,
 
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsPath: str, editor: bool,
+                         editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool) -> str:
@@ -284,12 +284,12 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
-                                 iconsAsButtons, 'icons') + '</center>'
+                                 iconsAsButtons) + '</center>'
     if linksExist(baseDir):
         htmlStr += \
             getLeftColumnContent(baseDir, nickname, domainFull,
                                  httpPrefix, translate,
-                                 'icons', editor,
+                                 editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False)
     else:

@@ -43,7 +43,7 @@ def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
 
 def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           httpPrefix: str, translate: {},
-                          iconsPath: str, moderator: bool, editor: bool,
+                          moderator: bool, editor: bool,
                           newswire: {}, positiveVoting: bool,
                           showBackButton: bool, timelinePath: str,
                           showPublishButton: bool,
@@ -196,7 +196,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show the newswire lines
     newswireContentStr = \
         htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                     positiveVoting, 'icons')
+                     positiveVoting)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -206,7 +206,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
 
 def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
-                 translate: {}, positiveVoting: bool, iconsPath: str) -> str:
+                 translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
     """
     separatorStr = htmlPostSeparator(baseDir, 'right')
@@ -444,12 +444,12 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
-                                 iconsAsButtons, 'icons') + '</center>'
+                                 iconsAsButtons) + '</center>'
     if newswire:
         htmlStr += \
             getRightColumnContent(baseDir, nickname, domainFull,
                                   httpPrefix, translate,
-                                  'icons', moderator, editor,
+                                  moderator, editor,
                                   newswire, positiveVoting,
                                   False, timelinePath, showPublishButton,
                                   showPublishAsIcon, rssIconAtTop, False,
