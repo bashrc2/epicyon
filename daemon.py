@@ -1403,6 +1403,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Actions on the moderator screeen
         """
         usersPath = path.replace('/moderationaction', '')
+        nickname = usersPath.replace('/users/', '')
         actorStr = httpPrefix + '://' + domainFull + usersPath
 
         length = int(self.headers['Content-length'])
@@ -1441,7 +1442,8 @@ class PubServer(BaseHTTPRequestHandler):
                 elif moderationStr.startswith('submitInfo'):
                     msg = htmlModerationInfo(self.server.cssCache,
                                              self.server.translate,
-                                             baseDir, httpPrefix)
+                                             baseDir, httpPrefix,
+                                             nickname)
                     msg = msg.encode('utf-8')
                     self._login_headers('text/html',
                                         len(msg), callingDomain)

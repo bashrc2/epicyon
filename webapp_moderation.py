@@ -45,7 +45,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
 
 
 def htmlModerationInfo(cssCache: {}, translate: {},
-                       baseDir: str, httpPrefix: str) -> str:
+                       baseDir: str, httpPrefix: str,
+                       nickname: str) -> str:
     msgStr1 = \
         'These are globally blocked for all accounts on this instance'
     msgStr2 = \
@@ -58,9 +59,9 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     infoForm = htmlHeaderWithExternalStyle(cssFilename)
 
     infoForm += \
-        '<center><h1>' + \
+        '<center><h1><a href="/users/' + nickname + '/moderation">' + \
         translate['Moderation Information'] + \
-        '</h1></center>'
+        '</a></h1></center>'
 
     infoShown = False
     suspendedFilename = baseDir + '/accounts/suspended.txt'
