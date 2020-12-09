@@ -339,5 +339,7 @@
     "Select the edit icon to add RSS feeds": "RSS फ़ीड जोड़ने के लिए संपादन आइकन का चयन करें",
     "Select the edit icon to add web links": "वेब लिंक जोड़ने के लिए संपादन आइकन का चयन करें",
     "Hashtag Categories RSS Feed": "हैशटैग श्रेणियाँ आरएसएस फ़ीड",
-    "Ask about a shared item.": "एक साझा आइटम के बारे में पूछें।"
+    "Ask about a shared item.": "एक साझा आइटम के बारे में पूछें।",
+    "Account Information": "खाते की जानकारी",
+    "This account interacts with the following instances": "यह खाता निम्नलिखित उदाहरणों के साथ सहभागिता करता है"
 }

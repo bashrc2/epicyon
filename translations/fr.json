@@ -339,5 +339,7 @@
     "Select the edit icon to add RSS feeds": "Sélectionnez l'icône d'édition pour ajouter des flux RSS",
     "Select the edit icon to add web links": "Sélectionnez l'icône de modification pour ajouter des liens Web",
     "Hashtag Categories RSS Feed": "Flux RSS des catégories Hashtag",
-    "Ask about a shared item.": "Renseignez-vous sur un élément partagé."
+    "Ask about a shared item.": "Renseignez-vous sur un élément partagé.",
+    "Account Information": "Information sur le compte",
+    "This account interacts with the following instances": "Ce compte interagit avec les instances suivantes"
 }

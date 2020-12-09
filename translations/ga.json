@@ -339,5 +339,7 @@
     "Select the edit icon to add RSS feeds": "Roghnaigh an deilbhín eagar chun fothaí RSS a chur leis",
     "Select the edit icon to add web links": "Roghnaigh an deilbhín eagar chun naisc ghréasáin a chur leis",
     "Hashtag Categories RSS Feed": "Catagóirí Hashtag RSS Feed",
-    "Ask about a shared item.": "Fiafraigh faoi earra roinnte."
+    "Ask about a shared item.": "Fiafraigh faoi earra roinnte.",
+    "Account Information": "Faisnéis Chuntais",
+    "This account interacts with the following instances": "Idirghníomhaíonn an cuntas seo leis na cásanna seo a leanas"
 }

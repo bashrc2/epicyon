@@ -526,8 +526,8 @@ if args.posts:
 if args.postDomains:
     if '@' not in args.postDomains:
         if '/users/' in args.postDomains:
-            postsNickname = getNicknameFromActor(args.posts)
-            postsDomain, postsPort = getDomainFromActor(args.posts)
+            postsNickname = getNicknameFromActor(args.postDomains)
+            postsDomain, postsPort = getDomainFromActor(args.postDomains)
             args.postDomains = postsNickname + '@' + postsDomain
             if postsPort:
                 if postsPort != 80 and postsPort != 443:
@@ -565,8 +565,9 @@ if args.postDomainsBlocked:
     # given handle but which are globally blocked on this instance
     if '@' not in args.postDomainsBlocked:
         if '/users/' in args.postDomainsBlocked:
-            postsNickname = getNicknameFromActor(args.posts)
-            postsDomain, postsPort = getDomainFromActor(args.posts)
+            postsNickname = getNicknameFromActor(args.postDomainsBlocked)
+            postsDomain, postsPort = \
+                getDomainFromActor(args.postDomainsBlocked)
             args.postDomainsBlocked = postsNickname + '@' + postsDomain
             if postsPort:
                 if postsPort != 80 and postsPort != 443:

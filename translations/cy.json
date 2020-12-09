@@ -339,5 +339,7 @@
     "Select the edit icon to add RSS feeds": "Dewiswch yr eicon golygu i ychwanegu porthwyr RSS",
     "Select the edit icon to add web links": "Dewiswch yr eicon golygu i ychwanegu dolenni gwe",
     "Hashtag Categories RSS Feed": "Categorïau Hashtag RSS Feed",
-    "Ask about a shared item.": "Gofynnwch am eitem a rennir."
+    "Ask about a shared item.": "Gofynnwch am eitem a rennir.",
+    "Account Information": "Gwybodaeth Gyfrif",
+    "This account interacts with the following instances": "Mae'r cyfrif hwn yn rhyngweithio â'r achosion canlynol"
 }

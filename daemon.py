@@ -136,6 +136,7 @@ from webapp_timeline import htmlInboxBlogs
 from webapp_timeline import htmlInboxNews
 from webapp_timeline import htmlInboxFeatures
 from webapp_timeline import htmlOutbox
+from webapp_moderation import htmlAccountInfo
 from webapp_moderation import htmlModeration
 from webapp_moderation import htmlModerationInfo
 from webapp_create_post import htmlNewPost
@@ -1440,10 +1441,27 @@ class PubServer(BaseHTTPRequestHandler):
                         moderationText = \
                             urllib.parse.unquote_plus(modText.strip())
                 elif moderationStr.startswith('submitInfo'):
-                    msg = htmlModerationInfo(self.server.cssCache,
-                                             self.server.translate,
-                                             baseDir, httpPrefix,
-                                             nickname)
+                    searchHandle = \
+                        urllib.parse.unquote_plus(moderationStr.strip())
+                    if searchHandle:
+                        if '@' not in searchHandle:
+                            searchHandle = None
+                    if searchHandle:
+                        msg = \
+                            htmlAccountInfo(self.server.cssCache,
+                                            self.server.translate,
+                                            baseDir, httpPrefix,
+                                            nickname,
+                                            self.server.domain,
+                                            self.server.port,
+                                            searchHandle,
+                                            self.server.debug)
+                    else:
+                        msg = \
+                            htmlModerationInfo(self.server.cssCache,
+                                               self.server.translate,
+                                               baseDir, httpPrefix,
+                                               nickname)
                     msg = msg.encode('utf-8')
                     self._login_headers('text/html',
                                         len(msg), callingDomain)
@@ -10977,6 +10995,42 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show blogs 2 done',
                                   'show shares 2 done')
+
+        # block a domain from htmlAccountInfo
+        if authorized and '/users/' in self.path and \
+           '/accountinfo?blockdomain=' in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isModerator(self.server.baseDir, nickname):
+                self._400()
+                return
+            blockDomain = self.path.split('/accountinfo?blockdomain=')[1]
+            blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
+            addGlobalBlock(self.server.baseDir, nickname, blockDomain)
+            self.server.GETbusy = False
+            # TODO this should go back to the account info screen
+            self._redirect_headers('/users/' + nickname + '/moderation',
+                                   cookie, callingDomain)
+            return
+
+        # unblock a domain from htmlAccountInfo
+        if authorized and '/users/' in self.path and \
+           '/accountinfo?unblockdomain=' in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isModerator(self.server.baseDir, nickname):
+                self._400()
+                return
+            blockDomain = self.path.split('/accountinfo?unblockdomain=')[1]
+            blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
+            removeGlobalBlock(self.server.baseDir, nickname, blockDomain)
+            self.server.GETbusy = False
+            # TODO this should go back to the account info screen
+            self._redirect_headers('/users/' + nickname + '/moderation',
+                                   cookie, callingDomain)
+            return
 
         # get the bookmarks timeline for a given person
         if self.path.endswith('/tlbookmarks') or \
