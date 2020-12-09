@@ -244,7 +244,7 @@ systemctl restart epicyon
 If you want to use your own favicon then copy your `favicon.ico` file to the base directory where you installed Epicyon.
 
 
-## Changing themes
+## Changing Themes
 
 When changing themes you may need to ensure that your nginx cache is cleared (/var/www/cache/*) and that your local browser cache is cleared for the site (Shift + Reload). Otherwise images and icons from the previous theme may remain.
 
