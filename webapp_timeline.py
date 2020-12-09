@@ -12,7 +12,6 @@ from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
-from webapp_utils import getIconsWebPath
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -111,10 +110,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         newReport = True
         if boxName == 'moderation':
             os.remove(newReportFile)
-
-    # directory where icons are found
-    # This changes depending upon theme
-    iconsPath = getIconsWebPath(baseDir)
 
     separatorStr = ''
     if boxName != 'tlmedia':
@@ -222,7 +217,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
                         '" title="' + translate['Approve follow requests'] + \
-                        '" src="/' + iconsPath + '/person.png"/></a>\n'
+                        '" src="/icons/person.png"/></a>\n'
                     break
 
     logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '3')
@@ -279,7 +274,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newdm"><img loading="lazy" src="/' + \
-                iconsPath + '/newpost.png" title="' + \
+                'icons/newpost.png" title="' + \
                 translate['Create a new DM'] + \
                 '" alt="| ' + translate['Create a new DM'] + \
                 '" class="timelineicon"/></a>\n'
@@ -295,7 +290,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
-                iconsPath + '/newpost.png" title="' + \
+                'icons/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>\n'
@@ -309,7 +304,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newevent"><img loading="lazy" src="/' + \
-                iconsPath + '/newpost.png" title="' + \
+                'icons/newpost.png" title="' + \
                 translate['Create a new event'] + '" alt="| ' + \
                 translate['Create a new event'] + \
                 '" class="timelineicon"/></a>\n'
@@ -323,7 +318,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/newshare"><img loading="lazy" src="/' + \
-                iconsPath + '/newpost.png" title="' + \
+                'icons/newpost.png" title="' + \
                 translate['Create a new shared item'] + '" alt="| ' + \
                 translate['Create a new shared item'] + \
                 '" class="timelineicon"/></a>\n'
@@ -338,7 +333,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
-                    iconsPath + '/newpost.png" title="' + \
+                    'icons/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
                     translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
@@ -352,7 +347,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 newPostButtonStr += \
                     '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
-                    iconsPath + '/newpost.png" title="' + \
+                    'icons/newpost.png" title="' + \
                     translate['Create a new post'] + \
                     '" alt="| ' + translate['Create a new post'] + \
                     '" class="timelineicon"/></a>\n'
@@ -388,7 +383,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   sharesButtonStr, bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
                                   newPostButtonStr, baseDir, nickname,
-                                  domain, iconsPath, timelineStartTime,
+                                  domain, 'icons', timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
@@ -411,7 +406,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # left column
     leftColumnStr = \
         getLeftColumnContent(baseDir, nickname, domainFull,
-                             httpPrefix, translate, iconsPath,
+                             httpPrefix, translate, 'icons',
                              editor, False, None, rssIconAtTop,
                              True, False)
     tlStr += '  <td valign="top" class="col-left">' + \
@@ -430,7 +425,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   sharesButtonStr, bookmarksButtonStr,
                                   eventsButtonStr, moderationButtonStr,
                                   newPostButtonStr, baseDir, nickname,
-                                  domain, iconsPath, timelineStartTime,
+                                  domain, 'icons', timelineStartTime,
                                   newCalendarEvent, calendarPath,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
@@ -495,7 +490,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '    <a href="' + usersPath + '/' + boxName + \
             '?page=' + str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsPath + '/pageup.png" title="' + \
+            'icons/pageup.png" title="' + \
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
@@ -545,7 +540,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     currTlStr = \
                         individualPostAsHtml(False, recentPostsCache,
                                              maxRecentPosts,
-                                             iconsPath, translate, pageNumber,
+                                             'icons', translate, pageNumber,
                                              baseDir, session, wfRequest,
                                              personCache,
                                              nickname, domain, port,
@@ -577,7 +572,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsPath + '/pagedown.png" title="' + \
+            'icons/pagedown.png" title="' + \
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
@@ -590,7 +585,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
-                                           httpPrefix, translate, iconsPath,
+                                           httpPrefix, translate, 'icons',
                                            moderator, editor,
                                            newswire, positiveVoting,
                                            False, None, True,
@@ -662,13 +657,12 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     timelineStr = ''
 
     if pageNumber > 1:
-        iconsPath = getIconsWebPath(baseDir)
         timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsPath + '/pageup.png" title="' + translate['Page up'] + \
+            'icons/pageup.png" title="' + translate['Page up'] + \
             '" alt="' + translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
@@ -686,13 +680,12 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
         timelineStr += separatorStr
 
     if not lastPage:
-        iconsPath = getIconsWebPath(baseDir)
         timelineStr += \
             '  <center>\n' + \
             '    <a href="' + actor + '/tlshares?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsPath + '/pagedown.png" title="' + translate['Page down'] + \
+            'icons/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>\n' + \
             '  </center>\n'
 

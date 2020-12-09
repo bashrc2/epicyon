@@ -58,7 +58,6 @@ from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
 from posts import sendToFollowersThread
-from webapp_utils import getIconsWebPath
 from webapp_post import individualPostAsHtml
 from question import questionUpdateVotes
 from media import replaceYouTube
@@ -173,7 +172,7 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     if boxname != 'tlevents' and boxname != 'outbox':
         boxname = 'inbox'
     individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                         getIconsWebPath(baseDir), translate, pageNumber,
+                         'icons', translate, pageNumber,
                          baseDir, session, cachedWebfingers, personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,

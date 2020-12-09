@@ -25,7 +25,6 @@ from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsWebPath
 
 
 def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
@@ -143,7 +142,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + '" title="' + \
                 translate['Edit newswire'] + '" src="/' + \
-                iconsPath + '/edit_notify.png" /></a>\n'
+                'icons/edit_notify.png" /></a>\n'
         else:
             # show the edit icon
             htmlStr += \
@@ -153,7 +152,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Edit newswire'] + '" title="' + \
                 translate['Edit newswire'] + '" src="/' + \
-                iconsPath + '/edit.png" /></a>\n'
+                'icons/edit.png" /></a>\n'
 
     # show the RSS icons
     rssIconStr = \
@@ -162,14 +161,14 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '" loading="lazy" alt="' + \
         translate['Hashtag Categories RSS Feed'] + '" title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
-        iconsPath + '/categoriesrss.png" /></a>\n'
+        'icons/categoriesrss.png" /></a>\n'
     rssIconStr += \
         '        <a href="/newswire.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
         translate['Newswire RSS Feed'] + '" title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
-        iconsPath + '/logorss.png" /></a>\n'
+        'icons/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
 
@@ -183,7 +182,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '" loading="lazy" alt="' + \
                 translate['Publish a news article'] + '" title="' + \
                 translate['Publish a news article'] + '" src="/' + \
-                iconsPath + '/publish.png" /></a>\n'
+                'icons/publish.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
         htmlStr += '      </center>\n'
@@ -197,7 +196,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show the newswire lines
     newswireContentStr = \
         htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                     positiveVoting, iconsPath)
+                     positiveVoting, 'icons')
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -252,7 +251,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
                 htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
-                    iconsPath + '/vote.png" /></a></p>\n'
+                    'icons/vote.png" /></a></p>\n'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
                 htmlStr += dateShown + '</span></p>\n'
@@ -277,7 +276,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
                 htmlStr += '<img class="voteicon" src="/' + \
-                    iconsPath + '/vote.png" /></a>'
+                    'icons/vote.png" /></a>'
                 htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
@@ -323,8 +322,6 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-
-    # iconsPath = getIconsWebPath(baseDir)
 
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
@@ -422,8 +419,6 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsPath = getIconsWebPath(baseDir)
-
     if nickname == 'news':
         editor = False
         moderator = False
@@ -449,12 +444,12 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'newswire', authorized,
-                                 iconsAsButtons, iconsPath) + '</center>'
+                                 iconsAsButtons, 'icons') + '</center>'
     if newswire:
         htmlStr += \
             getRightColumnContent(baseDir, nickname, domainFull,
                                   httpPrefix, translate,
-                                  iconsPath, moderator, editor,
+                                  'icons', moderator, editor,
                                   newswire, positiveVoting,
                                   False, timelinePath, showPublishButton,
                                   showPublishAsIcon, rssIconAtTop, False,

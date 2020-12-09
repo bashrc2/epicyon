@@ -212,7 +212,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
                 '/search"><img loading="lazy" src="/' + \
-                iconsPath + '/search.png" title="' + \
+                'icons/search.png" title="' + \
                 translate['Search and follow'] + '" alt="| ' + \
                 translate['Search and follow'] + \
                 '" class="timelineicon"/></a>'
@@ -239,7 +239,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '      <a class="imageAnchor" href="' + \
                 usersPath + calendarPath + \
-                '"><img loading="lazy" src="/' + iconsPath + '/' + \
+                '"><img loading="lazy" src="/icons/' + \
                 calendarImage + '" title="' + translate['Calendar'] + \
                 '" alt="| ' + calendarAltText + \
                 '" class="timelineicon"/></a>\n'
@@ -256,7 +256,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             tlStr += \
                 '      <a class="imageAnchor" href="' + \
                 usersPath + '/minimal' + \
-                '"><img loading="lazy" src="/' + iconsPath + \
+                '"><img loading="lazy" src="/icons' + \
                 '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
                 '" alt="| ' + translate['Show/Hide Buttons'] + \
                 '" class="timelineicon"/></a>\n'
@@ -278,7 +278,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a class="imageAnchorMobile" href="' + \
             usersPath + '/newswiremobile">' + \
-            '<img loading="lazy" src="/' + iconsPath + \
+            '<img loading="lazy" src="/icons' + \
             '/newswire.png" title="' + translate['News'] + \
             '" alt="| ' + translate['News'] + \
             '" class="timelineicon"/></a>'
@@ -296,7 +296,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a class="imageAnchorMobile" href="' + \
             usersPath + '/linksmobile">' + \
-            '<img loading="lazy" src="/' + iconsPath + \
+            '<img loading="lazy" src="/icons' + \
             '/links.png" title="' + translate['Edit Links'] + \
             '" alt="| ' + translate['Edit Links'] + \
             '" class="timelineicon"/></a>'

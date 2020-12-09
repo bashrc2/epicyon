@@ -12,7 +12,6 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getImageFormats
 from utils import getMediaFormats
-from webapp_utils import getIconsWebPath
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -81,7 +80,7 @@ def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     dropDownContent += '  <label for="my-newPostDropdown"\n'
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
-        iconsPath + '/' + scopeIcon + '"/><b>' + \
+        'icons/' + scopeIcon + '"/><b>' + \
         scopeDescription + '</b></label>\n'
     dropDownContent += '  <ul>\n'
 
@@ -89,58 +88,58 @@ def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
         dropDownContent += \
             '<li><a href="' + pathBase + dropdownNewPostSuffix + \
             '"><img loading="lazy" alt="" title="" src="/' + \
-            iconsPath + '/scope_public.png"/><b>' + \
+            'icons/scope_public.png"/><b>' + \
             translate['Public'] + '</b><br>' + \
             translate['Visible to anyone'] + '</a></li>\n'
         if defaultTimeline == 'tlfeatures':
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
                 '"><img loading="lazy" alt="" title="" src="/' + \
-                iconsPath + '/scope_blog.png"/><b>' + \
+                'icons/scope_blog.png"/><b>' + \
                 translate['Article'] + '</b><br>' + \
                 translate['Create an article'] + '</a></li>\n'
         else:
             dropDownContent += \
                 '<li><a href="' + pathBase + dropdownNewBlogSuffix + \
                 '"><img loading="lazy" alt="" title="" src="/' + \
-                iconsPath + '/scope_blog.png"/><b>' + \
+                'icons/scope_blog.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
                 translate['Publicly visible post'] + '</a></li>\n'
         dropDownContent += \
             '<li><a href="' + pathBase + dropdownUnlistedSuffix + \
             '"><img loading="lazy" alt="" title="" src="/' + \
-            iconsPath + '/scope_unlisted.png"/><b>' + \
+            'icons/scope_unlisted.png"/><b>' + \
             translate['Unlisted'] + '</b><br>' + \
             translate['Not on public timeline'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownFollowersSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
-        iconsPath + '/scope_followers.png"/><b>' + \
+        'icons/scope_followers.png"/><b>' + \
         translate['Followers'] + '</b><br>' + \
         translate['Only to followers'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownDMSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
-        iconsPath + '/scope_dm.png"/><b>' + \
+        'icons/scope_dm.png"/><b>' + \
         translate['DM'] + '</b><br>' + \
         translate['Only to mentioned people'] + '</a></li>\n'
 
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReminderSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
-        iconsPath + '/scope_reminder.png"/><b>' + \
+        'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownEventSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
-        iconsPath + '/scope_event.png"/><b>' + \
+        'icons/scope_event.png"/><b>' + \
         translate['Event'] + '</b><br>' + \
         translate['Create an event'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
-        iconsPath + '/scope_report.png"/><b>' + \
+        'icons/scope_report.png"/><b>' + \
         translate['Report'] + '</b><br>' + \
         translate['Send to moderators'] + '</a></li>\n'
 
@@ -148,13 +147,13 @@ def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
         dropDownContent += \
             '<li><a href="' + pathBase + \
             '/newshare"><img loading="lazy" alt="" title="" src="/' + \
-            iconsPath + '/scope_share.png"/><b>' + \
+            'icons/scope_share.png"/><b>' + \
             translate['Shares'] + '</b><br>' + \
             translate['Describe a shared item'] + '</a></li>\n'
         dropDownContent += \
             '<li><a href="' + pathBase + \
             '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
-            iconsPath + '/scope_question.png"/><b>' + \
+            'icons/scope_question.png"/><b>' + \
             translate['Question'] + '</b><br>' + \
             translate['Ask a question'] + '</a></li>\n'
 
@@ -174,7 +173,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 defaultTimeline: str, newswire: {}) -> str:
     """New post screen
     """
-    iconsPath = getIconsWebPath(baseDir)
     replyStr = ''
 
     showPublicOnDropdown = True
@@ -495,7 +493,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<p><img loading="lazy" alt="" title="" ' + \
                 'class="emojicalendar" src="/' + \
-                iconsPath + '/calendar.png"/>\n'
+                'icons/calendar.png"/>\n'
             # select a date and time for this post
             dateAndLocation += '<label class="labels">' + \
                 translate['Date'] + ': </label>\n'
@@ -510,7 +508,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<p><img loading="lazy" alt="" title="" ' + \
                 'class="emojicalendar" src="/' + \
-                iconsPath + '/calendar.png"/>\n'
+                'icons/calendar.png"/>\n'
             # select start time for the event
             dateAndLocation += '<label class="labels">' + \
                 translate['Start Date'] + ': </label>\n'
@@ -523,7 +521,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<br><img loading="lazy" alt="" title="" ' + \
                 'class="emojicalendar" src="/' + \
-                iconsPath + '/calendar.png"/>\n'
+                'icons/calendar.png"/>\n'
             dateAndLocation += '<label class="labels">' + \
                 translate['End Date'] + ': </label>\n'
             dateAndLocation += '<input type="date" name="endDate">\n'
@@ -621,7 +619,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             htmlNewPostDropDown(scopeIcon, scopeDescription,
                                 replyStr,
                                 translate,
-                                iconsPath,
+                                'icons',
                                 showPublicOnDropdown,
                                 defaultTimeline,
                                 pathBase,

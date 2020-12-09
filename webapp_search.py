@@ -23,7 +23,6 @@ from utils import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsWebPath
 from webapp_utils import getImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -102,7 +101,6 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           callingDomain: str) -> str:
     """Search results for shared items
     """
-    iconsPath = getIconsWebPath(baseDir)
     currPage = 1
     ctr = 0
     sharedItemsForm = ''
@@ -215,7 +213,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" type="submit" name="submitSearch">\n'
                             sharedItemsForm += \
                                 '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/' + iconsPath + \
+                                'class="pageicon" src="/icons' + \
                                 '/pageup.png" title="' + \
                                 translate['Page up'] + \
                                 '" alt="' + translate['Page up'] + \
@@ -249,7 +247,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" type="submit" name="submitSearch">\n'
                             sharedItemsForm += \
                                 '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/' + iconsPath + \
+                                'class="pageicon" src="/icons' + \
                                 '/pagedown.png" title="' + \
                                 translate['Page down'] + \
                                 '" alt="' + translate['Page down'] + \
@@ -559,7 +557,6 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             '</h5></center>'
         return historySearchForm
 
-    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds
@@ -590,7 +587,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         postStr = \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
-                                 iconsPath, translate, None,
+                                 'icons', translate, None,
                                  baseDir, session, wfRequest,
                                  personCache,
                                  nickname, domain, port,
@@ -635,7 +632,6 @@ def htmlHashtagSearch(cssCache: {},
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
@@ -682,7 +678,7 @@ def htmlHashtagSearch(cssCache: {},
     hashtagSearchForm += \
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
-        iconsPath + '/logorss.png" /></a></center>\n'
+        'icons/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
     if isEditor(baseDir, nickname):
@@ -711,7 +707,7 @@ def htmlHashtagSearch(cssCache: {},
             '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsPath + '/pageup.png" title="' + \
+            'icons/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
@@ -756,7 +752,7 @@ def htmlHashtagSearch(cssCache: {},
         postStr = \
             individualPostAsHtml(allowDownloads, recentPostsCache,
                                  maxRecentPosts,
-                                 iconsPath, translate, None,
+                                 'icons', translate, None,
                                  baseDir, session, wfRequest,
                                  personCache,
                                  nickname, domain, port,
@@ -781,7 +777,7 @@ def htmlHashtagSearch(cssCache: {},
             '  <center>\n' + \
             '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + iconsPath + \
+            '"><img loading="lazy" class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'

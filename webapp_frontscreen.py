@@ -12,7 +12,6 @@ from utils import getDomainFromActor
 from person import personBoxJson
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
-from webapp_utils import getIconsWebPath
 from webapp_utils import getBannerFile
 from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
@@ -33,7 +32,6 @@ def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
     """
-    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
     profileStr = ''
     maxItems = 4
@@ -57,7 +55,7 @@ def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         iconsPath, translate, None,
+                                         'icons', translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,
@@ -101,10 +99,9 @@ def htmlFrontScreen(rssIconAtTop: bool,
     if port:
         domainFull = domain + ':' + str(port)
 
-    iconsPath = getIconsWebPath(baseDir)
     loginButton = headerButtonsFrontScreen(translate, nickname,
                                            'features', authorized,
-                                           iconsAsButtons, iconsPath)
+                                           iconsAsButtons, 'icons')
 
     # If this is the news account then show a different banner
     bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
@@ -123,11 +120,10 @@ def htmlFrontScreen(rssIconAtTop: bool,
     profileHeaderStr += '  <tbody>\n'
     profileHeaderStr += '    <tr>\n'
     profileHeaderStr += '      <td valign="top" class="col-left">\n'
-    iconsPath = getIconsWebPath(baseDir)
     profileHeaderStr += \
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
-                             iconsPath, False,
+                             'icons', False,
                              False, None, rssIconAtTop, True,
                              True)
     profileHeaderStr += '      </td>\n'
@@ -155,11 +151,10 @@ def htmlFrontScreen(rssIconAtTop: bool,
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'
     profileFooterStr += '      <td valign="top" class="col-right">\n'
-    iconsPath = getIconsWebPath(baseDir)
     profileFooterStr += \
         getRightColumnContent(baseDir, 'news', domainFull,
                               httpPrefix, translate,
-                              iconsPath, False, False,
+                              'icons', False, False,
                               newswire, False,
                               False, None, False, False,
                               False, True, authorized, True)

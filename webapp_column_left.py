@@ -16,7 +16,6 @@ from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -136,7 +135,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
-            iconsPath + '/edit.png" /></a>\n'
+            'icons/edit.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -155,7 +154,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + rssTitle + \
         '" title="' + rssTitle + \
-        '" src="/' + iconsPath + '/logorss.png" /></a>\n'
+        '" src="/icons/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
     htmlStr += '      </div>\n'
@@ -264,8 +263,6 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsPath = getIconsWebPath(baseDir)
-
     # is the user a site editor?
     if nickname == 'news':
         editor = False
@@ -287,12 +284,12 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
-                                 iconsAsButtons, iconsPath) + '</center>'
+                                 iconsAsButtons, 'icons') + '</center>'
     if linksExist(baseDir):
         htmlStr += \
             getLeftColumnContent(baseDir, nickname, domainFull,
                                  httpPrefix, translate,
-                                 iconsPath, editor,
+                                 'icons', editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False)
     else:

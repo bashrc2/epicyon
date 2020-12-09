@@ -110,13 +110,13 @@ def headerButtonsFrontScreen(translate: {},
             headerStr += \
                 '        <a href="' + \
                 '/users/news/newswiremobile">' + \
-                '<img loading="lazy" src="/' + iconsPath + \
+                '<img loading="lazy" src="/icons' + \
                 '/newswire.png" title="' + translate['Newswire'] + \
                 '" alt="| ' + translate['Newswire'] + '"/></a>\n'
             headerStr += \
                 '        <a href="' + \
                 '/users/news/linksmobile">' + \
-                '<img loading="lazy" src="/' + iconsPath + \
+                '<img loading="lazy" src="/icons' + \
                 '/links.png" title="' + translate['Links'] + \
                 '" alt="| ' + translate['Links'] + '"/></a>\n'
     else:
@@ -388,12 +388,6 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
         if personJson['icon'].get('url'):
             return personJson['icon']['url']
     return None
-
-
-def getIconsWebPath(baseDir: str) -> str:
-    """Returns the web path where icons exist
-    """
-    return 'icons'
 
 
 def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
@@ -832,7 +826,6 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
 def htmlPostSeparator(baseDir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
-    iconsPath = getIconsWebPath(baseDir)
     theme = getConfigParam(baseDir, 'theme')
     filename = 'separator.png'
     separatorClass = "postSeparatorImage"
@@ -844,7 +837,7 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
             '<div class="' + separatorClass + '"><center>' + \
-            '<img src="/' + iconsPath + '/' + filename + '"/>' + \
+            '<img src="/icons/' + filename + '"/>' + \
             '</center></div>\n'
     return separatorStr
 

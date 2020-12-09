@@ -20,7 +20,6 @@ from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsWebPath
 
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
@@ -122,8 +121,6 @@ def htmlCalendarDay(cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<tbody>\n'
 
-    iconsPath = getIconsWebPath(baseDir)
-
     if dayEvents:
         for eventPost in dayEvents:
             eventTime = None
@@ -156,7 +153,7 @@ def htmlCalendarDay(cssCache: {}, translate: {},
                     '">\n<img class="calendardayicon" loading="lazy" alt="' + \
                     translate['Delete this event'] + ' |" title="' + \
                     translate['Delete this event'] + '" src="/' + \
-                    iconsPath + '/delete.png" /></a></td>\n'
+                    'icons/delete.png" /></a></td>\n'
 
             if eventTime and eventDescription and eventPlace:
                 calendarStr += \
@@ -201,7 +198,6 @@ def htmlCalendar(cssCache: {}, translate: {},
                  httpPrefix: str, domainFull: str) -> str:
     """Show the calendar for a person
     """
-    iconsPath = getIconsWebPath(baseDir)
     domain = domainFull
     if ':' in domainFull:
         domain = domainFull.split(':')[0]
@@ -302,7 +298,7 @@ def htmlCalendar(cssCache: {}, translate: {},
         '?month=' + str(prevMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
-        '" title="' + translate['Previous month'] + '" src="/' + iconsPath + \
+        '" title="' + translate['Previous month'] + '" src="/icons' + \
         '/prev.png" class="buttonprev"/></a>\n'
     calendarStr += '  <a href="' + calActor + '/inbox" title="'
     calendarStr += translate['Switch to timeline view'] + '">'
@@ -312,7 +308,7 @@ def htmlCalendar(cssCache: {}, translate: {},
         '?month=' + str(nextMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
-        '" title="' + translate['Next month'] + '" src="/' + iconsPath + \
+        '" title="' + translate['Next month'] + '" src="/icons' + \
         '/prev.png" class="buttonnext"/></a>\n'
     calendarStr += '</caption>\n'
     calendarStr += '<thead>\n'
