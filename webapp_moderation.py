@@ -69,8 +69,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     searchDomain, searchPort = getDomainFromActor(searchHandle)
 
     infoForm += \
-        '<center><h1><a href="/users/' + nickname + '/moderation?' + \
-        searchHandle + '">' + \
+        '<center><h1><a href="/users/' + nickname + '/moderation' + \
+        '?modaction=' + searchHandle + '">' + \
         translate['Account Information'] + \
         ': ' + searchNickname + '@' + searchDomain + \
         '</a></h1><br><br>'

@@ -8132,8 +8132,9 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         moderationActionStr = ''
-                        if '?' in nickname:
-                            moderationActionStr = nickname.split('?')[1]
+                        if '?modaction=' in nickname:
+                            moderationActionStr = \
+                                nickname.split('?modaction=')[1]
                             nickname = nickname.split('?')[0]
                         msg = \
                             htmlModeration(self.server.cssCache,
@@ -8185,8 +8186,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/moderation', '')
-                    if '?' in nickname:
-                        nickname = nickname.split('?')[0]
+                    if '?modaction=' in nickname:
+                        nickname = nickname.split('?modaction=')[0]
                     print('DEBUG: ' + nickname +
                           ' was not authorized to access ' + path)
         if debug:
@@ -11014,7 +11015,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             searchHandle = ''
             if '?' in blockDomain:
-                searchHandle = '?' + blockDomain.split('?')[1]
+                searchHandle = '?modaction=' + blockDomain.split('?')[1]
                 blockDomain = blockDomain.split('?')[0]
             addGlobalBlock(self.server.baseDir, nickname, blockDomain)
             self.server.GETbusy = False
@@ -11035,7 +11036,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             searchHandle = ''
             if '?' in blockDomain:
-                searchHandle = '?' + blockDomain.split('?')[1]
+                searchHandle = '?modaction=' + blockDomain.split('?')[1]
                 blockDomain = blockDomain.split('?')[0]
             removeGlobalBlock(self.server.baseDir, nickname, blockDomain)
             self.server.GETbusy = False
