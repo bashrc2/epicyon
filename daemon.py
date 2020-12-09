@@ -8131,6 +8131,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
+                        moderationActionStr = ''
                         if '?' in nickname:
                             moderationActionStr = nickname.split('?')[1]
                             nickname = nickname.split('?')[0]
