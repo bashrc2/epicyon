@@ -3823,8 +3823,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change theme
                     if fields.get('themeDropdown'):
-                        self.themeName = fields['themeDropdown']
-                        setTheme(baseDir, self.themeName, domain,
+                        self.server.themeName = fields['themeDropdown']
+                        setTheme(baseDir, self.server.themeName, domain,
                                  allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
@@ -4196,7 +4196,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
-                                self.themeName = currTheme
+                                self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
                                 self.server.showPublishAsIcon = \
@@ -4566,12 +4566,13 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
                 favFilename = 'favicon.avif'
-        themeName = getConfigParam(baseDir, 'theme')
-        if not themeName:
+        if not self.server.themeName:
+            self.themeName = getConfigParam(baseDir, 'theme')
+        if not self.server.themeName:
             themeName = 'default'
         # custom favicon
         faviconFilename = \
-            baseDir + '/theme/' + themeName + '/icons/' + favFilename
+            baseDir + '/theme/' + self.server.themeName + '/icons/' + favFilename
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
@@ -5060,11 +5061,11 @@ class PubServer(BaseHTTPRequestHandler):
         if path.endswith('.png'):
             mediaStr = path.split('/icons/')[1]
             if '/' not in mediaStr:
-                if not self.themeName:
+                if not self.server.themeName:
                     theme = 'default'
                 else:
-                    theme = self.themeName
-                iconFilename = mediaStr                
+                    theme = self.server.themeName
+                iconFilename = mediaStr
             else:
                 theme = mediaStr.split('/')[0]
                 iconFilename = mediaStr.split('/')[1]
@@ -13069,11 +13070,11 @@ def runDaemon(maxNewswirePosts: int,
         createNewsInbox(baseDir, domain, port, httpPrefix)
 
     # set the avatar for the news account
-    themeName = getConfigParam(baseDir, 'theme')
-    if not themeName:
-        themeName = 'default'
+    httpd.themeName = getConfigParam(baseDir, 'theme')
+    if not httpd.themeName:
+        httpd.themeName = 'default'
     setNewsAvatar(baseDir,
-                  themeName,
+                  httpd.themeName,
                   httpPrefix,
                   domain,
                   httpd.domainFull)
@@ -13115,11 +13116,6 @@ def runDaemon(maxNewswirePosts: int,
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
-
-    # get the current theme
-    httpd.themeName = getConfigParam(baseDir, 'theme')
-    if not httpd.themeName:
-        httpd.themeName = 'default'
 
     print('Creating expire thread for shared items')
     httpd.thrSharesExpire = \
