@@ -2417,6 +2417,11 @@ def testFirstParagraphFromString():
 
 def testParseFeedDate():
     print('testParseFeedDate')
+
+    pubDate = "Tue, 08 Dec 2020 06:24:38 -0600"
+    publishedDate = parseFeedDate(pubDate)
+    assert publishedDate == "2020-12-08 12:24:38+00:00"
+
     pubDate = "2020-08-27T16:12:34+00:00"
     publishedDate = parseFeedDate(pubDate)
     assert publishedDate == "2020-08-27 16:12:34+00:00"

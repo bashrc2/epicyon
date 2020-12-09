@@ -154,14 +154,6 @@ def parseFeedDate(pubDate: str) -> str:
             continue
         if ',' not in pubDate and ',' in dateFormat:
             continue
-        if '-' in pubDate and '-' not in dateFormat:
-            continue
-        if '-' not in pubDate and '-' in dateFormat:
-            continue
-        if 'T' in pubDate and 'T' not in dateFormat:
-            continue
-        if 'T' not in pubDate and 'T' in dateFormat:
-            continue
         if 'Z' in pubDate and 'Z' not in dateFormat:
             continue
         if 'Z' not in pubDate and 'Z' in dateFormat:
@@ -267,10 +259,13 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
     if '<item>' not in xmlStr:
         return {}
     result = {}
+
+    # is this an rss feed containing hashtag categories?
     if '<title>#categories</title>' in xmlStr:
         xml2StrToHashtagCategories(baseDir, xmlStr,
                                    maxCategoriesFeedItemSizeKb)
         return {}
+
     rssItems = xmlStr.split('<item>')
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
