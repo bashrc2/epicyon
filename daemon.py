@@ -5704,6 +5704,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   likedPostFilename, likeUrl,
                                   likeActor, domain,
                                   debug)
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like.png'):
+                del self.server.iconsCache['like.png']
+            if self.server.iconsCache.get('like_inactive.png'):
+                del self.server.iconsCache['like_inactive.png']
         else:
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
@@ -5808,6 +5813,11 @@ class PubServer(BaseHTTPRequestHandler):
                                      baseDir,
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug)
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like.png'):
+                del self.server.iconsCache['like.png']
+            if self.server.iconsCache.get('like_inactive.png'):
+                del self.server.iconsCache['like_inactive.png']
         # send out the undo like to followers
         self._postToOutbox(undoLikeJson, self.server.projectVersion)
         self.server.GETbusy = False
