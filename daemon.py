@@ -11110,7 +11110,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the moderation feed for a moderator
         if self.path.endswith('/moderation') or \
-           '/moderation?page=' in self.path:
+           '/moderation?' in self.path:
             if self._showModTimeline(authorized,
                                      callingDomain, self.path,
                                      self.server.baseDir,
