@@ -1441,8 +1441,13 @@ class PubServer(BaseHTTPRequestHandler):
                         moderationText = \
                             urllib.parse.unquote_plus(modText.strip())
                 elif moderationStr.startswith('submitInfo'):
-                    searchHandle = \
-                        urllib.parse.unquote_plus(moderationStr.strip())
+                    searchHandle = None
+                    if '=' in moderationStr:
+                        moderationText = \
+                            moderationStr.split('=')[1].strip()
+                        modText = moderationText.replace('+', ' ')
+                        searchHandle = \
+                            urllib.parse.unquote_plus(modText.strip())
                     if searchHandle:
                         if '@' not in searchHandle:
                             searchHandle = None
