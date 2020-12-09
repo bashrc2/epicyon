@@ -547,6 +547,20 @@ def testPostMessageBetweenServers():
                             break
         time.sleep(1)
 
+    # check that a news account exists
+    newsActorDir = aliceDir + '/accounts/news@' + aliceDomain
+    print("newsActorDir: " + newsActorDir)
+    assert os.path.isdir(newsActorDir)
+    newsActorFile = newsActorDir + '.json'
+    assert os.path.isfile(newsActorFile)
+    newsActorJson = loadJson(newsActorFile)
+    assert newsActorJson
+    assert newsActorJson.get("id")
+    # check the id of the news actor
+    print('News actor Id: ' + newsActorJson["id"])
+    assert (newsActorJson["id"] ==
+            httpPrefix + '://' + aliceAddress + '/users/news')
+
     # Image attachment created
     assert len([name for name in os.listdir(mediaPath)
                 if os.path.isfile(os.path.join(mediaPath, name))]) > 0
@@ -1747,6 +1761,13 @@ def testWebLinks():
            '<p>Test1 test2 '
            '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
 
+    exampleText = \
+        "<p>Don't remove a p2p link " + \
+        "rad:git:hwd1yrerc3mcgn8ga9rho3dqi4w33nep7kxmqezss4topyfgmexihp" + \
+        "33xcw</p>"
+    resultText = removeLongWords(addWebLinks(exampleText), 40, [])
+    assert resultText == exampleText
+
 
 def testAddEmoji():
     print('testAddEmoji')
@@ -2396,6 +2417,11 @@ def testFirstParagraphFromString():
 
 def testParseFeedDate():
     print('testParseFeedDate')
+
+    pubDate = "Tue, 08 Dec 2020 06:24:38 -0600"
+    publishedDate = parseFeedDate(pubDate)
+    assert publishedDate == "2020-12-08 12:24:38+00:00"
+
     pubDate = "2020-08-27T16:12:34+00:00"
     publishedDate = parseFeedDate(pubDate)
     assert publishedDate == "2020-08-27 16:12:34+00:00"

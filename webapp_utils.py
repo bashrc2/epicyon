@@ -68,8 +68,7 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
 def headerButtonsFrontScreen(translate: {},
                              nickname: str, boxName: str,
                              authorized: bool,
-                             iconsAsButtons: bool,
-                             iconsPath: bool) -> str:
+                             iconsAsButtons: bool) -> str:
     """Returns the header buttons for the front page of a news instance
     """
     headerStr = ''
@@ -110,13 +109,13 @@ def headerButtonsFrontScreen(translate: {},
             headerStr += \
                 '        <a href="' + \
                 '/users/news/newswiremobile">' + \
-                '<img loading="lazy" src="/' + iconsPath + \
+                '<img loading="lazy" src="/icons' + \
                 '/newswire.png" title="' + translate['Newswire'] + \
                 '" alt="| ' + translate['Newswire'] + '"/></a>\n'
             headerStr += \
                 '        <a href="' + \
                 '/users/news/linksmobile">' + \
-                '<img loading="lazy" src="/' + iconsPath + \
+                '<img loading="lazy" src="/icons' + \
                 '/links.png" title="' + translate['Links'] + \
                 '" alt="| ' + translate['Links'] + '"/></a>\n'
     else:
@@ -390,17 +389,6 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {},
     return None
 
 
-def getIconsWebPath(baseDir: str) -> str:
-    """Returns the web path where icons exist
-    """
-    iconsPath = 'icons'
-    theme = getConfigParam(baseDir, 'theme')
-    if theme:
-        if os.path.isdir(baseDir + '/theme/' + theme + '/icons'):
-            iconsPath = 'icons/' + theme
-    return iconsPath
-
-
 def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
@@ -422,24 +410,26 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
     allSharesJson = {}
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' in handle:
-                accountDir = baseDir + '/accounts/' + handle
-                sharesFilename = accountDir + '/shares.json'
-                if os.path.isfile(sharesFilename):
-                    sharesJson = loadJson(sharesFilename)
-                    if not sharesJson:
-                        continue
-                    nickname = handle.split('@')[0]
-                    # actor who owns this share
-                    owner = actor.split('/users/')[0] + '/users/' + nickname
-                    ctr = 0
-                    for itemID, item in sharesJson.items():
-                        # assign owner to the item
-                        item['actor'] = owner
-                        allSharesJson[str(item['published'])] = item
-                        ctr += 1
-                        if ctr >= maxSharesPerAccount:
-                            break
+            if '@' not in handle:
+                continue
+            accountDir = baseDir + '/accounts/' + handle
+            sharesFilename = accountDir + '/shares.json'
+            if not os.path.isfile(sharesFilename):
+                continue
+            sharesJson = loadJson(sharesFilename)
+            if not sharesJson:
+                continue
+            nickname = handle.split('@')[0]
+            # actor who owns this share
+            owner = actor.split('/users/')[0] + '/users/' + nickname
+            ctr = 0
+            for itemID, item in sharesJson.items():
+                # assign owner to the item
+                item['actor'] = owner
+                allSharesJson[str(item['published'])] = item
+                ctr += 1
+                if ctr >= maxSharesPerAccount:
+                    break
     # sort the shared items in descending order of publication date
     sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
     lastPage = False
@@ -835,7 +825,6 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
 def htmlPostSeparator(baseDir: str, column: str) -> str:
     """Returns the html for a timeline post separator image
     """
-    iconsPath = getIconsWebPath(baseDir)
     theme = getConfigParam(baseDir, 'theme')
     filename = 'separator.png'
     separatorClass = "postSeparatorImage"
@@ -847,7 +836,7 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
             '<div class="' + separatorClass + '"><center>' + \
-            '<img src="/' + iconsPath + '/' + filename + '"/>' + \
+            '<img src="/icons/' + filename + '"/>' + \
             '</center></div>\n'
     return separatorStr
 

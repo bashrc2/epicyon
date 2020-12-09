@@ -35,7 +35,6 @@ from jami import getJamiAddress
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
-from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import addEmojiToDisplayName
@@ -256,7 +255,6 @@ def htmlProfileAfterSearch(cssCache: {},
         profileStr += '  </form>\n'
         profileStr += '</div>\n'
 
-    iconsPath = getIconsWebPath(baseDir)
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
                               projectVersion, httpPrefix, domain):
@@ -268,7 +266,7 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                                 iconsPath, translate, None, baseDir,
+                                 translate, None, baseDir,
                                  session, cachedWebfingers, personCache,
                                  nickname, domain, port,
                                  item, avatarUrl, False, False,
@@ -284,7 +282,7 @@ def htmlProfileAfterSearch(cssCache: {},
 
 
 def getProfileHeader(baseDir: str, nickname: str, domain: str,
-                     domainFull: str, translate: {}, iconsPath: str,
+                     domainFull: str, translate: {},
                      defaultTimeline: str,
                      displayName: str,
                      avatarDescription: str,
@@ -313,7 +311,7 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
-        '<img class="qrcode" src="/' + iconsPath + \
+        '<img class="qrcode" src="/icons' + \
         '/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
@@ -481,17 +479,16 @@ def htmlProfile(rssIconAtTop: bool,
         donateSection += '  </center>\n'
         donateSection += '</div>\n'
 
-    iconsPath = getIconsWebPath(baseDir)
     if authorized:
         editProfileStr = \
             '<a class="imageAnchor" href="' + usersPath + '/editprofile">' + \
-            '<img loading="lazy" src="/' + iconsPath + \
+            '<img loading="lazy" src="/icons' + \
             '/edit.png" title="' + translate['Edit'] + \
             '" alt="| ' + translate['Edit'] + '" class="timelineicon"/></a>\n'
 
         logoutStr = \
             '<a class="imageAnchor" href="/logout">' + \
-            '<img loading="lazy" src="/' + iconsPath + \
+            '<img loading="lazy" src="/icons' + \
             '/logout.png" title="' + translate['Logout'] + \
             '" alt="| ' + translate['Logout'] + \
             '" class="timelineicon"/></a>\n'
@@ -564,7 +561,7 @@ def htmlProfile(rssIconAtTop: bool,
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
         getProfileHeader(baseDir, nickname, domain,
-                         domainFull, translate, iconsPath,
+                         domainFull, translate,
                          defaultTimeline, displayName,
                          avatarDescription,
                          profileDescriptionShort,
@@ -672,7 +669,6 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     """Shows posts on the profile screen
     These should only be public posts
     """
-    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
     profileStr = ''
     maxItems = 4
@@ -697,7 +693,7 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                 postStr = \
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
-                                         iconsPath, translate, None,
+                                         translate, None,
                                          baseDir, session, wfRequest,
                                          personCache,
                                          nickname, domain, port, item,
@@ -728,7 +724,6 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
     """
     profileStr = ''
 
-    iconsPath = getIconsWebPath(baseDir)
     if authorized and pageNumber:
         if authorized and pageNumber > 1:
             # page up arrow
@@ -737,7 +732,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber - 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
-                iconsPath + '/pageup.png" title="' + \
+                'icons/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
                 translate['Page up'] + '"></a>\n' + \
                 '  </center>\n'
@@ -757,7 +752,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 '    <a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber + 1) + '#buttonheader' + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
-                iconsPath + '/pagedown.png" title="' + \
+                'icons/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
                 translate['Page down'] + '"></a>\n' + \
                 '  </center>\n'

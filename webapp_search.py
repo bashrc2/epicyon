@@ -23,7 +23,6 @@ from utils import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
-from webapp_utils import getIconsWebPath
 from webapp_utils import getImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -102,7 +101,6 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                           callingDomain: str) -> str:
     """Search results for shared items
     """
-    iconsPath = getIconsWebPath(baseDir)
     currPage = 1
     ctr = 0
     sharedItemsForm = ''
@@ -116,8 +114,10 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     sharedItemsForm = \
         htmlHeaderWithExternalStyle(cssFilename)
     sharedItemsForm += \
-        '<center><h1>' + translate['Shared Items Search'] + \
-        '</h1></center>'
+        '<center><h1>' + \
+        '<a href="' + actor + '/search">' + \
+        translate['Shared Items Search'] + \
+        '</a></h1></center>'
     resultsExist = False
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
@@ -213,14 +213,14 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" type="submit" name="submitSearch">\n'
                             sharedItemsForm += \
                                 '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/' + iconsPath + \
+                                'class="pageicon" src="/icons' + \
                                 '/pageup.png" title="' + \
                                 translate['Page up'] + \
                                 '" alt="' + translate['Page up'] + \
                                 '"/></a>\n'
                             sharedItemsForm += '  </center>\n'
                             sharedItemsForm += '</form>\n'
-                            resultsExist = True
+                        resultsExist = True
                     ctr += 1
                     if ctr >= resultsPerPage:
                         currPage += 1
@@ -247,7 +247,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                                 '" type="submit" name="submitSearch">\n'
                             sharedItemsForm += \
                                 '    <img loading="lazy" ' + \
-                                'class="pageicon" src="/' + iconsPath + \
+                                'class="pageicon" src="/icons' + \
                                 '/pagedown.png" title="' + \
                                 translate['Page down'] + \
                                 '" alt="' + translate['Page down'] + \
@@ -382,7 +382,8 @@ def htmlSearch(cssCache: {}, translate: {},
     return followStr
 
 
-def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
+def htmlSkillsSearch(actor: str,
+                     cssCache: {}, translate: {}, baseDir: str,
                      httpPrefix: str,
                      skillsearch: str, instanceOnly: bool,
                      postsPerPage: int) -> str:
@@ -473,8 +474,10 @@ def htmlSkillsSearch(cssCache: {}, translate: {}, baseDir: str,
 
     skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
     skillSearchForm += \
-        '<center><h1>' + translate['Skills search'] + ': ' + \
-        skillsearch + '</h1></center>'
+        '<center><h1><a href = "' + actor + '/search">' + \
+        translate['Skills search'] + ': ' + \
+        skillsearch + \
+        '</a></h1></center>'
 
     if len(results) == 0:
         skillSearchForm += \
@@ -538,8 +541,15 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         htmlHeaderWithExternalStyle(cssFilename)
 
     # add the page title
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     historySearchForm += \
-        '<center><h1>' + translate['Your Posts'] + '</h1></center>'
+        '<center><h1><a href="' + actor + '/search">' + \
+        translate['Your Posts'] + \
+        '</a></h1></center>'
 
     if len(boxFilenames) == 0:
         historySearchForm += \
@@ -547,7 +557,6 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             '</h5></center>'
         return historySearchForm
 
-    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # ensure that the page number is in bounds
@@ -578,7 +587,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         postStr = \
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
-                                 iconsPath, translate, None,
+                                 translate, None,
                                  baseDir, session, wfRequest,
                                  personCache,
                                  nickname, domain, port,
@@ -623,7 +632,6 @@ def htmlHashtagSearch(cssCache: {},
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
-    iconsPath = getIconsWebPath(baseDir)
     separatorStr = htmlPostSeparator(baseDir, None)
 
     # check that the directory for the nickname exists
@@ -670,7 +678,7 @@ def htmlHashtagSearch(cssCache: {},
     hashtagSearchForm += \
         '<img style="width:3%;min-width:50px" ' + \
         'loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
-        iconsPath + '/logorss.png" /></a></center>\n'
+        'icons/logorss.png" /></a></center>\n'
 
     # edit the category for this hashtag
     if isEditor(baseDir, nickname):
@@ -699,7 +707,7 @@ def htmlHashtagSearch(cssCache: {},
             '    <a href="/tags/' + hashtag + '?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
-            iconsPath + '/pageup.png" title="' + \
+            'icons/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
             '"></a>\n  </center>\n'
@@ -744,7 +752,7 @@ def htmlHashtagSearch(cssCache: {},
         postStr = \
             individualPostAsHtml(allowDownloads, recentPostsCache,
                                  maxRecentPosts,
-                                 iconsPath, translate, None,
+                                 translate, None,
                                  baseDir, session, wfRequest,
                                  personCache,
                                  nickname, domain, port,
@@ -769,7 +777,7 @@ def htmlHashtagSearch(cssCache: {},
             '  <center>\n' + \
             '    <a href="/tags/' + hashtag + \
             '?page=' + str(pageNumber + 1) + \
-            '"><img loading="lazy" class="pageicon" src="/' + iconsPath + \
+            '"><img loading="lazy" class="pageicon" src="/icons' + \
             '/pagedown.png" title="' + translate['Page down'] + \
             '" alt="' + translate['Page down'] + '"></a>' + \
             '  </center>'

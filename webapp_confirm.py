@@ -13,7 +13,6 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import loadJson
 from webapp_utils import getAltPath
-from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_post import individualPostAsHtml
@@ -33,7 +32,6 @@ def htmlConfirmDelete(cssCache: {},
     """
     if '/statuses/' not in messageId:
         return None
-    iconsPath = getIconsWebPath(baseDir)
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
@@ -63,7 +61,7 @@ def htmlConfirmDelete(cssCache: {},
     deletePostStr = htmlHeaderWithExternalStyle(cssFilename)
     deletePostStr += \
         individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
-                             iconsPath, translate, pageNumber,
+                             translate, pageNumber,
                              baseDir, session, wfRequest, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,

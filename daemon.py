@@ -1856,7 +1856,7 @@ class PubServer(BaseHTTPRequestHandler):
                               baseDir,
                               httpPrefix,
                               reportPath, None,
-                              [optionsActor], None,
+                              [optionsActor], None, None,
                               pageNumber,
                               chooserNickname,
                               domain,
@@ -1925,7 +1925,7 @@ class PubServer(BaseHTTPRequestHandler):
                               baseDir,
                               httpPrefix,
                               reportPath, None, [],
-                              postUrl, pageNumber,
+                              None, postUrl, pageNumber,
                               chooserNickname,
                               domain,
                               domainFull,
@@ -2392,7 +2392,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # skill search
                 searchStr = searchStr.replace('*', '').strip()
                 skillStr = \
-                    htmlSkillsSearch(self.server.cssCache,
+                    htmlSkillsSearch(actorStr,
+                                     self.server.cssCache,
                                      self.server.translate,
                                      baseDir,
                                      httpPrefix,
@@ -3822,9 +3823,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # change theme
                     if fields.get('themeDropdown'):
-                        setTheme(baseDir,
-                                 fields['themeDropdown'],
-                                 domain,
+                        self.server.themeName = fields['themeDropdown']
+                        setTheme(baseDir, self.server.themeName, domain,
                                  allowLocalNetworkAccess)
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
@@ -4196,6 +4196,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               '.etag')
                             currTheme = getTheme(baseDir)
                             if currTheme:
+                                self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
                                 self.server.showPublishAsIcon = \
@@ -4565,12 +4566,14 @@ class PubServer(BaseHTTPRequestHandler):
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
                 favFilename = 'favicon.avif'
-        themeName = getConfigParam(baseDir, 'theme')
-        if not themeName:
-            themeName = 'default'
+        if not self.server.themeName:
+            self.themeName = getConfigParam(baseDir, 'theme')
+        if not self.server.themeName:
+            self.server.themeName = 'default'
         # custom favicon
         faviconFilename = \
-            baseDir + '/theme/' + themeName + '/icons/' + favFilename
+            baseDir + '/theme/' + self.server.themeName + \
+            '/icons/' + favFilename
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
@@ -5059,7 +5062,10 @@ class PubServer(BaseHTTPRequestHandler):
         if path.endswith('.png'):
             mediaStr = path.split('/icons/')[1]
             if '/' not in mediaStr:
-                theme = 'default'
+                if not self.server.themeName:
+                    theme = 'default'
+                else:
+                    theme = self.server.themeName
                 iconFilename = mediaStr
             else:
                 theme = mediaStr.split('/')[0]
@@ -8961,7 +8967,7 @@ class PubServer(BaseHTTPRequestHandler):
                               httpPrefix,
                               path, inReplyToUrl,
                               replyToList,
-                              shareDescription,
+                              shareDescription, None,
                               replyPageNumber,
                               nickname, domain,
                               domainFull,
@@ -10538,26 +10544,41 @@ class PubServer(BaseHTTPRequestHandler):
             # for moderation posts or the dm timeline
             if '?replydm=' in self.path:
                 inReplyToUrl = self.path.split('?replydm=')[1]
+                inReplyToUrl = urllib.parse.unquote_plus(inReplyToUrl)
                 if '?' in inReplyToUrl:
+                    # multiple parameters
                     mentionsList = inReplyToUrl.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyHandle = m.replace('mention=', '')
-                            if m.replace('mention=', '') not in replyToList:
-                                replyToList.append(m.replace('mention=', ''))
-                        if m.startswith('page='):
+                            inReplyToUrl = replyHandle
+                            if replyHandle not in replyToList:
+                                replyToList.append(replyHandle)
+                        elif m.startswith('page='):
                             replyPageStr = m.replace('page=', '')
                             if replyPageStr.isdigit():
                                 replyPageNumber = int(replyPageStr)
-#                        if m.startswith('actor='):
-#                            replytoActor = m.replace('actor=', '')
-                    inReplyToUrl = mentionsList[0]
-                    if inReplyToUrl.startswith('sharedesc:'):
+                        elif m.startswith('sharedesc:'):
+                            # get the title for the shared item
+                            shareDescription = \
+                                m.replace('sharedesc:', '').strip()
+                            shareDescription = \
+                                shareDescription.replace('_', ' ')
+                else:
+                    # single parameter
+                    if inReplyToUrl.startswith('mention='):
+                        replyHandle = inReplyToUrl.replace('mention=', '')
+                        inReplyToUrl = replyHandle
+                        if replyHandle not in replyToList:
+                            replyToList.append(replyHandle)
+                    elif inReplyToUrl.startswith('sharedesc:'):
+                        # get the title for the shared item
                         shareDescription = \
-                            inReplyToUrl.replace('sharedesc:', '')
+                            inReplyToUrl.replace('sharedesc:', '').strip()
                         shareDescription = \
-                            urllib.parse.unquote_plus(shareDescription.strip())
-                self.path = self.path.split('?replydm=')[0]+'/newdm'
+                            shareDescription.replace('_', ' ')
+
+                self.path = self.path.split('?replydm=')[0] + '/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)
 
@@ -13050,11 +13071,11 @@ def runDaemon(maxNewswirePosts: int,
         createNewsInbox(baseDir, domain, port, httpPrefix)
 
     # set the avatar for the news account
-    themeName = getConfigParam(baseDir, 'theme')
-    if not themeName:
-        themeName = 'default'
+    httpd.themeName = getConfigParam(baseDir, 'theme')
+    if not httpd.themeName:
+        httpd.themeName = 'default'
     setNewsAvatar(baseDir,
-                  themeName,
+                  httpd.themeName,
                   httpPrefix,
                   domain,
                   httpd.domainFull)

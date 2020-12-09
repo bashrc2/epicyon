@@ -11,11 +11,11 @@ from shutil import copyfile
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
+from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
 from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
-from webapp_utils import getIconsWebPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -28,9 +28,46 @@ def linksExist(baseDir: str) -> bool:
     return os.path.isfile(linksFilename)
 
 
+def getLeftColumnShares(baseDir: str,
+                        httpPrefix: str, domainFull: str,
+                        nickname: str,
+                        maxSharesInLeftColumn: int,
+                        translate: {}) -> []:
+    """get any shares and turn them into the left column links format
+    """
+    pageNumber = 1
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    sharesJson, lastPage = \
+        sharesTimelineJson(actor, pageNumber,
+                           maxSharesInLeftColumn,
+                           baseDir, maxSharesInLeftColumn)
+    if not sharesJson:
+        return []
+
+    linksList = []
+    ctr = 0
+    for published, item in sharesJson.items():
+        sharedesc = item['displayName']
+        if '<' in sharedesc or '?' in sharedesc:
+            continue
+        contactActor = item['actor']
+        shareLink = actor + \
+            '?replydm=sharedesc:' + \
+            sharedesc.replace(' ', '_') + \
+            '?mention=' + contactActor
+        linksList.append(sharedesc + ' ' + shareLink)
+        ctr += 1
+        if ctr >= maxSharesInLeftColumn:
+            break
+
+    if linksList:
+        linksList = ['* ' + translate['Shares']] + linksList
+    return linksList
+
+
 def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          httpPrefix: str, translate: {},
-                         iconsPath: str, editor: bool,
+                         editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
                          frontPage: bool) -> str:
@@ -98,7 +135,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '" loading="lazy" alt="' + \
             translate['Edit Links'] + '" title="' + \
             translate['Edit Links'] + '" src="/' + \
-            iconsPath + '/edit.png" /></a>\n'
+            'icons/edit.png" /></a>\n'
 
     # RSS icon
     if nickname != 'news':
@@ -117,7 +154,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + rssTitle + \
         '" title="' + rssTitle + \
-        '" src="/' + iconsPath + '/logorss.png" /></a>\n'
+        '" src="/icons/logorss.png" /></a>\n'
     if rssIconAtTop:
         htmlStr += rssIconStr
     htmlStr += '      </div>\n'
@@ -136,53 +173,64 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     linksFilename = baseDir + '/accounts/links.txt'
     linksFileContainsEntries = False
+    linksList = None
     if os.path.isfile(linksFilename):
-        linksList = None
         with open(linksFilename, "r") as f:
             linksList = f.readlines()
-        if linksList:
-            for lineStr in linksList:
-                if ' ' not in lineStr:
-                    if '#' not in lineStr:
-                        if '*' not in lineStr:
-                            continue
-                lineStr = lineStr.strip()
-                words = lineStr.split(' ')
-                # get the link
-                linkStr = None
-                for word in words:
-                    if word == '#':
+
+    if not frontPage:
+        # show a number of shares
+        maxSharesInLeftColumn = 3
+        sharesList = \
+            getLeftColumnShares(baseDir,
+                                httpPrefix, domainFull, nickname,
+                                maxSharesInLeftColumn, translate)
+        if linksList and sharesList:
+            linksList = sharesList + linksList
+
+    if linksList:
+        for lineStr in linksList:
+            if ' ' not in lineStr:
+                if '#' not in lineStr:
+                    if '*' not in lineStr:
                         continue
-                    if word == '*':
-                        continue
-                    if '://' in word:
-                        linkStr = word
-                        break
-                if linkStr:
-                    lineStr = lineStr.replace(linkStr, '').strip()
-                    # avoid any dubious scripts being added
-                    if '<' not in lineStr:
-                        # remove trailing comma if present
-                        if lineStr.endswith(','):
-                            lineStr = lineStr[:len(lineStr)-1]
-                        # add link to the returned html
-                        htmlStr += \
-                            '      <p><a href="' + linkStr + '">' + \
-                            lineStr + '</a></p>\n'
-                        linksFileContainsEntries = True
-                else:
-                    if lineStr.startswith('#') or lineStr.startswith('*'):
-                        lineStr = lineStr[1:].strip()
-                        if firstSeparatorAdded:
-                            htmlStr += separatorStr
-                        firstSeparatorAdded = True
-                        htmlStr += \
-                            '      <h3 class="linksHeader">' + \
-                            lineStr + '</h3>\n'
-                    else:
-                        htmlStr += \
-                            '      <p>' + lineStr + '</p>\n'
+            lineStr = lineStr.strip()
+            words = lineStr.split(' ')
+            # get the link
+            linkStr = None
+            for word in words:
+                if word == '#':
+                    continue
+                if word == '*':
+                    continue
+                if '://' in word:
+                    linkStr = word
+                    break
+            if linkStr:
+                lineStr = lineStr.replace(linkStr, '').strip()
+                # avoid any dubious scripts being added
+                if '<' not in lineStr:
+                    # remove trailing comma if present
+                    if lineStr.endswith(','):
+                        lineStr = lineStr[:len(lineStr)-1]
+                    # add link to the returned html
+                    htmlStr += \
+                        '      <p><a href="' + linkStr + '">' + \
+                        lineStr + '</a></p>\n'
                     linksFileContainsEntries = True
+            else:
+                if lineStr.startswith('#') or lineStr.startswith('*'):
+                    lineStr = lineStr[1:].strip()
+                    if firstSeparatorAdded:
+                        htmlStr += separatorStr
+                    firstSeparatorAdded = True
+                    htmlStr += \
+                        '      <h3 class="linksHeader">' + \
+                        lineStr + '</h3>\n'
+                else:
+                    htmlStr += \
+                        '      <p>' + lineStr + '</p>\n'
+                linksFileContainsEntries = True
 
     if firstSeparatorAdded:
         htmlStr += separatorStr
@@ -215,8 +263,6 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    iconsPath = getIconsWebPath(baseDir)
-
     # is the user a site editor?
     if nickname == 'news':
         editor = False
@@ -238,12 +284,12 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += '<center>' + \
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
-                                 iconsAsButtons, iconsPath) + '</center>'
+                                 iconsAsButtons) + '</center>'
     if linksExist(baseDir):
         htmlStr += \
             getLeftColumnContent(baseDir, nickname, domainFull,
                                  httpPrefix, translate,
-                                 iconsPath, editor,
+                                 editor,
                                  False, timelinePath,
                                  rssIconAtTop, False, False)
     else:

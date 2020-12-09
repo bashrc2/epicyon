@@ -651,6 +651,8 @@ def removeLongWords(content: str, maxWordLength: int,
             continue
         elif 'dat:' in wordStr:
             continue
+        elif 'rad:' in wordStr:
+            continue
         elif 'hyper:' in wordStr:
             continue
         elif 'briar:' in wordStr:
