@@ -3826,6 +3826,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.themeName = fields['themeDropdown']
                         setTheme(baseDir, self.server.themeName, domain,
                                  allowLocalNetworkAccess)
+                        self.server.iconsCache = {}
+                        self.server.fontsCache = {}
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
                                            'showPublishAsIcon')
@@ -4199,6 +4201,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
+                                self.server.iconsCache = {}
+                                self.server.fontsCache = {}
                                 self.server.showPublishAsIcon = \
                                     getConfigParam(self.server.baseDir,
                                                    'showPublishAsIcon')
