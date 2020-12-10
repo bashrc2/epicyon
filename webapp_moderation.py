@@ -68,11 +68,10 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     searchNickname = getNicknameFromActor(searchHandle)
     searchDomain, searchPort = getDomainFromActor(searchHandle)
 
+    searchHandle = searchNickname + '@' + searchDomain
     infoForm += \
-        '<center><h1><a href="/users/' + nickname + '/moderation' + \
-        '?modaction=' + searchHandle + '">' + \
-        translate['Account Information'] + \
-        ': ' + searchNickname + '@' + searchDomain + \
+        '<center><h1><a href="/users/' + nickname + '/moderation">' + \
+        translate['Account Information'] + ': ' + searchHandle + \
         '</a></h1><br>'
 
     infoForm += translate[msgStr1] + '</center><br><br>'
@@ -91,12 +90,14 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
         if isBlockedDomain(baseDir, postDomain):
             infoForm += \
-                '<a href="' + usersPath + '?unblockdomain=' + postDomain + '">'
+                '<a href="' + usersPath + '?unblockdomain=' + postDomain + \
+                '?handle=' + searchHandle + '">'
             infoForm += '<button class="buttonhighlighted"><span>' + \
                 translate['Unblock'] + '</span></button></a>'
         else:
             infoForm += \
-                '<a href="' + usersPath + '?blockdomain=' + postDomain + '">'
+                '<a href="' + usersPath + '?blockdomain=' + postDomain + \
+                '?handle=' + searchHandle + '">'
             infoForm += '<button class="button"><span>' + \
                 translate['Block'] + '</span></button></a>'
         infoForm += '<br>'

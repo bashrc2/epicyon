@@ -8132,10 +8132,6 @@ class PubServer(BaseHTTPRequestHandler):
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
                         moderationActionStr = ''
-                        if '?modaction=' in nickname:
-                            moderationActionStr = \
-                                nickname.split('?modaction=')[1]
-                            nickname = nickname.split('?modaction=')[0]
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
@@ -8186,8 +8182,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     nickname = path.replace('/users/', '')
                     nickname = nickname.replace('/moderation', '')
-                    if '?modaction=' in nickname:
-                        nickname = nickname.split('?modaction=')[0]
                     print('DEBUG: ' + nickname +
                           ' was not authorized to access ' + path)
         if debug:
@@ -11004,7 +10998,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # block a domain from htmlAccountInfo
         if authorized and '/users/' in self.path and \
-           '/accountinfo?blockdomain=' in self.path:
+           '/accountinfo?blockdomain=' in self.path and \
+           '?handle=' in self.path:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
@@ -11012,20 +11007,33 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 return
             blockDomain = self.path.split('/accountinfo?blockdomain=')[1]
+            searchHandle = blockDomain.split('?handle=')[1]
+            blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
-            searchHandle = ''
             if '?' in blockDomain:
-                searchHandle = '?modaction=' + blockDomain.split('?')[1]
                 blockDomain = blockDomain.split('?')[0]
             addGlobalBlock(self.server.baseDir, nickname, blockDomain)
             self.server.GETbusy = False
-            self._redirect_headers('/users/' + nickname + '/moderation' +
-                                   searchHandle, cookie, callingDomain)
+            msg = \
+                htmlAccountInfo(self.server.cssCache,
+                                self.server.translate,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                nickname,
+                                self.server.domain,
+                                self.server.port,
+                                searchHandle,
+                                self.server.debug)
+            msg = msg.encode('utf-8')
+            self._login_headers('text/html',
+                                len(msg), callingDomain)
+            self._write(msg)
             return
 
         # unblock a domain from htmlAccountInfo
         if authorized and '/users/' in self.path and \
-           '/accountinfo?unblockdomain=' in self.path:
+           '/accountinfo?unblockdomain=' in self.path and \
+           '?handle=' in self.path:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
@@ -11033,15 +11041,25 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 return
             blockDomain = self.path.split('/accountinfo?unblockdomain=')[1]
+            searchHandle = blockDomain.split('?handle=')[1]
+            blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
-            searchHandle = ''
-            if '?' in blockDomain:
-                searchHandle = '?modaction=' + blockDomain.split('?')[1]
-                blockDomain = blockDomain.split('?')[0]
             removeGlobalBlock(self.server.baseDir, nickname, blockDomain)
             self.server.GETbusy = False
-            self._redirect_headers('/users/' + nickname + '/moderation' +
-                                   searchHandle, cookie, callingDomain)
+            msg = \
+                htmlAccountInfo(self.server.cssCache,
+                                self.server.translate,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                nickname,
+                                self.server.domain,
+                                self.server.port,
+                                searchHandle,
+                                self.server.debug)
+            msg = msg.encode('utf-8')
+            self._login_headers('text/html',
+                                len(msg), callingDomain)
+            self._write(msg)
             return
 
         # get the bookmarks timeline for a given person
