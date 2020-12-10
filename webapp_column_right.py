@@ -242,7 +242,8 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             htmlStr += '<p class="newswireItemVotedOn">' + \
-                '<a href="' + item[1] + '">' + \
+                '<a href="' + item[1] + '" target="_blank" ' + \
+                'rel="noopener noreferrer">' + \
                 '<span class="newswireItemVotedOn">' + title + \
                 '</span></a>' + totalVotesStr
             if moderator:
@@ -269,7 +270,8 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
-                    '<a href="' + item[1] + '">' + \
+                    '<a href="' + item[1] + '" target="_blank" ' + \
+                    'rel="noopener noreferrer">' + \
                     title + '</a>' + totalVotesStr
                 htmlStr += ' ' + dateShown
                 htmlStr += '<a href="/users/' + nickname + \
@@ -280,7 +282,8 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
-                    '<a href="' + item[1] + '">' + \
+                    '<a href="' + item[1] + '" target="_blank" ' + \
+                    'rel="noopener noreferrer">' + \
                     title + '</a>' + \
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
