@@ -11013,7 +11013,7 @@ class PubServer(BaseHTTPRequestHandler):
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             if '?' in blockDomain:
                 blockDomain = blockDomain.split('?')[0]
-            addGlobalBlock(self.server.baseDir, nickname, blockDomain)
+            addGlobalBlock(self.server.baseDir, nickname, '*@' + blockDomain)
             self.server.GETbusy = False
             msg = \
                 htmlAccountInfo(self.server.cssCache,
@@ -11046,7 +11046,8 @@ class PubServer(BaseHTTPRequestHandler):
             searchHandle = urllib.parse.unquote_plus(searchHandle)
             blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
-            removeGlobalBlock(self.server.baseDir, nickname, blockDomain)
+            removeGlobalBlock(self.server.baseDir, nickname,
+                              '*@' + blockDomain)
             self.server.GETbusy = False
             msg = \
                 htmlAccountInfo(self.server.cssCache,
