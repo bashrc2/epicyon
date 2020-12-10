@@ -136,6 +136,7 @@ from webapp_timeline import htmlInboxBlogs
 from webapp_timeline import htmlInboxNews
 from webapp_timeline import htmlInboxFeatures
 from webapp_timeline import htmlOutbox
+from webapp_moderation import htmlAccountInfo
 from webapp_moderation import htmlModeration
 from webapp_moderation import htmlModerationInfo
 from webapp_create_post import htmlNewPost
@@ -1403,6 +1404,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Actions on the moderator screeen
         """
         usersPath = path.replace('/moderationaction', '')
+        nickname = usersPath.replace('/users/', '')
         actorStr = httpPrefix + '://' + domainFull + usersPath
 
         length = int(self.headers['Content-length'])
@@ -1439,9 +1441,26 @@ class PubServer(BaseHTTPRequestHandler):
                         moderationText = \
                             urllib.parse.unquote_plus(modText.strip())
                 elif moderationStr.startswith('submitInfo'):
-                    msg = htmlModerationInfo(self.server.cssCache,
-                                             self.server.translate,
-                                             baseDir, httpPrefix)
+                    searchHandle = moderationText
+                    if searchHandle:
+                        if '@' not in searchHandle:
+                            searchHandle = None
+                    if searchHandle:
+                        msg = \
+                            htmlAccountInfo(self.server.cssCache,
+                                            self.server.translate,
+                                            baseDir, httpPrefix,
+                                            nickname,
+                                            self.server.domain,
+                                            self.server.port,
+                                            searchHandle,
+                                            self.server.debug)
+                    else:
+                        msg = \
+                            htmlModerationInfo(self.server.cssCache,
+                                               self.server.translate,
+                                               baseDir, httpPrefix,
+                                               nickname)
                     msg = msg.encode('utf-8')
                     self._login_headers('text/html',
                                         len(msg), callingDomain)
@@ -3826,6 +3845,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.themeName = fields['themeDropdown']
                         setTheme(baseDir, self.server.themeName, domain,
                                  allowLocalNetworkAccess)
+                        self.server.iconsCache = {}
+                        self.server.fontsCache = {}
                         self.server.showPublishAsIcon = \
                             getConfigParam(self.server.baseDir,
                                            'showPublishAsIcon')
@@ -4199,6 +4220,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
+                                self.server.iconsCache = {}
+                                self.server.fontsCache = {}
                                 self.server.showPublishAsIcon = \
                                     getConfigParam(self.server.baseDir,
                                                    'showPublishAsIcon')
@@ -5329,6 +5352,9 @@ class PubServer(BaseHTTPRequestHandler):
                            debug,
                            self.server.projectVersion)
         if announceJson:
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('repeat.png'):
+                del self.server.iconsCache['repeat.png']
             self._postToOutboxThread(announceJson)
         self.server.GETbusy = False
         actorAbsolute = httpPrefix + '://' + domainFull + actor
@@ -5419,6 +5445,9 @@ class PubServer(BaseHTTPRequestHandler):
                 'type': 'Announce'
             }
         }
+        # clear the icon from the cache so that it gets updated
+        if self.server.iconsCache.get('repeat_inactive.png'):
+            del self.server.iconsCache['repeat_inactive.png']
         self._postToOutboxThread(newUndoAnnounce)
         self.server.GETbusy = False
         actorAbsolute = httpPrefix + '://' + domainFull + actor
@@ -5700,6 +5729,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   likedPostFilename, likeUrl,
                                   likeActor, domain,
                                   debug)
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like.png'):
+                del self.server.iconsCache['like.png']
         else:
             print('WARN: unable to locate file for liked post ' +
                   likeUrl)
@@ -5804,6 +5836,9 @@ class PubServer(BaseHTTPRequestHandler):
                                      baseDir,
                                      likedPostFilename, likeUrl,
                                      undoActor, domain, debug)
+            # clear the icon from the cache so that it gets updated
+            if self.server.iconsCache.get('like_inactive.png'):
+                del self.server.iconsCache['like_inactive.png']
         # send out the undo like to followers
         self._postToOutbox(undoLikeJson, self.server.projectVersion)
         self.server.GETbusy = False
@@ -5895,6 +5930,9 @@ class PubServer(BaseHTTPRequestHandler):
                  self.server.cachedWebfingers,
                  self.server.debug,
                  self.server.projectVersion)
+        # clear the icon from the cache so that it gets updated
+        if self.server.iconsCache.get('bookmark.png'):
+            del self.server.iconsCache['bookmark.png']
         # self._postToOutbox(bookmarkJson, self.server.projectVersion)
         self.server.GETbusy = False
         actorAbsolute = \
@@ -5985,6 +6023,9 @@ class PubServer(BaseHTTPRequestHandler):
                      self.server.cachedWebfingers,
                      debug,
                      self.server.projectVersion)
+        # clear the icon from the cache so that it gets updated
+        if self.server.iconsCache.get('bookmark_inactive.png'):
+            del self.server.iconsCache['bookmark_inactive.png']
         # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
         self.server.GETbusy = False
         actorAbsolute = \
@@ -8090,6 +8131,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
+                        moderationActionStr = ''
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
@@ -8117,7 +8159,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.iconsAsButtons,
                                            self.server.rssIconAtTop,
                                            self.server.publishButtonAtTop,
-                                           authorized)
+                                           authorized, moderationActionStr)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -10954,6 +10996,74 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show blogs 2 done',
                                   'show shares 2 done')
 
+        # block a domain from htmlAccountInfo
+        if authorized and '/users/' in self.path and \
+           '/accountinfo?blockdomain=' in self.path and \
+           '?handle=' in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isModerator(self.server.baseDir, nickname):
+                self._400()
+                return
+            blockDomain = self.path.split('/accountinfo?blockdomain=')[1]
+            searchHandle = blockDomain.split('?handle=')[1]
+            searchHandle = urllib.parse.unquote_plus(searchHandle)
+            blockDomain = blockDomain.split('?handle=')[0]
+            blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
+            if '?' in blockDomain:
+                blockDomain = blockDomain.split('?')[0]
+            addGlobalBlock(self.server.baseDir, '*', blockDomain)
+            self.server.GETbusy = False
+            msg = \
+                htmlAccountInfo(self.server.cssCache,
+                                self.server.translate,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                nickname,
+                                self.server.domain,
+                                self.server.port,
+                                searchHandle,
+                                self.server.debug)
+            msg = msg.encode('utf-8')
+            self._login_headers('text/html',
+                                len(msg), callingDomain)
+            self._write(msg)
+            return
+
+        # unblock a domain from htmlAccountInfo
+        if authorized and '/users/' in self.path and \
+           '/accountinfo?unblockdomain=' in self.path and \
+           '?handle=' in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isModerator(self.server.baseDir, nickname):
+                self._400()
+                return
+            blockDomain = self.path.split('/accountinfo?unblockdomain=')[1]
+            searchHandle = blockDomain.split('?handle=')[1]
+            searchHandle = urllib.parse.unquote_plus(searchHandle)
+            blockDomain = blockDomain.split('?handle=')[0]
+            blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
+            removeGlobalBlock(self.server.baseDir, '*', blockDomain)
+            self.server.GETbusy = False
+            msg = \
+                htmlAccountInfo(self.server.cssCache,
+                                self.server.translate,
+                                self.server.baseDir,
+                                self.server.httpPrefix,
+                                nickname,
+                                self.server.domain,
+                                self.server.port,
+                                searchHandle,
+                                self.server.debug)
+            msg = msg.encode('utf-8')
+            self._login_headers('text/html',
+                                len(msg), callingDomain)
+            self._write(msg)
+            return
+
         # get the bookmarks timeline for a given person
         if self.path.endswith('/tlbookmarks') or \
            '/tlbookmarks?page=' in self.path or \
@@ -11021,7 +11131,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the moderation feed for a moderator
         if self.path.endswith('/moderation') or \
-           '/moderation?page=' in self.path:
+           '/moderation?' in self.path:
             if self._showModTimeline(authorized,
                                      callingDomain, self.path,
                                      self.server.baseDir,

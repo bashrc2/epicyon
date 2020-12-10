@@ -339,5 +339,7 @@
     "Select the edit icon to add RSS feeds": "Seleccioneu la icona d'edició per afegir canals RSS",
     "Select the edit icon to add web links": "Seleccioneu la icona d'edició per afegir enllaços web",
     "Hashtag Categories RSS Feed": "Feed RSS de categories de hashtag",
-    "Ask about a shared item.": "Pregunteu sobre un element compartit."
+    "Ask about a shared item.": "Pregunteu sobre un element compartit.",
+    "Account Information": "Informació del compte",
+    "This account interacts with the following instances": "Aquest compte interactua amb les instàncies següents"
 }

@@ -930,6 +930,10 @@ div.container {
     overflow: hidden;
 }
 
+.accountInfoDomains {
+    margin: 0 20%;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         background-color: var(--main-bg-color);

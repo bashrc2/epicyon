@@ -226,7 +226,8 @@ To run a security audit:
 ./security_audit
 ```
 
-Note that not all of the issues identified will necessarily be relevant to this project.
+Note that not all of the issues identified will necessarily be relevant to this project. Consider its output as a list of things which potentially can be investigated but usually will turn out not to be relevant.
+
 
 ## Installing on Onion or i2p domains
 
@@ -246,6 +247,11 @@ systemctl restart epicyon
 ## Custom Favicon
 
 If you want to use your own favicon then copy your `favicon.ico` file to the base directory where you installed Epicyon.
+
+
+## Changing Themes
+
+When changing themes you may need to ensure that your nginx cache is cleared (/var/www/cache/*) and that your local browser cache is cleared for the site (Shift + Reload). Otherwise images and icons from the previous theme may remain.
 
 
 ## Adding Themes

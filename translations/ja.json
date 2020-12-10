@@ -339,5 +339,7 @@
     "Select the edit icon to add RSS feeds": "編集アイコンを選択してRSSフィードを追加します",
     "Select the edit icon to add web links": "編集アイコンを選択してWebリンクを追加します",
     "Hashtag Categories RSS Feed": "ハッシュタグカテゴリRSSフィード",
-    "Ask about a shared item.": "共有アイテムについて質問します。"
+    "Ask about a shared item.": "共有アイテムについて質問します。",
+    "Account Information": "口座情報",
+    "This account interacts with the following instances": "このアカウントは、次のインスタンスと相互作用します"
 }

@@ -58,7 +58,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  iconsAsButtons: bool,
                  rssIconAtTop: bool,
                  publishButtonAtTop: bool,
-                 authorized: bool) -> str:
+                 authorized: bool,
+                 moderationActionStr: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -441,8 +442,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         idx = 'Nickname or URL. Block using *@domain or nickname@domain'
         tlStr += \
             '    <b>' + translate[idx] + '</b><br>\n'
-        tlStr += '    <input type="text" ' + \
-            'name="moderationAction" value="" autofocus><br>\n'
+        if moderationActionStr:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="' + \
+                moderationActionStr + '" autofocus><br>\n'
+        else:
+            tlStr += '    <input type="text" ' + \
+                'name="moderationAction" value="" autofocus><br>\n'
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Remove the above item'] + \
@@ -726,7 +732,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -763,7 +769,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -800,7 +806,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlEvents(cssCache: {}, defaultTimeline: str,
@@ -837,7 +843,7 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -869,7 +875,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -902,7 +908,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -935,7 +941,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -968,7 +974,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1001,7 +1007,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1034,7 +1040,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1068,4 +1074,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized)
+                        authorized, None)

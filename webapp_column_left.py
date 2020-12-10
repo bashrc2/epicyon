@@ -215,7 +215,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                         lineStr = lineStr[:len(lineStr)-1]
                     # add link to the returned html
                     htmlStr += \
-                        '      <p><a href="' + linkStr + '">' + \
+                        '      <p><a href="' + linkStr + \
+                        '" target="_blank" rel="noopener noreferrer">' + \
                         lineStr + '</a></p>\n'
                     linksFileContainsEntries = True
             else:
