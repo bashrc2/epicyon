@@ -71,8 +71,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     searchHandle = searchNickname + '@' + searchDomain
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
-        translate['Account Information'] + ': ' + searchHandle + \
-        '</a></h1><br>'
+        translate['Account Information'] + ':</a> <a href="' + \
+        httpPrefix + '://' + searchDomain + '/users/' + searchNickname + \
+        '">' + searchHandle + '</a></h1><br>'
 
     infoForm += translate[msgStr1] + '</center><br><br>'
 
