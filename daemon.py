@@ -8135,7 +8135,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if '?modaction=' in nickname:
                             moderationActionStr = \
                                 nickname.split('?modaction=')[1]
-                            nickname = nickname.split('?')[0]
+                            nickname = nickname.split('?modaction=')[0]
                         msg = \
                             htmlModeration(self.server.cssCache,
                                            self.server.defaultTimeline,
