@@ -73,7 +73,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         '?modaction=' + searchHandle + '">' + \
         translate['Account Information'] + \
         ': ' + searchNickname + '@' + searchDomain + \
-        '</a></h1><br><br>'
+        '</a></h1><br>'
 
     infoForm += translate[msgStr1] + '</center><br><br>'
 
