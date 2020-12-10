@@ -11008,6 +11008,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockDomain = self.path.split('/accountinfo?blockdomain=')[1]
             searchHandle = blockDomain.split('?handle=')[1]
+            searchHandle = urllib.parse.unquote_plus(searchHandle)
             blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             if '?' in blockDomain:
@@ -11042,6 +11043,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockDomain = self.path.split('/accountinfo?unblockdomain=')[1]
             searchHandle = blockDomain.split('?handle=')[1]
+            searchHandle = urllib.parse.unquote_plus(searchHandle)
             blockDomain = blockDomain.split('?handle=')[0]
             blockDomain = urllib.parse.unquote_plus(blockDomain.strip())
             removeGlobalBlock(self.server.baseDir, nickname, blockDomain)
