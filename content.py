@@ -358,7 +358,7 @@ def addWebLinks(content: str) -> str:
         if w.endswith('.') or w.endswith(';'):
             w = w[:-1]
         markup = '<a href="' + w + \
-            '" rel="nofollow noopener" target="_blank">'
+            '" rel="nofollow noopener noreferrer" target="_blank">'
         for prefix in prefixes:
             if w.startswith(prefix):
                 markup += '<span class="invisible">' + prefix + '</span>'
