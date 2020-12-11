@@ -216,7 +216,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     # add link to the returned html
                     htmlStr += \
                         '      <p><a href="' + linkStr + \
-                        '" target="_blank" rel="noopener noreferrer">' + \
+                        '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
                         lineStr + '</a></p>\n'
                     linksFileContainsEntries = True
             else:

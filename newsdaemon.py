@@ -355,18 +355,6 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
         # Block this item
         if actionStr.startswith('block') or actionStr.startswith('drop'):
             return False
-
-    # TODO
-    # If routing to another instance
-    # sendSignedJson(postJsonObject: {}, session, baseDir: str,
-    #                nickname: str, domain: str, port: int,
-    #                toNickname: str, toDomain: str, toPort: int, cc: str,
-    #                httpPrefix: str, False, False,
-    #                federationList: [],
-    #                sendThreads: [], postLog: [], cachedWebfingers: {},
-    #                personCache: {}, False, __version__) -> int:
-    # if actionOccurred:
-    #     return True
     return True
 
 

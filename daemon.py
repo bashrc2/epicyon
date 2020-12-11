@@ -995,7 +995,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.proxyType, version,
                                    self.server.debug,
                                    self.server.YTReplacementDomain,
-                                   self.server.showPublishedDateOnly)
+                                   self.server.showPublishedDateOnly,
+                                   self.server.allowLocalNetworkAccess)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post

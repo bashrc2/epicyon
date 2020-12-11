@@ -166,7 +166,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
         invalidPartials = ('127.0.', '192.168', '10.0.')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
-                      'hr')
+                      'hr', 'allow-popups', 'allow-scripts')
     for markup in contentSections:
         if '>' not in markup:
             continue
@@ -358,7 +358,7 @@ def addWebLinks(content: str) -> str:
         if w.endswith('.') or w.endswith(';'):
             w = w[:-1]
         markup = '<a href="' + w + \
-            '" rel="nofollow noopener" target="_blank">'
+            '" rel="nofollow noopener noreferrer" target="_blank">'
         for prefix in prefixes:
             if w.startswith(prefix):
                 markup += '<span class="invisible">' + prefix + '</span>'

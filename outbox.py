@@ -35,6 +35,7 @@ from bookmarks import outboxUndoBookmark
 from delete import outboxDelete
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
+from content import dangerousMarkup
 
 
 def postMessageToOutbox(messageJson: {}, postToNickname: str,
@@ -47,7 +48,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                         personCache: {}, allowDeletion: bool,
                         proxyType: str, version: str, debug: bool,
                         YTReplacementDomain: str,
-                        showPublishedDateOnly: bool) -> bool:
+                        showPublishedDateOnly: bool,
+                        allowLocalNetworkAccess: bool) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -66,6 +68,18 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                                         postToNickname,
                                         domain, port,
                                         messageJson)
+
+    # check that the outgoing post doesn't contain any markup
+    # which can be used to implement exploits
+    if messageJson.get('object'):
+        if isinstance(messageJson['object'], dict):
+            if messageJson['object'].get('content'):
+                if dangerousMarkup(messageJson['object']['content'],
+                                   allowLocalNetworkAccess):
+                    print('POST to outbox contains dangerous markup: ' +
+                          str(messageJson))
+                    return False
+
     if messageJson['type'] == 'Create':
         if not (messageJson.get('id') and
                 messageJson.get('type') and

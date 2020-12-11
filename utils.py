@@ -149,6 +149,8 @@ def setHashtagCategory(baseDir: str, hashtag: str, category: str,
                 if not os.path.isfile(hashtagFilename):
                     return False
 
+    if not os.path.isdir(baseDir + '/tags'):
+        os.mkdir(baseDir + '/tags')
     categoryFilename = baseDir + '/tags/' + hashtag + '.category'
     if force:
         # don't overwrite any existing categories
