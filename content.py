@@ -166,7 +166,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
         invalidPartials = ('127.0.', '192.168', '10.0.')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
-                      'hr')
+                      'hr', 'allow-popups', 'allow-scripts')
     for markup in contentSections:
         if '>' not in markup:
             continue
