@@ -196,7 +196,8 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
         content = fp.read().lower()
 
         cssMatches = ('behavior:', ':expression', '?php', '.php',
-                      'google')
+                      'google', 'localhost',
+                      '127.0.', '192.168', '10.0.')
         for match in cssMatches:
             if match in content:
                 return True
