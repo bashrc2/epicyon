@@ -63,6 +63,8 @@ def setMatrixAddress(actorJson: {}, matrixAddress: str) -> None:
         return
     if '"' in matrixAddress:
         return
+    if '<' in matrixAddress:
+        return
     if ':' not in matrixAddress:
         return
 

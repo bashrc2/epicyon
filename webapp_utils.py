@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from collections import OrderedDict
 from session import getJson
+from utils import removeHtml
 from utils import getImageExtensions
 from utils import getProtocolPrefixes
 from utils import loadJson
@@ -268,7 +269,7 @@ def setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
 def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     """Sets an blog address for the given actor
     """
-    setActorPropertyUrl(actorJson, 'Blog', blogAddress)
+    setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
 
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,

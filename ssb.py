@@ -52,6 +52,8 @@ def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
         notSSBAddress = True
     if ',' in ssbAddress:
         notSSBAddress = True
+    if '<' in ssbAddress:
+        notSSBAddress = True
 
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []

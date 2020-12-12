@@ -53,6 +53,8 @@ def setJamiAddress(actorJson: {}, jamiAddress: str) -> None:
         notJamiAddress = True
     if ',' in jamiAddress:
         notJamiAddress = True
+    if '<' in jamiAddress:
+        notJamiAddress = True
 
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []

@@ -48,6 +48,8 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
         notUrl = True
     if ' ' in donateUrl:
         notUrl = True
+    if '<' in donateUrl:
+        notUrl = True
 
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []

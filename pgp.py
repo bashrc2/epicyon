@@ -83,6 +83,8 @@ def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
         notEmailAddress = True
     if '.' not in emailAddress:
         notEmailAddress = True
+    if '<' in emailAddress:
+        notEmailAddress = True
     if emailAddress.startswith('@'):
         notEmailAddress = True
 
@@ -133,6 +135,8 @@ def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
         removeKey = True
     else:
         if '--BEGIN PGP PUBLIC KEY' not in PGPpubKey:
+            removeKey = True
+        if '<' in PGPpubKey:
             removeKey = True
 
     if not actorJson.get('attachment'):
