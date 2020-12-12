@@ -20,6 +20,14 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 
 
+def getBrokenLinkSubstitute() -> str:
+    """Returns html used to show a default image if the link to
+    an image is broken
+    """
+    return " onerror=\"this.onerror=null; this.src='" + \
+        "/icons/avatar_default.png'\""
+
+
 def htmlFollowingList(cssCache: {}, baseDir: str,
                       followingFilename: str) -> str:
     """Returns a list of handles being followed

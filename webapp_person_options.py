@@ -18,6 +18,7 @@ from follow import isFollowingActor
 from followingCalendar import receivingCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import getBrokenLinkSubstitute
 
 
 def htmlPersonOptions(defaultTimeline: str,
@@ -103,7 +104,7 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += '  <center>\n'
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
-        '"/></a>\n'
+        '" ' + getBrokenLinkSubstitute() + '/></a>\n'
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \

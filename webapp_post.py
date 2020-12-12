@@ -55,6 +55,7 @@ from webapp_utils import getContentWarningButton
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import getBrokenLinkSubstitute
 from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
@@ -199,14 +200,6 @@ def getAvatarImageUrl(session,
         avatarUrl = postActor + '/avatar.png'
 
     return avatarUrl
-
-
-def getBrokenLinkSubstitute() -> str:
-    """Returns html used to show a default image if the link to
-    an image is broken
-    """
-    return " onerror=\"this.onerror=null; this.src='" + \
-        "/icons/avatar_default.png'\""
 
 
 def getAvatarImageHtml(showAvatarOptions: bool,
