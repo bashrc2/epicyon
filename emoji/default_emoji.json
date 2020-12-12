@@ -772,5 +772,6 @@
     "valid": "valid",
     "python": "python",
     "vim": "vim",
-    "emacs": "emacs"
+    "emacs": "emacs",
+    "terminal": "terminal"
 }
