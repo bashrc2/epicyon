@@ -770,5 +770,6 @@
     "canary": "1F424",
     "linux": "1F427",
     "valid": "valid",
-    "python": "python"
+    "python": "python",
+    "vim": "vim"
 }
