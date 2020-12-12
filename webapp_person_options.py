@@ -11,6 +11,7 @@ from shutil import copyfile
 from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
+from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from blocking import isBlocked
@@ -18,6 +19,7 @@ from follow import isFollowingActor
 from followingCalendar import receivingCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import getBrokenLinkSubstitute
 
 
 def htmlPersonOptions(defaultTimeline: str,
@@ -103,7 +105,7 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += '  <center>\n'
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
-        '"/></a>\n'
+        '" ' + getBrokenLinkSubstitute() + '/></a>\n'
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
@@ -112,35 +114,36 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
-            emailAddress + '">' + emailAddress + '</a></p>\n'
+            emailAddress + '">' + removeHtml(emailAddress) + '</a></p>\n'
     if xmppAddress:
         optionsStr += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + xmppAddress + '">' + \
+            ': <a href="xmpp:' + removeHtml(xmppAddress) + '">' + \
             xmppAddress + '</a></p>\n'
     if matrixAddress:
         optionsStr += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
-            matrixAddress + '</p>\n'
+            removeHtml(matrixAddress) + '</p>\n'
     if ssbAddress:
         optionsStr += \
-            '<p class="imText">SSB: ' + ssbAddress + '</p>\n'
+            '<p class="imText">SSB: ' + removeHtml(ssbAddress) + '</p>\n'
     if blogAddress:
         optionsStr += \
-            '<p class="imText">Blog: <a href="' + blogAddress + '">' + \
-            blogAddress + '</a></p>\n'
+            '<p class="imText">Blog: <a href="' + \
+            removeHtml(blogAddress) + '">' + \
+            removeHtml(blogAddress) + '</a></p>\n'
     if toxAddress:
         optionsStr += \
-            '<p class="imText">Tox: ' + toxAddress + '</p>\n'
+            '<p class="imText">Tox: ' + removeHtml(toxAddress) + '</p>\n'
     if jamiAddress:
         optionsStr += \
-            '<p class="imText">Jami: ' + jamiAddress + '</p>\n'
+            '<p class="imText">Jami: ' + removeHtml(jamiAddress) + '</p>\n'
     if PGPfingerprint:
         optionsStr += '<p class="pgp">PGP: ' + \
-            PGPfingerprint.replace('\n', '<br>') + '</p>\n'
+            removeHtml(PGPfingerprint).replace('\n', '<br>') + '</p>\n'
     if PGPpubKey:
         optionsStr += '<p class="pgp">' + \
-            PGPpubKey.replace('\n', '<br>') + '</p>\n'
+            removeHtml(PGPpubKey).replace('\n', '<br>') + '</p>\n'
     optionsStr += '  <form method="POST" action="' + \
         originPathStr + '/personoptions">\n'
     optionsStr += '    <input type="hidden" name="pageNumber" value="' + \

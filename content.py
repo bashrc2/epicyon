@@ -163,7 +163,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     contentSections = content.split('<')
     invalidPartials = ()
     if not allowLocalNetworkAccess:
-        invalidPartials = ('127.0.', '192.168', '10.0.')
+        invalidPartials = ('localhost', '127.0.', '192.168', '10.0.')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
                       'hr', 'allow-popups', 'allow-scripts')
@@ -196,10 +196,25 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
         content = fp.read().lower()
 
         cssMatches = ('behavior:', ':expression', '?php', '.php',
-                      'google')
+                      'google', 'regexp', 'localhost',
+                      '127.0.', '192.168', '10.0.', '@import')
         for match in cssMatches:
             if match in content:
                 return True
+
+        # search for non-local web links
+        if 'url(' in content:
+            urlList = content.split('url(')
+            ctr = 0
+            for urlStr in urlList:
+                if ctr > 0:
+                    if ')' in urlStr:
+                        urlStr = urlStr.split(')')[0]
+                        if 'http' in urlStr:
+                            print('ERROR: non-local web link in CSS ' +
+                                  filename)
+                            return True
+                ctr += 1
 
         # an attacker can include html inside of the css
         # file as a comment and this may then be run from the html

@@ -769,5 +769,21 @@
     "budgie": "1F424",
     "canary": "1F424",
     "linux": "1F427",
-    "valid": "valid"
+    "valid": "valid",
+    "python": "python",
+    "vim": "vim",
+    "emacs": "emacs",
+    "terminal": "terminal",
+    "angryemote": "angryEmote",
+    "blankemote": "blankEmoteMid",
+    "boredemote": "boredEmote",
+    "confusedemote": "confusedEmote",
+    "dohemote": "dohEmote",
+    "happyemote": "happyEmote",
+    "neutralemote": "neutralEmote",
+    "sademote": "sadEmote",
+    "talkingemote": "talkingEmote",
+    "talkingemote2": "talkingEmote2",
+    "veryhappyemote": "veryHappyEmote",
+    "worriedemote": "worriedEmote"
 }

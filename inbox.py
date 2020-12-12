@@ -764,7 +764,7 @@ def personReceiveUpdate(baseDir: str,
     """Changes an actor. eg: avatar or display name change
     """
     if debug:
-        print('DEBUG: receiving actor update for '+personJson['url'])
+        print('DEBUG: receiving actor update for ' + personJson['url'])
     domainFull = domain
     if port:
         if port != 80 and port != 443:

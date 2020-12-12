@@ -43,6 +43,8 @@ def setXmppAddress(actorJson: {}, xmppAddress: str) -> None:
         notXmppAddress = True
     if '"' in xmppAddress:
         notXmppAddress = True
+    if '<' in xmppAddress:
+        notXmppAddress = True
 
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []

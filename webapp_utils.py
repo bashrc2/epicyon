@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from collections import OrderedDict
 from session import getJson
+from utils import removeHtml
 from utils import getImageExtensions
 from utils import getProtocolPrefixes
 from utils import loadJson
@@ -18,6 +19,14 @@ from cache import getPersonFromCache
 from cache import storePersonInCache
 from content import addHtmlTags
 from content import replaceEmojiFromTags
+
+
+def getBrokenLinkSubstitute() -> str:
+    """Returns html used to show a default image if the link to
+    an image is broken
+    """
+    return " onerror=\"this.onerror=null; this.src='" + \
+        "/icons/avatar_default.png'\""
 
 
 def htmlFollowingList(cssCache: {}, baseDir: str,
@@ -260,7 +269,7 @@ def setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
 def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     """Sets an blog address for the given actor
     """
-    setActorPropertyUrl(actorJson, 'Blog', blogAddress)
+    setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
 
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
@@ -273,36 +282,26 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
         return None
     actorStr = actor.replace('/', '-')
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
-    if avatarUrl.endswith('.png') or \
-       '.png?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/png'
-        }
-        avatarImageFilename = avatarImagePath + '.png'
-    elif (avatarUrl.endswith('.jpg') or
-          avatarUrl.endswith('.jpeg') or
-          '.jpg?' in avatarUrl or
-          '.jpeg?' in avatarUrl):
-        sessionHeaders = {
-            'Accept': 'image/jpeg'
-        }
-        avatarImageFilename = avatarImagePath + '.jpg'
-    elif avatarUrl.endswith('.gif') or '.gif?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/gif'
-        }
-        avatarImageFilename = avatarImagePath + '.gif'
-    elif avatarUrl.endswith('.webp') or '.webp?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/webp'
-        }
-        avatarImageFilename = avatarImagePath + '.webp'
-    elif avatarUrl.endswith('.avif') or '.avif?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/avif'
-        }
-        avatarImageFilename = avatarImagePath + '.avif'
-    else:
+
+    # try different image types
+    imageFormats = {
+        'png': 'png',
+        'jpg': 'jpeg',
+        'jpeg': 'jpeg',
+        'gif': 'gif',
+        'webp': 'webp',
+        'avif': 'avif'
+    }
+    avatarImageFilename = None
+    for imFormat, mimeType in imageFormats.items():
+        if avatarUrl.endswith('.' + imFormat) or \
+           '.' + imFormat + '?' in avatarUrl:
+            sessionHeaders = {
+                'Accept': 'image/' + mimeType
+            }
+            avatarImageFilename = avatarImagePath + '.' + imFormat
+
+    if not avatarImageFilename:
         return None
 
     if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:

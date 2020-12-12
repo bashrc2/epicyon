@@ -57,6 +57,8 @@ def setToxAddress(actorJson: {}, toxAddress: str) -> None:
         notToxAddress = True
     if ',' in toxAddress:
         notToxAddress = True
+    if '<' in toxAddress:
+        notToxAddress = True
 
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []

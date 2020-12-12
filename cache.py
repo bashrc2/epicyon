@@ -18,6 +18,10 @@ def storePersonInCache(baseDir: str, personUrl: str,
                        allowWriteToFile: bool) -> None:
     """Store an actor in the cache
     """
+    if 'statuses' in personUrl or personUrl.endswith('/actor'):
+        # This is not an actor or person account
+        return
+
     currTime = datetime.datetime.utcnow()
     personCache[personUrl] = {
         "actor": personJson,
