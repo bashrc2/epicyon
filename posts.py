@@ -266,7 +266,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             avatarUrl = personJson['icon']['url']
     displayName = None
     if personJson.get('name'):
-        displayName = personJson['name']
+        displayName = removeHtml(personJson['name'])
 
     storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
