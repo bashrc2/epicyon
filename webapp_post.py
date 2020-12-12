@@ -206,7 +206,7 @@ def getBrokenLinkSubstitute() -> str:
     an image is broken
     """
     return " onerror=\"this.onerror=null; this.src='" + \
-        "icons/avatar_default.png'\""
+        "/icons/avatar_default.png'\""
 
 
 def getAvatarImageHtml(showAvatarOptions: bool,
