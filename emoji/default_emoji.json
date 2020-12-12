@@ -771,5 +771,6 @@
     "linux": "1F427",
     "valid": "valid",
     "python": "python",
-    "vim": "vim"
+    "vim": "vim",
+    "emacs": "emacs"
 }
