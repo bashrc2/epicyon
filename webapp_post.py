@@ -213,7 +213,7 @@ def getAvatarImageHtml(showAvatarOptions: bool,
     if '/users/news/' not in avatarUrl:
         avatarLink = '        <a class="imageAnchor" href="' + postActor + '">'
         avatarLink += \
-            '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
+            '<img loading="lazy" src="' + avatarUrl + '" title="' + \
             translate['Show profile'] + '" alt=" "' + avatarPosition + \
             getBrokenLinkSubstitute() + '/></a>\n'
 
