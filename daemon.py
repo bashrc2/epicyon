@@ -171,6 +171,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import removeHtml
 from utils import setHashtagCategory
 from utils import isEditor
 from utils import getImageExtensions
@@ -3760,7 +3761,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # change displayed name
                     if fields.get('displayNickname'):
                         if fields['displayNickname'] != actorJson['name']:
-                            actorJson['name'] = fields['displayNickname']
+                            actorJson['name'] = \
+                                removeHtml(fields['displayNickname'])
                             actorChanged = True
 
                     # change media instance status
@@ -4047,13 +4049,14 @@ class PubServer(BaseHTTPRequestHandler):
                     # change user bio
                     if fields.get('bio'):
                         if fields['bio'] != actorJson['summary']:
+                            bioStr = removeHtml(fields['bio'])
                             actorTags = {}
                             actorJson['summary'] = \
                                 addHtmlTags(baseDir,
                                             httpPrefix,
                                             nickname,
                                             domainFull,
-                                            fields['bio'], [], actorTags)
+                                            bioStr, [], actorTags)
                             if actorTags:
                                 actorJson['tag'] = []
                                 for tagName, tag in actorTags.items():
