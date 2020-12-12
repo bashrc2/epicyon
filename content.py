@@ -202,6 +202,20 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
             if match in content:
                 return True
 
+        # search for non-local web links
+        if 'url(' in content:
+            urlList = content.split('url(')
+            ctr = 0
+            for urlStr in urlList:
+                if ctr > 0:
+                    if ')' in urlStr:
+                        urlStr = urlStr.split(')')[0]
+                        if 'http' in urlStr:
+                            print('ERROR: non-local web link in CSS ' +
+                                  filename)
+                            return True
+                ctr += 1
+
         # an attacker can include html inside of the css
         # file as a comment and this may then be run from the html
         if dangerousMarkup(content, allowLocalNetworkAccess):
