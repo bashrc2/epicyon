@@ -281,36 +281,26 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
         return None
     actorStr = actor.replace('/', '-')
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
-    if avatarUrl.endswith('.png') or \
-       '.png?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/png'
-        }
-        avatarImageFilename = avatarImagePath + '.png'
-    elif (avatarUrl.endswith('.jpg') or
-          avatarUrl.endswith('.jpeg') or
-          '.jpg?' in avatarUrl or
-          '.jpeg?' in avatarUrl):
-        sessionHeaders = {
-            'Accept': 'image/jpeg'
-        }
-        avatarImageFilename = avatarImagePath + '.jpg'
-    elif avatarUrl.endswith('.gif') or '.gif?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/gif'
-        }
-        avatarImageFilename = avatarImagePath + '.gif'
-    elif avatarUrl.endswith('.webp') or '.webp?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/webp'
-        }
-        avatarImageFilename = avatarImagePath + '.webp'
-    elif avatarUrl.endswith('.avif') or '.avif?' in avatarUrl:
-        sessionHeaders = {
-            'Accept': 'image/avif'
-        }
-        avatarImageFilename = avatarImagePath + '.avif'
-    else:
+
+    # try different image types
+    imageFormats = {
+        'png': 'png',
+        'jpg': 'jpeg',
+        'jpeg': 'jpeg',
+        'gif': 'gif',
+        'webp': 'webp',
+        'avif': 'avif'
+    }
+    avatarImageFilename = None
+    for imFormat, mimeType in imageFormats.items():
+        if avatarUrl.endswith('.' + imFormat) or \
+           '.' + imFormat + '?' in avatarUrl:
+            sessionHeaders = {
+                'Accept': 'image/' + mimeType
+            }
+            avatarImageFilename = avatarImagePath + '.' + imFormat
+
+    if not avatarImageFilename:
         return None
 
     if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:
