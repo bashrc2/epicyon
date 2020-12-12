@@ -163,7 +163,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     contentSections = content.split('<')
     invalidPartials = ()
     if not allowLocalNetworkAccess:
-        invalidPartials = ('127.0.', '192.168', '10.0.')
+        invalidPartials = ('localhost', '127.0.', '192.168', '10.0.')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
                       'hr', 'allow-popups', 'allow-scripts')
