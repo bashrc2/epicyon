@@ -103,7 +103,11 @@ def addNewswireDictEntry(baseDir: str, domain: str,
                          tags=[], maxTags=32) -> None:
     """Update the newswire dictionary
     """
-    allText = removeHtml(title + ' ' + description)
+    # remove any markup
+    title = removeHtml(title)
+    description = removeHtml(description)
+
+    allText = title + ' ' + description
 
     # check that none of the text is filtered against
     if isFiltered(baseDir, 'news', domain, allText):
