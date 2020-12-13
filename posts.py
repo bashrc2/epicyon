@@ -898,16 +898,6 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     if eventUUID:
         postObjectType = 'Event'
 
-    # public posts with mentions should include the mentioned
-    # actors within CC
-    # "I think we don’t notify about mentions unless the person
-    #  is also addressed in to/cc" -- gargron
-    if toRecipients and toCC and mentionedRecipients:
-        if len(toRecipients) == 1 and len(toCC) == 1:
-            if toRecipients[0].endswith('#Public') and \
-               toCC[0].endswith('/followers'):
-                toCC += mentionedRecipients
-
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
 

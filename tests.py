@@ -20,6 +20,7 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from posts import getMentionedPeople
 from posts import validContentWarning
 from posts import deleteAllPosts
 from posts import createPublicPost
@@ -2479,8 +2480,23 @@ def testGuessHashtagCategory() -> None:
     assert guess == "bar"
 
 
+def testGetMentionedPeople() -> None:
+    print('testGetMentionedPeople')
+    baseDir = os.getcwd()
+
+    content = "@dragon@cave.site @bat@cave.site This is a test."
+    actors = getMentionedPeople(baseDir, 'https',
+                                content,
+                                'mydomain', False)
+    assert actors
+    assert len(actors) == 2
+    assert actors[0] == "https://cave.site/users/dragon"
+    assert actors[1] == "https://cave.site/users/bat"
+
+
 def runAllTests():
     print('Running tests...')
+    testGetMentionedPeople()
     testGuessHashtagCategory()
     testValidNickname()
     testParseFeedDate()
