@@ -760,6 +760,7 @@ def addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
                 addAccountBlogsToNewswire(baseDir, nickname, domain,
                                           newswire, maxBlogsPerAccount,
                                           blogsIndex, maxTags)
+        break
 
     # sort the moderation dict into chronological order, latest first
     sortedModerationDict = \

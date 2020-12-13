@@ -622,6 +622,7 @@ def getBlogIndexesForAccounts(baseDir: str) -> {}:
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 blogIndexes[acct] = blogsIndex
+        break
     return blogIndexes
 
 
@@ -639,6 +640,7 @@ def noOfBlogAccounts(baseDir: str) -> int:
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 ctr += 1
+        break
     return ctr
 
 
@@ -655,6 +657,7 @@ def singleBlogAccountNickname(baseDir: str) -> str:
             blogsIndex = accountDir + '/tlblogs.index'
             if os.path.isfile(blogsIndex):
                 return acct.split('@')[0]
+        break
     return None
 
 
@@ -698,6 +701,7 @@ def htmlBlogView(authorized: bool,
                     httpPrefix + '://' + domainFull + '/blog/' + \
                     acct.split('@')[0] + '">' + acct + '</a>'
                 blogStr += '</p>'
+        break
 
     return blogStr + htmlFooter()
 

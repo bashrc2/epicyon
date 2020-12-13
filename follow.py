@@ -1203,6 +1203,7 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
                             print('DEBUG: ' + account +
                                   ' follows ' + actorHandle)
                         recipientsDict[account] = None
+        break
     return recipientsDict
 
 

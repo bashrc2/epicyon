@@ -110,6 +110,7 @@ def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
                 else:
                     if hashtag not in hashtagCategories[categoryStr]:
                         hashtagCategories[categoryStr].append(hashtag)
+        break
     return hashtagCategories
 
 
@@ -407,6 +408,7 @@ def getFollowersOfPerson(baseDir: str,
                         if account not in followers:
                             followers.append(account)
                         break
+        break
     return followers
 
 
@@ -932,6 +934,7 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
             if recentPostsCache.get('html'):
                 if recentPostsCache['html'].get(postId):
                     del recentPostsCache['html'][postId]
+        break
 
 
 def locatePost(baseDir: str, nickname: str, domain: str,
@@ -1195,6 +1198,7 @@ def noOfAccounts(baseDir: str) -> bool:
             if '@' in account:
                 if not account.startswith('inbox@'):
                     accountCtr += 1
+        break
     return accountCtr
 
 
@@ -1217,6 +1221,7 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
                                 timeDiff = (currTime - int(lastUsed))
                                 if timeDiff < monthSeconds:
                                     accountCtr += 1
+        break
     return accountCtr
 
 
@@ -1493,6 +1498,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
                 res.append(filePath)
                 if len(res) >= maxResults:
                     return res
+        break
     return res
 
 

@@ -3195,6 +3195,7 @@ def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
                 archivePostsForPerson(httpPrefix, nickname, domain, baseDir,
                                       'outbox', archiveSubdir,
                                       recentPostsCache, maxPostsInBox)
+        break
 
 
 def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,

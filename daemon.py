@@ -4789,6 +4789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      port,
                                      maxPostsInRSSFeed, 1,
                                      False)
+            break
         if msg:
             msg = rss2Header(httpPrefix,
                              'news', domainFull,
@@ -12133,6 +12134,7 @@ class PubServer(BaseHTTPRequestHandler):
                     contentJson = loadJson(deviceFilename)
                     if contentJson:
                         devicesList.append(contentJson)
+                break
             # return the list of devices for this handle
             msg = \
                 json.dumps(devicesList,
@@ -12932,6 +12934,7 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                     continue
                 tokensDict[nickname] = token
                 tokensLookup[token] = nickname
+        break
 
 
 def runDaemon(dormantMonths: int,

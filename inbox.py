@@ -200,6 +200,7 @@ def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
             if 'postNickname' in open(filename).read():
                 print('queue file incorrectly saved to ' + filename)
                 return False
+        break
     return True
 
 
@@ -224,6 +225,7 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
                 print('Expected: ' + expectedStr)
                 print('Invalid filename: ' + filename)
                 return False
+        break
     return True
 
 
@@ -2471,6 +2473,7 @@ def clearQueueItems(baseDir: str, queue: []) -> None:
                         ctr += 1
                     except BaseException:
                         pass
+        break
     if ctr > 0:
         print('Removed ' + str(ctr) + ' inbox queue items')
 
@@ -2487,6 +2490,7 @@ def restoreQueueItems(baseDir: str, queue: []) -> None:
             for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
                 for qfile in queuefiles:
                     queue.append(os.path.join(queueDir, qfile))
+        break
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 

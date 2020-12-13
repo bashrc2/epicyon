@@ -197,6 +197,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                             if categoryStr not in categorySwarm:
                                 categorySwarm.append(categoryStr)
                         break
+        break
 
     if not tagSwarm:
         return ''

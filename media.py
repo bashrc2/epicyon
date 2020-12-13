@@ -221,3 +221,4 @@ def archiveMedia(baseDir: str, archiveDirectory: str, maxWeeks=4) -> None:
                 else:
                     # archive to /dev/null
                     rmtree(os.path.join(baseDir + '/media', weekDir))
+        break
