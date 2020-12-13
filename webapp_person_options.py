@@ -115,7 +115,7 @@ def htmlPersonOptions(defaultTimeline: str,
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     handleShown = handle
     if dormant:
-        handleShown += '💤'
+        handleShown += ' 💤'
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handleShown + '</p>\n'

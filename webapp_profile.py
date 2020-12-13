@@ -1457,7 +1457,7 @@ def individualFollowAsHtml(translate: {},
     domain, port = getDomainFromActor(followUrl)
     titleStr = '@' + nickname + '@' + domain
     if dormant:
-        titleStr += '💤'
+        titleStr += ' 💤'
     avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
