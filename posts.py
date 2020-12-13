@@ -1012,6 +1012,16 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             if newPost.get('object'):
                 newPost['object']['cc'] = [ccUrl]
 
+                # if this is a public post then include any mentions in cc
+                toCC = newPost['object']['cc']
+                if len(toRecipients) == 1:
+                    if toRecipients[0].endswith('#Public') and \
+                       ccUrl.endswith('/followers'):
+                        for tag in tags:
+                            if tag['type'] == 'Mention':
+                                if tag['href'] not in toCC:
+                                    toCC.append(tag['href'])
+
     # if this is a moderation report then add a status
     if isModerationReport:
         # add status
