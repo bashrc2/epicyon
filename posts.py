@@ -52,6 +52,7 @@ from utils import votesOnNewswireItem
 from utils import removeHtml
 from media import attachMedia
 from media import replaceYouTube
+from content import tagExists
 from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -801,7 +802,8 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 isPublic = True
                 break
         for tagName, tag in hashtagsDict.items():
-            tags.append(tag)
+            if not tagExists(tag['type'], tag['name'], tags):
+                tags.append(tag)
             if isPublic:
                 updateHashtagsIndex(baseDir, tag, newPostId)
         print('Content tags: ' + str(tags))

@@ -2506,7 +2506,7 @@ def testReplyToPublicPost() -> None:
                          "@ninjarodent@rat.site This is a test.",
                          False, False, False, True,
                          None, None, False, postId)
-    print(str(reply))
+    # print(str(reply))
     assert reply['object']['content'] == \
         '<p><span class=\"h-card\">' + \
         '<a href=\"https://rat.site/@ninjarodent\" ' + \
