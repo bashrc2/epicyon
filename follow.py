@@ -54,8 +54,7 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
                     nickname = handle.split('@')[0]
                     domain = handle.split('@')[1]
                     actor = \
-                        httpPrefix + '://' + \
-                        nickname + '@' + domain + '/users/' + nickname
+                        httpPrefix + '://' + domain + '/users/' + nickname
                     lastSeenFilename = \
                         lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
                     print('lastSeenFilename: ' + lastSeenFilename)
