@@ -67,6 +67,7 @@ from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
 from happening import saveEventPost
 from delete import removeOldHashtags
+from follow import isFollowingActor
 
 
 def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
@@ -2066,6 +2067,30 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
     return False
 
 
+def updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
+    """Updates the time when the given handle last saw the given actor
+    """
+    if '@' not in handle:
+        return
+    nickname = handle.split('@')[0]
+    domain = handle.split('@')[1]
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(accountPath):
+        return
+    if not isFollowingActor(baseDir, nickname, domain, actor):
+        return
+    lastSeenPath = accountPath + '/lastseen'
+    if not os.path.isdir(lastSeenPath):
+        os.mkdir(lastSeenPath)
+    lastSeenFilename = lastSeenPath + '/' + actor.replace('/', '#') + '.txt'
+    currTime = datetime.datetime.utcnow()
+    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    with open(lastSeenFilename, 'w+') as lastSeenFile:
+        lastSeenFile.write(str(daysSinceEpoch))
+
+
 def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                       session, keyId: str, handle: str, messageJson: {},
                       baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2085,6 +2110,8 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
     actor = keyId
     if '#' in actor:
         actor = keyId.split('#')[0]
+
+    updateLastSeen(baseDir, handle, actor)
 
     isGroup = groupHandle(baseDir, handle)
 
