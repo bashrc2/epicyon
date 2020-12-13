@@ -2037,6 +2037,11 @@ maxFeedItemSizeKb = \
 if maxFeedItemSizeKb is not None:
     args.maxFeedItemSizeKb = int(maxFeedItemSizeKb)
 
+dormantMonths = \
+    getConfigParam(baseDir, 'dormantMonths')
+if dormantMonths is not None:
+    args.dormantMonths = int(dormantMonths)
+
 allowNewsFollowers = \
     getConfigParam(baseDir, 'allowNewsFollowers')
 if allowNewsFollowers is not None:
