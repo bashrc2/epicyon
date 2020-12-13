@@ -50,7 +50,7 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
                         continue
                     if '@' not in handle:
                         continue
-                    handle = handle.strip()
+                    handle = handle.replace('\n', '')
                     nickname = handle.split('@')[0]
                     domain = handle.split('@')[1]
                     actor = \
