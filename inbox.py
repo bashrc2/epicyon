@@ -2088,6 +2088,13 @@ def updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
     lastSeenFilename = lastSeenPath + '/' + actor.replace('/', '#') + '.txt'
     currTime = datetime.datetime.utcnow()
     daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    # has the value changed?
+    if os.path.isfile(lastSeenFilename):
+        with open(lastSeenFilename, 'r') as lastSeenFile:
+            daysSinceEpochFile = lastSeenFile.read()
+            if int(daysSinceEpochFile) == daysSinceEpoch:
+                # value hasn't changed, so we can save writing anything to file
+                return
     with open(lastSeenFilename, 'w+') as lastSeenFile:
         lastSeenFile.write(str(daysSinceEpoch))
 
