@@ -4987,7 +4987,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     ssbAddress, blogAddress,
                                     toxAddress, jamiAddress,
                                     PGPpubKey, PGPfingerprint,
-                                    emailAddress).encode('utf-8')
+                                    emailAddress,
+                                    self.server.dormantMonths).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
