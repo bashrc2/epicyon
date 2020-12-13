@@ -742,11 +742,13 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 '  </center>\n'
 
     for followingActor in followingJson['orderedItems']:
+        # is this a dormant followed account?
         dormant = False
         if authorized and feedName == 'following':
             dormant = \
                 isDormant(baseDir, nickname, domain, followingActor,
                           dormantMonths)
+
         profileStr += \
             individualFollowAsHtml(translate, baseDir, session,
                                    wfRequest, personCache,
@@ -754,6 +756,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                                    authorized, nickname,
                                    httpPrefix, projectVersion, dormant,
                                    buttons)
+
     if authorized and maxItemsPerPage and pageNumber:
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
             # page down arrow
