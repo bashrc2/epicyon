@@ -743,7 +743,7 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
 
     for followingActor in followingJson['orderedItems']:
         dormant = False
-        if feedName == 'following':
+        if authorized and feedName == 'following':
             dormant = \
                 isDormant(baseDir, nickname, domain, followingActor,
                           dormantMonths)
