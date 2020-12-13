@@ -89,6 +89,7 @@ from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowPerson
+from follow import createInitialLastSeen
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -13260,6 +13261,8 @@ def runDaemon(dormantMonths: int,
     httpd.maxRecentPosts = maxRecentPosts
     httpd.iconsCache = {}
     httpd.fontsCache = {}
+
+    createInitialLastSeen(baseDir, httpPrefix)
 
     print('Creating inbox queue')
     httpd.thrInboxQueue = \
