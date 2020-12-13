@@ -75,6 +75,7 @@ from inbox import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
+from content import dangerousCSS
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -1984,6 +1985,17 @@ def testRemoveHtml():
     assert(removeHtml(testStr) == 'This string has html.')
 
 
+def testDangerousCSS():
+    print('testDangerousCSS')
+    baseDir = os.getcwd()
+    for subdir, dirs, files in os.walk(baseDir):
+        for f in files:
+            if not f.endswith('.css'):
+                continue
+            assert not dangerousCSS(baseDir + '/' + f, False)
+        break
+
+
 def testDangerousMarkup():
     print('testDangerousMarkup')
     allowLocalNetworkAccess = False
@@ -2483,6 +2495,7 @@ def runAllTests():
     testRemoveIdEnding()
     testJsonPostAllowsComments()
     runHtmlReplaceQuoteMarks()
+    testDangerousCSS()
     testDangerousMarkup()
     testRemoveHtml()
     testSiteIsActive()
