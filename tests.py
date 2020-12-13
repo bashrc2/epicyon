@@ -2494,8 +2494,41 @@ def testGetMentionedPeople() -> None:
     assert actors[1] == "https://cave.site/users/bat"
 
 
+def testReplyToPublicPost() -> None:
+    baseDir = os.getcwd()
+    nickname = 'test7492362'
+    domain = 'other.site'
+    port = 443
+    httpPrefix = 'https'
+    postId = httpPrefix + '://rat.site/users/ninjarodent/statuses/63746173435'
+    reply = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         "@ninjarodent@rat.site This is a test.",
+                         False, False, False, True,
+                         None, None, False, postId)
+    print(str(reply))
+    assert reply['object']['content'] == \
+        '<p><span class=\"h-card\">' + \
+        '<a href=\"https://rat.site/@ninjarodent\" ' + \
+        'class=\"u-url mention\">@<span>ninjarodent</span>' + \
+        '</a></span> This is a test.</p>'
+    assert reply['object']['tag'][0]['type'] == 'Mention'
+    assert reply['object']['tag'][0]['name'] == '@ninjarodent@rat.site'
+    assert reply['object']['tag'][0]['href'] == \
+        'https://rat.site/users/ninjarodent'
+    assert len(reply['object']['to']) == 1
+    assert reply['object']['to'][0].endswith('#Public')
+    assert len(reply['object']['cc']) >= 1
+    assert reply['object']['cc'][0].endswith(nickname + '/followers')
+    assert len(reply['object']['tag']) == 1
+    assert len(reply['object']['cc']) == 2
+    assert reply['object']['cc'][1] == \
+        httpPrefix + '://rat.site/users/ninjarodent'
+
+
 def runAllTests():
     print('Running tests...')
+    testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()
     testValidNickname()
