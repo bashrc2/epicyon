@@ -61,7 +61,7 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
                     print('lastSeenFilename: ' + lastSeenFilename)
                     if not os.path.isfile(lastSeenFilename):
                         with open(lastSeenFilename, 'w+') as fp:
-                            fp.write(str(0))
+                            fp.write(str(100))
         break
 
 
