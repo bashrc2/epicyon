@@ -2069,6 +2069,7 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
 
 def updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
     """Updates the time when the given handle last saw the given actor
+    This can later be used to indicate if accounts are dormant/abandoned/moved
     """
     if '@' not in handle:
         return
