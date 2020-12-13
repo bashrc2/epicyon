@@ -33,11 +33,11 @@ def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
 
     with open(lastSeenFilename, 'r') as lastSeenFile:
         daysSinceEpochStr = lastSeenFile.read()
-        daysSinceEpoch = int(daysSinceEpoch)
+        daysSinceEpoch = int(daysSinceEpochStr)
         currTime = datetime.datetime.utcnow()
         currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
         timeDiffMonths = \
-            int((currDaysSinceEpoch - daysSinceEpochStr) / 30)
+            int((currDaysSinceEpoch - daysSinceEpoch) / 30)
         if timeDiffMonths >= dormantMonths:
             return True
     return False
