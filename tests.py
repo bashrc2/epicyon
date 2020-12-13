@@ -20,6 +20,7 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
+from posts import getMentionedPeople
 from posts import validContentWarning
 from posts import deleteAllPosts
 from posts import createPublicPost
@@ -75,6 +76,7 @@ from inbox import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
+from content import dangerousCSS
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -296,8 +298,10 @@ def createServerAlice(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
+    dormantMonths = 3
     print('Server running: Alice')
-    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
+    runDaemon(dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
@@ -364,8 +368,10 @@ def createServerBob(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
+    dormantMonths = 3
     print('Server running: Bob')
-    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
+    runDaemon(dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -406,8 +412,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
+    dormantMonths = 3
     print('Server running: Eve')
-    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
+    runDaemon(dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -1683,7 +1691,7 @@ def testWebLinks():
         'This post has a web links https://somesite.net\n\nAnd some other text'
     linkedText = addWebLinks(exampleText)
     assert \
-        '<a href="https://somesite.net" rel="nofollow noopener"' + \
+        '<a href="https://somesite.net" rel="nofollow noopener noreferrer"' + \
         ' target="_blank"><span class="invisible">https://' + \
         '</span><span class="ellipsis">somesite.net</span></a' in linkedText
 
@@ -1976,6 +1984,17 @@ def testRemoveHtml():
     assert(removeHtml(testStr) == testStr)
     testStr = 'This string <a href="1234.567">has html</a>.'
     assert(removeHtml(testStr) == 'This string has html.')
+
+
+def testDangerousCSS():
+    print('testDangerousCSS')
+    baseDir = os.getcwd()
+    for subdir, dirs, files in os.walk(baseDir):
+        for f in files:
+            if not f.endswith('.css'):
+                continue
+            assert not dangerousCSS(baseDir + '/' + f, False)
+        break
 
 
 def testDangerousMarkup():
@@ -2461,8 +2480,56 @@ def testGuessHashtagCategory() -> None:
     assert guess == "bar"
 
 
+def testGetMentionedPeople() -> None:
+    print('testGetMentionedPeople')
+    baseDir = os.getcwd()
+
+    content = "@dragon@cave.site @bat@cave.site This is a test."
+    actors = getMentionedPeople(baseDir, 'https',
+                                content,
+                                'mydomain', False)
+    assert actors
+    assert len(actors) == 2
+    assert actors[0] == "https://cave.site/users/dragon"
+    assert actors[1] == "https://cave.site/users/bat"
+
+
+def testReplyToPublicPost() -> None:
+    baseDir = os.getcwd()
+    nickname = 'test7492362'
+    domain = 'other.site'
+    port = 443
+    httpPrefix = 'https'
+    postId = httpPrefix + '://rat.site/users/ninjarodent/statuses/63746173435'
+    reply = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         "@ninjarodent@rat.site This is a test.",
+                         False, False, False, True,
+                         None, None, False, postId)
+    # print(str(reply))
+    assert reply['object']['content'] == \
+        '<p><span class=\"h-card\">' + \
+        '<a href=\"https://rat.site/@ninjarodent\" ' + \
+        'class=\"u-url mention\">@<span>ninjarodent</span>' + \
+        '</a></span> This is a test.</p>'
+    assert reply['object']['tag'][0]['type'] == 'Mention'
+    assert reply['object']['tag'][0]['name'] == '@ninjarodent@rat.site'
+    assert reply['object']['tag'][0]['href'] == \
+        'https://rat.site/users/ninjarodent'
+    assert len(reply['object']['to']) == 1
+    assert reply['object']['to'][0].endswith('#Public')
+    assert len(reply['object']['cc']) >= 1
+    assert reply['object']['cc'][0].endswith(nickname + '/followers')
+    assert len(reply['object']['tag']) == 1
+    assert len(reply['object']['cc']) == 2
+    assert reply['object']['cc'][1] == \
+        httpPrefix + '://rat.site/users/ninjarodent'
+
+
 def runAllTests():
     print('Running tests...')
+    testReplyToPublicPost()
+    testGetMentionedPeople()
     testGuessHashtagCategory()
     testValidNickname()
     testParseFeedDate()
@@ -2477,6 +2544,7 @@ def runAllTests():
     testRemoveIdEnding()
     testJsonPostAllowsComments()
     runHtmlReplaceQuoteMarks()
+    testDangerousCSS()
     testDangerousMarkup()
     testRemoveHtml()
     testSiteIsActive()

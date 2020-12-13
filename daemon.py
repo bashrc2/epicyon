@@ -89,6 +89,7 @@ from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowPerson
+from follow import createInitialLastSeen
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -4788,6 +4789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      port,
                                      maxPostsInRSSFeed, 1,
                                      False)
+            break
         if msg:
             msg = rss2Header(httpPrefix,
                              'news', domainFull,
@@ -4987,7 +4989,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     ssbAddress, blogAddress,
                                     toxAddress, jamiAddress,
                                     PGPpubKey, PGPfingerprint,
-                                    emailAddress).encode('utf-8')
+                                    emailAddress,
+                                    self.server.dormantMonths).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -6491,6 +6494,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -6570,6 +6574,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 YTReplacementDomain,
                                                 showPublishedDateOnly,
                                                 self.server.newswire,
+                                                self.server.dormantMonths,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -8258,6 +8263,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -8349,6 +8355,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -8440,6 +8447,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -8506,6 +8514,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
                                 self.server.newswire,
+                                self.server.dormantMonths,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -12125,6 +12134,7 @@ class PubServer(BaseHTTPRequestHandler):
                     contentJson = loadJson(deviceFilename)
                     if contentJson:
                         devicesList.append(contentJson)
+                break
             # return the list of devices for this handle
             msg = \
                 json.dumps(devicesList,
@@ -12924,9 +12934,11 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                     continue
                 tokensDict[nickname] = token
                 tokensLookup[token] = nickname
+        break
 
 
-def runDaemon(maxNewswirePosts: int,
+def runDaemon(dormantMonths: int,
+              maxNewswirePosts: int,
               allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
@@ -13120,6 +13132,10 @@ def runDaemon(maxNewswirePosts: int,
     # maximum size of a hashtag category, in K
     httpd.maxCategoriesFeedItemSizeKb = 1024
 
+    # how many months does a followed account need to be unseen
+    # for it to be considered dormant?
+    httpd.dormantMonths = dormantMonths
+
     if registration == 'open':
         httpd.registration = True
     else:
@@ -13248,6 +13264,8 @@ def runDaemon(maxNewswirePosts: int,
     httpd.maxRecentPosts = maxRecentPosts
     httpd.iconsCache = {}
     httpd.fontsCache = {}
+
+    createInitialLastSeen(baseDir, httpPrefix)
 
     print('Creating inbox queue')
     httpd.thrInboxQueue = \

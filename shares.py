@@ -167,6 +167,7 @@ def addShare(baseDir: str,
                                  '/users/' + nickname + '/tlshares')
                 except BaseException:
                     pass
+        break
 
 
 def expireShares(baseDir: str) -> None:
@@ -179,6 +180,7 @@ def expireShares(baseDir: str) -> None:
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
             expireSharesForAccount(baseDir, nickname, domain)
+        break
 
 
 def expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:

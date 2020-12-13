@@ -11,6 +11,7 @@ from shutil import copyfile
 from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
+from utils import isDormant
 from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -39,7 +40,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       jamiAddress: str,
                       PGPpubKey: str,
                       PGPfingerprint: str,
-                      emailAddress) -> str:
+                      emailAddress: str,
+                      dormantMonths: int) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -53,6 +55,7 @@ def htmlPersonOptions(defaultTimeline: str,
             copyfile(baseDir + '/accounts/options-background.jpg',
                      baseDir + '/accounts/options-background.jpg')
 
+    dormant = False
     followStr = 'Follow'
     blockStr = 'Block'
     nickname = None
@@ -66,6 +69,9 @@ def htmlPersonOptions(defaultTimeline: str,
         followerDomain, followerPort = getDomainFromActor(optionsActor)
         if isFollowingActor(baseDir, nickname, domain, optionsActor):
             followStr = 'Unfollow'
+            dormant = \
+                isDormant(baseDir, nickname, domain, optionsActor,
+                          dormantMonths)
 
         optionsNickname = getNicknameFromActor(optionsActor)
         optionsDomainFull = optionsDomain
@@ -107,9 +113,12 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
         '" ' + getBrokenLinkSubstitute() + '/></a>\n'
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
+    handleShown = handle
+    if dormant:
+        handleShown += ' 💤'
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
-        ' @' + handle + '</p>\n'
+        ' @' + handleShown + '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \

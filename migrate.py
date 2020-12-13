@@ -51,3 +51,4 @@ def migrateAccount(baseDir: str, oldHandle: str, newHandle: str) -> None:
                 migrateFollows(followFilename, oldHandle, newHandle)
                 followFilename = accountDir + '/followers.txt'
                 migrateFollows(followFilename, oldHandle, newHandle)
+        break

@@ -19,6 +19,30 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
+              dormantMonths=3) -> bool:
+    """Is the given followed actor dormant, from the standpoint
+    of the given account
+    """
+    lastSeenFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/lastseen/' + actor.replace('/', '#') + '.txt'
+
+    if not os.path.isfile(lastSeenFilename):
+        return False
+
+    with open(lastSeenFilename, 'r') as lastSeenFile:
+        daysSinceEpochStr = lastSeenFile.read()
+        daysSinceEpoch = int(daysSinceEpochStr)
+        currTime = datetime.datetime.utcnow()
+        currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+        timeDiffMonths = \
+            int((currDaysSinceEpoch - daysSinceEpoch) / 30)
+        if timeDiffMonths >= dormantMonths:
+            return True
+    return False
+
+
 def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     """Returns the category for the hashtag
     """
@@ -86,6 +110,7 @@ def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
                 else:
                     if hashtag not in hashtagCategories[categoryStr]:
                         hashtagCategories[categoryStr].append(hashtag)
+        break
     return hashtagCategories
 
 
@@ -383,6 +408,7 @@ def getFollowersOfPerson(baseDir: str,
                         if account not in followers:
                             followers.append(account)
                         break
+        break
     return followers
 
 
@@ -908,6 +934,7 @@ def clearFromPostCaches(baseDir: str, recentPostsCache: {},
             if recentPostsCache.get('html'):
                 if recentPostsCache['html'].get(postId):
                     del recentPostsCache['html'][postId]
+        break
 
 
 def locatePost(baseDir: str, nickname: str, domain: str,
@@ -1171,6 +1198,7 @@ def noOfAccounts(baseDir: str) -> bool:
             if '@' in account:
                 if not account.startswith('inbox@'):
                     accountCtr += 1
+        break
     return accountCtr
 
 
@@ -1193,6 +1221,7 @@ def noOfActiveAccountsMonthly(baseDir: str, months: int) -> bool:
                                 timeDiff = (currTime - int(lastUsed))
                                 if timeDiff < monthSeconds:
                                     accountCtr += 1
+        break
     return accountCtr
 
 
@@ -1469,6 +1498,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
                 res.append(filePath)
                 if len(res) >= maxResults:
                     return res
+        break
     return res
 
 

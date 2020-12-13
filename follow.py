@@ -27,6 +27,43 @@ from auth import createBasicAuthHeader
 from session import postJson
 
 
+def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
+    """Creates initial lastseen files for all follows
+    """
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct or 'news@' in acct:
+                continue
+            accountDir = os.path.join(baseDir + '/accounts', acct)
+            followingFilename = accountDir + '/following.txt'
+            if not os.path.isfile(followingFilename):
+                continue
+            lastSeenDir = accountDir + '/lastseen'
+            if not os.path.isdir(lastSeenDir):
+                os.mkdir(lastSeenDir)
+            with open(followingFilename, 'r') as fp:
+                followingHandles = fp.readlines()
+                for handle in followingHandles:
+                    if '#' in handle:
+                        continue
+                    if '@' not in handle:
+                        continue
+                    handle = handle.replace('\n', '')
+                    nickname = handle.split('@')[0]
+                    domain = handle.split('@')[1]
+                    actor = \
+                        httpPrefix + '://' + domain + '/users/' + nickname
+                    lastSeenFilename = \
+                        lastSeenDir + '/' + actor.replace('/', '#') + '.txt'
+                    print('lastSeenFilename: ' + lastSeenFilename)
+                    if not os.path.isfile(lastSeenFilename):
+                        with open(lastSeenFilename, 'w+') as fp:
+                            fp.write(str(100))
+        break
+
+
 def preApprovedFollower(baseDir: str,
                         nickname: str, domain: str,
                         approveHandle: str,
@@ -1167,6 +1204,7 @@ def getFollowersOfActor(baseDir: str, actor: str, debug: bool) -> {}:
                             print('DEBUG: ' + account +
                                   ' follows ' + actorHandle)
                         recipientsDict[account] = None
+        break
     return recipientsDict
 
 

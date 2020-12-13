@@ -152,6 +152,7 @@ def E2EEdevicesCollection(baseDir: str, nickname: str, domain: str,
             devJson = loadJson(deviceFilename)
             if devJson:
                 deviceList.append(devJson)
+        break
 
     devicesDict = {
         'id': personId + '/collections/devices',

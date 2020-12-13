@@ -321,6 +321,7 @@ def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
             # check of the file is too old
             if fileDaysSinceEpoch < maxDaysSinceEpoch:
                 removeHashtags.append(tagsFilename)
+        break
 
     for removeFilename in removeHashtags:
         try:

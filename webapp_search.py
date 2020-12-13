@@ -256,6 +256,7 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
                             sharedItemsForm += '</form>\n'
                             break
                         ctr = 0
+        break
     if not resultsExist:
         sharedItemsForm += \
             '<center><h5>' + translate['No results'] + '</h5></center>\n'
@@ -428,6 +429,7 @@ def htmlSkillsSearch(actor: str,
                             ';' + actorJson['icon']['url']
                         if indexStr not in results:
                             results.append(indexStr)
+        break
     if not instanceOnly:
         # search actor cache
         for subdir, dirs, files in os.walk(baseDir + '/cache/actors/'):
@@ -465,6 +467,7 @@ def htmlSkillsSearch(actor: str,
                                     ';' + actorJson['icon']['url']
                                 if indexStr not in results:
                                     results.append(indexStr)
+            break
 
     results.sort(reverse=True)
 

@@ -429,6 +429,7 @@ def sharesTimelineJson(actor: str, pageNumber: int, itemsPerPage: int,
                 ctr += 1
                 if ctr >= maxSharesPerAccount:
                     break
+        break
     # sort the shared items in descending order of publication date
     sharesJson = OrderedDict(sorted(allSharesJson.items(), reverse=True))
     lastPage = False

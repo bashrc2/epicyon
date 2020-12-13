@@ -52,6 +52,7 @@ from utils import votesOnNewswireItem
 from utils import removeHtml
 from media import attachMedia
 from media import replaceYouTube
+from content import tagExists
 from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -801,7 +802,8 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 isPublic = True
                 break
         for tagName, tag in hashtagsDict.items():
-            tags.append(tag)
+            if not tagExists(tag['type'], tag['name'], tags):
+                tags.append(tag)
             if isPublic:
                 updateHashtagsIndex(baseDir, tag, newPostId)
         print('Content tags: ' + str(tags))
@@ -1009,6 +1011,16 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             newPost['cc'] = [ccUrl]
             if newPost.get('object'):
                 newPost['object']['cc'] = [ccUrl]
+
+                # if this is a public post then include any mentions in cc
+                toCC = newPost['object']['cc']
+                if len(toRecipients) == 1:
+                    if toRecipients[0].endswith('#Public') and \
+                       ccUrl.endswith('/followers'):
+                        for tag in tags:
+                            if tag['type'] == 'Mention':
+                                if tag['href'] not in toCC:
+                                    toCC.append(tag['href'])
 
     # if this is a moderation report then add a status
     if isModerationReport:
@@ -3183,6 +3195,7 @@ def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
                 archivePostsForPerson(httpPrefix, nickname, domain, baseDir,
                                       'outbox', archiveSubdir,
                                       recentPostsCache, maxPostsInBox)
+        break
 
 
 def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,

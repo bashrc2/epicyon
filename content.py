@@ -508,6 +508,15 @@ def addEmoji(baseDir: str, wordStr: str,
     return True
 
 
+def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
+    """Returns true if a tag exists in the given dict
+    """
+    for tag in tags:
+        if tag['name'] == tagName and tag['type'] == tagType:
+            return True
+    return False
+
+
 def addMention(wordStr: str, httpPrefix: str, following: str,
                replaceMentions: {}, recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and

@@ -557,6 +557,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
                             os.remove(accountDir + '/right_col_image.png')
                 except BaseException:
                     pass
+        break
 
 
 def setNewsAvatar(baseDir: str, name: str,

@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import isDormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import isSystemAccount
@@ -364,8 +365,9 @@ def htmlProfile(rssIconAtTop: bool,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 showPublishedDateOnly: bool,
-                newswire: {}, extraJson=None,
-                pageNumber=None, maxItemsPerPage=None) -> str:
+                newswire: {}, dormantMonths: int,
+                extraJson=None, pageNumber=None,
+                maxItemsPerPage=None) -> str:
     """Show the profile page as html
     """
     nickname = profileJson['preferredUsername']
@@ -628,7 +630,8 @@ def htmlProfile(rssIconAtTop: bool,
                                  domain, port, session,
                                  wfRequest, personCache, extraJson,
                                  projectVersion, ["unfollow"], selected,
-                                 usersPath, pageNumber, maxItemsPerPage)
+                                 usersPath, pageNumber, maxItemsPerPage,
+                                 dormantMonths)
     elif selected == 'followers':
         profileStr += \
             htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -637,7 +640,7 @@ def htmlProfile(rssIconAtTop: bool,
                                  wfRequest, personCache, extraJson,
                                  projectVersion, ["block"],
                                  selected, usersPath, pageNumber,
-                                 maxItemsPerPage)
+                                 maxItemsPerPage, dormantMonths)
     elif selected == 'roles':
         profileStr += \
             htmlProfileRoles(translate, nickname, domainFull,
@@ -719,7 +722,8 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                          buttons: [],
                          feedName: str, actor: str,
                          pageNumber: int,
-                         maxItemsPerPage: int) -> str:
+                         maxItemsPerPage: int,
+                         dormantMonths: int) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -737,13 +741,22 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                 translate['Page up'] + '"></a>\n' + \
                 '  </center>\n'
 
-    for item in followingJson['orderedItems']:
+    for followingActor in followingJson['orderedItems']:
+        # is this a dormant followed account?
+        dormant = False
+        if authorized and feedName == 'following':
+            dormant = \
+                isDormant(baseDir, nickname, domain, followingActor,
+                          dormantMonths)
+
         profileStr += \
             individualFollowAsHtml(translate, baseDir, session,
                                    wfRequest, personCache,
-                                   domain, item, authorized, nickname,
-                                   httpPrefix, projectVersion,
+                                   domain, followingActor,
+                                   authorized, nickname,
+                                   httpPrefix, projectVersion, dormant,
                                    buttons)
+
     if authorized and maxItemsPerPage and pageNumber:
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
             # page down arrow
@@ -1436,12 +1449,15 @@ def individualFollowAsHtml(translate: {},
                            actorNickname: str,
                            httpPrefix: str,
                            projectVersion: str,
+                           dormant: bool,
                            buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
     nickname = getNicknameFromActor(followUrl)
     domain, port = getDomainFromActor(followUrl)
     titleStr = '@' + nickname + '@' + domain
+    if dormant:
+        titleStr += ' 💤'
     avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'

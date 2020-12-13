@@ -67,6 +67,7 @@ from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
 from happening import saveEventPost
 from delete import removeOldHashtags
+from follow import isFollowingActor
 
 
 def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
@@ -199,6 +200,7 @@ def validInbox(baseDir: str, nickname: str, domain: str) -> bool:
             if 'postNickname' in open(filename).read():
                 print('queue file incorrectly saved to ' + filename)
                 return False
+        break
     return True
 
 
@@ -223,6 +225,7 @@ def validInboxFilenames(baseDir: str, nickname: str, domain: str,
                 print('Expected: ' + expectedStr)
                 print('Invalid filename: ' + filename)
                 return False
+        break
     return True
 
 
@@ -2066,6 +2069,38 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
     return False
 
 
+def updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
+    """Updates the time when the given handle last saw the given actor
+    This can later be used to indicate if accounts are dormant/abandoned/moved
+    """
+    if '@' not in handle:
+        return
+    nickname = handle.split('@')[0]
+    domain = handle.split('@')[1]
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(accountPath):
+        return
+    if not isFollowingActor(baseDir, nickname, domain, actor):
+        return
+    lastSeenPath = accountPath + '/lastseen'
+    if not os.path.isdir(lastSeenPath):
+        os.mkdir(lastSeenPath)
+    lastSeenFilename = lastSeenPath + '/' + actor.replace('/', '#') + '.txt'
+    currTime = datetime.datetime.utcnow()
+    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    # has the value changed?
+    if os.path.isfile(lastSeenFilename):
+        with open(lastSeenFilename, 'r') as lastSeenFile:
+            daysSinceEpochFile = lastSeenFile.read()
+            if int(daysSinceEpochFile) == daysSinceEpoch:
+                # value hasn't changed, so we can save writing anything to file
+                return
+    with open(lastSeenFilename, 'w+') as lastSeenFile:
+        lastSeenFile.write(str(daysSinceEpoch))
+
+
 def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                       session, keyId: str, handle: str, messageJson: {},
                       baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2085,6 +2120,8 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
     actor = keyId
     if '#' in actor:
         actor = keyId.split('#')[0]
+
+    updateLastSeen(baseDir, handle, actor)
 
     isGroup = groupHandle(baseDir, handle)
 
@@ -2436,6 +2473,7 @@ def clearQueueItems(baseDir: str, queue: []) -> None:
                         ctr += 1
                     except BaseException:
                         pass
+        break
     if ctr > 0:
         print('Removed ' + str(ctr) + ' inbox queue items')
 
@@ -2452,6 +2490,7 @@ def restoreQueueItems(baseDir: str, queue: []) -> None:
             for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
                 for qfile in queuefiles:
                     queue.append(os.path.join(queueDir, qfile))
+        break
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
