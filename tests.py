@@ -296,8 +296,10 @@ def createServerAlice(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
+    dormantMonths = 3
     print('Server running: Alice')
-    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
+    runDaemon(dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
@@ -364,8 +366,10 @@ def createServerBob(path: str, domain: str, port: int,
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
+    dormantMonths = 3
     print('Server running: Bob')
-    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
+    runDaemon(dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
@@ -406,8 +410,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     i2pDomain = None
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
+    dormantMonths = 3
     print('Server running: Eve')
-    runDaemon(maxNewswirePosts, allowLocalNetworkAccess,
+    runDaemon(dormantMonths, maxNewswirePosts,
+              allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,

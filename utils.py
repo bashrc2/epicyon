@@ -19,6 +19,33 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
+              dormantMonths=3) -> bool:
+    """Is the given followed actor dormant, from the standpoint
+    of the given account
+    """
+    lastSeenFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/lastseen/' + actor.replace('/', '#') + '.txt'
+
+    if not os.path.isfile(lastSeenFilename):
+        return False
+
+    with open(lastSeenFilename, 'r') as lastSeenFile:
+        daysSinceEpochStr = lastSeenFile.read()
+        if not daysSinceEpochStr:
+            return False
+        if not daysSinceEpochStr.isdigit():
+            return False
+        currTime = datetime.datetime.utcnow()
+        currDaysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+        timeDiffMonths = \
+            int((currDaysSinceEpoch - int(daysSinceEpochStr)) / 30)
+        if timeDiffMonths >= dormantMonths:
+            return True
+    return False
+
+
 def getHashtagCategory(baseDir: str, hashtag: str) -> str:
     """Returns the category for the hashtag
     """

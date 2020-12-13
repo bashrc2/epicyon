@@ -6491,6 +6491,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -6570,6 +6571,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 YTReplacementDomain,
                                                 showPublishedDateOnly,
                                                 self.server.newswire,
+                                                self.server.dormantMonths,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -8258,6 +8260,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -8349,6 +8352,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -8440,6 +8444,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.dormantMonths,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -8506,6 +8511,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
                                 self.server.newswire,
+                                self.server.dormantMonths,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -12926,7 +12932,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
                 tokensLookup[token] = nickname
 
 
-def runDaemon(maxNewswirePosts: int,
+def runDaemon(dormantMonths: int,
+              maxNewswirePosts: int,
               allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
               publishButtonAtTop: bool,
@@ -13119,6 +13126,10 @@ def runDaemon(maxNewswirePosts: int,
 
     # maximum size of a hashtag category, in K
     httpd.maxCategoriesFeedItemSizeKb = 1024
+
+    # how many months does a followed account need to be unseen
+    # for it to be considered dormant?
+    httpd.dormantMonths = dormantMonths
 
     if registration == 'open':
         httpd.registration = True

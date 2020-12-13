@@ -116,6 +116,11 @@ parser.add_argument('--postsPerSource',
                     dest='maxNewswirePostsPerSource', type=int,
                     default=4,
                     help='Maximum newswire posts per feed or account')
+parser.add_argument('--dormantMonths',
+                    dest='dormantMonths', type=int,
+                    default=3,
+                    help='How many months does a followed account need to ' +
+                    'be unseen for before being considered dormant')
 parser.add_argument('--maxNewswirePosts',
                     dest='maxNewswirePosts', type=int,
                     default=20,
@@ -2080,7 +2085,8 @@ if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.maxNewswirePosts,
+    runDaemon(args.dormantMonths,
+              args.maxNewswirePosts,
               args.allowLocalNetworkAccess,
               args.maxFeedItemSizeKb,
               args.publishButtonAtTop,
