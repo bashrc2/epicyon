@@ -572,7 +572,7 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                              xmlStr, moderated, mirrored,
                              maxPostsPerSource, maxFeedItemSizeKb,
                              maxCategoriesFeedItemSizeKb)
-    elif '<rdf:RDF>' in xmlStr:
+    elif '<?xml version="1.0"' in xmlStr:
         return xml1StrToDict(baseDir, domain,
                              xmlStr, moderated, mirrored,
                              maxPostsPerSource, maxFeedItemSizeKb,
@@ -608,7 +608,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         print('ERROR: getRSS url should be a string')
         return None
     headers = {
-        'Accept': 'text/xml; charset=UTF-8'
+        'Accept': 'text/xml, application/xml; charset=UTF-8'
     }
     params = None
     sessionParams = {}
