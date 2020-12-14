@@ -1,4 +1,6 @@
 {
+    "post-separator-margin-top": "10px",
+    "post-separator-margin-bottom": "10px",
     "time-color": "grey",
     "event-color": "white",
     "login-bg-color": "#567726",

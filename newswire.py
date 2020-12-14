@@ -258,7 +258,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                   maxPostsPerSource: int,
                   maxFeedItemSizeKb: int,
                   maxCategoriesFeedItemSizeKb: int) -> {}:
-    """Converts an xml 2.0 string to a dictionary
+    """Converts an xml RSS 2.0 string to a dictionary
     """
     if '<item>' not in xmlStr:
         return {}
@@ -328,7 +328,90 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             if postCtr >= maxPostsPerSource:
                 break
     if postCtr > 0:
-        print('Added ' + str(postCtr) + ' rss feed items to newswire')
+        print('Added ' + str(postCtr) + ' rss 2.0 feed items to newswire')
+    return result
+
+
+def xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
+                  moderated: bool, mirrored: bool,
+                  maxPostsPerSource: int,
+                  maxFeedItemSizeKb: int,
+                  maxCategoriesFeedItemSizeKb: int) -> {}:
+    """Converts an xml RSS 1.0 string to a dictionary
+    https://validator.w3.org/feed/docs/rss1.html
+    """
+    itemStr = '<item'
+    if itemStr not in xmlStr:
+        return {}
+    result = {}
+
+    # is this an rss feed containing hashtag categories?
+    if '<title>#categories</title>' in xmlStr:
+        xml2StrToHashtagCategories(baseDir, xmlStr,
+                                   maxCategoriesFeedItemSizeKb)
+        return {}
+
+    rssItems = xmlStr.split(itemStr)
+    postCtr = 0
+    maxBytes = maxFeedItemSizeKb * 1024
+    for rssItem in rssItems:
+        if not rssItem:
+            continue
+        if len(rssItem) > maxBytes:
+            print('WARN: rss 1.0 feed item is too big')
+            continue
+        if rssItem.startswith('s>'):
+            continue
+        if '<title>' not in rssItem:
+            continue
+        if '</title>' not in rssItem:
+            continue
+        if '<link>' not in rssItem:
+            continue
+        if '</link>' not in rssItem:
+            continue
+        if '<dc:date>' not in rssItem:
+            continue
+        if '</dc:date>' not in rssItem:
+            continue
+        title = rssItem.split('<title>')[1]
+        title = removeCDATA(title.split('</title>')[0])
+        description = ''
+        if '<description>' in rssItem and '</description>' in rssItem:
+            description = rssItem.split('<description>')[1]
+            description = removeCDATA(description.split('</description>')[0])
+        else:
+            if '<media:description>' in rssItem and \
+               '</media:description>' in rssItem:
+                description = rssItem.split('<media:description>')[1]
+                description = description.split('</media:description>')[0]
+                description = removeCDATA(description)
+        link = rssItem.split('<link>')[1]
+        link = link.split('</link>')[0]
+        if '://' not in link:
+            continue
+        itemDomain = link.split('://')[1]
+        if '/' in itemDomain:
+            itemDomain = itemDomain.split('/')[0]
+        if isBlockedDomain(baseDir, itemDomain):
+            continue
+        pubDate = rssItem.split('<dc:date>')[1]
+        pubDate = pubDate.split('</dc:date>')[0]
+
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
+            postFilename = ''
+            votesStatus = []
+            addNewswireDictEntry(baseDir, domain,
+                                 result, pubDateStr,
+                                 title, link,
+                                 votesStatus, postFilename,
+                                 description, moderated, mirrored)
+            postCtr += 1
+            if postCtr >= maxPostsPerSource:
+                break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) + ' rss 1.0 feed items to newswire')
     return result
 
 
@@ -489,6 +572,11 @@ def xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                              xmlStr, moderated, mirrored,
                              maxPostsPerSource, maxFeedItemSizeKb,
                              maxCategoriesFeedItemSizeKb)
+    elif '<?xml version="1.0"' in xmlStr:
+        return xml1StrToDict(baseDir, domain,
+                             xmlStr, moderated, mirrored,
+                             maxPostsPerSource, maxFeedItemSizeKb,
+                             maxCategoriesFeedItemSizeKb)
     elif 'xmlns="http://www.w3.org/2005/Atom"' in xmlStr:
         return atomFeedToDict(baseDir, domain,
                               xmlStr, moderated, mirrored,
@@ -520,7 +608,7 @@ def getRSS(baseDir: str, domain: str, session, url: str,
         print('ERROR: getRSS url should be a string')
         return None
     headers = {
-        'Accept': 'text/xml; charset=UTF-8'
+        'Accept': 'text/xml, application/xml; charset=UTF-8'
     }
     params = None
     sessionParams = {}
