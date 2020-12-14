@@ -328,7 +328,7 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             if postCtr >= maxPostsPerSource:
                 break
     if postCtr > 0:
-        print('Added ' + str(postCtr) + ' rss feed items to newswire')
+        print('Added ' + str(postCtr) + ' rss 2.0 feed items to newswire')
     return result
 
 
@@ -340,7 +340,8 @@ def xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
     """Converts an xml RSS 1.0 string to a dictionary
     https://validator.w3.org/feed/docs/rss1.html
     """
-    if '<item' not in xmlStr:
+    itemStr = '<item'
+    if itemStr not in xmlStr:
         return {}
     result = {}
 
@@ -350,14 +351,16 @@ def xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
                                    maxCategoriesFeedItemSizeKb)
         return {}
 
-    rssItems = xmlStr.split('<item')
+    rssItems = xmlStr.split(itemStr)
     postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     for rssItem in rssItems:
         if not rssItem:
             continue
         if len(rssItem) > maxBytes:
-            print('WARN: rss feed item is too big')
+            print('WARN: rss 1.0 feed item is too big')
+            continue
+        if rssItem.startswith('s>'):
             continue
         if '<title>' not in rssItem:
             continue
