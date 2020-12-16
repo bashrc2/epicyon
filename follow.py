@@ -535,10 +535,7 @@ def storeFollowRequest(baseDir: str,
 
     approveHandle = nickname + '@' + domain
     domainFull = getFullDomain(domain, fromPort)
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in domain:
-                approveHandle = nickname + '@' + domain + ':' + str(fromPort)
+    approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
 
     followersFilename = accountsDir + '/followers.txt'
     if os.path.isfile(followersFilename):
@@ -628,12 +625,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         return False
     domain, tempPort = getDomainFromActor(messageJson['actor'])
     fromPort = port
-    domainFull = domain
+    domainFull = getFullDomain(domain, tempPort)
     if tempPort:
         fromPort = tempPort
-        if tempPort != 80 and tempPort != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(tempPort)
     if not domainPermitted(domain, federationList):
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
@@ -901,12 +895,7 @@ def sendFollowRequest(session, baseDir: str,
         return None
 
     fullDomain = getFullDomain(domain, port)
-    followActor = httpPrefix + '://' + domain + '/users/' + nickname
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                followActor = httpPrefix + '://' + \
-                    fullDomain + '/users/' + nickname
+    followActor = httpPrefix + '://' + fullDomain + '/users/' + nickname
 
     requestDomain = getFullDomain(followDomain, followPort)
 
