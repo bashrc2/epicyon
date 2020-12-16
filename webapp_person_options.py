@@ -206,26 +206,33 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += \
         '    <a href="' + backPath + '"><button type="button" ' + \
         'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
-        '</button></a>'
+        '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>'
+        translate['View'] + '</button>\n'
     optionsStr += donateStr
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>'
+        followStr + '">' + translate[followStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>'
+        blockStr + '">' + translate[blockStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>'
+        translate['DM'] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>'
+        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>'
+        translate['Report'] + '</button>\n'
+
+    if isModerator(baseDir, nickname):
+        optionsStr += '    <input type="hidden" ' + \
+            'name="moderationAction" value="' + handleShown + '"><br>\n'
+        optionsStr += \
+            '    <button type="submit" class="button" name="submitInfo">' + \
+            translate['Info'] + '</button>\n'
 
     personNotes = ''
     personNotesFilename = \
