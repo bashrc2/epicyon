@@ -1781,10 +1781,7 @@ def sendPostViaServer(projectVersion: str,
         print('WARN: No session for sendPostViaServer')
         return 6
 
-    if toPort:
-        if toPort != 80 and toPort != 443:
-            if ':' not in fromDomain:
-                fromDomain = fromDomain + ':' + str(fromPort)
+    fromDomain = getFullDomain(fromDomain, fromPort)
 
     handle = httpPrefix + '://' + fromDomain + '/@' + fromNickname
 
