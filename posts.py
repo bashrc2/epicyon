@@ -3461,8 +3461,6 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                                   projectVersion, httpPrefix,
                                   domain)
     for blockedDomain, postUrlList in blockedPosts.items():
-        if not domainsInfo.get(blockedDomain):
-            continue
         domainsInfo[blockedDomain] += postUrlList
 
     return domainsInfo

@@ -92,9 +92,13 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
         if isBlockedDomain(baseDir, postDomain):
             blockedPostsLinks = ''
+            urlCtr = 0
             for url in blockedPostUrls:
+                if urlCtr > 0:
+                    blockedPostsLinks += '<br>'
                 blockedPostsLinks += \
-                    '<a href="' + url + '">' + url + '</a><br>'
+                    '<a href="' + url + '">' + url + '</a>'
+                urlCtr += 1
             blockedPostsHtml = ''
             if blockedPostsLinks:
                 blockedPostsHtml = \
