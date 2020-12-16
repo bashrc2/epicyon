@@ -22,6 +22,7 @@ except ImportError:
 import base64
 from time import gmtime, strftime
 import datetime
+from utils import getFullDomain
 
 
 def messageContentDigest(messageBodyJsonStr: str) -> str:
@@ -40,15 +41,9 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
-    if toPort:
-        if toPort != 80 and toPort != 443:
-            if ':' not in toDomain:
-                toDomain = toDomain + ':' + str(port)
+    toDomain = getFullDomain(toDomain, toPort)
 
     if not dateStr:
         dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())

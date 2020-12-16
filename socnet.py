@@ -10,6 +10,7 @@ from session import createSession
 from webfinger import webfingerHandle
 from posts import getPersonBox
 from posts import getPostDomains
+from utils import getFullDomain
 
 
 def instancesGraph(baseDir: str, handles: str,
@@ -46,11 +47,7 @@ def instancesGraph(baseDir: str, handles: str,
         nickname = handle.split('@')[0]
         domain = handle.split('@')[1]
 
-        domainFull = domain
-        if port:
-            if port != 80 and port != 443:
-                if ':' not in domain:
-                    domainFull = domain + ':' + str(port)
+        domainFull = getFullDomain(domain, port)
         handle = httpPrefix + "://" + domainFull + "/@" + nickname
         wfRequest = \
             webfingerHandle(session, handle, httpPrefix,
