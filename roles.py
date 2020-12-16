@@ -11,6 +11,7 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
+from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
@@ -259,12 +260,7 @@ def sendRoleViaServer(baseDir: str, session,
         print('WARN: No session for sendRoleViaServer')
         return 6
 
-    delegatorDomainFull = delegatorDomain
-    if delegatorPort:
-        if delegatorPort != 80 and delegatorPort != 443:
-            if ':' not in delegatorDomain:
-                delegatorDomainFull = \
-                    delegatorDomain + ':' + str(delegatorPort)
+    delegatorDomainFull = getFullDomain(delegatorDomain, delegatorPort)
 
     toUrl = \
         httpPrefix + '://' + delegatorDomainFull + '/users/' + nickname

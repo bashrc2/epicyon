@@ -33,6 +33,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
@@ -127,11 +128,7 @@ def testHttpsigBase(withDigest):
     }
     messageBodyJsonStr = json.dumps(messageBodyJson)
 
-    headersDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                headersDomain = domain + ':' + str(port)
+    headersDomain = getFullDomain(domain, port)
 
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath = '/inbox'

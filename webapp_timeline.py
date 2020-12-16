@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import time
+from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
@@ -191,10 +192,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         eventsButton = 'buttonselected'
 
     # get the full domain, including any port number
-    fullDomain = domain
-    if port != 80 and port != 443:
-        if ':' not in domain:
-            fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     usersPath = '/users/' + nickname
     actor = httpPrefix + '://' + fullDomain + usersPath
@@ -399,10 +397,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     tlStr += '  <tbody>\n'
     tlStr += '    <tr>\n'
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     # left column
     leftColumnStr = \
@@ -655,10 +650,7 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     sharesJson, lastPage = \
         sharesTimelineJson(actor, pageNumber, itemsPerPage,
                            baseDir, maxSharesPerAccount)
-    domainFull = domain
-    if port != 80 and port != 443:
-        if ':' not in domain:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     timelineStr = ''
 

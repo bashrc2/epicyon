@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from shutil import copyfile
+from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -35,10 +36,7 @@ def htmlConfirmDelete(cssCache: {},
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
@@ -103,10 +101,7 @@ def htmlConfirmRemoveSharedItem(cssCache: {}, translate: {}, baseDir: str,
     itemID = getValidSharedItemID(shareName)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     sharesFile = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/shares.json'
     if not os.path.isfile(sharesFile):

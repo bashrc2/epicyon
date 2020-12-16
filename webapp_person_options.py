@@ -11,6 +11,7 @@ from shutil import copyfile
 from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
+from utils import getFullDomain
 from utils import isDormant
 from utils import removeHtml
 from utils import getDomainFromActor
@@ -45,10 +46,7 @@ def htmlPersonOptions(defaultTimeline: str,
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-    optionsDomainFull = optionsDomain
-    if optionsPort:
-        if optionsPort != 80 and optionsPort != 443:
-            optionsDomainFull = optionsDomain + ':' + str(optionsPort)
+    optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
 
     if os.path.isfile(baseDir + '/accounts/options-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/options-background.jpg'):
@@ -74,10 +72,7 @@ def htmlPersonOptions(defaultTimeline: str,
                           dormantMonths)
 
         optionsNickname = getNicknameFromActor(optionsActor)
-        optionsDomainFull = optionsDomain
-        if optionsPort:
-            if optionsPort != 80 and optionsPort != 443:
-                optionsDomainFull = optionsDomain + ':' + str(optionsPort)
+        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
         if isBlocked(baseDir, nickname, domain,
                      optionsNickname, optionsDomainFull):
             blockStr = 'Block'
