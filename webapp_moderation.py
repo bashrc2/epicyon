@@ -87,15 +87,12 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     infoForm += '<div class="accountInfoDomains">'
     usersPath = '/users/' + nickname + '/accountinfo'
     ctr = 1
-    for postDomain, blockedPosts in domainDict.items():
+    for postDomain, blockedPostUrls in domainDict.items():
         infoForm += '<a href="' + \
             httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
         if isBlockedDomain(baseDir, postDomain):
             blockedPostsLinks = ''
-            for blockedPostJson in blockedPosts:
-                if not blockedPostJson['object'].get('url'):
-                    continue
-                url = blockedPostJson['object']['url']
+            for url in blockedPostUrls:
                 blockedPostsLinks += \
                     '<a href="' + url + '">' + url + '</a><br>'
             blockedPostsHtml = ''

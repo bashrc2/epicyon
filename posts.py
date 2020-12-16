@@ -547,11 +547,13 @@ def getPostsForBlockedDomains(baseDir: str,
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
                     getDomainFromActor(item['object']['inReplyTo'])
-                if isBlockedDomain(baseDir, postDomain):
+                if isBlockedDomain(baseDir, postDomain) and \
+                   item['object'].get('url'):
+                    url = item['object']['url']
                     if not blockedPosts.get(postDomain):
-                        blockedPosts[postDomain] = [item]
+                        blockedPosts[postDomain] = [url]
                     else:
-                        blockedPosts[postDomain].append(item)
+                        blockedPosts[postDomain].append(url)
 
         if item['object'].get('tag'):
             for tagItem in item['object']['tag']:
@@ -560,11 +562,13 @@ def getPostsForBlockedDomains(baseDir: str,
                     if tagItem.get('href'):
                         postDomain, postPort = \
                             getDomainFromActor(tagItem['href'])
-                        if isBlockedDomain(baseDir, postDomain):
+                        if isBlockedDomain(baseDir, postDomain) and \
+                           item['object'].get('url'):
+                            url = item['object']['url']
                             if not blockedPosts.get(postDomain):
-                                blockedPosts[postDomain] = [item]
+                                blockedPosts[postDomain] = [url]
                             else:
-                                blockedPosts[postDomain].append(item)
+                                blockedPosts[postDomain].append(url)
     return blockedPosts
 
 
@@ -3456,10 +3460,10 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                                   debug,
                                   projectVersion, httpPrefix,
                                   domain)
-    for blockedDomain, postList in blockedPosts.items():
+    for blockedDomain, postUrlList in blockedPosts.items():
         if not domainsInfo.get(blockedDomain):
             continue
-        domainsInfo[blockedDomain] = postList.copy()
+        domainsInfo[blockedDomain] += postUrlList
 
     return domainsInfo
 
