@@ -102,12 +102,7 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
     """Note that the domain is the destination, not the sender
     """
     contentType = 'application/activity+json'
-    headerDomain = toDomain
-
-    if toPort:
-        if toPort != 80 and toPort != 443:
-            if ':' not in headerDomain:
-                headerDomain = headerDomain + ':' + str(toPort)
+    headerDomain = getFullDomain(toDomain, toPort)
 
     dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
