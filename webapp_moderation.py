@@ -98,10 +98,12 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 url = blockedPostJson['object']['url']
                 blockedPostsLinks += \
                     '<a href="' + url + '">' + url + '</a><br>'
-            blockedPostsHtml = \
-                getContentWarningButton('blockNumber' + str(ctr),
-                                        translate, blockedPostsLinks)
-            ctr += 1
+            blockedPostsHtml = ''
+            if blockedPostsLinks:
+                blockedPostsHtml = \
+                    getContentWarningButton('blockNumber' + str(ctr),
+                                            translate, blockedPostsLinks)
+                ctr += 1
 
             infoForm += \
                 '<a href="' + usersPath + '?unblockdomain=' + postDomain + \
