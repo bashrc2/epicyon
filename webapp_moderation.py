@@ -9,8 +9,9 @@ __status__ = "Production"
 import os
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from posts import getPublicPostDomains
+from posts import getPublicPostInfo
 from webapp_timeline import htmlTimeline
+from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from blocking import isBlockedDomain
@@ -78,23 +79,36 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     infoForm += translate[msgStr1] + '</center><br><br>'
 
     proxyType = 'tor'
-    domainList = []
-    domainList = getPublicPostDomains(None,
-                                      baseDir, searchNickname, searchDomain,
-                                      proxyType, searchPort,
-                                      httpPrefix, debug,
-                                      __version__, domainList)
+    domainDict = getPublicPostInfo(None,
+                                   baseDir, searchNickname, searchDomain,
+                                   proxyType, searchPort,
+                                   httpPrefix, debug,
+                                   __version__)
     infoForm += '<div class="accountInfoDomains">'
     usersPath = '/users/' + nickname + '/accountinfo'
-    for postDomain in domainList:
+    ctr = 1
+    for postDomain, blockedPosts in domainDict.items():
         infoForm += '<a href="' + \
             httpPrefix + '://' + postDomain + '">' + postDomain + '</a> '
         if isBlockedDomain(baseDir, postDomain):
+            blockedPostsLinks = ''
+            for blockedPostJson in blockedPosts:
+                if not blockedPostJson['object'].get('url'):
+                    continue
+                url = blockedPostJson['object']['url']
+                blockedPostsLinks += \
+                    '<a href="' + url + '">' + url + '</a><br>'
+            blockedPostsHtml = \
+                getContentWarningButton('blockNumber' + str(ctr),
+                                        translate, blockedPostsLinks)
+            ctr += 1
+
             infoForm += \
                 '<a href="' + usersPath + '?unblockdomain=' + postDomain + \
                 '?handle=' + searchHandle + '">'
             infoForm += '<button class="buttonhighlighted"><span>' + \
-                translate['Unblock'] + '</span></button></a>'
+                translate['Unblock'] + '</span></button></a> ' + \
+                blockedPostsHtml
         else:
             infoForm += \
                 '<a href="' + usersPath + '?blockdomain=' + postDomain + \

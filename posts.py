@@ -60,6 +60,7 @@ from content import replaceEmojiFromTags
 from content import removeTextFormatting
 from auth import createBasicAuthHeader
 from blocking import isBlocked
+from blocking import isBlockedDomain
 from filters import isFiltered
 from git import convertPostToPatch
 from jsonldsig import jsonldSign
@@ -505,6 +506,66 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                         if postDomain not in postDomains:
                             postDomains.append(postDomain)
     return postDomains
+
+
+def getPostsForBlockedDomains(baseDir: str,
+                              session, outboxUrl: str, maxPosts: int,
+                              maxMentions: int,
+                              maxEmoji: int, maxAttachments: int,
+                              federationList: [],
+                              personCache: {},
+                              debug: bool,
+                              projectVersion: str, httpPrefix: str,
+                              domain: str) -> {}:
+    """Returns a dictionary of posts for blocked domains
+    """
+    if not outboxUrl:
+        return {}
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if '/outbox/' in outboxUrl:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+
+    blockedPosts = {}
+
+    i = 0
+    userFeed = parseUserFeed(session, outboxUrl, asHeader,
+                             projectVersion, httpPrefix, domain)
+    for item in userFeed:
+        i += 1
+        if i > maxPosts:
+            break
+        if not item.get('object'):
+            continue
+        if not isinstance(item['object'], dict):
+            continue
+        if item['object'].get('inReplyTo'):
+            if isinstance(item['object']['inReplyTo'], str):
+                postDomain, postPort = \
+                    getDomainFromActor(item['object']['inReplyTo'])
+                if isBlockedDomain(baseDir, postDomain):
+                    if not blockedPosts.get(postDomain):
+                        blockedPosts[postDomain] = [item]
+                    else:
+                        blockedPosts[postDomain].append(item)
+
+        if item['object'].get('tag'):
+            for tagItem in item['object']['tag']:
+                tagType = tagItem['type'].lower()
+                if tagType == 'mention':
+                    if tagItem.get('href'):
+                        postDomain, postPort = \
+                            getDomainFromActor(tagItem['href'])
+                        if isBlockedDomain(baseDir, postDomain):
+                            if not blockedPosts.get(postDomain):
+                                blockedPosts[postDomain] = [item]
+                            else:
+                                blockedPosts[postDomain].append(item)
+    return blockedPosts
 
 
 def deleteAllPosts(baseDir: str,
@@ -3338,6 +3399,69 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                        projectVersion, httpPrefix, domain, domainList)
     postDomains.sort()
     return postDomains
+
+
+def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
+                      proxyType: str, port: int, httpPrefix: str,
+                      debug: bool, projectVersion: str) -> []:
+    """ Returns a dict of domains referenced within public posts
+    """
+    if not session:
+        session = createSession(proxyType)
+    if not session:
+        return {}
+    personCache = {}
+    cachedWebfingers = {}
+    federationList = []
+
+    domainFull = getFullDomain(domain, port)
+    handle = httpPrefix + "://" + domainFull + "/@" + nickname
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion)
+    if not wfRequest:
+        return {}
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return {}
+
+    (personUrl, pubKeyId, pubKey,
+     personId, sharedInbox,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache,
+                                            projectVersion, httpPrefix,
+                                            nickname, domain, 'outbox')
+    maxMentions = 99
+    maxEmoji = 99
+    maxAttachments = 5
+    maxPosts = 64
+    postDomains = \
+        getPostDomains(session, personUrl, maxPosts, maxMentions, maxEmoji,
+                       maxAttachments, federationList,
+                       personCache, debug,
+                       projectVersion, httpPrefix, domain, [])
+    postDomains.sort()
+    domainsInfo = {}
+    for d in postDomains:
+        if not domainsInfo.get(d):
+            domainsInfo[d] = []
+
+    blockedPosts = \
+        getPostsForBlockedDomains(baseDir, session, personUrl, maxPosts,
+                                  maxMentions,
+                                  maxEmoji, maxAttachments,
+                                  federationList,
+                                  personCache,
+                                  debug,
+                                  projectVersion, httpPrefix,
+                                  domain)
+    for blockedDomain, postList in blockedPosts.items():
+        if not domainsInfo.get(blockedDomain):
+            continue
+        domainsInfo[blockedDomain] = postList.copy()
+
+    return domainsInfo
 
 
 def getPublicPostDomainsBlocked(session, baseDir: str,
