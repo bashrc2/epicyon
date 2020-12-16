@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import getFullDomain
 from utils import removeIdEnding
 from utils import removePostFromCache
 from utils import urlPermitted
@@ -237,11 +238,7 @@ def bookmark(recentPostsCache: {},
     if not urlPermitted(objectUrl, federationList):
         return None
 
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -298,11 +295,7 @@ def bookmarkPost(recentPostsCache: {},
                  debug: bool, projectVersion: str) -> {}:
     """Bookmarks a given status post. This is only used by unit tests
     """
-    bookmarkedomain = bookmarkedomain
-    if bookmarkPort:
-        if bookmarkPort != 80 and bookmarkPort != 443:
-            if ':' not in bookmarkedomain:
-                bookmarkedomain = bookmarkedomain + ':' + str(bookmarkPort)
+    bookmarkedomain = getFullDomain(bookmarkedomain, bookmarkPort)
 
     actorBookmarked = httpPrefix + '://' + bookmarkedomain + \
         '/users/' + bookmarkNickname
@@ -333,11 +326,7 @@ def undoBookmark(recentPostsCache: {},
     if not urlPermitted(objectUrl, federationList):
         return None
 
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -396,11 +385,7 @@ def undoBookmarkPost(session, baseDir: str, federationList: [],
                      debug: bool) -> {}:
     """Removes a bookmarked post
     """
-    bookmarkedomain = bookmarkedomain
-    if bookmarkPort:
-        if bookmarkPort != 80 and bookmarkPort != 443:
-            if ':' not in bookmarkedomain:
-                bookmarkedomain = bookmarkedomain + ':' + str(bookmarkPort)
+    bookmarkedomain = getFullDomain(bookmarkedomain, bookmarkPort)
 
     objectUrl = httpPrefix + '://' + bookmarkedomain + \
         '/users/' + bookmarkNickname + \
@@ -425,11 +410,7 @@ def sendBookmarkViaServer(baseDir: str, session,
         print('WARN: No session for sendBookmarkViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     newBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -503,11 +484,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
         print('WARN: No session for sendUndoBookmarkViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     newUndoBookmarkJson = {
         "@context": "https://www.w3.org/ns/activitystreams",

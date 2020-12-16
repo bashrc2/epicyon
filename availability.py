@@ -11,6 +11,7 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
+from utils import getFullDomain
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import loadJson
@@ -85,11 +86,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
         print('WARN: No session for sendAvailabilityViaServer')
         return 6
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     toUrl = httpPrefix + '://' + domainFull + '/users/' + nickname
     ccUrl = httpPrefix + '://' + domainFull + '/users/' + nickname + \

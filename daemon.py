@@ -172,6 +172,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getFullDomain
 from utils import removeHtml
 from utils import setHashtagCategory
 from utils import isEditor
@@ -1501,12 +1502,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
-                        fullBlockDomain = blockDomain
-                        if blockPort:
-                            if blockPort != 80 and blockPort != 443:
-                                if ':' not in blockDomain:
-                                    fullBlockDomain = \
-                                        blockDomain + ':' + str(blockPort)
+                        fullBlockDomain = getFullDomain(blockDomain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -1524,12 +1520,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
-                        fullBlockDomain = blockDomain
-                        if blockPort:
-                            if blockPort != 80 and blockPort != 443:
-                                if ':' not in blockDomain:
-                                    fullBlockDomain = \
-                                        blockDomain + ':' + str(blockPort)
+                        fullBlockDomain = getFullDomain(blockDomain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -1692,12 +1683,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-        optionsDomainFull = optionsDomain
-        if optionsPort:
-            if optionsPort != 80 and optionsPort != 443:
-                if ':' not in optionsDomain:
-                    optionsDomainFull = optionsDomain + ':' + \
-                        str(optionsPort)
+        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
         if chooserNickname == optionsNickname and \
            optionsDomain == domain and \
            optionsPort == port:
@@ -2011,11 +1997,7 @@ class PubServer(BaseHTTPRequestHandler):
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
                 getDomainFromActor(followingActor)
-            followingDomainFull = followingDomain
-            if followingPort:
-                if followingPort != 80 and followingPort != 443:
-                    followingDomainFull = \
-                        followingDomain + ':' + str(followingPort)
+            followingDomainFull = getFullDomain(followingDomain, followingPort)
             if followerNickname == followingNickname and \
                followingDomain == domain and \
                followingPort == port:
@@ -2208,12 +2190,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockingDomain, blockingPort = \
                 getDomainFromActor(blockingActor)
-            blockingDomainFull = blockingDomain
-            if blockingPort:
-                if blockingPort != 80 and blockingPort != 443:
-                    if ':' not in blockingDomain:
-                        blockingDomainFull = \
-                            blockingDomain + ':' + str(blockingPort)
+            blockingDomainFull = getFullDomain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
                blockingPort == port:
@@ -2297,12 +2274,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockingDomain, blockingPort = \
                 getDomainFromActor(blockingActor)
-            blockingDomainFull = blockingDomain
-            if blockingPort:
-                if blockingPort != 80 and blockingPort != 443:
-                    if ':' not in blockingDomain:
-                        blockingDomainFull = \
-                            blockingDomain + ':' + str(blockingPort)
+            blockingDomainFull = getFullDomain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
                blockingPort == port:
@@ -13154,11 +13126,7 @@ def runDaemon(dormantMonths: int,
     httpd.maxPostsInBox = 32000
     httpd.domain = domain
     httpd.port = port
-    httpd.domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                httpd.domainFull = domain + ':' + str(port)
+    httpd.domainFull = getFullDomain(domain, port)
     saveDomainQrcode(baseDir, httpPrefix, httpd.domainFull)
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug
