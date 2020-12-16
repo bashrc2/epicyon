@@ -115,8 +115,10 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             infoForm += \
                 '<a href="' + usersPath + '?blockdomain=' + postDomain + \
                 '?handle=' + searchHandle + '">'
-            infoForm += '<button class="button"><span>' + \
-                translate['Block'] + '</span></button></a>'
+            if postDomain != domain:
+                infoForm += '<button class="button"><span>' + \
+                    translate['Block'] + '</span></button>'
+            infoForm += '</a>'
         infoForm += '<br>'
 
     infoForm += '</div>'
