@@ -228,8 +228,6 @@ def htmlPersonOptions(defaultTimeline: str,
         translate['Report'] + '</button>\n'
 
     if isModerator(baseDir, nickname):
-        optionsStr += '    <input type="hidden" ' + \
-            'name="moderationAction" value="' + handleShown + '"><br>\n'
         optionsStr += \
             '    <button type="submit" class="button" name="submitInfo">' + \
             translate['Info'] + '</button>\n'

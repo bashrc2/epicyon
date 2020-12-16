@@ -1877,6 +1877,28 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        # person options screen, Info button
+        # See htmlPersonOptions
+        if '&submitInfo=' in optionsConfirmParams:
+            if isModerator(self.server.baseDir, chooserNickname):
+                if debug:
+                    print('Showing info for ' + optionsActor)
+                msg = \
+                    htmlAccountInfo(self.server.cssCache,
+                                    self.server.translate,
+                                    self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    chooserNickname,
+                                    self.server.domain,
+                                    self.server.port,
+                                    optionsActor,
+                                    self.server.debug)
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self.server.POSTbusy = False
+                return
+
         # person options screen, snooze button
         # See htmlPersonOptions
         if '&submitSnooze=' in optionsConfirmParams:
