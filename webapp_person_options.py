@@ -229,7 +229,8 @@ def htmlPersonOptions(defaultTimeline: str,
 
     if isModerator(baseDir, nickname):
         optionsStr += \
-            '    <button type="submit" class="button" name="submitInfo">' + \
+            '    <button type="submit" class="button" ' + \
+            'name="submitPersonInfo">' + \
             translate['Info'] + '</button>\n'
 
     personNotes = ''

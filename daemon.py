@@ -1879,7 +1879,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # person options screen, Info button
         # See htmlPersonOptions
-        if '&submitInfo=' in optionsConfirmParams:
+        if '&submitPersonInfo=' in optionsConfirmParams:
             if isModerator(self.server.baseDir, chooserNickname):
                 if debug:
                     print('Showing info for ' + optionsActor)
@@ -1897,6 +1897,9 @@ class PubServer(BaseHTTPRequestHandler):
                                   cookie, callingDomain)
                 self._write(msg)
                 self.server.POSTbusy = False
+                return
+            else:
+                self._404()
                 return
 
         # person options screen, snooze button
