@@ -1886,13 +1886,13 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlAccountInfo(self.server.cssCache,
                                     self.server.translate,
-                                    self.server.baseDir,
-                                    self.server.httpPrefix,
+                                    baseDir,
+                                    httpPrefix,
                                     chooserNickname,
-                                    self.server.domain,
+                                    domain,
                                     self.server.port,
                                     optionsActor,
-                                    self.server.debug)
+                                    self.server.debug).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
