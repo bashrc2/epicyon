@@ -446,6 +446,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                 'name="moderationAction" value="" autofocus><br>\n'
         tlStr += \
             '    <input type="submit" title="' + \
+            translate['Information about current blocks/suspensions'] + \
+            '" name="submitInfo" value="' + translate['Info'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
             translate['Remove the above item'] + \
             '" name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
@@ -466,10 +470,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '    <input type="submit" title="' + \
             translate['Unblock an account on another instance'] + \
             '" name="submitUnblock" value="' + translate['Unblock'] + '">\n'
-        tlStr += \
-            '    <input type="submit" title="' + \
-            translate['Information about current blocks/suspensions'] + \
-            '" name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += '</div>\n</form>\n'
 
     logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
