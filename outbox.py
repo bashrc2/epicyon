@@ -14,6 +14,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getDomainFromActor
 from blocking import isBlockedDomain
@@ -113,9 +114,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                           str(messageJson))
             return False
         testDomain, testPort = getDomainFromActor(messageJson['actor'])
-        if testPort:
-            if testPort != 80 and testPort != 443:
-                testDomain = testDomain + ':' + str(testPort)
+        testDomain = getFullDomain(testDomain, testPort)
         if isBlockedDomain(baseDir, testDomain):
             if debug:
                 print('DEBUG: domain is blocked: ' + messageJson['actor'])
