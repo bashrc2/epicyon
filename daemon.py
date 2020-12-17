@@ -5660,6 +5660,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if filename:
                         saveJson(newswire[dateStr][votesIndex],
                                  filename + '.votes')
+        else:
+            print('No newswire item with date: ' + dateStr + ' ' +
+                  str(newswire))
 
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr + '/' + \
