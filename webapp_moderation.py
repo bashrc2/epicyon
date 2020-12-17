@@ -79,6 +79,10 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     infoForm += translate[msgStr1] + '</center><br><br>'
 
     proxyType = 'tor'
+    if not os.path.isfile('/usr/bin/tor'):
+        proxyType = None
+    if domain.endswith('.i2p'):
+        proxyType = None
     domainDict = getPublicPostInfo(None,
                                    baseDir, searchNickname, searchDomain,
                                    proxyType, searchPort,
