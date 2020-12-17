@@ -12,6 +12,7 @@ from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
 from utils import getFullDomain
+from utils import getConfigParam
 from utils import isDormant
 from utils import removeHtml
 from utils import getDomainFromActor
@@ -183,8 +184,10 @@ def htmlPersonOptions(defaultTimeline: str,
 
     # checkbox for permission to post to newswire
     if optionsDomainFull == domainFull:
-        if isModerator(baseDir, nickname) and \
-           not isModerator(baseDir, optionsNickname):
+        adminNickname = getConfigParam(baseDir, 'admin')
+        if (nickname == adminNickname or
+            (isModerator(baseDir, nickname) and
+             not isModerator(baseDir, optionsNickname))):
             newswireBlockedFilename = \
                 baseDir + '/accounts/' + \
                 optionsNickname + '@' + optionsDomain + '/.nonewswire'
