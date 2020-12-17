@@ -1409,8 +1409,17 @@ class PubServer(BaseHTTPRequestHandler):
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if not isModerator(self.server.baseDir, nickname):
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorStr = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(actorStr + '/moderation',
+                                       cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
 
+        actorStr = httpPrefix + '://' + domainFull + usersPath
         length = int(self.headers['Content-length'])
 
         try:
