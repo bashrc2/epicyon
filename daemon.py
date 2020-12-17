@@ -4517,13 +4517,15 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['id'].replace('/', '#') + '.json'
                         saveJson(actorJson, actorCacheFilename)
                         # send profile update to followers
-                        ccStr = 'https://www.w3.org/ns/' + \
+                        pubStr = 'https://www.w3.org/ns/' + \
                             'activitystreams#Public'
+                        pubNumber, pubDate = getStatusNumber()
                         updateActorJson = {
+                            'id': actorJson['id'] + '#updates/' + pubNumber,
                             'type': 'Update',
                             'actor': actorJson['id'],
-                            'to': [actorJson['id'] + '/followers'],
-                            'cc': [ccStr],
+                            'to': [pubStr],
+                            'cc': [actorJson['id'] + '/followers'],
                             'object': actorJson
                         }
                         self._postToOutbox(updateActorJson,
