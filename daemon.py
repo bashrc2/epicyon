@@ -4520,7 +4520,12 @@ class PubServer(BaseHTTPRequestHandler):
                         pubStr = 'https://www.w3.org/ns/' + \
                             'activitystreams#Public'
                         pubNumber, pubDate = getStatusNumber()
+                        pubContext = actorJson['@context'].copy()
+                        # remove the context from the actor json and put it
+                        # at the start of the Upgrade activity
+                        del actorJson['@context']
                         updateActorJson = {
+                            '@context': pubContext,
                             'id': actorJson['id'] + '#updates/' + pubNumber,
                             'type': 'Update',
                             'actor': actorJson['id'],
