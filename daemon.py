@@ -5589,9 +5589,11 @@ class PubServer(BaseHTTPRequestHandler):
         if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
                 print('Voting on newswire item: ' + str(newswire[dateStr]))
-                if 'vote:' + nickname not in newswire[dateStr][2]:
-                    newswire[dateStr][2].append('vote:' + nickname)
-                    filename = newswire[dateStr][3]
+                votesIndex = 2
+                filenameIndex = 3
+                if 'vote:' + nickname not in newswire[dateStr][votesIndex]:
+                    newswire[dateStr][votesIndex].append('vote:' + nickname)
+                    filename = newswire[dateStr][filenameIndex]
                     newswireStateFilename = \
                         baseDir + '/accounts/.newswirestate.json'
                     try:
@@ -5599,7 +5601,7 @@ class PubServer(BaseHTTPRequestHandler):
                     except Exception as e:
                         print('ERROR saving newswire state, ' + str(e))
                     if filename:
-                        saveJson(newswire[dateStr][2],
+                        saveJson(newswire[dateStr][votesIndex],
                                  filename + '.votes')
 
         originPathStrAbsolute = \
