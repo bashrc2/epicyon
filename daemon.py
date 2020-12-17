@@ -5588,6 +5588,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = nickname.split('/')[0]
         if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
+                print('Voting on newswire item: ' + str(newswire[dateStr]))
                 if 'vote:' + nickname not in newswire[dateStr][2]:
                     newswire[dateStr][2].append('vote:' + nickname)
                     filename = newswire[dateStr][3]
