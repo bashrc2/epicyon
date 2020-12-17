@@ -5587,6 +5587,7 @@ class PubServer(BaseHTTPRequestHandler):
         nickname = urllib.parse.unquote_plus(originPathStr.split('/users/')[1])
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        print('Newswire item date: ' + dateStr)
         if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
                 print('Voting on newswire item: ' + str(newswire[dateStr]))
@@ -5604,6 +5605,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if filename:
                         saveJson(newswire[dateStr][votesIndex],
                                  filename + '.votes')
+        else:
+            print('No newswire item with date: ' + dateStr + ' ' +
+                  str(newswire))
 
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr + '/' + \
