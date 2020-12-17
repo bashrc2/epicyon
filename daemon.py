@@ -5639,14 +5639,18 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStr = path.split('/newswireunvote=')[0]
         dateStr = \
             path.split('/newswireunvote=')[1].replace('T', ' ') + '+00:00'
-        nickname = originPathStr.split('/users/')[1]
+        dateStr = dateStr.replace(' 00:00', '').replace('+00:00', '')
+        dateStr = urllib.parse.unquote_plus(dateStr) + '+00:00'
+        nickname = urllib.parse.unquote_plus(originPathStr.split('/users/')[1])
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
-                if 'vote:' + nickname in newswire[dateStr][2]:
-                    newswire[dateStr][2].remove('vote:' + nickname)
-                    filename = newswire[dateStr][3]
+                votesIndex = 2
+                filenameIndex = 3
+                if 'vote:' + nickname in newswire[dateStr][votesIndex]:
+                    newswire[dateStr][votesIndex].remove('vote:' + nickname)
+                    filename = newswire[dateStr][filenameIndex]
                     newswireStateFilename = \
                         baseDir + '/accounts/.newswirestate.json'
                     try:
@@ -5654,7 +5658,7 @@ class PubServer(BaseHTTPRequestHandler):
                     except Exception as e:
                         print('ERROR saving newswire state, ' + str(e))
                     if filename:
-                        saveJson(newswire[dateStr][2],
+                        saveJson(newswire[dateStr][votesIndex],
                                  filename + '.votes')
 
         originPathStrAbsolute = \
