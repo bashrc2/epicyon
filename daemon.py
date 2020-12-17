@@ -1456,6 +1456,21 @@ class PubServer(BaseHTTPRequestHandler):
                 elif moderationStr.startswith('submitInfo'):
                     searchHandle = moderationText
                     if searchHandle:
+                        if '/@' in searchHandle:
+                            searchNickname = \
+                                getNicknameFromActor(searchHandle)
+                            searchDomain, searchPort = \
+                                getDomainFromActor(searchHandle)
+                            searchHandle = \
+                                searchNickname + '@' + searchDomain
+                        if '@' not in searchHandle:
+                            if searchHandle.startswith('http'):
+                                searchNickname = \
+                                    getNicknameFromActor(searchHandle)
+                                searchDomain, searchPort = \
+                                    getDomainFromActor(searchHandle)
+                                searchHandle = \
+                                    searchNickname + '@' + searchDomain
                         if '@' not in searchHandle:
                             # is this a local nickname on this instance?
                             localHandle = \
