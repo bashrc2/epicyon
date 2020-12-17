@@ -1448,7 +1448,14 @@ class PubServer(BaseHTTPRequestHandler):
                     searchHandle = moderationText
                     if searchHandle:
                         if '@' not in searchHandle:
-                            searchHandle = None
+                            # is this a local nickname on this instance?
+                            localHandle = \
+                                searchHandle + '@' + self.server.domain
+                            if os.path.isdir(self.server.baseDir +
+                                             '/accounts/' + localHandle):
+                                searchHandle = localHandle
+                            else:
+                                searchHandle = None
                     if searchHandle:
                         msg = \
                             htmlAccountInfo(self.server.cssCache,
