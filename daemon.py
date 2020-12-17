@@ -1405,7 +1405,7 @@ class PubServer(BaseHTTPRequestHandler):
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           debug: bool) -> None:
-        """Actions on the moderator screeen
+        """Actions on the moderator screen
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
