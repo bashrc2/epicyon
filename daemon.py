@@ -1767,9 +1767,10 @@ class PubServer(BaseHTTPRequestHandler):
         # See htmlPersonOptions
         if '&submitPostToNews=' in optionsConfirmParams:
             adminNickname = getConfigParam(self.server.baseDir, 'admin')
-            if (chooserNickname == adminNickname or
-                (isModerator(self.server.baseDir, chooserNickname) and
-                 not isModerator(self.server.baseDir, optionsNickname))):
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
                 postsToNews = None
                 if 'postsToNews=' in optionsConfirmParams:
                     postsToNews = optionsConfirmParams.split('postsToNews=')[1]
