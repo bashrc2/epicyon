@@ -749,8 +749,8 @@ def personReceiveUpdate(baseDir: str,
                         personJson: {}, personCache: {}, debug: bool) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
-    if debug:
-        print('DEBUG: receiving actor update for ' + personJson['url'])
+    print('Receiving actor update for ' + personJson['url'] +
+          ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
     actor = updateDomainFull + '/users/' + updateNickname
@@ -894,7 +894,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
 
     if messageJson['type'] == 'Person':
         if messageJson.get('url') and messageJson.get('id'):
-            print('Request to update unwrapped actor: ' + messageJson['id'])
+            print('Request to update actor unwrapped: ' + str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['id'])
             if updateNickname:
                 updateDomain, updatePort = \
@@ -915,7 +915,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
        messageJson['object']['type'] == 'Service':
         if messageJson['object'].get('url') and \
            messageJson['object'].get('id'):
-            print('Request to update actor: ' + messageJson['actor'])
+            print('Request to update actor: ' + str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['actor'])
             if updateNickname:
                 updateDomain, updatePort = \
