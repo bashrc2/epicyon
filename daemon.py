@@ -5583,7 +5583,8 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStr = path.split('/newswirevote=')[0]
         dateStr = \
             path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
-        nickname = originPathStr.split('/users/')[1]
+        dateStr = urllib.parse.unquote_plus(dateStr)
+        nickname = urllib.parse.unquote_plus(originPathStr.split('/users/')[1])
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if newswire.get(dateStr):
