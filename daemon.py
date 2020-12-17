@@ -1766,23 +1766,27 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See htmlPersonOptions
         if '&submitPostToNews=' in optionsConfirmParams:
-            if isModerator(self.server.baseDir, chooserNickname):
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname == adminNickname or
+                (isModerator(self.server.baseDir, chooserNickname) and
+                 not isModerator(self.server.baseDir, optionsNickname))):
                 postsToNews = None
                 if 'postsToNews=' in optionsConfirmParams:
                     postsToNews = optionsConfirmParams.split('postsToNews=')[1]
                     if '&' in postsToNews:
                         postsToNews = postsToNews.split('&')[0]
-                newswireBlockedFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    optionsNickname + '@' + optionsDomain + '/.nonewswire'
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                newswireBlockedFilename = accountDir + '/.nonewswire'
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
                         os.remove(newswireBlockedFilename)
                 else:
-                    noNewswireFile = open(newswireBlockedFilename, "w+")
-                    if noNewswireFile:
-                        noNewswireFile.write('\n')
-                        noNewswireFile.close()
+                    if os.path.isdir(accountDir):
+                        noNewswireFile = open(newswireBlockedFilename, "w+")
+                        if noNewswireFile:
+                            noNewswireFile.write('\n')
+                            noNewswireFile.close()
             self._redirect_headers(usersPath + '/' +
                                    self.server.defaultTimeline +
                                    '?page='+str(pageNumber), cookie,
