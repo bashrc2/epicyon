@@ -553,7 +553,8 @@ def getPostsForBlockedDomains(baseDir: str,
                     if not blockedPosts.get(postDomain):
                         blockedPosts[postDomain] = [url]
                     else:
-                        blockedPosts[postDomain].append(url)
+                        if url not in blockedPosts[postDomain]:
+                            blockedPosts[postDomain].append(url)
 
         if item['object'].get('tag'):
             for tagItem in item['object']['tag']:
@@ -568,7 +569,8 @@ def getPostsForBlockedDomains(baseDir: str,
                             if not blockedPosts.get(postDomain):
                                 blockedPosts[postDomain] = [url]
                             else:
-                                blockedPosts[postDomain].append(url)
+                                if url not in blockedPosts[postDomain]:
+                                    blockedPosts[postDomain].append(url)
     return blockedPosts
 
 
