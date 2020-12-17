@@ -3778,6 +3778,13 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['icon']['url'] = \
                                 actorJson['icon']['url'].replace(srchStr,
                                                                  repStr)
+                            if '.' in actorJson['icon']['url']:
+                                imgExt = \
+                                    actorJson['icon']['url'].split('.')[-1]
+                                if imgExt == 'jpg':
+                                    imgExt = 'jpeg'
+                                actorJson['icon']['mediaType'] = \
+                                    'image/' + imgExt
                         elif mType == 'image':
                             lastPartOfUrl = \
                                 actorJson['image']['url'].split('/')[-1]
@@ -3785,6 +3792,13 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['image']['url'] = \
                                 actorJson['image']['url'].replace(srchStr,
                                                                   repStr)
+                            if '.' in actorJson['image']['url']:
+                                imgExt = \
+                                    actorJson['image']['url'].split('.')[-1]
+                                if imgExt == 'jpg':
+                                    imgExt = 'jpeg'
+                                actorJson['image']['mediaType'] = \
+                                    'image/' + imgExt
 
                     # set skill levels
                     skillCtr = 1
