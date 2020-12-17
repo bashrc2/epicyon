@@ -183,6 +183,7 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsStr += checkboxStr
 
     # checkbox for permission to post to newswire
+    newswirePostsPermitted = False
     if optionsDomainFull == domainFull:
         adminNickname = getConfigParam(baseDir, 'admin')
         if (nickname == adminNickname or
@@ -200,7 +201,25 @@ def htmlPersonOptions(defaultTimeline: str,
                 translate['Submit'] + '</button><br>\n'
             if os.path.isfile(newswireBlockedFilename):
                 checkboxStr = checkboxStr.replace(' checked>', '>')
+            else:
+                newswirePostsPermitted = True
             optionsStr += checkboxStr
+
+    # whether blogs created by this account are moderated on the newswire
+    if newswirePostsPermitted:
+        moderatedFilename = \
+            baseDir + '/accounts/' + \
+            optionsNickname + '@' + optionsDomain + '/.newswiremoderated'
+        checkboxStr = \
+            '    <input type="checkbox" ' + \
+            'class="profilecheckbox" name="modNewsPosts" checked> ' + \
+            translate['News posts are moderated'] + \
+            '\n    <button type="submit" class="buttonsmall" ' + \
+            'name="submitModNewsPosts">' + \
+            translate['Submit'] + '</button><br>\n'
+        if not os.path.isfile(moderatedFilename):
+            checkboxStr = checkboxStr.replace(' checked>', '>')
+        optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
     backPath = '/'

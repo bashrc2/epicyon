@@ -1811,6 +1811,39 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        # person options screen, permission to post to newswire
+        # See htmlPersonOptions
+        if '&submitModNewsPosts=' in optionsConfirmParams:
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
+                modPostsToNews = None
+                if 'modNewsPosts=' in optionsConfirmParams:
+                    modPostsToNews = \
+                        optionsConfirmParams.split('modNewsPosts=')[1]
+                    if '&' in modPostsToNews:
+                        modPostsToNews = modPostsToNews.split('&')[0]
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                newswireModFilename = accountDir + '/.newswiremoderated'
+                if modPostsToNews != 'on':
+                    if os.path.isfile(newswireModFilename):
+                        os.remove(newswireModFilename)
+                else:
+                    if os.path.isdir(accountDir):
+                        modNewswireFile = open(newswireModFilename, "w+")
+                        if modNewswireFile:
+                            modNewswireFile.write('\n')
+                            modNewswireFile.close()
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
         # person options screen, block button
         # See htmlPersonOptions
         if '&submitBlock=' in optionsConfirmParams:
