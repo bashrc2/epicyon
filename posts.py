@@ -547,9 +547,11 @@ def getPostsForBlockedDomains(baseDir: str,
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
                     getDomainFromActor(item['object']['inReplyTo'])
-                if isBlockedDomain(baseDir, postDomain) and \
-                   item['object'].get('url'):
-                    url = item['object']['url']
+                if isBlockedDomain(baseDir, postDomain):
+                    if item['object'].get('url'):
+                        url = item['object']['url']
+                    else:
+                        url = item['object']['id']
                     if not blockedPosts.get(postDomain):
                         blockedPosts[postDomain] = [url]
                     else:
@@ -563,9 +565,11 @@ def getPostsForBlockedDomains(baseDir: str,
                     if tagItem.get('href'):
                         postDomain, postPort = \
                             getDomainFromActor(tagItem['href'])
-                        if isBlockedDomain(baseDir, postDomain) and \
-                           item['object'].get('url'):
-                            url = item['object']['url']
+                        if isBlockedDomain(baseDir, postDomain):
+                            if item['object'].get('url'):
+                                url = item['object']['url']
+                            else:
+                                url = item['object']['id']
                             if not blockedPosts.get(postDomain):
                                 blockedPosts[postDomain] = [url]
                             else:
