@@ -3767,6 +3767,11 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(actorFilename):
                 actorJson = loadJson(actorFilename)
                 if actorJson:
+                    if not actorJson.get('discoverable'):
+                        # discoverable in profile directory
+                        # which isn't implemented in Epicyon
+                        actorJson['discoverable'] = False
+                        actorChanged = True
                     # update the avatar/image url file extension
                     uploads = profileMediaTypesUploaded.items()
                     for mType, lastPart in uploads:
