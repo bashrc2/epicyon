@@ -4528,6 +4528,7 @@ class PubServer(BaseHTTPRequestHandler):
                             'cc': [actorJson['id'] + '/followers'],
                             'object': actorJson
                         }
+                        print('Sending actor update: ' + updateActorJson)
                         self._postToOutbox(updateActorJson,
                                            __version__, nickname)
 
