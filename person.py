@@ -190,7 +190,8 @@ def getDefaultPersonContext() -> str:
         'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
         'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
         'messageFranking': 'toot:messageFranking',
-        'publicKeyBase64': 'toot:publicKeyBase64'
+        'publicKeyBase64': 'toot:publicKeyBase64',
+        'discoverable': 'toot:discoverable'
     }
 
 
@@ -279,6 +280,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         },
         'inbox': inboxStr,
         'manuallyApprovesFollowers': approveFollowers,
+        'discoverable': False,
         'name': personName,
         'outbox': personId+'/outbox',
         'preferredUsername': personName,
