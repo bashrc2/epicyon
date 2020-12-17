@@ -22,6 +22,7 @@ from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getFullDomain
 from utils import isEditor
 from utils import locatePost
 from utils import loadJson
@@ -1135,11 +1136,7 @@ def individualPostAsHtml(allowDownloads: bool,
     if messageId:
         messageIdStr = ';' + messageId
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     pageNumberParam = ''
     if pageNumber:
@@ -1604,19 +1601,14 @@ def htmlIndividualPost(cssCache: {},
     if likedBy:
         likedByNickname = getNicknameFromActor(likedBy)
         likedByDomain, likedByPort = getDomainFromActor(likedBy)
-        if likedByPort:
-            if likedByPort != 80 and likedByPort != 443:
-                likedByDomain += ':' + str(likedByPort)
+        likedByDomain = getFullDomain(likedByDomain, likedByPort)
         likedByHandle = likedByNickname + '@' + likedByDomain
         postStr += \
             '<p>' + translate['Liked by'] + \
             ' <a href="' + likedBy + '">@' + \
             likedByHandle + '</a>\n'
 
-        domainFull = domain
-        if port:
-            if port != 80 and port != 443:
-                domainFull = domain + ':' + str(port)
+        domainFull = getFullDomain(domain, port)
         actor = '/users/' + nickname
         followStr = '  <form method="POST" ' + \
             'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'

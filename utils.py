@@ -19,6 +19,18 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getFullDomain(domain: str, port: int) -> str:
+    """Returns the full domain name, including port number
+    """
+    if not port:
+        return domain
+    if ':' in domain:
+        return domain
+    if port == 80 or port == 443:
+        return domain
+    return domain + ':' + str(port)
+
+
 def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
               dormantMonths=3) -> bool:
     """Is the given followed actor dormant, from the standpoint

@@ -11,6 +11,8 @@ from shutil import copyfile
 from petnames import getPetName
 from person import isPersonSnoozed
 from posts import isModerator
+from utils import getFullDomain
+from utils import getConfigParam
 from utils import isDormant
 from utils import removeHtml
 from utils import getDomainFromActor
@@ -45,10 +47,7 @@ def htmlPersonOptions(defaultTimeline: str,
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-    optionsDomainFull = optionsDomain
-    if optionsPort:
-        if optionsPort != 80 and optionsPort != 443:
-            optionsDomainFull = optionsDomain + ':' + str(optionsPort)
+    optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
 
     if os.path.isfile(baseDir + '/accounts/options-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/options-background.jpg'):
@@ -74,10 +73,7 @@ def htmlPersonOptions(defaultTimeline: str,
                           dormantMonths)
 
         optionsNickname = getNicknameFromActor(optionsActor)
-        optionsDomainFull = optionsDomain
-        if optionsPort:
-            if optionsPort != 80 and optionsPort != 443:
-                optionsDomainFull = optionsDomain + ':' + str(optionsPort)
+        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
         if isBlocked(baseDir, nickname, domain,
                      optionsNickname, optionsDomainFull):
             blockStr = 'Block'
@@ -187,9 +183,12 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsStr += checkboxStr
 
     # checkbox for permission to post to newswire
+    newswirePostsPermitted = False
     if optionsDomainFull == domainFull:
-        if isModerator(baseDir, nickname) and \
-           not isModerator(baseDir, optionsNickname):
+        adminNickname = getConfigParam(baseDir, 'admin')
+        if (nickname == adminNickname or
+            (isModerator(baseDir, nickname) and
+             not isModerator(baseDir, optionsNickname))):
             newswireBlockedFilename = \
                 baseDir + '/accounts/' + \
                 optionsNickname + '@' + optionsDomain + '/.nonewswire'
@@ -202,7 +201,25 @@ def htmlPersonOptions(defaultTimeline: str,
                 translate['Submit'] + '</button><br>\n'
             if os.path.isfile(newswireBlockedFilename):
                 checkboxStr = checkboxStr.replace(' checked>', '>')
+            else:
+                newswirePostsPermitted = True
             optionsStr += checkboxStr
+
+    # whether blogs created by this account are moderated on the newswire
+    if newswirePostsPermitted:
+        moderatedFilename = \
+            baseDir + '/accounts/' + \
+            optionsNickname + '@' + optionsDomain + '/.newswiremoderated'
+        checkboxStr = \
+            '    <input type="checkbox" ' + \
+            'class="profilecheckbox" name="modNewsPosts" checked> ' + \
+            translate['News posts are moderated'] + \
+            '\n    <button type="submit" class="buttonsmall" ' + \
+            'name="submitModNewsPosts">' + \
+            translate['Submit'] + '</button><br>\n'
+        if not os.path.isfile(moderatedFilename):
+            checkboxStr = checkboxStr.replace(' checked>', '>')
+        optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
     backPath = '/'
@@ -211,26 +228,32 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += \
         '    <a href="' + backPath + '"><button type="button" ' + \
         'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
-        '</button></a>'
+        '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>'
+        translate['View'] + '</button>\n'
     optionsStr += donateStr
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>'
+        followStr + '">' + translate[followStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>'
+        blockStr + '">' + translate[blockStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>'
+        translate['DM'] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>'
+        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>'
+        translate['Report'] + '</button>\n'
+
+    if isModerator(baseDir, nickname):
+        optionsStr += \
+            '    <button type="submit" class="button" ' + \
+            'name="submitPersonInfo">' + \
+            translate['Info'] + '</button>\n'
 
     personNotes = ''
     personNotesFilename = \

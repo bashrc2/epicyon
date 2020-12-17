@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from utils import getFullDomain
 from utils import isEventPost
 from utils import removeIdEnding
 from utils import getProtocolPrefixes
@@ -371,10 +372,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
             if debug:
                 print('DEBUG: post from ' + postNickname + ' blocked')
             return None
-        if postPort:
-            if postPort != 80 and postPort != 443:
-                if ':' not in postDomain:
-                    postDomain = postDomain + ':' + str(postPort)
+        postDomain = getFullDomain(postDomain, postPort)
 
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
@@ -524,10 +522,7 @@ def inboxPostRecipients(baseDir: str, postJsonObject: {},
     if ':' in domain:
         domain = domain.split(':')[0]
     domainBase = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
     domainMatch = '/' + domain + '/users/'
 
     actor = postJsonObject['actor']
@@ -649,11 +644,7 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         return False
     domainFollower, portFollower = \
         getDomainFromActor(messageJson['object']['actor'])
-    domainFollowerFull = domainFollower
-    if portFollower:
-        if portFollower != 80 and portFollower != 443:
-            if ':' not in domainFollower:
-                domainFollowerFull = domainFollower + ':' + str(portFollower)
+    domainFollowerFull = getFullDomain(domainFollower, portFollower)
 
     nicknameFollowing = \
         getNicknameFromActor(messageJson['object']['object'])
@@ -663,12 +654,7 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         return False
     domainFollowing, portFollowing = \
         getDomainFromActor(messageJson['object']['object'])
-    domainFollowingFull = domainFollowing
-    if portFollowing:
-        if portFollowing != 80 and portFollowing != 443:
-            if ':' not in domainFollowing:
-                domainFollowingFull = \
-                    domainFollowing + ':' + str(portFollowing)
+    domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
     if unfollowerOfPerson(baseDir,
                           nicknameFollowing, domainFollowingFull,
@@ -749,10 +735,7 @@ def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
     if not isEventPost(messageJson):
         return
     print('Receiving event: ' + str(messageJson['object']))
-    handle = nickname + '@' + domain
-    if port:
-        if port != 80 and port != 443:
-            handle += ':' + str(port)
+    handle = getFullDomain(nickname + '@' + domain, port)
 
     postId = removeIdEnding(messageJson['id']).replace('/', '#')
 
@@ -766,16 +749,10 @@ def personReceiveUpdate(baseDir: str,
                         personJson: {}, personCache: {}, debug: bool) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
-    if debug:
-        print('DEBUG: receiving actor update for ' + personJson['url'])
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
-    updateDomainFull = updateDomain
-    if updatePort:
-        if updatePort != 80 and updatePort != 443:
-            updateDomainFull = updateDomain + ':' + str(updatePort)
+    print('Receiving actor update for ' + personJson['url'] +
+          ' ' + str(personJson))
+    domainFull = getFullDomain(domain, port)
+    updateDomainFull = getFullDomain(updateDomain, updatePort)
     actor = updateDomainFull + '/users/' + updateNickname
     if actor not in personJson['id']:
         actor = updateDomainFull + '/profile/' + updateNickname
@@ -917,7 +894,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
 
     if messageJson['type'] == 'Person':
         if messageJson.get('url') and messageJson.get('id'):
-            print('Request to update unwrapped actor: ' + messageJson['id'])
+            print('Request to update actor unwrapped: ' + str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['id'])
             if updateNickname:
                 updateDomain, updatePort = \
@@ -938,7 +915,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
        messageJson['object']['type'] == 'Service':
         if messageJson['object'].get('url') and \
            messageJson['object'].get('id'):
-            print('Request to update actor: ' + messageJson['actor'])
+            print('Request to update actor: ' + str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['actor'])
             if updateNickname:
                 updateDomain, updatePort = \
@@ -1124,10 +1101,7 @@ def receiveBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: unrecognized domain ' + handle)
         return False
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
@@ -1192,10 +1166,7 @@ def receiveUndoBookmark(recentPostsCache: {},
             print('DEBUG: "statuses" missing from like object in ' +
                   messageJson['type'])
         return False
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
     if domain not in handle.split('@')[1]:
         if debug:
@@ -1249,11 +1220,7 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' object is not a string')
         return False
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     deletePrefix = httpPrefix + '://' + domainFull + '/'
     if (not allowDeletion and
         (not messageJson['object'].startswith(deletePrefix) or
@@ -1923,23 +1890,15 @@ def sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     nickname = handle.split('@')[0]
 #    groupname = getGroupName(baseDir, handle)
     domain = handle.split('@')[1]
-    domainFull = domain
-    if ':' not in domain:
-        if port:
-            if port != 80 and port != 443:
-                domain = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     # set sender
     cc = ''
     sendingActor = postJsonObject['actor']
     sendingActorNickname = getNicknameFromActor(sendingActor)
     sendingActorDomain, sendingActorPort = \
         getDomainFromActor(sendingActor)
-    sendingActorDomainFull = sendingActorDomain
-    if ':' in sendingActorDomain:
-        if sendingActorPort:
-            if sendingActorPort != 80 and sendingActorPort != 443:
-                sendingActorDomainFull = \
-                    sendingActorDomain + ':' + str(sendingActorPort)
+    sendingActorDomainFull = \
+        getFullDomain(sendingActorDomain, sendingActorPort)
     senderStr = '@' + sendingActorNickname + '@' + sendingActorDomainFull
     if not postJsonObject['object']['content'].startswith(senderStr):
         postJsonObject['object']['content'] = \
@@ -2259,9 +2218,7 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 if isinstance(attributedTo, str):
                     fromNickname = getNicknameFromActor(attributedTo)
                     fromDomain, fromPort = getDomainFromActor(attributedTo)
-                    if fromPort:
-                        if fromPort != 80 and fromPort != 443:
-                            fromDomain += ':' + str(fromPort)
+                    fromDomain = getFullDomain(fromDomain, fromPort)
                     if receiveGitPatch(baseDir, nickname, domain,
                                        jsonObj['type'],
                                        jsonObj['summary'],
@@ -2352,11 +2309,7 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                              nickname + '/dm')
 
             # get the actor being replied to
-            domainFull = domain
-            if port:
-                if ':' not in domain:
-                    if port != 80 and port != 443:
-                        domainFull = domainFull + ':' + str(port)
+            domainFull = getFullDomain(domain, port)
             actor = httpPrefix + '://' + domainFull + \
                 '/users/' + handle.split('@')[0]
 

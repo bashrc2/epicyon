@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
 from utils import removeIdEnding
@@ -59,6 +60,7 @@ from content import replaceEmojiFromTags
 from content import removeTextFormatting
 from auth import createBasicAuthHeader
 from blocking import isBlocked
+from blocking import isBlockedDomain
 from filters import isFiltered
 from git import convertPostToPatch
 from jsonldsig import jsonldSign
@@ -506,6 +508,76 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     return postDomains
 
 
+def getPostsForBlockedDomains(baseDir: str,
+                              session, outboxUrl: str, maxPosts: int,
+                              maxMentions: int,
+                              maxEmoji: int, maxAttachments: int,
+                              federationList: [],
+                              personCache: {},
+                              debug: bool,
+                              projectVersion: str, httpPrefix: str,
+                              domain: str) -> {}:
+    """Returns a dictionary of posts for blocked domains
+    """
+    if not outboxUrl:
+        return {}
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if '/outbox/' in outboxUrl:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+
+    blockedPosts = {}
+
+    i = 0
+    userFeed = parseUserFeed(session, outboxUrl, asHeader,
+                             projectVersion, httpPrefix, domain)
+    for item in userFeed:
+        i += 1
+        if i > maxPosts:
+            break
+        if not item.get('object'):
+            continue
+        if not isinstance(item['object'], dict):
+            continue
+        if item['object'].get('inReplyTo'):
+            if isinstance(item['object']['inReplyTo'], str):
+                postDomain, postPort = \
+                    getDomainFromActor(item['object']['inReplyTo'])
+                if isBlockedDomain(baseDir, postDomain):
+                    if item['object'].get('url'):
+                        url = item['object']['url']
+                    else:
+                        url = item['object']['id']
+                    if not blockedPosts.get(postDomain):
+                        blockedPosts[postDomain] = [url]
+                    else:
+                        if url not in blockedPosts[postDomain]:
+                            blockedPosts[postDomain].append(url)
+
+        if item['object'].get('tag'):
+            for tagItem in item['object']['tag']:
+                tagType = tagItem['type'].lower()
+                if tagType == 'mention':
+                    if tagItem.get('href'):
+                        postDomain, postPort = \
+                            getDomainFromActor(tagItem['href'])
+                        if isBlockedDomain(baseDir, postDomain):
+                            if item['object'].get('url'):
+                                url = item['object']['url']
+                            else:
+                                url = item['object']['id']
+                            if not blockedPosts.get(postDomain):
+                                blockedPosts[postDomain] = [url]
+                            else:
+                                if url not in blockedPosts[postDomain]:
+                                    blockedPosts[postDomain].append(url)
+    return blockedPosts
+
+
 def deleteAllPosts(baseDir: str,
                    nickname: str, domain: str, boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
@@ -740,10 +812,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     tags = []
     hashtagsDict = {}
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     # add tags
     if nickname != 'news':
@@ -1070,10 +1139,7 @@ def outboxMessageCreateWrap(httpPrefix: str,
     https://www.w3.org/TR/activitypub/#object-without-create
     """
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
     statusNumber, published = getStatusNumber()
     if messageJson.get('published'):
         published = messageJson['published']
@@ -1108,10 +1174,7 @@ def postIsAddressedToFollowers(baseDir: str,
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     if not postJsonObject.get('object'):
         return False
@@ -1174,11 +1237,7 @@ def createPublicPost(baseDir: str,
                      eventDate=None, eventTime=None, location=None) -> {}:
     """Public post
     """
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     return createPostBase(baseDir, nickname, domain, port,
                           'https://www.w3.org/ns/activitystreams#Public',
                           httpPrefix + '://' + domainFull + '/users/' +
@@ -1278,11 +1337,7 @@ def createQuestionPost(baseDir: str,
                        subject: str, durationDays: int) -> {}:
     """Question post with multiple choice options
     """
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     messageJson = \
         createPostBase(baseDir, nickname, domain, port,
                        'https://www.w3.org/ns/activitystreams#Public',
@@ -1328,11 +1383,7 @@ def createUnlistedPost(baseDir: str,
                        eventDate=None, eventTime=None, location=None) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     return createPostBase(baseDir, nickname, domain, port,
                           httpPrefix + '://' + domainFull + '/users/' +
                           nickname + '/followers',
@@ -1361,11 +1412,7 @@ def createFollowersOnlyPost(baseDir: str,
                             location=None) -> {}:
     """Followers only post
     """
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     return createPostBase(baseDir, nickname, domain, port,
                           httpPrefix + '://' + domainFull + '/users/' +
                           nickname + '/followers',
@@ -1404,11 +1451,7 @@ def createEventPost(baseDir: str,
     if not category:
         print('Event has no category')
         return None
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     # create event uuid
     eventUUID = str(uuid.uuid1())
@@ -1524,11 +1567,7 @@ def createReportPost(baseDir: str,
                      debug: bool, subject=None) -> {}:
     """Send a report to moderators
     """
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     # add a title to distinguish moderation reports from other posts
     reportTitle = 'Moderation Report'
@@ -1698,10 +1737,7 @@ def sendPost(projectVersion: str,
         # shared inbox actor on @domain@domain
         toNickname = toDomain
 
-    if toPort:
-        if toPort != 80 and toPort != 443:
-            if ':' not in toDomain:
-                toDomain = toDomain + ':' + str(toPort)
+    toDomain = getFullDomain(toDomain, toPort)
 
     handle = httpPrefix + '://' + toDomain + '/@' + toNickname
 
@@ -1816,10 +1852,7 @@ def sendPostViaServer(projectVersion: str,
         print('WARN: No session for sendPostViaServer')
         return 6
 
-    if toPort:
-        if toPort != 80 and toPort != 443:
-            if ':' not in fromDomain:
-                fromDomain = fromDomain + ':' + str(fromPort)
+    fromDomain = getFullDomain(fromDomain, fromPort)
 
     handle = httpPrefix + '://' + fromDomain + '/@' + fromNickname
 
@@ -1863,11 +1896,7 @@ def sendPostViaServer(projectVersion: str,
     clientToServer = True
     if toDomain.lower().endswith('public'):
         toPersonId = 'https://www.w3.org/ns/activitystreams#Public'
-        fromDomainFull = fromDomain
-        if fromPort:
-            if fromPort != 80 and fromPort != 443:
-                if ':' not in fromDomain:
-                    fromDomainFull = fromDomain + ':' + str(fromPort)
+        fromDomainFull = getFullDomain(fromDomain, fromPort)
         cc = httpPrefix + '://' + fromDomainFull + '/users/' + \
             fromNickname + '/followers'
     else:
@@ -1877,11 +1906,7 @@ def sendPostViaServer(projectVersion: str,
                 httpPrefix + '://' + \
                 fromDomainFull + '/users/' + fromNickname + '/followers'
         else:
-            toDomainFull = toDomain
-            if toPort:
-                if toPort != 80 and toPort != 443:
-                    if ':' not in toDomain:
-                        toDomainFull = toDomain + ':' + str(toPort)
+            toDomainFull = getFullDomain(toDomain, toPort)
             toPersonId = httpPrefix + '://' + toDomainFull + \
                 '/users/' + toNickname
 
@@ -2010,10 +2035,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         toNickname = toDomain
 #        sharedInbox = True
 
-    if toPort:
-        if toPort != 80 and toPort != 443:
-            if ':' not in toDomain:
-                toDomain = toDomain + ':' + str(toPort)
+    toDomain = getFullDomain(toDomain, toPort)
 
     toDomainUrl = httpPrefix + '://' + toDomain
     if not siteIsActive(toDomainUrl):
@@ -2290,16 +2312,8 @@ def sendToNamedAddresses(session, baseDir: str,
         if not toDomain:
             continue
         if debug:
-            domainFull = domain
-            if port:
-                if port != 80 and port != 443:
-                    if ':' not in domain:
-                        domainFull = domain + ':' + str(port)
-            toDomainFull = toDomain
-            if toPort:
-                if toPort != 80 and toPort != 443:
-                    if ':' not in toDomain:
-                        toDomainFull = toDomain + ':' + str(toPort)
+            domainFull = getFullDomain(domain, port)
+            toDomainFull = getFullDomain(toDomain, toPort)
             print('DEBUG: Post sending s2s: ' + nickname + '@' + domainFull +
                   ' to ' + toNickname + '@' + toDomainFull)
 
@@ -2618,10 +2632,7 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
     boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
     boxname = 'moderation'
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     if not pageNumber:
         pageNumber = 1
@@ -2939,10 +2950,7 @@ def createBoxIndexed(recentPostsCache: {},
         indexBoxName = boxname
         timelineNickname = 'news'
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     boxActor = httpPrefix + '://' + domain + '/users/' + nickname
 
@@ -3332,11 +3340,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     cachedWebfingers = {}
     federationList = []
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
@@ -3377,11 +3381,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     cachedWebfingers = {}
     federationList = []
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
@@ -3409,6 +3409,67 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                        projectVersion, httpPrefix, domain, domainList)
     postDomains.sort()
     return postDomains
+
+
+def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
+                      proxyType: str, port: int, httpPrefix: str,
+                      debug: bool, projectVersion: str) -> []:
+    """ Returns a dict of domains referenced within public posts
+    """
+    if not session:
+        session = createSession(proxyType)
+    if not session:
+        return {}
+    personCache = {}
+    cachedWebfingers = {}
+    federationList = []
+
+    domainFull = getFullDomain(domain, port)
+    handle = httpPrefix + "://" + domainFull + "/@" + nickname
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion)
+    if not wfRequest:
+        return {}
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return {}
+
+    (personUrl, pubKeyId, pubKey,
+     personId, sharedInbox,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache,
+                                            projectVersion, httpPrefix,
+                                            nickname, domain, 'outbox')
+    maxMentions = 99
+    maxEmoji = 99
+    maxAttachments = 5
+    maxPosts = 64
+    postDomains = \
+        getPostDomains(session, personUrl, maxPosts, maxMentions, maxEmoji,
+                       maxAttachments, federationList,
+                       personCache, debug,
+                       projectVersion, httpPrefix, domain, [])
+    postDomains.sort()
+    domainsInfo = {}
+    for d in postDomains:
+        if not domainsInfo.get(d):
+            domainsInfo[d] = []
+
+    blockedPosts = \
+        getPostsForBlockedDomains(baseDir, session, personUrl, maxPosts,
+                                  maxMentions,
+                                  maxEmoji, maxAttachments,
+                                  federationList,
+                                  personCache,
+                                  debug,
+                                  projectVersion, httpPrefix,
+                                  domain)
+    for blockedDomain, postUrlList in blockedPosts.items():
+        domainsInfo[blockedDomain] += postUrlList
+
+    return domainsInfo
 
 
 def getPublicPostDomainsBlocked(session, baseDir: str,
@@ -3740,10 +3801,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         attributedDomain, attributedPort = \
             getDomainFromActor(announcedJson['object']['id'])
         if attributedNickname and attributedDomain:
-            if attributedPort:
-                if attributedPort != 80 and attributedPort != 443:
-                    attributedDomain = \
-                        attributedDomain + ':' + str(attributedPort)
+            attributedDomain = getFullDomain(attributedDomain, attributedPort)
             if isBlocked(baseDir, nickname, domain,
                          attributedNickname, attributedDomain):
                 rejectAnnounce(announceFilename)
@@ -3859,11 +3917,7 @@ def sendBlockViaServer(baseDir: str, session,
         print('WARN: No session for sendBlockViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + \
@@ -3942,11 +3996,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
         print('WARN: No session for sendBlockViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + \

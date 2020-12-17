@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import getFullDomain
 from utils import removeIdEnding
 from utils import urlPermitted
 from utils import getNicknameFromActor
@@ -66,11 +67,7 @@ def like(recentPostsCache: {},
     if not urlPermitted(objectUrl, federationList):
         return None
 
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     newLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -132,11 +129,7 @@ def likePost(recentPostsCache: {},
              debug: bool, projectVersion: str) -> {}:
     """Likes a given status post. This is only used by unit tests
     """
-    likeDomain = likeDomain
-    if likePort:
-        if likePort != 80 and likePort != 443:
-            if ':' not in likeDomain:
-                likeDomain = likeDomain + ':' + str(likePort)
+    likeDomain = getFullDomain(likeDomain, likePort)
 
     actorLiked = httpPrefix + '://' + likeDomain + '/users/' + likeNickname
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
@@ -165,11 +158,7 @@ def undolike(recentPostsCache: {},
     if not urlPermitted(objectUrl, federationList):
         return None
 
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     newUndoLikeJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -234,11 +223,7 @@ def sendLikeViaServer(baseDir: str, session,
         print('WARN: No session for sendLikeViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
 
@@ -313,11 +298,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
         print('WARN: No session for sendUndoLikeViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
 

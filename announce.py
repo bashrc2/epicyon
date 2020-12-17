@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import getFullDomain
 from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
@@ -113,11 +114,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
 
     if ':' in domain:
         domain = domain.split(':')[0]
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     statusNumber, published = getStatusNumber()
     newAnnounceId = httpPrefix + '://' + fullDomain + \
@@ -172,11 +169,7 @@ def announcePublic(session, baseDir: str, federationList: [],
                    debug: bool, projectVersion: str) -> {}:
     """Makes a public announcement
     """
-    fromDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fromDomain = domain + ':' + str(port)
+    fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomain + '/users/' + nickname + \
@@ -200,11 +193,7 @@ def repeatPost(session, baseDir: str, federationList: [],
                debug: bool, projectVersion: str) -> {}:
     """Repeats a given status post
     """
-    announcedDomain = announceDomain
-    if announcePort:
-        if announcePort != 80 and announcePort != 443:
-            if ':' not in announcedDomain:
-                announcedDomain = announcedDomain + ':' + str(announcePort)
+    announcedDomain = getFullDomain(announceDomain, announcePort)
 
     objectUrl = announceHttpsPrefix + '://' + announcedDomain + '/users/' + \
         announceNickname + '/statuses/' + str(announceStatusNumber)
@@ -236,11 +225,7 @@ def undoAnnounce(session, baseDir: str, federationList: [],
 
     if ':' in domain:
         domain = domain.split(':')[0]
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     newUndoAnnounce = {
         "@context": "https://www.w3.org/ns/activitystreams",
@@ -290,11 +275,7 @@ def undoAnnouncePublic(session, baseDir: str, federationList: [],
                        debug: bool) -> {}:
     """Undoes a public announcement
     """
-    fromDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fromDomain = domain + ':' + str(port)
+    fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomain + '/users/' + nickname + \
@@ -318,11 +299,7 @@ def undoRepeatPost(session, baseDir: str, federationList: [],
                    debug: bool) -> {}:
     """Undoes a status post repeat
     """
-    announcedDomain = announceDomain
-    if announcePort:
-        if announcePort != 80 and announcePort != 443:
-            if ':' not in announcedDomain:
-                announcedDomain = announcedDomain + ':' + str(announcePort)
+    announcedDomain = getFullDomain(announceDomain, announcePort)
 
     objectUrl = announceHttpsPrefix + '://' + announcedDomain + '/users/' + \
         announceNickname + '/statuses/' + str(announceStatusNumber)
@@ -347,11 +324,7 @@ def sendAnnounceViaServer(baseDir: str, session,
         print('WARN: No session for sendAnnounceViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname + \

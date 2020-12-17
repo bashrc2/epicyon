@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import getFullDomain
 from utils import isDormant
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -97,11 +98,7 @@ def htmlProfileAfterSearch(cssCache: {},
         print('DEBUG: No domain found in ' + profileHandle)
         return None
 
-    searchDomainFull = searchDomain
-    if searchPort:
-        if searchPort != 80 and searchPort != 443:
-            if ':' not in searchDomain:
-                searchDomainFull = searchDomain + ':' + str(searchPort)
+    searchDomainFull = getFullDomain(searchDomain, searchPort)
 
     profileStr = ''
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -225,10 +222,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                     profileDescriptionShort,
                                     avatarUrl, imageUrl)
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     followIsPermitted = True
     if searchNickname == 'news' and searchDomainFull == domainFull:
@@ -834,11 +828,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     nickname = getNicknameFromActor(path)
     if not nickname:
         return ''
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     actorFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '.json'

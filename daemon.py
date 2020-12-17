@@ -172,6 +172,7 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getFullDomain
 from utils import removeHtml
 from utils import setHashtagCategory
 from utils import isEditor
@@ -1404,12 +1405,21 @@ class PubServer(BaseHTTPRequestHandler):
                           domain: str, domainFull: str, port: int,
                           onionDomain: str, i2pDomain: str,
                           debug: bool) -> None:
-        """Actions on the moderator screeen
+        """Actions on the moderator screen
         """
         usersPath = path.replace('/moderationaction', '')
         nickname = usersPath.replace('/users/', '')
-        actorStr = httpPrefix + '://' + domainFull + usersPath
+        if not isModerator(self.server.baseDir, nickname):
+            if callingDomain.endswith('.onion') and onionDomain:
+                actorStr = 'http://' + onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and i2pDomain):
+                actorStr = 'http://' + i2pDomain + usersPath
+                self._redirect_headers(actorStr + '/moderation',
+                                       cookie, callingDomain)
+            self.server.POSTbusy = False
+            return
 
+        actorStr = httpPrefix + '://' + domainFull + usersPath
         length = int(self.headers['Content-length'])
 
         try:
@@ -1446,8 +1456,30 @@ class PubServer(BaseHTTPRequestHandler):
                 elif moderationStr.startswith('submitInfo'):
                     searchHandle = moderationText
                     if searchHandle:
+                        if '/@' in searchHandle:
+                            searchNickname = \
+                                getNicknameFromActor(searchHandle)
+                            searchDomain, searchPort = \
+                                getDomainFromActor(searchHandle)
+                            searchHandle = \
+                                searchNickname + '@' + searchDomain
                         if '@' not in searchHandle:
-                            searchHandle = None
+                            if searchHandle.startswith('http'):
+                                searchNickname = \
+                                    getNicknameFromActor(searchHandle)
+                                searchDomain, searchPort = \
+                                    getDomainFromActor(searchHandle)
+                                searchHandle = \
+                                    searchNickname + '@' + searchDomain
+                        if '@' not in searchHandle:
+                            # is this a local nickname on this instance?
+                            localHandle = \
+                                searchHandle + '@' + self.server.domain
+                            if os.path.isdir(self.server.baseDir +
+                                             '/accounts/' + localHandle):
+                                searchHandle = localHandle
+                            else:
+                                searchHandle = None
                     if searchHandle:
                         msg = \
                             htmlAccountInfo(self.server.cssCache,
@@ -1501,12 +1533,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
-                        fullBlockDomain = blockDomain
-                        if blockPort:
-                            if blockPort != 80 and blockPort != 443:
-                                if ':' not in blockDomain:
-                                    fullBlockDomain = \
-                                        blockDomain + ':' + str(blockPort)
+                        fullBlockDomain = getFullDomain(blockDomain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -1524,12 +1551,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # https://domain
                         blockDomain, blockPort = \
                             getDomainFromActor(moderationText)
-                        fullBlockDomain = blockDomain
-                        if blockPort:
-                            if blockPort != 80 and blockPort != 443:
-                                if ':' not in blockDomain:
-                                    fullBlockDomain = \
-                                        blockDomain + ':' + str(blockPort)
+                        fullBlockDomain = getFullDomain(blockDomain, blockPort)
                     if '@' in moderationText:
                         # nick@domain or *@domain
                         fullBlockDomain = moderationText.split('@')[1]
@@ -1692,12 +1714,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         optionsDomain, optionsPort = getDomainFromActor(optionsActor)
-        optionsDomainFull = optionsDomain
-        if optionsPort:
-            if optionsPort != 80 and optionsPort != 443:
-                if ':' not in optionsDomain:
-                    optionsDomainFull = optionsDomain + ':' + \
-                        str(optionsPort)
+        optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
         if chooserNickname == optionsNickname and \
            optionsDomain == domain and \
            optionsPort == port:
@@ -1780,23 +1797,61 @@ class PubServer(BaseHTTPRequestHandler):
         # person options screen, permission to post to newswire
         # See htmlPersonOptions
         if '&submitPostToNews=' in optionsConfirmParams:
-            if isModerator(self.server.baseDir, chooserNickname):
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
                 postsToNews = None
                 if 'postsToNews=' in optionsConfirmParams:
                     postsToNews = optionsConfirmParams.split('postsToNews=')[1]
                     if '&' in postsToNews:
                         postsToNews = postsToNews.split('&')[0]
-                newswireBlockedFilename = \
-                    self.server.baseDir + '/accounts/' + \
-                    optionsNickname + '@' + optionsDomain + '/.nonewswire'
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                newswireBlockedFilename = accountDir + '/.nonewswire'
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
                         os.remove(newswireBlockedFilename)
                 else:
-                    noNewswireFile = open(newswireBlockedFilename, "w+")
-                    if noNewswireFile:
-                        noNewswireFile.write('\n')
-                        noNewswireFile.close()
+                    if os.path.isdir(accountDir):
+                        noNewswireFile = open(newswireBlockedFilename, "w+")
+                        if noNewswireFile:
+                            noNewswireFile.write('\n')
+                            noNewswireFile.close()
+            self._redirect_headers(usersPath + '/' +
+                                   self.server.defaultTimeline +
+                                   '?page='+str(pageNumber), cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, permission to post to newswire
+        # See htmlPersonOptions
+        if '&submitModNewsPosts=' in optionsConfirmParams:
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
+                modPostsToNews = None
+                if 'modNewsPosts=' in optionsConfirmParams:
+                    modPostsToNews = \
+                        optionsConfirmParams.split('modNewsPosts=')[1]
+                    if '&' in modPostsToNews:
+                        modPostsToNews = modPostsToNews.split('&')[0]
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                newswireModFilename = accountDir + '/.newswiremoderated'
+                if modPostsToNews != 'on':
+                    if os.path.isfile(newswireModFilename):
+                        os.remove(newswireModFilename)
+                else:
+                    if os.path.isdir(accountDir):
+                        modNewswireFile = open(newswireModFilename, "w+")
+                        if modNewswireFile:
+                            modNewswireFile.write('\n')
+                            modNewswireFile.close()
             self._redirect_headers(usersPath + '/' +
                                    self.server.defaultTimeline +
                                    '?page='+str(pageNumber), cookie,
@@ -1890,6 +1945,31 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             self.server.POSTbusy = False
             return
+
+        # person options screen, Info button
+        # See htmlPersonOptions
+        if '&submitPersonInfo=' in optionsConfirmParams:
+            if isModerator(self.server.baseDir, chooserNickname):
+                if debug:
+                    print('Showing info for ' + optionsActor)
+                msg = \
+                    htmlAccountInfo(self.server.cssCache,
+                                    self.server.translate,
+                                    baseDir,
+                                    httpPrefix,
+                                    chooserNickname,
+                                    domain,
+                                    self.server.port,
+                                    optionsActor,
+                                    self.server.debug).encode('utf-8')
+                self._set_headers('text/html', len(msg),
+                                  cookie, callingDomain)
+                self._write(msg)
+                self.server.POSTbusy = False
+                return
+            else:
+                self._404()
+                return
 
         # person options screen, snooze button
         # See htmlPersonOptions
@@ -2011,11 +2091,7 @@ class PubServer(BaseHTTPRequestHandler):
             followingNickname = getNicknameFromActor(followingActor)
             followingDomain, followingPort = \
                 getDomainFromActor(followingActor)
-            followingDomainFull = followingDomain
-            if followingPort:
-                if followingPort != 80 and followingPort != 443:
-                    followingDomainFull = \
-                        followingDomain + ':' + str(followingPort)
+            followingDomainFull = getFullDomain(followingDomain, followingPort)
             if followerNickname == followingNickname and \
                followingDomain == domain and \
                followingPort == port:
@@ -2208,12 +2284,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockingDomain, blockingPort = \
                 getDomainFromActor(blockingActor)
-            blockingDomainFull = blockingDomain
-            if blockingPort:
-                if blockingPort != 80 and blockingPort != 443:
-                    if ':' not in blockingDomain:
-                        blockingDomainFull = \
-                            blockingDomain + ':' + str(blockingPort)
+            blockingDomainFull = getFullDomain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
                blockingPort == port:
@@ -2297,12 +2368,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             blockingDomain, blockingPort = \
                 getDomainFromActor(blockingActor)
-            blockingDomainFull = blockingDomain
-            if blockingPort:
-                if blockingPort != 80 and blockingPort != 443:
-                    if ':' not in blockingDomain:
-                        blockingDomainFull = \
-                            blockingDomain + ':' + str(blockingPort)
+            blockingDomainFull = getFullDomain(blockingDomain, blockingPort)
             if blockerNickname == blockingNickname and \
                blockingDomain == domain and \
                blockingPort == port:
@@ -3701,6 +3767,11 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile(actorFilename):
                 actorJson = loadJson(actorFilename)
                 if actorJson:
+                    if not actorJson.get('discoverable'):
+                        # discoverable in profile directory
+                        # which isn't implemented in Epicyon
+                        actorJson['discoverable'] = False
+                        actorChanged = True
                     # update the avatar/image url file extension
                     uploads = profileMediaTypesUploaded.items()
                     for mType, lastPart in uploads:
@@ -3712,6 +3783,13 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['icon']['url'] = \
                                 actorJson['icon']['url'].replace(srchStr,
                                                                  repStr)
+                            if '.' in actorJson['icon']['url']:
+                                imgExt = \
+                                    actorJson['icon']['url'].split('.')[-1]
+                                if imgExt == 'jpg':
+                                    imgExt = 'jpeg'
+                                actorJson['icon']['mediaType'] = \
+                                    'image/' + imgExt
                         elif mType == 'image':
                             lastPartOfUrl = \
                                 actorJson['image']['url'].split('/')[-1]
@@ -3719,6 +3797,13 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['image']['url'] = \
                                 actorJson['image']['url'].replace(srchStr,
                                                                   repStr)
+                            if '.' in actorJson['image']['url']:
+                                imgExt = \
+                                    actorJson['image']['url'].split('.')[-1]
+                                if imgExt == 'jpg':
+                                    imgExt = 'jpeg'
+                                actorJson['image']['mediaType'] = \
+                                    'image/' + imgExt
 
                     # set skill levels
                     skillCtr = 1
@@ -4451,15 +4536,23 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['id'].replace('/', '#') + '.json'
                         saveJson(actorJson, actorCacheFilename)
                         # send profile update to followers
-                        ccStr = 'https://www.w3.org/ns/' + \
+                        pubStr = 'https://www.w3.org/ns/' + \
                             'activitystreams#Public'
+                        pubNumber, pubDate = getStatusNumber()
+                        pubContext = actorJson['@context'].copy()
+                        # remove the context from the actor json and put it
+                        # at the start of the Upgrade activity
+                        del actorJson['@context']
                         updateActorJson = {
+                            '@context': pubContext,
+                            'id': actorJson['id'] + '#updates/' + pubNumber,
                             'type': 'Update',
                             'actor': actorJson['id'],
-                            'to': [actorJson['id'] + '/followers'],
-                            'cc': [ccStr],
+                            'to': [pubStr],
+                            'cc': [actorJson['id'] + '/followers'],
                             'object': actorJson
                         }
+                        print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
                                            __version__, nickname)
 
@@ -5531,15 +5624,22 @@ class PubServer(BaseHTTPRequestHandler):
         """
         originPathStr = path.split('/newswirevote=')[0]
         dateStr = \
-            path.split('/newswirevote=')[1].replace('T', ' ') + '+00:00'
-        nickname = originPathStr.split('/users/')[1]
+            path.split('/newswirevote=')[1].replace('T', ' ')
+        dateStr = dateStr.replace(' 00:00', '').replace('+00:00', '')
+        dateStr = urllib.parse.unquote_plus(dateStr) + '+00:00'
+        nickname = urllib.parse.unquote_plus(originPathStr.split('/users/')[1])
         if '/' in nickname:
             nickname = nickname.split('/')[0]
+        print('Newswire item date: ' + dateStr)
         if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
-                if 'vote:' + nickname not in newswire[dateStr][2]:
-                    newswire[dateStr][2].append('vote:' + nickname)
-                    filename = newswire[dateStr][3]
+                newswireItem = newswire[dateStr]
+                print('Voting on newswire item: ' + str(newswireItem))
+                votesIndex = 2
+                filenameIndex = 3
+                if 'vote:' + nickname not in newswireItem[votesIndex]:
+                    newswireItem[votesIndex].append('vote:' + nickname)
+                    filename = newswireItem[filenameIndex]
                     newswireStateFilename = \
                         baseDir + '/accounts/.newswirestate.json'
                     try:
@@ -5547,8 +5647,11 @@ class PubServer(BaseHTTPRequestHandler):
                     except Exception as e:
                         print('ERROR saving newswire state, ' + str(e))
                     if filename:
-                        saveJson(newswire[dateStr][2],
+                        saveJson(newswireItem[votesIndex],
                                  filename + '.votes')
+        else:
+            print('No newswire item with date: ' + dateStr + ' ' +
+                  str(newswire))
 
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr + '/' + \
@@ -5578,15 +5681,20 @@ class PubServer(BaseHTTPRequestHandler):
         """
         originPathStr = path.split('/newswireunvote=')[0]
         dateStr = \
-            path.split('/newswireunvote=')[1].replace('T', ' ') + '+00:00'
-        nickname = originPathStr.split('/users/')[1]
+            path.split('/newswireunvote=')[1].replace('T', ' ')
+        dateStr = dateStr.replace(' 00:00', '').replace('+00:00', '')
+        dateStr = urllib.parse.unquote_plus(dateStr) + '+00:00'
+        nickname = urllib.parse.unquote_plus(originPathStr.split('/users/')[1])
         if '/' in nickname:
             nickname = nickname.split('/')[0]
         if newswire.get(dateStr):
             if isModerator(baseDir, nickname):
-                if 'vote:' + nickname in newswire[dateStr][2]:
-                    newswire[dateStr][2].remove('vote:' + nickname)
-                    filename = newswire[dateStr][3]
+                votesIndex = 2
+                filenameIndex = 3
+                newswireItem = newswire[dateStr]
+                if 'vote:' + nickname in newswireItem[votesIndex]:
+                    newswireItem[votesIndex].remove('vote:' + nickname)
+                    filename = newswireItem[filenameIndex]
                     newswireStateFilename = \
                         baseDir + '/accounts/.newswirestate.json'
                     try:
@@ -5594,8 +5702,11 @@ class PubServer(BaseHTTPRequestHandler):
                     except Exception as e:
                         print('ERROR saving newswire state, ' + str(e))
                     if filename:
-                        saveJson(newswire[dateStr][2],
+                        saveJson(newswireItem[votesIndex],
                                  filename + '.votes')
+        else:
+            print('No newswire item with date: ' + dateStr + ' ' +
+                  str(newswire))
 
         originPathStrAbsolute = \
             httpPrefix + '://' + domainFull + originPathStr + '/' + \
@@ -13154,11 +13265,7 @@ def runDaemon(dormantMonths: int,
     httpd.maxPostsInBox = 32000
     httpd.domain = domain
     httpd.port = port
-    httpd.domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                httpd.domainFull = domain + ':' + str(port)
+    httpd.domainFull = getFullDomain(domain, port)
     saveDomainQrcode(baseDir, httpPrefix, httpd.domainFull)
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug

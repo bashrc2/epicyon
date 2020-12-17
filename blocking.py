@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import getFullDomain
 from utils import removeIdEnding
 from utils import isEvil
 from utils import locatePost
@@ -265,11 +266,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
         print('WARN: unable to find nickname in ' + messageJson['object'])
         return
     domainBlocked, portBlocked = getDomainFromActor(messageJson['object'])
-    domainBlockedFull = domainBlocked
-    if portBlocked:
-        if portBlocked != 80 and portBlocked != 443:
-            if ':' not in domainBlocked:
-                domainBlockedFull = domainBlocked + ':' + str(portBlocked)
+    domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
 
     addBlock(baseDir, nickname, domain,
              nicknameBlocked, domainBlockedFull)
@@ -346,11 +343,7 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         return
     domainObject = messageJson['object']['object']
     domainBlocked, portBlocked = getDomainFromActor(domainObject)
-    domainBlockedFull = domainBlocked
-    if portBlocked:
-        if portBlocked != 80 and portBlocked != 443:
-            if ':' not in domainBlocked:
-                domainBlockedFull = domainBlocked + ':' + str(portBlocked)
+    domainBlockedFull = getFullDomain(domainBlocked, portBlocked)
 
     removeBlock(baseDir, nickname, domain,
                 nicknameBlocked, domainBlockedFull)

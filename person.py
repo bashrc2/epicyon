@@ -35,6 +35,7 @@ from auth import storeBasicCredentials
 from auth import removePassword
 from roles import setRole
 from media import removeMetaData
+from utils import getFullDomain
 from utils import validNickname
 from utils import loadJson
 from utils import saveJson
@@ -68,11 +69,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
 
     if ':' in domain:
         domain = domain.split(':')[0]
-    fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     handle = nickname + '@' + domain
     personFilename = baseDir + '/accounts/' + handle + '.json'
@@ -193,7 +190,8 @@ def getDefaultPersonContext() -> str:
         'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
         'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
         'messageFranking': 'toot:messageFranking',
-        'publicKeyBase64': 'toot:publicKeyBase64'
+        'publicKeyBase64': 'toot:publicKeyBase64',
+        'discoverable': 'toot:discoverable'
     }
 
 
@@ -213,10 +211,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
 
     handle = nickname + '@' + domain
     originalDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     personType = 'Person'
     # Enable follower approval by default
@@ -285,6 +280,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         },
         'inbox': inboxStr,
         'manuallyApprovesFollowers': approveFollowers,
+        'discoverable': False,
         'name': personName,
         'outbox': personId+'/outbox',
         'preferredUsername': personName,
@@ -418,10 +414,7 @@ def savePersonQrcode(baseDir: str,
         nickname + '@' + domain + '/qrcode.png'
     if os.path.isfile(qrcodeFilename):
         return
-    handle = '@' + nickname + '@' + domain
-    if port:
-        if port != 80 and port != 443:
-            handle = handle + ':' + str(port)
+    handle = getFullDomain('@' + nickname + '@' + domain, port)
     url = pyqrcode.create(handle)
     url.png(qrcodeFilename, scale)
 
@@ -868,11 +861,7 @@ def canRemovePost(baseDir: str, nickname: str,
     if '/statuses/' not in postId:
         return False
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     # is the post by the admin?
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -898,11 +887,7 @@ def removeTagsForNickname(baseDir: str, nickname: str,
     """
     if not os.path.isdir(baseDir + '/tags'):
         return
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     matchStr = domainFull + '/users/' + nickname + '/'
     directory = os.fsencode(baseDir + '/tags/')
     for f in os.scandir(directory):

@@ -14,6 +14,7 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_media import addEmbeddedElements
+from utils import getFullDomain
 from utils import getMediaFormats
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -443,10 +444,7 @@ def htmlBlogPage(authorized: bool, session,
     if not timelineJson:
         return blogStr + htmlFooter()
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     # show previous and next buttons
     if pageNumber is not None:
@@ -513,10 +511,7 @@ def htmlBlogPageRSS2(authorized: bool, session,
        '\n' in nickname or '\r' in nickname:
         return None
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     blogRSS2 = ''
     if includeHeader:
@@ -571,10 +566,7 @@ def htmlBlogPageRSS3(authorized: bool, session,
        '\n' in nickname or '\r' in nickname:
         return None
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     blogRSS3 = ''
 
@@ -682,10 +674,7 @@ def htmlBlogView(authorized: bool,
                                 nickname, domain, port,
                                 noOfItems, 1)
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:

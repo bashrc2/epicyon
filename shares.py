@@ -13,6 +13,7 @@ from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
 from session import postImage
+from utils import getFullDomain
 from utils import validNickname
 from utils import loadJson
 from utils import saveJson
@@ -115,11 +116,7 @@ def addShare(baseDir: str,
                 imageFilename = sharesImageFilename + '.' + ext
                 moveImage = True
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     # copy or move the image for the shared item to its destination
     if imageFilename:
@@ -247,10 +244,7 @@ def getSharesFeedForPerson(baseDir: str,
     if not validNickname(domain, nickname):
         return None
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     handleDomain = domain
     if ':' in handleDomain:
@@ -331,11 +325,7 @@ def sendShareViaServer(baseDir, session,
         print('WARN: No session for sendShareViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomainFull + \
@@ -439,11 +429,7 @@ def sendUndoShareViaServer(baseDir: str, session,
         print('WARN: No session for sendUndoShareViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomainFull + \

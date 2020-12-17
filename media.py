@@ -13,6 +13,7 @@ import os
 import datetime
 from hashlib import sha1
 from auth import createPassword
+from utils import getFullDomain
 from utils import getImageExtensions
 from utils import getVideoExtensions
 from utils import getAudioExtensions
@@ -163,10 +164,7 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
     if mediaType == 'audio/mpeg':
         fileExtension = 'mp3'
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     mPath = getMediaPath()
     mediaPath = mPath + '/' + createPassword(32) + '.' + fileExtension

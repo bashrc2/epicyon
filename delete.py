@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from datetime import datetime
+from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getStatusNumber
 from utils import urlPermitted
@@ -42,10 +43,7 @@ def createDelete(session, baseDir: str, federationList: [],
     if ':' in domain:
         domain = domain.split(':')[0]
         fullDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
+    fullDomain = getFullDomain(domain, port)
 
     statusNumber, published = getStatusNumber()
     newDeleteId = \
@@ -100,11 +98,7 @@ def sendDeleteViaServer(baseDir: str, session,
         print('WARN: No session for sendDeleteViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
     actor = httpPrefix + '://' + fromDomainFull + \
         '/users/' + fromNickname
@@ -181,11 +175,7 @@ def deletePublic(session, baseDir: str, federationList: [],
                  debug: bool) -> {}:
     """Makes a public delete activity
     """
-    fromDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fromDomain = domain + ':' + str(port)
+    fromDomain = getFullDomain(domain, port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://' + fromDomain + \
@@ -209,11 +199,7 @@ def deletePostPub(session, baseDir: str, federationList: [],
                   debug: bool) -> {}:
     """Deletes a given status post
     """
-    deletedDomain = deleteDomain
-    if deletePort:
-        if deletePort != 80 and deletePort != 443:
-            if ':' not in deletedDomain:
-                deletedDomain = deletedDomain + ':' + str(deletePort)
+    deletedDomain = getFullDomain(deleteDomain, deletePort)
 
     objectUrl = \
         deleteHttpsPrefix + '://' + deletedDomain + '/users/' + \

@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import getFullDomain
 from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -30,10 +31,7 @@ def createAcceptReject(baseDir: str, federationList: [],
     if not urlPermitted(objectJson['actor'], federationList):
         return None
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",

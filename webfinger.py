@@ -18,6 +18,7 @@ import urllib.parse
 from session import getJson
 from cache import storeWebfingerInCache
 from cache import getWebfingerFromCache
+from utils import getFullDomain
 from utils import loadJson
 from utils import loadJsonOnionify
 from utils import saveJson
@@ -113,10 +114,7 @@ def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
     """Stores webfinger endpoint for a user to a file
     """
     originalDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
     handle = nickname + '@' + domain
     wfSubdir = '/wfendpoints'
     if not os.path.isdir(baseDir + wfSubdir):
@@ -135,10 +133,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
     """Creates a webfinger endpoint for a user
     """
     originalDomain = domain
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     personName = nickname
     personId = httpPrefix + "://" + domain + "/users/" + personName
@@ -245,10 +240,7 @@ def webfingerLookup(path: str, baseDir: str,
         if debug:
             print('DEBUG: WEBFINGER no @ in handle ' + handle)
         return None
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in handle:
-                handle = handle + ':' + str(port)
+    handle = getFullDomain(handle, port)
     # convert @domain@domain to inbox@domain
     if '@' in handle:
         handleDomain = handle.split('@')[1]

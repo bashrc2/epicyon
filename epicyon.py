@@ -47,6 +47,7 @@ from tests import testClientToServer
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
+from utils import getFullDomain
 from utils import setConfigParam
 from utils import getConfigParam
 from utils import getDomainFromActor
@@ -501,10 +502,8 @@ if args.posts:
         if '/users/' in args.posts:
             postsNickname = getNicknameFromActor(args.posts)
             postsDomain, postsPort = getDomainFromActor(args.posts)
-            args.posts = postsNickname + '@' + postsDomain
-            if postsPort:
-                if postsPort != 80 and postsPort != 443:
-                    args.posts += ':' + str(postsPort)
+            args.posts = \
+                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --posts nickname@domain')
             sys.exit()
@@ -533,10 +532,8 @@ if args.postDomains:
         if '/users/' in args.postDomains:
             postsNickname = getNicknameFromActor(args.postDomains)
             postsDomain, postsPort = getDomainFromActor(args.postDomains)
-            args.postDomains = postsNickname + '@' + postsDomain
-            if postsPort:
-                if postsPort != 80 and postsPort != 443:
-                    args.postDomains += ':' + str(postsPort)
+            args.postDomains = \
+                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --postDomains nickname@domain')
             sys.exit()
@@ -573,10 +570,8 @@ if args.postDomainsBlocked:
             postsNickname = getNicknameFromActor(args.postDomainsBlocked)
             postsDomain, postsPort = \
                 getDomainFromActor(args.postDomainsBlocked)
-            args.postDomainsBlocked = postsNickname + '@' + postsDomain
-            if postsPort:
-                if postsPort != 80 and postsPort != 443:
-                    args.postDomainsBlocked += ':' + str(postsPort)
+            args.postDomainsBlocked = \
+                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --postDomainsBlocked nickname@domain')
             sys.exit()
@@ -612,10 +607,8 @@ if args.checkDomains:
         if '/users/' in args.checkDomains:
             postsNickname = getNicknameFromActor(args.posts)
             postsDomain, postsPort = getDomainFromActor(args.posts)
-            args.checkDomains = postsNickname + '@' + postsDomain
-            if postsPort:
-                if postsPort != 80 and postsPort != 443:
-                    args.checkDomains += ':' + str(postsPort)
+            args.checkDomains = \
+                getFullDomain(postsNickname + '@' + postsDomain, postsPort)
         else:
             print('Syntax: --checkDomains nickname@domain')
             sys.exit()

@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import getFullDomain
 from utils import isEditor
 from utils import loadJson
 from utils import getDomainFromActor
@@ -544,10 +545,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
         htmlHeaderWithExternalStyle(cssFilename)
 
     # add the page title
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     historySearchForm += \
         '<center><h1><a href="' + actor + '/search">' + \
@@ -823,10 +821,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
     if not lines:
         return None
 
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
+    domainFull = getFullDomain(domain, port)
 
     maxFeedLength = 10
     hashtagFeed = \

@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
+from utils import getFullDomain
 from utils import isSystemAccount
 from utils import getFollowersList
 from utils import validNickname
@@ -145,11 +146,8 @@ def isFollowingActor(baseDir: str,
         print('WARN: unable to find nickname in ' + actor)
         return False
     followingDomain, followingPort = getDomainFromActor(actor)
-    followingHandle = followingNickname + '@' + followingDomain
-    if followingPort:
-        if followingPort != 80 and followingPort != 443:
-            if ':' not in followingHandle:
-                followingHandle += ':' + str(followingPort)
+    followingHandle = \
+        getFullDomain(followingNickname + '@' + followingDomain, followingPort)
     if followingHandle.lower() in open(followingFile).read().lower():
         return True
     return False
@@ -374,10 +372,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     if not validNickname(domain, nickname):
         return None
 
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                domain = domain + ':' + str(port)
+    domain = getFullDomain(domain, port)
 
     if headerOnly:
         firstStr = \
@@ -539,12 +534,8 @@ def storeFollowRequest(baseDir: str,
         return False
 
     approveHandle = nickname + '@' + domain
-    domainFull = domain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in domain:
-                approveHandle = nickname + '@' + domain + ':' + str(fromPort)
-                domainFull = domain + ':' + str(fromPort)
+    domainFull = getFullDomain(domain, fromPort)
+    approveHandle = getFullDomain(nickname + '@' + domain, fromPort)
 
     followersFilename = accountsDir + '/followers.txt'
     if os.path.isfile(followersFilename):
@@ -634,12 +625,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         return False
     domain, tempPort = getDomainFromActor(messageJson['actor'])
     fromPort = port
-    domainFull = domain
+    domainFull = getFullDomain(domain, tempPort)
     if tempPort:
         fromPort = tempPort
-        if tempPort != 80 and tempPort != 443:
-            if ':' not in domain:
-                domainFull = domain + ':' + str(tempPort)
     if not domainPermitted(domain, federationList):
         if debug:
             print('DEBUG: follower from domain not permitted - ' + domain)
@@ -666,11 +654,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: follow domain not permitted ' + domainToFollow)
         return True
-    domainToFollowFull = domainToFollow
-    if tempPort:
-        if tempPort != 80 and tempPort != 443:
-            if ':' not in domainToFollow:
-                domainToFollowFull = domainToFollow + ':' + str(tempPort)
+    domainToFollowFull = getFullDomain(domainToFollow, tempPort)
     nicknameToFollow = getNicknameFromActor(messageJson['object'])
     if not nicknameToFollow:
         if debug:
@@ -878,10 +862,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
               ' port ' + str(port) + ' to ' +
               nickname + '@' + domain + ' port ' + str(fromPort))
     clientToServer = False
-    denyHandle = nickname + '@' + domain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            denyHandle = denyHandle + ':' + str(fromPort)
+    denyHandle = getFullDomain(nickname + '@' + domain, fromPort)
     # remove from the follow requests file
     removeFromFollowRequests(baseDir, nicknameToFollow, domainToFollow,
                              denyHandle, debug)
@@ -913,20 +894,10 @@ def sendFollowRequest(session, baseDir: str,
     if not domainPermitted(followDomain, federationList):
         return None
 
-    fullDomain = domain
-    followActor = httpPrefix + '://' + domain + '/users/' + nickname
-    if port:
-        if port != 80 and port != 443:
-            if ':' not in domain:
-                fullDomain = domain + ':' + str(port)
-                followActor = httpPrefix + '://' + \
-                    fullDomain + '/users/' + nickname
+    fullDomain = getFullDomain(domain, port)
+    followActor = httpPrefix + '://' + fullDomain + '/users/' + nickname
 
-    requestDomain = followDomain
-    if followPort:
-        if followPort != 80 and followPort != 443:
-            if ':' not in followDomain:
-                requestDomain = followDomain + ':' + str(followPort)
+    requestDomain = getFullDomain(followDomain, followPort)
 
     statusNumber, published = getStatusNumber()
 
@@ -984,17 +955,9 @@ def sendFollowRequestViaServer(baseDir: str, session,
         print('WARN: No session for sendFollowRequestViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
 
-    followDomainFull = followDomain
-    if followPort:
-        if followPort != 80 and followPort != 443:
-            if ':' not in followDomain:
-                followDomainFull = followDomain + ':' + str(followPort)
+    followDomainFull = getFullDomain(followDomain, followPort)
 
     followActor = httpPrefix + '://' + \
         fromDomainFull + '/users/' + fromNickname
@@ -1077,16 +1040,8 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
         print('WARN: No session for sendUnfollowRequestViaServer')
         return 6
 
-    fromDomainFull = fromDomain
-    if fromPort:
-        if fromPort != 80 and fromPort != 443:
-            if ':' not in fromDomain:
-                fromDomainFull = fromDomain + ':' + str(fromPort)
-    followDomainFull = followDomain
-    if followPort:
-        if followPort != 80 and followPort != 443:
-            if ':' not in followDomain:
-                followDomainFull = followDomain + ':' + str(followPort)
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+    followDomainFull = getFullDomain(followDomain, followPort)
 
     followActor = httpPrefix + '://' + \
         fromDomainFull + '/users/' + fromNickname
@@ -1241,11 +1196,7 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         return
     domainFollower, portFollower = \
         getDomainFromActor(messageJson['object']['actor'])
-    domainFollowerFull = domainFollower
-    if portFollower:
-        if portFollower != 80 and portFollower != 443:
-            if ':' not in domainFollower:
-                domainFollowerFull = domainFollower + ':' + str(portFollower)
+    domainFollowerFull = getFullDomain(domainFollower, portFollower)
 
     nicknameFollowing = getNicknameFromActor(messageJson['object']['object'])
     if not nicknameFollowing:
@@ -1254,12 +1205,7 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         return
     domainFollowing, portFollowing = \
         getDomainFromActor(messageJson['object']['object'])
-    domainFollowingFull = domainFollowing
-    if portFollowing:
-        if portFollowing != 80 and portFollowing != 443:
-            if ':' not in domainFollowing:
-                domainFollowingFull = \
-                    domainFollowing + ':' + str(portFollowing)
+    domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
     if unfollowPerson(baseDir, nicknameFollower, domainFollowerFull,
                       nicknameFollowing, domainFollowingFull):
