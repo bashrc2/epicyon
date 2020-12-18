@@ -4570,8 +4570,8 @@ class PubServer(BaseHTTPRequestHandler):
                             'id': actorJson['id'] + '#updates/' + pubNumber,
                             'type': 'Update',
                             'actor': actorJson['id'],
-                            'cc': [pubStr],
-                            'to': [actorJson['id'] + '/followers'],
+                            'to': [pubStr],
+                            'cc': [actorJson['id'] + '/followers'],
                             'object': actorJson
                         }
                         print('Sending actor update: ' + str(updateActorJson))
