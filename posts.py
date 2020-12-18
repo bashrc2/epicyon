@@ -142,7 +142,12 @@ def cleanHtml(rawHtml: str) -> str:
 
 
 def getUserUrl(wfRequest: {}) -> str:
+    """Gets the actor url from a webfinger request
+    """
+    print('getUserUrl: ' + str(wfRequest))
     if not wfRequest.get('links'):
+        print('getUserUrl webfinger activity+json contains no links ' +
+              str(wfRequest))
         return None
     for link in wfRequest['links']:
         if not (link.get('type') and link.get('href')):
@@ -153,7 +158,7 @@ def getUserUrl(wfRequest: {}) -> str:
                 '/accounts/' in link['href'] or
                 '/profile/' in link['href'] or
                 '/channel/' in link['href']):
-            print('Webfinger activity+json ' +
+            print('getUserUrl webfinger activity+json ' +
                   'contains single user instance actor ' +
                   str(link))
         return link['href']
