@@ -69,12 +69,14 @@ class threadWithTrace(threading.Thread):
                                daemon=True)
 
 
-def removeDormantThreads(baseDir: str, threadsList: [], debug: bool) -> None:
+def removeDormantThreads(baseDir: str, threadsList: [], debug: bool,
+                         timeoutMins=30) -> None:
     """Removes threads whose execution has completed
     """
     if len(threadsList) == 0:
         return
 
+    timeoutSecs = int(timeoutMins * 60)
     dormantThreads = []
     currTime = datetime.datetime.utcnow()
     changed = False
@@ -92,13 +94,13 @@ def removeDormantThreads(baseDir: str, threadsList: [], debug: bool) -> None:
                               'thread is not alive ten seconds after start')
                     removeThread = True
             # timeout for started threads
-            if (currTime - th.startTime).total_seconds() > 600:
+            if (currTime - th.startTime).total_seconds() > timeoutSecs:
                 if debug:
                     print('DEBUG: started thread timed out')
                 removeThread = True
         else:
             # timeout for threads which havn't been started
-            if (currTime - th.startTime).total_seconds() > 600:
+            if (currTime - th.startTime).total_seconds() > timeoutSecs:
                 if debug:
                     print('DEBUG: unstarted thread timed out')
                 removeThread = True

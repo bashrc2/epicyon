@@ -122,6 +122,11 @@ parser.add_argument('--dormantMonths',
                     default=3,
                     help='How many months does a followed account need to ' +
                     'be unseen for before being considered dormant')
+parser.add_argument('--sendThreadsTimeoutMins',
+                    dest='sendThreadsTimeoutMins', type=int,
+                    default=30,
+                    help='How many minutes before a thread to send out ' +
+                    'posts expires')
 parser.add_argument('--maxNewswirePosts',
                     dest='maxNewswirePosts', type=int,
                     default=20,
@@ -2035,6 +2040,11 @@ dormantMonths = \
 if dormantMonths is not None:
     args.dormantMonths = int(dormantMonths)
 
+sendThreadsTimeoutMins = \
+    getConfigParam(baseDir, 'sendThreadsTimeoutMins')
+if sendThreadsTimeoutMins is not None:
+    args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
+
 allowNewsFollowers = \
     getConfigParam(baseDir, 'allowNewsFollowers')
 if allowNewsFollowers is not None:
@@ -2083,7 +2093,8 @@ if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.dormantMonths,
+    runDaemon(args.sendThreadsTimeoutMins,
+              args.dormantMonths,
               args.maxNewswirePosts,
               args.allowLocalNetworkAccess,
               args.maxFeedItemSizeKb,

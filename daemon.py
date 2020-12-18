@@ -12980,12 +12980,13 @@ class EpicyonServer(ThreadingHTTPServer):
             return HTTPServer.handle_error(self, request, client_address)
 
 
-def runPostsQueue(baseDir: str, sendThreads: [], debug: bool) -> None:
+def runPostsQueue(baseDir: str, sendThreads: [], debug: bool,
+                  timeoutMins: int) -> None:
     """Manages the threads used to send posts
     """
     while True:
         time.sleep(1)
-        removeDormantThreads(baseDir, sendThreads, debug)
+        removeDormantThreads(baseDir, sendThreads, debug, timeoutMins)
 
 
 def runSharesExpire(versionNumber: str, baseDir: str) -> None:
@@ -13048,7 +13049,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(dormantMonths: int,
+def runDaemon(sendThreadsTimeoutMins: int,
+              dormantMonths: int,
               maxNewswirePosts: int,
               allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
@@ -13343,10 +13345,14 @@ def runDaemon(dormantMonths: int,
                               httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
 
+    # number of mins after which sending posts or updates will expire
+    httpd.sendThreadsTimeoutMins = sendThreadsTimeoutMins
+
     print('Creating posts queue')
     httpd.thrPostsQueue = \
         threadWithTrace(target=runPostsQueue,
-                        args=(baseDir, httpd.sendThreads, debug), daemon=True)
+                        args=(baseDir, httpd.sendThreads, debug,
+                              httpd.sendThreadsTimeoutMins), daemon=True)
     if not unitTest:
         httpd.thrPostsWatchdog = \
             threadWithTrace(target=runPostsWatchdog,
