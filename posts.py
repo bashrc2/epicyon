@@ -2433,26 +2433,29 @@ def sendToFollowers(session, baseDir: str,
     sendingCtr = 0
     for followerDomain, followerHandles in grouped.items():
         print('Sending post to followers progress ' +
-              str(int(sendingCtr * 100 / len(grouped.items()))) + '%')
+              str(int(sendingCtr * 100 / len(grouped.items()))) + '% ' +
+              followerDomain)
         sendingCtr += 1
 
         if debug:
-            print('DEBUG: follower handles for ' + followerDomain)
             pprint(followerHandles)
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
         if not siteIsActive(followerDomainUrl):
-            print('Domain is inactive: ' + followerDomainUrl)
+            print('Sending post to followers domain is inactive: ' +
+                  followerDomainUrl)
             continue
-        print('Domain is active: ' + followerDomainUrl)
+        print('Sending post to followers domain is active: ' +
+              followerDomainUrl)
 
         withSharedInbox = hasSharedInbox(session, httpPrefix, followerDomain)
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
         if not withSharedInbox:
-            print(followerDomain + ' does not have a shared inbox')
+            print('Sending post to followers, ' + followerDomain +
+                  ' does not have a shared inbox')
 
         toPort = port
         index = 0
@@ -2486,13 +2489,13 @@ def sendToFollowers(session, baseDir: str,
 
             if toNickname != 'inbox' and postJsonObject.get('type'):
                 if sendingProfileUpdate(postJsonObject):
-                    print('Sending profile update to ' +
+                    print('Sending post to followers ' +
                           'shared inbox of ' + toDomain)
                     toNickname = 'inbox'
 
-            if debug:
-                print('DEBUG: Sending from ' + nickname + '@' + domain +
-                      ' to ' + toNickname + '@' + toDomain)
+            print('Sending post to followers from ' +
+                  nickname + '@' + domain +
+                  ' to ' + toNickname + '@' + toDomain)
 
             sendSignedJson(postJsonObject, session, baseDir,
                            nickname, fromDomain, port,
@@ -2504,19 +2507,17 @@ def sendToFollowers(session, baseDir: str,
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
-                if debug:
-                    print('DEBUG: Sending to ' + handle)
+                print('Sending post to followers ' + handle)
                 toNickname = handle.split('@')[0]
 
-                if debug:
-                    if postJsonObject['type'] != 'Update':
-                        print('DEBUG: Sending from ' +
-                              nickname + '@' + domain + ' to ' +
-                              toNickname + '@' + toDomain)
-                    else:
-                        print('DEBUG: Sending profile update from ' +
-                              nickname + '@' + domain + ' to ' +
-                              toNickname + '@' + toDomain)
+                if postJsonObject['type'] != 'Update':
+                    print('Sending post to followers from ' +
+                          nickname + '@' + domain + ' to ' +
+                          toNickname + '@' + toDomain)
+                else:
+                    print('Sending post to followers profile update from ' +
+                          nickname + '@' + domain + ' to ' +
+                          toNickname + '@' + toDomain)
 
                 sendSignedJson(postJsonObject, session, baseDir,
                                nickname, fromDomain, port,
