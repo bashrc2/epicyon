@@ -76,14 +76,14 @@ def getJson(session, url: str, headers: {}, params: {},
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
     except requests.exceptions.RequestException as e:
-        print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
-              'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams) + '\n')
+        print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
+              'headers: ' + str(sessionHeaders) + ' ' +
+              'params: ' + str(sessionParams))
         print(e)
     except ValueError as e:
-        print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
-              'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams) + '\n')
+        print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
+              'headers: ' + str(sessionHeaders) + ' ' +
+              'params: ' + str(sessionParams) + ' ')
         print(e)
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
