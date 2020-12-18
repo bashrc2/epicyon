@@ -123,7 +123,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, nickname,
-                                            domain, postToBox)
+                                            domain, postToBox, 57262)
 
     if not inboxUrl:
         if debug:

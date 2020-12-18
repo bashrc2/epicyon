@@ -136,7 +136,7 @@ def sendDeleteViaServer(baseDir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 53036)
 
     if not inboxUrl:
         if debug:

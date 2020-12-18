@@ -152,7 +152,7 @@ def sendSkillViaServer(baseDir: str, session, nickname: str, password: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, nickname, domain,
-                                            postToBox)
+                                            postToBox, 86725)
 
     if not inboxUrl:
         if debug:

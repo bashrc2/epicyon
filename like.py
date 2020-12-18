@@ -257,7 +257,7 @@ def sendLikeViaServer(baseDir: str, session,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname, fromDomain,
-                                            postToBox)
+                                            postToBox, 72873)
 
     if not inboxUrl:
         if debug:
@@ -335,7 +335,8 @@ def sendUndoLikeViaServer(baseDir: str, session,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
-                                            fromDomain, postToBox)
+                                            fromDomain, postToBox,
+                                            72625)
 
     if not inboxUrl:
         if debug:

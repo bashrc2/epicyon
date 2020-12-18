@@ -1179,7 +1179,8 @@ def individualPostAsHtml(allowDownloads: bool,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache,
                                                  projectVersion, httpPrefix,
-                                                 nickname, domain, 'outbox')
+                                                 nickname, domain, 'outbox',
+                                                 72367)
         logPostTiming(enableTimingLog, postStartTime, '6')
 
         if avatarUrl2:

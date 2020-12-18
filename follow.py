@@ -995,7 +995,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 52025)
 
     if not inboxUrl:
         if debug:
@@ -1086,7 +1086,8 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
                                             wfRequest, personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname,
-                                            fromDomain, postToBox)
+                                            fromDomain, postToBox,
+                                            76536)
 
     if not inboxUrl:
         if debug:

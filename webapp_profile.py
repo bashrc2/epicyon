@@ -1457,7 +1457,7 @@ def individualFollowAsHtml(translate: {},
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache, projectVersion,
                                                  httpPrefix, nickname,
-                                                 domain, 'outbox')
+                                                 domain, 'outbox', 43036)
         if avatarUrl2:
             avatarUrl = avatarUrl2
         if displayName:

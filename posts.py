@@ -141,13 +141,13 @@ def cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}) -> str:
+def getUserUrl(wfRequest: {}, sourceId=0) -> str:
     """Gets the actor url from a webfinger request
     """
-    print('getUserUrl: ' + str(wfRequest))
+    print('getUserUrl: ' + str(sourceId) + ' ' + str(wfRequest))
     if not wfRequest.get('links'):
         print('getUserUrl webfinger activity+json contains no links ' +
-              str(wfRequest))
+              str(sourceId) + ' ' + str(wfRequest))
         return None
     for link in wfRequest['links']:
         if not (link.get('type') and link.get('href')):
@@ -160,7 +160,7 @@ def getUserUrl(wfRequest: {}) -> str:
                 '/channel/' in link['href']):
             print('getUserUrl webfinger activity+json ' +
                   'contains single user instance actor ' +
-                  str(link))
+                  str(sourceId) + ' ' + str(link))
         return link['href']
     return None
 
@@ -207,13 +207,14 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                  personCache: {},
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
-                 boxName='inbox') -> (str, str, str, str, str, str, str, str):
+                 boxName='inbox',
+                 sourceId=0) -> (str, str, str, str, str, str, str, str):
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not wfRequest.get('errors'):
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, sourceId)
     else:
         if nickname == 'dev':
             # try single user instance
@@ -1774,7 +1775,8 @@ def sendPost(projectVersion: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, postToBox)
+                                            nickname, domain, postToBox,
+                                            72533)
 
     if not inboxUrl:
         return 3
@@ -1889,7 +1891,8 @@ def sendPostViaServer(projectVersion: str,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname,
-                                            fromDomain, postToBox)
+                                            fromDomain, postToBox,
+                                            82796)
     if not inboxUrl:
         if debug:
             print('DEBUG: No ' + postToBox + ' was found for ' + handle)
@@ -2088,7 +2091,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix,
-                                 nickname, domain, postToBox)
+                                 nickname, domain, postToBox,
+                                 30873)
 
     print("inboxUrl: " + str(inboxUrl))
     print("toPersonId: " + str(toPersonId))
@@ -3396,7 +3400,8 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox')
+                                            nickname, domain, 'outbox',
+                                            62524)
     maxMentions = 10
     maxEmoji = 10
     maxAttachments = 5
@@ -3437,7 +3442,8 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox')
+                                            nickname, domain, 'outbox',
+                                            92522)
     maxMentions = 99
     maxEmoji = 99
     maxAttachments = 5
@@ -3480,7 +3486,8 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox')
+                                            nickname, domain, 'outbox',
+                                            13863)
     maxMentions = 99
     maxEmoji = 99
     maxAttachments = 5
@@ -3995,7 +4002,7 @@ def sendBlockViaServer(baseDir: str, session,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4077,7 +4084,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 53892)
 
     if not inboxUrl:
         if debug:
