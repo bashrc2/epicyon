@@ -58,7 +58,7 @@ def getJson(session, url: str, headers: {}, params: {},
             domain='testdomain') -> {}:
     if not isinstance(url, str):
         print('url: ' + str(url))
-        print('ERROR: getJson url should be a string')
+        print('ERROR: getJson failed, url should be a string')
         return None
     sessionParams = {}
     sessionHeaders = {}
@@ -71,7 +71,7 @@ def getJson(session, url: str, headers: {}, params: {},
         sessionHeaders['User-Agent'] += \
             '; +' + httpPrefix + '://' + domain + '/'
     if not session:
-        print('WARN: no session specified for getJson')
+        print('WARN: getJson failed, no session specified for getJson')
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
@@ -87,7 +87,7 @@ def getJson(session, url: str, headers: {}, params: {},
         print(e)
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during getJson')
+            print('WARN: getJson failed, connection was reset during getJson')
         print(e)
     return None
 
