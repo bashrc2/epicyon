@@ -148,13 +148,15 @@ def randomizeActorImages(personJson: {}) -> None:
     This causes other instances to update their cached avatar image
     """
     personId = personJson['id']
+    nickname = personId.split('/users/')[1]
     lastPartOfFilename = personJson['icon']['url'].split('/')[-1]
     existingExtension = lastPartOfFilename.split('.')[1]
     # NOTE: these files don't need to have cryptographically
     # secure names
     randStr = str(randint(10000000000000, 99999999999999))  # nosec
     personJson['icon']['url'] = \
-        '/accounts/avatars/avatar' + randStr + '.' + existingExtension
+        '/accounts/avatars/' + nickname + \
+        '/avatar' + randStr + '.' + existingExtension
     lastPartOfFilename = personJson['image']['url'].split('/')[-1]
     existingExtension = lastPartOfFilename.split('.')[1]
     randStr = str(randint(10000000000000, 99999999999999))  # nosec
