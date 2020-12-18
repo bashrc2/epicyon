@@ -196,7 +196,8 @@ def getDefaultPersonContext() -> str:
         'shares': 'toot:shares',
         'skills': 'toot:skills',
         'roles': 'toot:roles',
-        'availability': 'toot:availability'
+        'availability': 'toot:availability',
+        'nomadicLocations': 'toot:nomadicLocations'
     }
 
 
