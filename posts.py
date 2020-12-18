@@ -2414,7 +2414,15 @@ def sendToFollowers(session, baseDir: str,
     clientToServer = False
 
     # for each instance
+    sendingStartTime = datetime.datetime.utcnow()
+    print('Sending post to followers begins ' +
+          sendingStartTime.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    sendingCtr = 0
     for followerDomain, followerHandles in grouped.items():
+        print('Sending post to followers progress ' +
+              str(int(sendingCtr * 100 / len(grouped.items()))) + '%')
+        sendingCtr += 1
+
         if debug:
             print('DEBUG: follower handles for ' + followerDomain)
             pprint(followerHandles)
@@ -2509,6 +2517,10 @@ def sendToFollowers(session, baseDir: str,
 
     if debug:
         print('DEBUG: End of sendToFollowers')
+
+    sendingEndTime = datetime.datetime.utcnow()
+    sendingMins = int((sendingEndTime - sendingStartTime).total_seconds() / 60)
+    print('Sending post to followers ends ' + str(sendingMins) + ' mins')
 
 
 def sendToFollowersThread(session, baseDir: str,
