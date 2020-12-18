@@ -259,10 +259,18 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         if not item.get('object'):
             continue
+
+        wfRequest = {}
+        requestHandle = nickname + '@' + domain
+        if cachedWebfingers.get(requestHandle):
+            wfRequest = cachedWebfingers[requestHandle]
+        elif cachedWebfingers.get(requestHandle + ':' + str(port)):
+            wfRequest = cachedWebfingers[requestHandle + ':' + str(port)]
+
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                  translate, None, baseDir,
-                                 session, cachedWebfingers, personCache,
+                                 session, wfRequest, personCache,
                                  nickname, domain, port,
                                  item, avatarUrl, False, False,
                                  httpPrefix, projectVersion, 'inbox',
