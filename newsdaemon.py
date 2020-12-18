@@ -752,7 +752,7 @@ def runNewswireWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrNewswireDaemon.start()
     while True:
         time.sleep(50)
-        if not httpd.thrNewswireDaemon.isAlive():
+        if not httpd.thrNewswireDaemon.is_alive():
             httpd.thrNewswireDaemon.kill()
             httpd.thrNewswireDaemon = \
                 newswireOriginal.clone(runNewswireDaemon)

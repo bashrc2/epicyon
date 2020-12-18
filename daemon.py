@@ -1012,7 +1012,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('Waiting for previous outbox thread to end')
             waitCtr = 0
             thName = accountOutboxThreadName
-            while self.server.outboxThread[thName].isAlive() and waitCtr < 8:
+            while self.server.outboxThread[thName].is_alive() and waitCtr < 8:
                 time.sleep(1)
                 waitCtr += 1
             if waitCtr >= 8:
@@ -12087,7 +12087,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.newPostThread.get(newPostThreadName):
             print('Waiting for previous new post thread to end')
             waitCtr = 0
-            while (self.server.newPostThread[newPostThreadName].isAlive() and
+            while (self.server.newPostThread[newPostThreadName].is_alive() and
                    waitCtr < 8):
                 time.sleep(1)
                 waitCtr += 1
@@ -13005,7 +13005,7 @@ def runPostsWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrPostsQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrPostsQueue.isAlive():
+        if not httpd.thrPostsQueue.is_alive():
             httpd.thrPostsQueue.kill()
             httpd.thrPostsQueue = postsQueueOriginal.clone(runPostsQueue)
             httpd.thrPostsQueue.start()
@@ -13020,7 +13020,7 @@ def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrSharesExpire.start()
     while True:
         time.sleep(20)
-        if not httpd.thrSharesExpire.isAlive():
+        if not httpd.thrSharesExpire.is_alive():
             httpd.thrSharesExpire.kill()
             httpd.thrSharesExpire = sharesExpireOriginal.clone(runSharesExpire)
             httpd.thrSharesExpire.start()

@@ -2456,7 +2456,7 @@ def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrInboxQueue.isAlive() or httpd.restartInboxQueue:
+        if not httpd.thrInboxQueue.is_alive() or httpd.restartInboxQueue:
             httpd.restartInboxQueueInProgress = True
             httpd.thrInboxQueue.kill()
             httpd.thrInboxQueue = inboxQueueOriginal.clone(runInboxQueue)
