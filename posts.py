@@ -1174,7 +1174,7 @@ def postIsAddressedToFollowers(baseDir: str,
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
-    domain = getFullDomain(domain, port)
+    domainFull = getFullDomain(domain, port)
 
     if not postJsonObject.get('object'):
         return False
@@ -1192,7 +1192,7 @@ def postIsAddressedToFollowers(baseDir: str,
         if postJsonObject.get('cc'):
             ccList = postJsonObject['cc']
 
-    followersUrl = httpPrefix + '://' + domain + '/users/' + \
+    followersUrl = httpPrefix + '://' + domainFull + '/users/' + \
         nickname + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
@@ -2353,6 +2353,26 @@ def hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
     return False
 
 
+def sendingProfileUpdate(postJsonObject: {}) -> bool:
+    """Returns true if the given json is a profile update
+    """
+    if postJsonObject['type'] != 'Update':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('type'):
+        return False
+    activityType = postJsonObject['object']['type']
+    if activityType == 'Person' or \
+       activityType == 'Application' or \
+       activityType == 'Group' or \
+       activityType == 'Service':
+        return True
+    return False
+
+
 def sendToFollowers(session, baseDir: str,
                     nickname: str,
                     domain: str,
@@ -2438,18 +2458,10 @@ def sendToFollowers(session, baseDir: str,
                 toNickname = 'inbox'
 
             if toNickname != 'inbox' and postJsonObject.get('type'):
-                if postJsonObject['type'] == 'Update':
-                    if postJsonObject.get('object'):
-                        if isinstance(postJsonObject['object'], dict):
-                            if postJsonObject['object'].get('type'):
-                                typ = postJsonObject['object']['type']
-                                if typ == 'Person' or \
-                                   typ == 'Application' or \
-                                   typ == 'Group' or \
-                                   typ == 'Service':
-                                    print('Sending profile update to ' +
-                                          'shared inbox of ' + toDomain)
-                                    toNickname = 'inbox'
+                if sendingProfileUpdate(postJsonObject):
+                    print('Sending profile update to ' +
+                          'shared inbox of ' + toDomain)
+                    toNickname = 'inbox'
 
             if debug:
                 print('DEBUG: Sending from ' + nickname + '@' + domain +
