@@ -3799,11 +3799,11 @@ class PubServer(BaseHTTPRequestHandler):
                     for mType, lastPart in uploads:
                         repStr = '/' + lastPart
                         if mType == 'avatar':
-                            lastPartOfUrl = \
-                                actorJson['icon']['url'].split('/')[-1]
-                            srchStr = '/' + lastPartOfUrl
                             actorUrl = actorJson['icon']['url']
+                            lastPartOfUrl = actorUrl.split('/')[-1]
+                            srchStr = '/' + lastPartOfUrl
                             actorUrl = actorUrl.replace(srchStr, repStr)
+                            print('actorUrl: ' + actorUrl)
                             actorJson['icon']['url'] = \
                                 actorUrl.replace('/users/',
                                                  '/accounts/avatars/')
