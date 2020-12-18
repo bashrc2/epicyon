@@ -3803,8 +3803,6 @@ class PubServer(BaseHTTPRequestHandler):
                             lastPartOfUrl = actorUrl.split('/')[-1]
                             srchStr = '/' + lastPartOfUrl
                             actorUrl = actorUrl.replace(srchStr, repStr)
-                            actorUrl = actorUrl.replace('/users/',
-                                                        '/accounts/avatars/')
                             actorJson['icon']['url'] = actorUrl
                             print('actorUrl: ' + actorUrl)
                             if '.' in actorUrl:
@@ -9359,16 +9357,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   '_nodeinfo(callingDomain)',
                                   '_mastoApi(callingDomain)')
-
-        # alternative way of referencing avatar images
-        # /accounts/avatars/nickname/avatar[number].png
-        # instead of /users/nickname/avatar[number].png
-        if self.path.startswith('/accounts/avatars/'):
-            nickname = self.path.split('/accounts/avatars/')[1]
-            if '/' in nickname:
-                avatarFilename = nickname.split('/')[1]
-                nickname = nickname.split('/')[0]
-                self.path = '/users/' + nickname + '/' + avatarFilename
 
         if self.path == '/logout':
             if not self.server.newsInstance:
