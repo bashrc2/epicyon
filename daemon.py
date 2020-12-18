@@ -3772,17 +3772,17 @@ class PubServer(BaseHTTPRequestHandler):
                         # which isn't implemented in Epicyon
                         actorJson['discoverable'] = False
                         actorChanged = True
-                    if not actorJson['@context'].get('orgSchema'):
-                        actorJson['@context']['orgSchema'] = 'toot:orgSchema'
+                    if not actorJson['@context'][2].get('orgSchema'):
+                        actorJson['@context'][2]['orgSchema'] = 'toot:orgSchema'
                         actorChanged = True
-                    if not actorJson['@context'].get('skills'):
-                        actorJson['@context']['skills'] = 'toot:skills'
+                    if not actorJson['@context'][2].get('skills'):
+                        actorJson['@context'][2]['skills'] = 'toot:skills'
                         actorChanged = True
-                    if not actorJson['@context'].get('roles'):
-                        actorJson['@context']['roles'] = 'toot:roles'
+                    if not actorJson['@context'][2].get('roles'):
+                        actorJson['@context'][2]['roles'] = 'toot:roles'
                         actorChanged = True
-                    if not actorJson['@context'].get('availability'):
-                        actorJson['@context']['availaibility'] = \
+                    if not actorJson['@context'][2].get('availability'):
+                        actorJson['@context'][2]['availaibility'] = \
                             'toot:availability'
                         actorChanged = True
                     if actorJson.get('capabilityAcquisitionEndpoint'):
