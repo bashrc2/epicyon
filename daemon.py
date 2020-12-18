@@ -3803,13 +3803,12 @@ class PubServer(BaseHTTPRequestHandler):
                             lastPartOfUrl = actorUrl.split('/')[-1]
                             srchStr = '/' + lastPartOfUrl
                             actorUrl = actorUrl.replace(srchStr, repStr)
+                            actorUrl = actorUrl.replace('/users/',
+                                                        '/accounts/avatars/')
+                            actorJson['icon']['url'] = actorUrl
                             print('actorUrl: ' + actorUrl)
-                            actorJson['icon']['url'] = \
-                                actorUrl.replace('/users/',
-                                                 '/accounts/avatars/')
-                            if '.' in actorJson['icon']['url']:
-                                imgExt = \
-                                    actorJson['icon']['url'].split('.')[-1]
+                            if '.' in actorUrl:
+                                imgExt = actorUrl.split('.')[-1]
                                 if imgExt == 'jpg':
                                     imgExt = 'jpeg'
                                 actorJson['icon']['mediaType'] = \
