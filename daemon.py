@@ -4543,13 +4543,13 @@ class PubServer(BaseHTTPRequestHandler):
                         # remove the context from the actor json and put it
                         # at the start of the Upgrade activity
                         del actorJson['@context']
-                        # NOTE: there is deliberately no cc here
                         updateActorJson = {
                             '@context': pubContext,
                             'id': actorJson['id'] + '#updates/' + pubNumber,
                             'type': 'Update',
                             'actor': actorJson['id'],
                             'to': [pubStr],
+                            'cc': [actorJson['id'] + '/followers'],
                             'object': actorJson
                         }
                         print('Sending actor update: ' + str(updateActorJson))
