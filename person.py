@@ -191,7 +191,12 @@ def getDefaultPersonContext() -> str:
         'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
         'messageFranking': 'toot:messageFranking',
         'publicKeyBase64': 'toot:publicKeyBase64',
-        'discoverable': 'toot:discoverable'
+        'discoverable': 'toot:discoverable',
+        'orgSchema': 'toot:orgSchema',
+        'shares': 'toot:shares',
+        'skills': 'toot:skills',
+        'roles': 'toot:roles',
+        'availability': 'toot:availability'
     }
 
 

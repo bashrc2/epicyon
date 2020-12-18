@@ -3772,6 +3772,22 @@ class PubServer(BaseHTTPRequestHandler):
                         # which isn't implemented in Epicyon
                         actorJson['discoverable'] = False
                         actorChanged = True
+                    if not actorJson['@context'].get('orgSchema'):
+                        actorJson['@context']['orgSchema'] = 'toot:orgSchema'
+                        actorChanged = True
+                    if not actorJson['@context'].get('skills'):
+                        actorJson['@context']['skills'] = 'toot:skills'
+                        actorChanged = True
+                    if not actorJson['@context'].get('roles'):
+                        actorJson['@context']['roles'] = 'toot:roles'
+                        actorChanged = True
+                    if not actorJson['@context'].get('availability'):
+                        actorJson['@context']['availaibility'] = \
+                            'toot:availability'
+                        actorChanged = True
+                    if actorJson.get('capabilityAcquisitionEndpoint'):
+                        del actorJson['capabilityAcquisitionEndpoint']
+                        actorChanged = True
                     # update the avatar/image url file extension
                     uploads = profileMediaTypesUploaded.items()
                     for mType, lastPart in uploads:
