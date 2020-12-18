@@ -2342,14 +2342,20 @@ def sendToNamedAddresses(session, baseDir: str,
 
 def hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
     """Returns true if the given domain has a shared inbox
+    This tries the new and the old way of webfingering the shared inbox
     """
-    wfRequest = webfingerHandle(session, domain + '@' + domain,
-                                httpPrefix, {},
-                                None, __version__)
-    if wfRequest:
-        if isinstance(wfRequest, dict):
-            if not wfRequest.get('errors'):
-                return True
+    tryHandles = [
+        domain + '@' + domain,
+        'inbox@' + domain
+    ]
+    for handle in tryHandles:
+        wfRequest = webfingerHandle(session, handle,
+                                    httpPrefix, {},
+                                    None, __version__)
+        if wfRequest:
+            if isinstance(wfRequest, dict):
+                if not wfRequest.get('errors'):
+                    return True
     return False
 
 
@@ -2424,8 +2430,8 @@ def sendToFollowers(session, baseDir: str,
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
-            else:
-                print(followerDomain + ' does not have a shared inbox')
+        if not withSharedInbox:
+            print(followerDomain + ' does not have a shared inbox')
 
         toPort = port
         index = 0
