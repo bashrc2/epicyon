@@ -342,5 +342,9 @@
     "Ask about a shared item.": "Ask about a shared item.",
     "Account Information": "Account Information",
     "This account interacts with the following instances": "This account interacts with the following instances",
-    "News posts are moderated": "News posts are moderated"
+    "News posts are moderated": "News posts are moderated",
+    "Filter": "Filter",
+    "Filter out words": "Filter out words",
+    "Unfilter": "Unfilter",
+    "Unfilter words": "Unfilter words"
 }

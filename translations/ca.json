@@ -342,5 +342,9 @@
     "Ask about a shared item.": "Pregunteu sobre un element compartit.",
     "Account Information": "Informació del compte",
     "This account interacts with the following instances": "Aquest compte interactua amb les instàncies següents",
-    "News posts are moderated": "Les publicacions de notícies es moderen"
+    "News posts are moderated": "Les publicacions de notícies es moderen",
+    "Filter": "Filtre",
+    "Filter out words": "Filtra les paraules",
+    "Unfilter": "Sense filtre",
+    "Unfilter words": "Paraules sense filtre"
 }

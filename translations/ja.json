@@ -342,5 +342,9 @@
     "Ask about a shared item.": "共有アイテムについて質問します。",
     "Account Information": "口座情報",
     "This account interacts with the following instances": "このアカウントは、次のインスタンスと相互作用します",
-    "News posts are moderated": "ニュース投稿はモデレートされます"
+    "News posts are moderated": "ニュース投稿はモデレートされます",
+    "Filter": "フィルタ",
+    "Filter out words": "単語を除外する",
+    "Unfilter": "フィルタリング解除",
+    "Unfilter words": "単語のフィルタリングを解除する"
 }

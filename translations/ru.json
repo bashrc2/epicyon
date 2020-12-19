@@ -342,5 +342,9 @@
     "Ask about a shared item.": "Спросите об общем элементе.",
     "Account Information": "Информация об аккаунте",
     "This account interacts with the following instances": "Этот аккаунт взаимодействует со следующими экземплярами",
-    "News posts are moderated": "Сообщения новостей модерируются"
+    "News posts are moderated": "Сообщения новостей модерируются",
+    "Filter": "Фильтр",
+    "Filter out words": "Отфильтровать слова",
+    "Unfilter": "Нефильтровать",
+    "Unfilter words": "Не фильтровать слова"
 }

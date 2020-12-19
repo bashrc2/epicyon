@@ -342,5 +342,9 @@
     "Ask about a shared item.": "询问共享项目。",
     "Account Information": "帐户信息",
     "This account interacts with the following instances": "此帐户与以下实例进行交互",
-    "News posts are moderated": "新闻发布被审核"
+    "News posts are moderated": "新闻发布被审核",
+    "Filter": "过滤",
+    "Filter out words": "过滤掉单词",
+    "Unfilter": "取消过滤",
+    "Unfilter words": "未过滤字词"
 }

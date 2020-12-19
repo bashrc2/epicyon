@@ -342,5 +342,9 @@
     "Ask about a shared item.": "Fiafraigh faoi earra roinnte.",
     "Account Information": "Faisnéis Chuntais",
     "This account interacts with the following instances": "Idirghníomhaíonn an cuntas seo leis na cásanna seo a leanas",
-    "News posts are moderated": "Déantar poist nuachta a mhodhnú"
+    "News posts are moderated": "Déantar poist nuachta a mhodhnú",
+    "Filter": "Scagaire",
+    "Filter out words": "Scag focail amach",
+    "Unfilter": "Neamhleithleach",
+    "Unfilter words": "Focail neamhleithleacha"
 }

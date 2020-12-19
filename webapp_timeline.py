@@ -444,6 +444,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         else:
             tlStr += '    <input type="text" ' + \
                 'name="moderationAction" value="" autofocus><br>\n'
+
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Information about current blocks/suspensions'] + \
@@ -453,6 +454,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Remove the above item'] + \
             '" name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
+
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Suspend the above account nickname'] + \
@@ -462,6 +464,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Remove a suspension for an account nickname'] + \
             '" name="submitUnsuspend" value="' + \
             translate['Unsuspend'] + '">\n'
+
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Block an account on another instance'] + \
@@ -470,6 +473,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '    <input type="submit" title="' + \
             translate['Unblock an account on another instance'] + \
             '" name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Filter out words'] + \
+            '" name="submitFilter" value="' + translate['Filter'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unfilter words'] + \
+            '" name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+
         tlStr += '</div>\n</form>\n'
 
     logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')

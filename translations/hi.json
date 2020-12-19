@@ -342,5 +342,9 @@
     "Ask about a shared item.": "एक साझा आइटम के बारे में पूछें।",
     "Account Information": "खाते की जानकारी",
     "This account interacts with the following instances": "यह खाता निम्नलिखित उदाहरणों के साथ सहभागिता करता है",
-    "News posts are moderated": "समाचार पोस्ट संचालित होते हैं"
+    "News posts are moderated": "समाचार पोस्ट संचालित होते हैं",
+    "Filter": "फ़िल्टर",
+    "Filter out words": "शब्दों को फ़िल्टर करें",
+    "Unfilter": "Unfilter",
+    "Unfilter words": "अनफ़िल्टर शब्द"
 }
