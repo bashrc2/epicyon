@@ -71,10 +71,10 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
         if content + '\n' in open(globalFiltersFilename).read():
             return True
 
-    filtersFilename = baseDir + '/accounts/' + \
+    accountFiltersFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/filters.txt'
-    if os.path.isfile(filtersFilename):
-        with open(filtersFilename, 'r') as fp:
+    if os.path.isfile(accountFiltersFilename):
+        with open(accountFiltersFilename, 'r') as fp:
             for line in fp:
                 filterStr = line.replace('\n', '').replace('\r', '')
                 if '+' not in filterStr:
