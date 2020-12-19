@@ -34,6 +34,7 @@ from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
 from jami import getJamiAddress
+from filters import isFiltered
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
@@ -990,6 +991,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     skillCtr = 1
     if skills:
         for skillDesc, skillValue in skills.items():
+            if isFiltered(baseDir, nickname, domain, skillDesc):
+                continue
             skillsStr += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
                 ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
