@@ -91,16 +91,19 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     You can add individual words or use word1+word2 to indicate that two
     words must be present although not necessarily adjacent
     """
+    globalFiltersFilename = baseDir + '/accounts/filters.txt'
+    if os.path.isfile(globalFiltersFilename):
+        if content + '\n' in open(globalFiltersFilename).read():
+            return True
+
+    if not nickname or not domain:
+        return False
+
     # optionally remove retweets
     removeTwitter = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/.removeTwitter'
     if os.path.isfile(removeTwitter):
         if isTwitterPost(content):
-            return True
-
-    globalFiltersFilename = baseDir + '/accounts/filters.txt'
-    if os.path.isfile(globalFiltersFilename):
-        if content + '\n' in open(globalFiltersFilename).read():
             return True
 
     accountFiltersFilename = baseDir + '/accounts/' + \
