@@ -27,6 +27,10 @@ def addGlobalFilter(baseDir: str, words: str) -> bool:
     """Adds a global filter for particular words within
     the content of a incoming posts
     """
+    if not words:
+        return False
+    if len(words) < 2:
+        return False
     filtersFilename = baseDir + '/accounts/filters.txt'
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
