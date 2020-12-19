@@ -97,8 +97,11 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
         if wordsFile:
             wordsList = wordsFile.read().split('\n')
             for word in wordsList:
-                if word in content:
-                    return True
+                if not word:
+                    continue
+                if len(word) > 1:
+                    if word in content:
+                        return True
 
     if not nickname or not domain:
         return False
