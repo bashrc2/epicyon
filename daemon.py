@@ -3773,7 +3773,8 @@ class PubServer(BaseHTTPRequestHandler):
                         actorJson['discoverable'] = False
                         actorChanged = True
                     if not actorJson['@context'][2].get('orgSchema'):
-                        actorJson['@context'][2]['orgSchema'] = 'toot:orgSchema'
+                        actorJson['@context'][2]['orgSchema'] = \
+                            'toot:orgSchema'
                         actorChanged = True
                     if not actorJson['@context'][2].get('skills'):
                         actorJson['@context'][2]['skills'] = 'toot:skills'
@@ -3833,6 +3834,9 @@ class PubServer(BaseHTTPRequestHandler):
                         skillName = \
                             fields.get('skillName' + str(skillCtr))
                         if not skillName:
+                            skillCtr += 1
+                            continue
+                        if isFiltered(baseDir, nickname, domain, skillName):
                             skillCtr += 1
                             continue
                         skillValue = \
