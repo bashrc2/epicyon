@@ -68,7 +68,7 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
 
     globalFiltersFilename = baseDir + '/accounts/filters.txt'
     if os.path.isfile(globalFiltersFilename):
-        if content in open(globalFiltersFilename).read():
+        if content + '\n' in open(globalFiltersFilename).read():
             return True
 
     filtersFilename = baseDir + '/accounts/' + \
