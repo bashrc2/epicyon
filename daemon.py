@@ -3885,9 +3885,13 @@ class PubServer(BaseHTTPRequestHandler):
                     # change displayed name
                     if fields.get('displayNickname'):
                         if fields['displayNickname'] != actorJson['name']:
-                            actorJson['name'] = \
+                            displayName = \
                                 removeHtml(fields['displayNickname'])
-                            actorChanged = True
+                            if not isFiltered(baseDir,
+                                              nickname, domain,
+                                              displayName):
+                                actorJson['name'] = displayName
+                                actorChanged = True
 
                     # change media instance status
                     if fields.get('mediaInstance'):

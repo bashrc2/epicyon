@@ -881,7 +881,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
         if actorJson.get('name'):
-            displayNickname = actorJson['name']
+            if not isFiltered(baseDir, nickname, domain, actorJson['name']):
+                displayNickname = actorJson['name']
         if actorJson.get('summary'):
             bioStr = \
                 actorJson['summary'].replace('<p>', '').replace('</p>', '')
