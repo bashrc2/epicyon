@@ -66,9 +66,9 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
         if isTwitterPost(content):
             return True
 
-    globalFiltersFilename = baseDir + '/accounts/filters.txt'
-    if os.path.isfile(globalFiltersFilename):
-        if content + '\n' in open(globalFiltersFilename).read():
+    instanceFiltersFilename = baseDir + '/accounts/filters.txt'
+    if os.path.isfile(instanceFiltersFilename):
+        if content + '\n' in open(instanceFiltersFilename).read():
             return True
 
     accountFiltersFilename = baseDir + '/accounts/' + \
