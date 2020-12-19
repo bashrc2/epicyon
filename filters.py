@@ -93,6 +93,9 @@ def isFilteredBase(filename: str, content: str) -> bool:
     """Uses the given file containing filtered words to check
     the given content
     """
+    if not os.path.isfile(filename):
+        return False
+
     with open(filename, 'r') as fp:
         for line in fp:
             filterStr = line.replace('\n', '').replace('\r', '')
