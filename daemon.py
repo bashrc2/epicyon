@@ -3891,7 +3891,9 @@ class PubServer(BaseHTTPRequestHandler):
                                               nickname, domain,
                                               displayName):
                                 actorJson['name'] = displayName
-                                actorChanged = True
+                            else:
+                                actorJson['name'] = nickname
+                            actorChanged = True
 
                     # change media instance status
                     if fields.get('mediaInstance'):
