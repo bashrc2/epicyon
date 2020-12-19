@@ -4174,18 +4174,20 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('bio'):
                         if fields['bio'] != actorJson['summary']:
                             bioStr = removeHtml(fields['bio'])
-                            actorTags = {}
-                            actorJson['summary'] = \
-                                addHtmlTags(baseDir,
-                                            httpPrefix,
-                                            nickname,
-                                            domainFull,
-                                            bioStr, [], actorTags)
-                            if actorTags:
-                                actorJson['tag'] = []
-                                for tagName, tag in actorTags.items():
-                                    actorJson['tag'].append(tag)
-                            actorChanged = True
+                            if not isFiltered(baseDir,
+                                              nickname, domain, bioStr):
+                                actorTags = {}
+                                actorJson['summary'] = \
+                                    addHtmlTags(baseDir,
+                                                httpPrefix,
+                                                nickname,
+                                                domainFull,
+                                                bioStr, [], actorTags)
+                                if actorTags:
+                                    actorJson['tag'] = []
+                                    for tagName, tag in actorTags.items():
+                                        actorJson['tag'].append(tag)
+                                actorChanged = True
                     else:
                         if actorJson['summary']:
                             actorJson['summary'] = ''
