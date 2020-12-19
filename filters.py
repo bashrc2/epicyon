@@ -89,6 +89,29 @@ def isTwitterPost(content: str) -> bool:
     return False
 
 
+def isFilteredBase(filename: str, content: str) -> bool:
+    """Uses the given file containing filtered words to check
+    the given content
+    """
+    with open(filename, 'r') as fp:
+        for line in fp:
+            filterStr = line.replace('\n', '').replace('\r', '')
+            if not filterStr:
+                continue
+            if len(filterStr) < 2:
+                continue
+            if '+' not in filterStr:
+                if filterStr in content:
+                    return True
+            else:
+                filterWords = filterStr.replace('"', '').split('+')
+                for word in filterWords:
+                    if word not in content:
+                        return False
+                return True
+    return False
+
+
 def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex
@@ -96,16 +119,8 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     words must be present although not necessarily adjacent
     """
     globalFiltersFilename = baseDir + '/accounts/filters.txt'
-    if os.path.isfile(globalFiltersFilename):
-        wordsFile = open(globalFiltersFilename, 'r')
-        if wordsFile:
-            wordsList = wordsFile.read().split('\n')
-            for word in wordsList:
-                if not word:
-                    continue
-                if len(word) > 1:
-                    if word in content:
-                        return True
+    if isFilteredBase(globalFiltersFilename, content):
+        return True
 
     if not nickname or not domain:
         return False
@@ -119,17 +134,4 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
 
     accountFiltersFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/filters.txt'
-    if os.path.isfile(accountFiltersFilename):
-        with open(accountFiltersFilename, 'r') as fp:
-            for line in fp:
-                filterStr = line.replace('\n', '').replace('\r', '')
-                if '+' not in filterStr:
-                    if filterStr in content:
-                        return True
-                else:
-                    filterWords = filterStr.replace('"', '').split('+')
-                    for word in filterWords:
-                        if word not in content:
-                            return False
-                    return True
-    return False
+    return isFilteredBase(accountFiltersFilename, content)
