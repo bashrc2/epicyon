@@ -185,6 +185,22 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 blockedStr + '</textarea>'
             infoForm += '</div>'
             infoShown = True
+
+    filtersFilename = baseDir + '/accounts/filters.txt'
+    if os.path.isfile(filtersFilename):
+        with open(filtersFilename, "r") as f:
+            filteredStr = f.read()
+            infoForm += '<div class="container">'
+            infoForm += \
+                '  <br><b>' + \
+                translate['Filtered words'] + '</b>'
+            infoForm += \
+                '  <textarea id="message" ' + \
+                'name="filtered" style="height:700px">' + \
+                filteredStr + '</textarea>'
+            infoForm += '</div>'
+            infoShown = True
+
     if not infoShown:
         infoForm += \
             '<center><p>' + \
