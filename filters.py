@@ -23,12 +23,44 @@ def addFilter(baseDir: str, nickname: str, domain: str, words: str) -> bool:
     return True
 
 
+def addGlobalFilter(baseDir: str, words: str) -> bool:
+    """Adds a global filter for particular words within
+    the content of a incoming posts
+    """
+    filtersFilename = baseDir + '/accounts/filters.txt'
+    if os.path.isfile(filtersFilename):
+        if words in open(filtersFilename).read():
+            return False
+    filtersFile = open(filtersFilename, "a+")
+    filtersFile.write(words + '\n')
+    filtersFile.close()
+    return True
+
+
 def removeFilter(baseDir: str, nickname: str, domain: str,
                  words: str) -> bool:
     """Removes a word filter
     """
     filtersFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/filters.txt'
+    if os.path.isfile(filtersFilename):
+        if words in open(filtersFilename).read():
+            with open(filtersFilename, 'r') as fp:
+                with open(filtersFilename + '.new', 'w+') as fpnew:
+                    for line in fp:
+                        line = line.replace('\n', '')
+                        if line != words:
+                            fpnew.write(line + '\n')
+            if os.path.isfile(filtersFilename + '.new'):
+                os.rename(filtersFilename + '.new', filtersFilename)
+                return True
+    return False
+
+
+def removeGlobalFilter(baseDir: str, words: str) -> bool:
+    """Removes a global word filter
+    """
+    filtersFilename = baseDir + '/accounts/filters.txt'
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             with open(filtersFilename, 'r') as fp:
@@ -66,9 +98,9 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
         if isTwitterPost(content):
             return True
 
-    instanceFiltersFilename = baseDir + '/accounts/filters.txt'
-    if os.path.isfile(instanceFiltersFilename):
-        if content + '\n' in open(instanceFiltersFilename).read():
+    globalFiltersFilename = baseDir + '/accounts/filters.txt'
+    if os.path.isfile(globalFiltersFilename):
+        if content + '\n' in open(globalFiltersFilename).read():
             return True
 
     accountFiltersFilename = baseDir + '/accounts/' + \

@@ -239,6 +239,8 @@ from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
 from filters import isFiltered
+from filters import addGlobalFilter
+from filters import removeGlobalFilter
 import os
 
 
@@ -1506,6 +1508,10 @@ class PubServer(BaseHTTPRequestHandler):
                     moderationButton = 'block'
                 elif moderationStr.startswith('submitUnblock'):
                     moderationButton = 'unblock'
+                elif moderationStr.startswith('submitFilter'):
+                    moderationButton = 'filter'
+                elif moderationStr.startswith('submitUnfilter'):
+                    moderationButton = 'unfilter'
                 elif moderationStr.startswith('submitSuspend'):
                     moderationButton = 'suspend'
                 elif moderationStr.startswith('submitUnsuspend'):
@@ -1526,6 +1532,10 @@ class PubServer(BaseHTTPRequestHandler):
                     suspendAccount(baseDir, nickname, domain)
                 if moderationButton == 'unsuspend':
                     unsuspendAccount(baseDir, nickname)
+                if moderationButton == 'filter':
+                    addGlobalFilter(baseDir, moderationText)
+                if moderationButton == 'unfilter':
+                    removeGlobalFilter(baseDir, moderationText)
                 if moderationButton == 'block':
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
