@@ -3851,6 +3851,9 @@ class PubServer(BaseHTTPRequestHandler):
                                int(skillValue):
                                 actorChanged = True
                         newSkills[skillName] = int(skillValue)
+                        skillsStr = self.server.translate['Skills']
+                        setHashtagCategory(baseDir, skillName,
+                                           skillsStr.lower())
                         skillCtr += 1
                     if len(actorJson['skills'].items()) != \
                        len(newSkills.items()):
