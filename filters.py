@@ -93,8 +93,12 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     """
     globalFiltersFilename = baseDir + '/accounts/filters.txt'
     if os.path.isfile(globalFiltersFilename):
-        if content + '\n' in open(globalFiltersFilename).read():
-            return True
+        wordsFile = open(globalFiltersFilename, 'r')
+        if wordsFile:
+            wordsList = wordsFile.read().split('\n')
+            for word in wordsList:
+                if word in content:
+                    return True
 
     if not nickname or not domain:
         return False
