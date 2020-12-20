@@ -155,14 +155,6 @@ def htmlModerationInfo(cssCache: {}, translate: {},
 
     infoShown = False
 
-    cols = 5
-    infoForm += '<div class="container">\n'
-    infoForm += '<table class="accountsTable">\n'
-    infoForm += '  <colgroup>\n'
-    for col in range(cols):
-        infoForm += '    <col span="1" class="accountsTableCol">\n'
-    infoForm += '  </colgroup>\n'
-    infoForm += '<tr>\n'
     accounts = []
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
@@ -173,6 +165,18 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             accounts.append(acct)
         break
     accounts.sort()
+
+    cols = 5
+    if len(accounts) > 10:
+        infoForm += '<details><summary><b>' + translate['Show Accounts']
+        infoForm += '</b></summary>\n'
+    infoForm += '<div class="container">\n'
+    infoForm += '<table class="accountsTable">\n'
+    infoForm += '  <colgroup>\n'
+    for col in range(cols):
+        infoForm += '    <col span="1" class="accountsTableCol">\n'
+    infoForm += '  </colgroup>\n'
+    infoForm += '<tr>\n'
 
     col = 0
     for acct in accounts:
@@ -200,6 +204,8 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             infoForm += '</tr>\n<tr>\n'
     infoForm += '</tr>\n</table>\n'
     infoForm += '</div>\n'
+    if len(accounts) > 10:
+        infoForm += '</details>\n'
 
     suspendedFilename = baseDir + '/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
