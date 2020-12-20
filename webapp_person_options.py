@@ -43,7 +43,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       PGPpubKey: str,
                       PGPfingerprint: str,
                       emailAddress: str,
-                      dormantMonths: int) -> str:
+                      dormantMonths: int,
+                      backToPath: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -225,6 +226,8 @@ def htmlPersonOptions(defaultTimeline: str,
     backPath = '/'
     if nickname:
         backPath = '/users/' + nickname + '/' + defaultTimeline
+        if 'moderation' in backToPath:
+            backPath = '/users/' + nickname + '/moderation'
     optionsStr += \
         '    <a href="' + backPath + '"><button type="button" ' + \
         'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \

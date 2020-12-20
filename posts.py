@@ -141,18 +141,27 @@ def cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}) -> str:
-    if wfRequest.get('links'):
-        for link in wfRequest['links']:
-            if link.get('type') and link.get('href'):
-                if link['type'] == 'application/activity+json':
-                    if not ('/users/' in link['href'] or
-                            '/accounts/' in link['href'] or
-                            '/profile/' in link['href'] or
-                            '/channel/' in link['href']):
-                        print('Webfinger activity+json contains ' +
-                              'single user instance actor')
-                    return link['href']
+def getUserUrl(wfRequest: {}, sourceId=0) -> str:
+    """Gets the actor url from a webfinger request
+    """
+    print('getUserUrl: ' + str(sourceId) + ' ' + str(wfRequest))
+    if not wfRequest.get('links'):
+        print('getUserUrl webfinger activity+json contains no links ' +
+              str(sourceId) + ' ' + str(wfRequest))
+        return None
+    for link in wfRequest['links']:
+        if not (link.get('type') and link.get('href')):
+            continue
+        if link['type'] != 'application/activity+json':
+            continue
+        if not ('/users/' in link['href'] or
+                '/accounts/' in link['href'] or
+                '/profile/' in link['href'] or
+                '/channel/' in link['href']):
+            print('getUserUrl webfinger activity+json ' +
+                  'contains single user instance actor ' +
+                  str(sourceId) + ' ' + str(link))
+        return link['href']
     return None
 
 
@@ -198,13 +207,14 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                  personCache: {},
                  projectVersion: str, httpPrefix: str,
                  nickname: str, domain: str,
-                 boxName='inbox') -> (str, str, str, str, str, str, str, str):
+                 boxName='inbox',
+                 sourceId=0) -> (str, str, str, str, str, str, str, str):
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not wfRequest.get('errors'):
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, sourceId)
     else:
         if nickname == 'dev':
             # try single user instance
@@ -1174,7 +1184,7 @@ def postIsAddressedToFollowers(baseDir: str,
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
-    domain = getFullDomain(domain, port)
+    domainFull = getFullDomain(domain, port)
 
     if not postJsonObject.get('object'):
         return False
@@ -1192,7 +1202,7 @@ def postIsAddressedToFollowers(baseDir: str,
         if postJsonObject.get('cc'):
             ccList = postJsonObject['cc']
 
-    followersUrl = httpPrefix + '://' + domain + '/users/' + \
+    followersUrl = httpPrefix + '://' + domainFull + '/users/' + \
         nickname + '/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
@@ -1765,7 +1775,8 @@ def sendPost(projectVersion: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, postToBox)
+                                            nickname, domain, postToBox,
+                                            72533)
 
     if not inboxUrl:
         return 3
@@ -1880,7 +1891,8 @@ def sendPostViaServer(projectVersion: str,
                                             personCache,
                                             projectVersion, httpPrefix,
                                             fromNickname,
-                                            fromDomain, postToBox)
+                                            fromDomain, postToBox,
+                                            82796)
     if not inboxUrl:
         if debug:
             print('DEBUG: No ' + postToBox + ' was found for ' + handle)
@@ -2079,7 +2091,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix,
-                                 nickname, domain, postToBox)
+                                 nickname, domain, postToBox,
+                                 30873)
 
     print("inboxUrl: " + str(inboxUrl))
     print("toPersonId: " + str(toPersonId))
@@ -2342,14 +2355,40 @@ def sendToNamedAddresses(session, baseDir: str,
 
 def hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
     """Returns true if the given domain has a shared inbox
+    This tries the new and the old way of webfingering the shared inbox
     """
-    wfRequest = webfingerHandle(session, domain + '@' + domain,
-                                httpPrefix, {},
-                                None, __version__)
-    if wfRequest:
-        if isinstance(wfRequest, dict):
-            if not wfRequest.get('errors'):
-                return True
+    tryHandles = [
+        domain + '@' + domain,
+        'inbox@' + domain
+    ]
+    for handle in tryHandles:
+        wfRequest = webfingerHandle(session, handle,
+                                    httpPrefix, {},
+                                    None, __version__)
+        if wfRequest:
+            if isinstance(wfRequest, dict):
+                if not wfRequest.get('errors'):
+                    return True
+    return False
+
+
+def sendingProfileUpdate(postJsonObject: {}) -> bool:
+    """Returns true if the given json is a profile update
+    """
+    if postJsonObject['type'] != 'Update':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('type'):
+        return False
+    activityType = postJsonObject['object']['type']
+    if activityType == 'Person' or \
+       activityType == 'Application' or \
+       activityType == 'Group' or \
+       activityType == 'Service':
+        return True
     return False
 
 
@@ -2388,24 +2427,35 @@ def sendToFollowers(session, baseDir: str,
     clientToServer = False
 
     # for each instance
+    sendingStartTime = datetime.datetime.utcnow()
+    print('Sending post to followers begins ' +
+          sendingStartTime.strftime("%Y-%m-%dT%H:%M:%SZ"))
+    sendingCtr = 0
     for followerDomain, followerHandles in grouped.items():
+        print('Sending post to followers progress ' +
+              str(int(sendingCtr * 100 / len(grouped.items()))) + '% ' +
+              followerDomain)
+        sendingCtr += 1
+
         if debug:
-            print('DEBUG: follower handles for ' + followerDomain)
             pprint(followerHandles)
 
         # check that the follower's domain is active
         followerDomainUrl = httpPrefix + '://' + followerDomain
         if not siteIsActive(followerDomainUrl):
-            print('Domain is inactive: ' + followerDomainUrl)
+            print('Sending post to followers domain is inactive: ' +
+                  followerDomainUrl)
             continue
-        print('Domain is active: ' + followerDomainUrl)
+        print('Sending post to followers domain is active: ' +
+              followerDomainUrl)
 
         withSharedInbox = hasSharedInbox(session, httpPrefix, followerDomain)
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
-            else:
-                print(followerDomain + ' does not have a shared inbox')
+        if not withSharedInbox:
+            print('Sending post to followers, ' + followerDomain +
+                  ' does not have a shared inbox')
 
         toPort = port
         index = 0
@@ -2438,22 +2488,14 @@ def sendToFollowers(session, baseDir: str,
                 toNickname = 'inbox'
 
             if toNickname != 'inbox' and postJsonObject.get('type'):
-                if postJsonObject['type'] == 'Update':
-                    if postJsonObject.get('object'):
-                        if isinstance(postJsonObject['object'], dict):
-                            if postJsonObject['object'].get('type'):
-                                typ = postJsonObject['object']['type']
-                                if typ == 'Person' or \
-                                   typ == 'Application' or \
-                                   typ == 'Group' or \
-                                   typ == 'Service':
-                                    print('Sending profile update to ' +
-                                          'shared inbox of ' + toDomain)
-                                    toNickname = 'inbox'
+                if sendingProfileUpdate(postJsonObject):
+                    print('Sending post to followers ' +
+                          'shared inbox of ' + toDomain)
+                    toNickname = 'inbox'
 
-            if debug:
-                print('DEBUG: Sending from ' + nickname + '@' + domain +
-                      ' to ' + toNickname + '@' + toDomain)
+            print('Sending post to followers from ' +
+                  nickname + '@' + domain +
+                  ' to ' + toNickname + '@' + toDomain)
 
             sendSignedJson(postJsonObject, session, baseDir,
                            nickname, fromDomain, port,
@@ -2465,19 +2507,17 @@ def sendToFollowers(session, baseDir: str,
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
-                if debug:
-                    print('DEBUG: Sending to ' + handle)
+                print('Sending post to followers ' + handle)
                 toNickname = handle.split('@')[0]
 
-                if debug:
-                    if postJsonObject['type'] != 'Update':
-                        print('DEBUG: Sending from ' +
-                              nickname + '@' + domain + ' to ' +
-                              toNickname + '@' + toDomain)
-                    else:
-                        print('DEBUG: Sending profile update from ' +
-                              nickname + '@' + domain + ' to ' +
-                              toNickname + '@' + toDomain)
+                if postJsonObject['type'] != 'Update':
+                    print('Sending post to followers from ' +
+                          nickname + '@' + domain + ' to ' +
+                          toNickname + '@' + toDomain)
+                else:
+                    print('Sending post to followers profile update from ' +
+                          nickname + '@' + domain + ' to ' +
+                          toNickname + '@' + toDomain)
 
                 sendSignedJson(postJsonObject, session, baseDir,
                                nickname, fromDomain, port,
@@ -2491,6 +2531,10 @@ def sendToFollowers(session, baseDir: str,
 
     if debug:
         print('DEBUG: End of sendToFollowers')
+
+    sendingEndTime = datetime.datetime.utcnow()
+    sendingMins = int((sendingEndTime - sendingStartTime).total_seconds() / 60)
+    print('Sending post to followers ends ' + str(sendingMins) + ' mins')
 
 
 def sendToFollowersThread(session, baseDir: str,
@@ -3357,7 +3401,8 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox')
+                                            nickname, domain, 'outbox',
+                                            62524)
     maxMentions = 10
     maxEmoji = 10
     maxAttachments = 5
@@ -3398,7 +3443,8 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox')
+                                            nickname, domain, 'outbox',
+                                            92522)
     maxMentions = 99
     maxEmoji = 99
     maxAttachments = 5
@@ -3441,7 +3487,8 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache,
                                             projectVersion, httpPrefix,
-                                            nickname, domain, 'outbox')
+                                            nickname, domain, 'outbox',
+                                            13863)
     maxMentions = 99
     maxEmoji = 99
     maxAttachments = 5
@@ -3956,7 +4003,7 @@ def sendBlockViaServer(baseDir: str, session,
      displayName) = getPersonBox(baseDir, session, wfRequest,
                                  personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 72652)
 
     if not inboxUrl:
         if debug:
@@ -4038,7 +4085,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 53892)
 
     if not inboxUrl:
         if debug:

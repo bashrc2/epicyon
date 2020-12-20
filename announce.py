@@ -369,7 +369,7 @@ def sendAnnounceViaServer(baseDir: str, session,
                                  personCache,
                                  projectVersion, httpPrefix,
                                  fromNickname, fromDomain,
-                                 postToBox)
+                                 postToBox, 73528)
 
     if not inboxUrl:
         if debug:

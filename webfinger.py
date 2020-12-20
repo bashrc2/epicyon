@@ -67,6 +67,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     wf = getWebfingerFromCache(nickname + '@' + wfDomain,
                                cachedWebfingers)
     if wf:
+        print('Webfinger from cache: ' + str(wf))
         return wf
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix, domain)
     par = {

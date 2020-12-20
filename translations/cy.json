@@ -342,5 +342,10 @@
     "Ask about a shared item.": "Gofynnwch am eitem a rennir.",
     "Account Information": "Gwybodaeth Gyfrif",
     "This account interacts with the following instances": "Mae'r cyfrif hwn yn rhyngweithio â'r achosion canlynol",
-    "News posts are moderated": "Mae swyddi newyddion yn cael eu cymedroli"
+    "News posts are moderated": "Mae swyddi newyddion yn cael eu cymedroli",
+    "Filter": "Hidlo",
+    "Filter out words": "Hidlo geiriau",
+    "Unfilter": "Di-hid",
+    "Unfilter words": "Geiriau di-hid",
+    "Show Accounts": "Dangos Cyfrifon"
 }

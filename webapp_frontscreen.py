@@ -83,7 +83,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     session, wfRequest: {}, personCache: {},
                     YTReplacementDomain: str,
                     showPublishedDateOnly: bool,
-                    newswire: {}, extraJson=None,
+                    newswire: {}, theme: str, extraJson=None,
                     pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the news instance front screen
     """
@@ -104,7 +104,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                                            iconsAsButtons)
 
     # If this is the news account then show a different banner
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
     profileHeaderStr = \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" />\n'
@@ -124,7 +125,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
         getLeftColumnContent(baseDir, 'news', domainFull,
                              httpPrefix, translate,
                              False, False, None, rssIconAtTop, True,
-                             True)
+                             True, theme)
     profileHeaderStr += '      </td>\n'
     profileHeaderStr += '      <td valign="top" class="col-center">\n'
 
@@ -136,7 +137,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
 
     licenseStr = ''
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain)
+        getBannerFile(baseDir, nickname, domain, theme)
     profileStr += \
         htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
                              translate,
@@ -155,7 +156,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               httpPrefix, translate,
                               False, False, newswire, False,
                               False, None, False, False,
-                              False, True, authorized, True)
+                              False, True, authorized, True, theme)
     profileFooterStr += '      </td>\n'
     profileFooterStr += '  </tr>\n'
     profileFooterStr += '  </tbody>\n'

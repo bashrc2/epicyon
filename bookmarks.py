@@ -441,7 +441,7 @@ def sendBookmarkViaServer(baseDir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 72483)
 
     if not inboxUrl:
         if debug:
@@ -518,7 +518,7 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
      fromPersonId, sharedInbox, avatarUrl,
      displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
                                  projectVersion, httpPrefix, fromNickname,
-                                 fromDomain, postToBox)
+                                 fromDomain, postToBox, 72528)
 
     if not inboxUrl:
         if debug:

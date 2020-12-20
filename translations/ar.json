@@ -342,5 +342,10 @@
     "Ask about a shared item.": "اسأل عن عنصر مشترك.",
     "Account Information": "معلومات الحساب",
     "This account interacts with the following instances": "يتفاعل هذا الحساب مع الحالات التالية",
-    "News posts are moderated": "المشاركات الإخبارية خاضعة للإشراف"
+    "News posts are moderated": "المشاركات الإخبارية خاضعة للإشراف",
+    "Filter": "منقي",
+    "Filter out words": "تصفية الكلمات",
+    "Unfilter": "غير مرشح",
+    "Unfilter words": "الكلمات غير المصفاة",
+    "Show Accounts": "إظهار الحسابات"
 }

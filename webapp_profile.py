@@ -34,6 +34,7 @@ from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
 from jami import getJamiAddress
+from filters import isFiltered
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
@@ -259,10 +260,20 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         if not item.get('object'):
             continue
+
+        # wfRequest = {}
+        # requestHandle = nickname + '@' + domain
+        # if cachedWebfingers.get(requestHandle):
+        #     wfRequest = cachedWebfingers[requestHandle]
+        # elif cachedWebfingers.get(requestHandle + ':' + str(port)):
+        #     wfRequest = cachedWebfingers[requestHandle + ':' + str(port)]
+        # TODO: this may need to be changed
+        wfRequest = cachedWebfingers
+
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                  translate, None, baseDir,
-                                 session, cachedWebfingers, personCache,
+                                 session, wfRequest, personCache,
                                  nickname, domain, port,
                                  item, avatarUrl, False, False,
                                  httpPrefix, projectVersion, 'inbox',
@@ -282,7 +293,8 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
                      displayName: str,
                      avatarDescription: str,
                      profileDescriptionShort: str,
-                     loginButton: str, avatarUrl: str) -> str:
+                     loginButton: str, avatarUrl: str,
+                     theme: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -291,7 +303,7 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
-        'src="/users/' + nickname + '/image.png" /></a>\n'
+        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
     htmlStr += '      <figcaption>\n'
     htmlStr += \
         '        <a href="/users/' + \
@@ -359,7 +371,7 @@ def htmlProfile(rssIconAtTop: bool,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 showPublishedDateOnly: bool,
-                newswire: {}, dormantMonths: int,
+                newswire: {}, theme: str, dormantMonths: int,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -378,7 +390,7 @@ def htmlProfile(rssIconAtTop: bool,
                                session, wfRequest, personCache,
                                YTReplacementDomain,
                                showPublishedDateOnly,
-                               newswire, extraJson,
+                               newswire, theme, extraJson,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])
@@ -561,7 +573,7 @@ def htmlProfile(rssIconAtTop: bool,
                          defaultTimeline, displayName,
                          avatarDescription,
                          profileDescriptionShort,
-                         loginButton, avatarUrl)
+                         loginButton, avatarUrl, theme)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -819,7 +831,7 @@ def htmlProfileShares(actor: str, translate: {},
 
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
-                    defaultTimeline: str) -> str:
+                    defaultTimeline: str, theme: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -836,7 +848,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     isBot = ''
     isGroup = ''
@@ -872,10 +885,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         PGPpubKey = getPGPpubKey(actorJson)
         PGPfingerprint = getPGPfingerprint(actorJson)
         if actorJson.get('name'):
-            displayNickname = actorJson['name']
+            if not isFiltered(baseDir, nickname, domain, actorJson['name']):
+                displayNickname = actorJson['name']
         if actorJson.get('summary'):
             bioStr = \
                 actorJson['summary'].replace('<p>', '').replace('</p>', '')
+            if isFiltered(baseDir, nickname, domain, bioStr):
+                bioStr = ''
         if actorJson.get('manuallyApprovesFollowers'):
             if actorJson['manuallyApprovesFollowers']:
                 manuallyApprovesFollowers = 'checked'
@@ -982,6 +998,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     skillCtr = 1
     if skills:
         for skillDesc, skillValue in skills.items():
+            if isFiltered(baseDir, nickname, domain, skillDesc):
+                continue
             skillsStr += \
                 '<p><input type="text" placeholder="' + translate['Skill'] + \
                 ' ' + str(skillCtr) + '" name="skillName' + str(skillCtr) + \
@@ -1457,7 +1475,7 @@ def individualFollowAsHtml(translate: {},
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache, projectVersion,
                                                  httpPrefix, nickname,
-                                                 domain, 'outbox')
+                                                 domain, 'outbox', 43036)
         if avatarUrl2:
             avatarUrl = avatarUrl2
         if displayName:

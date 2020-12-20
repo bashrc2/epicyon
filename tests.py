@@ -236,11 +236,11 @@ def testThreads():
                         args=('test',),
                         daemon=True)
     thr.start()
-    assert thr.isAlive() is True
+    assert thr.is_alive() is True
     time.sleep(1)
     thr.kill()
     thr.join()
-    assert thr.isAlive() is False
+    assert thr.is_alive() is False
 
 
 def createServerAlice(path: str, domain: str, port: int,
@@ -296,8 +296,10 @@ def createServerAlice(path: str, domain: str, port: int,
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
     dormantMonths = 3
+    sendThreadsTimeoutMins = 30
     print('Server running: Alice')
-    runDaemon(dormantMonths, maxNewswirePosts,
+    runDaemon(sendThreadsTimeoutMins,
+              dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False,
@@ -366,8 +368,10 @@ def createServerBob(path: str, domain: str, port: int,
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
     dormantMonths = 3
+    sendThreadsTimeoutMins = 30
     print('Server running: Bob')
-    runDaemon(dormantMonths, maxNewswirePosts,
+    runDaemon(sendThreadsTimeoutMins,
+              dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
@@ -410,8 +414,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     allowLocalNetworkAccess = True
     maxNewswirePosts = 20
     dormantMonths = 3
+    sendThreadsTimeoutMins = 30
     print('Server running: Eve')
-    runDaemon(dormantMonths, maxNewswirePosts,
+    runDaemon(sendThreadsTimeoutMins,
+              dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, 10, False,
               0, 100, 1024, 5, False, 0,
@@ -456,7 +462,7 @@ def testPostMessageBetweenServers():
 
     global thrAlice
     if thrAlice:
-        while thrAlice.isAlive():
+        while thrAlice.is_alive():
             thrAlice.stop()
             time.sleep(1)
         thrAlice.kill()
@@ -470,7 +476,7 @@ def testPostMessageBetweenServers():
 
     global thrBob
     if thrBob:
-        while thrBob.isAlive():
+        while thrBob.is_alive():
             thrBob.stop()
             time.sleep(1)
         thrBob.kill()
@@ -484,8 +490,8 @@ def testPostMessageBetweenServers():
 
     thrAlice.start()
     thrBob.start()
-    assert thrAlice.isAlive() is True
-    assert thrBob.isAlive() is True
+    assert thrAlice.is_alive() is True
+    assert thrBob.is_alive() is True
 
     # wait for both servers to be running
     while not (testServerAliceRunning and testServerBobRunning):
@@ -684,11 +690,11 @@ def testPostMessageBetweenServers():
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
-    assert thrAlice.isAlive() is False
+    assert thrAlice.is_alive() is False
 
     thrBob.kill()
     thrBob.join()
-    assert thrBob.isAlive() is False
+    assert thrBob.is_alive() is False
 
     os.chdir(baseDir)
     shutil.rmtree(aliceDir)
@@ -727,7 +733,7 @@ def testFollowBetweenServers():
 
     global thrAlice
     if thrAlice:
-        while thrAlice.isAlive():
+        while thrAlice.is_alive():
             thrAlice.stop()
             time.sleep(1)
         thrAlice.kill()
@@ -741,7 +747,7 @@ def testFollowBetweenServers():
 
     global thrBob
     if thrBob:
-        while thrBob.isAlive():
+        while thrBob.is_alive():
             thrBob.stop()
             time.sleep(1)
         thrBob.kill()
@@ -755,8 +761,8 @@ def testFollowBetweenServers():
 
     thrAlice.start()
     thrBob.start()
-    assert thrAlice.isAlive() is True
-    assert thrBob.isAlive() is True
+    assert thrAlice.is_alive() is True
+    assert thrBob.is_alive() is True
 
     # wait for all servers to be running
     ctr = 0
@@ -856,11 +862,11 @@ def testFollowBetweenServers():
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
-    assert thrAlice.isAlive() is False
+    assert thrAlice.is_alive() is False
 
     thrBob.kill()
     thrBob.join()
-    assert thrBob.isAlive() is False
+    assert thrBob.is_alive() is False
 
     # queue item removed
     time.sleep(4)
@@ -1284,7 +1290,7 @@ def testClientToServer():
 
     global thrAlice
     if thrAlice:
-        while thrAlice.isAlive():
+        while thrAlice.is_alive():
             thrAlice.stop()
             time.sleep(1)
         thrAlice.kill()
@@ -1298,7 +1304,7 @@ def testClientToServer():
 
     global thrBob
     if thrBob:
-        while thrBob.isAlive():
+        while thrBob.is_alive():
             thrBob.stop()
             time.sleep(1)
         thrBob.kill()
@@ -1312,8 +1318,8 @@ def testClientToServer():
 
     thrAlice.start()
     thrBob.start()
-    assert thrAlice.isAlive() is True
-    assert thrBob.isAlive() is True
+    assert thrAlice.is_alive() is True
+    assert thrBob.is_alive() is True
 
     # wait for both servers to be running
     ctr = 0
@@ -1608,11 +1614,11 @@ def testClientToServer():
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
-    assert thrAlice.isAlive() is False
+    assert thrAlice.is_alive() is False
 
     thrBob.kill()
     thrBob.join()
-    assert thrBob.isAlive() is False
+    assert thrBob.is_alive() is False
 
     os.chdir(baseDir)
     # shutil.rmtree(aliceDir)

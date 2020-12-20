@@ -9,12 +9,10 @@ __status__ = "Production"
 import os
 from shutil import copyfile
 from datetime import datetime
-from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import getHashtagCategories
 from utils import getHashtagCategory
 from webapp_utils import getSearchBannerFile
-from webapp_utils import getImageFile
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -231,7 +229,8 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
 
 
 def htmlSearchHashtagCategory(cssCache: {}, translate: {},
-                              baseDir: str, path: str, domain: str) -> str:
+                              baseDir: str, path: str, domain: str,
+                              theme: str) -> str:
     """Show hashtags after selecting a category on the main search screen
     """
     actor = path.split('/category/')[0]
@@ -251,24 +250,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(baseDir, searchNickname, domain)
-    if not os.path.isfile(searchBannerFilename):
-        # get the default search banner for the theme
-        theme = getConfigParam(baseDir, 'theme').lower()
-        if theme == 'default':
-            theme = ''
-        else:
-            theme = '_' + theme
-        themeSearchImageFile, themeSearchBannerFilename = \
-            getImageFile(baseDir, 'search_banner', baseDir + '/img',
-                         searchNickname, domain)
-        if os.path.isfile(themeSearchBannerFilename):
-            searchBannerFilename = \
-                baseDir + '/accounts/' + \
-                searchNickname + '@' + domain + '/' + themeSearchImageFile
-            copyfile(themeSearchBannerFilename,
-                     searchBannerFilename)
-            searchBannerFile = themeSearchImageFile
+        getSearchBannerFile(baseDir, searchNickname, domain, theme)
 
     if os.path.isfile(searchBannerFilename):
         htmlStr += '<a href="' + actor + '/search">\n'

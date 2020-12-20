@@ -1,5 +1,6 @@
 {
     "today-circle": "#03a494",
+    "options-main-link-color-hover": "white",
     "main-link-color-hover": "blue",
     "font-size-newswire-mobile": "32px",
     "newswire-date-color": "#00a594",
@@ -58,8 +59,10 @@
     "border-width": "1px",
     "border-width-header": "1px",
     "main-link-color": "darkblue",
+    "options-main-link-color": "lightgrey",
     "title-color": "#2a2c37",
     "main-visited-color": "#232c37",
+    "options-main-visited-color": "#ccc",
     "text-entry-foreground": "#111",
     "text-entry-background": "white",
     "font-color-header": "black",

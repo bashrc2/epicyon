@@ -342,5 +342,10 @@
     "Ask about a shared item.": "Chiedi informazioni su un elemento condiviso.",
     "Account Information": "Informazioni account",
     "This account interacts with the following instances": "Questo account interagisce con le seguenti istanze",
-    "News posts are moderated": "I post di notizie sono moderati"
+    "News posts are moderated": "I post di notizie sono moderati",
+    "Filter": "Filtro",
+    "Filter out words": "Filtra le parole",
+    "Unfilter": "Unfilter",
+    "Unfilter words": "Parole non filtrate",
+    "Show Accounts": "Mostra account"
 }

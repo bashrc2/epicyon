@@ -173,9 +173,19 @@ def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     avatarUrl = None
     if boxname != 'tlevents' and boxname != 'outbox':
         boxname = 'inbox'
+
+    # wfRequest = {}
+    # requestHandle = nickname + '@' + domain
+    # if cachedWebfingers.get(requestHandle):
+    #     wfRequest = cachedWebfingers[requestHandle]
+    # elif cachedWebfingers.get(requestHandle + ':' + str(port)):
+    #     wfRequest = cachedWebfingers[requestHandle + ':' + str(port)]
+    # TODO: this may need to be changed
+    wfRequest = cachedWebfingers
+
     individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,
-                         baseDir, session, cachedWebfingers, personCache,
+                         baseDir, session, wfRequest, personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,
                          httpPrefix, __version__, boxname, None,
@@ -2456,7 +2466,7 @@ def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrInboxQueue.isAlive() or httpd.restartInboxQueue:
+        if not httpd.thrInboxQueue.is_alive() or httpd.restartInboxQueue:
             httpd.restartInboxQueueInProgress = True
             httpd.thrInboxQueue.kill()
             httpd.thrInboxQueue = inboxQueueOriginal.clone(runInboxQueue)

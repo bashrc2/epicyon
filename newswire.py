@@ -110,7 +110,7 @@ def addNewswireDictEntry(baseDir: str, domain: str,
     allText = title + ' ' + description
 
     # check that none of the text is filtered against
-    if isFiltered(baseDir, 'news', domain, allText):
+    if isFiltered(baseDir, None, None, allText):
         return
 
     if tags is None:

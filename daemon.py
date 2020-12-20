@@ -239,6 +239,8 @@ from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
 from filters import isFiltered
+from filters import addGlobalFilter
+from filters import removeGlobalFilter
 import os
 
 
@@ -1012,7 +1014,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('Waiting for previous outbox thread to end')
             waitCtr = 0
             thName = accountOutboxThreadName
-            while self.server.outboxThread[thName].isAlive() and waitCtr < 8:
+            while self.server.outboxThread[thName].is_alive() and waitCtr < 8:
                 time.sleep(1)
                 waitCtr += 1
             if waitCtr >= 8:
@@ -1506,6 +1508,10 @@ class PubServer(BaseHTTPRequestHandler):
                     moderationButton = 'block'
                 elif moderationStr.startswith('submitUnblock'):
                     moderationButton = 'unblock'
+                elif moderationStr.startswith('submitFilter'):
+                    moderationButton = 'filter'
+                elif moderationStr.startswith('submitUnfilter'):
+                    moderationButton = 'unfilter'
                 elif moderationStr.startswith('submitSuspend'):
                     moderationButton = 'suspend'
                 elif moderationStr.startswith('submitUnsuspend'):
@@ -1526,6 +1532,10 @@ class PubServer(BaseHTTPRequestHandler):
                     suspendAccount(baseDir, nickname, domain)
                 if moderationButton == 'unsuspend':
                     unsuspendAccount(baseDir, nickname)
+                if moderationButton == 'filter':
+                    addGlobalFilter(baseDir, moderationText)
+                if moderationButton == 'unfilter':
+                    removeGlobalFilter(baseDir, moderationText)
                 if moderationButton == 'block':
                     fullBlockDomain = None
                     if moderationText.startswith('http') or \
@@ -1939,7 +1949,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domain,
                               domainFull,
                               self.server.defaultTimeline,
-                              self.server.newswire).encode('utf-8')
+                              self.server.newswire,
+                              self.server.themeName).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -2032,7 +2043,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domain,
                               domainFull,
                               self.server.defaultTimeline,
-                              self.server.newswire).encode('utf-8')
+                              self.server.newswire,
+                              self.server.themeName).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -3772,20 +3784,42 @@ class PubServer(BaseHTTPRequestHandler):
                         # which isn't implemented in Epicyon
                         actorJson['discoverable'] = False
                         actorChanged = True
+                    if not actorJson['@context'][2].get('orgSchema'):
+                        actorJson['@context'][2]['orgSchema'] = \
+                            'toot:orgSchema'
+                        actorChanged = True
+                    if not actorJson['@context'][2].get('skills'):
+                        actorJson['@context'][2]['skills'] = 'toot:skills'
+                        actorChanged = True
+                    if not actorJson['@context'][2].get('shares'):
+                        actorJson['@context'][2]['shares'] = 'toot:shares'
+                        actorChanged = True
+                    if not actorJson['@context'][2].get('roles'):
+                        actorJson['@context'][2]['roles'] = 'toot:roles'
+                        actorChanged = True
+                    if not actorJson['@context'][2].get('availability'):
+                        actorJson['@context'][2]['availaibility'] = \
+                            'toot:availability'
+                    if not actorJson['@context'][2].get('nomadicLocations'):
+                        actorJson['@context'][2]['nomadicLocations'] = \
+                            'toot:nomadicLocations'
+                        actorChanged = True
+                    if actorJson.get('capabilityAcquisitionEndpoint'):
+                        del actorJson['capabilityAcquisitionEndpoint']
+                        actorChanged = True
                     # update the avatar/image url file extension
                     uploads = profileMediaTypesUploaded.items()
                     for mType, lastPart in uploads:
                         repStr = '/' + lastPart
                         if mType == 'avatar':
-                            lastPartOfUrl = \
-                                actorJson['icon']['url'].split('/')[-1]
+                            actorUrl = actorJson['icon']['url']
+                            lastPartOfUrl = actorUrl.split('/')[-1]
                             srchStr = '/' + lastPartOfUrl
-                            actorJson['icon']['url'] = \
-                                actorJson['icon']['url'].replace(srchStr,
-                                                                 repStr)
-                            if '.' in actorJson['icon']['url']:
-                                imgExt = \
-                                    actorJson['icon']['url'].split('.')[-1]
+                            actorUrl = actorUrl.replace(srchStr, repStr)
+                            actorJson['icon']['url'] = actorUrl
+                            print('actorUrl: ' + actorUrl)
+                            if '.' in actorUrl:
+                                imgExt = actorUrl.split('.')[-1]
                                 if imgExt == 'jpg':
                                     imgExt = 'jpeg'
                                 actorJson['icon']['mediaType'] = \
@@ -3814,6 +3848,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if not skillName:
                             skillCtr += 1
                             continue
+                        if isFiltered(baseDir, nickname, domain, skillName):
+                            skillCtr += 1
+                            continue
                         skillValue = \
                             fields.get('skillValue' + str(skillCtr))
                         if not skillValue:
@@ -3826,6 +3863,9 @@ class PubServer(BaseHTTPRequestHandler):
                                int(skillValue):
                                 actorChanged = True
                         newSkills[skillName] = int(skillValue)
+                        skillsStr = self.server.translate['Skills']
+                        setHashtagCategory(baseDir, skillName,
+                                           skillsStr.lower())
                         skillCtr += 1
                     if len(actorJson['skills'].items()) != \
                        len(newSkills.items()):
@@ -3847,8 +3887,14 @@ class PubServer(BaseHTTPRequestHandler):
                     # change displayed name
                     if fields.get('displayNickname'):
                         if fields['displayNickname'] != actorJson['name']:
-                            actorJson['name'] = \
+                            displayName = \
                                 removeHtml(fields['displayNickname'])
+                            if not isFiltered(baseDir,
+                                              nickname, domain,
+                                              displayName):
+                                actorJson['name'] = displayName
+                            else:
+                                actorJson['name'] = nickname
                             actorChanged = True
 
                     # change media instance status
@@ -4136,18 +4182,20 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('bio'):
                         if fields['bio'] != actorJson['summary']:
                             bioStr = removeHtml(fields['bio'])
-                            actorTags = {}
-                            actorJson['summary'] = \
-                                addHtmlTags(baseDir,
-                                            httpPrefix,
-                                            nickname,
-                                            domainFull,
-                                            bioStr, [], actorTags)
-                            if actorTags:
-                                actorJson['tag'] = []
-                                for tagName, tag in actorTags.items():
-                                    actorJson['tag'].append(tag)
-                            actorChanged = True
+                            if not isFiltered(baseDir,
+                                              nickname, domain, bioStr):
+                                actorTags = {}
+                                actorJson['summary'] = \
+                                    addHtmlTags(baseDir,
+                                                httpPrefix,
+                                                nickname,
+                                                domainFull,
+                                                bioStr, [], actorTags)
+                                if actorTags:
+                                    actorJson['tag'] = []
+                                    for tagName, tag in actorTags.items():
+                                        actorJson['tag'].append(tag)
+                                actorChanged = True
                     else:
                         if actorJson['summary']:
                             actorJson['summary'] = ''
@@ -5030,6 +5078,7 @@ class PubServer(BaseHTTPRequestHandler):
                            cookie: str, debug: bool) -> None:
         """Show person options screen
         """
+        backToPath = ''
         optionsStr = path.split('?options=')[1]
         originPathStr = path.split('?options=')[0]
         if ';' in optionsStr and '/users/news/' not in path:
@@ -5038,6 +5087,14 @@ class PubServer(BaseHTTPRequestHandler):
             optionsActor = optionsList[0]
             optionsPageNumber = optionsList[1]
             optionsProfileUrl = optionsList[2]
+            if '.' in optionsProfileUrl and \
+               optionsProfileUrl.startswith('/members/'):
+                ext = optionsProfileUrl.split('.')[-1]
+                optionsProfileUrl = optionsProfileUrl.split('/members/')[1]
+                optionsProfileUrl = optionsProfileUrl.replace('.' + ext, '')
+                optionsProfileUrl = \
+                    '/users/' + optionsProfileUrl + '/avatar.' + ext
+                backToPath = 'moderation'
             if optionsPageNumber.isdigit():
                 pageNumber = int(optionsPageNumber)
             optionsLink = None
@@ -5083,7 +5140,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     toxAddress, jamiAddress,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
-                                    self.server.dormantMonths).encode('utf-8')
+                                    self.server.dormantMonths,
+                                    backToPath).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -6605,6 +6663,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     actorJson['roles'],
                                     None, None)
@@ -6685,6 +6744,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 YTReplacementDomain,
                                                 showPublishedDateOnly,
                                                 self.server.newswire,
+                                                self.server.themeName,
                                                 self.server.dormantMonths,
                                                 actorJson['skills'],
                                                 None, None)
@@ -7046,7 +7106,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.iconsAsButtons,
                                         self.server.rssIconAtTop,
                                         self.server.publishButtonAtTop,
-                                        authorized)
+                                        authorized,
+                                        self.server.themeName)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -7169,7 +7230,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
                                          self.server.publishButtonAtTop,
-                                         authorized)
+                                         authorized, self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7285,7 +7346,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
                                          self.server.publishButtonAtTop,
-                                         authorized)
+                                         authorized, self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7401,7 +7462,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
-                                       authorized)
+                                       authorized,
+                                       self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7517,7 +7579,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
-                                       authorized)
+                                       authorized,
+                                       self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7642,7 +7705,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.iconsAsButtons,
                                       self.server.rssIconAtTop,
                                       self.server.publishButtonAtTop,
-                                      authorized)
+                                      authorized,
+                                      self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7763,7 +7827,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
                                           self.server.publishButtonAtTop,
-                                          authorized)
+                                          authorized,
+                                          self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7847,7 +7912,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.iconsAsButtons,
                                    self.server.rssIconAtTop,
                                    self.server.publishButtonAtTop,
-                                   authorized)
+                                   authorized, self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7947,7 +8012,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
                                           self.server.publishButtonAtTop,
-                                          authorized)
+                                          authorized,
+                                          self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -8066,7 +8132,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
-                                       authorized)
+                                       authorized,
+                                       self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -8177,7 +8244,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.iconsAsButtons,
                                self.server.rssIconAtTop,
                                self.server.publishButtonAtTop,
-                               authorized)
+                               authorized,
+                               self.server.themeName)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -8374,6 +8442,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     shares,
                                     pageNumber, sharesPerPage)
@@ -8466,6 +8535,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     following,
                                     pageNumber,
@@ -8558,6 +8628,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     followers,
                                     pageNumber,
@@ -8625,6 +8696,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
                                 self.server.newswire,
+                                self.server.themeName,
                                 self.server.dormantMonths,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -8870,9 +8942,9 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _columImage(self, side: str, callingDomain: str, path: str,
-                    baseDir: str, domain: str, port: int,
-                    GETstartTime, GETtimings: {}) -> bool:
+    def _columnImage(self, side: str, callingDomain: str, path: str,
+                     baseDir: str, domain: str, port: int,
+                     GETstartTime, GETtimings: {}) -> bool:
         """Shows an image at the top of the left/right column
         """
         nickname = getNicknameFromActor(path)
@@ -8999,10 +9071,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _showAvatarOrBackground(self, callingDomain: str, path: str,
-                                baseDir: str, domain: str,
-                                GETstartTime, GETtimings: {}) -> bool:
-        """Shows an avatar or profile background image
+    def _showAvatarOrBanner(self, callingDomain: str, path: str,
+                            baseDir: str, domain: str,
+                            GETstartTime, GETtimings: {}) -> bool:
+        """Shows an avatar or banner or profile background image
         """
         if '/users/' in path:
             if self._pathIsImage(path):
@@ -9010,11 +9082,20 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in avatarStr and '.temp.' not in path:
                     avatarNickname = avatarStr.split('/')[0]
                     avatarFile = avatarStr.split('/')[1]
+                    avatarFileExt = avatarFile.split('.')[-1]
                     # remove any numbers, eg. avatar123.png becomes avatar.png
                     if avatarFile.startswith('avatar'):
-                        avatarFile = 'avatar.' + avatarFile.split('.')[1]
+                        avatarFile = 'avatar.' + avatarFileExt
+                    elif avatarFile.startswith('banner'):
+                        avatarFile = 'banner.' + avatarFileExt
+                    elif avatarFile.startswith('search_banner'):
+                        avatarFile = 'search_banner.' + avatarFileExt
                     elif avatarFile.startswith('image'):
-                        avatarFile = 'image.' + avatarFile.split('.')[1]
+                        avatarFile = 'image.' + avatarFileExt
+                    elif avatarFile.startswith('left_col_image'):
+                        avatarFile = 'left_col_image.' + avatarFileExt
+                    elif avatarFile.startswith('right_col_image'):
+                        avatarFile = 'right_col_image.' + avatarFileExt
                     avatarFilename = \
                         baseDir + '/accounts/' + \
                         avatarNickname + '@' + domain + '/' + avatarFile
@@ -9138,7 +9219,8 @@ class PubServer(BaseHTTPRequestHandler):
                               nickname, domain,
                               domainFull,
                               self.server.defaultTimeline,
-                              self.server.newswire).encode('utf-8')
+                              self.server.newswire,
+                              self.server.themeName).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -9167,7 +9249,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path, domain,
                                   port,
                                   httpPrefix,
-                                  self.server.defaultTimeline).encode('utf-8')
+                                  self.server.defaultTimeline,
+                                  self.server.themeName).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -9181,7 +9264,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _editLinks(self, callingDomain: str, path: str,
                    translate: {}, baseDir: str,
                    httpPrefix: str, domain: str, port: int,
-                   cookie: str) -> bool:
+                   cookie: str, theme: str) -> bool:
         """Show the links from the left column
         """
         if '/users/' in path and path.endswith('/editlinks'):
@@ -9191,7 +9274,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 path, domain,
                                 port,
                                 httpPrefix,
-                                self.server.defaultTimeline).encode('utf-8')
+                                self.server.defaultTimeline,
+                                theme).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -9215,7 +9299,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    path, domain,
                                    port,
                                    httpPrefix,
-                                   self.server.defaultTimeline).encode('utf-8')
+                                   self.server.defaultTimeline,
+                                   self.server.themeName).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -9992,19 +10077,19 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             if self.path.endswith('/left_col_image.png'):
-                if self._columImage('left', callingDomain, self.path,
-                                    self.server.baseDir,
-                                    self.server.domain,
-                                    self.server.port,
-                                    GETstartTime, GETtimings):
+                if self._columnImage('left', callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.domain,
+                                     self.server.port,
+                                     GETstartTime, GETtimings):
                     return
 
             if self.path.endswith('/right_col_image.png'):
-                if self._columImage('right', callingDomain, self.path,
-                                    self.server.baseDir,
-                                    self.server.domain,
-                                    self.server.port,
-                                    GETstartTime, GETtimings):
+                if self._columnImage('right', callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.domain,
+                                     self.server.port,
+                                     GETstartTime, GETtimings):
                     return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -10082,10 +10167,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
-        if self._showAvatarOrBackground(callingDomain, self.path,
-                                        self.server.baseDir,
-                                        self.server.domain,
-                                        GETstartTime, GETtimings):
+        if self._showAvatarOrBanner(callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.domain,
+                                    GETstartTime, GETtimings):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -10208,7 +10293,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized,
                                          rssIconAtTop,
                                          iconsAsButtons,
-                                         defaultTimeline).encode('utf-8')
+                                         defaultTimeline,
+                                         self.server.themeName).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -10239,7 +10325,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized,
                                       self.server.rssIconAtTop,
                                       iconsAsButtons,
-                                      defaultTimeline).encode('utf-8')
+                                      defaultTimeline,
+                                      self.server.themeName).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -10307,7 +10394,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.translate,
                                  self.server.baseDir, self.path,
                                  self.server.domain,
-                                 self.server.defaultTimeline).encode('utf-8')
+                                 self.server.defaultTimeline,
+                                 self.server.themeName).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -10321,7 +10409,8 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlSearchHashtagCategory(self.server.cssCache,
                                             self.server.translate,
                                             self.server.baseDir, self.path,
-                                            self.server.domain)
+                                            self.server.domain,
+                                            self.server.themeName)
             if msg:
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
@@ -10813,7 +10902,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.httpPrefix,
                                self.server.domain,
                                self.server.port,
-                               cookie):
+                               cookie,
+                               self.server.themeName):
                 return
 
             # edit newswire from the right column of the timeline
@@ -11643,7 +11733,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       fields['subject'],
                                       fields['message'],
                                       filename, attachmentMediaType,
-                                      fields['imageDescription'])
+                                      fields['imageDescription'],
+                                      self.server.themeName)
                     if messageJson:
                         messageJson = messageJson.encode('utf-8')
                         self._set_headers('text/html',
@@ -12087,7 +12178,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.newPostThread.get(newPostThreadName):
             print('Waiting for previous new post thread to end')
             waitCtr = 0
-            while (self.server.newPostThread[newPostThreadName].isAlive() and
+            while (self.server.newPostThread[newPostThreadName].is_alive() and
                    waitCtr < 8):
                 time.sleep(1)
                 waitCtr += 1
@@ -12980,12 +13071,13 @@ class EpicyonServer(ThreadingHTTPServer):
             return HTTPServer.handle_error(self, request, client_address)
 
 
-def runPostsQueue(baseDir: str, sendThreads: [], debug: bool) -> None:
+def runPostsQueue(baseDir: str, sendThreads: [], debug: bool,
+                  timeoutMins: int) -> None:
     """Manages the threads used to send posts
     """
     while True:
         time.sleep(1)
-        removeDormantThreads(baseDir, sendThreads, debug)
+        removeDormantThreads(baseDir, sendThreads, debug, timeoutMins)
 
 
 def runSharesExpire(versionNumber: str, baseDir: str) -> None:
@@ -13004,7 +13096,7 @@ def runPostsWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrPostsQueue.start()
     while True:
         time.sleep(20)
-        if not httpd.thrPostsQueue.isAlive():
+        if not httpd.thrPostsQueue.is_alive():
             httpd.thrPostsQueue.kill()
             httpd.thrPostsQueue = postsQueueOriginal.clone(runPostsQueue)
             httpd.thrPostsQueue.start()
@@ -13019,7 +13111,7 @@ def runSharesExpireWatchdog(projectVersion: str, httpd) -> None:
     httpd.thrSharesExpire.start()
     while True:
         time.sleep(20)
-        if not httpd.thrSharesExpire.isAlive():
+        if not httpd.thrSharesExpire.is_alive():
             httpd.thrSharesExpire.kill()
             httpd.thrSharesExpire = sharesExpireOriginal.clone(runSharesExpire)
             httpd.thrSharesExpire.start()
@@ -13048,7 +13140,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(dormantMonths: int,
+def runDaemon(sendThreadsTimeoutMins: int,
+              dormantMonths: int,
               maxNewswirePosts: int,
               allowLocalNetworkAccess: bool,
               maxFeedItemSizeKb: int,
@@ -13343,10 +13436,14 @@ def runDaemon(dormantMonths: int,
                               httpd.maxPostsInBox), daemon=True)
     httpd.thrCache.start()
 
+    # number of mins after which sending posts or updates will expire
+    httpd.sendThreadsTimeoutMins = sendThreadsTimeoutMins
+
     print('Creating posts queue')
     httpd.thrPostsQueue = \
         threadWithTrace(target=runPostsQueue,
-                        args=(baseDir, httpd.sendThreads, debug), daemon=True)
+                        args=(baseDir, httpd.sendThreads, debug,
+                              httpd.sendThreadsTimeoutMins), daemon=True)
     if not unitTest:
         httpd.thrPostsWatchdog = \
             threadWithTrace(target=runPostsWatchdog,

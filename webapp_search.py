@@ -15,7 +15,6 @@ from utils import isEditor
 from utils import loadJson
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import getConfigParam
 from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
@@ -24,7 +23,6 @@ from utils import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
-from webapp_utils import getImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile
@@ -312,7 +310,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 
 def htmlSearch(cssCache: {}, translate: {},
                baseDir: str, path: str, domain: str,
-               defaultTimeline: str) -> str:
+               defaultTimeline: str, theme: str) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -331,24 +329,7 @@ def htmlSearch(cssCache: {}, translate: {},
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(baseDir, searchNickname, domain)
-    if not os.path.isfile(searchBannerFilename):
-        # get the default search banner for the theme
-        theme = getConfigParam(baseDir, 'theme').lower()
-        if theme == 'default':
-            theme = ''
-        else:
-            theme = '_' + theme
-        themeSearchImageFile, themeSearchBannerFilename = \
-            getImageFile(baseDir, 'search_banner', baseDir + '/img',
-                         searchNickname, domain)
-        if os.path.isfile(themeSearchBannerFilename):
-            searchBannerFilename = \
-                baseDir + '/accounts/' + \
-                searchNickname + '@' + domain + '/' + themeSearchImageFile
-            copyfile(themeSearchBannerFilename,
-                     searchBannerFilename)
-            searchBannerFile = themeSearchImageFile
+        getSearchBannerFile(baseDir, searchNickname, domain, theme)
 
     if os.path.isfile(searchBannerFilename):
         usersPath = '/users/' + searchNickname

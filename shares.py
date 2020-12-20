@@ -376,7 +376,8 @@ def sendShareViaServer(baseDir, session,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
-                                            fromDomain, postToBox)
+                                            fromDomain, postToBox,
+                                            83653)
 
     if not inboxUrl:
         if debug:
@@ -474,7 +475,8 @@ def sendUndoShareViaServer(baseDir: str, session,
      avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
                                             personCache, projectVersion,
                                             httpPrefix, fromNickname,
-                                            fromDomain, postToBox)
+                                            fromDomain, postToBox,
+                                            12663)
 
     if not inboxUrl:
         if debug:

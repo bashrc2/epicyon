@@ -7,14 +7,12 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from shutil import copyfile
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
-from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -70,7 +68,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                          editor: bool,
                          showBackButton: bool, timelinePath: str,
                          rssIconAtTop: bool, showHeaderImage: bool,
-                         frontPage: bool) -> str:
+                         frontPage: bool, theme: str) -> str:
     """Returns html content for the left column
     """
     htmlStr = ''
@@ -83,23 +81,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     editImageClass = ''
     if showHeaderImage:
         leftImageFile, leftColumnImageFilename = \
-            getLeftImageFile(baseDir, nickname, domain)
-        if not os.path.isfile(leftColumnImageFilename):
-            theme = getConfigParam(baseDir, 'theme').lower()
-            if theme == 'default':
-                theme = ''
-            else:
-                theme = '_' + theme
-            themeLeftImageFile, themeLeftColumnImageFilename = \
-                getImageFile(baseDir, 'left_col_image', baseDir + '/img',
-                             nickname, domain)
-            if os.path.isfile(themeLeftColumnImageFilename):
-                leftColumnImageFilename = \
-                    baseDir + '/accounts/' + \
-                    nickname + '@' + domain + '/' + themeLeftImageFile
-                copyfile(themeLeftColumnImageFilename,
-                         leftColumnImageFilename)
-                leftImageFile = themeLeftImageFile
+            getLeftImageFile(baseDir, nickname, domain, theme)
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
@@ -255,7 +237,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                     timelinePath: str, authorized: bool,
                     rssIconAtTop: bool,
                     iconsAsButtons: bool,
-                    defaultTimeline: str) -> str:
+                    defaultTimeline: str,
+                    theme: str) -> str:
     """Show the left column links within mobile view
     """
     htmlStr = ''
@@ -276,7 +259,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         domain = domain.split(':')[0]
 
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
@@ -293,7 +277,8 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
                                  httpPrefix, translate,
                                  editor,
                                  False, timelinePath,
-                                 rssIconAtTop, False, False)
+                                 rssIconAtTop, False, False,
+                                 theme)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'
@@ -310,7 +295,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
 
 def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                   domain: str, port: int, httpPrefix: str,
-                  defaultTimeline: str) -> str:
+                  defaultTimeline: str, theme: str) -> str:
     """Shows the edit links screen
     """
     if '/users/' not in path:
@@ -331,7 +316,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         cssFilename = baseDir + '/links.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     editLinksForm = htmlHeaderWithExternalStyle(cssFilename)
 

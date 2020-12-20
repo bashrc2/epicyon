@@ -60,7 +60,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  rssIconAtTop: bool,
                  publishButtonAtTop: bool,
                  authorized: bool,
-                 moderationActionStr: str) -> str:
+                 moderationActionStr: str,
+                 theme: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -123,7 +124,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         cssFilename = baseDir + '/epicyon.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
 
@@ -404,7 +406,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         getLeftColumnContent(baseDir, nickname, domainFull,
                              httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
-                             True, False)
+                             True, False, theme)
     tlStr += '  <td valign="top" class="col-left">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
@@ -444,6 +446,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         else:
             tlStr += '    <input type="text" ' + \
                 'name="moderationAction" value="" autofocus><br>\n'
+
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Information about current blocks/suspensions'] + \
@@ -453,6 +456,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Remove the above item'] + \
             '" name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
+
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Suspend the above account nickname'] + \
@@ -462,6 +466,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Remove a suspension for an account nickname'] + \
             '" name="submitUnsuspend" value="' + \
             translate['Unsuspend'] + '">\n'
+
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Block an account on another instance'] + \
@@ -470,6 +475,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '    <input type="submit" title="' + \
             translate['Unblock an account on another instance'] + \
             '" name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Filter out words'] + \
+            '" name="submitFilter" value="' + translate['Filter'] + '">\n'
+        tlStr += \
+            '    <input type="submit" title="' + \
+            translate['Unfilter words'] + \
+            '" name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+
         tlStr += '</div>\n</form>\n'
 
     logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
@@ -592,7 +607,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            False, None, True,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
-                                           authorized, True)
+                                           authorized, True, theme)
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
@@ -705,7 +720,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                iconsAsButtons: bool,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
-               authorized: bool) -> str:
+               authorized: bool, theme: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -724,7 +739,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -742,7 +757,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               iconsAsButtons: bool,
               rssIconAtTop: bool,
               publishButtonAtTop: bool,
-              authorized: bool) -> str:
+              authorized: bool, theme: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -761,7 +776,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -779,7 +794,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   iconsAsButtons: bool,
                   rssIconAtTop: bool,
                   publishButtonAtTop: bool,
-                  authorized: bool) -> str:
+                  authorized: bool, theme: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -798,7 +813,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlEvents(cssCache: {}, defaultTimeline: str,
@@ -816,7 +831,7 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                iconsAsButtons: bool,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
-               authorized: bool) -> str:
+               authorized: bool, theme: str) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -835,7 +850,7 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -853,7 +868,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  iconsAsButtons: bool,
                  rssIconAtTop: bool,
                  publishButtonAtTop: bool,
-                 authorized: bool) -> str:
+                 authorized: bool, theme: str) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -867,7 +882,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -885,7 +900,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      iconsAsButtons: bool,
                      rssIconAtTop: bool,
                      publishButtonAtTop: bool,
-                     authorized: bool) -> str:
+                     authorized: bool, theme: str) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -900,7 +915,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -918,7 +933,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    iconsAsButtons: bool,
                    rssIconAtTop: bool,
                    publishButtonAtTop: bool,
-                   authorized: bool) -> str:
+                   authorized: bool, theme: str) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -933,7 +948,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -951,7 +966,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    iconsAsButtons: bool,
                    rssIconAtTop: bool,
                    publishButtonAtTop: bool,
-                   authorized: bool) -> str:
+                   authorized: bool, theme: str) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -966,7 +981,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -984,7 +999,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       iconsAsButtons: bool,
                       rssIconAtTop: bool,
                       publishButtonAtTop: bool,
-                      authorized: bool) -> str:
+                      authorized: bool,
+                      theme: str) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -999,7 +1015,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1017,7 +1033,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   iconsAsButtons: bool,
                   rssIconAtTop: bool,
                   publishButtonAtTop: bool,
-                  authorized: bool) -> str:
+                  authorized: bool, theme: str) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1032,7 +1048,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1050,7 +1066,7 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                iconsAsButtons: bool,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
-               authorized: bool) -> str:
+               authorized: bool, theme: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1066,4 +1082,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None)
+                        authorized, None, theme)

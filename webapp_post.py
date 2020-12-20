@@ -47,6 +47,7 @@ from content import getMentionsFromHtml
 from content import switchWords
 from person import isPersonSnoozed
 from announce import announcedByPerson
+from webapp_utils import getAvatarImageUrl
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import updateAvatarImageCache
 from webapp_utils import loadIndividualPostAsHtmlFromCache
@@ -175,32 +176,6 @@ def getPostFromRecentCache(session,
                            postJsonObject, postHtml)
     logPostTiming(enableTimingLog, postStartTime, '3')
     return postHtml
-
-
-def getAvatarImageUrl(session,
-                      baseDir: str, httpPrefix: str,
-                      postActor: str, personCache: {},
-                      avatarUrl: str, allowDownloads: bool) -> str:
-    """Returns the avatar image url
-    """
-    # get the avatar image url for the post actor
-    if not avatarUrl:
-        avatarUrl = \
-            getPersonAvatarUrl(baseDir, postActor, personCache,
-                               allowDownloads)
-        avatarUrl = \
-            updateAvatarImageCache(session, baseDir, httpPrefix,
-                                   postActor, avatarUrl, personCache,
-                                   allowDownloads)
-    else:
-        updateAvatarImageCache(session, baseDir, httpPrefix,
-                               postActor, avatarUrl, personCache,
-                               allowDownloads)
-
-    if not avatarUrl:
-        avatarUrl = postActor + '/avatar.png'
-
-    return avatarUrl
 
 
 def getAvatarImageHtml(showAvatarOptions: bool,
@@ -1179,7 +1154,8 @@ def individualPostAsHtml(allowDownloads: bool,
          avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
                                                  personCache,
                                                  projectVersion, httpPrefix,
-                                                 nickname, domain, 'outbox')
+                                                 nickname, domain, 'outbox',
+                                                 72367)
         logPostTiming(enableTimingLog, postStartTime, '6')
 
         if avatarUrl2:
