@@ -9055,10 +9055,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _showAvatarOrBackground(self, callingDomain: str, path: str,
-                                baseDir: str, domain: str,
-                                GETstartTime, GETtimings: {}) -> bool:
-        """Shows an avatar or profile background image
+    def _showAvatarOrBanner(self, callingDomain: str, path: str,
+                            baseDir: str, domain: str,
+                            GETstartTime, GETtimings: {}) -> bool:
+        """Shows an avatar or banner or profile background image
         """
         if '/users/' in path:
             if self._pathIsImage(path):
@@ -9069,6 +9069,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove any numbers, eg. avatar123.png becomes avatar.png
                     if avatarFile.startswith('avatar'):
                         avatarFile = 'avatar.' + avatarFile.split('.')[1]
+                    if avatarFile.startswith('banner'):
+                        avatarFile = 'banner.' + avatarFile.split('.')[1]
                     elif avatarFile.startswith('image'):
                         avatarFile = 'image.' + avatarFile.split('.')[1]
                     avatarFilename = \
@@ -10138,10 +10140,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
-        if self._showAvatarOrBackground(callingDomain, self.path,
-                                        self.server.baseDir,
-                                        self.server.domain,
-                                        GETstartTime, GETtimings):
+        if self._showAvatarOrBanner(callingDomain, self.path,
+                                    self.server.baseDir,
+                                    self.server.domain,
+                                    GETstartTime, GETtimings):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
