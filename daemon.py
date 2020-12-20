@@ -9086,6 +9086,8 @@ class PubServer(BaseHTTPRequestHandler):
                         avatarFile = 'avatar.' + avatarFileExt
                     elif avatarFile.startswith('banner'):
                         avatarFile = 'banner.' + avatarFileExt
+                    elif avatarFile.startswith('search_banner'):
+                        avatarFile = 'search_banner.' + avatarFileExt
                     elif avatarFile.startswith('image'):
                         avatarFile = 'image.' + avatarFileExt
                     avatarFilename = \
