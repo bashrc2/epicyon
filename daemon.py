@@ -5091,6 +5091,7 @@ class PubServer(BaseHTTPRequestHandler):
                 optionsProfileUrl = optionsProfileUrl.replace('.' + ext, '')
                 optionsProfileUrl = \
                     '/users/' + optionsProfileUrl + '/avatar.' + ext
+                backToPath = 'moderation'
             if optionsPageNumber.isdigit():
                 pageNumber = int(optionsPageNumber)
             optionsLink = None
@@ -5136,7 +5137,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     toxAddress, jamiAddress,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
-                                    self.server.dormantMonths).encode('utf-8')
+                                    self.server.dormantMonths,
+                                    backToPath).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
