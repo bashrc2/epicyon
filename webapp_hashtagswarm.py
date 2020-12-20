@@ -253,23 +253,6 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
         getSearchBannerFile(baseDir, searchNickname, domain, theme)
-    if not os.path.isfile(searchBannerFilename):
-        # get the default search banner for the theme
-        theme = getConfigParam(baseDir, 'theme').lower()
-        if theme == 'default':
-            theme = ''
-        else:
-            theme = '_' + theme
-        themeSearchImageFile, themeSearchBannerFilename = \
-            getImageFile(baseDir, 'search_banner', baseDir + '/img',
-                         searchNickname, domain, theme)
-        if os.path.isfile(themeSearchBannerFilename):
-            searchBannerFilename = \
-                baseDir + '/accounts/' + \
-                searchNickname + '@' + domain + '/' + themeSearchImageFile
-            copyfile(themeSearchBannerFilename,
-                     searchBannerFilename)
-            searchBannerFile = themeSearchImageFile
 
     if os.path.isfile(searchBannerFilename):
         htmlStr += '<a href="' + actor + '/search">\n'

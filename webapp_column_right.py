@@ -86,22 +86,6 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if showHeaderImage:
         rightImageFile, rightColumnImageFilename = \
             getRightImageFile(baseDir, nickname, domain, theme)
-        if not os.path.isfile(rightColumnImageFilename):
-            theme = getConfigParam(baseDir, 'theme').lower()
-            if theme == 'default':
-                theme = ''
-            else:
-                theme = '_' + theme
-            themeRightImageFile, themeRightColumnImageFilename = \
-                getImageFile(baseDir, 'right_col_image', baseDir + '/img',
-                             nickname, domain, theme)
-            if os.path.isfile(themeRightColumnImageFilename):
-                rightColumnImageFilename = \
-                    baseDir + '/accounts/' + \
-                    nickname + '@' + domain + '/' + themeRightImageFile
-                copyfile(themeRightColumnImageFilename,
-                         rightColumnImageFilename)
-                rightImageFile = themeRightImageFile
 
         # show the image at the top of the column
         editImageClass = 'rightColEdit'

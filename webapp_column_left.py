@@ -7,14 +7,12 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-from shutil import copyfile
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import isEditor
 from webapp_utils import sharesTimelineJson
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getLeftImageFile
-from webapp_utils import getImageFile
 from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -84,22 +82,6 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
     if showHeaderImage:
         leftImageFile, leftColumnImageFilename = \
             getLeftImageFile(baseDir, nickname, domain, theme)
-        if not os.path.isfile(leftColumnImageFilename):
-            theme = getConfigParam(baseDir, 'theme').lower()
-            if theme == 'default':
-                theme = ''
-            else:
-                theme = '_' + theme
-            themeLeftImageFile, themeLeftColumnImageFilename = \
-                getImageFile(baseDir, 'left_col_image', baseDir + '/img',
-                             nickname, domain, theme)
-            if os.path.isfile(themeLeftColumnImageFilename):
-                leftColumnImageFilename = \
-                    baseDir + '/accounts/' + \
-                    nickname + '@' + domain + '/' + themeLeftImageFile
-                copyfile(themeLeftColumnImageFilename,
-                         leftColumnImageFilename)
-                leftImageFile = themeLeftImageFile
 
         # show the image at the top of the column
         editImageClass = 'leftColEdit'
