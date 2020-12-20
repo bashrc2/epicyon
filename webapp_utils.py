@@ -850,3 +850,29 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     if not highlight:
         return label
     return '*' + str(label) + '*'
+
+
+def getAvatarImageUrl(session,
+                      baseDir: str, httpPrefix: str,
+                      postActor: str, personCache: {},
+                      avatarUrl: str, allowDownloads: bool) -> str:
+    """Returns the avatar image url
+    """
+    # get the avatar image url for the post actor
+    if not avatarUrl:
+        avatarUrl = \
+            getPersonAvatarUrl(baseDir, postActor, personCache,
+                               allowDownloads)
+        avatarUrl = \
+            updateAvatarImageCache(session, baseDir, httpPrefix,
+                                   postActor, avatarUrl, personCache,
+                                   allowDownloads)
+    else:
+        updateAvatarImageCache(session, baseDir, httpPrefix,
+                               postActor, avatarUrl, personCache,
+                               allowDownloads)
+
+    if not avatarUrl:
+        avatarUrl = postActor + '/avatar.png'
+
+    return avatarUrl
