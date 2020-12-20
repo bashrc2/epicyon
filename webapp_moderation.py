@@ -204,7 +204,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             infoForm += '<b><u>'
         infoForm += acctNickname
         if isEditor(baseDir, acctNickname):
-            infoForm += ' ✏'
+            infoForm += ' ✍'
         if modAccount:
             infoForm += '</u></b>'
         infoForm += '</center></a>\n</td>\n'
