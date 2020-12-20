@@ -200,10 +200,10 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         infoForm += '<br><center>'
         modAccount = isModerator(baseDir, acctNickname)
         if modAccount:
-            infoForm += '<b>'
+            infoForm += '<b><u>'
         infoForm += acctNickname
         if modAccount:
-            infoForm += '</b>'
+            infoForm += '</u></b>'
         infoForm += '</center></a>\n</td>\n'
         col += 1
         if col == cols:
