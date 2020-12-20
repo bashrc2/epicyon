@@ -484,9 +484,9 @@ def getImageFile(baseDir: str, name: str, directory: str,
     bannerFile = ''
     bannerFilename = ''
     for ext in bannerExtensions:
-        bannerFile = name + '.' + ext
-        bannerFilename = directory + '/' + bannerFile
-        if os.path.isfile(bannerFilename):
+        bannerFileTest = name + '.' + ext
+        bannerFilenameTest = directory + '/' + bannerFileTest
+        if os.path.isfile(bannerFilenameTest):
             bannerFile = name + '_' + theme + '.' + ext
             bannerFilename = directory + '/' + bannerFile
             break
