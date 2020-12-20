@@ -194,7 +194,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             if actorJson['icon'].get('url'):
                 avatarUrl = actorJson['icon']['url']
                 if '.' in avatarUrl:
-                    ext = avatarUrl.split('.')[-1]
+                    ext = '.' + avatarUrl.split('.')[-1]
         acctUrl = \
             '/users/' + nickname + '?options=' + actor + ';1;' + \
             '/members/' + acctNickname + ext
