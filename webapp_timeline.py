@@ -124,7 +124,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         cssFilename = baseDir + '/epicyon.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
 
