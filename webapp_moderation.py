@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import isEditor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -202,6 +203,8 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         if modAccount:
             infoForm += '<b><u>'
         infoForm += acctNickname
+        if isEditor(baseDir, acctNickname):
+            infoForm += '✏'
         if modAccount:
             infoForm += '</u></b>'
         infoForm += '</center></a>\n</td>\n'
