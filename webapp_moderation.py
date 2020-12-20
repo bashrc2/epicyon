@@ -189,12 +189,15 @@ def htmlModerationInfo(cssCache: {}, translate: {},
             continue
         actor = actorJson['id']
         avatarUrl = ''
+        ext = ''
         if actorJson.get('icon'):
             if actorJson['icon'].get('url'):
                 avatarUrl = actorJson['icon']['url']
+                if '.' in avatarUrl:
+                    ext = avatarUrl.split('.')[-1]
         acctUrl = \
             '/users/' + nickname + '?options=' + actor + ';1;' + \
-            '/members/' + acctNickname
+            '/members/' + acctNickname + ext
         infoForm += '<td>\n<a href="' + acctUrl + '">'
         infoForm += '<img loading="lazy" style="width:90%" '
         infoForm += 'src="' + avatarUrl + '" />'
