@@ -182,10 +182,11 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                     avatarUrl = actorJson['icon']['url']
             acctUrl = \
                 '/users/' + nickname + '?options=' + actor + ';1;' + \
-                avatarUrl.replace('/', '-')
+                '/avatars/' + avatarUrl.replace('/', '-')
             infoForm += '<td>\n<a href="' + acctUrl + '">'
             infoForm += '<img style="width:90%" src="' + avatarUrl + '" />'
-            infoForm += '<br>' + acctNickname + '</a>\n</td>\n'
+            infoForm += '<br><center>' + acctNickname
+            infoForm += '</center></a>\n</td>\n'
             col += 1
             if col == cols:
                 # new row of accounts
