@@ -199,7 +199,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         infoForm += '<img loading="lazy" style="width:90%" '
         infoForm += 'src="' + avatarUrl + '" />'
         infoForm += '<br><center>'
-        if isModerator(baseDir, acctNickname)
+        if isModerator(baseDir, acctNickname):
             infoForm += '<b><u>' + acctNickname + '</u></b>'
         else:
             infoForm += acctNickname
