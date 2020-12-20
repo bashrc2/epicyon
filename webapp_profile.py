@@ -293,7 +293,8 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
                      displayName: str,
                      avatarDescription: str,
                      profileDescriptionShort: str,
-                     loginButton: str, avatarUrl: str) -> str:
+                     loginButton: str, avatarUrl: str,
+                     theme: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -302,7 +303,7 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
-        'src="/users/' + nickname + '/image.png" /></a>\n'
+        'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
     htmlStr += '      <figcaption>\n'
     htmlStr += \
         '        <a href="/users/' + \
@@ -572,7 +573,7 @@ def htmlProfile(rssIconAtTop: bool,
                          defaultTimeline, displayName,
                          avatarDescription,
                          profileDescriptionShort,
-                         loginButton, avatarUrl)
+                         loginButton, avatarUrl, theme)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
