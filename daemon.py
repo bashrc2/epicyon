@@ -9066,13 +9066,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in avatarStr and '.temp.' not in path:
                     avatarNickname = avatarStr.split('/')[0]
                     avatarFile = avatarStr.split('/')[1]
+                    avatarFileExt = avatarFile.split('.')[-1]
                     # remove any numbers, eg. avatar123.png becomes avatar.png
                     if avatarFile.startswith('avatar'):
-                        avatarFile = 'avatar.' + avatarFile.split('.')[1]
+                        avatarFile = 'avatar.' + avatarFileExt
                     if avatarFile.startswith('banner'):
-                        avatarFile = 'banner.' + avatarFile.split('.')[1]
+                        avatarFile = 'banner.' + avatarFileExt
                     elif avatarFile.startswith('image'):
-                        avatarFile = 'image.' + avatarFile.split('.')[1]
+                        avatarFile = 'image.' + avatarFileExt
                     avatarFilename = \
                         baseDir + '/accounts/' + \
                         avatarNickname + '@' + domain + '/' + avatarFile
