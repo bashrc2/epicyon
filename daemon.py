@@ -5084,6 +5084,12 @@ class PubServer(BaseHTTPRequestHandler):
             optionsActor = optionsList[0]
             optionsPageNumber = optionsList[1]
             optionsProfileUrl = optionsList[2]
+            if '.' in optionsProfileUrl and \
+               optionsProfileUrl.startswith('/members/'):
+                ext = optionsProfileUrl.split('.')[-1]
+                optionsProfileUrl = optionsProfileUrl.split('/members/')[0]
+                optionsProfileUrl = \
+                    '/users/' + optionsProfileUrl + '/avatar.' + ext
             if optionsPageNumber.isdigit():
                 pageNumber = int(optionsPageNumber)
             optionsLink = None

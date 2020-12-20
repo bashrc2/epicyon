@@ -194,7 +194,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 avatarUrl = actorJson['icon']['url']
         acctUrl = \
             '/users/' + nickname + '?options=' + actor + ';1;' + \
-            '/avatars/' + avatarUrl.replace('/', '-')
+            '/members/' + acctNickname
         infoForm += '<td>\n<a href="' + acctUrl + '">'
         infoForm += '<img loading="lazy" style="width:90%" '
         infoForm += 'src="' + avatarUrl + '" />'
