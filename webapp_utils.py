@@ -476,7 +476,7 @@ def postContainsPublic(postJsonObject: {}) -> bool:
 
 
 def getImageFile(baseDir: str, name: str, directory: str,
-                 nickname: str, domain: str) -> (str, str):
+                 nickname: str, domain: str, theme: str) -> (str, str):
     """
     returns the filenames for an image with the given name
     """
@@ -484,7 +484,7 @@ def getImageFile(baseDir: str, name: str, directory: str,
     bannerFile = ''
     bannerFilename = ''
     for ext in bannerExtensions:
-        bannerFile = name + '.' + ext
+        bannerFile = name + '_' + theme + '.' + ext
         bannerFilename = directory + '/' + bannerFile
         if os.path.isfile(bannerFilename):
             break
@@ -492,31 +492,31 @@ def getImageFile(baseDir: str, name: str, directory: str,
 
 
 def getBannerFile(baseDir: str,
-                  nickname: str, domain: str) -> (str, str):
+                  nickname: str, domain: str, theme: str) -> (str, str):
     return getImageFile(baseDir, 'banner',
                         baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
+                        nickname, domain, theme)
 
 
 def getSearchBannerFile(baseDir: str,
-                        nickname: str, domain: str) -> (str, str):
+                        nickname: str, domain: str, theme: str) -> (str, str):
     return getImageFile(baseDir, 'search_banner',
                         baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
+                        nickname, domain, theme)
 
 
 def getLeftImageFile(baseDir: str,
-                     nickname: str, domain: str) -> (str, str):
+                     nickname: str, domain: str, theme: str) -> (str, str):
     return getImageFile(baseDir, 'left_col_image',
                         baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
+                        nickname, domain, theme)
 
 
 def getRightImageFile(baseDir: str,
-                      nickname: str, domain: str) -> (str, str):
+                      nickname: str, domain: str, theme: str) -> (str, str):
     return getImageFile(baseDir, 'right_col_image',
                         baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain)
+                        nickname, domain, theme)
 
 
 def htmlHeaderWithExternalStyle(cssFilename: str, lang='en') -> str:

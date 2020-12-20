@@ -370,7 +370,7 @@ def htmlProfile(rssIconAtTop: bool,
                 session, wfRequest: {}, personCache: {},
                 YTReplacementDomain: str,
                 showPublishedDateOnly: bool,
-                newswire: {}, dormantMonths: int,
+                newswire: {}, theme: str, dormantMonths: int,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -389,7 +389,7 @@ def htmlProfile(rssIconAtTop: bool,
                                session, wfRequest, personCache,
                                YTReplacementDomain,
                                showPublishedDateOnly,
-                               newswire, extraJson,
+                               newswire, theme, extraJson,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])

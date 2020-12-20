@@ -51,7 +51,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           rssIconAtTop: bool,
                           publishButtonAtTop: bool,
                           authorized: bool,
-                          showHeaderImage: bool) -> str:
+                          showHeaderImage: bool,
+                          theme: str) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -84,7 +85,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     editImageClass = ''
     if showHeaderImage:
         rightImageFile, rightColumnImageFilename = \
-            getRightImageFile(baseDir, nickname, domain)
+            getRightImageFile(baseDir, nickname, domain, theme)
         if not os.path.isfile(rightColumnImageFilename):
             theme = getConfigParam(baseDir, 'theme').lower()
             if theme == 'default':
@@ -93,7 +94,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 theme = '_' + theme
             themeRightImageFile, themeRightColumnImageFilename = \
                 getImageFile(baseDir, 'right_col_image', baseDir + '/img',
-                             nickname, domain)
+                             nickname, domain, theme)
             if os.path.isfile(themeRightColumnImageFilename):
                 rightColumnImageFilename = \
                     baseDir + '/accounts/' + \
@@ -412,7 +413,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                        authorized: bool,
                        rssIconAtTop: bool,
                        iconsAsButtons: bool,
-                       defaultTimeline: str) -> str:
+                       defaultTimeline: str,
+                       theme: str) -> str:
     """Shows the mobile version of the newswire right column
     """
     htmlStr = ''
@@ -456,7 +458,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                                   newswire, positiveVoting,
                                   False, timelinePath, showPublishButton,
                                   showPublishAsIcon, rssIconAtTop, False,
-                                  authorized, False)
+                                  authorized, False, theme)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'

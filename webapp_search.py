@@ -312,7 +312,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 
 def htmlSearch(cssCache: {}, translate: {},
                baseDir: str, path: str, domain: str,
-               defaultTimeline: str) -> str:
+               defaultTimeline: str, theme: str) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -331,7 +331,7 @@ def htmlSearch(cssCache: {}, translate: {},
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
-        getSearchBannerFile(baseDir, searchNickname, domain)
+        getSearchBannerFile(baseDir, searchNickname, domain, theme)
     if not os.path.isfile(searchBannerFilename):
         # get the default search banner for the theme
         theme = getConfigParam(baseDir, 'theme').lower()
@@ -341,7 +341,7 @@ def htmlSearch(cssCache: {}, translate: {},
             theme = '_' + theme
         themeSearchImageFile, themeSearchBannerFilename = \
             getImageFile(baseDir, 'search_banner', baseDir + '/img',
-                         searchNickname, domain)
+                         searchNickname, domain, theme)
         if os.path.isfile(themeSearchBannerFilename):
             searchBannerFilename = \
                 baseDir + '/accounts/' + \

@@ -6661,6 +6661,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     actorJson['roles'],
                                     None, None)
@@ -6741,6 +6742,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 YTReplacementDomain,
                                                 showPublishedDateOnly,
                                                 self.server.newswire,
+                                                self.server.themeName,
                                                 self.server.dormantMonths,
                                                 actorJson['skills'],
                                                 None, None)
@@ -7102,7 +7104,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.iconsAsButtons,
                                         self.server.rssIconAtTop,
                                         self.server.publishButtonAtTop,
-                                        authorized)
+                                        authorized,
+                                        self.server.themeName)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -7225,7 +7228,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
                                          self.server.publishButtonAtTop,
-                                         authorized)
+                                         authorized, self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -7341,7 +7344,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
                                          self.server.publishButtonAtTop,
-                                         authorized)
+                                         authorized, self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7457,7 +7460,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
-                                       authorized)
+                                       authorized,
+                                       self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7573,7 +7577,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
-                                       authorized)
+                                       authorized,
+                                       self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7698,7 +7703,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.iconsAsButtons,
                                       self.server.rssIconAtTop,
                                       self.server.publishButtonAtTop,
-                                      authorized)
+                                      authorized,
+                                      self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7819,7 +7825,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
                                           self.server.publishButtonAtTop,
-                                          authorized)
+                                          authorized,
+                                          self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -7903,7 +7910,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.iconsAsButtons,
                                    self.server.rssIconAtTop,
                                    self.server.publishButtonAtTop,
-                                   authorized)
+                                   authorized, self.server.themeName)
                     msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -8003,7 +8010,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.iconsAsButtons,
                                           self.server.rssIconAtTop,
                                           self.server.publishButtonAtTop,
-                                          authorized)
+                                          authorized,
+                                          self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -8122,7 +8130,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.iconsAsButtons,
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
-                                       authorized)
+                                       authorized,
+                                       self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
@@ -8233,7 +8242,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.iconsAsButtons,
                                self.server.rssIconAtTop,
                                self.server.publishButtonAtTop,
-                               authorized)
+                               authorized,
+                               self.server.themeName)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -8430,6 +8440,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     shares,
                                     pageNumber, sharesPerPage)
@@ -8522,6 +8533,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     following,
                                     pageNumber,
@@ -8614,6 +8626,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain,
                                     self.server.showPublishedDateOnly,
                                     self.server.newswire,
+                                    self.server.themeName,
                                     self.server.dormantMonths,
                                     followers,
                                     pageNumber,
@@ -8681,6 +8694,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.YTReplacementDomain,
                                 self.server.showPublishedDateOnly,
                                 self.server.newswire,
+                                self.server.themeName,
                                 self.server.dormantMonths,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -8927,8 +8941,8 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _columnImage(self, side: str, callingDomain: str, path: str,
-                    baseDir: str, domain: str, port: int,
-                    GETstartTime, GETtimings: {}) -> bool:
+                     baseDir: str, domain: str, port: int,
+                     GETstartTime, GETtimings: {}) -> bool:
         """Shows an image at the top of the left/right column
         """
         nickname = getNicknameFromActor(path)
@@ -9240,7 +9254,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _editLinks(self, callingDomain: str, path: str,
                    translate: {}, baseDir: str,
                    httpPrefix: str, domain: str, port: int,
-                   cookie: str) -> bool:
+                   cookie: str, theme: str) -> bool:
         """Show the links from the left column
         """
         if '/users/' in path and path.endswith('/editlinks'):
@@ -9250,7 +9264,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 path, domain,
                                 port,
                                 httpPrefix,
-                                self.server.defaultTimeline).encode('utf-8')
+                                self.server.defaultTimeline,
+                                theme).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -10267,7 +10282,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized,
                                          rssIconAtTop,
                                          iconsAsButtons,
-                                         defaultTimeline).encode('utf-8')
+                                         defaultTimeline,
+                                         self.server.themeName).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -10298,7 +10314,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized,
                                       self.server.rssIconAtTop,
                                       iconsAsButtons,
-                                      defaultTimeline).encode('utf-8')
+                                      defaultTimeline,
+                                      self.server.themeName).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -10366,7 +10383,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.translate,
                                  self.server.baseDir, self.path,
                                  self.server.domain,
-                                 self.server.defaultTimeline).encode('utf-8')
+                                 self.server.defaultTimeline,
+                                 self.server.theme).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -10380,7 +10398,8 @@ class PubServer(BaseHTTPRequestHandler):
             msg = htmlSearchHashtagCategory(self.server.cssCache,
                                             self.server.translate,
                                             self.server.baseDir, self.path,
-                                            self.server.domain)
+                                            self.server.domain,
+                                            self.server.themeName)
             if msg:
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
@@ -10872,7 +10891,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.httpPrefix,
                                self.server.domain,
                                self.server.port,
-                               cookie):
+                               cookie,
+                               self.server.themeName):
                 return
 
             # edit newswire from the right column of the timeline
