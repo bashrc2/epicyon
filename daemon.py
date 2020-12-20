@@ -8926,7 +8926,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _columImage(self, side: str, callingDomain: str, path: str,
+    def _columnImage(self, side: str, callingDomain: str, path: str,
                     baseDir: str, domain: str, port: int,
                     GETstartTime, GETtimings: {}) -> bool:
         """Shows an image at the top of the left/right column
@@ -10048,19 +10048,19 @@ class PubServer(BaseHTTPRequestHandler):
                     return
 
             if self.path.endswith('/left_col_image.png'):
-                if self._columImage('left', callingDomain, self.path,
-                                    self.server.baseDir,
-                                    self.server.domain,
-                                    self.server.port,
-                                    GETstartTime, GETtimings):
+                if self._columnImage('left', callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.domain,
+                                     self.server.port,
+                                     GETstartTime, GETtimings):
                     return
 
             if self.path.endswith('/right_col_image.png'):
-                if self._columImage('right', callingDomain, self.path,
-                                    self.server.baseDir,
-                                    self.server.domain,
-                                    self.server.port,
-                                    GETstartTime, GETtimings):
+                if self._columnImage('right', callingDomain, self.path,
+                                     self.server.baseDir,
+                                     self.server.domain,
+                                     self.server.port,
+                                     GETstartTime, GETtimings):
                     return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
