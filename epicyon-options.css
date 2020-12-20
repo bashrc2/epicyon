@@ -4,8 +4,8 @@
     --options-bg-color: #282c37;
     --options-link-bg-color: transparent;
     --options-fg-color: #dddddd;
-    --main-link-color: #999;
-    --main-visited-color: #888;
+    --options-main-link-color: #999;
+    --options-main-visited-color: #888;
     --border-color: #505050;
     --font-size-header: 18px;
     --font-color-header: #ccc;
@@ -34,7 +34,7 @@
     --follow-text-entry-width: 90%;
     --focus-color: white;
     --petname-width-chars: 16ch;
-    --main-link-color-hover: #bbb;
+    --options-main-link-color-hover: #bbb;
 }
 
 @font-face {
@@ -73,25 +73,25 @@ a, u {
 }
 
 a:visited{
-    color: var(--main-visited-color);
+    color: var(--options-main-visited-color);
     background: var(--options-link-bg-color);
     font-weight: normal;
     text-decoration: none;
 }
 
 a:link {
-    color: var(--main-link-color);
+    color: var(--options-main-link-color);
     background: var(--options-link-bg-color);
     font-weight: normal;
     text-decoration: none;
 }
 
 a:link:hover {
-    color: var(--main-link-color-hover);
+    color: var(--options-main-link-color-hover);
 }
 
 a:visited:hover {
-    color: var(--main-link-color-hover);
+    color: var(--options-main-link-color-hover);
 }
 
 a:focus {
@@ -116,12 +116,12 @@ a:focus {
 
 .imText {
     font-size: var(--font-size4);
-    color: var(--main-link-color);
+    color: var(--options-main-link-color);
 }
 
 .pgp {
     font-size: var(--font-size5);
-    color: var(--main-link-color);
+    color: var(--options-main-link-color);
     background: var(--options-link-bg-color);
 }
 
