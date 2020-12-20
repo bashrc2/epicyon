@@ -8,18 +8,15 @@ __status__ = "Production"
 
 import os
 from datetime import datetime
-from shutil import copyfile
 from content import removeLongWords
 from utils import removeHtml
 from utils import locatePost
 from utils import loadJson
-from utils import getConfigParam
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import isEditor
 from posts import isModerator
 from webapp_utils import getRightImageFile
-from webapp_utils import getImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
@@ -282,7 +279,8 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
                   blogTitle: str, blogContent: str,
                   blogImageFilename: str,
                   blogImageAttachmentMediaType: str,
-                  blogImageDescription: str) -> str:
+                  blogImageDescription: str,
+                  theme: str) -> str:
     """Show the citations screen when creating a blog
     """
     htmlStr = ''
@@ -314,7 +312,8 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
@@ -422,7 +421,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     htmlStr = htmlHeaderWithExternalStyle(cssFilename)
 
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
@@ -458,7 +458,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
 def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
                      domain: str, port: int, httpPrefix: str,
-                     defaultTimeline: str) -> str:
+                     defaultTimeline: str, theme: str) -> str:
     """Shows the edit newswire screen
     """
     if '/users/' not in path:
@@ -479,7 +479,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         cssFilename = baseDir + '/links.css'
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     editNewswireForm = htmlHeaderWithExternalStyle(cssFilename)
 

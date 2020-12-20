@@ -15,7 +15,6 @@ from utils import isEditor
 from utils import loadJson
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from utils import getConfigParam
 from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
@@ -24,7 +23,6 @@ from utils import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath
-from webapp_utils import getImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getSearchBannerFile

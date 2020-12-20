@@ -830,7 +830,7 @@ def htmlProfileShares(actor: str, translate: {},
 
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
-                    defaultTimeline: str) -> str:
+                    defaultTimeline: str, theme: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -847,7 +847,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         return ''
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     isBot = ''
     isGroup = ''

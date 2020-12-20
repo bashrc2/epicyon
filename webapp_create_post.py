@@ -169,7 +169,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 reportUrl: str, pageNumber: int,
                 nickname: str, domain: str,
                 domainFull: str,
-                defaultTimeline: str, newswire: {}) -> str:
+                defaultTimeline: str, newswire: {},
+                theme: str) -> str:
     """New post screen
     """
     replyStr = ''
@@ -178,7 +179,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     messageBoxHeight = 400
 
     # filename of the banner shown at the top
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
 
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):

@@ -104,7 +104,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                                            iconsAsButtons)
 
     # If this is the news account then show a different banner
-    bannerFile, bannerFilename = getBannerFile(baseDir, nickname, domain)
+    bannerFile, bannerFilename = \
+        getBannerFile(baseDir, nickname, domain, theme)
     profileHeaderStr = \
         '<img loading="lazy" class="timeline-banner" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" />\n'
@@ -136,7 +137,7 @@ def htmlFrontScreen(rssIconAtTop: bool,
 
     licenseStr = ''
     bannerFile, bannerFilename = \
-        getBannerFile(baseDir, nickname, domain)
+        getBannerFile(baseDir, nickname, domain, theme)
     profileStr += \
         htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
                              translate,

@@ -9,12 +9,10 @@ __status__ = "Production"
 import os
 from shutil import copyfile
 from datetime import datetime
-from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import getHashtagCategories
 from utils import getHashtagCategory
 from webapp_utils import getSearchBannerFile
-from webapp_utils import getImageFile
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter

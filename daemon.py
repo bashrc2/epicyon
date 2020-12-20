@@ -1949,7 +1949,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domain,
                               domainFull,
                               self.server.defaultTimeline,
-                              self.server.newswire).encode('utf-8')
+                              self.server.newswire,
+                              self.server.themeName).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -2042,7 +2043,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domain,
                               domainFull,
                               self.server.defaultTimeline,
-                              self.server.newswire).encode('utf-8')
+                              self.server.newswire,
+                              self.server.themeName).encode('utf-8')
             self._set_headers('text/html', len(msg),
                               cookie, callingDomain)
             self._write(msg)
@@ -9217,7 +9219,8 @@ class PubServer(BaseHTTPRequestHandler):
                               nickname, domain,
                               domainFull,
                               self.server.defaultTimeline,
-                              self.server.newswire).encode('utf-8')
+                              self.server.newswire,
+                              self.server.themeName).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -9246,7 +9249,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   path, domain,
                                   port,
                                   httpPrefix,
-                                  self.server.defaultTimeline).encode('utf-8')
+                                  self.server.defaultTimeline,
+                                  self.server.themeName).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -9295,7 +9299,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    path, domain,
                                    port,
                                    httpPrefix,
-                                   self.server.defaultTimeline).encode('utf-8')
+                                   self.server.defaultTimeline,
+                                   self.server.themeName).encode('utf-8')
             if msg:
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
@@ -11728,7 +11733,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       fields['subject'],
                                       fields['message'],
                                       filename, attachmentMediaType,
-                                      fields['imageDescription'])
+                                      fields['imageDescription'],
+                                      self.server.themeName)
                     if messageJson:
                         messageJson = messageJson.encode('utf-8')
                         self._set_headers('text/html',
