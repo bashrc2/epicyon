@@ -9084,7 +9084,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # remove any numbers, eg. avatar123.png becomes avatar.png
                     if avatarFile.startswith('avatar'):
                         avatarFile = 'avatar.' + avatarFileExt
-                    if avatarFile.startswith('banner'):
+                    elif avatarFile.startswith('banner'):
                         avatarFile = 'banner.' + avatarFileExt
                     elif avatarFile.startswith('image'):
                         avatarFile = 'image.' + avatarFileExt
