@@ -10384,7 +10384,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir, self.path,
                                  self.server.domain,
                                  self.server.defaultTimeline,
-                                 self.server.theme).encode('utf-8')
+                                 self.server.themeName).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
