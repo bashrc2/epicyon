@@ -5087,7 +5087,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '.' in optionsProfileUrl and \
                optionsProfileUrl.startswith('/members/'):
                 ext = optionsProfileUrl.split('.')[-1]
-                optionsProfileUrl = optionsProfileUrl.split('/members/')[0]
+                optionsProfileUrl = optionsProfileUrl.split('/members/')[1]
                 optionsProfileUrl = \
                     '/users/' + optionsProfileUrl + '/avatar.' + ext
             if optionsPageNumber.isdigit():
