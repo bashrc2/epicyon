@@ -9090,6 +9090,10 @@ class PubServer(BaseHTTPRequestHandler):
                         avatarFile = 'search_banner.' + avatarFileExt
                     elif avatarFile.startswith('image'):
                         avatarFile = 'image.' + avatarFileExt
+                    elif avatarFile.startswith('left_col_image'):
+                        avatarFile = 'left_col_image.' + avatarFileExt
+                    elif avatarFile.startswith('right_col_image'):
+                        avatarFile = 'right_col_image.' + avatarFileExt
                     avatarFilename = \
                         baseDir + '/accounts/' + \
                         avatarNickname + '@' + domain + '/' + avatarFile
