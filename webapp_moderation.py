@@ -184,7 +184,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 '/users/' + nickname + '?options=' + actor + ';1;' + \
                 avatarUrl.replace('/', '-')
             infoForm += '<td>\n<a href="' + acctUrl + '">'
-            infoForm += '<img src="' + avatarUrl + '" />'
+            infoForm += '<img style="width:90%" src="' + avatarUrl + '" />'
             infoForm += '<br>' + acctNickname + '</a>\n</td>\n'
             col += 1
             if col == cols:

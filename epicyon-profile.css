@@ -951,12 +951,12 @@ div.container {
         color: var(--title-color);
     }
     .accountsTable {
-	width: 100%;
-	border: 0;
+        width: 100%;
+        border: 0;
     }
     .accountsTableCol {
-	width: 20%;
-	text-align: center;
+        width: 20%;
+        text-align: center;
     }
     .containerHeader {
         border: var(--border-width-header) solid var(--border-color);
@@ -1610,12 +1610,12 @@ div.container {
         color: var(--title-color);
     }
     .accountsTable {
-	width: 100%;
-	border: 0;
+        width: 100%;
+        border: 0;
     }
     .accountsTableCol {
-	width: 20%;
-	text-align: center;
+        width: 20%;
+        text-align: center;
     }
     .containerHeader {
         border: var(--border-width-header) solid var(--border-color);
