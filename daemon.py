@@ -5088,6 +5088,7 @@ class PubServer(BaseHTTPRequestHandler):
                optionsProfileUrl.startswith('/members/'):
                 ext = optionsProfileUrl.split('.')[-1]
                 optionsProfileUrl = optionsProfileUrl.split('/members/')[1]
+                optionsProfileUrl = optionsProfileUrl.replace('.' + ext, '')
                 optionsProfileUrl = \
                     '/users/' + optionsProfileUrl + '/avatar.' + ext
             if optionsPageNumber.isdigit():
