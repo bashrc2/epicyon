@@ -5076,6 +5076,7 @@ class PubServer(BaseHTTPRequestHandler):
                            cookie: str, debug: bool) -> None:
         """Show person options screen
         """
+        backToPath = ''
         optionsStr = path.split('?options=')[1]
         originPathStr = path.split('?options=')[0]
         if ';' in optionsStr and '/users/news/' not in path:
