@@ -163,35 +163,41 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         infoForm += '    <col span="1" class="accountsTableCol">\n'
     infoForm += '  </colgroup>\n'
     infoForm += '<tr>\n'
-    col = 0
+    accounts = []
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
             if 'inbox@' in acct or 'news@' in acct:
                 continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
-            acctNickname = acct.split('@')[0]
-            actorJson = loadJson(accountDir + '.json')
-            if not actorJson:
-                continue
-            actor = actorJson['id']
-            avatarUrl = ''
-            if actorJson.get('icon'):
-                if actorJson['icon'].get('url'):
-                    avatarUrl = actorJson['icon']['url']
-            acctUrl = \
-                '/users/' + nickname + '?options=' + actor + ';1;' + \
-                '/avatars/' + avatarUrl.replace('/', '-')
-            infoForm += '<td>\n<a href="' + acctUrl + '">'
-            infoForm += '<img style="width:90%" src="' + avatarUrl + '" />'
-            infoForm += '<br><center>' + acctNickname
-            infoForm += '</center></a>\n</td>\n'
-            col += 1
-            if col == cols:
-                # new row of accounts
-                infoForm += '</tr>\n<tr>\n'
+            accounts.append(acct)
         break
+    accounts.sort()
+
+    col = 0
+    for acct in accounts:
+        acctNickname = acct.split('@')[0]
+        accountDir = os.path.join(baseDir + '/accounts', acct)
+        actorJson = loadJson(accountDir + '.json')
+        if not actorJson:
+            continue
+        actor = actorJson['id']
+        avatarUrl = ''
+        if actorJson.get('icon'):
+            if actorJson['icon'].get('url'):
+                avatarUrl = actorJson['icon']['url']
+        acctUrl = \
+            '/users/' + nickname + '?options=' + actor + ';1;' + \
+            '/avatars/' + avatarUrl.replace('/', '-')
+        infoForm += '<td>\n<a href="' + acctUrl + '">'
+        infoForm += '<img loading="lazy" style="width:90%" '
+        infoForm += 'src="' + avatarUrl + '" />'
+        infoForm += '<br><center>' + acctNickname
+        infoForm += '</center></a>\n</td>\n'
+        col += 1
+        if col == cols:
+            # new row of accounts
+            infoForm += '</tr>\n<tr>\n'
     infoForm += '</tr>\n</table>\n'
     infoForm += '</div>\n'
 
