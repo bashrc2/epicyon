@@ -11,6 +11,7 @@ from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from posts import getPublicPostInfo
+from posts import isModerator
 from webapp_timeline import htmlTimeline
 # from webapp_utils import getPersonAvatarUrl
 from webapp_utils import getContentWarningButton
@@ -196,7 +197,13 @@ def htmlModerationInfo(cssCache: {}, translate: {},
         infoForm += '<td>\n<a href="' + acctUrl + '">'
         infoForm += '<img loading="lazy" style="width:90%" '
         infoForm += 'src="' + avatarUrl + '" />'
-        infoForm += '<br><center>' + acctNickname
+        infoForm += '<br><center>'
+        modAccount = isModerator(baseDir, acctNickname)
+        if modAccount:
+            infoForm += '<b>'
+        infoForm += acctNickname
+        if modAccount:
+            infoForm += '</b>'
         infoForm += '</center></a>\n</td>\n'
         col += 1
         if col == cols:
