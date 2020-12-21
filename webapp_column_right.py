@@ -502,10 +502,6 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += \
         '    <div style="float:right">\n'
     editNewswireForm += \
-    # editNewswireForm += \
-    #     '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-    #     translate['Go Back'] + '</button></a>\n'
-    editNewswireForm += \
         '      <input type="submit" name="submitNewswire" value="' + \
         translate['Submit'] + '">\n'
     editNewswireForm += \
