@@ -644,7 +644,17 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
     newPostForm += '    <div class="containerNewPost">\n'
-    newPostForm += '      <table style="width:100%" border="0"><tr>\n'
+    newPostForm += '      <table style="width:100%" border="0">\n'
+    newPostForm += '        <colgroup>\n'
+    newPostForm += '          <col span="1" style="width:50%">\n'
+    newPostForm += '          <col span="1" style="width:10%">\n'
+    if newswire and path.endswith('/newblog'):
+        newPostForm += '          <col span="1" style="width:20%">\n'
+        newPostForm += '          <col span="1" style="width:20%">\n'
+    else:
+        newPostForm += '          <col span="1" style="width:40%">\n'
+    newPostForm += '        </colgroup>\n'
+    newPostForm += '<tr>\n'
     newPostForm += '<td>' + dropDownContent + '</td>\n'
 
     newPostForm += \
