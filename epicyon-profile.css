@@ -705,6 +705,7 @@ input[type=submit] {
     font-size: var(--font-size-header);
     font-family: Arial, Helvetica, sans-serif;
     width: 10ch;
+    float: right;
 }
 
 .loginButton {
@@ -1455,7 +1456,7 @@ div.container {
         font-size: var(--font-size);
         font-family: Arial, Helvetica, sans-serif;
         width: 10ch;
-	float: right;
+        float: right;
     }
     .question {
         font-size: var(--font-size);
@@ -1475,7 +1476,7 @@ div.container {
     input.vote[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: left;
+        float: right;
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
@@ -2096,7 +2097,7 @@ div.container {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;
         width: 10ch;
-	float: right;
+        float: right;
     }
     .question {
         font-size: var(--font-size3);
@@ -2116,7 +2117,7 @@ div.container {
     input.vote[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: left;
+        float: right;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
