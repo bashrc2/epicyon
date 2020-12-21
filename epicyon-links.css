@@ -244,6 +244,10 @@ h1 {
     width: 10%;
 }
 
+ .containerSubmitNewPost {
+     margin: 20px;
+ }
+ 
 .container img.timelineicon:hover {
     filter: brightness(150%);
 }
