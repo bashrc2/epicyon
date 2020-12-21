@@ -8347,7 +8347,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.iconsAsButtons,
                                            self.server.rssIconAtTop,
                                            self.server.publishButtonAtTop,
-                                           authorized, moderationActionStr)
+                                           authorized, moderationActionStr,
+                                           self.server.themeName)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
