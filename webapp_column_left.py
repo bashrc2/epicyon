@@ -343,7 +343,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     editLinksForm += \
         '        <colgroup>\n'
     editLinksForm += \
-        '          <col span="1" style="width:100%">\n'
+        '          <col span="1" style="width:100%;float:right">\n'
     editLinksForm += \
         '        </colgroup>\n'
     editLinksForm += \
