@@ -653,6 +653,17 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
+
+    # for a new blog if newswire items exist then add a citations button
+    if newswire and path.endswith('/newblog'):
+        newPostForm += \
+            '      <td><input type="submit" name="submitCitations" value="' + \
+            translate['Citations'] + '"></td>\n'
+
+    newPostForm += \
+        '      <td><input type="submit" name="submitPost" value="' + \
+        translate['Submit'] + '"></td>\n'
+
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
@@ -663,16 +674,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     #     '      <a href="' + pathBase + \
     #     '/inbox"><button class="cancelbtn">' + \
     #     translate['Go Back'] + '</button></a>\n'
-
-    # for a new blog if newswire items exist then add a citations button
-    if newswire and path.endswith('/newblog'):
-        newPostForm += \
-            '      <input type="submit" name="submitCitations" value="' + \
-            translate['Citations'] + '">\n'
-
-    newPostForm += \
-        '      <input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '">\n'
 
     newPostForm += '    </center></div>\n'
 
