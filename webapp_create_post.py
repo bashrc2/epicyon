@@ -543,7 +543,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 str(messageBoxHeight) + 'px"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
-        dateAndLocation += '<br><label class="labels">' + \
+        dateAndLocation += '<label class="labels">' + \
             translate['Location'] + ': </label>\n'
         dateAndLocation += '<input type="text" name="location">\n'
         if endpoint == 'newevent':
