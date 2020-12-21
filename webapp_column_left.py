@@ -337,7 +337,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     editLinksForm += \
         '    <h1>' + translate['Edit Links'] + '</h1>'
     editLinksForm += \
-        '    <div class="containerNewPost">\n'
+        '    <div class="containerSubmitNewPost">\n'
     editLinksForm += \
         '      <table style="width:100%" border="0">\n'
     editLinksForm += \

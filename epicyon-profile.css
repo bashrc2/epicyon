@@ -472,6 +472,7 @@ a:focus {
     border: 0;
     background-color: var(--main-bg-color);
     margin: var(--vertical-between-posts);
+    float: right;
 }
 
 .editColumnHeader {
