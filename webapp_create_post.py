@@ -543,7 +543,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 str(messageBoxHeight) + 'px"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
-        dateAndLocation += '<br><label class="labels">' + \
+        dateAndLocation += '<label class="labels">' + \
             translate['Location'] + ': </label>\n'
         dateAndLocation += '<input type="text" name="location">\n'
         if endpoint == 'newevent':
@@ -644,7 +644,17 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
     newPostForm += '    <div class="containerNewPost">\n'
-    newPostForm += '      <table style="width:100%" border="0"><tr>\n'
+    newPostForm += '      <table style="width:100%" border="0">\n'
+    newPostForm += '        <colgroup>\n'
+    newPostForm += '          <col span="1" style="width:70%">\n'
+    newPostForm += '          <col span="1" style="width:10%">\n'
+    if newswire and path.endswith('/newblog'):
+        newPostForm += '          <col span="1" style="width:10%">\n'
+        newPostForm += '          <col span="1" style="width:10%">\n'
+    else:
+        newPostForm += '          <col span="1" style="width:20%">\n'
+    newPostForm += '        </colgroup>\n'
+    newPostForm += '<tr>\n'
     newPostForm += '<td>' + dropDownContent + '</td>\n'
 
     newPostForm += \
@@ -653,6 +663,17 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
+
+    # for a new blog if newswire items exist then add a citations button
+    if newswire and path.endswith('/newblog'):
+        newPostForm += \
+            '      <td><input type="submit" name="submitCitations" value="' + \
+            translate['Citations'] + '"></td>\n'
+
+    newPostForm += \
+        '      <td><input type="submit" name="submitPost" value="' + \
+        translate['Submit'] + '"></td>\n'
+
     newPostForm += '      </tr>\n'
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
@@ -663,16 +684,6 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     #     '      <a href="' + pathBase + \
     #     '/inbox"><button class="cancelbtn">' + \
     #     translate['Go Back'] + '</button></a>\n'
-
-    # for a new blog if newswire items exist then add a citations button
-    if newswire and path.endswith('/newblog'):
-        newPostForm += \
-            '      <input type="submit" name="submitCitations" value="' + \
-            translate['Citations'] + '">\n'
-
-    newPostForm += \
-        '      <input type="submit" name="submitPost" value="' + \
-        translate['Submit'] + '">\n'
 
     newPostForm += '    </center></div>\n'
 

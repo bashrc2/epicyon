@@ -19,6 +19,29 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def validPostDate(published: str, maxAgeDays=7) -> bool:
+    """Returns true if the published date is recent and is not in the future
+    """
+    baselineTime = datetime.datetime(1970, 1, 1)
+
+    daysDiff = datetime.datetime.utcnow() - baselineTime
+    nowDaysSinceEpoch = daysDiff.days
+
+    postTimeObject = \
+        datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+    daysDiff = postTimeObject - baselineTime
+    postDaysSinceEpoch = daysDiff.days
+
+    if postDaysSinceEpoch > nowDaysSinceEpoch:
+        print("Inbox post has a published date in the future!")
+        return False
+
+    if nowDaysSinceEpoch - postDaysSinceEpoch >= maxAgeDays:
+        print("Inbox post is not recent enough")
+        return False
+    return True
+
+
 def getFullDomain(domain: str, port: int) -> str:
     """Returns the full domain name, including port number
     """

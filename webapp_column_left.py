@@ -335,14 +335,12 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     editLinksForm += \
         '  <div class="vertical-center">\n'
     editLinksForm += \
-        '    <h1>' + translate['Edit Links'] + '</h1>'
+        '    <div class="containerSubmitNewPost">\n'
     editLinksForm += \
-        '    <div class="container">\n'
+        '      <h1>' + translate['Edit Links'] + '</h1>'
     editLinksForm += \
-        '      <center>\n' + \
-        '        <input type="submit" name="submitLinks" value="' + \
-        translate['Submit'] + '">\n' + \
-        '      </center>\n'
+        '      <input type="submit" name="submitLinks" value="' + \
+        translate['Submit'] + '">\n'
     editLinksForm += \
         '    </div>\n'
 

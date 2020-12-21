@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from utils import validPostDate
 from utils import getFullDomain
 from utils import isEventPost
 from utils import removeIdEnding
@@ -1384,7 +1385,13 @@ def receiveAnnounce(recentPostsCache: {},
                                       nickname, domain, messageJson,
                                       __version__, translate,
                                       YTReplacementDomain)
-    if postJsonObject:
+    if not postJsonObject:
+        if domain not in messageJson['object'] and \
+           onionDomain not in messageJson['object']:
+            if os.path.isfile(postFilename):
+                # if the announce can't be downloaded then remove it
+                os.remove(postFilename)
+    else:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
                   messageJson['actor'] + ' -> ' + messageJson['object'])
@@ -1428,8 +1435,8 @@ def receiveAnnounce(recentPostsCache: {},
                         print('DEBUG: Retry ' + str(tries + 1) +
                               ' obtaining actor for ' + lookupActor)
                     time.sleep(5)
-    if debug:
-        print('DEBUG: announced/repeated post arrived in inbox')
+        if debug:
+            print('DEBUG: announced/repeated post arrived in inbox')
     return True
 
 
@@ -1610,6 +1617,8 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
     if 'T' not in messageJson['object']['published']:
         return False
     if 'Z' not in messageJson['object']['published']:
+        return False
+    if not validPostDate(messageJson['object']['published']):
         return False
 
     if messageJson['object'].get('summary'):

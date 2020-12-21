@@ -244,6 +244,10 @@ h1 {
     width: 10%;
 }
 
+ .containerSubmitNewPost {
+     margin: 20px;
+ }
+ 
 .container img.timelineicon:hover {
     filter: brightness(150%);
 }
@@ -524,6 +528,7 @@ input[type=submit] {
     font-size: var(--font-size-header);
     font-family: Arial, Helvetica, sans-serif;
     width: 120px;
+    float: right;
 }
 
 .loginButton {

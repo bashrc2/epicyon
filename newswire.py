@@ -14,6 +14,7 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
+from utils import validPostDate
 from utils import setHashtagCategory
 from utils import firstParagraphFromString
 from utils import isPublicPost
@@ -140,6 +141,13 @@ def addNewswireDictEntry(baseDir: str, domain: str,
         postTags,
         mirrored
     ]
+
+
+def validFeedDate(pubDate: str) -> bool:
+    # convert from YY-MM-DD HH:MM:SS+00:00 to
+    # YY-MM-DDTHH:MM:SSZ
+    postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
+    return validPostDate(postDate, 30)
 
 
 def parseFeedDate(pubDate: str) -> str:
@@ -317,16 +325,17 @@ def xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
 
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
-            postFilename = ''
-            votesStatus = []
-            addNewswireDictEntry(baseDir, domain,
-                                 result, pubDateStr,
-                                 title, link,
-                                 votesStatus, postFilename,
-                                 description, moderated, mirrored)
-            postCtr += 1
-            if postCtr >= maxPostsPerSource:
-                break
+            if validFeedDate(pubDateStr):
+                postFilename = ''
+                votesStatus = []
+                addNewswireDictEntry(baseDir, domain,
+                                     result, pubDateStr,
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
     if postCtr > 0:
         print('Added ' + str(postCtr) + ' rss 2.0 feed items to newswire')
     return result
@@ -400,16 +409,17 @@ def xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
 
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
-            postFilename = ''
-            votesStatus = []
-            addNewswireDictEntry(baseDir, domain,
-                                 result, pubDateStr,
-                                 title, link,
-                                 votesStatus, postFilename,
-                                 description, moderated, mirrored)
-            postCtr += 1
-            if postCtr >= maxPostsPerSource:
-                break
+            if validFeedDate(pubDateStr):
+                postFilename = ''
+                votesStatus = []
+                addNewswireDictEntry(baseDir, domain,
+                                     result, pubDateStr,
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
     if postCtr > 0:
         print('Added ' + str(postCtr) + ' rss 1.0 feed items to newswire')
     return result
@@ -471,16 +481,17 @@ def atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
 
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
-            postFilename = ''
-            votesStatus = []
-            addNewswireDictEntry(baseDir, domain,
-                                 result, pubDateStr,
-                                 title, link,
-                                 votesStatus, postFilename,
-                                 description, moderated, mirrored)
-            postCtr += 1
-            if postCtr >= maxPostsPerSource:
-                break
+            if validFeedDate(pubDateStr):
+                postFilename = ''
+                votesStatus = []
+                addNewswireDictEntry(baseDir, domain,
+                                     result, pubDateStr,
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
     if postCtr > 0:
         print('Added ' + str(postCtr) + ' atom feed items to newswire')
     return result
@@ -540,16 +551,17 @@ def atomFeedYTToDict(baseDir: str, domain: str, xmlStr: str,
 
         pubDateStr = parseFeedDate(pubDate)
         if pubDateStr:
-            postFilename = ''
-            votesStatus = []
-            addNewswireDictEntry(baseDir, domain,
-                                 result, pubDateStr,
-                                 title, link,
-                                 votesStatus, postFilename,
-                                 description, moderated, mirrored)
-            postCtr += 1
-            if postCtr >= maxPostsPerSource:
-                break
+            if validFeedDate(pubDateStr):
+                postFilename = ''
+                votesStatus = []
+                addNewswireDictEntry(baseDir, domain,
+                                     result, pubDateStr,
+                                     title, link,
+                                     votesStatus, postFilename,
+                                     description, moderated, mirrored)
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
     if postCtr > 0:
         print('Added ' + str(postCtr) + ' YouTube feed items to newswire')
     return result
