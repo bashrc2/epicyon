@@ -474,6 +474,11 @@ a:focus {
     margin: var(--vertical-between-posts);
 }
 
+.editColumnHeader {
+    float: right;
+    min-width: 10ch;
+}
+
 .media {
     width: 80%;
     border-radius: 5px;
