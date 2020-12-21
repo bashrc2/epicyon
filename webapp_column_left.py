@@ -337,10 +337,24 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     editLinksForm += \
         '    <h1>' + translate['Edit Links'] + '</h1>'
     editLinksForm += \
-        '    <div class="editColumnHeader">\n'
+        '    <div class="containerNewPost">\n'
     editLinksForm += \
-        '        <input type="submit" name="submitLinks" value="' + \
+        '      <table style="width:100%" border="0">\n'
+    editLinksForm += \
+        '        <colgroup>\n'
+    editLinksForm += \
+        '          <col span="1" style="width:100%">\n'
+    editLinksForm += \
+        '        </colgroup>\n'
+    editLinksForm += \
+        '        <tr><td>\n'
+    editLinksForm += \
+        '          <input type="submit" name="submitLinks" value="' + \
         translate['Submit'] + '">\n'
+    editLinksForm += \
+        '        </td></tr>\n'
+    editLinksForm += \
+        '      </table>\n'
     editLinksForm += \
         '    </div>\n'
 
