@@ -1255,34 +1255,35 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="file" id="avatar" name="avatar"'
     editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += \
-        '      <br><label class="labels">' + \
-        translate['Background image'] + '</label>\n'
-    editProfileForm += '      <input type="file" id="image" name="image"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+    if not newsInstance:
+        editProfileForm += \
+            '      <br><label class="labels">' + \
+            translate['Background image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="image" name="image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '      <br><label class="labels">' + \
-        translate['Timeline banner image'] + '</label>\n'
-    editProfileForm += '      <input type="file" id="banner" name="banner"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Timeline banner image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="banner" name="banner"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '      <br><label class="labels">' + \
-        translate['Search banner image'] + '</label>\n'
-    editProfileForm += '      <input type="file" id="search_banner" '
-    editProfileForm += 'name="search_banner"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Search banner image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="search_banner" '
+        editProfileForm += 'name="search_banner"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '      <br><label class="labels">' + \
-        translate['Left column image'] + '</label>\n'
-    editProfileForm += '      <input type="file" id="left_col_image" '
-    editProfileForm += 'name="left_col_image"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Left column image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="left_col_image" '
+        editProfileForm += 'name="left_col_image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '      <br><label class="labels">' + \
-        translate['Right column image'] + '</label>\n'
-    editProfileForm += '      <input type="file" id="right_col_image" '
-    editProfileForm += 'name="right_col_image"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
+        editProfileForm += '      <br><label class="labels">' + \
+            translate['Right column image'] + '</label>\n'
+        editProfileForm += '      <input type="file" id="right_col_image" '
+        editProfileForm += 'name="right_col_image"'
+        editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '    </div>\n'
     editProfileForm += '    <div class="container">\n'
