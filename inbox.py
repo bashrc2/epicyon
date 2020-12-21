@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from utils import validPostDate
 from utils import getFullDomain
 from utils import isEventPost
 from utils import removeIdEnding
@@ -69,29 +70,6 @@ from content import dangerousMarkup
 from happening import saveEventPost
 from delete import removeOldHashtags
 from follow import isFollowingActor
-
-
-def validPostDate(published: str) -> bool:
-    """Returns true if the published date is recent and is not in the future
-    """
-    baselineTime = datetime.datetime(1970, 1, 1)
-
-    daysDiff = datetime.datetime.utcnow() - baselineTime
-    nowDaysSinceEpoch = daysDiff.days
-
-    postTimeObject = \
-        datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-    daysDiff = postTimeObject - baselineTime
-    postDaysSinceEpoch = daysDiff.days
-
-    if postDaysSinceEpoch > nowDaysSinceEpoch:
-        print("Inbox post has a published date in the future!")
-        return False
-
-    if nowDaysSinceEpoch - postDaysSinceEpoch > 3:
-        print("Inbox post is not recent enough")
-        return False
-    return True
 
 
 def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
