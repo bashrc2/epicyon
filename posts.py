@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import validPostDate
 from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
@@ -3815,6 +3816,12 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             # pprint(announcedJson)
             return None
         if not announcedJson.get('content'):
+            rejectAnnounce(announceFilename)
+            return None
+        if not announcedJson.get('published'):
+            rejectAnnounce(announceFilename)
+            return None
+        if not validPostDate(announcedJson['published']):
             rejectAnnounce(announceFilename)
             return None
         if isFiltered(baseDir, nickname, domain, announcedJson['content']):
