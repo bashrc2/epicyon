@@ -2674,7 +2674,6 @@ def testFunctions():
 def runAllTests():
     print('Running tests...')
     testFunctions()
-    return
     testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()
