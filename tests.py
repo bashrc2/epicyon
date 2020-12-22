@@ -2571,6 +2571,7 @@ def testFunctions():
 
     # which modules is each function used within?
     for modName in modules:
+        print('Module: ' + modName + ' ✓')
         with open(modName + '.py', "r") as f:
             lines = f.readlines()
             for name, properties in functionProperties.items():
@@ -2622,6 +2623,7 @@ def testFunctions():
                   ' in module ' + properties['module'] +
                   ' is not called anywhere')
         assert properties['calledInModule']
+        print('Function: ' + name + ' ✓')
     # print(str(function))
     # print(str(functionProperties))
 
