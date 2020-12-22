@@ -10,8 +10,8 @@ import os
 from shutil import copyfile
 from datetime import datetime
 from utils import getNicknameFromActor
-from utils import getHashtagCategories
-from utils import getHashtagCategory
+from categories import getHashtagCategories
+from categories import getHashtagCategory
 from webapp_utils import getSearchBannerFile
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -51,7 +51,7 @@ def getHashtagCategoriesFeed(baseDir: str,
     return rssStr
 
 
-def getHashtagDomainMax(domainHistogram: {}) -> str:
+def _getHashtagDomainMax(domainHistogram: {}) -> str:
     """Returns the domain with the maximum number of hashtags
     """
     maxCount = 1
@@ -63,7 +63,7 @@ def getHashtagDomainMax(domainHistogram: {}) -> str:
     return maxDomain
 
 
-def getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
+def _getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
     """Returns the html for a histogram of domains
     from which hashtags are coming
     """
@@ -88,7 +88,7 @@ def getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
     rightColStr = ''
 
     for i in range(len(domainHistogram)):
-        domain = getHashtagDomainMax(domainHistogram)
+        domain = _getHashtagDomainMax(domainHistogram)
         if not domain:
             break
         percent = int(domainHistogram[domain] * 100 / totalCount)
@@ -224,7 +224,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
             getContentWarningButton('alltags', translate, tagSwarmStr)
 
     tagSwarmHtml = categorySwarmStr + tagSwarmStr.strip() + '\n'
-    # tagSwarmHtml += getHashtagDomainHistogram(domainHistogram, translate)
+    # tagSwarmHtml += _getHashtagDomainHistogram(domainHistogram, translate)
     return tagSwarmHtml
 
 

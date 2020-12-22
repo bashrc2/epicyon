@@ -17,8 +17,8 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
 
-def htmlFollowingDataList(baseDir: str, nickname: str,
-                          domain: str, domainFull: str) -> str:
+def _htmlFollowingDataList(baseDir: str, nickname: str,
+                           domain: str, domainFull: str) -> str:
     """Returns a datalist of handles being followed
     """
     listStr = '<datalist id="followingHandles">\n'
@@ -57,20 +57,20 @@ def htmlFollowingDataList(baseDir: str, nickname: str,
     return listStr
 
 
-def htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
-                        replyStr: str,
-                        translate: {},
-                        showPublicOnDropdown: bool,
-                        defaultTimeline: str,
-                        pathBase: str,
-                        dropdownNewPostSuffix: str,
-                        dropdownNewBlogSuffix: str,
-                        dropdownUnlistedSuffix: str,
-                        dropdownFollowersSuffix: str,
-                        dropdownDMSuffix: str,
-                        dropdownReminderSuffix: str,
-                        dropdownEventSuffix: str,
-                        dropdownReportSuffix: str) -> str:
+def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
+                         replyStr: str,
+                         translate: {},
+                         showPublicOnDropdown: bool,
+                         defaultTimeline: str,
+                         pathBase: str,
+                         dropdownNewPostSuffix: str,
+                         dropdownNewBlogSuffix: str,
+                         dropdownUnlistedSuffix: str,
+                         dropdownFollowersSuffix: str,
+                         dropdownDMSuffix: str,
+                         dropdownReminderSuffix: str,
+                         dropdownEventSuffix: str,
+                         dropdownReportSuffix: str) -> str:
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<div class="newPostDropdown">\n'
@@ -617,20 +617,20 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     dropDownContent = ''
     if not reportUrl and not shareDescription:
         dropDownContent = \
-            htmlNewPostDropDown(scopeIcon, scopeDescription,
-                                replyStr,
-                                translate,
-                                showPublicOnDropdown,
-                                defaultTimeline,
-                                pathBase,
-                                dropdownNewPostSuffix,
-                                dropdownNewBlogSuffix,
-                                dropdownUnlistedSuffix,
-                                dropdownFollowersSuffix,
-                                dropdownDMSuffix,
-                                dropdownReminderSuffix,
-                                dropdownEventSuffix,
-                                dropdownReportSuffix)
+            _htmlNewPostDropDown(scopeIcon, scopeDescription,
+                                 replyStr,
+                                 translate,
+                                 showPublicOnDropdown,
+                                 defaultTimeline,
+                                 pathBase,
+                                 dropdownNewPostSuffix,
+                                 dropdownNewBlogSuffix,
+                                 dropdownUnlistedSuffix,
+                                 dropdownFollowersSuffix,
+                                 dropdownDMSuffix,
+                                 dropdownReminderSuffix,
+                                 dropdownEventSuffix,
+                                 dropdownReportSuffix)
     else:
         if not shareDescription:
             # reporting a post to moderator
@@ -717,7 +717,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentionsStr + '" selected>\n'
         newPostForm += \
-            htmlFollowingDataList(baseDir, nickname, domain, domainFull)
+            _htmlFollowingDataList(baseDir, nickname, domain, domainFull)
         newPostForm += ''
         selectedStr = ''
 

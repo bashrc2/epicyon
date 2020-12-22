@@ -63,7 +63,7 @@ from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 
 
-def logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
+def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
     """Create a log of timings for performance tuning
     """
     if not enableTimingLog:
@@ -92,10 +92,10 @@ def preparePostFromHtmlCache(postHtml: str, boxName: str,
     return withPageNumber
 
 
-def saveIndividualPostAsHtmlToCache(baseDir: str,
-                                    nickname: str, domain: str,
-                                    postJsonObject: {},
-                                    postHtml: str) -> bool:
+def _saveIndividualPostAsHtmlToCache(baseDir: str,
+                                     nickname: str, domain: str,
+                                     postJsonObject: {},
+                                     postHtml: str) -> bool:
     """Saves the given html for a post to a cache file
     This is so that it can be quickly reloaded on subsequent
     refresh of the timeline
@@ -118,23 +118,23 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,
     return False
 
 
-def getPostFromRecentCache(session,
-                           baseDir: str,
-                           httpPrefix: str,
-                           nickname: str, domain: str,
-                           postJsonObject: {},
-                           postActor: str,
-                           personCache: {},
-                           allowDownloads: bool,
-                           showPublicOnly: bool,
-                           storeToCache: bool,
-                           boxName: str,
-                           avatarUrl: str,
-                           enableTimingLog: bool,
-                           postStartTime,
-                           pageNumber: int,
-                           recentPostsCache: {},
-                           maxRecentPosts: int) -> str:
+def _getPostFromRecentCache(session,
+                            baseDir: str,
+                            httpPrefix: str,
+                            nickname: str, domain: str,
+                            postJsonObject: {},
+                            postActor: str,
+                            personCache: {},
+                            allowDownloads: bool,
+                            showPublicOnly: bool,
+                            storeToCache: bool,
+                            boxName: str,
+                            avatarUrl: str,
+                            enableTimingLog: bool,
+                            postStartTime,
+                            pageNumber: int,
+                            recentPostsCache: {},
+                            maxRecentPosts: int) -> str:
     """Attempts to get the html post from the recent posts cache in memory
     """
     if boxName == 'tlmedia':
@@ -157,13 +157,13 @@ def getPostFromRecentCache(session,
             getPersonAvatarUrl(baseDir, postActor, personCache,
                                allowDownloads)
 
-        logPostTiming(enableTimingLog, postStartTime, '2.1')
+        _logPostTiming(enableTimingLog, postStartTime, '2.1')
 
     updateAvatarImageCache(session, baseDir, httpPrefix,
                            postActor, avatarUrl, personCache,
                            allowDownloads)
 
-    logPostTiming(enableTimingLog, postStartTime, '2.2')
+    _logPostTiming(enableTimingLog, postStartTime, '2.2')
 
     postHtml = \
         loadIndividualPostAsHtmlFromCache(baseDir, nickname, domain,
@@ -174,15 +174,15 @@ def getPostFromRecentCache(session,
     postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
     updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                            postJsonObject, postHtml)
-    logPostTiming(enableTimingLog, postStartTime, '3')
+    _logPostTiming(enableTimingLog, postStartTime, '3')
     return postHtml
 
 
-def getAvatarImageHtml(showAvatarOptions: bool,
-                       nickname: str, domainFull: str,
-                       avatarUrl: str, postActor: str,
-                       translate: {}, avatarPosition: str,
-                       pageNumber: int, messageIdStr: str) -> str:
+def _getAvatarImageHtml(showAvatarOptions: bool,
+                        nickname: str, domainFull: str,
+                        avatarUrl: str, postActor: str,
+                        translate: {}, avatarPosition: str,
+                        pageNumber: int, messageIdStr: str) -> str:
     """Get html for the avatar image
     """
     avatarLink = ''
@@ -215,10 +215,10 @@ def getAvatarImageHtml(showAvatarOptions: bool,
     return avatarLink.strip()
 
 
-def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
-                     showIcons: bool, commentsEnabled: bool,
-                     postJsonObject: {}, pageNumberParam: str,
-                     translate: {}) -> str:
+def _getReplyIconHtml(nickname: str, isPublicRepeat: bool,
+                      showIcons: bool, commentsEnabled: bool,
+                      postJsonObject: {}, pageNumberParam: str,
+                      translate: {}) -> str:
     """Returns html for the reply icon/button
     """
     replyStr = ''
@@ -274,9 +274,9 @@ def getReplyIconHtml(nickname: str, isPublicRepeat: bool,
     return replyStr
 
 
-def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
-                    postJsonObject: {}, actorNickname: str,
-                    translate: {}, isEvent: bool) -> str:
+def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
+                     postJsonObject: {}, actorNickname: str,
+                     translate: {}, isEvent: bool) -> str:
     """Returns html for the edit icon/button
     """
     editStr = ''
@@ -330,15 +330,15 @@ def getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     return editStr
 
 
-def getAnnounceIconHtml(nickname: str, domainFull: str,
-                        postJsonObject: {},
-                        isPublicRepeat: bool,
-                        isModerationPost: bool,
-                        showRepeatIcon: bool,
-                        translate: {},
-                        pageNumberParam: str,
-                        timelinePostBookmark: str,
-                        boxName: str) -> str:
+def _getAnnounceIconHtml(nickname: str, domainFull: str,
+                         postJsonObject: {},
+                         isPublicRepeat: bool,
+                         isModerationPost: bool,
+                         showRepeatIcon: bool,
+                         translate: {},
+                         pageNumberParam: str,
+                         timelinePostBookmark: str,
+                         boxName: str) -> str:
     """Returns html for announce icon/button
     """
     announceStr = ''
@@ -372,15 +372,15 @@ def getAnnounceIconHtml(nickname: str, domainFull: str,
     return announceStr
 
 
-def getLikeIconHtml(nickname: str, domainFull: str,
-                    isModerationPost: bool,
-                    showLikeButton: bool,
-                    postJsonObject: {},
-                    enableTimingLog: bool,
-                    postStartTime,
-                    translate: {}, pageNumberParam: str,
-                    timelinePostBookmark: str,
-                    boxName: str) -> str:
+def _getLikeIconHtml(nickname: str, domainFull: str,
+                     isModerationPost: bool,
+                     showLikeButton: bool,
+                     postJsonObject: {},
+                     enableTimingLog: bool,
+                     postStartTime,
+                     translate: {}, pageNumberParam: str,
+                     timelinePostBookmark: str,
+                     boxName: str) -> str:
     """Returns html for like icon/button
     """
     likeStr = ''
@@ -390,7 +390,7 @@ def getLikeIconHtml(nickname: str, domainFull: str,
         likeTitle = translate['Like this post']
         likeCount = noOfLikes(postJsonObject)
 
-        logPostTiming(enableTimingLog, postStartTime, '12.1')
+        _logPostTiming(enableTimingLog, postStartTime, '12.1')
 
         likeCountStr = ''
         if likeCount > 0:
@@ -406,7 +406,7 @@ def getLikeIconHtml(nickname: str, domainFull: str,
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
 
-        logPostTiming(enableTimingLog, postStartTime, '12.2')
+        _logPostTiming(enableTimingLog, postStartTime, '12.2')
 
         likeStr = ''
         if likeCountStr:
@@ -430,14 +430,14 @@ def getLikeIconHtml(nickname: str, domainFull: str,
     return likeStr
 
 
-def getBookmarkIconHtml(nickname: str, domainFull: str,
-                        postJsonObject: {},
-                        isModerationPost: bool,
-                        translate: {},
-                        enableTimingLog: bool,
-                        postStartTime, boxName: str,
-                        pageNumberParam: str,
-                        timelinePostBookmark: str) -> str:
+def _getBookmarkIconHtml(nickname: str, domainFull: str,
+                         postJsonObject: {},
+                         isModerationPost: bool,
+                         translate: {},
+                         enableTimingLog: bool,
+                         postStartTime, boxName: str,
+                         pageNumberParam: str,
+                         timelinePostBookmark: str) -> str:
     """Returns html for bookmark icon/button
     """
     bookmarkStr = ''
@@ -452,7 +452,7 @@ def getBookmarkIconHtml(nickname: str, domainFull: str,
         bookmarkIcon = 'bookmark.png'
         bookmarkLink = 'unbookmark'
         bookmarkTitle = translate['Undo the bookmark']
-    logPostTiming(enableTimingLog, postStartTime, '12.6')
+    _logPostTiming(enableTimingLog, postStartTime, '12.6')
     bookmarkStr = \
         '        <a class="imageAnchor" href="/users/' + nickname + '?' + \
         bookmarkLink + '=' + postJsonObject['object']['id'] + \
@@ -468,15 +468,15 @@ def getBookmarkIconHtml(nickname: str, domainFull: str,
     return bookmarkStr
 
 
-def getMuteIconHtml(isMuted: bool,
-                    postActor: str,
-                    messageId: str,
-                    nickname: str, domainFull: str,
-                    allowDeletion: bool,
-                    pageNumberParam: str,
-                    boxName: str,
-                    timelinePostBookmark: str,
-                    translate: {}) -> str:
+def _getMuteIconHtml(isMuted: bool,
+                     postActor: str,
+                     messageId: str,
+                     nickname: str, domainFull: str,
+                     allowDeletion: bool,
+                     pageNumberParam: str,
+                     boxName: str,
+                     timelinePostBookmark: str,
+                     translate: {}) -> str:
     """Returns html for mute icon/button
     """
     muteStr = ''
@@ -512,13 +512,13 @@ def getMuteIconHtml(isMuted: bool,
     return muteStr
 
 
-def getDeleteIconHtml(nickname: str, domainFull: str,
-                      allowDeletion: bool,
-                      postActor: str,
-                      messageId: str,
-                      postJsonObject: {},
-                      pageNumberParam: str,
-                      translate: {}) -> str:
+def _getDeleteIconHtml(nickname: str, domainFull: str,
+                       allowDeletion: bool,
+                       postActor: str,
+                       messageId: str,
+                       postJsonObject: {},
+                       pageNumberParam: str,
+                       translate: {}) -> str:
     """Returns html for delete icon/button
     """
     deleteStr = ''
@@ -541,8 +541,8 @@ def getDeleteIconHtml(nickname: str, domainFull: str,
     return deleteStr
 
 
-def getPublishedDateStr(postJsonObject: {},
-                        showPublishedDateOnly: bool) -> str:
+def _getPublishedDateStr(postJsonObject: {},
+                         showPublishedDateOnly: bool) -> str:
     """Return the html for the published date on a post
     """
     publishedStr = ''
@@ -575,9 +575,9 @@ def getPublishedDateStr(postJsonObject: {},
     return publishedStr
 
 
-def getBlogCitationsHtml(boxName: str,
-                         postJsonObject: {},
-                         translate: {}) -> str:
+def _getBlogCitationsHtml(boxName: str,
+                          postJsonObject: {},
+                          translate: {}) -> str:
     """Returns blog citations as html
     """
     # show blog citations
@@ -609,7 +609,7 @@ def getBlogCitationsHtml(boxName: str,
     return citationsStr
 
 
-def boostOwnTootHtml(translate: {}) -> str:
+def _boostOwnTootHtml(translate: {}) -> str:
     """The html title for announcing your own post
     """
     return '        <img loading="lazy" title="' + \
@@ -619,8 +619,8 @@ def boostOwnTootHtml(translate: {}) -> str:
         '/repeat_inactive.png" class="announceOrReply"/>\n'
 
 
-def announceUnattributedHtml(translate: {},
-                             postJsonObject: {}) -> str:
+def _announceUnattributedHtml(translate: {},
+                              postJsonObject: {}) -> str:
     """Returns the html for an announce title where there
     is no attribution on the announced post
     """
@@ -634,10 +634,10 @@ def announceUnattributedHtml(translate: {},
         '" class="announceOrReply">@unattributed</a>\n'
 
 
-def announceWithoutDisplayNameHtml(translate: {},
-                                   announceNickname: str,
-                                   announceDomain: str,
-                                   postJsonObject: {}) -> str:
+def _announceWithoutDisplayNameHtml(translate: {},
+                                    announceNickname: str,
+                                    announceDomain: str,
+                                    postJsonObject: {}) -> str:
     """Returns html for an announce title where there is no display name
     only a handle nick@domain
     """
@@ -650,9 +650,9 @@ def announceWithoutDisplayNameHtml(translate: {},
         announceNickname + '@' + announceDomain + '</a>\n'
 
 
-def announceWithDisplayNameHtml(translate: {},
-                                postJsonObject: {},
-                                announceDisplayName: str) -> str:
+def _announceWithDisplayNameHtml(translate: {},
+                                 postJsonObject: {},
+                                 announceDisplayName: str) -> str:
     """Returns html for an announce having a display name
     """
     return '          <img loading="lazy" title="' + \
@@ -665,24 +665,24 @@ def announceWithDisplayNameHtml(translate: {},
         'class="announceOrReply">' + announceDisplayName + '</a>\n'
 
 
-def getPostTitleAnnounceHtml(baseDir: str,
-                             httpPrefix: str,
-                             nickname: str, domain: str,
-                             showRepeatIcon: bool,
-                             isAnnounced: bool,
-                             postJsonObject: {},
-                             postActor: str,
-                             translate: {},
-                             enableTimingLog: bool,
-                             postStartTime,
-                             boxName: str,
-                             personCache: {},
-                             allowDownloads: bool,
-                             avatarPosition: str,
-                             pageNumber: int,
-                             messageIdStr: str,
-                             containerClassIcons: str,
-                             containerClass: str) -> (str, str, str, str):
+def _getPostTitleAnnounceHtml(baseDir: str,
+                              httpPrefix: str,
+                              nickname: str, domain: str,
+                              showRepeatIcon: bool,
+                              isAnnounced: bool,
+                              postJsonObject: {},
+                              postActor: str,
+                              translate: {},
+                              enableTimingLog: bool,
+                              postStartTime,
+                              boxName: str,
+                              personCache: {},
+                              allowDownloads: bool,
+                              avatarPosition: str,
+                              pageNumber: int,
+                              messageIdStr: str,
+                              containerClassIcons: str,
+                              containerClass: str) -> (str, str, str, str):
     """Returns the announce title of a post containing names of participants
     x announces y
     """
@@ -695,10 +695,10 @@ def getPostTitleAnnounceHtml(baseDir: str,
             attributedTo = postJsonObject['object']['attributedTo']
 
         if attributedTo.startswith(postActor):
-            titleStr += boostOwnTootHtml(translate)
+            titleStr += _boostOwnTootHtml(translate)
         else:
             # boosting another person's post
-            logPostTiming(enableTimingLog, postStartTime, '13.2')
+            _logPostTiming(enableTimingLog, postStartTime, '13.2')
             announceNickname = None
             if attributedTo:
                 announceNickname = getNicknameFromActor(attributedTo)
@@ -710,7 +710,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                 announceDisplayName = \
                     getDisplayName(baseDir, attributedTo, personCache)
                 if announceDisplayName:
-                    logPostTiming(enableTimingLog, postStartTime, '13.3')
+                    _logPostTiming(enableTimingLog, postStartTime, '13.3')
 
                     # add any emoji to the display name
                     if ':' in announceDisplayName:
@@ -719,11 +719,11 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                                   nickname, domain,
                                                   announceDisplayName,
                                                   False)
-                    logPostTiming(enableTimingLog, postStartTime, '13.3.1')
+                    _logPostTiming(enableTimingLog, postStartTime, '13.3.1')
                     titleStr += \
-                        announceWithDisplayNameHtml(translate,
-                                                    postJsonObject,
-                                                    announceDisplayName)
+                        _announceWithDisplayNameHtml(translate,
+                                                     postJsonObject,
+                                                     announceDisplayName)
                     # show avatar of person replied to
                     announceActor = \
                         postJsonObject['object']['attributedTo']
@@ -731,7 +731,7 @@ def getPostTitleAnnounceHtml(baseDir: str,
                         getPersonAvatarUrl(baseDir, announceActor,
                                            personCache, allowDownloads)
 
-                    logPostTiming(enableTimingLog, postStartTime, '13.4')
+                    _logPostTiming(enableTimingLog, postStartTime, '13.4')
 
                     if announceAvatarUrl:
                         idx = 'Show options for this person'
@@ -756,23 +756,23 @@ def getPostTitleAnnounceHtml(baseDir: str,
                                 '/></a>\n    </div>\n'
                 else:
                     titleStr += \
-                        announceWithoutDisplayNameHtml(translate,
-                                                       announceNickname,
-                                                       announceDomain,
-                                                       postJsonObject)
+                        _announceWithoutDisplayNameHtml(translate,
+                                                        announceNickname,
+                                                        announceDomain,
+                                                        postJsonObject)
             else:
                 titleStr += \
-                    announceUnattributedHtml(translate,
-                                             postJsonObject)
+                    _announceUnattributedHtml(translate,
+                                              postJsonObject)
     else:
         titleStr += \
-            announceUnattributedHtml(translate, postJsonObject)
+            _announceUnattributedHtml(translate, postJsonObject)
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
 
 
-def replyToYourselfHtml(translate: {}, ) -> str:
+def _replyToYourselfHtml(translate: {}) -> str:
     """Returns html for a title which is a reply to yourself
     """
     return '    <img loading="lazy" title="' + \
@@ -782,8 +782,8 @@ def replyToYourselfHtml(translate: {}, ) -> str:
         '/reply.png" class="announceOrReply"/>\n'
 
 
-def replyToUnknownHtml(translate: {},
-                       postJsonObject: {}) -> str:
+def _replyToUnknownHtml(translate: {},
+                        postJsonObject: {}) -> str:
     """Returns the html title for a reply to an unknown handle
     """
     return '        <img loading="lazy" title="' + \
@@ -795,9 +795,9 @@ def replyToUnknownHtml(translate: {},
         '" class="announceOrReply">@unknown</a>\n'
 
 
-def replyWithUnknownPathHtml(translate: {},
-                             postJsonObject: {},
-                             postDomain: str) -> str:
+def _replyWithUnknownPathHtml(translate: {},
+                              postJsonObject: {},
+                              postDomain: str) -> str:
     """Returns html title for a reply with an unknown path
     eg. does not contain /statuses/
     """
@@ -812,8 +812,8 @@ def replyWithUnknownPathHtml(translate: {},
         postDomain + '</a>\n'
 
 
-def getReplyHtml(translate: {},
-                 inReplyTo: str, replyDisplayName: str) -> str:
+def _getReplyHtml(translate: {},
+                  inReplyTo: str, replyDisplayName: str) -> str:
     """Returns html title for a reply
     """
     return '        ' + \
@@ -827,9 +827,9 @@ def getReplyHtml(translate: {},
         replyDisplayName + '</a>\n'
 
 
-def getReplyWithoutDisplayName(translate: {},
-                               inReplyTo: str,
-                               replyNickname: str, replyDomain: str) -> str:
+def _getReplyWithoutDisplayName(translate: {},
+                                inReplyTo: str,
+                                replyNickname: str, replyDomain: str) -> str:
     """Returns html for a reply without a display name,
     only a handle nick@domain
     """
@@ -842,24 +842,24 @@ def getReplyWithoutDisplayName(translate: {},
         replyNickname + '@' + replyDomain + '</a>\n'
 
 
-def getPostTitleReplyHtml(baseDir: str,
-                          httpPrefix: str,
-                          nickname: str, domain: str,
-                          showRepeatIcon: bool,
-                          isAnnounced: bool,
-                          postJsonObject: {},
-                          postActor: str,
-                          translate: {},
-                          enableTimingLog: bool,
-                          postStartTime,
-                          boxName: str,
-                          personCache: {},
-                          allowDownloads: bool,
-                          avatarPosition: str,
-                          pageNumber: int,
-                          messageIdStr: str,
-                          containerClassIcons: str,
-                          containerClass: str) -> (str, str, str, str):
+def _getPostTitleReplyHtml(baseDir: str,
+                           httpPrefix: str,
+                           nickname: str, domain: str,
+                           showRepeatIcon: bool,
+                           isAnnounced: bool,
+                           postJsonObject: {},
+                           postActor: str,
+                           translate: {},
+                           enableTimingLog: bool,
+                           postStartTime,
+                           boxName: str,
+                           personCache: {},
+                           allowDownloads: bool,
+                           avatarPosition: str,
+                           pageNumber: int,
+                           messageIdStr: str,
+                           containerClassIcons: str,
+                           containerClass: str) -> (str, str, str, str):
     """Returns the reply title of a post containing names of participants
     x replies to y
     """
@@ -873,7 +873,7 @@ def getPostTitleReplyHtml(baseDir: str,
     containerClassIcons = 'containericons darker'
     containerClass = 'container darker'
     if postJsonObject['object']['inReplyTo'].startswith(postActor):
-        titleStr += replyToYourselfHtml(translate)
+        titleStr += _replyToYourselfHtml(translate)
         return (titleStr, replyAvatarImageInPost,
                 containerClassIcons, containerClass)
 
@@ -894,7 +894,7 @@ def getPostTitleReplyHtml(baseDir: str,
                 if replyDisplayName:
                     # add emoji to the display name
                     if ':' in replyDisplayName:
-                        logPostTiming(enableTimingLog, postStartTime, '13.5')
+                        _logPostTiming(enableTimingLog, postStartTime, '13.5')
 
                         replyDisplayName = \
                             addEmojiToDisplayName(baseDir,
@@ -903,12 +903,12 @@ def getPostTitleReplyHtml(baseDir: str,
                                                   domain,
                                                   replyDisplayName,
                                                   False)
-                        logPostTiming(enableTimingLog, postStartTime, '13.6')
+                        _logPostTiming(enableTimingLog, postStartTime, '13.6')
 
                     titleStr += \
-                        getReplyHtml(translate, inReplyTo, replyDisplayName)
+                        _getReplyHtml(translate, inReplyTo, replyDisplayName)
 
-                    logPostTiming(enableTimingLog, postStartTime, '13.7')
+                    _logPostTiming(enableTimingLog, postStartTime, '13.7')
 
                     # show avatar of person replied to
                     replyAvatarUrl = \
@@ -917,7 +917,7 @@ def getPostTitleReplyHtml(baseDir: str,
                                            personCache,
                                            allowDownloads)
 
-                    logPostTiming(enableTimingLog, postStartTime, '13.8')
+                    _logPostTiming(enableTimingLog, postStartTime, '13.8')
 
                     if replyAvatarUrl:
                         replyAvatarImageInPost = \
@@ -947,12 +947,13 @@ def getPostTitleReplyHtml(baseDir: str,
                     inReplyTo = \
                         postJsonObject['object']['inReplyTo']
                     titleStr += \
-                        getReplyWithoutDisplayName(translate,
-                                                   inReplyTo,
-                                                   replyNickname, replyDomain)
+                        _getReplyWithoutDisplayName(translate,
+                                                    inReplyTo,
+                                                    replyNickname,
+                                                    replyDomain)
         else:
             titleStr += \
-                replyToUnknownHtml(translate, postJsonObject)
+                _replyToUnknownHtml(translate, postJsonObject)
     else:
         postDomain = \
             postJsonObject['object']['inReplyTo']
@@ -963,31 +964,31 @@ def getPostTitleReplyHtml(baseDir: str,
             postDomain = postDomain.split('/', 1)[0]
         if postDomain:
             titleStr += \
-                replyWithUnknownPathHtml(translate,
-                                         postJsonObject, postDomain)
+                _replyWithUnknownPathHtml(translate,
+                                          postJsonObject, postDomain)
 
     return (titleStr, replyAvatarImageInPost,
             containerClassIcons, containerClass)
 
 
-def getPostTitleHtml(baseDir: str,
-                     httpPrefix: str,
-                     nickname: str, domain: str,
-                     showRepeatIcon: bool,
-                     isAnnounced: bool,
-                     postJsonObject: {},
-                     postActor: str,
-                     translate: {},
-                     enableTimingLog: bool,
-                     postStartTime,
-                     boxName: str,
-                     personCache: {},
-                     allowDownloads: bool,
-                     avatarPosition: str,
-                     pageNumber: int,
-                     messageIdStr: str,
-                     containerClassIcons: str,
-                     containerClass: str) -> (str, str, str, str):
+def _getPostTitleHtml(baseDir: str,
+                      httpPrefix: str,
+                      nickname: str, domain: str,
+                      showRepeatIcon: bool,
+                      isAnnounced: bool,
+                      postJsonObject: {},
+                      postActor: str,
+                      translate: {},
+                      enableTimingLog: bool,
+                      postStartTime,
+                      boxName: str,
+                      personCache: {},
+                      allowDownloads: bool,
+                      avatarPosition: str,
+                      pageNumber: int,
+                      messageIdStr: str,
+                      containerClassIcons: str,
+                      containerClass: str) -> (str, str, str, str):
     """Returns the title of a post containing names of participants
     x replies to y, x announces y, etc
     """
@@ -998,52 +999,52 @@ def getPostTitleHtml(baseDir: str,
                 containerClassIcons, containerClass)
 
     if isAnnounced:
-        return getPostTitleAnnounceHtml(baseDir,
-                                        httpPrefix,
-                                        nickname, domain,
-                                        showRepeatIcon,
-                                        isAnnounced,
-                                        postJsonObject,
-                                        postActor,
-                                        translate,
-                                        enableTimingLog,
-                                        postStartTime,
-                                        boxName,
-                                        personCache,
-                                        allowDownloads,
-                                        avatarPosition,
-                                        pageNumber,
-                                        messageIdStr,
-                                        containerClassIcons,
-                                        containerClass)
+        return _getPostTitleAnnounceHtml(baseDir,
+                                         httpPrefix,
+                                         nickname, domain,
+                                         showRepeatIcon,
+                                         isAnnounced,
+                                         postJsonObject,
+                                         postActor,
+                                         translate,
+                                         enableTimingLog,
+                                         postStartTime,
+                                         boxName,
+                                         personCache,
+                                         allowDownloads,
+                                         avatarPosition,
+                                         pageNumber,
+                                         messageIdStr,
+                                         containerClassIcons,
+                                         containerClass)
 
-    return getPostTitleReplyHtml(baseDir,
-                                 httpPrefix,
-                                 nickname, domain,
-                                 showRepeatIcon,
-                                 isAnnounced,
-                                 postJsonObject,
-                                 postActor,
-                                 translate,
-                                 enableTimingLog,
-                                 postStartTime,
-                                 boxName,
-                                 personCache,
-                                 allowDownloads,
-                                 avatarPosition,
-                                 pageNumber,
-                                 messageIdStr,
-                                 containerClassIcons,
-                                 containerClass)
+    return _getPostTitleReplyHtml(baseDir,
+                                  httpPrefix,
+                                  nickname, domain,
+                                  showRepeatIcon,
+                                  isAnnounced,
+                                  postJsonObject,
+                                  postActor,
+                                  translate,
+                                  enableTimingLog,
+                                  postStartTime,
+                                  boxName,
+                                  personCache,
+                                  allowDownloads,
+                                  avatarPosition,
+                                  pageNumber,
+                                  messageIdStr,
+                                  containerClassIcons,
+                                  containerClass)
 
 
-def getFooterWithIcons(showIcons: bool,
-                       containerClassIcons: str,
-                       replyStr: str, announceStr: str,
-                       likeStr: str, bookmarkStr: str,
-                       deleteStr: str, muteStr: str, editStr: str,
-                       postJsonObject: {}, publishedLink: str,
-                       timeClass: str, publishedStr: str) -> str:
+def _getFooterWithIcons(showIcons: bool,
+                        containerClassIcons: str,
+                        replyStr: str, announceStr: str,
+                        likeStr: str, bookmarkStr: str,
+                        deleteStr: str, muteStr: str, editStr: str,
+                        postJsonObject: {}, publishedLink: str,
+                        timeClass: str, publishedStr: str) -> str:
     """Returns the html for a post footer containing icons
     """
     if not showIcons:
@@ -1098,14 +1099,14 @@ def individualPostAsHtml(allowDownloads: bool,
     # accurate timing of different parts of the code
     enableTimingLog = not allowDownloads
 
-    logPostTiming(enableTimingLog, postStartTime, '1')
+    _logPostTiming(enableTimingLog, postStartTime, '1')
 
     avatarPosition = ''
     messageId = ''
     if postJsonObject.get('id'):
         messageId = removeIdEnding(postJsonObject['id'])
 
-    logPostTiming(enableTimingLog, postStartTime, '2')
+    _logPostTiming(enableTimingLog, postStartTime, '2')
 
     messageIdStr = ''
     if messageId:
@@ -1119,25 +1120,25 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # get the html post from the recent posts cache if it exists there
     postHtml = \
-        getPostFromRecentCache(session, baseDir,
-                               httpPrefix, nickname, domain,
-                               postJsonObject,
-                               postActor,
-                               personCache,
-                               allowDownloads,
-                               showPublicOnly,
-                               storeToCache,
-                               boxName,
-                               avatarUrl,
-                               enableTimingLog,
-                               postStartTime,
-                               pageNumber,
-                               recentPostsCache,
-                               maxRecentPosts)
+        _getPostFromRecentCache(session, baseDir,
+                                httpPrefix, nickname, domain,
+                                postJsonObject,
+                                postActor,
+                                personCache,
+                                allowDownloads,
+                                showPublicOnly,
+                                storeToCache,
+                                boxName,
+                                avatarUrl,
+                                enableTimingLog,
+                                postStartTime,
+                                pageNumber,
+                                recentPostsCache,
+                                maxRecentPosts)
     if postHtml:
         return postHtml
 
-    logPostTiming(enableTimingLog, postStartTime, '4')
+    _logPostTiming(enableTimingLog, postStartTime, '4')
 
     avatarUrl = \
         getAvatarImageUrl(session,
@@ -1145,7 +1146,7 @@ def individualPostAsHtml(allowDownloads: bool,
                           postActor, personCache,
                           avatarUrl, allowDownloads)
 
-    logPostTiming(enableTimingLog, postStartTime, '5')
+    _logPostTiming(enableTimingLog, postStartTime, '5')
 
     # get the display name
     if domainFull not in postActor:
@@ -1156,7 +1157,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                                  projectVersion, httpPrefix,
                                                  nickname, domain, 'outbox',
                                                  72367)
-        logPostTiming(enableTimingLog, postStartTime, '6')
+        _logPostTiming(enableTimingLog, postStartTime, '6')
 
         if avatarUrl2:
             avatarUrl = avatarUrl2
@@ -1168,14 +1169,14 @@ def individualPostAsHtml(allowDownloads: bool,
                                           nickname, domain,
                                           displayName, False)
 
-    logPostTiming(enableTimingLog, postStartTime, '7')
+    _logPostTiming(enableTimingLog, postStartTime, '7')
 
     avatarLink = \
-        getAvatarImageHtml(showAvatarOptions,
-                           nickname, domainFull,
-                           avatarUrl, postActor,
-                           translate, avatarPosition,
-                           pageNumber, messageIdStr)
+        _getAvatarImageHtml(showAvatarOptions,
+                            nickname, domainFull,
+                            avatarUrl, postActor,
+                            translate, avatarPosition,
+                            pageNumber, messageIdStr)
 
     avatarImageInPost = \
         '      <div class="timeline-avatar">' + avatarLink + '</div>\n'
@@ -1215,7 +1216,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postJsonObject = postJsonAnnounce
         isAnnounced = True
 
-    logPostTiming(enableTimingLog, postStartTime, '8')
+    _logPostTiming(enableTimingLog, postStartTime, '8')
 
     if not isinstance(postJsonObject['object'], dict):
         return ''
@@ -1266,7 +1267,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
 
     # benchmark 9
-    logPostTiming(enableTimingLog, postStartTime, '9')
+    _logPostTiming(enableTimingLog, postStartTime, '9')
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
@@ -1280,33 +1281,33 @@ def individualPostAsHtml(allowDownloads: bool,
         if postJsonObject['object']['commentsEnabled'] is False:
             commentsEnabled = False
 
-    replyStr = getReplyIconHtml(nickname, isPublicRepeat,
-                                showIcons, commentsEnabled,
-                                postJsonObject, pageNumberParam,
-                                translate)
+    replyStr = _getReplyIconHtml(nickname, isPublicRepeat,
+                                 showIcons, commentsEnabled,
+                                 postJsonObject, pageNumberParam,
+                                 translate)
 
-    logPostTiming(enableTimingLog, postStartTime, '10')
+    _logPostTiming(enableTimingLog, postStartTime, '10')
 
     isEvent = isEventPost(postJsonObject)
 
-    logPostTiming(enableTimingLog, postStartTime, '11')
+    _logPostTiming(enableTimingLog, postStartTime, '11')
 
-    editStr = getEditIconHtml(baseDir, nickname, domainFull,
-                              postJsonObject, actorNickname,
-                              translate, isEvent)
+    editStr = _getEditIconHtml(baseDir, nickname, domainFull,
+                               postJsonObject, actorNickname,
+                               translate, isEvent)
 
     announceStr = \
-        getAnnounceIconHtml(nickname, domainFull,
-                            postJsonObject,
-                            isPublicRepeat,
-                            isModerationPost,
-                            showRepeatIcon,
-                            translate,
-                            pageNumberParam,
-                            timelinePostBookmark,
-                            boxName)
+        _getAnnounceIconHtml(nickname, domainFull,
+                             postJsonObject,
+                             isPublicRepeat,
+                             isModerationPost,
+                             showRepeatIcon,
+                             translate,
+                             pageNumberParam,
+                             timelinePostBookmark,
+                             boxName)
 
-    logPostTiming(enableTimingLog, postStartTime, '12')
+    _logPostTiming(enableTimingLog, postStartTime, '12')
 
     # whether to show a like button
     hideLikeButtonFile = \
@@ -1315,81 +1316,81 @@ def individualPostAsHtml(allowDownloads: bool,
     if os.path.isfile(hideLikeButtonFile):
         showLikeButton = False
 
-    likeStr = getLikeIconHtml(nickname, domainFull,
-                              isModerationPost,
-                              showLikeButton,
-                              postJsonObject,
-                              enableTimingLog,
-                              postStartTime,
-                              translate, pageNumberParam,
-                              timelinePostBookmark,
-                              boxName)
+    likeStr = _getLikeIconHtml(nickname, domainFull,
+                               isModerationPost,
+                               showLikeButton,
+                               postJsonObject,
+                               enableTimingLog,
+                               postStartTime,
+                               translate, pageNumberParam,
+                               timelinePostBookmark,
+                               boxName)
 
-    logPostTiming(enableTimingLog, postStartTime, '12.5')
+    _logPostTiming(enableTimingLog, postStartTime, '12.5')
 
     bookmarkStr = \
-        getBookmarkIconHtml(nickname, domainFull,
-                            postJsonObject,
-                            isModerationPost,
-                            translate,
-                            enableTimingLog,
-                            postStartTime, boxName,
-                            pageNumberParam,
-                            timelinePostBookmark)
+        _getBookmarkIconHtml(nickname, domainFull,
+                             postJsonObject,
+                             isModerationPost,
+                             translate,
+                             enableTimingLog,
+                             postStartTime, boxName,
+                             pageNumberParam,
+                             timelinePostBookmark)
 
-    logPostTiming(enableTimingLog, postStartTime, '12.9')
+    _logPostTiming(enableTimingLog, postStartTime, '12.9')
 
     isMuted = postIsMuted(baseDir, nickname, domain, postJsonObject, messageId)
 
-    logPostTiming(enableTimingLog, postStartTime, '13')
+    _logPostTiming(enableTimingLog, postStartTime, '13')
 
     muteStr = \
-        getMuteIconHtml(isMuted,
-                        postActor,
-                        messageId,
-                        nickname, domainFull,
-                        allowDeletion,
-                        pageNumberParam,
-                        boxName,
-                        timelinePostBookmark,
-                        translate)
+        _getMuteIconHtml(isMuted,
+                         postActor,
+                         messageId,
+                         nickname, domainFull,
+                         allowDeletion,
+                         pageNumberParam,
+                         boxName,
+                         timelinePostBookmark,
+                         translate)
 
     deleteStr = \
-        getDeleteIconHtml(nickname, domainFull,
-                          allowDeletion,
-                          postActor,
-                          messageId,
-                          postJsonObject,
-                          pageNumberParam,
-                          translate)
+        _getDeleteIconHtml(nickname, domainFull,
+                           allowDeletion,
+                           postActor,
+                           messageId,
+                           postJsonObject,
+                           pageNumberParam,
+                           translate)
 
-    logPostTiming(enableTimingLog, postStartTime, '13.1')
+    _logPostTiming(enableTimingLog, postStartTime, '13.1')
 
     # get the title: x replies to y, x announces y, etc
     (titleStr2,
      replyAvatarImageInPost,
      containerClassIcons,
-     containerClass) = getPostTitleHtml(baseDir,
-                                        httpPrefix,
-                                        nickname, domain,
-                                        showRepeatIcon,
-                                        isAnnounced,
-                                        postJsonObject,
-                                        postActor,
-                                        translate,
-                                        enableTimingLog,
-                                        postStartTime,
-                                        boxName,
-                                        personCache,
-                                        allowDownloads,
-                                        avatarPosition,
-                                        pageNumber,
-                                        messageIdStr,
-                                        containerClassIcons,
-                                        containerClass)
+     containerClass) = _getPostTitleHtml(baseDir,
+                                         httpPrefix,
+                                         nickname, domain,
+                                         showRepeatIcon,
+                                         isAnnounced,
+                                         postJsonObject,
+                                         postActor,
+                                         translate,
+                                         enableTimingLog,
+                                         postStartTime,
+                                         boxName,
+                                         personCache,
+                                         allowDownloads,
+                                         avatarPosition,
+                                         pageNumber,
+                                         messageIdStr,
+                                         containerClassIcons,
+                                         containerClass)
     titleStr += titleStr2
 
-    logPostTiming(enableTimingLog, postStartTime, '14')
+    _logPostTiming(enableTimingLog, postStartTime, '14')
 
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
@@ -1398,9 +1399,9 @@ def individualPostAsHtml(allowDownloads: bool,
                                  bookmarkStr, deleteStr, muteStr)
 
     publishedStr = \
-        getPublishedDateStr(postJsonObject, showPublishedDateOnly)
+        _getPublishedDateStr(postJsonObject, showPublishedDateOnly)
 
-    logPostTiming(enableTimingLog, postStartTime, '15')
+    _logPostTiming(enableTimingLog, postStartTime, '15')
 
     publishedLink = messageId
     # blog posts should have no /statuses/ in their link
@@ -1427,13 +1428,13 @@ def individualPostAsHtml(allowDownloads: bool,
         containerClassIcons = 'containericons dm'
         containerClass = 'container dm'
 
-    newFooterStr = getFooterWithIcons(showIcons,
-                                      containerClassIcons,
-                                      replyStr, announceStr,
-                                      likeStr, bookmarkStr,
-                                      deleteStr, muteStr, editStr,
-                                      postJsonObject, publishedLink,
-                                      timeClass, publishedStr)
+    newFooterStr = _getFooterWithIcons(showIcons,
+                                       containerClassIcons,
+                                       replyStr, announceStr,
+                                       likeStr, bookmarkStr,
+                                       deleteStr, muteStr, editStr,
+                                       postJsonObject, publishedLink,
+                                       timeClass, publishedStr)
     if newFooterStr:
         footerStr = newFooterStr
 
@@ -1466,7 +1467,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          postJsonObject['object']['summary'],
                          postJsonObject['object']['content'])
 
-    logPostTiming(enableTimingLog, postStartTime, '16')
+    _logPostTiming(enableTimingLog, postStartTime, '16')
 
     if not isPatch:
         objectContent = \
@@ -1509,7 +1510,7 @@ def individualPostAsHtml(allowDownloads: bool,
         else:
             contentStr += cwContentStr
 
-    logPostTiming(enableTimingLog, postStartTime, '17')
+    _logPostTiming(enableTimingLog, postStartTime, '17')
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
@@ -1531,7 +1532,7 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # show blog citations
     citationsStr = \
-        getBlogCitationsHtml(boxName, postJsonObject, translate)
+        _getBlogCitationsHtml(boxName, postJsonObject, translate)
 
     postHtml = ''
     if boxName != 'tlmedia':
@@ -1546,18 +1547,18 @@ def individualPostAsHtml(allowDownloads: bool,
     else:
         postHtml = galleryStr
 
-    logPostTiming(enableTimingLog, postStartTime, '18')
+    _logPostTiming(enableTimingLog, postStartTime, '18')
 
     # save the created html to the recent posts cache
     if not showPublicOnly and storeToCache and \
        boxName != 'tlmedia' and boxName != 'tlbookmarks' and \
        boxName != 'bookmarks':
-        saveIndividualPostAsHtmlToCache(baseDir, nickname, domain,
-                                        postJsonObject, postHtml)
+        _saveIndividualPostAsHtmlToCache(baseDir, nickname, domain,
+                                         postJsonObject, postHtml)
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                                postJsonObject, postHtml)
 
-    logPostTiming(enableTimingLog, postStartTime, '19')
+    _logPostTiming(enableTimingLog, postStartTime, '19')
 
     return postHtml
 

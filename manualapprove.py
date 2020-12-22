@@ -62,7 +62,7 @@ def manualDenyFollowRequest(session, baseDir: str,
     print('Follow request from ' + denyHandle + ' was denied.')
 
 
-def approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
+def _approveFollowerHandle(accountDir: str, approveHandle: str) -> None:
     """ Record manually approved handles so that if they unfollow and then
      re-follow later then they don't need to be manually approved again
     """
@@ -203,7 +203,7 @@ def manualApproveFollowRequest(session, baseDir: str,
     # in followers.txt
     if approveHandleFull in open(followersFilename).read():
         # mark this handle as approved for following
-        approveFollowerHandle(accountDir, approveHandle)
+        _approveFollowerHandle(accountDir, approveHandle)
         # update the follow requests with the handles not yet approved
         os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
         # remove the .follow file

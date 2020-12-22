@@ -27,8 +27,8 @@ from webapp_headerbuttons import headerButtonsTimeline
 from posts import isModerator
 
 
-def logTimelineTiming(enableTimingLog: bool, timelineStartTime,
-                      boxName: str, debugId: str) -> None:
+def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
+                       boxName: str, debugId: str) -> None:
     """Create a log of timings for performance tuning
     """
     if not enableTimingLog:
@@ -127,7 +127,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '1')
 
     # is the user a moderator?
     if not moderator:
@@ -137,7 +137,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if not editor:
         editor = isEditor(baseDir, nickname)
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '2')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '2')
 
     # the appearance of buttons - highlighted or not
     inboxButton = 'button'
@@ -221,7 +221,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                         '" src="/icons/person.png"/></a>\n'
                     break
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '3')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '3')
 
     # moderation / reports button
     moderationButtonStr = ''
@@ -256,7 +256,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     tlStr = htmlHeaderWithExternalStyle(cssFilename)
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
 
     # if this is a news instance and we are viewing the news timeline
     newsHeader = False
@@ -487,17 +487,17 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
         tlStr += '</div>\n</form>\n'
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '6')
 
     if boxName == 'tlshares':
         maxSharesPerAccount = itemsPerPage
         return (tlStr +
-                htmlSharesTimeline(translate, pageNumber, itemsPerPage,
-                                   baseDir, actor, nickname, domain, port,
-                                   maxSharesPerAccount, httpPrefix) +
+                _htmlSharesTimeline(translate, pageNumber, itemsPerPage,
+                                    baseDir, actor, nickname, domain, port,
+                                    maxSharesPerAccount, httpPrefix) +
                 htmlFooter())
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
 
     # page up arrow
     if pageNumber > 1:
@@ -543,14 +543,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                     preparePostFromHtmlCache(currTlStr,
                                                              boxName,
                                                              pageNumber)
-                                logTimelineTiming(enableTimingLog,
-                                                  timelineStartTime,
-                                                  boxName, '10')
+                                _logTimelineTiming(enableTimingLog,
+                                                   timelineStartTime,
+                                                   boxName, '10')
 
                 if not currTlStr:
-                    logTimelineTiming(enableTimingLog,
-                                      timelineStartTime,
-                                      boxName, '11')
+                    _logTimelineTiming(enableTimingLog,
+                                       timelineStartTime,
+                                       boxName, '11')
 
                     # read the post from disk
                     currTlStr = \
@@ -570,8 +570,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
                                              False, True)
-                    logTimelineTiming(enableTimingLog,
-                                      timelineStartTime, boxName, '12')
+                    _logTimelineTiming(enableTimingLog,
+                                       timelineStartTime, boxName, '12')
 
                 if currTlStr:
                     itemCtr += 1
@@ -612,7 +612,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
 
-    logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
+    _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '9')
 
     tlStr += '  </tbody>\n'
     tlStr += '</table>\n'
@@ -656,10 +656,10 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
     return profileStr
 
 
-def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
-                       baseDir: str, actor: str,
-                       nickname: str, domain: str, port: int,
-                       maxSharesPerAccount: int, httpPrefix: str) -> str:
+def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
+                        baseDir: str, actor: str,
+                        nickname: str, domain: str, port: int,
+                        maxSharesPerAccount: int, httpPrefix: str) -> str:
     """Show shared items timeline as html
     """
     sharesJson, lastPage = \

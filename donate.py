@@ -7,7 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 
-def getDonationTypes() -> str:
+def _getDonationTypes() -> str:
     return ('patreon', 'paypal', 'gofundme', 'liberapay',
             'kickstarter', 'indiegogo', 'crowdsupply',
             'subscribestar')
@@ -18,7 +18,7 @@ def getDonationUrl(actorJson: {}) -> str:
     """
     if not actorJson.get('attachment'):
         return ''
-    donationType = getDonationTypes()
+    donationType = _getDonationTypes()
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -54,7 +54,7 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
-    donationType = getDonationTypes()
+    donationType = _getDonationTypes()
     donateName = None
     for paymentService in donationType:
         if paymentService in donateUrl:

@@ -21,7 +21,6 @@ import pyqrcode
 from hashlib import sha256
 from hashlib import sha1
 from session import createSession
-from webfinger import parseHandle
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
@@ -59,7 +58,7 @@ from person import personBoxJson
 from person import createSharedInbox
 from person import createNewsInbox
 from person import suspendAccount
-from person import unsuspendAccount
+from person import reenableAccount
 from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
@@ -88,7 +87,7 @@ from inbox import populateReplies
 from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import sendFollowRequest
-from follow import unfollowPerson
+from follow import unfollowAccount
 from follow import createInitialLastSeen
 from auth import authorize
 from auth import createPassword
@@ -174,7 +173,7 @@ from shares import removeShare
 from shares import expireShares
 from utils import getFullDomain
 from utils import removeHtml
-from utils import setHashtagCategory
+from categories import setHashtagCategory
 from utils import isEditor
 from utils import getImageExtensions
 from utils import mediaFileMimeType
@@ -273,22 +272,6 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
     qrcodeFilename = baseDir + '/accounts/qrcode.png'
     url = pyqrcode.create(httpPrefix + '://' + domainFull)
     url.png(qrcodeFilename, scale)
-
-
-def readFollowList(filename: str) -> None:
-    """Returns a list of ActivityPub addresses to follow
-    """
-    followlist = []
-    if not os.path.isfile(filename):
-        return followlist
-    followUsers = open(filename, "r")
-    for u in followUsers:
-        if u not in followlist:
-            nickname, domain = parseHandle(u)
-            if nickname:
-                followlist.append(nickname + '@' + domain)
-    followUsers.close()
-    return followlist
 
 
 class PubServer(BaseHTTPRequestHandler):
@@ -1091,13 +1074,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         beginSaveTime = time.time()
         # save the json for later queue processing
+        messageBytesDecoded = messageBytes.decode('utf-8')
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir,
                                  self.server.httpPrefix,
                                  nickname,
                                  self.server.domainFull,
                                  messageJson,
-                                 messageBytes.decode('utf-8'),
+                                 messageBytesDecoded,
                                  headersDict,
                                  self.path,
                                  self.server.debug)
@@ -1531,7 +1515,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if moderationButton == 'suspend':
                     suspendAccount(baseDir, nickname, domain)
                 if moderationButton == 'unsuspend':
-                    unsuspendAccount(baseDir, nickname)
+                    reenableAccount(baseDir, nickname)
                 if moderationButton == 'filter':
                     addGlobalFilter(baseDir, moderationText)
                 if moderationButton == 'unfilter':
@@ -2132,9 +2116,9 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
-                unfollowPerson(self.server.baseDir, self.postToNickname,
-                               self.server.domain,
-                               followingNickname, followingDomainFull)
+                unfollowAccount(self.server.baseDir, self.postToNickname,
+                                self.server.domain,
+                                followingNickname, followingDomainFull)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onionDomain:
@@ -2929,11 +2913,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.postToNickname:
                     if monthStr and yearStr:
                         if monthStr.isdigit() and yearStr.isdigit():
+                            yearInt = int(yearStr)
+                            monthInt = int(monthStr)
                             removeCalendarEvent(baseDir,
                                                 self.postToNickname,
                                                 domain,
-                                                int(yearStr),
-                                                int(monthStr),
+                                                yearInt,
+                                                monthInt,
                                                 removeMessageId)
                     self._postToOutboxThread(deleteJson)
         if callingDomain.endswith('.onion') and onionDomain:
@@ -6854,6 +6840,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                        recentPostsCache,
                                                        maxRecentPosts,
                                                        translate,
+                                                       self.server.baseDir,
                                                        self.server.session,
                                                        cachedWebfingers,
                                                        personCache,
@@ -7079,6 +7066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                           'show inbox page')
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
+                        minimalNick = self._isMinimal(nickname)
                         msg = htmlInbox(self.server.cssCache,
                                         defaultTimeline,
                                         recentPostsCache,
@@ -7096,7 +7084,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         allowDeletion,
                                         httpPrefix,
                                         projectVersion,
-                                        self._isMinimal(nickname),
+                                        minimalNick,
                                         YTReplacementDomain,
                                         self.server.showPublishedDateOnly,
                                         self.server.newswire,
@@ -7202,6 +7190,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
+                        minimalNick = self._isMinimal(nickname)
                         msg = \
                             htmlInboxDMs(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -7220,7 +7209,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.allowDeletion,
                                          httpPrefix,
                                          self.server.projectVersion,
-                                         self._isMinimal(nickname),
+                                         minimalNick,
                                          self.server.YTReplacementDomain,
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
@@ -7318,6 +7307,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
+                    minimalNick = self._isMinimal(nickname)
                     msg = \
                         htmlInboxReplies(self.server.cssCache,
                                          self.server.defaultTimeline,
@@ -7336,7 +7326,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.allowDeletion,
                                          httpPrefix,
                                          self.server.projectVersion,
-                                         self._isMinimal(nickname),
+                                         minimalNick,
                                          self.server.YTReplacementDomain,
                                          self.server.showPublishedDateOnly,
                                          self.server.newswire,
@@ -7434,6 +7424,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
+                    minimalNick = self._isMinimal(nickname)
                     msg = \
                         htmlInboxMedia(self.server.cssCache,
                                        self.server.defaultTimeline,
@@ -7452,7 +7443,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allowDeletion,
                                        httpPrefix,
                                        self.server.projectVersion,
-                                       self._isMinimal(nickname),
+                                       minimalNick,
                                        self.server.YTReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
@@ -7551,6 +7542,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.votingTimeMins)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
+                    minimalNick = self._isMinimal(nickname)
                     msg = \
                         htmlInboxBlogs(self.server.cssCache,
                                        self.server.defaultTimeline,
@@ -7569,7 +7561,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allowDeletion,
                                        httpPrefix,
                                        self.server.projectVersion,
-                                       self._isMinimal(nickname),
+                                       minimalNick,
                                        self.server.YTReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
@@ -7676,6 +7668,7 @@ class PubServer(BaseHTTPRequestHandler):
                     editor = isEditor(baseDir, currNickname)
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
+                    minimalNick = self._isMinimal(nickname)
                     msg = \
                         htmlInboxNews(self.server.cssCache,
                                       self.server.defaultTimeline,
@@ -7694,7 +7687,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.allowDeletion,
                                       httpPrefix,
                                       self.server.projectVersion,
-                                      self._isMinimal(nickname),
+                                      minimalNick,
                                       self.server.YTReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.newswire,
@@ -7799,6 +7792,7 @@ class PubServer(BaseHTTPRequestHandler):
                         currNickname = currNickname.split('/')[0]
                     fullWidthTimelineButtonHeader = \
                         self.server.fullWidthTimelineButtonHeader
+                    minimalNick = self._isMinimal(nickname)
                     msg = \
                         htmlInboxFeatures(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -7817,7 +7811,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.allowDeletion,
                                           httpPrefix,
                                           self.server.projectVersion,
-                                          self._isMinimal(nickname),
+                                          minimalNick,
                                           self.server.YTReplacementDomain,
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
@@ -7984,6 +7978,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
+                        minimalNick = self._isMinimal(nickname)
                         msg = \
                             htmlBookmarks(self.server.cssCache,
                                           self.server.defaultTimeline,
@@ -8002,7 +7997,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.allowDeletion,
                                           httpPrefix,
                                           self.server.projectVersion,
-                                          self._isMinimal(nickname),
+                                          minimalNick,
                                           self.server.YTReplacementDomain,
                                           self.server.showPublishedDateOnly,
                                           self.server.newswire,
@@ -8104,6 +8099,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.votingTimeMins)
                         fullWidthTimelineButtonHeader = \
                             self.server.fullWidthTimelineButtonHeader
+                        minimalNick = self._isMinimal(nickname)
                         msg = \
                             htmlEvents(self.server.cssCache,
                                        self.server.defaultTimeline,
@@ -8122,7 +8118,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allowDeletion,
                                        httpPrefix,
                                        self.server.projectVersion,
-                                       self._isMinimal(nickname),
+                                       minimalNick,
                                        self.server.YTReplacementDomain,
                                        self.server.showPublishedDateOnly,
                                        self.server.newswire,
@@ -8216,6 +8212,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.votingTimeMins)
                 fullWidthTimelineButtonHeader = \
                     self.server.fullWidthTimelineButtonHeader
+                minimalNick = self._isMinimal(nickname)
                 msg = \
                     htmlOutbox(self.server.cssCache,
                                self.server.defaultTimeline,
@@ -8234,7 +8231,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.allowDeletion,
                                httpPrefix,
                                self.server.projectVersion,
-                               self._isMinimal(nickname),
+                               minimalNick,
                                self.server.YTReplacementDomain,
                                self.server.showPublishedDateOnly,
                                self.server.newswire,

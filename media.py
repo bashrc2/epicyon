@@ -6,7 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-from blurhash import blurhash_encode as blurencode
+from blurhash import blurhash_encode
 from PIL import Image
 import numpy
 import os
@@ -56,11 +56,12 @@ def removeMetaData(imageFilename: str, outputFilename: str) -> None:
         os.system('/usr/bin/mogrify -strip ' + outputFilename)  # nosec
 
 
-def getImageHash(imageFilename: str) -> str:
-    return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
+def _getImageHash(imageFilename: str) -> str:
+    value = numpy.array(Image.open(imageFilename).convert("RGB"))
+    return blurhash_encode(value)
 
 
-def isMedia(imageFilename: str) -> bool:
+def _isMedia(imageFilename: str) -> bool:
     permittedMedia = getMediaExtensions()
     for m in permittedMedia:
         if imageFilename.endswith('.' + m):
@@ -102,7 +103,7 @@ def getAttachmentMediaType(filename: str) -> str:
     return mediaType
 
 
-def updateEtag(mediaFilename: str) -> None:
+def _updateEtag(mediaFilename: str) -> None:
     """ calculate the etag, which is a sha1 of the data
     """
     # only create etags for media
@@ -142,7 +143,7 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
     Blurhash is optional, since low power systems may take a long
     time to calculate it
     """
-    if not isMedia(imageFilename):
+    if not _isMedia(imageFilename):
         return postJson
 
     fileExtension = None
@@ -181,7 +182,7 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
     if mediaType.startswith('image/'):
         attachmentJson['focialPoint'] = [0.0, 0.0]
         if useBlurhash:
-            attachmentJson['blurhash'] = getImageHash(imageFilename)
+            attachmentJson['blurhash'] = _getImageHash(imageFilename)
     postJson['attachment'] = [attachmentJson]
 
     if baseDir:
@@ -189,7 +190,7 @@ def attachMedia(baseDir: str, httpPrefix: str, domain: str, port: int,
             removeMetaData(imageFilename, mediaFilename)
         else:
             copyfile(imageFilename, mediaFilename)
-        updateEtag(mediaFilename)
+        _updateEtag(mediaFilename)
 
     return postJson
 

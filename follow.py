@@ -65,10 +65,10 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
         break
 
 
-def preApprovedFollower(baseDir: str,
-                        nickname: str, domain: str,
-                        approveHandle: str,
-                        allowNewsFollowers: bool) -> bool:
+def _preApprovedFollower(baseDir: str,
+                         nickname: str, domain: str,
+                         approveHandle: str,
+                         allowNewsFollowers: bool) -> bool:
     """Is the given handle an already manually approved follower?
     """
     # optionally allow the news account to be followed
@@ -84,10 +84,10 @@ def preApprovedFollower(baseDir: str,
     return False
 
 
-def removeFromFollowBase(baseDir: str,
-                         nickname: str, domain: str,
-                         acceptOrDenyHandle: str, followFile: str,
-                         debug: bool) -> None:
+def _removeFromFollowBase(baseDir: str,
+                          nickname: str, domain: str,
+                          acceptOrDenyHandle: str, followFile: str,
+                          debug: bool) -> None:
     """Removes a handle from follow requests or rejects file
     """
     handle = nickname + '@' + domain
@@ -114,17 +114,17 @@ def removeFromFollowRequests(baseDir: str,
                              denyHandle: str, debug: bool) -> None:
     """Removes a handle from follow requests
     """
-    removeFromFollowBase(baseDir, nickname, domain,
-                         denyHandle, 'followrequests', debug)
+    _removeFromFollowBase(baseDir, nickname, domain,
+                          denyHandle, 'followrequests', debug)
 
 
-def removeFromFollowRejects(baseDir: str,
-                            nickname: str, domain: str,
-                            acceptHandle: str, debug: bool) -> None:
+def _removeFromFollowRejects(baseDir: str,
+                             nickname: str, domain: str,
+                             acceptHandle: str, debug: bool) -> None:
     """Removes a handle from follow rejects
     """
-    removeFromFollowBase(baseDir, nickname, domain,
-                         acceptHandle, 'followrejects', debug)
+    _removeFromFollowBase(baseDir, nickname, domain,
+                          acceptHandle, 'followrejects', debug)
 
 
 def isFollowingActor(baseDir: str,
@@ -179,8 +179,8 @@ def followerOfPerson(baseDir: str, nickname: str, domain: str,
                         federationList, debug, 'followers.txt')
 
 
-def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
-                       followerNickname: str, followerDomain: str) -> bool:
+def _isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
+                        followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?
     """
     if ':' in domain:
@@ -212,10 +212,10 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     return alreadyFollowing
 
 
-def unfollowPerson(baseDir: str, nickname: str, domain: str,
-                   followNickname: str, followDomain: str,
-                   followFile='following.txt',
-                   debug=False) -> bool:
+def unfollowAccount(baseDir: str, nickname: str, domain: str,
+                    followNickname: str, followDomain: str,
+                    followFile='following.txt',
+                    debug=False) -> bool:
     """Removes a person to the follow list
     """
     if ':' in domain:
@@ -261,14 +261,14 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def unfollowerOfPerson(baseDir: str, nickname: str, domain: str,
-                       followerNickname: str, followerDomain: str,
-                       debug=False) -> bool:
+def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
+                        followerNickname: str, followerDomain: str,
+                        debug=False) -> bool:
     """Remove a follower of a person
     """
-    return unfollowPerson(baseDir, nickname, domain,
-                          followerNickname, followerDomain,
-                          'followers.txt', debug)
+    return unfollowAccount(baseDir, nickname, domain,
+                           followerNickname, followerDomain,
+                           'followers.txt', debug)
 
 
 def clearFollows(baseDir: str, nickname: str, domain: str,
@@ -291,9 +291,9 @@ def clearFollowers(baseDir: str, nickname: str, domain: str) -> None:
     clearFollows(baseDir, nickname, domain, 'followers.txt')
 
 
-def getNoOfFollows(baseDir: str, nickname: str, domain: str,
-                   authenticated: bool,
-                   followFile='following.txt') -> int:
+def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
+                    authenticated: bool,
+                    followFile='following.txt') -> int:
     """Returns the number of follows or followers
     """
     # only show number of followers to authenticated
@@ -324,12 +324,12 @@ def getNoOfFollows(baseDir: str, nickname: str, domain: str,
     return ctr
 
 
-def getNoOfFollowers(baseDir: str,
-                     nickname: str, domain: str, authenticated: bool) -> int:
+def _getNoOfFollowers(baseDir: str,
+                      nickname: str, domain: str, authenticated: bool) -> int:
     """Returns the number of followers of the given person
     """
-    return getNoOfFollows(baseDir, nickname, domain,
-                          authenticated, 'followers.txt')
+    return _getNoOfFollows(baseDir, nickname, domain,
+                           authenticated, 'followers.txt')
 
 
 def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
@@ -382,7 +382,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
             httpPrefix + '://' + domain + '/users/' + \
             nickname + '/' + followFile
         totalStr = \
-            getNoOfFollows(baseDir, nickname, domain, authenticated)
+            _getNoOfFollows(baseDir, nickname, domain, authenticated)
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': firstStr,
@@ -463,15 +463,15 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
     return following
 
 
-def followApprovalRequired(baseDir: str, nicknameToFollow: str,
-                           domainToFollow: str, debug: bool,
-                           followRequestHandle: str,
-                           allowNewsFollowers: bool) -> bool:
+def _followApprovalRequired(baseDir: str, nicknameToFollow: str,
+                            domainToFollow: str, debug: bool,
+                            followRequestHandle: str,
+                            allowNewsFollowers: bool) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
-    if preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
-                           followRequestHandle, allowNewsFollowers):
+    if _preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
+                            followRequestHandle, allowNewsFollowers):
         return False
 
     manuallyApproveFollows = False
@@ -494,10 +494,10 @@ def followApprovalRequired(baseDir: str, nicknameToFollow: str,
     return manuallyApproveFollows
 
 
-def noOfFollowRequests(baseDir: str,
-                       nicknameToFollow: str, domainToFollow: str,
-                       nickname: str, domain: str, fromPort: int,
-                       followType: str) -> int:
+def _noOfFollowRequests(baseDir: str,
+                        nicknameToFollow: str, domainToFollow: str,
+                        nickname: str, domain: str, fromPort: int,
+                        followType: str) -> int:
     """Returns the current number of follow requests
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -521,11 +521,11 @@ def noOfFollowRequests(baseDir: str,
     return ctr
 
 
-def storeFollowRequest(baseDir: str,
-                       nicknameToFollow: str, domainToFollow: str, port: int,
-                       nickname: str, domain: str, fromPort: int,
-                       followJson: {},
-                       debug: bool, personUrl: str) -> bool:
+def _storeFollowRequest(baseDir: str,
+                        nicknameToFollow: str, domainToFollow: str, port: int,
+                        nickname: str, domain: str, fromPort: int,
+                        followJson: {},
+                        debug: bool, personUrl: str) -> bool:
     """Stores the follow request for later use
     """
     accountsDir = baseDir + '/accounts/' + \
@@ -668,9 +668,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                       nicknameToFollow)
             return True
     if maxFollowers > 0:
-        if getNoOfFollowers(baseDir,
-                            nicknameToFollow, domainToFollow,
-                            True) > maxFollowers:
+        if _getNoOfFollowers(baseDir,
+                             nicknameToFollow, domainToFollow,
+                             True) > maxFollowers:
             print('WARN: ' + nicknameToFollow +
                   ' has reached their maximum number of followers')
             return True
@@ -682,9 +682,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                       baseDir + '/accounts/' + handleToFollow)
             return True
 
-    if isFollowerOfPerson(baseDir,
-                          nicknameToFollow, domainToFollowFull,
-                          nickname, domainFull):
+    if _isFollowerOfPerson(baseDir,
+                           nicknameToFollow, domainToFollowFull,
+                           nickname, domainFull):
         if debug:
             print('DEBUG: ' + nickname + '@' + domain +
                   ' is already a follower of ' +
@@ -693,37 +693,37 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
 
     # what is the followers policy?
     approveHandle = nickname + '@' + domainFull
-    if followApprovalRequired(baseDir, nicknameToFollow,
-                              domainToFollow, debug, approveHandle,
-                              allowNewsFollowers):
+    if _followApprovalRequired(baseDir, nicknameToFollow,
+                               domainToFollow, debug, approveHandle,
+                               allowNewsFollowers):
         print('Follow approval is required')
         if domain.endswith('.onion'):
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  'onion') > 5:
+            if _noOfFollowRequests(baseDir,
+                                   nicknameToFollow, domainToFollow,
+                                   nickname, domain, fromPort,
+                                   'onion') > 5:
                 print('Too many follow requests from onion addresses')
                 return False
         elif domain.endswith('.i2p'):
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  'i2p') > 5:
+            if _noOfFollowRequests(baseDir,
+                                   nicknameToFollow, domainToFollow,
+                                   nickname, domain, fromPort,
+                                   'i2p') > 5:
                 print('Too many follow requests from i2p addresses')
                 return False
         else:
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  '') > 10:
+            if _noOfFollowRequests(baseDir,
+                                   nicknameToFollow, domainToFollow,
+                                   nickname, domain, fromPort,
+                                   '') > 10:
                 print('Too many follow requests')
                 return False
 
         print('Storing follow request for approval')
-        return storeFollowRequest(baseDir,
-                                  nicknameToFollow, domainToFollow, port,
-                                  nickname, domain, fromPort,
-                                  messageJson, debug, messageJson['actor'])
+        return _storeFollowRequest(baseDir,
+                                   nicknameToFollow, domainToFollow, port,
+                                   nickname, domain, fromPort,
+                                   messageJson, debug, messageJson['actor'])
     else:
         print('Follow request does not require approval')
         # update the followers
@@ -920,15 +920,15 @@ def sendFollowRequest(session, baseDir: str,
         'object': followedId
     }
 
-    if followApprovalRequired(baseDir, nickname, domain, debug,
-                              followHandle, allowNewsFollowers):
+    if _followApprovalRequired(baseDir, nickname, domain, debug,
+                               followHandle, allowNewsFollowers):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected
         # follow request will block them again.
-        removeFromFollowRejects(baseDir,
-                                nickname, domain,
-                                followHandle, debug)
+        _removeFromFollowRejects(baseDir,
+                                 nickname, domain,
+                                 followHandle, debug)
 
     sendSignedJson(newFollowJson, session, baseDir, nickname, domain, port,
                    followNickname, followDomain, followPort,
@@ -1208,8 +1208,8 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    if unfollowPerson(baseDir, nicknameFollower, domainFollowerFull,
-                      nicknameFollowing, domainFollowingFull):
+    if unfollowAccount(baseDir, nicknameFollower, domainFollowerFull,
+                       nicknameFollowing, domainFollowingFull):
         if debug:
             print('DEBUG: ' + nicknameFollower + ' unfollowed ' +
                   nicknameFollowing + '@' + domainFollowingFull)

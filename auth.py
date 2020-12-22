@@ -14,7 +14,7 @@ import secrets
 from utils import isSystemAccount
 
 
-def hashPassword(password: str) -> str:
+def _hashPassword(password: str) -> str:
     """Hash a password for storing
     """
     salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
@@ -25,7 +25,7 @@ def hashPassword(password: str) -> str:
     return (salt + pwdhash).decode('ascii')
 
 
-def getPasswordHash(salt: str, providedPassword: str) -> str:
+def _getPasswordHash(salt: str, providedPassword: str) -> str:
     """Returns the hash of a password
     """
     pwdhash = hashlib.pbkdf2_hmac('sha512',
@@ -57,7 +57,7 @@ def constantTimeStringCheck(string1: str, string2: str) -> bool:
     return matched
 
 
-def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
+def _verifyPassword(storedPassword: str, providedPassword: str) -> bool:
     """Verify a stored password against one provided by user
     """
     if not storedPassword:
@@ -66,7 +66,7 @@ def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
         return False
     salt = storedPassword[:64]
     storedPassword = storedPassword[64:]
-    pwHash = getPasswordHash(salt, providedPassword)
+    pwHash = _getPasswordHash(salt, providedPassword)
     return constantTimeStringCheck(pwHash, storedPassword)
 
 
@@ -137,7 +137,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
         if line.startswith(nickname+':'):
             storedPassword = \
                 line.split(':')[1].replace('\n', '').replace('\r', '')
-            success = verifyPassword(storedPassword, providedPassword)
+            success = _verifyPassword(storedPassword, providedPassword)
             if not success:
                 if debug:
                     print('DEBUG: Password check failed for ' + nickname)
@@ -159,7 +159,7 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
         os.mkdir(baseDir + '/accounts')
 
     passwordFile = baseDir + '/accounts/passwords'
-    storeStr = nickname + ':' + hashPassword(password)
+    storeStr = nickname + ':' + _hashPassword(password)
     if os.path.isfile(passwordFile):
         if nickname + ':' in open(passwordFile).read():
             with open(passwordFile, "r") as fin:

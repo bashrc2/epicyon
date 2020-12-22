@@ -50,15 +50,15 @@ def noOfLikes(postJsonObject: {}) -> int:
     return len(postJsonObject['object']['likes']['items'])
 
 
-def like(recentPostsCache: {},
-         session, baseDir: str, federationList: [],
-         nickname: str, domain: str, port: int,
-         ccList: [], httpPrefix: str,
-         objectUrl: str, actorLiked: str,
-         clientToServer: bool,
-         sendThreads: [], postLog: [],
-         personCache: {}, cachedWebfingers: {},
-         debug: bool, projectVersion: str) -> {}:
+def _like(recentPostsCache: {},
+          session, baseDir: str, federationList: [],
+          nickname: str, domain: str, port: int,
+          ccList: [], httpPrefix: str,
+          objectUrl: str, actorLiked: str,
+          clientToServer: bool,
+          sendThreads: [], postLog: [],
+          personCache: {}, cachedWebfingers: {},
+          debug: bool, projectVersion: str) -> {}:
     """Creates a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -134,81 +134,11 @@ def likePost(recentPostsCache: {},
     actorLiked = httpPrefix + '://' + likeDomain + '/users/' + likeNickname
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
-    return like(recentPostsCache,
-                session, baseDir, federationList, nickname, domain, port,
-                ccList, httpPrefix, objectUrl, actorLiked, clientToServer,
-                sendThreads, postLog, personCache, cachedWebfingers,
-                debug, projectVersion)
-
-
-def undolike(recentPostsCache: {},
-             session, baseDir: str, federationList: [],
-             nickname: str, domain: str, port: int,
-             ccList: [], httpPrefix: str,
-             objectUrl: str, actorLiked: str,
-             clientToServer: bool,
-             sendThreads: [], postLog: [],
-             personCache: {}, cachedWebfingers: {},
-             debug: bool, projectVersion: str) -> {}:
-    """Removes a like
-    actor is the person doing the liking
-    'to' might be a specific person (actor) whose post was liked
-    object is typically the url of the message which was liked
-    """
-    if not urlPermitted(objectUrl, federationList):
-        return None
-
-    fullDomain = getFullDomain(domain, port)
-
-    newUndoLikeJson = {
-        "@context": "https://www.w3.org/ns/activitystreams",
-        'type': 'Undo',
-        'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
-        'object': {
-            'type': 'Like',
-            'actor': httpPrefix + '://' + fullDomain + '/users/' + nickname,
-            'object': objectUrl
-        }
-    }
-    if ccList:
-        if len(ccList) > 0:
-            newUndoLikeJson['cc'] = ccList
-            newUndoLikeJson['object']['cc'] = ccList
-
-    # Extract the domain and nickname from a statuses link
-    likedPostNickname = None
-    likedPostDomain = None
-    likedPostPort = None
-    if actorLiked:
-        likedPostNickname = getNicknameFromActor(actorLiked)
-        likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
-    else:
-        if '/users/' in objectUrl or \
-           '/accounts/' in objectUrl or \
-           '/channel/' in objectUrl or \
-           '/profile/' in objectUrl:
-            likedPostNickname = getNicknameFromActor(objectUrl)
-            likedPostDomain, likedPostPort = getDomainFromActor(objectUrl)
-
-    if likedPostNickname:
-        postFilename = locatePost(baseDir, nickname, domain, objectUrl)
-        if not postFilename:
-            return None
-
-        undoLikesCollectionEntry(baseDir, postFilename, objectUrl,
-                                 newUndoLikeJson['actor'], domain, debug)
-
-        sendSignedJson(newUndoLikeJson, session, baseDir,
-                       nickname, domain, port,
-                       likedPostNickname, likedPostDomain, likedPostPort,
-                       'https://www.w3.org/ns/activitystreams#Public',
-                       httpPrefix, True, clientToServer, federationList,
-                       sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion)
-    else:
-        return None
-
-    return newUndoLikeJson
+    return _like(recentPostsCache,
+                 session, baseDir, federationList, nickname, domain, port,
+                 ccList, httpPrefix, objectUrl, actorLiked, clientToServer,
+                 sendThreads, postLog, personCache, cachedWebfingers,
+                 debug, projectVersion)
 
 
 def sendLikeViaServer(baseDir: str, session,

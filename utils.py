@@ -78,152 +78,6 @@ def isDormant(baseDir: str, nickname: str, domain: str, actor: str,
     return False
 
 
-def getHashtagCategory(baseDir: str, hashtag: str) -> str:
-    """Returns the category for the hashtag
-    """
-    categoryFilename = baseDir + '/tags/' + hashtag + '.category'
-    if not os.path.isfile(categoryFilename):
-        categoryFilename = baseDir + '/tags/' + hashtag.title() + '.category'
-        if not os.path.isfile(categoryFilename):
-            categoryFilename = \
-                baseDir + '/tags/' + hashtag.upper() + '.category'
-            if not os.path.isfile(categoryFilename):
-                return ''
-
-    with open(categoryFilename, 'r') as fp:
-        categoryStr = fp.read()
-        if categoryStr:
-            return categoryStr
-    return ''
-
-
-def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
-    """Returns a dictionary containing hashtag categories
-    """
-    hashtagCategories = {}
-
-    if recent:
-        currTime = datetime.datetime.utcnow()
-        daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
-        recently = daysSinceEpoch - 1
-
-    for subdir, dirs, files in os.walk(baseDir + '/tags'):
-        for f in files:
-            if not f.endswith('.category'):
-                continue
-            categoryFilename = os.path.join(baseDir + '/tags', f)
-            if not os.path.isfile(categoryFilename):
-                continue
-            hashtag = f.split('.')[0]
-            with open(categoryFilename, 'r') as fp:
-                categoryStr = fp.read()
-
-                if not categoryStr:
-                    continue
-
-                if category:
-                    # only return a dictionary for a specific category
-                    if categoryStr != category:
-                        continue
-
-                if recent:
-                    tagsFilename = baseDir + '/tags/' + hashtag + '.txt'
-                    if not os.path.isfile(tagsFilename):
-                        continue
-                    modTimesinceEpoc = \
-                        os.path.getmtime(tagsFilename)
-                    lastModifiedDate = \
-                        datetime.datetime.fromtimestamp(modTimesinceEpoc)
-                    fileDaysSinceEpoch = \
-                        (lastModifiedDate -
-                         datetime.datetime(1970, 1, 1)).days
-                    if fileDaysSinceEpoch < recently:
-                        continue
-
-                if not hashtagCategories.get(categoryStr):
-                    hashtagCategories[categoryStr] = [hashtag]
-                else:
-                    if hashtag not in hashtagCategories[categoryStr]:
-                        hashtagCategories[categoryStr].append(hashtag)
-        break
-    return hashtagCategories
-
-
-def updateHashtagCategories(baseDir: str) -> None:
-    """Regenerates the list of hashtag categories
-    """
-    categoryListFilename = baseDir + '/accounts/categoryList.txt'
-    hashtagCategories = getHashtagCategories(baseDir)
-    if not hashtagCategories:
-        if os.path.isfile(categoryListFilename):
-            os.remove(categoryListFilename)
-        return
-
-    categoryList = []
-    for categoryStr, hashtagList in hashtagCategories.items():
-        categoryList.append(categoryStr)
-    categoryList.sort()
-
-    categoryListStr = ''
-    for categoryStr in categoryList:
-        categoryListStr += categoryStr + '\n'
-
-    # save a list of available categories for quick lookup
-    with open(categoryListFilename, 'w+') as fp:
-        fp.write(categoryListStr)
-
-
-def validHashtagCategory(category: str) -> bool:
-    """Returns true if the category name is valid
-    """
-    if not category:
-        return False
-
-    invalidChars = (',', ' ', '<', ';', '\\')
-    for ch in invalidChars:
-        if ch in category:
-            return False
-
-    # too long
-    if len(category) > 40:
-        return False
-
-    return True
-
-
-def setHashtagCategory(baseDir: str, hashtag: str, category: str,
-                       force=False) -> bool:
-    """Sets the category for the hashtag
-    """
-    if not validHashtagCategory(category):
-        return False
-
-    if not force:
-        hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
-        if not os.path.isfile(hashtagFilename):
-            hashtag = hashtag.title()
-            hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
-            if not os.path.isfile(hashtagFilename):
-                hashtag = hashtag.upper()
-                hashtagFilename = baseDir + '/tags/' + hashtag + '.txt'
-                if not os.path.isfile(hashtagFilename):
-                    return False
-
-    if not os.path.isdir(baseDir + '/tags'):
-        os.mkdir(baseDir + '/tags')
-    categoryFilename = baseDir + '/tags/' + hashtag + '.category'
-    if force:
-        # don't overwrite any existing categories
-        if os.path.isfile(categoryFilename):
-            return False
-    with open(categoryFilename, 'w+') as fp:
-        fp.write(category)
-        updateHashtagCategories(baseDir)
-        return True
-
-    return False
-
-
 def isEditor(baseDir: str, nickname: str) -> bool:
     """Returns true if the given nickname is an editor
     """
@@ -343,7 +197,7 @@ def isSystemAccount(nickname: str) -> bool:
     return False
 
 
-def createConfig(baseDir: str) -> None:
+def _createConfig(baseDir: str) -> None:
     """Creates a configuration file
     """
     configFilename = baseDir + '/config.json'
@@ -357,7 +211,7 @@ def createConfig(baseDir: str) -> None:
 def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
     """
-    createConfig(baseDir)
+    _createConfig(baseDir)
     configFilename = baseDir + '/config.json'
     configJson = {}
     if os.path.isfile(configFilename):
@@ -369,7 +223,7 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
 def getConfigParam(baseDir: str, variableName: str):
     """Gets a configuration value
     """
-    createConfig(baseDir)
+    _createConfig(baseDir)
     configFilename = baseDir + '/config.json'
     configJson = loadJson(configFilename)
     if configJson:
@@ -756,8 +610,8 @@ def getDomainFromActor(actor: str) -> (str, int):
     return domain, port
 
 
-def setDefaultPetName(baseDir: str, nickname: str, domain: str,
-                      followNickname: str, followDomain: str) -> None:
+def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
+                       followNickname: str, followDomain: str) -> None:
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
@@ -793,7 +647,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                  followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
-    if not domainPermitted(followDomain.lower().replace('\n', ''),
+    followDomainStrLower = followDomain.lower().replace('\n', '')
+    if not domainPermitted(followDomainStrLower,
                            federationList):
         if debug:
             print('DEBUG: follow of domain ' +
@@ -869,8 +724,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         addPersonToCalendar(baseDir, nickname, domain,
                             followNickname, followDomain)
         # add a default petname
-        setDefaultPetName(baseDir, nickname, domain,
-                          followNickname, followDomain)
+        _setDefaultPetName(baseDir, nickname, domain,
+                           followNickname, followDomain)
     return True
 
 
@@ -1010,7 +865,8 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     return None
 
 
-def removeAttachment(baseDir: str, httpPrefix: str, domain: str, postJson: {}):
+def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
+                      postJson: {}):
     if not postJson.get('attachment'):
         return
     if not postJson['attachment'][0].get('url'):
@@ -1053,8 +909,8 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
                                   ' from moderation index')
 
 
-def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
-                      postJsonObject: str):
+def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: str):
     """Is the given post a reply to a blog post?
     """
     if not postJsonObject.get('object'):
@@ -1093,8 +949,8 @@ def deletePost(baseDir: str, httpPrefix: str,
                 return
 
         # don't remove replies to blog posts
-        if isReplyToBlogPost(baseDir, nickname, domain,
-                             postJsonObject):
+        if _isReplyToBlogPost(baseDir, nickname, domain,
+                              postJsonObject):
             return
 
         # remove from recent posts cache in memory
@@ -1112,7 +968,7 @@ def deletePost(baseDir: str, httpPrefix: str,
                     del recentPostsCache['html'][postId]
 
         # remove any attachment
-        removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
+        _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
         extensions = ('votes', 'arrived', 'muted')
         for ext in extensions:

@@ -24,7 +24,7 @@ from webapp_utils import htmlPostSeparator
 from webapp_utils import headerButtonsFrontScreen
 
 
-def votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
+def _votesIndicator(totalVotes: int, positiveVoting: bool) -> str:
     """Returns an indicator of the number of votes on a newswire item
     """
     if totalVotes <= 0:
@@ -177,8 +177,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 
     # show the newswire lines
     newswireContentStr = \
-        htmlNewswire(baseDir, newswire, nickname, moderator, translate,
-                     positiveVoting)
+        _htmlNewswire(baseDir, newswire, nickname, moderator, translate,
+                      positiveVoting)
     htmlStr += newswireContentStr
 
     # show the rss icon at the bottom, typically on the right hand side
@@ -187,8 +187,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
-                 translate: {}, positiveVoting: bool) -> str:
+def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
+                  translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
     """
     separatorStr = htmlPostSeparator(baseDir, 'right')
@@ -220,7 +220,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             if moderator:
                 totalVotes = votesOnNewswireItem(item[2])
                 totalVotesStr = \
-                    votesIndicator(totalVotes, positiveVoting)
+                    _votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             htmlStr += '<p class="newswireItemVotedOn">' + \
@@ -247,7 +247,7 @@ def htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     # show a number of ticks or crosses for how many
                     # votes for or against
                     totalVotesStr = \
-                        votesIndicator(totalVotes, positiveVoting)
+                        _votesIndicator(totalVotes, positiveVoting)
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             if moderator and moderatedItem:

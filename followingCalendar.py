@@ -34,10 +34,10 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
     return handle + '\n' in open(calendarFilename).read()
 
 
-def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
-                          followingNickname: str,
-                          followingDomain: str,
-                          add: bool) -> None:
+def _receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
+                           followingNickname: str,
+                           followingDomain: str,
+                           add: bool) -> None:
     """Adds or removes a handle from the following.txt list into a list
     indicating whether to receive calendar events from that account
     """
@@ -100,12 +100,12 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
 def addPersonToCalendar(baseDir: str, nickname: str, domain: str,
                         followingNickname: str,
                         followingDomain: str) -> None:
-    receiveCalendarEvents(baseDir, nickname, domain,
-                          followingNickname, followingDomain, True)
+    _receiveCalendarEvents(baseDir, nickname, domain,
+                           followingNickname, followingDomain, True)
 
 
 def removePersonFromCalendar(baseDir: str, nickname: str, domain: str,
                              followingNickname: str,
                              followingDomain: str) -> None:
-    receiveCalendarEvents(baseDir, nickname, domain,
-                          followingNickname, followingDomain, False)
+    _receiveCalendarEvents(baseDir, nickname, domain,
+                           followingNickname, followingDomain, False)

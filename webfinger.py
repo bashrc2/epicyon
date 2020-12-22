@@ -25,7 +25,7 @@ from utils import saveJson
 from utils import getProtocolPrefixes
 
 
-def parseHandle(handle: str) -> (str, str):
+def _parseHandle(handle: str) -> (str, str):
     if '.' not in handle:
         return None, None
     prefixes = getProtocolPrefixes()
@@ -54,7 +54,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         print('WARN: No session specified for webfingerHandle')
         return None
 
-    nickname, domain = parseHandle(handle)
+    nickname, domain = _parseHandle(handle)
     if not nickname:
         return None
     wfDomain = domain
@@ -97,7 +97,7 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     return result
 
 
-def generateMagicKey(publicKeyPem) -> str:
+def _generateMagicKey(publicKeyPem) -> str:
     """See magic_key method in
        https://github.com/tootsuite/mastodon/blob/
        707ddf7808f90e3ab042d7642d368c2ce8e95e6f/app/models/account.rb
@@ -170,7 +170,7 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
                 "type": "application/activity+json"
             },
             {
-                "href": generateMagicKey(publicKeyPem),
+                "href": _generateMagicKey(publicKeyPem),
                 "rel": "magic-public-key"
             }
         ],
@@ -271,7 +271,7 @@ def webfingerLookup(path: str, baseDir: str,
     return wfJson
 
 
-def webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
+def _webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
     """Updates webfinger Email/blog/xmpp links from profile
     Returns true if one or more tags has been changed
     """
@@ -350,6 +350,6 @@ def webfingerUpdate(baseDir: str, nickname: str, domain: str,
     if not actorJson:
         return
 
-    if webfingerUpdateFromProfile(wfJson, actorJson):
+    if _webfingerUpdateFromProfile(wfJson, actorJson):
         if saveJson(wfJson, filename):
             cachedWebfingers[handle] = wfJson

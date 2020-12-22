@@ -49,8 +49,8 @@ from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
 from follow import followerOfPerson
-from follow import unfollowPerson
-from follow import unfollowerOfPerson
+from follow import unfollowAccount
+from follow import unfollowerOfAccount
 from follow import sendFollowRequest
 from person import createPerson
 from person import setDisplayNickname
@@ -73,7 +73,7 @@ from delete import sendDeleteViaServer
 from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
-from inbox import guessHashtagCategory
+from categories import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
@@ -101,7 +101,7 @@ thrBob = None
 thrEve = None
 
 
-def testHttpsigBase(withDigest):
+def _testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
 
     baseDir = os.getcwd()
@@ -206,8 +206,8 @@ def testHttpsigBase(withDigest):
 
 
 def testHttpsig():
-    testHttpsigBase(True)
-    testHttpsigBase(False)
+    _testHttpsigBase(True)
+    _testHttpsigBase(False)
 
 
 def testCache():
@@ -274,19 +274,44 @@ def createServerAlice(path: str, domain: str, port: int,
         followerOfPerson(path, nickname, domain, 'bob', bobAddress,
                          federationList, False)
     if hasPosts:
+        testFollowersOnly = False
+        testSaveToFile = True
         clientToServer = False
+        testCommentsEnabled = True
+        testAttachImageFilename = None
+        testMediaType = None
+        testImageDescription = None
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "No wise fish would go anywhere without a porpoise",
-                         False, True, clientToServer, True,
-                         None, None, useBlurhash)
+                         testFollowersOnly,
+                         testSaveToFile,
+                         clientToServer,
+                         testCommentsEnabled,
+                         testAttachImageFilename,
+                         testMediaType,
+                         testImageDescription,
+                         useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
-                         "Curiouser and curiouser!", False, True,
-                         clientToServer, True, None, None, useBlurhash)
+                         "Curiouser and curiouser!",
+                         testFollowersOnly,
+                         testSaveToFile,
+                         clientToServer,
+                         testCommentsEnabled,
+                         testAttachImageFilename,
+                         testMediaType,
+                         testImageDescription,
+                         useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
-                         False, True, clientToServer, True,
-                         None, None, useBlurhash)
+                         testFollowersOnly,
+                         testSaveToFile,
+                         clientToServer,
+                         testCommentsEnabled,
+                         testAttachImageFilename,
+                         testMediaType,
+                         testImageDescription,
+                         useBlurhash)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -346,19 +371,43 @@ def createServerBob(path: str, domain: str, port: int,
         followerOfPerson(path, nickname, domain,
                          'alice', aliceAddress, federationList, False)
     if hasPosts:
+        testFollowersOnly = False
+        testSaveToFile = True
+        testCommentsEnabled = True
+        testAttachImageFilename = None
+        testImageDescription = None
+        testMediaType = None
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
-                         False, True, clientToServer, True,
-                         None, None, useBlurhash)
+                         testFollowersOnly,
+                         testSaveToFile,
+                         clientToServer,
+                         testCommentsEnabled,
+                         testAttachImageFilename,
+                         testMediaType,
+                         testImageDescription,
+                         useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
-                         False, True, clientToServer, True,
-                         None, None, useBlurhash)
+                         testFollowersOnly,
+                         testSaveToFile,
+                         clientToServer,
+                         testCommentsEnabled,
+                         testAttachImageFilename,
+                         testMediaType,
+                         testImageDescription,
+                         useBlurhash)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
-                         False, True, clientToServer, True,
-                         None, None, useBlurhash)
+                         testFollowersOnly,
+                         testSaveToFile,
+                         clientToServer,
+                         testCommentsEnabled,
+                         testAttachImageFilename,
+                         testMediaType,
+                         testImageDescription,
+                         useBlurhash)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -601,10 +650,12 @@ def testPostMessageBetweenServers():
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
 
+    aliceDomainStr = aliceDomain + ':' + str(alicePort)
     followerOfPerson(bobDir, 'bob', bobDomain, 'alice',
-                     aliceDomain + ':' + str(alicePort), federationList, False)
+                     aliceDomainStr, federationList, False)
+    bobDomainStr = bobDomain + ':' + str(bobPort)
     followPerson(aliceDir, 'alice', aliceDomain, 'bob',
-                 bobDomain + ':' + str(bobPort), federationList, False)
+                 bobDomainStr, federationList, False)
 
     sessionBob = createSession(proxyType)
     bobPostLog = []
@@ -978,7 +1029,7 @@ def testNoOfFollowersOnDomain():
         noOfFollowersOnDomain(baseDir, nickname + '@' + domain, otherdomain)
     assert followersOnOtherDomain == 3
 
-    unfollowerOfPerson(baseDir, nickname, domain, 'sausagedog', otherdomain)
+    unfollowerOfAccount(baseDir, nickname, domain, 'sausagedog', otherdomain)
     followersOnOtherDomain = \
         noOfFollowersOnDomain(baseDir, nickname + '@' + domain, otherdomain)
     assert followersOnOtherDomain == 2
@@ -1074,7 +1125,7 @@ def testFollows():
             assert(False)
 
     assert(domainFound)
-    unfollowPerson(baseDir, nickname, domain, 'batman', 'mesh.com')
+    unfollowAccount(baseDir, nickname, domain, 'batman', 'mesh.com')
 
     domainFound = False
     for followingDomain in f:
@@ -1753,7 +1804,8 @@ def testWebLinks():
         'they prefer to cling to their customs, beliefs, and traditions ' + \
         'rather than to accept the teachings of a war of each ' + \
         'against all"\n\n--Peter Kropotkin'
-    resultText = removeLongWords(addWebLinks(exampleText), 40, [])
+    testFnStr = addWebLinks(exampleText)
+    resultText = removeLongWords(testFnStr, 40, [])
     assert resultText == exampleText
     assert 'ellipsis' not in resultText
 
@@ -1767,7 +1819,8 @@ def testWebLinks():
 
     exampleText = \
         '<p>Test1 test2 #YetAnotherExcessivelyLongwindedAndBoringHashtag</p>'
-    resultText = removeLongWords(addWebLinks(exampleText), 40, [])
+    testFnStr = addWebLinks(exampleText)
+    resultText = removeLongWords(testFnStr, 40, [])
     assert(resultText ==
            '<p>Test1 test2 '
            '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
@@ -1776,7 +1829,8 @@ def testWebLinks():
         "<p>Don't remove a p2p link " + \
         "rad:git:hwd1yrerc3mcgn8ga9rho3dqi4w33nep7kxmqezss4topyfgmexihp" + \
         "33xcw</p>"
-    resultText = removeLongWords(addWebLinks(exampleText), 40, [])
+    testFnStr = addWebLinks(exampleText)
+    resultText = removeLongWords(testFnStr, 40, [])
     assert resultText == exampleText
 
 
@@ -2533,8 +2587,277 @@ def testReplyToPublicPost() -> None:
         httpPrefix + '://rat.site/users/ninjarodent'
 
 
+def getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
+    """Returns the arguments of a function call given lines
+    of source code and a starting line number
+    """
+    argsStr = lines[startLineCtr].split(name + '(')[1]
+    if ')' in argsStr:
+        argsStr = argsStr.split(')')[0].replace(' ', '').split(',')
+        return argsStr
+    for lineCtr in range(startLineCtr + 1, len(lines)):
+        if ')' not in lines[lineCtr]:
+            argsStr += lines[lineCtr]
+            continue
+        else:
+            argsStr += lines[lineCtr].split(')')[0]
+            break
+    return argsStr.replace('\n', '').replace(' ', '').split(',')
+
+
+def getFunctionCalls(name: str, lines: [], startLineCtr: int,
+                     functionProperties: {}) -> []:
+    """Returns the functions called by the given one,
+    Starting with the given source code at the given line
+    """
+    callsFunctions = []
+    functionContentStr = ''
+    for lineCtr in range(startLineCtr + 1, len(lines)):
+        if lines[lineCtr].startswith('def '):
+            break
+        if lines[lineCtr].startswith('class '):
+            break
+        functionContentStr += lines[lineCtr]
+    for funcName, properties in functionProperties.items():
+        if funcName + '(' in functionContentStr:
+            callsFunctions.append(funcName)
+    return callsFunctions
+
+
+def functionArgsMatch(callArgs: [], funcArgs: []):
+    """Do the function artuments match the function call arguments
+    """
+    if len(callArgs) == len(funcArgs):
+        return True
+
+    # count non-optional arguments
+    callArgsCtr = 0
+    for a in callArgs:
+        if a == 'self':
+            continue
+        if '=' not in a:
+            callArgsCtr += 1
+
+    funcArgsCtr = 0
+    for a in funcArgs:
+        if a == 'self':
+            continue
+        if '=' not in a:
+            funcArgsCtr += 1
+
+    return callArgsCtr >= funcArgsCtr
+
+
+def testFunctions():
+    print('testFunctions')
+    function = {}
+    functionProperties = {}
+    modules = {}
+
+    for subdir, dirs, files in os.walk('.'):
+        for sourceFile in files:
+            if not sourceFile.endswith('.py'):
+                continue
+            modName = sourceFile.replace('.py', '')
+            modules[modName] = {
+                'functions': []
+            }
+            sourceStr = ''
+            with open(sourceFile, "r") as f:
+                sourceStr = f.read()
+                modules[modName]['source'] = sourceStr
+            with open(sourceFile, "r") as f:
+                lines = f.readlines()
+                modules[modName]['lines'] = lines
+                for line in lines:
+                    if not line.startswith('def '):
+                        continue
+                    methodName = line.split('def ', 1)[1].split('(')[0]
+                    methodArgs = \
+                        sourceStr.split('def ' + methodName + '(')[1]
+                    methodArgs = methodArgs.split(')')[0]
+                    methodArgs = methodArgs.replace(' ', '').split(',')
+                    if function.get(modName):
+                        function[modName].append(methodName)
+                    else:
+                        function[modName] = [methodName]
+                    if methodName not in modules[modName]['functions']:
+                        modules[modName]['functions'].append(methodName)
+                    functionProperties[methodName] = {
+                        "args": methodArgs,
+                        "module": modName,
+                        "calledInModule": []
+                    }
+        break
+
+    excludeFuncArgs = [
+        'pyjsonld'
+    ]
+    excludeFuncs = [
+        'link'
+    ]
+    # which modules is each function used within?
+    for modName, modProperties in modules.items():
+        print('Module: ' + modName + ' ✓')
+        for name, properties in functionProperties.items():
+            lineCtr = 0
+            for line in modules[modName]['lines']:
+                if line.startswith('def '):
+                    lineCtr += 1
+                    continue
+                if name + '(' in line:
+                    modList = \
+                        functionProperties[name]['calledInModule']
+                    if modName not in modList:
+                        modList.append(modName)
+                    if modName in excludeFuncArgs:
+                        lineCtr += 1
+                        continue
+                    if name in excludeFuncs:
+                        lineCtr += 1
+                        continue
+                    callArgs = \
+                        getFunctionCallArgs(name,
+                                            modules[modName]['lines'],
+                                            lineCtr)
+                    if not functionArgsMatch(callArgs,
+                                             functionProperties[name]['args']):
+                        print('Call to function ' + name +
+                              ' does not match its arguments')
+                        print('def args: ' +
+                              str(len(functionProperties[name]['args'])) +
+                              '\n' + str(functionProperties[name]['args']))
+                        print('Call args: ' + str(len(callArgs)) + '\n' +
+                              str(callArgs))
+                        print('module ' + modName + ' line ' + str(lineCtr))
+                        assert False
+                lineCtr += 1
+
+    # don't check these functions, because they are procedurally called
+    exclusions = [
+        'set_document_loader',
+        'normalize',
+        'get_document_loader',
+        'runInboxQueueWatchdog',
+        'runInboxQueue',
+        'runPostSchedule',
+        'runPostScheduleWatchdog',
+        'str2bool',
+        'runNewswireDaemon',
+        'runNewswireWatchdog',
+        'threadSendPost',
+        'sendToFollowers',
+        'expireCache',
+        'migrateAccount',
+        'getMutualsOfPerson',
+        'runPostsQueue',
+        'runSharesExpire',
+        'runPostsWatchdog',
+        'runSharesExpireWatchdog',
+        'getThisWeeksEvents',
+        'getAvailability',
+        'testThreadsFunction',
+        'createServerAlice',
+        'createServerBob',
+        'createServerEve',
+        'E2EEremoveDevice',
+        'setOrganizationScheme'
+    ]
+    excludeImports = [
+        'link'
+    ]
+    excludeLocal = [
+        'pyjsonld',
+        'daemon',
+        'tests'
+    ]
+    # check that functions are called somewhere
+    for name, properties in functionProperties.items():
+        if name in exclusions:
+            continue
+        isLocalFunction = False
+        if not properties['calledInModule']:
+            print('function ' + name +
+                  ' in module ' + properties['module'] +
+                  ' is not called anywhere')
+        assert properties['calledInModule']
+
+        if len(properties['calledInModule']) == 1:
+            modName = properties['calledInModule'][0]
+            if modName not in excludeLocal and \
+               modName == properties['module']:
+                isLocalFunction = True
+                if not name.startswith('_'):
+                    print('Local function ' + name +
+                          ' in ' + modName + '.py does not begin with _')
+                    assert False
+
+        if name not in excludeImports:
+            for modName in properties['calledInModule']:
+                if modName == properties['module']:
+                    continue
+                importStr = 'from ' + properties['module'] + ' import ' + name
+                if importStr not in modules[modName]['source']:
+                    print(importStr + ' not found in ' + modName + '.py')
+                    assert False
+
+        if not isLocalFunction:
+            if name.startswith('_'):
+                excludePublic = [
+                    'pyjsonld',
+                    'daemon',
+                    'tests'
+                ]
+                modName = properties['module']
+                if modName not in excludePublic:
+                    print('Public function ' + name + ' in ' +
+                          modName + '.py begins with _')
+                    assert False
+        print('Function: ' + name + ' ✓')
+
+    print('Constructing call graph')
+    for modName, modProperties in modules.items():
+        lineCtr = 0
+        for line in modules[modName]['lines']:
+            if line.startswith('def '):
+                name = line.split('def ')[1].split('(')[0]
+                callsList = \
+                    getFunctionCalls(name, modules[modName]['lines'],
+                                     lineCtr, functionProperties)
+                functionProperties[name]['calls'] = callsList.copy()
+            lineCtr += 1
+    callGraphStr = 'digraph Epicyon {\n\n'
+    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
+
+    for modName, modProperties in modules.items():
+        callGraphStr += '  subgraph cluster_' + modName + ' {\n'
+        callGraphStr += '    label = "' + modName + '";\n'
+        callGraphStr += '    node [style=filled];\n'
+        callGraphStr += '    '
+        for name in modProperties['functions']:
+            callGraphStr += '"' + name + '" '
+        callGraphStr += ';\n'
+        callGraphStr += '    color=blue;\n'
+        callGraphStr += '  }\n\n'
+
+    for name, properties in functionProperties.items():
+        if not properties['calls']:
+            continue
+        for calledFunc in properties['calls']:
+            callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+
+    callGraphStr += '\n}\n'
+    with open('epicyon.dot', 'w+') as fp:
+        fp.write(callGraphStr)
+        print('Call graph saved to epicyon.dot')
+        print('Convert to image with: ' +
+              'dot -Tjpg epicyon.dot -o epicyon_diagram.jpg')
+
+
 def runAllTests():
     print('Running tests...')
+    testFunctions()
     testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()

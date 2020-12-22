@@ -89,11 +89,11 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     return deletePostStr
 
 
-def htmlCalendarDay(cssCache: {}, translate: {},
-                    baseDir: str, path: str,
-                    year: int, monthNumber: int, dayNumber: int,
-                    nickname: str, domain: str, dayEvents: [],
-                    monthName: str, actor: str) -> str:
+def _htmlCalendarDay(cssCache: {}, translate: {},
+                     baseDir: str, path: str,
+                     year: int, monthNumber: int, dayNumber: int,
+                     nickname: str, domain: str, dayEvents: [],
+                     monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
@@ -251,10 +251,10 @@ def htmlCalendar(cssCache: {}, translate: {},
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return htmlCalendarDay(cssCache, translate, baseDir, path,
-                               year, monthNumber, dayNumber,
-                               nickname, domain, dayEvents,
-                               monthName, actor)
+        return _htmlCalendarDay(cssCache, translate, baseDir, path,
+                                year, monthNumber, dayNumber,
+                                nickname, domain, dayEvents,
+                                monthName, actor)
 
     events = \
         getCalendarEvents(baseDir, nickname, domain, year, monthNumber)

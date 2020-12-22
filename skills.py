@@ -41,17 +41,6 @@ def setSkillLevel(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def setSkills(baseDir: str, nickname: str, domain: str, skills: {}) -> None:
-    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
-    if not os.path.isfile(actorFilename):
-        return False
-
-    actorJson = loadJson(actorFilename)
-    if actorJson:
-        actorJson['skills'] = skills
-        saveJson(actorJson, actorFilename)
-
-
 def getSkills(baseDir: str, nickname: str, domain: str) -> []:
     """Returns the skills for a given person
     """

@@ -26,9 +26,9 @@ from newswire import rss2Header
 from newswire import rss2Footer
 
 
-def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
-                    nickname: str, domain: str, domainFull: str,
-                    postId: str, depth=0) -> int:
+def _noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
+                     nickname: str, domain: str, domainFull: str,
+                     postId: str, depth=0) -> int:
     """Returns the number of replies on the post
     This is recursive, so can handle replies to replies
     """
@@ -66,9 +66,10 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
             replyPostId = replyPostId.replace('.json', '')
             if locatePost(baseDir, nickname, domain, replyPostId):
                 replyPostId = replyPostId.replace('.replies', '')
-                replies += 1 + noOfBlogReplies(baseDir, httpPrefix, translate,
-                                               nickname, domain, domainFull,
-                                               replyPostId, depth+1)
+                replies += \
+                    1 + _noOfBlogReplies(baseDir, httpPrefix, translate,
+                                         nickname, domain, domainFull,
+                                         replyPostId, depth+1)
             else:
                 # remove post which no longer exists
                 removals.append(replyPostId)
@@ -86,9 +87,9 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     return replies
 
 
-def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
-                   nickname: str, domain: str, domainFull: str,
-                   postId: str, depth=0) -> str:
+def _getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
+                    nickname: str, domain: str, domainFull: str,
+                    postId: str, depth=0) -> str:
     """Returns a string containing html blog posts
     """
     if depth > 4:
@@ -136,9 +137,9 @@ def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                 continue
             with open(postFilename, "r") as postFile:
                 repliesStr += postFile.read() + '\n'
-            rply = getBlogReplies(baseDir, httpPrefix, translate,
-                                  nickname, domain, domainFull,
-                                  replyPostId, depth+1)
+            rply = _getBlogReplies(baseDir, httpPrefix, translate,
+                                   nickname, domain, domainFull,
+                                   replyPostId, depth+1)
             if rply not in repliesStr:
                 repliesStr += rply
 
@@ -152,12 +153,12 @@ def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     return ''
 
 
-def htmlBlogPostContent(authorized: bool,
-                        baseDir: str, httpPrefix: str, translate: {},
-                        nickname: str, domain: str, domainFull: str,
-                        postJsonObject: {},
-                        handle: str, restrictToDomain: bool,
-                        blogSeparator='<hr>') -> str:
+def _htmlBlogPostContent(authorized: bool,
+                         baseDir: str, httpPrefix: str, translate: {},
+                         nickname: str, domain: str, domainFull: str,
+                         postJsonObject: {},
+                         handle: str, restrictToDomain: bool,
+                         blogSeparator='<hr>') -> str:
     """Returns the content for a single blog post
     """
     linkedAuthor = False
@@ -269,9 +270,9 @@ def htmlBlogPostContent(authorized: bool,
             '/users/' + nickname + '">' + translate['About the author'] + \
             '</a></p>\n'
 
-    replies = noOfBlogReplies(baseDir, httpPrefix, translate,
-                              nickname, domain, domainFull,
-                              postJsonObject['object']['id'])
+    replies = _noOfBlogReplies(baseDir, httpPrefix, translate,
+                               nickname, domain, domainFull,
+                               postJsonObject['object']['id'])
 
     # separator between blogs should be centered
     if '<center>' not in blogSeparator:
@@ -288,23 +289,23 @@ def htmlBlogPostContent(authorized: bool,
     else:
         blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
         if not titleStr:
-            blogStr += getBlogReplies(baseDir, httpPrefix, translate,
-                                      nickname, domain, domainFull,
-                                      postJsonObject['object']['id'])
+            blogStr += _getBlogReplies(baseDir, httpPrefix, translate,
+                                       nickname, domain, domainFull,
+                                       postJsonObject['object']['id'])
         else:
-            blogRepliesStr = getBlogReplies(baseDir, httpPrefix, translate,
-                                            nickname, domain, domainFull,
-                                            postJsonObject['object']['id'])
+            blogRepliesStr = _getBlogReplies(baseDir, httpPrefix, translate,
+                                             nickname, domain, domainFull,
+                                             postJsonObject['object']['id'])
             blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
 
     return blogStr
 
 
-def htmlBlogPostRSS2(authorized: bool,
-                     baseDir: str, httpPrefix: str, translate: {},
-                     nickname: str, domain: str, domainFull: str,
-                     postJsonObject: {},
-                     handle: str, restrictToDomain: bool) -> str:
+def _htmlBlogPostRSS2(authorized: bool,
+                      baseDir: str, httpPrefix: str, translate: {},
+                      nickname: str, domain: str, domainFull: str,
+                      postJsonObject: {},
+                      handle: str, restrictToDomain: bool) -> str:
     """Returns the RSS version 2 feed for a single blog post
     """
     rssStr = ''
@@ -331,11 +332,11 @@ def htmlBlogPostRSS2(authorized: bool,
     return rssStr
 
 
-def htmlBlogPostRSS3(authorized: bool,
-                     baseDir: str, httpPrefix: str, translate: {},
-                     nickname: str, domain: str, domainFull: str,
-                     postJsonObject: {},
-                     handle: str, restrictToDomain: bool) -> str:
+def _htmlBlogPostRSS3(authorized: bool,
+                      baseDir: str, httpPrefix: str, translate: {},
+                      nickname: str, domain: str, domainFull: str,
+                      postJsonObject: {},
+                      handle: str, restrictToDomain: bool) -> str:
     """Returns the RSS version 3 feed for a single blog post
     """
     rssStr = ''
@@ -359,7 +360,7 @@ def htmlBlogPostRSS3(authorized: bool,
     return rssStr
 
 
-def htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
+def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
     """Removes the CW button from blog posts, where the
     summary field is instead used as the blog title
     """
@@ -383,13 +384,13 @@ def htmlBlogPost(authorized: bool,
     if os.path.isfile(baseDir + '/blog.css'):
         cssFilename = baseDir + '/blog.css'
     blogStr = htmlHeaderWithExternalStyle(cssFilename)
-    htmlBlogRemoveCwButton(blogStr, translate)
+    _htmlBlogRemoveCwButton(blogStr, translate)
 
-    blogStr += htmlBlogPostContent(authorized, baseDir,
-                                   httpPrefix, translate,
-                                   nickname, domain,
-                                   domainFull, postJsonObject,
-                                   None, False)
+    blogStr += _htmlBlogPostContent(authorized, baseDir,
+                                    httpPrefix, translate,
+                                    nickname, domain,
+                                    domainFull, postJsonObject,
+                                    None, False)
 
     # show rss links
     blogStr += '<p class="rssfeed">'
@@ -428,7 +429,7 @@ def htmlBlogPage(authorized: bool, session,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
     blogStr = htmlHeaderWithExternalStyle(cssFilename)
-    htmlBlogRemoveCwButton(blogStr, translate)
+    _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
@@ -472,11 +473,11 @@ def htmlBlogPage(authorized: bool, session,
         if item['type'] != 'Create':
             continue
 
-        blogStr += htmlBlogPostContent(authorized, baseDir,
-                                       httpPrefix, translate,
-                                       nickname, domain,
-                                       domainFull, item,
-                                       None, True)
+        blogStr += _htmlBlogPostContent(authorized, baseDir,
+                                        httpPrefix, translate,
+                                        nickname, domain,
+                                        domainFull, item,
+                                        None, True)
 
     if len(timelineJson['orderedItems']) >= noOfItems:
         blogStr += navigateStr
@@ -544,11 +545,11 @@ def htmlBlogPageRSS2(authorized: bool, session,
                 continue
 
             blogRSS2 += \
-                htmlBlogPostRSS2(authorized, baseDir,
-                                 httpPrefix, translate,
-                                 nickname, domain,
-                                 domainFull, item,
-                                 None, True)
+                _htmlBlogPostRSS2(authorized, baseDir,
+                                  httpPrefix, translate,
+                                  nickname, domain,
+                                  domainFull, item,
+                                  None, True)
 
     if includeHeader:
         return blogRSS2 + rss2Footer()
@@ -590,35 +591,16 @@ def htmlBlogPageRSS3(authorized: bool, session,
                 continue
 
             blogRSS3 += \
-                htmlBlogPostRSS3(authorized, baseDir,
-                                 httpPrefix, translate,
-                                 nickname, domain,
-                                 domainFull, item,
-                                 None, True)
+                _htmlBlogPostRSS3(authorized, baseDir,
+                                  httpPrefix, translate,
+                                  nickname, domain,
+                                  domainFull, item,
+                                  None, True)
 
     return blogRSS3
 
 
-def getBlogIndexesForAccounts(baseDir: str) -> {}:
-    """ Get the index files for blogs for each account
-    and add them to a dict
-    """
-    blogIndexes = {}
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-        for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct:
-                continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
-            blogsIndex = accountDir + '/tlblogs.index'
-            if os.path.isfile(blogsIndex):
-                blogIndexes[acct] = blogsIndex
-        break
-    return blogIndexes
-
-
-def noOfBlogAccounts(baseDir: str) -> int:
+def _noOfBlogAccounts(baseDir: str) -> int:
     """Returns the number of blog accounts
     """
     ctr = 0
@@ -636,7 +618,7 @@ def noOfBlogAccounts(baseDir: str) -> int:
     return ctr
 
 
-def singleBlogAccountNickname(baseDir: str) -> str:
+def _singleBlogAccountNickname(baseDir: str) -> str:
     """Returns the nickname of a single blog account
     """
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
@@ -666,8 +648,8 @@ def htmlBlogView(authorized: bool,
         cssFilename = baseDir + '/epicyon.css'
     blogStr = htmlHeaderWithExternalStyle(cssFilename)
 
-    if noOfBlogAccounts(baseDir) <= 1:
-        nickname = singleBlogAccountNickname(baseDir)
+    if _noOfBlogAccounts(baseDir) <= 1:
+        nickname = _singleBlogAccountNickname(baseDir)
         if nickname:
             return htmlBlogPage(authorized, session,
                                 baseDir, httpPrefix, translate,

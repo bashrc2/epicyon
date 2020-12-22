@@ -77,8 +77,8 @@ def getPetName(baseDir: str, nickname: str, domain: str,
     return ''
 
 
-def getPetNameHandle(baseDir: str, nickname: str, domain: str,
-                     petname: str) -> str:
+def _getPetNameHandle(baseDir: str, nickname: str, domain: str,
+                      petname: str) -> str:
     """Given a petname returns the handle
     """
     if petname.startswith('@'):
@@ -113,7 +113,7 @@ def resolvePetnames(baseDir: str, nickname: str, domain: str,
         if not wrd.startswith('@'):
             break
         # does a petname handle exist for this?
-        handle = getPetNameHandle(baseDir, nickname, domain, wrd)
+        handle = _getPetNameHandle(baseDir, nickname, domain, wrd)
         if not handle:
             continue
         # replace the petname with the handle

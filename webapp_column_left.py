@@ -19,18 +19,18 @@ from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
 
 
-def linksExist(baseDir: str) -> bool:
+def _linksExist(baseDir: str) -> bool:
     """Returns true if links have been created
     """
     linksFilename = baseDir + '/accounts/links.txt'
     return os.path.isfile(linksFilename)
 
 
-def getLeftColumnShares(baseDir: str,
-                        httpPrefix: str, domainFull: str,
-                        nickname: str,
-                        maxSharesInLeftColumn: int,
-                        translate: {}) -> []:
+def _getLeftColumnShares(baseDir: str,
+                         httpPrefix: str, domainFull: str,
+                         nickname: str,
+                         maxSharesInLeftColumn: int,
+                         translate: {}) -> []:
     """get any shares and turn them into the left column links format
     """
     pageNumber = 1
@@ -164,9 +164,9 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
         # show a number of shares
         maxSharesInLeftColumn = 3
         sharesList = \
-            getLeftColumnShares(baseDir,
-                                httpPrefix, domainFull, nickname,
-                                maxSharesInLeftColumn, translate)
+            _getLeftColumnShares(baseDir,
+                                 httpPrefix, domainFull, nickname,
+                                 maxSharesInLeftColumn, translate)
         if linksList and sharesList:
             linksList = sharesList + linksList
 
@@ -271,7 +271,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
         headerButtonsFrontScreen(translate, nickname,
                                  'links', authorized,
                                  iconsAsButtons) + '</center>'
-    if linksExist(baseDir):
+    if _linksExist(baseDir):
         htmlStr += \
             getLeftColumnContent(baseDir, nickname, domainFull,
                                  httpPrefix, translate,
