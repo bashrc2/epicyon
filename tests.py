@@ -2537,19 +2537,23 @@ def testFunctions():
     print('testFunctions')
     function = {}
     functionProperties = {}
-    modules = []
+    modules = {}
 
     for subdir, dirs, files in os.walk('.'):
         for sourceFile in files:
             if not sourceFile.endswith('.py'):
                 continue
             modName = sourceFile.replace('.py', '')
-            modules.append(modName)
+            modules[modName] = {
+                'functions': []
+            }
             sourceStr = ''
             with open(sourceFile, "r") as f:
                 sourceStr = f.read()
+                modules[modName]['source'] = sourceStr
             with open(sourceFile, "r") as f:
                 lines = f.readlines()
+                modules[modName]['lines'] = lines
                 for line in lines:
                     if not line.startswith('def '):
                         continue
@@ -2562,6 +2566,8 @@ def testFunctions():
                         function[modName].append(methodName)
                     else:
                         function[modName] = [methodName]
+                    if methodName not in modules[modName]['functions']:
+                        modules[modName]['functions'].append(methodName)
                     functionProperties[methodName] = {
                         "args": methodArgs,
                         "module": modName,
@@ -2570,19 +2576,17 @@ def testFunctions():
         break
 
     # which modules is each function used within?
-    for modName in modules:
+    for modName, modProperties in modules.items():
         print('Module: ' + modName + ' ✓')
-        with open(modName + '.py', "r") as f:
-            lines = f.readlines()
-            for name, properties in functionProperties.items():
-                for line in lines:
-                    if line.startswith('def '):
-                        continue
-                    if name + '(' in line:
-                        modList = \
-                            functionProperties[name]['calledInModule']
-                        if modName not in modList:
-                            modList.append(modName)
+        for name, properties in functionProperties.items():
+            for line in modules[modName]['lines']:
+                if line.startswith('def '):
+                    continue
+                if name + '(' in line:
+                    modList = \
+                        functionProperties[name]['calledInModule']
+                    if modName not in modList:
+                        modList.append(modName)
 
     # don't check these functions, because they are procedurally called
     exclusions = [
@@ -2648,7 +2652,7 @@ def testFunctions():
                 if modName == properties['module']:
                     continue
                 importStr = 'from ' + properties['module'] + ' import ' + name
-                if importStr not in open(modName + '.py').read():
+                if importStr not in modules[modName]['source']:
                     print(importStr + ' not found in ' + modName + '.py')
                     assert False
 
@@ -2670,6 +2674,7 @@ def testFunctions():
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    return
     testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()
