@@ -2626,6 +2626,7 @@ def testFunctions():
     for name, properties in functionProperties.items():
         if name in exclusions:
             continue
+        isLocalModule = False
         if not properties['calledInModule']:
             print('function ' + name +
                   ' in module ' + properties['module'] +
@@ -2636,9 +2637,10 @@ def testFunctions():
             modName = properties['calledInModule'][0]
             if modName not in excludeLocal and \
                modName == properties['module']:
+                isLocalModule = True
                 if not name.startswith('_'):
                     print('Local function ' + name +
-                          ' in ' + modName + ' does not begin with _')
+                          ' in ' + modName + '.py does not begin with _')
                     assert False
 
         if name not in excludeImports:
@@ -2648,6 +2650,19 @@ def testFunctions():
                 importStr = 'from ' + properties['module'] + ' import ' + name
                 if importStr not in open(modName + '.py').read():
                     print(importStr + ' not found in ' + modName + '.py')
+                    assert False
+
+        if not isLocalModule:
+            if name.startswith('_'):
+                excludePublic = [
+                    'pyjsonld',
+                    'daemon',
+                    'tests'
+                ]
+                modName = properties['module']
+                if modName not in excludePublic:
+                    print('Public function ' + name + ' in ' +
+                          modName + '.py begins with _')
                     assert False
         print('Function: ' + name + ' ✓')
 
