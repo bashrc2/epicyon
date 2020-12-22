@@ -63,7 +63,7 @@ def clearEditorStatus(baseDir: str) -> None:
                 saveJson(actorJson, filename)
 
 
-def addModerator(baseDir: str, nickname: str, domain: str) -> None:
+def _addModerator(baseDir: str, nickname: str, domain: str) -> None:
     """Adds a moderator nickname to the file
     """
     if ':' in domain:
@@ -92,7 +92,7 @@ def addModerator(baseDir: str, nickname: str, domain: str) -> None:
                 f.write(nickname + '\n')
 
 
-def removeModerator(baseDir: str, nickname: str):
+def _removeModerator(baseDir: str, nickname: str):
     """Removes a moderator nickname from the file
     """
     moderatorsFile = baseDir + '/accounts/moderators.txt'
@@ -125,7 +125,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
         if role:
             # add the role
             if project == 'instance' and 'role' == 'moderator':
-                addModerator(baseDir, nickname, domain)
+                _addModerator(baseDir, nickname, domain)
             if actorJson['roles'].get(project):
                 if role not in actorJson['roles'][project]:
                     actorJson['roles'][project].append(role)
@@ -134,7 +134,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
         else:
             # remove the role
             if project == 'instance':
-                removeModerator(baseDir, nickname)
+                _removeModerator(baseDir, nickname)
             if actorJson['roles'].get(project):
                 actorJson['roles'][project].remove(role)
                 # if the project contains no roles then remove it
@@ -144,8 +144,8 @@ def setRole(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getRoles(baseDir: str, nickname: str, domain: str,
-             project: str) -> []:
+def _getRoles(baseDir: str, nickname: str, domain: str,
+              project: str) -> []:
     """Returns the roles for a given person on a given project
     """
     actorFilename = baseDir + '/accounts/' + \
@@ -198,8 +198,8 @@ def outboxDelegate(baseDir: str, authenticatedNickname: str,
     # instance delegators can delagate to other projects
     # than their own
     canDelegate = False
-    delegatorRoles = getRoles(baseDir, delegatorNickname,
-                              domain, 'instance')
+    delegatorRoles = _getRoles(baseDir, delegatorNickname,
+                               domain, 'instance')
     if delegatorRoles:
         if 'delegator' in delegatorRoles:
             canDelegate = True
@@ -207,8 +207,8 @@ def outboxDelegate(baseDir: str, authenticatedNickname: str,
     if not canDelegate:
         canDelegate = True
         # non-instance delegators can only delegate within their project
-        delegatorRoles = getRoles(baseDir, delegatorNickname,
-                                  domain, project)
+        delegatorRoles = _getRoles(baseDir, delegatorNickname,
+                                   domain, project)
         if delegatorRoles:
             if 'delegator' not in delegatorRoles:
                 return False
@@ -230,7 +230,7 @@ def outboxDelegate(baseDir: str, authenticatedNickname: str,
         return True
 
     # what roles is this person already assigned to?
-    existingRoles = getRoles(baseDir, nickname, domain, project)
+    existingRoles = _getRoles(baseDir, nickname, domain, project)
     if existingRoles:
         if role in existingRoles:
             if debug:

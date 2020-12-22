@@ -14,8 +14,8 @@ from utils import loadJson
 from outbox import postMessageToOutbox
 
 
-def updatePostSchedule(baseDir: str, handle: str, httpd,
-                       maxScheduledPosts: int) -> None:
+def _updatePostSchedule(baseDir: str, handle: str, httpd,
+                        maxScheduledPosts: int) -> None:
     """Checks if posts are due to be delivered and if so moves them to the outbox
     """
     scheduleIndexFilename = baseDir + '/accounts/' + handle + '/schedule.index'
@@ -145,7 +145,7 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
                     baseDir + '/accounts/' + account + '/schedule.index'
                 if not os.path.isfile(scheduleIndexFilename):
                     continue
-                updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
+                _updatePostSchedule(baseDir, account, httpd, maxScheduledPosts)
         break
 
 

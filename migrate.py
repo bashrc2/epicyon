@@ -9,8 +9,8 @@ __status__ = "Production"
 import os
 
 
-def migrateFollows(followFilename: str, oldHandle: str,
-                   newHandle: str) -> None:
+def _migrateFollows(followFilename: str, oldHandle: str,
+                    newHandle: str) -> None:
     """Changes a handle within following or followers list
     """
     if not os.path.isfile(followFilename):
@@ -48,7 +48,7 @@ def migrateAccount(baseDir: str, oldHandle: str, newHandle: str) -> None:
             if '@' in handle:
                 accountDir = baseDir + '/accounts/' + handle
                 followFilename = accountDir + '/following.txt'
-                migrateFollows(followFilename, oldHandle, newHandle)
+                _migrateFollows(followFilename, oldHandle, newHandle)
                 followFilename = accountDir + '/followers.txt'
-                migrateFollows(followFilename, oldHandle, newHandle)
+                _migrateFollows(followFilename, oldHandle, newHandle)
         break

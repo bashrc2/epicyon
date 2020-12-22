@@ -20,14 +20,14 @@ from webapp_column_right import getRightColumnContent
 from webapp_post import individualPostAsHtml
 
 
-def htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
-                         translate: {},
-                         baseDir: str, httpPrefix: str,
-                         nickname: str, domain: str, port: int,
-                         session, wfRequest: {}, personCache: {},
-                         projectVersion: str,
-                         YTReplacementDomain: str,
-                         showPublishedDateOnly: bool) -> str:
+def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
+                          translate: {},
+                          baseDir: str, httpPrefix: str,
+                          nickname: str, domain: str, port: int,
+                          session, wfRequest: {}, personCache: {},
+                          projectVersion: str,
+                          YTReplacementDomain: str,
+                          showPublishedDateOnly: bool) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -139,14 +139,14 @@ def htmlFrontScreen(rssIconAtTop: bool,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     profileStr += \
-        htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
-                             translate,
-                             baseDir, httpPrefix,
-                             nickname, domain, port,
-                             session, wfRequest, personCache,
-                             projectVersion,
-                             YTReplacementDomain,
-                             showPublishedDateOnly) + licenseStr
+        _htmlFrontScreenPosts(recentPostsCache, maxRecentPosts,
+                              translate,
+                              baseDir, httpPrefix,
+                              nickname, domain, port,
+                              session, wfRequest, personCache,
+                              projectVersion,
+                              YTReplacementDomain,
+                              showPublishedDateOnly) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

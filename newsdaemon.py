@@ -35,7 +35,7 @@ from inbox import storeHashTags
 from session import createSession
 
 
-def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
+def _updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
     """Updates the index used for imported RSS feeds
     """
     basePath = baseDir + '/accounts/news@' + domain
@@ -59,7 +59,7 @@ def updateFeedsOutboxIndex(baseDir: str, domain: str, postId: str) -> None:
             feedsFile.close()
 
 
-def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
+def _saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
     """Saves the time when an rss post arrived to a file
     """
     arrivedFile = open(postFilename + '.arrived', 'w+')
@@ -68,7 +68,7 @@ def saveArrivedTime(baseDir: str, postFilename: str, arrived: str) -> None:
         arrivedFile.close()
 
 
-def removeControlCharacters(content: str) -> str:
+def _removeControlCharacters(content: str) -> str:
     """Remove escaped html
     """
     if '&' in content:
@@ -227,14 +227,14 @@ def hashtagRuleTree(operators: [],
     return tree
 
 
-def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
-                              hashtags: [], httpPrefix: str,
-                              domain: str, port: int,
-                              personCache: {},
-                              cachedWebfingers: {},
-                              federationList: [],
-                              sendThreads: [], postLog: [],
-                              moderated: bool, url: str) -> bool:
+def _newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
+                               hashtags: [], httpPrefix: str,
+                               domain: str, port: int,
+                               personCache: {},
+                               cachedWebfingers: {},
+                               federationList: [],
+                               sendThreads: [], postLog: [],
+                               moderated: bool, url: str) -> bool:
     """Applies hashtag rules to a news post.
     Returns true if the post should be saved to the news timeline
     of this instance
@@ -356,9 +356,9 @@ def newswireHashtagProcessing(session, baseDir: str, postJsonObject: {},
     return True
 
 
-def createNewsMirror(baseDir: str, domain: str,
-                     postIdNumber: str, url: str,
-                     maxMirroredArticles: int) -> bool:
+def _createNewsMirror(baseDir: str, domain: str,
+                      postIdNumber: str, url: str,
+                      maxMirroredArticles: int) -> bool:
     """Creates a local mirror of a news article
     """
     if '|' in url or '>' in url:
@@ -446,17 +446,17 @@ def createNewsMirror(baseDir: str, domain: str,
     return True
 
 
-def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
-                            domain: str, port: int,
-                            newswire: {},
-                            translate: {},
-                            recentPostsCache: {}, maxRecentPosts: int,
-                            session, cachedWebfingers: {},
-                            personCache: {},
-                            federationList: [],
-                            sendThreads: [], postLog: [],
-                            maxMirroredArticles: int,
-                            allowLocalNetworkAccess: bool) -> None:
+def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
+                             domain: str, port: int,
+                             newswire: {},
+                             translate: {},
+                             recentPostsCache: {}, maxRecentPosts: int,
+                             session, cachedWebfingers: {},
+                             personCache: {},
+                             federationList: [],
+                             sendThreads: [], postLog: [],
+                             maxMirroredArticles: int,
+                             allowLocalNetworkAccess: bool) -> None:
     """Converts rss items in a newswire into posts
     """
     if not newswire:
@@ -497,7 +497,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             newswire[originalDateStr][3] = filename
             continue
 
-        rssTitle = removeControlCharacters(item[0])
+        rssTitle = _removeControlCharacters(item[0])
         url = item[1]
         if dangerousMarkup(url, allowLocalNetworkAccess) or \
            dangerousMarkup(rssTitle, allowLocalNetworkAccess):
@@ -505,7 +505,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         rssDescription = ''
 
         # get the rss description if it exists
-        rssDescription = removeControlCharacters(item[4])
+        rssDescription = _removeControlCharacters(item[4])
         if rssDescription.startswith('<![CDATA['):
             rssDescription = rssDescription.replace('<![CDATA[', '')
             rssDescription = rssDescription.replace(']]>', '')
@@ -555,8 +555,8 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             continue
 
         if mirrored:
-            if not createNewsMirror(baseDir, domain, statusNumber,
-                                    url, maxMirroredArticles):
+            if not _createNewsMirror(baseDir, domain, statusNumber,
+                                     url, maxMirroredArticles):
                 continue
 
         idStr = \
@@ -590,12 +590,12 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
         moderated = item[5]
 
-        savePost = newswireHashtagProcessing(session, baseDir, blog, hashtags,
-                                             httpPrefix, domain, port,
-                                             personCache, cachedWebfingers,
-                                             federationList,
-                                             sendThreads, postLog,
-                                             moderated, url)
+        savePost = _newswireHashtagProcessing(session, baseDir, blog, hashtags,
+                                              httpPrefix, domain, port,
+                                              personCache, cachedWebfingers,
+                                              federationList,
+                                              sendThreads, postLog,
+                                              moderated, url)
 
         # save the post and update the index
         if savePost:
@@ -628,7 +628,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                     blog['object']['content'] = content
 
             # update the newswire tags if new ones have been found by
-            # newswireHashtagProcessing
+            # _newswireHashtagProcessing
             for tag in hashtags:
                 if tag not in newswire[originalDateStr][6]:
                     newswire[originalDateStr][6].append(tag)
@@ -637,14 +637,14 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
 
             clearFromPostCaches(baseDir, recentPostsCache, postId)
             if saveJson(blog, filename):
-                updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
+                _updateFeedsOutboxIndex(baseDir, domain, postId + '.json')
 
                 # Save a file containing the time when the post arrived
                 # this can then later be used to construct the news timeline
                 # excluding items during the voting period
                 if moderated:
-                    saveArrivedTime(baseDir, filename,
-                                    blog['object']['arrived'])
+                    _saveArrivedTime(baseDir, filename,
+                                     blog['object']['arrived'])
                 else:
                     if os.path.isfile(filename + '.arrived'):
                         os.remove(filename + '.arrived')
@@ -658,7 +658,7 @@ def convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 newswire[originalDateStr][3] = filename
 
 
-def mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
+def _mergeWithPreviousNewswire(oldNewswire: {}, newNewswire: {}) -> None:
     """Preserve any votes or generated activitypub post filename
     as rss feeds are updated
     """
@@ -707,26 +707,26 @@ def runNewswireDaemon(baseDir: str, httpd,
             if os.path.isfile(newswireStateFilename):
                 httpd.newswire = loadJson(newswireStateFilename)
 
-        mergeWithPreviousNewswire(httpd.newswire, newNewswire)
+        _mergeWithPreviousNewswire(httpd.newswire, newNewswire)
 
         httpd.newswire = newNewswire
         if newNewswire:
             saveJson(httpd.newswire, newswireStateFilename)
             print('Newswire updated')
 
-        convertRSStoActivityPub(baseDir,
-                                httpPrefix, domain, port,
-                                newNewswire, translate,
-                                httpd.recentPostsCache,
-                                httpd.maxRecentPosts,
-                                httpd.session,
-                                httpd.cachedWebfingers,
-                                httpd.personCache,
-                                httpd.federationList,
-                                httpd.sendThreads,
-                                httpd.postLog,
-                                httpd.maxMirroredArticles,
-                                httpd.allowLocalNetworkAccess)
+        _convertRSStoActivityPub(baseDir,
+                                 httpPrefix, domain, port,
+                                 newNewswire, translate,
+                                 httpd.recentPostsCache,
+                                 httpd.maxRecentPosts,
+                                 httpd.session,
+                                 httpd.cachedWebfingers,
+                                 httpd.personCache,
+                                 httpd.federationList,
+                                 httpd.sendThreads,
+                                 httpd.postLog,
+                                 httpd.maxMirroredArticles,
+                                 httpd.allowLocalNetworkAccess)
         print('Newswire feed converted to ActivityPub')
 
         if httpd.maxNewsPosts > 0:

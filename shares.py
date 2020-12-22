@@ -176,11 +176,11 @@ def expireShares(baseDir: str) -> None:
                 continue
             nickname = account.split('@')[0]
             domain = account.split('@')[1]
-            expireSharesForAccount(baseDir, nickname, domain)
+            _expireSharesForAccount(baseDir, nickname, domain)
         break
 
 
-def expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
+def _expireSharesForAccount(baseDir: str, nickname: str, domain: str) -> None:
     """Removes expired items from shares for a particular account
     """
     handleDomain = domain

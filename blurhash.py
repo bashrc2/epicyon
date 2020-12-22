@@ -39,7 +39,7 @@ alphabet = \
 alphabet_values = dict(zip(alphabet, range(len(alphabet))))
 
 
-def base83_encode(value, length):
+def _base83_encode(value, length):
     """
     Decodes an integer to a base83 string, as used in blurhash.
 
@@ -57,7 +57,7 @@ def base83_encode(value, length):
     return result
 
 
-def srgb_to_linear(value):
+def _srgb_to_linear(value):
     """
     srgb 0-255 integer to linear 0.0-1.0 floating point conversion.
     """
@@ -67,14 +67,14 @@ def srgb_to_linear(value):
     return math.pow((value + 0.055) / 1.055, 2.4)
 
 
-def sign_pow(value, exp):
+def _sign_pow(value, exp):
     """
     Sign-preserving exponentiation.
     """
     return math.copysign(math.pow(abs(value), exp), value)
 
 
-def linear_to_srgb(value):
+def _linear_to_srgb(value):
     """
     linear 0.0-1.0 floating point to srgb 0-255 integer conversion.
     """
@@ -113,9 +113,9 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
             image_linear_line = []
             for x in range(int(width)):
                 image_linear_line.append([
-                    srgb_to_linear(image[y][x][0]),
-                    srgb_to_linear(image[y][x][1]),
-                    srgb_to_linear(image[y][x][2])
+                    _srgb_to_linear(image[y][x][0]),
+                    _srgb_to_linear(image[y][x][1]),
+                    _srgb_to_linear(image[y][x][2])
                 ])
             image_linear.append(image_linear_line)
     else:
@@ -149,9 +149,9 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
                         abs(component[1]), abs(component[2]))
 
     # Encode components
-    dc_value = (linear_to_srgb(components[0][0]) << 16) + \
-        (linear_to_srgb(components[0][1]) << 8) + \
-        linear_to_srgb(components[0][2])
+    dc_value = (_linear_to_srgb(components[0][0]) << 16) + \
+        (_linear_to_srgb(components[0][1]) << 8) + \
+        _linear_to_srgb(components[0][2])
 
     quant_max_ac_component = int(max(0, min(82,
                                             math.floor(max_ac_component *
@@ -163,9 +163,9 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
         r2 = r / ac_component_norm_factor
         g2 = g / ac_component_norm_factor
         b2 = b / ac_component_norm_factor
-        r3 = math.floor(sign_pow(r2, 0.5) * 9.0 + 9.5)
-        g3 = math.floor(sign_pow(g2, 0.5) * 9.0 + 9.5)
-        b3 = math.floor(sign_pow(b2, 0.5) * 9.0 + 9.5)
+        r3 = math.floor(_sign_pow(r2, 0.5) * 9.0 + 9.5)
+        g3 = math.floor(_sign_pow(g2, 0.5) * 9.0 + 9.5)
+        b3 = math.floor(_sign_pow(b2, 0.5) * 9.0 + 9.5)
         ac_values.append(
             int(max(0.0, min(18.0, r3))) * 19 * 19 +
             int(max(0.0, min(18.0, g3))) * 19 +
@@ -174,10 +174,10 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
 
     # Build final blurhash
     blurhash = ""
-    blurhash += base83_encode((components_x - 1) + (components_y - 1) * 9, 1)
-    blurhash += base83_encode(quant_max_ac_component, 1)
-    blurhash += base83_encode(dc_value, 4)
+    blurhash += _base83_encode((components_x - 1) + (components_y - 1) * 9, 1)
+    blurhash += _base83_encode(quant_max_ac_component, 1)
+    blurhash += _base83_encode(dc_value, 4)
     for ac_value in ac_values:
-        blurhash += base83_encode(ac_value, 2)
+        blurhash += _base83_encode(ac_value, 2)
 
     return blurhash

@@ -50,15 +50,15 @@ def noOfLikes(postJsonObject: {}) -> int:
     return len(postJsonObject['object']['likes']['items'])
 
 
-def like(recentPostsCache: {},
-         session, baseDir: str, federationList: [],
-         nickname: str, domain: str, port: int,
-         ccList: [], httpPrefix: str,
-         objectUrl: str, actorLiked: str,
-         clientToServer: bool,
-         sendThreads: [], postLog: [],
-         personCache: {}, cachedWebfingers: {},
-         debug: bool, projectVersion: str) -> {}:
+def _like(recentPostsCache: {},
+          session, baseDir: str, federationList: [],
+          nickname: str, domain: str, port: int,
+          ccList: [], httpPrefix: str,
+          objectUrl: str, actorLiked: str,
+          clientToServer: bool,
+          sendThreads: [], postLog: [],
+          personCache: {}, cachedWebfingers: {},
+          debug: bool, projectVersion: str) -> {}:
     """Creates a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -134,11 +134,11 @@ def likePost(recentPostsCache: {},
     actorLiked = httpPrefix + '://' + likeDomain + '/users/' + likeNickname
     objectUrl = actorLiked + '/statuses/' + str(likeStatusNumber)
 
-    return like(recentPostsCache,
-                session, baseDir, federationList, nickname, domain, port,
-                ccList, httpPrefix, objectUrl, actorLiked, clientToServer,
-                sendThreads, postLog, personCache, cachedWebfingers,
-                debug, projectVersion)
+    return _like(recentPostsCache,
+                 session, baseDir, federationList, nickname, domain, port,
+                 ccList, httpPrefix, objectUrl, actorLiked, clientToServer,
+                 sendThreads, postLog, personCache, cachedWebfingers,
+                 debug, projectVersion)
 
 
 def sendLikeViaServer(baseDir: str, session,

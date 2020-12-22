@@ -79,7 +79,7 @@ def removeGlobalFilter(baseDir: str, words: str) -> bool:
     return False
 
 
-def isTwitterPost(content: str) -> bool:
+def _isTwitterPost(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
     if '/twitter.' in content or '@twitter.' in content:
@@ -89,7 +89,7 @@ def isTwitterPost(content: str) -> bool:
     return False
 
 
-def isFilteredBase(filename: str, content: str) -> bool:
+def _isFilteredBase(filename: str, content: str) -> bool:
     """Uses the given file containing filtered words to check
     the given content
     """
@@ -122,7 +122,7 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     words must be present although not necessarily adjacent
     """
     globalFiltersFilename = baseDir + '/accounts/filters.txt'
-    if isFilteredBase(globalFiltersFilename, content):
+    if _isFilteredBase(globalFiltersFilename, content):
         return True
 
     if not nickname or not domain:
@@ -132,9 +132,9 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     removeTwitter = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/.removeTwitter'
     if os.path.isfile(removeTwitter):
-        if isTwitterPost(content):
+        if _isTwitterPost(content):
             return True
 
     accountFiltersFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/filters.txt'
-    return isFilteredBase(accountFiltersFilename, content)
+    return _isFilteredBase(accountFiltersFilename, content)

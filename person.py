@@ -134,7 +134,7 @@ def setOrganizationScheme(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def accountExists(baseDir: str, nickname: str, domain: str) -> bool:
+def _accountExists(baseDir: str, nickname: str, domain: str) -> bool:
     """Returns true if the given account exists
     """
     if ':' in domain:
@@ -201,10 +201,10 @@ def getDefaultPersonContext() -> str:
     }
 
 
-def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
-                     httpPrefix: str, saveToFile: bool,
-                     manualFollowerApproval: bool,
-                     password=None) -> (str, str, {}, {}):
+def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
+                      httpPrefix: str, saveToFile: bool,
+                      manualFollowerApproval: bool,
+                      password=None) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     privateKeyPem, publicKeyPem = generateRSAKey()
@@ -377,7 +377,7 @@ def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
                     manualFollowerApproval: bool) -> bool:
     """Registers a new account from the web interface
     """
-    if accountExists(baseDir, nickname, domain):
+    if _accountExists(baseDir, nickname, domain):
         return False
     if not validNickname(domain, nickname):
         print('REGISTER: Nickname ' + nickname + ' is invalid')
@@ -449,12 +449,12 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
             return None, None, None, None
 
     (privateKeyPem, publicKeyPem,
-     newPerson, webfingerEndpoint) = createPersonBase(baseDir, nickname,
-                                                      domain, port,
-                                                      httpPrefix,
-                                                      saveToFile,
-                                                      manualFollowerApproval,
-                                                      password)
+     newPerson, webfingerEndpoint) = _createPersonBase(baseDir, nickname,
+                                                       domain, port,
+                                                       httpPrefix,
+                                                       saveToFile,
+                                                       manualFollowerApproval,
+                                                       password)
     if not getConfigParam(baseDir, 'admin'):
         if nickname != 'news':
             # print(nickname+' becomes the instance admin and a moderator')
@@ -525,8 +525,8 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str) -> (str, str, {}, {}):
     """Generates the shared inbox
     """
-    return createPersonBase(baseDir, nickname, domain, port, httpPrefix,
-                            True, True, None)
+    return _createPersonBase(baseDir, nickname, domain, port, httpPrefix,
+                             True, True, None)
 
 
 def createNewsInbox(baseDir: str, domain: str, port: int,
@@ -845,8 +845,8 @@ def canRemovePost(baseDir: str, nickname: str,
     return True
 
 
-def removeTagsForNickname(baseDir: str, nickname: str,
-                          domain: str, port: int) -> None:
+def _removeTagsForNickname(baseDir: str, nickname: str,
+                           domain: str, port: int) -> None:
     """Removes tags for a nickname
     """
     if not os.path.isdir(baseDir + '/tags'):
@@ -900,7 +900,7 @@ def removeAccount(baseDir: str, nickname: str,
     unsuspendAccount(baseDir, nickname)
     handle = nickname + '@' + domain
     removePassword(baseDir, nickname)
-    removeTagsForNickname(baseDir, nickname, domain, port)
+    _removeTagsForNickname(baseDir, nickname, domain, port)
     if os.path.isdir(baseDir + '/deactivated/' + handle):
         shutil.rmtree(baseDir + '/deactivated/' + handle)
     if os.path.isdir(baseDir + '/accounts/' + handle):

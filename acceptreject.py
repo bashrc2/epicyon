@@ -15,10 +15,10 @@ from utils import domainPermitted
 from utils import followPerson
 
 
-def createAcceptReject(baseDir: str, federationList: [],
-                       nickname: str, domain: str, port: int,
-                       toUrl: str, ccUrl: str, httpPrefix: str,
-                       objectJson: {}, acceptType: str) -> {}:
+def _createAcceptReject(baseDir: str, federationList: [],
+                        nickname: str, domain: str, port: int,
+                        toUrl: str, ccUrl: str, httpPrefix: str,
+                        objectJson: {}, acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and
@@ -51,24 +51,24 @@ def createAccept(baseDir: str, federationList: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, httpPrefix: str,
                  objectJson: {}) -> {}:
-    return createAcceptReject(baseDir, federationList,
-                              nickname, domain, port,
-                              toUrl, ccUrl, httpPrefix,
-                              objectJson, 'Accept')
+    return _createAcceptReject(baseDir, federationList,
+                               nickname, domain, port,
+                               toUrl, ccUrl, httpPrefix,
+                               objectJson, 'Accept')
 
 
 def createReject(baseDir: str, federationList: [],
                  nickname: str, domain: str, port: int,
                  toUrl: str, ccUrl: str, httpPrefix: str,
                  objectJson: {}) -> {}:
-    return createAcceptReject(baseDir, federationList,
-                              nickname, domain, port,
-                              toUrl, ccUrl,
-                              httpPrefix, objectJson, 'Reject')
+    return _createAcceptReject(baseDir, federationList,
+                               nickname, domain, port,
+                               toUrl, ccUrl,
+                               httpPrefix, objectJson, 'Reject')
 
 
-def acceptFollow(baseDir: str, domain: str, messageJson: {},
-                 federationList: [], debug: bool) -> None:
+def _acceptFollow(baseDir: str, domain: str, messageJson: {},
+                  federationList: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
     if not messageJson.get('object'):
@@ -204,7 +204,7 @@ def receiveAcceptReject(session, baseDir: str,
                   ' does not contain a nickname. ' +
                   'Assuming single user instance.')
     # receive follow accept
-    acceptFollow(baseDir, domain, messageJson, federationList, debug)
+    _acceptFollow(baseDir, domain, messageJson, federationList, debug)
     if debug:
         print('DEBUG: Uh, ' + messageJson['type'] + ', I guess')
     return True

@@ -214,14 +214,14 @@ def htmlProfileAfterSearch(cssCache: {},
             imageUrl = profileJson['image']['url']
 
     profileStr = \
-        getProfileHeaderAfterSearch(baseDir,
-                                    nickname, defaultTimeline,
-                                    searchNickname,
-                                    searchDomainFull,
-                                    translate,
-                                    displayName,
-                                    profileDescriptionShort,
-                                    avatarUrl, imageUrl)
+        _getProfileHeaderAfterSearch(baseDir,
+                                     nickname, defaultTimeline,
+                                     searchNickname,
+                                     searchDomainFull,
+                                     translate,
+                                     displayName,
+                                     profileDescriptionShort,
+                                     avatarUrl, imageUrl)
 
     domainFull = getFullDomain(domain, port)
 
@@ -287,14 +287,14 @@ def htmlProfileAfterSearch(cssCache: {},
     return htmlHeaderWithExternalStyle(cssFilename) + profileStr + htmlFooter()
 
 
-def getProfileHeader(baseDir: str, nickname: str, domain: str,
-                     domainFull: str, translate: {},
-                     defaultTimeline: str,
-                     displayName: str,
-                     avatarDescription: str,
-                     profileDescriptionShort: str,
-                     loginButton: str, avatarUrl: str,
-                     theme: str) -> str:
+def _getProfileHeader(baseDir: str, nickname: str, domain: str,
+                      domainFull: str, translate: {},
+                      defaultTimeline: str,
+                      displayName: str,
+                      avatarDescription: str,
+                      profileDescriptionShort: str,
+                      loginButton: str, avatarUrl: str,
+                      theme: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -327,14 +327,14 @@ def getProfileHeader(baseDir: str, nickname: str, domain: str,
     return htmlStr
 
 
-def getProfileHeaderAfterSearch(baseDir: str,
-                                nickname: str, defaultTimeline: str,
-                                searchNickname: str,
-                                searchDomainFull: str,
-                                translate: {},
-                                displayName: str,
-                                profileDescriptionShort: str,
-                                avatarUrl: str, imageUrl: str) -> str:
+def _getProfileHeaderAfterSearch(baseDir: str,
+                                 nickname: str, defaultTimeline: str,
+                                 searchNickname: str,
+                                 searchDomainFull: str,
+                                 translate: {},
+                                 displayName: str,
+                                 profileDescriptionShort: str,
+                                 avatarUrl: str, imageUrl: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -568,12 +568,12 @@ def htmlProfile(rssIconAtTop: bool,
 
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
-        getProfileHeader(baseDir, nickname, domain,
-                         domainFull, translate,
-                         defaultTimeline, displayName,
-                         avatarDescription,
-                         profileDescriptionShort,
-                         loginButton, avatarUrl, theme)
+        _getProfileHeader(baseDir, nickname, domain,
+                          domainFull, translate,
+                          defaultTimeline, displayName,
+                          avatarDescription,
+                          profileDescriptionShort,
+                          loginButton, avatarUrl, theme)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -621,44 +621,44 @@ def htmlProfile(rssIconAtTop: bool,
 
     if selected == 'posts':
         profileStr += \
-            htmlProfilePosts(recentPostsCache, maxRecentPosts,
-                             translate,
-                             baseDir, httpPrefix, authorized,
-                             nickname, domain, port,
-                             session, wfRequest, personCache,
-                             projectVersion,
-                             YTReplacementDomain,
-                             showPublishedDateOnly) + licenseStr
+            _htmlProfilePosts(recentPostsCache, maxRecentPosts,
+                              translate,
+                              baseDir, httpPrefix, authorized,
+                              nickname, domain, port,
+                              session, wfRequest, personCache,
+                              projectVersion,
+                              YTReplacementDomain,
+                              showPublishedDateOnly) + licenseStr
     elif selected == 'following':
         profileStr += \
-            htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                 authorized, nickname,
-                                 domain, port, session,
-                                 wfRequest, personCache, extraJson,
-                                 projectVersion, ["unfollow"], selected,
-                                 usersPath, pageNumber, maxItemsPerPage,
-                                 dormantMonths)
+            _htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                  authorized, nickname,
+                                  domain, port, session,
+                                  wfRequest, personCache, extraJson,
+                                  projectVersion, ["unfollow"], selected,
+                                  usersPath, pageNumber, maxItemsPerPage,
+                                  dormantMonths)
     elif selected == 'followers':
         profileStr += \
-            htmlProfileFollowing(translate, baseDir, httpPrefix,
-                                 authorized, nickname,
-                                 domain, port, session,
-                                 wfRequest, personCache, extraJson,
-                                 projectVersion, ["block"],
-                                 selected, usersPath, pageNumber,
-                                 maxItemsPerPage, dormantMonths)
+            _htmlProfileFollowing(translate, baseDir, httpPrefix,
+                                  authorized, nickname,
+                                  domain, port, session,
+                                  wfRequest, personCache, extraJson,
+                                  projectVersion, ["block"],
+                                  selected, usersPath, pageNumber,
+                                  maxItemsPerPage, dormantMonths)
     elif selected == 'roles':
         profileStr += \
-            htmlProfileRoles(translate, nickname, domainFull,
-                             extraJson)
+            _htmlProfileRoles(translate, nickname, domainFull,
+                              extraJson)
     elif selected == 'skills':
         profileStr += \
-            htmlProfileSkills(translate, nickname, domainFull, extraJson)
+            _htmlProfileSkills(translate, nickname, domainFull, extraJson)
     elif selected == 'shares':
         profileStr += \
-            htmlProfileShares(actor, translate,
-                              nickname, domainFull,
-                              extraJson) + licenseStr
+            _htmlProfileShares(actor, translate,
+                               nickname, domainFull,
+                               extraJson) + licenseStr
 
     profileStr = \
         htmlHeaderWithExternalStyle(cssFilename) + \
@@ -666,15 +666,15 @@ def htmlProfile(rssIconAtTop: bool,
     return profileStr
 
 
-def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
-                     translate: {},
-                     baseDir: str, httpPrefix: str,
-                     authorized: bool,
-                     nickname: str, domain: str, port: int,
-                     session, wfRequest: {}, personCache: {},
-                     projectVersion: str,
-                     YTReplacementDomain: str,
-                     showPublishedDateOnly: bool) -> str:
+def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
+                      translate: {},
+                      baseDir: str, httpPrefix: str,
+                      authorized: bool,
+                      nickname: str, domain: str, port: int,
+                      session, wfRequest: {}, personCache: {},
+                      projectVersion: str,
+                      YTReplacementDomain: str,
+                      showPublishedDateOnly: bool) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -720,16 +720,16 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     return profileStr
 
 
-def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
-                         authorized: bool,
-                         nickname: str, domain: str, port: int,
-                         session, wfRequest: {}, personCache: {},
-                         followingJson: {}, projectVersion: str,
-                         buttons: [],
-                         feedName: str, actor: str,
-                         pageNumber: int,
-                         maxItemsPerPage: int,
-                         dormantMonths: int) -> str:
+def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
+                          authorized: bool,
+                          nickname: str, domain: str, port: int,
+                          session, wfRequest: {}, personCache: {},
+                          followingJson: {}, projectVersion: str,
+                          buttons: [],
+                          feedName: str, actor: str,
+                          pageNumber: int,
+                          maxItemsPerPage: int,
+                          dormantMonths: int) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -756,12 +756,12 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           dormantMonths)
 
         profileStr += \
-            individualFollowAsHtml(translate, baseDir, session,
-                                   wfRequest, personCache,
-                                   domain, followingActor,
-                                   authorized, nickname,
-                                   httpPrefix, projectVersion, dormant,
-                                   buttons)
+            _individualFollowAsHtml(translate, baseDir, session,
+                                    wfRequest, personCache,
+                                    domain, followingActor,
+                                    authorized, nickname,
+                                    httpPrefix, projectVersion, dormant,
+                                    buttons)
 
     if authorized and maxItemsPerPage and pageNumber:
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
@@ -778,8 +778,8 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
     return profileStr
 
 
-def htmlProfileRoles(translate: {}, nickname: str, domain: str,
-                     rolesJson: {}) -> str:
+def _htmlProfileRoles(translate: {}, nickname: str, domain: str,
+                      rolesJson: {}) -> str:
     """Shows roles on the profile screen
     """
     profileStr = ''
@@ -801,8 +801,8 @@ def htmlProfileRoles(translate: {}, nickname: str, domain: str,
     return profileStr
 
 
-def htmlProfileSkills(translate: {}, nickname: str, domain: str,
-                      skillsJson: {}) -> str:
+def _htmlProfileSkills(translate: {}, nickname: str, domain: str,
+                       skillsJson: {}) -> str:
     """Shows skills on the profile screen
     """
     profileStr = ''
@@ -817,8 +817,8 @@ def htmlProfileSkills(translate: {}, nickname: str, domain: str,
     return profileStr
 
 
-def htmlProfileShares(actor: str, translate: {},
-                      nickname: str, domain: str, sharesJson: {}) -> str:
+def _htmlProfileShares(actor: str, translate: {},
+                       nickname: str, domain: str, sharesJson: {}) -> str:
     """Shows shares on the profile screen
     """
     profileStr = ''
@@ -1450,16 +1450,16 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     return editProfileForm
 
 
-def individualFollowAsHtml(translate: {},
-                           baseDir: str, session, wfRequest: {},
-                           personCache: {}, domain: str,
-                           followUrl: str,
-                           authorized: bool,
-                           actorNickname: str,
-                           httpPrefix: str,
-                           projectVersion: str,
-                           dormant: bool,
-                           buttons=[]) -> str:
+def _individualFollowAsHtml(translate: {},
+                            baseDir: str, session, wfRequest: {},
+                            personCache: {}, domain: str,
+                            followUrl: str,
+                            authorized: bool,
+                            actorNickname: str,
+                            httpPrefix: str,
+                            projectVersion: str,
+                            dormant: bool,
+                            buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
     nickname = getNicknameFromActor(followUrl)

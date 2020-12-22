@@ -33,7 +33,7 @@ def removeHtmlTag(htmlStr: str, tag: str) -> str:
     return htmlStr
 
 
-def removeQuotesWithinQuotes(content: str) -> str:
+def _removeQuotesWithinQuotes(content: str) -> str:
     """Removes any blockquote inside blockquote
     """
     if '<blockquote>' not in content:
@@ -96,7 +96,7 @@ def htmlReplaceEmailQuote(content: str) -> str:
             else:
                 lineStr = lineStr.replace('&gt;', '<br>')
             newContent += '<p>' + lineStr + '</blockquote></p>'
-    return removeQuotesWithinQuotes(newContent)
+    return _removeQuotesWithinQuotes(newContent)
 
 
 def htmlReplaceQuoteMarks(content: str) -> str:
@@ -314,7 +314,7 @@ def replaceEmojiFromTags(content: str, tag: [], messageType: str) -> str:
     return content
 
 
-def addMusicTag(content: str, tag: str) -> str:
+def _addMusicTag(content: str, tag: str) -> str:
     """If a music link is found then ensure that the post is
     tagged appropriately
     """
@@ -416,8 +416,8 @@ def validHashTag(hashtag: str) -> bool:
     return False
 
 
-def addHashTags(wordStr: str, httpPrefix: str, domain: str,
-                replaceHashTags: {}, postHashtags: {}) -> bool:
+def _addHashTags(wordStr: str, httpPrefix: str, domain: str,
+                 replaceHashTags: {}, postHashtags: {}) -> bool:
     """Detects hashtags and adds them to the replacements dict
     Also updates the hashtags list to be added to the post
     """
@@ -438,10 +438,10 @@ def addHashTags(wordStr: str, httpPrefix: str, domain: str,
     return True
 
 
-def addEmoji(baseDir: str, wordStr: str,
-             httpPrefix: str, domain: str,
-             replaceEmoji: {}, postTags: {},
-             emojiDict: {}) -> bool:
+def _addEmoji(baseDir: str, wordStr: str,
+              httpPrefix: str, domain: str,
+              replaceEmoji: {}, postTags: {},
+              emojiDict: {}) -> bool:
     """Detects Emoji and adds them to the replacements dict
     Also updates the tags list to be added to the post
     """
@@ -489,8 +489,8 @@ def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def addMention(wordStr: str, httpPrefix: str, following: str,
-               replaceMentions: {}, recipients: [], tags: {}) -> bool:
+def _addMention(wordStr: str, httpPrefix: str, following: str,
+                replaceMentions: {}, recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
     """
@@ -672,7 +672,7 @@ def removeLongWords(content: str, maxWordLength: int,
     return content
 
 
-def loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
+def _loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
     """Loads automatic tags file and returns a list containing
     the lines of the file
     """
@@ -685,9 +685,9 @@ def loadAutoTags(baseDir: str, nickname: str, domain: str) -> []:
     return []
 
 
-def autoTag(baseDir: str, nickname: str, domain: str,
-            wordStr: str, autoTagList: [],
-            appendTags: []):
+def _autoTag(baseDir: str, nickname: str, domain: str,
+             wordStr: str, autoTagList: [],
+             appendTags: []):
     """Generates a list of tags to be automatically appended to the content
     """
     for tagRule in autoTagList:
@@ -719,7 +719,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     maxWordLength = 40
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
-    content = addMusicTag(content, 'nowplaying')
+    content = _addMusicTag(content, 'nowplaying')
     contentSimplified = \
         content.replace(',', ' ').replace(';', ' ').replace('- ', ' ')
     contentSimplified = contentSimplified.replace('. ', ' ').strip()
@@ -760,7 +760,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     # extract mentions and tags from words
     longWordsList = []
     prevWordStr = ''
-    autoTagsList = loadAutoTags(baseDir, nickname, domain)
+    autoTagsList = _loadAutoTags(baseDir, nickname, domain)
     appendTags = []
     for wordStr in words:
         wordLen = len(wordStr)
@@ -769,13 +769,13 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                 longWordsList.append(wordStr)
             firstChar = wordStr[0]
             if firstChar == '@':
-                if addMention(wordStr, httpPrefix, following,
-                              replaceMentions, recipients, hashtags):
+                if _addMention(wordStr, httpPrefix, following,
+                               replaceMentions, recipients, hashtags):
                     prevWordStr = ''
                     continue
             elif firstChar == '#':
-                if addHashTags(wordStr, httpPrefix, originalDomain,
-                               replaceHashTags, hashtags):
+                if _addHashTags(wordStr, httpPrefix, originalDomain,
+                                replaceHashTags, hashtags):
                     prevWordStr = ''
                     continue
             elif ':' in wordStr:
@@ -791,18 +791,18 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                 emojiDict = loadJson(baseDir + '/emoji/emoji.json')
 
 #                print('TAG: looking up emoji for :'+wordStr2+':')
-                addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
-                         originalDomain, replaceEmoji, hashtags,
-                         emojiDict)
+                _addEmoji(baseDir, ':' + wordStr2 + ':', httpPrefix,
+                          originalDomain, replaceEmoji, hashtags,
+                          emojiDict)
             else:
-                if autoTag(baseDir, nickname, domain, wordStr,
-                           autoTagsList, appendTags):
+                if _autoTag(baseDir, nickname, domain, wordStr,
+                            autoTagsList, appendTags):
                     prevWordStr = ''
                     continue
                 if prevWordStr:
-                    if autoTag(baseDir, nickname, domain,
-                               prevWordStr + ' ' + wordStr,
-                               autoTagsList, appendTags):
+                    if _autoTag(baseDir, nickname, domain,
+                                prevWordStr + ' ' + wordStr,
+                                autoTagsList, appendTags):
                         prevWordStr = ''
                         continue
             prevWordStr = wordStr
@@ -810,8 +810,8 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     # add any auto generated tags
     for appended in appendTags:
         content = content + ' ' + appended
-        addHashTags(appended, httpPrefix, originalDomain,
-                    replaceHashTags, hashtags)
+        _addHashTags(appended, httpPrefix, originalDomain,
+                     replaceHashTags, hashtags)
 
     # replace words with their html versions
     for wordStr, replaceStr in replaceMentions.items():

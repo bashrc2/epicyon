@@ -138,14 +138,14 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
                 setHashtagCategory(baseDir, tagName, categoryStr)
 
 
-def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
-                              translate: {},
-                              baseDir: str, httpPrefix: str,
-                              session, cachedWebfingers: {}, personCache: {},
-                              nickname: str, domain: str, port: int,
-                              postJsonObject: {},
-                              allowDeletion: bool, boxname: str,
-                              showPublishedDateOnly: bool) -> None:
+def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
+                               translate: {},
+                               baseDir: str, httpPrefix: str,
+                               session, cachedWebfingers: {}, personCache: {},
+                               nickname: str, domain: str, port: int,
+                               postJsonObject: {},
+                               allowDeletion: bool, boxname: str,
+                               showPublishedDateOnly: bool) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -451,10 +451,10 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
     return filename
 
 
-def inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
-                           recipientsDict: {},
-                           domainMatch: str, domain: str,
-                           actor: str, debug: bool) -> bool:
+def _inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
+                            recipientsDict: {},
+                            domainMatch: str, domain: str,
+                            actor: str, debug: bool) -> bool:
     """Given a list of post recipients (toList) from 'to' or 'cc' parameters
     populate a recipientsDict with the handle for each
     """
@@ -485,9 +485,9 @@ def inboxPostRecipientsAdd(baseDir: str, httpPrefix: str, toList: [],
     return followerRecipients, recipientsDict
 
 
-def inboxPostRecipients(baseDir: str, postJsonObject: {},
-                        httpPrefix: str, domain: str, port: int,
-                        debug: bool) -> ([], []):
+def _inboxPostRecipients(baseDir: str, postJsonObject: {},
+                         httpPrefix: str, domain: str, port: int,
+                         debug: bool) -> ([], []):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -520,11 +520,11 @@ def inboxPostRecipients(baseDir: str, postJsonObject: {},
                 if debug:
                     print('DEBUG: resolving "to"')
                 includesFollowers, recipientsDict = \
-                    inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                           recipientsList,
-                                           recipientsDict,
-                                           domainMatch, domainBase,
-                                           actor, debug)
+                    _inboxPostRecipientsAdd(baseDir, httpPrefix,
+                                            recipientsList,
+                                            recipientsDict,
+                                            domainMatch, domainBase,
+                                            actor, debug)
                 if includesFollowers:
                     followerRecipients = True
             else:
@@ -537,11 +537,11 @@ def inboxPostRecipients(baseDir: str, postJsonObject: {},
                 else:
                     recipientsList = [postJsonObject['object']['cc']]
                 includesFollowers, recipientsDict = \
-                    inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                           recipientsList,
-                                           recipientsDict,
-                                           domainMatch, domainBase,
-                                           actor, debug)
+                    _inboxPostRecipientsAdd(baseDir, httpPrefix,
+                                            recipientsList,
+                                            recipientsDict,
+                                            domainMatch, domainBase,
+                                            actor, debug)
                 if includesFollowers:
                     followerRecipients = True
             else:
@@ -562,11 +562,11 @@ def inboxPostRecipients(baseDir: str, postJsonObject: {},
         else:
             recipientsList = [postJsonObject['to']]
         includesFollowers, recipientsDict = \
-            inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                   recipientsList,
-                                   recipientsDict,
-                                   domainMatch, domainBase,
-                                   actor, debug)
+            _inboxPostRecipientsAdd(baseDir, httpPrefix,
+                                    recipientsList,
+                                    recipientsDict,
+                                    domainMatch, domainBase,
+                                    actor, debug)
         if includesFollowers:
             followerRecipients = True
 
@@ -576,11 +576,11 @@ def inboxPostRecipients(baseDir: str, postJsonObject: {},
         else:
             recipientsList = [postJsonObject['cc']]
         includesFollowers, recipientsDict = \
-            inboxPostRecipientsAdd(baseDir, httpPrefix,
-                                   recipientsList,
-                                   recipientsDict,
-                                   domainMatch, domainBase,
-                                   actor, debug)
+            _inboxPostRecipientsAdd(baseDir, httpPrefix,
+                                    recipientsList,
+                                    recipientsDict,
+                                    domainMatch, domainBase,
+                                    actor, debug)
         if includesFollowers:
             followerRecipients = True
 
@@ -596,10 +596,10 @@ def inboxPostRecipients(baseDir: str, postJsonObject: {},
     return recipientsDict, recipientsDictFollowers
 
 
-def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
-                      port: int, messageJson: {},
-                      federationList: [],
-                      debug: bool) -> bool:
+def _receiveUndoFollow(session, baseDir: str, httpPrefix: str,
+                       port: int, messageJson: {},
+                       federationList: [],
+                       debug: bool) -> bool:
     if not messageJson['object'].get('actor'):
         if debug:
             print('DEBUG: follow request has no actor within object')
@@ -653,11 +653,11 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
     return False
 
 
-def receiveUndo(session, baseDir: str, httpPrefix: str,
-                port: int, sendThreads: [], postLog: [],
-                cachedWebfingers: {}, personCache: {},
-                messageJson: {}, federationList: [],
-                debug: bool) -> bool:
+def _receiveUndo(session, baseDir: str, httpPrefix: str,
+                 port: int, sendThreads: [], postLog: [],
+                 cachedWebfingers: {}, personCache: {},
+                 messageJson: {}, federationList: [],
+                 debug: bool) -> bool:
     """Receives an undo request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Undo'):
@@ -698,17 +698,17 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
                   ' object within object is not a string')
         return False
     if messageJson['object']['type'] == 'Follow':
-        return receiveUndoFollow(session, baseDir, httpPrefix,
-                                 port, messageJson,
-                                 federationList, debug)
+        return _receiveUndoFollow(session, baseDir, httpPrefix,
+                                  port, messageJson,
+                                  federationList, debug)
     return False
 
 
-def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
-                     httpPrefix: str, domain: str, port: int,
-                     sendThreads: [], postLog: [], cachedWebfingers: {},
-                     personCache: {}, messageJson: {}, federationList: [],
-                     nickname: str, debug: bool) -> bool:
+def _receiveEventPost(recentPostsCache: {}, session, baseDir: str,
+                      httpPrefix: str, domain: str, port: int,
+                      sendThreads: [], postLog: [], cachedWebfingers: {},
+                      personCache: {}, messageJson: {}, federationList: [],
+                      nickname: str, debug: bool) -> bool:
     """Receive a mobilizon-type event activity
     See https://framagit.org/framasoft/mobilizon/-/blob/
     master/lib/federation/activity_stream/converter/event.ex
@@ -723,11 +723,12 @@ def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
     saveEventPost(baseDir, handle, postId, messageJson['object'])
 
 
-def personReceiveUpdate(baseDir: str,
-                        domain: str, port: int,
-                        updateNickname: str, updateDomain: str,
-                        updatePort: int,
-                        personJson: {}, personCache: {}, debug: bool) -> bool:
+def _personReceiveUpdate(baseDir: str,
+                         domain: str, port: int,
+                         updateNickname: str, updateDomain: str,
+                         updatePort: int,
+                         personJson: {}, personCache: {},
+                         debug: bool) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
     print('Receiving actor update for ' + personJson['url'] +
@@ -795,8 +796,9 @@ def personReceiveUpdate(baseDir: str,
     return True
 
 
-def receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
-                            baseDir: str, nickname: str, domain: str) -> None:
+def _receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
+                             baseDir: str,
+                             nickname: str, domain: str) -> None:
     """Updating a question as new votes arrive
     """
     # message url of the question
@@ -832,11 +834,11 @@ def receiveUpdateToQuestion(recentPostsCache: {}, messageJson: {},
     removePostFromCache(messageJson, recentPostsCache)
 
 
-def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
-                  httpPrefix: str, domain: str, port: int,
-                  sendThreads: [], postLog: [], cachedWebfingers: {},
-                  personCache: {}, messageJson: {}, federationList: [],
-                  nickname: str, debug: bool) -> bool:
+def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
+                   httpPrefix: str, domain: str, port: int,
+                   sendThreads: [], postLog: [], cachedWebfingers: {},
+                   personCache: {}, messageJson: {}, federationList: [],
+                   nickname: str, debug: bool) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Update':
@@ -867,8 +869,8 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
         return False
 
     if messageJson['object']['type'] == 'Question':
-        receiveUpdateToQuestion(recentPostsCache, messageJson,
-                                baseDir, nickname, domain)
+        _receiveUpdateToQuestion(recentPostsCache, messageJson,
+                                 baseDir, nickname, domain)
         if debug:
             print('DEBUG: Question update was received')
         return True
@@ -880,10 +882,10 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
             if updateNickname:
                 updateDomain, updatePort = \
                     getDomainFromActor(messageJson['id'])
-                if personReceiveUpdate(baseDir, domain, port,
-                                       updateNickname, updateDomain,
-                                       updatePort, messageJson,
-                                       personCache, debug):
+                if _personReceiveUpdate(baseDir, domain, port,
+                                        updateNickname, updateDomain,
+                                        updatePort, messageJson,
+                                        personCache, debug):
                     if debug:
                         print('DEBUG: ' +
                               'Unwrapped profile update was received for ' +
@@ -901,12 +903,12 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
             if updateNickname:
                 updateDomain, updatePort = \
                     getDomainFromActor(messageJson['actor'])
-                if personReceiveUpdate(baseDir,
-                                       domain, port,
-                                       updateNickname, updateDomain,
-                                       updatePort,
-                                       messageJson['object'],
-                                       personCache, debug):
+                if _personReceiveUpdate(baseDir,
+                                        domain, port,
+                                        updateNickname, updateDomain,
+                                        updatePort,
+                                        messageJson['object'],
+                                        personCache, debug):
                     if debug:
                         print('DEBUG: Profile update was received for ' +
                               messageJson['object']['url'])
@@ -914,13 +916,13 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
     return False
 
 
-def receiveLike(recentPostsCache: {},
-                session, handle: str, isGroup: bool, baseDir: str,
-                httpPrefix: str, domain: str, port: int,
-                onionDomain: str,
-                sendThreads: [], postLog: [], cachedWebfingers: {},
-                personCache: {}, messageJson: {}, federationList: [],
-                debug: bool) -> bool:
+def _receiveLike(recentPostsCache: {},
+                 session, handle: str, isGroup: bool, baseDir: str,
+                 httpPrefix: str, domain: str, port: int,
+                 onionDomain: str,
+                 sendThreads: [], postLog: [], cachedWebfingers: {},
+                 personCache: {}, messageJson: {}, federationList: [],
+                 debug: bool) -> bool:
     """Receives a Like activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Like':
@@ -968,25 +970,25 @@ def receiveLike(recentPostsCache: {},
     if debug:
         print('DEBUG: liked post found in inbox')
 
-    if not alreadyLiked(baseDir,
-                        handle.split('@')[0],
-                        handle.split('@')[1],
-                        messageJson['object'],
-                        messageJson['actor']):
+    if not _alreadyLiked(baseDir,
+                         handle.split('@')[0],
+                         handle.split('@')[1],
+                         messageJson['object'],
+                         messageJson['actor']):
         updateLikesCollection(recentPostsCache, baseDir, postFilename,
                               messageJson['object'],
                               messageJson['actor'], domain, debug)
-        likeNotify(baseDir, domain, onionDomain, handle,
-                   messageJson['actor'], messageJson['object'])
+        _likeNotify(baseDir, domain, onionDomain, handle,
+                    messageJson['actor'], messageJson['object'])
     return True
 
 
-def receiveUndoLike(recentPostsCache: {},
-                    session, handle: str, isGroup: bool, baseDir: str,
-                    httpPrefix: str, domain: str, port: int,
-                    sendThreads: [], postLog: [], cachedWebfingers: {},
-                    personCache: {}, messageJson: {}, federationList: [],
-                    debug: bool) -> bool:
+def _receiveUndoLike(recentPostsCache: {},
+                     session, handle: str, isGroup: bool, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     sendThreads: [], postLog: [], cachedWebfingers: {},
+                     personCache: {}, messageJson: {}, federationList: [],
+                     debug: bool) -> bool:
     """Receives an undo like activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Undo':
@@ -1042,12 +1044,12 @@ def receiveUndoLike(recentPostsCache: {},
     return True
 
 
-def receiveBookmark(recentPostsCache: {},
-                    session, handle: str, isGroup: bool, baseDir: str,
-                    httpPrefix: str, domain: str, port: int,
-                    sendThreads: [], postLog: [], cachedWebfingers: {},
-                    personCache: {}, messageJson: {}, federationList: [],
-                    debug: bool) -> bool:
+def _receiveBookmark(recentPostsCache: {},
+                     session, handle: str, isGroup: bool, baseDir: str,
+                     httpPrefix: str, domain: str, port: int,
+                     sendThreads: [], postLog: [], cachedWebfingers: {},
+                     personCache: {}, messageJson: {}, federationList: [],
+                     debug: bool) -> bool:
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Bookmark':
@@ -1108,12 +1110,12 @@ def receiveBookmark(recentPostsCache: {},
     return True
 
 
-def receiveUndoBookmark(recentPostsCache: {},
-                        session, handle: str, isGroup: bool, baseDir: str,
-                        httpPrefix: str, domain: str, port: int,
-                        sendThreads: [], postLog: [], cachedWebfingers: {},
-                        personCache: {}, messageJson: {}, federationList: [],
-                        debug: bool) -> bool:
+def _receiveUndoBookmark(recentPostsCache: {},
+                         session, handle: str, isGroup: bool, baseDir: str,
+                         httpPrefix: str, domain: str, port: int,
+                         sendThreads: [], postLog: [], cachedWebfingers: {},
+                         personCache: {}, messageJson: {}, federationList: [],
+                         debug: bool) -> bool:
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Undo':
@@ -1177,12 +1179,12 @@ def receiveUndoBookmark(recentPostsCache: {},
     return True
 
 
-def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
-                  httpPrefix: str, domain: str, port: int,
-                  sendThreads: [], postLog: [], cachedWebfingers: {},
-                  personCache: {}, messageJson: {}, federationList: [],
-                  debug: bool, allowDeletion: bool,
-                  recentPostsCache: {}) -> bool:
+def _receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
+                   httpPrefix: str, domain: str, port: int,
+                   sendThreads: [], postLog: [], cachedWebfingers: {},
+                   personCache: {}, messageJson: {}, federationList: [],
+                   debug: bool, allowDeletion: bool,
+                   recentPostsCache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Delete':
@@ -1263,13 +1265,14 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
     return True
 
 
-def receiveAnnounce(recentPostsCache: {},
-                    session, handle: str, isGroup: bool, baseDir: str,
-                    httpPrefix: str, domain: str, onionDomain: str, port: int,
-                    sendThreads: [], postLog: [], cachedWebfingers: {},
-                    personCache: {}, messageJson: {}, federationList: [],
-                    debug: bool, translate: {},
-                    YTReplacementDomain: str) -> bool:
+def _receiveAnnounce(recentPostsCache: {},
+                     session, handle: str, isGroup: bool, baseDir: str,
+                     httpPrefix: str,
+                     domain: str, onionDomain: str, port: int,
+                     sendThreads: [], postLog: [], cachedWebfingers: {},
+                     personCache: {}, messageJson: {}, federationList: [],
+                     debug: bool, translate: {},
+                     YTReplacementDomain: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1410,12 +1413,12 @@ def receiveAnnounce(recentPostsCache: {},
     return True
 
 
-def receiveUndoAnnounce(recentPostsCache: {},
-                        session, handle: str, isGroup: bool, baseDir: str,
-                        httpPrefix: str, domain: str, port: int,
-                        sendThreads: [], postLog: [], cachedWebfingers: {},
-                        personCache: {}, messageJson: {}, federationList: [],
-                        debug: bool) -> bool:
+def _receiveUndoAnnounce(recentPostsCache: {},
+                         session, handle: str, isGroup: bool, baseDir: str,
+                         httpPrefix: str, domain: str, port: int,
+                         sendThreads: [], postLog: [], cachedWebfingers: {},
+                         personCache: {}, messageJson: {}, federationList: [],
+                         debug: bool) -> bool:
     """Receives an undo announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Undo':
@@ -1482,7 +1485,7 @@ def jsonPostAllowsComments(postJsonObject: {}) -> bool:
     return True
 
 
-def postAllowsComments(postFilename: str) -> bool:
+def _postAllowsComments(postFilename: str) -> bool:
     """Returns true if the given post allows comments/replies
     """
     postJsonObject = loadJson(postFilename)
@@ -1533,7 +1536,7 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
         if debug:
             print('DEBUG: post may have expired - ' + replyTo)
         return False
-    if not postAllowsComments(postFilename):
+    if not _postAllowsComments(postFilename):
         if debug:
             print('DEBUG: post does not allow comments - ' + replyTo)
         return False
@@ -1555,21 +1558,21 @@ def populateReplies(baseDir: str, httpPrefix: str, domain: str,
     return True
 
 
-def estimateNumberOfMentions(content: str) -> int:
+def _estimateNumberOfMentions(content: str) -> int:
     """Returns a rough estimate of the number of mentions
     """
     return int(content.count('@') / 2)
 
 
-def estimateNumberOfEmoji(content: str) -> int:
+def _estimateNumberOfEmoji(content: str) -> int:
     """Returns a rough estimate of the number of emoji
     """
     return int(content.count(':') / 2)
 
 
-def validPostContent(baseDir: str, nickname: str, domain: str,
-                     messageJson: {}, maxMentions: int, maxEmoji: int,
-                     allowLocalNetworkAccess: bool) -> bool:
+def _validPostContent(baseDir: str, nickname: str, domain: str,
+                      messageJson: {}, maxMentions: int, maxEmoji: int,
+                      allowLocalNetworkAccess: bool) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1615,14 +1618,14 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
         return False
 
     # check (rough) number of mentions
-    mentionsEst = estimateNumberOfMentions(messageJson['object']['content'])
+    mentionsEst = _estimateNumberOfMentions(messageJson['object']['content'])
     if mentionsEst > maxMentions:
         if messageJson['object'].get('id'):
             print('REJECT HELLTHREAD: ' + messageJson['object']['id'])
         print('REJECT HELLTHREAD: Too many mentions in post - ' +
               messageJson['object']['content'])
         return False
-    if estimateNumberOfEmoji(messageJson['object']['content']) > maxEmoji:
+    if _estimateNumberOfEmoji(messageJson['object']['content']) > maxEmoji:
         if messageJson['object'].get('id'):
             print('REJECT EMOJI OVERLOAD: ' + messageJson['object']['id'])
         print('REJECT EMOJI OVERLOAD: Too many emoji in post - ' +
@@ -1650,7 +1653,7 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
             postPostFilename = locatePost(baseDir, nickname, domain,
                                           originalPostId)
             if postPostFilename:
-                if not postAllowsComments(postPostFilename):
+                if not _postAllowsComments(postPostFilename):
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + originalPostId)
                     return False
@@ -1658,9 +1661,9 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
-                             domain: str, onionDomain: str, personCache: {},
-                             postJsonObject: {}, debug: bool) -> None:
+def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
+                              domain: str, onionDomain: str, personCache: {},
+                              postJsonObject: {}, debug: bool) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
@@ -1708,7 +1711,7 @@ def obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
         time.sleep(5)
 
 
-def dmNotify(baseDir: str, handle: str, url: str) -> None:
+def _dmNotify(baseDir: str, handle: str, url: str) -> None:
     """Creates a notification that a new DM has arrived
     """
     accountDir = baseDir + '/accounts/' + handle
@@ -1720,8 +1723,8 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
-def alreadyLiked(baseDir: str, nickname: str, domain: str,
-                 postUrl: str, likerActor: str) -> bool:
+def _alreadyLiked(baseDir: str, nickname: str, domain: str,
+                  postUrl: str, likerActor: str) -> bool:
     """Is the given post already liked by the given handle?
     """
     postFilename = \
@@ -1751,8 +1754,8 @@ def alreadyLiked(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def likeNotify(baseDir: str, domain: str, onionDomain: str,
-               handle: str, actor: str, url: str) -> None:
+def _likeNotify(baseDir: str, domain: str, onionDomain: str,
+                handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
     # This is not you liking your own post
@@ -1784,7 +1787,7 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
     if likerNickname and likerDomain:
         likerHandle = likerNickname + '@' + likerDomain
     else:
-        print('likeNotify likerHandle: ' +
+        print('_likeNotify likerHandle: ' +
               str(likerNickname) + '@' + str(likerDomain))
         likerHandle = actor
     if likerHandle != handle:
@@ -1813,7 +1816,7 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
             pass
 
 
-def replyNotify(baseDir: str, handle: str, url: str) -> None:
+def _replyNotify(baseDir: str, handle: str, url: str) -> None:
     """Creates a notification that a new reply has arrived
     """
     accountDir = baseDir + '/accounts/' + handle
@@ -1825,9 +1828,9 @@ def replyNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
-def gitPatchNotify(baseDir: str, handle: str,
-                   subject: str, content: str,
-                   fromNickname: str, fromDomain: str) -> None:
+def _gitPatchNotify(baseDir: str, handle: str,
+                    subject: str, content: str,
+                    fromNickname: str, fromDomain: str) -> None:
     """Creates a notification that a new git patch has arrived
     """
     accountDir = baseDir + '/accounts/' + handle
@@ -1840,7 +1843,7 @@ def gitPatchNotify(baseDir: str, handle: str,
         fp.write('git ' + handle + ' ' + subject)
 
 
-def groupHandle(baseDir: str, handle: str) -> bool:
+def _groupHandle(baseDir: str, handle: str) -> bool:
     """Is the given account handle a group?
     """
     actorFile = baseDir + '/accounts/' + handle + '.json'
@@ -1852,7 +1855,7 @@ def groupHandle(baseDir: str, handle: str) -> bool:
     return actorJson['type'] == 'Group'
 
 
-def getGroupName(baseDir: str, handle: str) -> str:
+def _getGroupName(baseDir: str, handle: str) -> str:
     """Returns the preferred name of a group
     """
     actorFile = baseDir + '/accounts/' + handle + '.json'
@@ -1864,11 +1867,11 @@ def getGroupName(baseDir: str, handle: str) -> str:
     return actorJson['name']
 
 
-def sendToGroupMembers(session, baseDir: str, handle: str, port: int,
-                       postJsonObject: {},
-                       httpPrefix: str, federationList: [],
-                       sendThreads: [], postLog: [], cachedWebfingers: {},
-                       personCache: {}, debug: bool) -> None:
+def _sendToGroupMembers(session, baseDir: str, handle: str, port: int,
+                        postJsonObject: {},
+                        httpPrefix: str, federationList: [],
+                        sendThreads: [], postLog: [], cachedWebfingers: {},
+                        personCache: {}, debug: bool) -> None:
     """When a post arrives for a group send it out to the group members
     """
     followersFile = baseDir + '/accounts/' + handle + '/followers.txt'
@@ -1877,7 +1880,7 @@ def sendToGroupMembers(session, baseDir: str, handle: str, port: int,
     if not postJsonObject.get('object'):
         return
     nickname = handle.split('@')[0]
-#    groupname = getGroupName(baseDir, handle)
+#    groupname = _getGroupName(baseDir, handle)
     domain = handle.split('@')[1]
     domainFull = getFullDomain(domain, port)
     # set sender
@@ -1941,7 +1944,8 @@ def sendToGroupMembers(session, baseDir: str, handle: str, port: int,
                                personCache, debug, __version__)
 
 
-def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
+def _inboxUpdateCalendar(baseDir: str, handle: str,
+                         postJsonObject: {}) -> None:
     """Detects whether the tag list on a post contains calendar events
     and if so saves the post id to a file in the calendar directory
     for the account
@@ -2017,7 +2021,7 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
     return False
 
 
-def updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
+def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
     """Updates the time when the given handle last saw the given actor
     This can later be used to indicate if accounts are dormant/abandoned/moved
     """
@@ -2049,127 +2053,125 @@ def updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
         lastSeenFile.write(str(daysSinceEpoch))
 
 
-def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
-                      session, keyId: str, handle: str, messageJson: {},
-                      baseDir: str, httpPrefix: str, sendThreads: [],
-                      postLog: [], cachedWebfingers: {}, personCache: {},
-                      queue: [], domain: str,
-                      onionDomain: str, i2pDomain: str,
-                      port: int, proxyType: str,
-                      federationList: [], debug: bool,
-                      queueFilename: str, destinationFilename: str,
-                      maxReplies: int, allowDeletion: bool,
-                      maxMentions: int, maxEmoji: int, translate: {},
-                      unitTest: bool, YTReplacementDomain: str,
-                      showPublishedDateOnly: bool,
-                      allowLocalNetworkAccess: bool) -> bool:
+def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
+                       session, keyId: str, handle: str, messageJson: {},
+                       baseDir: str, httpPrefix: str, sendThreads: [],
+                       postLog: [], cachedWebfingers: {}, personCache: {},
+                       queue: [], domain: str,
+                       onionDomain: str, i2pDomain: str,
+                       port: int, proxyType: str,
+                       federationList: [], debug: bool,
+                       queueFilename: str, destinationFilename: str,
+                       maxReplies: int, allowDeletion: bool,
+                       maxMentions: int, maxEmoji: int, translate: {},
+                       unitTest: bool, YTReplacementDomain: str,
+                       showPublishedDateOnly: bool,
+                       allowLocalNetworkAccess: bool) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
     if '#' in actor:
         actor = keyId.split('#')[0]
 
-    updateLastSeen(baseDir, handle, actor)
+    _updateLastSeen(baseDir, handle, actor)
 
-    isGroup = groupHandle(baseDir, handle)
+    isGroup = _groupHandle(baseDir, handle)
 
-    if receiveLike(recentPostsCache,
-                   session, handle, isGroup,
-                   baseDir, httpPrefix,
-                   domain, port,
-                   onionDomain,
-                   sendThreads, postLog,
-                   cachedWebfingers,
-                   personCache,
-                   messageJson,
-                   federationList,
-                   debug):
+    if _receiveLike(recentPostsCache,
+                    session, handle, isGroup,
+                    baseDir, httpPrefix,
+                    domain, port,
+                    onionDomain,
+                    sendThreads, postLog,
+                    cachedWebfingers,
+                    personCache,
+                    messageJson,
+                    federationList,
+                    debug):
         if debug:
             print('DEBUG: Like accepted from ' + actor)
         return False
 
-    if receiveUndoLike(recentPostsCache,
-                       session, handle, isGroup,
-                       baseDir, httpPrefix,
-                       domain, port,
-                       sendThreads, postLog,
-                       cachedWebfingers,
-                       personCache,
-                       messageJson,
-                       federationList,
-                       debug):
+    if _receiveUndoLike(recentPostsCache,
+                        session, handle, isGroup,
+                        baseDir, httpPrefix,
+                        domain, port,
+                        sendThreads, postLog,
+                        cachedWebfingers,
+                        personCache,
+                        messageJson,
+                        federationList,
+                        debug):
         if debug:
             print('DEBUG: Undo like accepted from ' + actor)
         return False
 
-    if receiveBookmark(recentPostsCache,
-                       session, handle, isGroup,
-                       baseDir, httpPrefix,
-                       domain, port,
-                       sendThreads, postLog,
-                       cachedWebfingers,
-                       personCache,
-                       messageJson,
-                       federationList,
-                       debug):
+    if _receiveBookmark(recentPostsCache,
+                        session, handle, isGroup,
+                        baseDir, httpPrefix,
+                        domain, port,
+                        sendThreads, postLog,
+                        cachedWebfingers,
+                        personCache,
+                        messageJson,
+                        federationList,
+                        debug):
         if debug:
             print('DEBUG: Bookmark accepted from ' + actor)
         return False
 
-    if receiveUndoBookmark(recentPostsCache,
-                           session, handle, isGroup,
-                           baseDir, httpPrefix,
-                           domain, port,
-                           sendThreads, postLog,
-                           cachedWebfingers,
-                           personCache,
-                           messageJson,
-                           federationList,
-                           debug):
+    if _receiveUndoBookmark(recentPostsCache,
+                            session, handle, isGroup,
+                            baseDir, httpPrefix,
+                            domain, port,
+                            sendThreads, postLog,
+                            cachedWebfingers,
+                            personCache,
+                            messageJson,
+                            federationList,
+                            debug):
         if debug:
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
 
-    # labelAccusatoryPost(messageJson, translate)
-
-    if receiveAnnounce(recentPostsCache,
-                       session, handle, isGroup,
-                       baseDir, httpPrefix,
-                       domain, onionDomain, port,
-                       sendThreads, postLog,
-                       cachedWebfingers,
-                       personCache,
-                       messageJson,
-                       federationList,
-                       debug, translate,
-                       YTReplacementDomain):
+    if _receiveAnnounce(recentPostsCache,
+                        session, handle, isGroup,
+                        baseDir, httpPrefix,
+                        domain, onionDomain, port,
+                        sendThreads, postLog,
+                        cachedWebfingers,
+                        personCache,
+                        messageJson,
+                        federationList,
+                        debug, translate,
+                        YTReplacementDomain):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
-    if receiveUndoAnnounce(recentPostsCache,
-                           session, handle, isGroup,
-                           baseDir, httpPrefix,
-                           domain, port,
-                           sendThreads, postLog,
-                           cachedWebfingers,
-                           personCache,
-                           messageJson,
-                           federationList,
-                           debug):
+    if _receiveUndoAnnounce(recentPostsCache,
+                            session, handle, isGroup,
+                            baseDir, httpPrefix,
+                            domain, port,
+                            sendThreads, postLog,
+                            cachedWebfingers,
+                            personCache,
+                            messageJson,
+                            federationList,
+                            debug):
         if debug:
             print('DEBUG: Undo announce accepted from ' + actor)
         return False
 
-    if receiveDelete(session, handle, isGroup,
-                     baseDir, httpPrefix,
-                     domain, port,
-                     sendThreads, postLog,
-                     cachedWebfingers,
-                     personCache,
-                     messageJson,
-                     federationList,
-                     debug, allowDeletion,
-                     recentPostsCache):
+    if _receiveDelete(session, handle, isGroup,
+                      baseDir, httpPrefix,
+                      domain, port,
+                      sendThreads, postLog,
+                      cachedWebfingers,
+                      personCache,
+                      messageJson,
+                      federationList,
+                      debug, allowDeletion,
+                      recentPostsCache):
         if debug:
             print('DEBUG: Delete accepted from ' + actor)
         return False
@@ -2188,9 +2190,9 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
         postJsonObject = messageJson
 
     nickname = handle.split('@')[0]
-    if validPostContent(baseDir, nickname, domain,
-                        postJsonObject, maxMentions, maxEmoji,
-                        allowLocalNetworkAccess):
+    if _validPostContent(baseDir, nickname, domain,
+                         postJsonObject, maxMentions, maxEmoji,
+                         allowLocalNetworkAccess):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -2213,10 +2215,10 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                        jsonObj['summary'],
                                        jsonObj['content'],
                                        fromNickname, fromDomain):
-                        gitPatchNotify(baseDir, handle,
-                                       jsonObj['summary'],
-                                       jsonObj['content'],
-                                       fromNickname, fromDomain)
+                        _gitPatchNotify(baseDir, handle,
+                                        jsonObj['summary'],
+                                        jsonObj['content'],
+                                        fromNickname, fromDomain)
                     elif '[PATCH]' in jsonObj['content']:
                         print('WARN: git patch not accepted - ' +
                               jsonObj['summary'])
@@ -2293,9 +2295,9 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             return False
                     # dm index will be updated
                     updateIndexList.append('dm')
-                    dmNotify(baseDir, handle,
-                             httpPrefix + '://' + domain + '/users/' +
-                             nickname + '/dm')
+                    _dmNotify(baseDir, handle,
+                              httpPrefix + '://' + domain + '/users/' +
+                              nickname + '/dm')
 
             # get the actor being replied to
             domainFull = getFullDomain(domain, port)
@@ -2313,10 +2315,10 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             if isinstance(inReplyTo, str):
                                 if not isMuted(baseDir, nickname, domain,
                                                inReplyTo):
-                                    replyNotify(baseDir, handle,
-                                                httpPrefix + '://' + domain +
-                                                '/users/' + nickname +
-                                                '/tlreplies')
+                                    _replyNotify(baseDir, handle,
+                                                 httpPrefix + '://' + domain +
+                                                 '/users/' + nickname +
+                                                 '/tlreplies')
                                 else:
                                     isReplyToMutedPost = True
 
@@ -2333,9 +2335,9 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 updateIndexList.append('tlevents')
 
         # get the avatar for a reply/announce
-        obtainAvatarForReplyPost(session, baseDir,
-                                 httpPrefix, domain, onionDomain,
-                                 personCache, postJsonObject, debug)
+        _obtainAvatarForReplyPost(session, baseDir,
+                                  httpPrefix, domain, onionDomain,
+                                  personCache, postJsonObject, debug)
 
         # save the post to file
         if saveJson(postJsonObject, destinationFilename):
@@ -2359,18 +2361,18 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             print('Saving inbox post as html to cache')
 
                         htmlCacheStartTime = time.time()
-                        inboxStorePostToHtmlCache(recentPostsCache,
-                                                  maxRecentPosts,
-                                                  translate, baseDir,
-                                                  httpPrefix,
-                                                  session, cachedWebfingers,
-                                                  personCache,
-                                                  handle.split('@')[0],
-                                                  domain, port,
-                                                  postJsonObject,
-                                                  allowDeletion,
-                                                  boxname,
-                                                  showPublishedDateOnly)
+                        _inboxStorePostToHtmlCache(recentPostsCache,
+                                                   maxRecentPosts,
+                                                   translate, baseDir,
+                                                   httpPrefix,
+                                                   session, cachedWebfingers,
+                                                   personCache,
+                                                   handle.split('@')[0],
+                                                   domain, port,
+                                                   postJsonObject,
+                                                   allowDeletion,
+                                                   boxname,
+                                                   showPublishedDateOnly)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2379,17 +2381,17 @@ def inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                   ' post as html to cache in ' +
                                   timeDiff + ' mS')
 
-            inboxUpdateCalendar(baseDir, handle, postJsonObject)
+            _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
             storeHashTags(baseDir, handle.split('@')[0], postJsonObject)
 
             # send the post out to group members
             if isGroup:
-                sendToGroupMembers(session, baseDir, handle, port,
-                                   postJsonObject,
-                                   httpPrefix, federationList, sendThreads,
-                                   postLog, cachedWebfingers, personCache,
-                                   debug)
+                _sendToGroupMembers(session, baseDir, handle, port,
+                                    postJsonObject,
+                                    httpPrefix, federationList, sendThreads,
+                                    postLog, cachedWebfingers, personCache,
+                                    debug)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
@@ -2420,7 +2422,7 @@ def clearQueueItems(baseDir: str, queue: []) -> None:
         print('Removed ' + str(ctr) + ' inbox queue items')
 
 
-def restoreQueueItems(baseDir: str, queue: []) -> None:
+def _restoreQueueItems(baseDir: str, queue: []) -> None:
     """Checks the queue for each account and appends filenames
     """
     queue.clear()
@@ -2483,7 +2485,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
     # if queue processing was interrupted (eg server crash)
     # then this loads any outstanding items back into the queue
-    restoreQueueItems(baseDir, queue)
+    _restoreQueueItems(baseDir, queue)
 
     # keep track of numbers of incoming posts per day
     quotasLastUpdateDaily = int(time.time())
@@ -2515,7 +2517,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             queueRestoreCtr += 1
             if queueRestoreCtr >= 30:
                 queueRestoreCtr = 0
-                restoreQueueItems(baseDir, queue)
+                _restoreQueueItems(baseDir, queue)
             continue
 
         currTime = int(time.time())
@@ -2731,14 +2733,14 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # if queueJson['post'].get('id'):
         #     queueJson['post']['id']=queueJson['id']
 
-        if receiveUndo(session,
-                       baseDir, httpPrefix, port,
-                       sendThreads, postLog,
-                       cachedWebfingers,
-                       personCache,
-                       queueJson['post'],
-                       federationList,
-                       debug):
+        if _receiveUndo(session,
+                        baseDir, httpPrefix, port,
+                        sendThreads, postLog,
+                        cachedWebfingers,
+                        personCache,
+                        queueJson['post'],
+                        federationList,
+                        debug):
             print('Queue: Undo accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
@@ -2782,16 +2784,16 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        if receiveEventPost(recentPostsCache, session,
-                            baseDir, httpPrefix,
-                            domain, port,
-                            sendThreads, postLog,
-                            cachedWebfingers,
-                            personCache,
-                            queueJson['post'],
-                            federationList,
-                            queueJson['postNickname'],
-                            debug):
+        if _receiveEventPost(recentPostsCache, session,
+                             baseDir, httpPrefix,
+                             domain, port,
+                             sendThreads, postLog,
+                             cachedWebfingers,
+                             personCache,
+                             queueJson['post'],
+                             federationList,
+                             queueJson['postNickname'],
+                             debug):
             print('Queue: Event activity accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
@@ -2799,16 +2801,16 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        if receiveUpdate(recentPostsCache, session,
-                         baseDir, httpPrefix,
-                         domain, port,
-                         sendThreads, postLog,
-                         cachedWebfingers,
-                         personCache,
-                         queueJson['post'],
-                         federationList,
-                         queueJson['postNickname'],
-                         debug):
+        if _receiveUpdate(recentPostsCache, session,
+                          baseDir, httpPrefix,
+                          domain, port,
+                          sendThreads, postLog,
+                          cachedWebfingers,
+                          personCache,
+                          queueJson['post'],
+                          federationList,
+                          queueJson['postNickname'],
+                          debug):
             print('Queue: Update accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
@@ -2818,8 +2820,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
         # get recipients list
         recipientsDict, recipientsDictFollowers = \
-            inboxPostRecipients(baseDir, queueJson['post'],
-                                httpPrefix, domain, port, debug)
+            _inboxPostRecipients(baseDir, queueJson['post'],
+                                 httpPrefix, domain, port, debug)
         if len(recipientsDict.items()) == 0 and \
            len(recipientsDictFollowers.items()) == 0:
             print('Queue: no recipients were resolved ' +
@@ -2866,26 +2868,26 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         for handle, capsId in recipientsDict.items():
             destination = \
                 queueJson['destination'].replace(inboxHandle, handle)
-            inboxAfterInitial(recentPostsCache,
-                              maxRecentPosts,
-                              session, keyId, handle,
-                              queueJson['post'],
-                              baseDir, httpPrefix,
-                              sendThreads, postLog,
-                              cachedWebfingers,
-                              personCache, queue,
-                              domain,
-                              onionDomain, i2pDomain,
-                              port, proxyType,
-                              federationList,
-                              debug,
-                              queueFilename, destination,
-                              maxReplies, allowDeletion,
-                              maxMentions, maxEmoji,
-                              translate, unitTest,
-                              YTReplacementDomain,
-                              showPublishedDateOnly,
-                              allowLocalNetworkAccess)
+            _inboxAfterInitial(recentPostsCache,
+                               maxRecentPosts,
+                               session, keyId, handle,
+                               queueJson['post'],
+                               baseDir, httpPrefix,
+                               sendThreads, postLog,
+                               cachedWebfingers,
+                               personCache, queue,
+                               domain,
+                               onionDomain, i2pDomain,
+                               port, proxyType,
+                               federationList,
+                               debug,
+                               queueFilename, destination,
+                               maxReplies, allowDeletion,
+                               maxMentions, maxEmoji,
+                               translate, unitTest,
+                               YTReplacementDomain,
+                               showPublishedDateOnly,
+                               allowLocalNetworkAccess)
             if debug:
                 pprint(queueJson['post'])
 

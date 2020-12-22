@@ -167,7 +167,7 @@ def getContentWarningButton(postID: str, translate: {},
         '</div></details>\n'
 
 
-def getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
+def _getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
     """Returns a url property from an actor
     """
     if not actorJson.get('attachment'):
@@ -206,10 +206,10 @@ def getActorPropertyUrl(actorJson: {}, propertyName: str) -> str:
 def getBlogAddress(actorJson: {}) -> str:
     """Returns blog address for the given actor
     """
-    return getActorPropertyUrl(actorJson, 'Blog')
+    return _getActorPropertyUrl(actorJson, 'Blog')
 
 
-def setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
+def _setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
     """Sets a url for the given actor property
     """
     if not actorJson.get('attachment'):
@@ -269,7 +269,7 @@ def setActorPropertyUrl(actorJson: {}, propertyName: str, url: str) -> None:
 def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     """Sets an blog address for the given actor
     """
-    setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
+    _setActorPropertyUrl(actorJson, 'Blog', removeHtml(blogAddress))
 
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
@@ -475,8 +475,8 @@ def postContainsPublic(postJsonObject: {}) -> bool:
     return containsPublic
 
 
-def getImageFile(baseDir: str, name: str, directory: str,
-                 nickname: str, domain: str, theme: str) -> (str, str):
+def _getImageFile(baseDir: str, name: str, directory: str,
+                  nickname: str, domain: str, theme: str) -> (str, str):
     """
     returns the filenames for an image with the given name
     """
@@ -495,30 +495,30 @@ def getImageFile(baseDir: str, name: str, directory: str,
 
 def getBannerFile(baseDir: str,
                   nickname: str, domain: str, theme: str) -> (str, str):
-    return getImageFile(baseDir, 'banner',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain, theme)
+    return _getImageFile(baseDir, 'banner',
+                         baseDir + '/accounts/' + nickname + '@' + domain,
+                         nickname, domain, theme)
 
 
 def getSearchBannerFile(baseDir: str,
                         nickname: str, domain: str, theme: str) -> (str, str):
-    return getImageFile(baseDir, 'search_banner',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain, theme)
+    return _getImageFile(baseDir, 'search_banner',
+                         baseDir + '/accounts/' + nickname + '@' + domain,
+                         nickname, domain, theme)
 
 
 def getLeftImageFile(baseDir: str,
                      nickname: str, domain: str, theme: str) -> (str, str):
-    return getImageFile(baseDir, 'left_col_image',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain, theme)
+    return _getImageFile(baseDir, 'left_col_image',
+                         baseDir + '/accounts/' + nickname + '@' + domain,
+                         nickname, domain, theme)
 
 
 def getRightImageFile(baseDir: str,
                       nickname: str, domain: str, theme: str) -> (str, str):
-    return getImageFile(baseDir, 'right_col_image',
-                        baseDir + '/accounts/' + nickname + '@' + domain,
-                        nickname, domain, theme)
+    return _getImageFile(baseDir, 'right_col_image',
+                         baseDir + '/accounts/' + nickname + '@' + domain,
+                         nickname, domain, theme)
 
 
 def htmlHeaderWithExternalStyle(cssFilename: str, lang='en') -> str:

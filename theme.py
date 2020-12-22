@@ -14,7 +14,7 @@ from shutil import copyfile
 from content import dangerousCSS
 
 
-def getThemeFiles() -> []:
+def _getThemeFiles() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
             'options.css', 'search.css', 'links.css')
@@ -38,7 +38,7 @@ def getThemesList(baseDir: str) -> []:
     return themes
 
 
-def setThemeInConfig(baseDir: str, name: str) -> bool:
+def _setThemeInConfig(baseDir: str, name: str) -> bool:
     configFilename = baseDir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
@@ -49,7 +49,7 @@ def setThemeInConfig(baseDir: str, name: str) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
+def _setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
     """Shows the newswire publish action as an icon or a button
     """
     configFilename = baseDir + '/config.json'
@@ -62,7 +62,7 @@ def setNewswirePublishAsIcon(baseDir: str, useIcon: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
+def _setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
     """Whether to show icons in the header (inbox, outbox, etc)
     as buttons
     """
@@ -76,7 +76,7 @@ def setIconsAsButtons(baseDir: str, useButtons: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
+def _setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
     """Whether to show RSS icon at the top of the timeline
     """
     configFilename = baseDir + '/config.json'
@@ -89,7 +89,7 @@ def setRssIconAtTop(baseDir: str, atTop: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
+def _setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
     """Whether to show the publish button above the title image
     in the newswire column
     """
@@ -103,7 +103,7 @@ def setPublishButtonAtTop(baseDir: str, atTop: bool) -> bool:
     return saveJson(configJson, configFilename)
 
 
-def setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
+def _setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
     """Shows the timeline button header containing inbox, outbox,
     calendar, etc as full width
     """
@@ -127,8 +127,8 @@ def getTheme(baseDir: str) -> str:
     return 'default'
 
 
-def removeTheme(baseDir: str):
-    themeFiles = getThemeFiles()
+def _removeTheme(baseDir: str):
+    themeFiles = _getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
             os.remove(baseDir + '/' + filename)
@@ -183,14 +183,14 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     return newcss.strip()
 
 
-def setThemeFromDict(baseDir: str, name: str,
-                     themeParams: {}, bgParams: {},
-                     allowLocalNetworkAccess: bool) -> None:
+def _setThemeFromDict(baseDir: str, name: str,
+                      themeParams: {}, bgParams: {},
+                      allowLocalNetworkAccess: bool) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
-        setThemeInConfig(baseDir, name)
-    themeFiles = getThemeFiles()
+        _setThemeInConfig(baseDir, name)
+    themeFiles = _getThemeFiles()
     for filename in themeFiles:
         # check for custom css within the theme directory
         templateFilename = baseDir + '/theme/' + name + '/epicyon-' + filename
@@ -215,33 +215,33 @@ def setThemeFromDict(baseDir: str, name: str,
             for paramName, paramValue in themeParams.items():
                 if paramName == 'newswire-publish-icon':
                     if paramValue.lower() == 'true':
-                        setNewswirePublishAsIcon(baseDir, True)
+                        _setNewswirePublishAsIcon(baseDir, True)
                     else:
-                        setNewswirePublishAsIcon(baseDir, False)
+                        _setNewswirePublishAsIcon(baseDir, False)
                     continue
                 elif paramName == 'full-width-timeline-buttons':
                     if paramValue.lower() == 'true':
-                        setFullWidthTimelineButtonHeader(baseDir, True)
+                        _setFullWidthTimelineButtonHeader(baseDir, True)
                     else:
-                        setFullWidthTimelineButtonHeader(baseDir, False)
+                        _setFullWidthTimelineButtonHeader(baseDir, False)
                     continue
                 elif paramName == 'icons-as-buttons':
                     if paramValue.lower() == 'true':
-                        setIconsAsButtons(baseDir, True)
+                        _setIconsAsButtons(baseDir, True)
                     else:
-                        setIconsAsButtons(baseDir, False)
+                        _setIconsAsButtons(baseDir, False)
                     continue
                 elif paramName == 'rss-icon-at-top':
                     if paramValue.lower() == 'true':
-                        setRssIconAtTop(baseDir, True)
+                        _setRssIconAtTop(baseDir, True)
                     else:
-                        setRssIconAtTop(baseDir, False)
+                        _setRssIconAtTop(baseDir, False)
                     continue
                 elif paramName == 'publish-button-at-top':
                     if paramValue.lower() == 'true':
-                        setPublishButtonAtTop(baseDir, True)
+                        _setPublishButtonAtTop(baseDir, True)
                     else:
-                        setPublishButtonAtTop(baseDir, False)
+                        _setPublishButtonAtTop(baseDir, False)
                     continue
                 css = setCSSparam(css, paramName, paramValue)
             filename = baseDir + '/' + filename
@@ -249,17 +249,17 @@ def setThemeFromDict(baseDir: str, name: str,
                 cssfile.write(css)
 
     if bgParams.get('login'):
-        setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
+        _setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
     if bgParams.get('follow'):
-        setBackgroundFormat(baseDir, name, 'follow', bgParams['follow'])
+        _setBackgroundFormat(baseDir, name, 'follow', bgParams['follow'])
     if bgParams.get('options'):
-        setBackgroundFormat(baseDir, name, 'options', bgParams['options'])
+        _setBackgroundFormat(baseDir, name, 'options', bgParams['options'])
     if bgParams.get('search'):
-        setBackgroundFormat(baseDir, name, 'search', bgParams['search'])
+        _setBackgroundFormat(baseDir, name, 'search', bgParams['search'])
 
 
-def setBackgroundFormat(baseDir: str, name: str,
-                        backgroundType: str, extension: str) -> None:
+def _setBackgroundFormat(baseDir: str, name: str,
+                         backgroundType: str, extension: str) -> None:
     """Sets the background file extension
     """
     if extension == 'jpg':
@@ -277,7 +277,7 @@ def setBackgroundFormat(baseDir: str, name: str,
 def enableGrayscale(baseDir: str) -> None:
     """Enables grayscale for the current theme
     """
-    themeFiles = getThemeFiles()
+    themeFiles = _getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -300,7 +300,7 @@ def enableGrayscale(baseDir: str) -> None:
 def disableGrayscale(baseDir: str) -> None:
     """Disables grayscale for the current theme
     """
-    themeFiles = getThemeFiles()
+    themeFiles = _getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -318,7 +318,7 @@ def disableGrayscale(baseDir: str) -> None:
         os.remove(grayscaleFilename)
 
 
-def setCustomFont(baseDir: str):
+def _setCustomFont(baseDir: str):
     """Uses a dictionary to set a theme
     """
     customFontExt = None
@@ -337,7 +337,7 @@ def setCustomFont(baseDir: str):
     if not customFontExt:
         return
 
-    themeFiles = getThemeFiles()
+    themeFiles = _getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -356,9 +356,9 @@ def setCustomFont(baseDir: str):
                 cssfile.write(css)
 
 
-def readVariablesFile(baseDir: str, themeName: str,
-                      variablesFile: str,
-                      allowLocalNetworkAccess: bool) -> None:
+def _readVariablesFile(baseDir: str, themeName: str,
+                       variablesFile: str,
+                       allowLocalNetworkAccess: bool) -> None:
     """Reads variables from a file in the theme directory
     """
     themeParams = loadJson(variablesFile, 0)
@@ -370,14 +370,14 @@ def readVariablesFile(baseDir: str, themeName: str,
         "options": "jpg",
         "search": "jpg"
     }
-    setThemeFromDict(baseDir, themeName, themeParams, bgParams,
-                     allowLocalNetworkAccess)
+    _setThemeFromDict(baseDir, themeName, themeParams, bgParams,
+                      allowLocalNetworkAccess)
 
 
-def setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
+def _setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
     name = 'default'
-    removeTheme(baseDir)
-    setThemeInConfig(baseDir, name)
+    _removeTheme(baseDir)
+    _setThemeInConfig(baseDir, name)
     bgParams = {
         "login": "jpg",
         "follow": "jpg",
@@ -394,11 +394,11 @@ def setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
         "banner-height-mobile": "10vh",
         "search-banner-height-mobile": "15vh"
     }
-    setThemeFromDict(baseDir, name, themeParams, bgParams,
-                     allowLocalNetworkAccess)
+    _setThemeFromDict(baseDir, name, themeParams, bgParams,
+                      allowLocalNetworkAccess)
 
 
-def setThemeFonts(baseDir: str, themeName: str) -> None:
+def _setThemeFonts(baseDir: str, themeName: str) -> None:
     """Adds custom theme fonts
     """
     themeNameLower = themeName.lower()
@@ -422,7 +422,7 @@ def setThemeFonts(baseDir: str, themeName: str) -> None:
         break
 
 
-def setThemeImages(baseDir: str, name: str) -> None:
+def _setThemeImages(baseDir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
     """
@@ -557,7 +557,7 @@ def setTheme(baseDir: str, name: str, domain: str,
     result = False
 
     prevThemeName = getTheme(baseDir)
-    removeTheme(baseDir)
+    _removeTheme(baseDir)
 
     themes = getThemesList(baseDir)
     for themeName in themes:
@@ -573,21 +573,21 @@ def setTheme(baseDir: str, name: str, domain: str,
                 if prevThemeName.lower() != themeNameLower:
                     # change the banner and profile image
                     # to the default for the theme
-                    setThemeImages(baseDir, name)
-                    setThemeFonts(baseDir, name)
+                    _setThemeImages(baseDir, name)
+                    _setThemeFonts(baseDir, name)
             result = True
 
     if not result:
         # default
-        setThemeDefault(baseDir)
+        _setThemeDefault(baseDir)
         result = True
 
     variablesFile = baseDir + '/theme/' + name + '/theme.json'
     if os.path.isfile(variablesFile):
-        readVariablesFile(baseDir, name, variablesFile,
-                          allowLocalNetworkAccess)
+        _readVariablesFile(baseDir, name, variablesFile,
+                           allowLocalNetworkAccess)
 
-    setCustomFont(baseDir)
+    _setCustomFont(baseDir)
 
     # set the news avatar
     newsAvatarThemeFilename = \
@@ -604,5 +604,5 @@ def setTheme(baseDir: str, name: str, domain: str,
     else:
         disableGrayscale(baseDir)
 
-    setThemeInConfig(baseDir, name)
+    _setThemeInConfig(baseDir, name)
     return result

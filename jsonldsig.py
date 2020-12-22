@@ -28,21 +28,21 @@ import base64
 import json
 
 
-def b64safeEncode(payload: {}) -> str:
+def _b64safeEncode(payload: {}) -> str:
     """
     b64 url safe encoding with the padding removed.
     """
     return base64.urlsafe_b64encode(payload).rstrip(b'=')
 
 
-def b64safeDecode(payload: {}) -> str:
+def _b64safeDecode(payload: {}) -> str:
     """
     b64 url safe decoding with the padding added.
     """
     return base64.urlsafe_b64decode(payload + b'=' * (4 - len(payload) % 4))
 
 
-def normalizeJson(payload: {}) -> str:
+def _normalizeJson(payload: {}) -> str:
     """
     Normalize with URDNA2015
     """
@@ -50,7 +50,7 @@ def normalizeJson(payload: {}) -> str:
                       sort_keys=True).encode('utf-8')
 
 
-def signRs256(payload: {}, privateKeyPem: str) -> str:
+def _signRs256(payload: {}, privateKeyPem: str) -> str:
     """
     Produce a RS256 signature of the payload
     """
@@ -60,7 +60,7 @@ def signRs256(payload: {}, privateKeyPem: str) -> str:
     return signature
 
 
-def verifyRs256(payload: {}, signature: str, publicKeyPem: str) -> bool:
+def _verifyRs256(payload: {}, signature: str, publicKeyPem: str) -> bool:
     """
     Verifies a RS256 signature
     """
@@ -69,7 +69,7 @@ def verifyRs256(payload: {}, signature: str, publicKeyPem: str) -> bool:
     return verifier.verify(SHA256.new(payload), signature)
 
 
-def signJws(payload: {}, privateKeyPem: str) -> str:
+def _signJws(payload: {}, privateKeyPem: str) -> str:
     """
     Prepare payload to sign
     """
@@ -78,28 +78,28 @@ def signJws(payload: {}, privateKeyPem: str) -> str:
         'b64': False,
         'crit': ['b64']
     }
-    normalizedJson = normalizeJson(header)
-    encodedHeader = b64safeEncode(normalizedJson)
+    normalizedJson = _normalizeJson(header)
+    encodedHeader = _b64safeEncode(normalizedJson)
     preparedPayload = b'.'.join([encodedHeader, payload])
 
-    signature = signRs256(preparedPayload, privateKeyPem)
-    encodedSignature = b64safeEncode(signature)
+    signature = _signRs256(preparedPayload, privateKeyPem)
+    encodedSignature = _b64safeEncode(signature)
     jwsSignature = b'..'.join([encodedHeader, encodedSignature])
 
     return jwsSignature
 
 
-def verifyJws(payload: {}, jwsSignature: str, publicKeyPem: str) -> bool:
+def _verifyJws(payload: {}, jwsSignature: str, publicKeyPem: str) -> bool:
     """
     Verifies a signature using the given public key
     """
     encodedHeader, encodedSignature = jwsSignature.split(b'..')
-    signature = b64safeDecode(encodedSignature)
+    signature = _b64safeDecode(encodedSignature)
     payload = b'.'.join([encodedHeader, payload])
-    return verifyRs256(payload, signature, publicKeyPem)
+    return _verifyRs256(payload, signature, publicKeyPem)
 
 
-def jsonldNormalize(jldDocument: str):
+def _jsonldNormalize(jldDocument: str):
     """
     Normalize and hash the json-ld document
     """
@@ -117,8 +117,8 @@ def jsonldSign(jldDocument: {}, privateKeyPem: str) -> {}:
     Produces a signed JSON-LD document with a Json Web Signature
     """
     jldDocument = deepcopy(jldDocument)
-    normalizedJldHash = jsonldNormalize(jldDocument)
-    jwsSignature = signJws(normalizedJldHash, privateKeyPem)
+    normalizedJldHash = _jsonldNormalize(jldDocument)
+    jwsSignature = _signJws(normalizedJldHash, privateKeyPem)
 
     # construct the signature document and add it to jsonld
     signature = {
@@ -138,9 +138,9 @@ def jsonldVerify(signedJldDocument: {}, publicKeyPem: str) -> bool:
     signedJldDocument = deepcopy(signedJldDocument)
     signature = signedJldDocument.pop('signature')
     jwsSignature = signature['signatureValue'].encode('utf-8')
-    normalizedJldHash = jsonldNormalize(signedJldDocument)
+    normalizedJldHash = _jsonldNormalize(signedJldDocument)
 
-    return verifyJws(normalizedJldHash, jwsSignature, publicKeyPem)
+    return _verifyJws(normalizedJldHash, jwsSignature, publicKeyPem)
 
 
 def testSignJsonld(jldDocument: {}, privateKeyPem: str) -> {}:

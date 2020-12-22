@@ -17,7 +17,7 @@ from utils import daysInMonth
 from utils import mergeDicts
 
 
-def validUuid(testUuid: str, version=4):
+def _validUuid(testUuid: str, version=4):
     """Check if uuid_to_test is a valid UUID
     """
     try:
@@ -28,7 +28,7 @@ def validUuid(testUuid: str, version=4):
     return str(uuid_obj) == testUuid
 
 
-def removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
+def _removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
     """Removes the given event Id from the timeline
     """
     if eventId + '\n' not in open(tlEventsFilename).read():
@@ -71,7 +71,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
 
     if eventJson.get('name') and eventJson.get('actor') and \
        eventJson.get('uuid') and eventJson.get('content'):
-        if not validUuid(eventJson['uuid']):
+        if not _validUuid(eventJson['uuid']):
             return False
         print('Mobilizon type event')
         # if this is a full description of an event then save it
@@ -92,7 +92,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
         tlEventsFilename = baseDir + '/accounts/' + handle + '/events.txt'
 
         if os.path.isfile(tlEventsFilename):
-            removeEventFromTimeline(eventId, tlEventsFilename)
+            _removeEventFromTimeline(eventId, tlEventsFilename)
             try:
                 with open(tlEventsFilename, 'r+') as tlEventsFile:
                     content = tlEventsFile.read()
@@ -146,7 +146,7 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     return True
 
 
-def isHappeningEvent(tag: {}) -> bool:
+def _isHappeningEvent(tag: {}) -> bool:
     """Is this tag an Event or Place ActivityStreams type?
     """
     if not tag.get('type'):
@@ -156,7 +156,7 @@ def isHappeningEvent(tag: {}) -> bool:
     return True
 
 
-def isHappeningPost(postJsonObject: {}) -> bool:
+def _isHappeningPost(postJsonObject: {}) -> bool:
     """Is this a post with tags?
     """
     if not postJsonObject:
@@ -208,13 +208,13 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
                 continue
 
             postJsonObject = loadJson(postFilename)
-            if not isHappeningPost(postJsonObject):
+            if not _isHappeningPost(postJsonObject):
                 continue
 
             postEvent = []
             dayOfMonth = None
             for tag in postJsonObject['object']['tag']:
-                if not isHappeningEvent(tag):
+                if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
@@ -275,11 +275,11 @@ def todaysEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
                 continue
 
             postJsonObject = loadJson(postFilename)
-            if not isHappeningPost(postJsonObject):
+            if not _isHappeningPost(postJsonObject):
                 continue
 
             for tag in postJsonObject['object']['tag']:
-                if not isHappeningEvent(tag):
+                if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] != 'Event':
@@ -322,11 +322,11 @@ def thisWeeksEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
                 continue
 
             postJsonObject = loadJson(postFilename)
-            if not isHappeningPost(postJsonObject):
+            if not _isHappeningPost(postJsonObject):
                 continue
 
             for tag in postJsonObject['object']['tag']:
-                if not isHappeningEvent(tag):
+                if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] != 'Event':
@@ -377,14 +377,14 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
                 continue
 
             postJsonObject = loadJson(postFilename)
-            if not isHappeningPost(postJsonObject):
+            if not _isHappeningPost(postJsonObject):
                 continue
 
             postEvent = []
             dayOfMonth = None
             weekDayIndex = None
             for tag in postJsonObject['object']['tag']:
-                if not isHappeningEvent(tag):
+                if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':
@@ -462,13 +462,13 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
                 continue
 
             postJsonObject = loadJson(postFilename)
-            if not isHappeningPost(postJsonObject):
+            if not _isHappeningPost(postJsonObject):
                 continue
 
             postEvent = []
             dayOfMonth = None
             for tag in postJsonObject['object']['tag']:
-                if not isHappeningEvent(tag):
+                if not _isHappeningEvent(tag):
                     continue
                 # this tag is an event or a place
                 if tag['type'] == 'Event':

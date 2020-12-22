@@ -107,7 +107,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
 def bookmarkedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     """Returns True if the given post is bookmarked by the given person
     """
-    if noOfBookmarks(postJsonObject) == 0:
+    if _noOfBookmarks(postJsonObject) == 0:
         return False
     actorMatch = domain + '/users/' + nickname
     for item in postJsonObject['object']['bookmarks']['items']:
@@ -116,7 +116,7 @@ def bookmarkedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     return False
 
 
-def noOfBookmarks(postJsonObject: {}) -> int:
+def _noOfBookmarks(postJsonObject: {}) -> int:
     """Returns the number of bookmarks ona  given post
     """
     if not postJsonObject.get('object'):

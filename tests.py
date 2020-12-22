@@ -101,7 +101,7 @@ thrBob = None
 thrEve = None
 
 
-def testHttpsigBase(withDigest):
+def _testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
 
     baseDir = os.getcwd()
@@ -206,8 +206,8 @@ def testHttpsigBase(withDigest):
 
 
 def testHttpsig():
-    testHttpsigBase(True)
-    testHttpsigBase(False)
+    _testHttpsigBase(True)
+    _testHttpsigBase(False)
 
 
 def testCache():
@@ -2617,6 +2617,11 @@ def testFunctions():
     excludeImports = [
         'link'
     ]
+    excludeLocal = [
+        'pyjsonld',
+        'daemon',
+        'tests'
+    ]
     # check that functions are called somewhere
     for name, properties in functionProperties.items():
         if name in exclusions:
@@ -2626,6 +2631,16 @@ def testFunctions():
                   ' in module ' + properties['module'] +
                   ' is not called anywhere')
         assert properties['calledInModule']
+
+        if len(properties['calledInModule']) == 1:
+            modName = properties['calledInModule'][0]
+            if modName not in excludeLocal and \
+               modName == properties['module']:
+                if not name.startswith('_'):
+                    print('Local function ' + name +
+                          ' in ' + modName + ' does not begin with _')
+                    assert False
+
         if name not in excludeImports:
             for modName in properties['calledInModule']:
                 if modName == properties['module']:
@@ -2635,8 +2650,6 @@ def testFunctions():
                     print(importStr + ' not found in ' + modName + '.py')
                     assert False
         print('Function: ' + name + ' ✓')
-    # print(str(function))
-    # print(str(functionProperties))
 
 
 def runAllTests():

@@ -135,7 +135,7 @@ def createSignedHeader(privateKeyPem: str, nickname: str,
     return headers
 
 
-def verifyRecentSignature(signedDateStr: str) -> bool:
+def _verifyRecentSignature(signedDateStr: str) -> bool:
     """Checks whether the given time taken from the header is within
     12 hours of the current time
     """
@@ -219,7 +219,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         else:
             if headers.get(signedHeader):
                 if signedHeader == 'date':
-                    if not verifyRecentSignature(headers[signedHeader]):
+                    if not _verifyRecentSignature(headers[signedHeader]):
                         if debug:
                             print('DEBUG: ' +
                                   'verifyPostHeaders date is not recent ' +
@@ -230,7 +230,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             else:
                 signedHeaderCap = signedHeader.capitalize()
                 if signedHeaderCap == 'Date':
-                    if not verifyRecentSignature(headers[signedHeaderCap]):
+                    if not _verifyRecentSignature(headers[signedHeaderCap]):
                         if debug:
                             print('DEBUG: ' +
                                   'verifyPostHeaders date is not recent ' +

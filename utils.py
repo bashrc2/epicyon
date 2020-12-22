@@ -197,7 +197,7 @@ def isSystemAccount(nickname: str) -> bool:
     return False
 
 
-def createConfig(baseDir: str) -> None:
+def _createConfig(baseDir: str) -> None:
     """Creates a configuration file
     """
     configFilename = baseDir + '/config.json'
@@ -211,7 +211,7 @@ def createConfig(baseDir: str) -> None:
 def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
     """
-    createConfig(baseDir)
+    _createConfig(baseDir)
     configFilename = baseDir + '/config.json'
     configJson = {}
     if os.path.isfile(configFilename):
@@ -223,7 +223,7 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
 def getConfigParam(baseDir: str, variableName: str):
     """Gets a configuration value
     """
-    createConfig(baseDir)
+    _createConfig(baseDir)
     configFilename = baseDir + '/config.json'
     configJson = loadJson(configFilename)
     if configJson:
@@ -610,8 +610,8 @@ def getDomainFromActor(actor: str) -> (str, int):
     return domain, port
 
 
-def setDefaultPetName(baseDir: str, nickname: str, domain: str,
-                      followNickname: str, followDomain: str) -> None:
+def _setDefaultPetName(baseDir: str, nickname: str, domain: str,
+                       followNickname: str, followDomain: str) -> None:
     """Sets a default petname
     This helps especially when using onion or i2p address
     """
@@ -723,8 +723,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         addPersonToCalendar(baseDir, nickname, domain,
                             followNickname, followDomain)
         # add a default petname
-        setDefaultPetName(baseDir, nickname, domain,
-                          followNickname, followDomain)
+        _setDefaultPetName(baseDir, nickname, domain,
+                           followNickname, followDomain)
     return True
 
 
@@ -864,7 +864,8 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     return None
 
 
-def removeAttachment(baseDir: str, httpPrefix: str, domain: str, postJson: {}):
+def _removeAttachment(baseDir: str, httpPrefix: str, domain: str,
+                      postJson: {}):
     if not postJson.get('attachment'):
         return
     if not postJson['attachment'][0].get('url'):
@@ -907,8 +908,8 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
                                   ' from moderation index')
 
 
-def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
-                      postJsonObject: str):
+def _isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: str):
     """Is the given post a reply to a blog post?
     """
     if not postJsonObject.get('object'):
@@ -947,8 +948,8 @@ def deletePost(baseDir: str, httpPrefix: str,
                 return
 
         # don't remove replies to blog posts
-        if isReplyToBlogPost(baseDir, nickname, domain,
-                             postJsonObject):
+        if _isReplyToBlogPost(baseDir, nickname, domain,
+                              postJsonObject):
             return
 
         # remove from recent posts cache in memory
@@ -966,7 +967,7 @@ def deletePost(baseDir: str, httpPrefix: str,
                     del recentPostsCache['html'][postId]
 
         # remove any attachment
-        removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
+        _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
         extensions = ('votes', 'arrived', 'muted')
         for ext in extensions:

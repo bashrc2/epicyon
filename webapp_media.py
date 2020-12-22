@@ -7,8 +7,8 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 
-def addEmbeddedVideoFromSites(translate: {}, content: str,
-                              width=400, height=300) -> str:
+def _addEmbeddedVideoFromSites(translate: {}, content: str,
+                               width=400, height=300) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
@@ -122,7 +122,7 @@ def addEmbeddedVideoFromSites(translate: {}, content: str,
     return content
 
 
-def addEmbeddedAudio(translate: {}, content: str) -> str:
+def _addEmbeddedAudio(translate: {}, content: str) -> str:
     """Adds embedded audio for mp3/ogg
     """
     if not ('.mp3' in content or '.ogg' in content):
@@ -167,8 +167,8 @@ def addEmbeddedAudio(translate: {}, content: str) -> str:
     return content
 
 
-def addEmbeddedVideo(translate: {}, content: str,
-                     width=400, height=300) -> str:
+def _addEmbeddedVideo(translate: {}, content: str,
+                      width=400, height=300) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
@@ -219,6 +219,6 @@ def addEmbeddedVideo(translate: {}, content: str,
 def addEmbeddedElements(translate: {}, content: str) -> str:
     """Adds embedded elements for various media types
     """
-    content = addEmbeddedVideoFromSites(translate, content)
-    content = addEmbeddedAudio(translate, content)
-    return addEmbeddedVideo(translate, content)
+    content = _addEmbeddedVideoFromSites(translate, content)
+    content = _addEmbeddedAudio(translate, content)
+    return _addEmbeddedVideo(translate, content)
