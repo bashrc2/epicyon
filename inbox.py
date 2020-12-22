@@ -81,14 +81,20 @@ def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
 
     for categoryStr, hashtagList in hashtagCategories.items():
         for hashtag in hashtagList:
-            if hashtag in tagName or tagName in hashtag:
-                if not categoryMatched:
-                    tagMatchedLen = len(hashtag)
+            if len(hashtag) < 3:
+                # avoid matching very small strings which often
+                # lead to spurious categories
+                continue
+            if hashtag not in tagName:
+                if tagName not in hashtag:
+                    continue
+            if not categoryMatched:
+                tagMatchedLen = len(hashtag)
+                categoryMatched = categoryStr
+            else:
+                # match the longest tag
+                if len(hashtag) > tagMatchedLen:
                     categoryMatched = categoryStr
-                else:
-                    # match the longest tag
-                    if len(hashtag) > tagMatchedLen:
-                        categoryMatched = categoryStr
     if not categoryMatched:
         return
     return categoryMatched
