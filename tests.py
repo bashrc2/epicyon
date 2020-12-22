@@ -276,7 +276,7 @@ def createServerAlice(path: str, domain: str, port: int,
     if hasPosts:
         testFollowersOnly = False
         testSaveToFile = True
-        clientToServer = False        
+        clientToServer = False
         testCommentsEnabled = True
         testAttachImageFilename = None
         testMediaType = None
@@ -375,7 +375,8 @@ def createServerBob(path: str, domain: str, port: int,
         testSaveToFile = True
         testCommentsEnabled = True
         testAttachImageFilename = None
-        testMediaType = None        
+        testImageDescription = None
+        testMediaType = None
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "It's your life, live it your way.",
                          testFollowersOnly,
@@ -2589,7 +2590,7 @@ def testReplyToPublicPost() -> None:
 def getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
     """Returns the arguments of a function call given lines
     of source code and a starting line number
-    """    
+    """
     argsStr = lines[startLineCtr].split(name + '(')[1]
     if ')' in argsStr:
         argsStr = argsStr.split(')')[0].replace(' ', '').split(',')

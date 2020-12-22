@@ -1984,7 +1984,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
-                     'Description of image',                     
+                     'Description of image',
                      useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
