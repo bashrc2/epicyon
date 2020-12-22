@@ -2844,15 +2844,15 @@ def testFunctions():
     for name, properties in functionProperties.items():
         if not properties['calls']:
             continue
-        for calledFunc in properties['calls']:
-            callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+        # for calledFunc in properties['calls']:
+        #     callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
 
     callGraphStr += '\n}\n'
     with open('epicyon.dot', 'w+') as fp:
         fp.write(callGraphStr)
         print('Call graph saved to epicyon.dot')
         print('Convert to image with: ' +
-              'dot -T epicyon.dot -o epicyon_diagram.jpg')
+              'dot -Tjpg epicyon.dot -o epicyon_diagram.jpg')
 
 
 def runAllTests():
