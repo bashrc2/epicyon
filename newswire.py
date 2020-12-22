@@ -15,7 +15,7 @@ from datetime import timedelta
 from datetime import timezone
 from collections import OrderedDict
 from utils import validPostDate
-from utils import setHashtagCategory
+from categories import setHashtagCategory
 from utils import firstParagraphFromString
 from utils import isPublicPost
 from utils import locatePost

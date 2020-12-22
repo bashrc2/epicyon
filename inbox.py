@@ -32,8 +32,8 @@ from utils import loadJson
 from utils import saveJson
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
-from utils import getHashtagCategories
-from utils import setHashtagCategory
+from categories import getHashtagCategories
+from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -70,34 +70,7 @@ from content import dangerousMarkup
 from happening import saveEventPost
 from delete import removeOldHashtags
 from follow import isFollowingActor
-
-
-def guessHashtagCategory(tagName: str, hashtagCategories: {}) -> str:
-    """Tries to guess a category for the given hashtag.
-    This works by trying to find the longest similar hashtag
-    """
-    categoryMatched = ''
-    tagMatchedLen = 0
-
-    for categoryStr, hashtagList in hashtagCategories.items():
-        for hashtag in hashtagList:
-            if len(hashtag) < 3:
-                # avoid matching very small strings which often
-                # lead to spurious categories
-                continue
-            if hashtag not in tagName:
-                if tagName not in hashtag:
-                    continue
-            if not categoryMatched:
-                tagMatchedLen = len(hashtag)
-                categoryMatched = categoryStr
-            else:
-                # match the longest tag
-                if len(hashtag) > tagMatchedLen:
-                    categoryMatched = categoryStr
-    if not categoryMatched:
-        return
-    return categoryMatched
+from categories import guessHashtagCategory
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:

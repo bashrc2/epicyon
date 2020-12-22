@@ -10,8 +10,8 @@ import os
 from shutil import copyfile
 from datetime import datetime
 from utils import getNicknameFromActor
-from utils import getHashtagCategories
-from utils import getHashtagCategory
+from categories import getHashtagCategories
+from categories import getHashtagCategory
 from webapp_utils import getSearchBannerFile
 from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle

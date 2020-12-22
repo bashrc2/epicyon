@@ -19,7 +19,7 @@ from utils import locatePost
 from utils import isPublicPost
 from utils import firstParagraphFromString
 from utils import searchBoxPosts
-from utils import getHashtagCategory
+from categories import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
 from webapp_utils import getAltPath

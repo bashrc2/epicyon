@@ -174,7 +174,7 @@ from shares import removeShare
 from shares import expireShares
 from utils import getFullDomain
 from utils import removeHtml
-from utils import setHashtagCategory
+from categories import setHashtagCategory
 from utils import isEditor
 from utils import getImageExtensions
 from utils import mediaFileMimeType
