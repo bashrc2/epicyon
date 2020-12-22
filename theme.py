@@ -398,39 +398,6 @@ def setThemeDefault(baseDir: str, allowLocalNetworkAccess: bool):
                      allowLocalNetworkAccess)
 
 
-def setThemeHighVis(baseDir: str, allowLocalNetworkAccess: bool):
-    name = 'highvis'
-    themeParams = {
-        "newswire-publish-icon": True,
-        "full-width-timeline-buttons": False,
-        "icons-as-buttons": False,
-        "rss-icon-at-top": True,
-        "publish-button-at-top": False,
-        "font-size-header": "22px",
-        "font-size-header-mobile": "32px",
-        "font-size": "45px",
-        "font-size2": "45px",
-        "font-size3": "45px",
-        "font-size4": "35px",
-        "font-size5": "29px",
-        "gallery-font-size": "35px",
-        "gallery-font-size-mobile": "55px",
-        "hashtag-vertical-spacing3": "100px",
-        "hashtag-vertical-spacing4": "150px",
-        "time-vertical-align": "-10px",
-        "*font-family": "'LinBiolinum_Rah'",
-        "*src": "url('./fonts/LinBiolinum_Rah.woff2') format('woff2')"
-    }
-    bgParams = {
-        "login": "jpg",
-        "follow": "jpg",
-        "options": "jpg",
-        "search": "jpg"
-    }
-    setThemeFromDict(baseDir, name, themeParams, bgParams,
-                     allowLocalNetworkAccess)
-
-
 def setThemeFonts(baseDir: str, themeName: str) -> None:
     """Adds custom theme fonts
     """

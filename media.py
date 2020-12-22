@@ -6,7 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-from blurhash import blurhash_encode as blurencode
+from blurhash import blurhash_encode
 from PIL import Image
 import numpy
 import os
@@ -57,7 +57,8 @@ def removeMetaData(imageFilename: str, outputFilename: str) -> None:
 
 
 def getImageHash(imageFilename: str) -> str:
-    return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
+    value = numpy.array(Image.open(imageFilename).convert("RGB"))
+    return blurhash_encode(value)
 
 
 def isMedia(imageFilename: str) -> bool:

@@ -1215,28 +1215,6 @@ def postIsAddressedToFollowers(baseDir: str,
     return addressedToFollowers
 
 
-def postIsAddressedToPublic(baseDir: str, postJsonObject: {}) -> bool:
-    """Returns true if the given post is addressed to public
-    """
-    if not postJsonObject.get('object'):
-        return False
-    if not postJsonObject['object'].get('to'):
-        return False
-
-    publicUrl = 'https://www.w3.org/ns/activitystreams#Public'
-
-    # does the public url exist in 'to' or 'cc' lists?
-    addressedToPublic = False
-    if publicUrl in postJsonObject['object']['to']:
-        addressedToPublic = True
-    if not addressedToPublic:
-        if not postJsonObject['object'].get('cc'):
-            return False
-        if publicUrl in postJsonObject['object']['cc']:
-            addressedToPublic = True
-    return addressedToPublic
-
-
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
@@ -2737,17 +2715,6 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
     return boxItems
 
 
-def getStatusNumberFromPostFilename(filename) -> int:
-    """Gets the status number from a post filename
-    eg. https:##testdomain.com:8085#users#testuser567#
-    statuses#1562958506952068.json
-    returns 156295850695206
-    """
-    if '#statuses#' not in filename:
-        return None
-    return int(filename.split('#')[-1].replace('.json', ''))
-
-
 def isDM(postJsonObject: {}) -> bool:
     """Returns true if the given post is a DM
     """
@@ -2847,66 +2814,6 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
             if actor in tag['href']:
                 return True
     return False
-
-
-def createBoxIndex(boxDir: str, postsInBoxDict: {}) -> int:
-    """ Creates an index for the given box
-    """
-    postsCtr = 0
-    postsInPersonInbox = os.scandir(boxDir)
-    for postFilename in postsInPersonInbox:
-        postFilename = postFilename.name
-        if not postFilename.endswith('.json'):
-            continue
-        # extract the status number
-        statusNumber = getStatusNumberFromPostFilename(postFilename)
-        if statusNumber:
-            postsInBoxDict[statusNumber] = os.path.join(boxDir, postFilename)
-            postsCtr += 1
-    return postsCtr
-
-
-def createSharedInboxIndex(baseDir: str, sharedBoxDir: str,
-                           postsInBoxDict: {}, postsCtr: int,
-                           nickname: str, domain: str) -> int:
-    """ Creates an index for the given shared inbox
-    """
-    handle = nickname + '@' + domain
-    followingFilename = baseDir + '/accounts/' + handle + '/following.txt'
-    postsInSharedInbox = os.scandir(sharedBoxDir)
-    followingHandles = None
-    for postFilename in postsInSharedInbox:
-        postFilename = postFilename.name
-        if not postFilename.endswith('.json'):
-            continue
-        statusNumber = getStatusNumberFromPostFilename(postFilename)
-        if not statusNumber:
-            continue
-
-        sharedInboxFilename = os.path.join(sharedBoxDir, postFilename)
-        # get the actor from the shared post
-        postJsonObject = loadJson(sharedInboxFilename, 0)
-        if not postJsonObject:
-            print('WARN: json load exception createSharedInboxIndex')
-            continue
-
-        actorNickname = getNicknameFromActor(postJsonObject['actor'])
-        if not actorNickname:
-            continue
-        actorDomain, actorPort = getDomainFromActor(postJsonObject['actor'])
-        if not actorDomain:
-            continue
-
-        # is the actor followed by this account?
-        if not followingHandles:
-            with open(followingFilename, 'r') as followingFile:
-                followingHandles = followingFile.read()
-        if actorNickname + '@' + actorDomain not in followingHandles:
-            continue
-
-        postsInBoxDict[statusNumber] = sharedInboxFilename
-        postsCtr += 1
-    return postsCtr
 
 
 def addPostStringToTimeline(postStr: str, boxname: str,

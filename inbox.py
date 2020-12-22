@@ -313,15 +313,6 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     return True
 
 
-def validPublishedDate(published: str) -> bool:
-    currTime = datetime.datetime.utcnow()
-    pubDate = datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
-    daysSincePublished = (currTime - pubDate).days
-    if daysSincePublished > 30:
-        return False
-    return True
-
-
 def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          nickname: str, domain: str,
                          postJsonObject: {},

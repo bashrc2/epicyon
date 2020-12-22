@@ -722,48 +722,6 @@ def personBoxJson(recentPostsCache: {},
     return None
 
 
-def personInboxJson(recentPostsCache: {},
-                    baseDir: str, domain: str, port: int, path: str,
-                    httpPrefix: str, noOfItems: int) -> []:
-    """Obtain the inbox feed for the given person
-    Authentication is expected to have already happened
-    """
-    if '/inbox' not in path:
-        return None
-
-    # Only show the header by default
-    headerOnly = True
-
-    # handle page numbers
-    pageNumber = None
-    if '?page=' in path:
-        pageNumber = path.split('?page=')[1]
-        if pageNumber == 'true':
-            pageNumber = 1
-        else:
-            try:
-                pageNumber = int(pageNumber)
-            except BaseException:
-                pass
-        path = path.split('?page=')[0]
-        headerOnly = False
-
-    if not path.endswith('/inbox'):
-        return None
-    nickname = None
-    if path.startswith('/users/'):
-        nickname = path.replace('/users/', '', 1).replace('/inbox', '')
-    if path.startswith('/@'):
-        nickname = path.replace('/@', '', 1).replace('/inbox', '')
-    if not nickname:
-        return None
-    if not validNickname(domain, nickname):
-        return None
-    return createInbox(recentPostsCache, baseDir, nickname,
-                       domain, port, httpPrefix,
-                       noOfItems, headerOnly, pageNumber)
-
-
 def setDisplayNickname(baseDir: str, nickname: str, domain: str,
                        displayName: str) -> bool:
     if len(displayName) > 32:

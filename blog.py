@@ -599,25 +599,6 @@ def htmlBlogPageRSS3(authorized: bool, session,
     return blogRSS3
 
 
-def getBlogIndexesForAccounts(baseDir: str) -> {}:
-    """ Get the index files for blogs for each account
-    and add them to a dict
-    """
-    blogIndexes = {}
-    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
-        for acct in dirs:
-            if '@' not in acct:
-                continue
-            if 'inbox@' in acct:
-                continue
-            accountDir = os.path.join(baseDir + '/accounts', acct)
-            blogsIndex = accountDir + '/tlblogs.index'
-            if os.path.isfile(blogsIndex):
-                blogIndexes[acct] = blogsIndex
-        break
-    return blogIndexes
-
-
 def noOfBlogAccounts(baseDir: str) -> int:
     """Returns the number of blog accounts
     """

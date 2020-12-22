@@ -21,7 +21,6 @@ import pyqrcode
 from hashlib import sha256
 from hashlib import sha1
 from session import createSession
-from webfinger import parseHandle
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
@@ -273,22 +272,6 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
     qrcodeFilename = baseDir + '/accounts/qrcode.png'
     url = pyqrcode.create(httpPrefix + '://' + domainFull)
     url.png(qrcodeFilename, scale)
-
-
-def readFollowList(filename: str) -> None:
-    """Returns a list of ActivityPub addresses to follow
-    """
-    followlist = []
-    if not os.path.isfile(filename):
-        return followlist
-    followUsers = open(filename, "r")
-    for u in followUsers:
-        if u not in followlist:
-            nickname, domain = parseHandle(u)
-            if nickname:
-                followlist.append(nickname + '@' + domain)
-    followUsers.close()
-    return followlist
 
 
 class PubServer(BaseHTTPRequestHandler):

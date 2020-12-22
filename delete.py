@@ -10,80 +10,15 @@ import os
 from datetime import datetime
 from utils import getFullDomain
 from utils import removeIdEnding
-from utils import getStatusNumber
-from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import deletePost
 from utils import removeModerationPostFromIndex
-from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
-
-
-def createDelete(session, baseDir: str, federationList: [],
-                 nickname: str, domain: str, port: int,
-                 toUrl: str, ccUrl: str, httpPrefix: str,
-                 objectUrl: str, clientToServer: bool,
-                 sendThreads: [], postLog: [],
-                 personCache: {}, cachedWebfingers: {},
-                 debug: bool) -> {}:
-    """Creates a delete message
-    Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
-    and ccUrl might be a specific person whose post is to be deleted
-    objectUrl is typically the url of the message, corresponding to url
-    or atomUri in createPostBase
-    """
-    if not urlPermitted(objectUrl, federationList):
-        return None
-
-    if ':' in domain:
-        domain = domain.split(':')[0]
-        fullDomain = domain
-    fullDomain = getFullDomain(domain, port)
-
-    statusNumber, published = getStatusNumber()
-    newDeleteId = \
-        httpPrefix + '://' + fullDomain + '/users/' + \
-        nickname + '/statuses/' + statusNumber
-    newDelete = {
-        "@context": "https://www.w3.org/ns/activitystreams",
-        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
-        'atomUri': newDeleteId,
-        'cc': [],
-        'id': newDeleteId + '/activity',
-        'object': objectUrl,
-        'published': published,
-        'to': [toUrl],
-        'type': 'Delete'
-    }
-    if ccUrl:
-        if len(ccUrl) > 0:
-            newDelete['cc'] = [ccUrl]
-
-    deleteNickname = None
-    deleteDomain = None
-    deletePort = None
-    if '/users/' in objectUrl or \
-       '/accounts/' in objectUrl or \
-       '/channel/' in objectUrl or \
-       '/profile/' in objectUrl:
-        deleteNickname = getNicknameFromActor(objectUrl)
-        deleteDomain, deletePort = getDomainFromActor(objectUrl)
-
-    if deleteNickname and deleteDomain:
-        sendSignedJson(newDelete, session, baseDir,
-                       nickname, domain, port,
-                       deleteNickname, deleteDomain, deletePort,
-                       'https://www.w3.org/ns/activitystreams#Public',
-                       httpPrefix, True, clientToServer, federationList,
-                       sendThreads, postLog, cachedWebfingers,
-                       personCache, debug)
-
-    return newDelete
 
 
 def sendDeleteViaServer(baseDir: str, session,
@@ -165,52 +100,6 @@ def sendDeleteViaServer(baseDir: str, session,
         print('DEBUG: c2s POST delete request success')
 
     return newDeleteJson
-
-
-def deletePublic(session, baseDir: str, federationList: [],
-                 nickname: str, domain: str, port: int, httpPrefix: str,
-                 objectUrl: str, clientToServer: bool,
-                 sendThreads: [], postLog: [],
-                 personCache: {}, cachedWebfingers: {},
-                 debug: bool) -> {}:
-    """Makes a public delete activity
-    """
-    fromDomain = getFullDomain(domain, port)
-
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://' + fromDomain + \
-        '/users/' + nickname + '/followers'
-    return createDelete(session, baseDir, federationList,
-                        nickname, domain, port,
-                        toUrl, ccUrl, httpPrefix,
-                        objectUrl, clientToServer,
-                        sendThreads, postLog,
-                        personCache, cachedWebfingers,
-                        debug)
-
-
-def deletePostPub(session, baseDir: str, federationList: [],
-                  nickname: str, domain: str, port: int, httpPrefix: str,
-                  deleteNickname: str, deleteDomain: str,
-                  deletePort: int, deleteHttpsPrefix: str,
-                  deleteStatusNumber: int, clientToServer: bool,
-                  sendThreads: [], postLog: [],
-                  personCache: {}, cachedWebfingers: {},
-                  debug: bool) -> {}:
-    """Deletes a given status post
-    """
-    deletedDomain = getFullDomain(deleteDomain, deletePort)
-
-    objectUrl = \
-        deleteHttpsPrefix + '://' + deletedDomain + '/users/' + \
-        deleteNickname + '/statuses/' + str(deleteStatusNumber)
-
-    return deletePublic(session, baseDir, federationList,
-                        nickname, domain, port, httpPrefix,
-                        objectUrl, clientToServer,
-                        sendThreads, postLog,
-                        personCache, cachedWebfingers,
-                        debug)
 
 
 def outboxDelete(baseDir: str, httpPrefix: str,

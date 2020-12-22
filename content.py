@@ -438,34 +438,6 @@ def addHashTags(wordStr: str, httpPrefix: str, domain: str,
     return True
 
 
-def loadEmojiDict(emojiDataFilename: str, emojiDict: {}) -> None:
-    """Creates an emoji dictionary based on emoji/emoji-data.txt
-    """
-    if not os.path.isfile(emojiDataFilename):
-        return
-    with open(emojiDataFilename, "r") as fileHandler:
-        for line in fileHandler:
-            if len(line) < 5:
-                continue
-            if line.startswith('#'):
-                continue
-            if '; Emoji' not in line:
-                continue
-            if ')' not in line:
-                continue
-            emojiUnicode = line.split(' ')[0]
-            if len(emojiUnicode) < 4:
-                continue
-            if '..' in emojiUnicode:
-                emojiUnicode = emojiUnicode.split('..')[0]
-            emojiName = line.split(')', 1)[1].strip()
-            emojiName = emojiName.replace('\n', '').replace('\r', '')
-            emojiName = emojiName.replace(' ', '').replace('-', '')
-            if '..' in emojiName:
-                emojiName = emojiName.split('..')[0]
-            emojiDict[emojiName.lower()] = emojiUnicode
-
-
 def addEmoji(baseDir: str, wordStr: str,
              httpPrefix: str, domain: str,
              replaceEmoji: {}, postTags: {},

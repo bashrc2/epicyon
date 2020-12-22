@@ -2533,8 +2533,102 @@ def testReplyToPublicPost() -> None:
         httpPrefix + '://rat.site/users/ninjarodent'
 
 
+def testFunctions():
+    print('testFunctions')
+    function = {}
+    functionProperties = {}
+    modules = []
+
+    for subdir, dirs, files in os.walk('.'):
+        for sourceFile in files:
+            if not sourceFile.endswith('.py'):
+                continue
+            modName = sourceFile.replace('.py', '')
+            modules.append(modName)
+            sourceStr = ''
+            with open(sourceFile, "r") as f:
+                sourceStr = f.read()
+            with open(sourceFile, "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if not line.startswith('def '):
+                        continue
+                    methodName = line.split('def ', 1)[1].split('(')[0]
+                    methodArgs = \
+                        sourceStr.split('def ' + methodName + '(')[1]
+                    methodArgs = methodArgs.split(')')[0]
+                    methodArgs = methodArgs.replace(' ', '').split(',')
+                    if function.get(modName):
+                        function[modName].append(methodName)
+                    else:
+                        function[modName] = [methodName]
+                    functionProperties[methodName] = {
+                        "args": methodArgs,
+                        "module": modName,
+                        "calledInModule": []
+                    }
+        break
+
+    # which modules is each function used within?
+    for modName in modules:
+        with open(modName + '.py', "r") as f:
+            lines = f.readlines()
+            for name, properties in functionProperties.items():
+                for line in lines:
+                    if line.startswith('def '):
+                        continue
+                    if name + '(' in line:
+                        modList = \
+                            functionProperties[name]['calledInModule']
+                        if modName not in modList:
+                            modList.append(modName)
+
+    # don't check these functions, because they are procedurally called
+    exclusions = [
+        'set_document_loader',
+        'normalize',
+        'get_document_loader',
+        'runInboxQueueWatchdog',
+        'runInboxQueue',
+        'runPostSchedule',
+        'runPostScheduleWatchdog',
+        'str2bool',
+        'runNewswireDaemon',
+        'runNewswireWatchdog',
+        'threadSendPost',
+        'sendToFollowers',
+        'expireCache',
+        'migrateAccount',
+        'getMutualsOfPerson',
+        'runPostsQueue',
+        'runSharesExpire',
+        'runPostsWatchdog',
+        'runSharesExpireWatchdog',
+        'getThisWeeksEvents',
+        'getAvailability',
+        'testThreadsFunction',
+        'createServerAlice',
+        'createServerBob',
+        'createServerEve',
+        'E2EEremoveDevice',
+        'setOrganizationScheme'
+    ]
+    # check that functions are called somewhere
+    for name, properties in functionProperties.items():
+        if name in exclusions:
+            continue
+        if not properties['calledInModule']:
+            print('function ' + name +
+                  ' in module ' + properties['module'] +
+                  ' is not called anywhere')
+        assert properties['calledInModule']
+    # print(str(function))
+    # print(str(functionProperties))
+
+
 def runAllTests():
     print('Running tests...')
+    testFunctions()
     testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()

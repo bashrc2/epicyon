@@ -542,16 +542,6 @@ def htmlFooter() -> str:
     return htmlStr
 
 
-def getFontFromCss(css: str) -> (str, str):
-    """Returns the font name and format
-    """
-    if ' url(' not in css:
-        return None, None
-    fontName = css.split(" url(")[1].split(")")[0].replace("'", '')
-    fontFormat = css.split(" format('")[1].split("')")[0]
-    return fontName, fontFormat
-
-
 def loadIndividualPostAsHtmlFromCache(baseDir: str,
                                       nickname: str, domain: str,
                                       postJsonObject: {}) -> str:
