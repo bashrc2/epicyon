@@ -2605,6 +2605,25 @@ def getFunctionCallArgs(name: str, lines: [], startLineCtr: int) -> []:
     return argsStr.replace('\n', '').replace(' ', '').split(',')
 
 
+def getFunctionCalls(name: str, lines: [], startLineCtr: int,
+                     functionProperties: {}) -> []:
+    """Returns the functions called by the given one,
+    Starting with the given source code at the given line
+    """
+    callsFunctions = []
+    functionContentStr = ''
+    for lineCtr in range(startLineCtr + 1, len(lines)):
+        if lines[lineCtr].startswith('def '):
+            break
+        if lines[lineCtr].startswith('class '):
+            break
+        functionContentStr += lines[lineCtr]
+    for funcName, properties in functionProperties.items():
+        if funcName + '(' in functionContentStr:
+            callsFunctions.append(funcName)
+    return callsFunctions
+
+
 def functionArgsMatch(callArgs: [], funcArgs: []):
     """Do the function artuments match the function call arguments
     """
@@ -2795,6 +2814,43 @@ def testFunctions():
                           modName + '.py begins with _')
                     assert False
         print('Function: ' + name + ' ✓')
+
+    print('Constructing call graph')
+    for modName, modProperties in modules.items():
+        lineCtr = 0
+        for line in modules[modName]['lines']:
+            if line.startswith('def '):
+                name = line.split('def ')[1].split('(')[0]
+                callsList = \
+                    getFunctionCalls(name, modules[modName]['lines'],
+                                     lineCtr, functionProperties)
+                functionProperties[name]['calls'] = callsList.copy()
+            lineCtr += 1
+    callGraphStr = 'digraph Epicyon {\n\n'
+    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
+
+    for modName, modProperties in modules.items():
+        callGraphStr += '  subgraph ' + modName + ' {\n'
+        callGraphStr += '    node [style=filled];\n'
+        callGraphStr += '    '
+        for name in modProperties['functions']:
+            callGraphStr += '"' + name + '" '
+        callGraphStr += ';\n'
+        callGraphStr += '    label = "' + modName + '";\n'
+        callGraphStr += '    color=blue;\n'
+        callGraphStr += '  }\n\n'
+
+    for name, properties in functionProperties.items():
+        if not properties['calls']:
+            continue
+        for calledFunc in properties['calls']:
+            callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+
+    callGraphStr += '\n}\n'
+    with open('epicyon.dot', 'w+') as fp:
+        fp.write(callGraphStr)
+        print('Call graph saved to epicyon.dot')
 
 
 def runAllTests():
