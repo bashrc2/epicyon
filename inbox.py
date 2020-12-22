@@ -959,8 +959,9 @@ def _receiveLike(recentPostsCache: {},
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of like - ' + handle)
     # if this post in the outbox of the person?
-    postFilename = locatePost(baseDir, handle.split('@')[0],
-                              handle.split('@')[1],
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
+    postFilename = locatePost(baseDir, handleName, handleDom,
                               messageJson['object'])
     if not postFilename:
         if debug:
@@ -970,9 +971,10 @@ def _receiveLike(recentPostsCache: {},
     if debug:
         print('DEBUG: liked post found in inbox')
 
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
     if not _alreadyLiked(baseDir,
-                         handle.split('@')[0],
-                         handle.split('@')[1],
+                         handleName, handleDom,
                          messageJson['object'],
                          messageJson['actor']):
         updateLikesCollection(recentPostsCache, baseDir, postFilename,
@@ -1028,8 +1030,10 @@ def _receiveUndoLike(recentPostsCache: {},
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo like - ' + handle)
     # if this post in the outbox of the person?
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
     postFilename = \
-        locatePost(baseDir, handle.split('@')[0], handle.split('@')[1],
+        locatePost(baseDir, handleName, handleDom,
                    messageJson['object']['object'])
     if not postFilename:
         if debug:
@@ -1446,8 +1450,9 @@ def _receiveUndoAnnounce(recentPostsCache: {},
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of undo announce - ' + handle)
     # if this post in the outbox of the person?
-    postFilename = locatePost(baseDir, handle.split('@')[0],
-                              handle.split('@')[1],
+    handleName = handle.split('@')[0]
+    handleDom = handle.split('@')[1]
+    postFilename = locatePost(baseDir, handleName, handleDom,
                               messageJson['object']['object'])
     if not postFilename:
         if debug:
@@ -2361,13 +2366,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             print('Saving inbox post as html to cache')
 
                         htmlCacheStartTime = time.time()
+                        handleName = handle.split('@')[0]
                         _inboxStorePostToHtmlCache(recentPostsCache,
                                                    maxRecentPosts,
                                                    translate, baseDir,
                                                    httpPrefix,
                                                    session, cachedWebfingers,
                                                    personCache,
-                                                   handle.split('@')[0],
+                                                   handleName,
                                                    domain, port,
                                                    postJsonObject,
                                                    allowDeletion,
@@ -2383,7 +2389,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             _inboxUpdateCalendar(baseDir, handle, postJsonObject)
 
-            storeHashTags(baseDir, handle.split('@')[0], postJsonObject)
+            handleName = handle.split('@')[0]
+            storeHashTags(baseDir, handleName, postJsonObject)
 
             # send the post out to group members
             if isGroup:
@@ -2710,12 +2717,13 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if debug:
             print('DEBUG: checking http headers')
             pprint(queueJson['httpHeaders'])
+        postStr = json.dumps(queueJson['post'])
         if not verifyPostHeaders(httpPrefix,
                                  pubKey,
                                  queueJson['httpHeaders'],
                                  queueJson['path'], False,
                                  queueJson['digest'],
-                                 json.dumps(queueJson['post']),
+                                 postStr,
                                  debug):
             print('Queue: Header signature check failed')
             pprint(queueJson['httpHeaders'])

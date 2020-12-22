@@ -647,7 +647,8 @@ def followPerson(baseDir: str, nickname: str, domain: str,
                  followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
-    if not domainPermitted(followDomain.lower().replace('\n', ''),
+    followDomainStrLower = followDomain.lower().replace('\n', '')
+    if not domainPermitted(followDomainStrLower,
                            federationList):
         if debug:
             print('DEBUG: follow of domain ' +

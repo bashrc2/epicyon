@@ -813,13 +813,14 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     content = postJsonObject['object']['content']
                     description = firstParagraphFromString(content)
                     description = _removeCDATA(description)
+                    tagsFromPost = _getHashtagsFromPost(postJsonObject)
                     _addNewswireDictEntry(baseDir, domain,
                                           newswire, published,
                                           postJsonObject['object']['summary'],
                                           postJsonObject['object']['url'],
                                           votes, fullPostFilename,
                                           description, moderated, False,
-                                          _getHashtagsFromPost(postJsonObject),
+                                          tagsFromPost,
                                           maxTags)
 
             ctr += 1

@@ -1936,8 +1936,9 @@ def sendPostViaServer(projectVersion: str,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
+    postDumps = json.dumps(postJsonObject)
     postResult = \
-        postJsonString(session, json.dumps(postJsonObject), [],
+        postJsonString(session, postDumps, [],
                        inboxUrl, headers, debug)
     if not postResult:
         if debug:

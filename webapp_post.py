@@ -772,7 +772,7 @@ def _getPostTitleAnnounceHtml(baseDir: str,
             containerClassIcons, containerClass)
 
 
-def _replyToYourselfHtml(translate: {}, ) -> str:
+def _replyToYourselfHtml(translate: {}) -> str:
     """Returns html for a title which is a reply to yourself
     """
     return '    <img loading="lazy" title="' + \

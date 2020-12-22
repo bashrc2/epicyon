@@ -758,7 +758,7 @@ def setBio(baseDir: str, nickname: str, domain: str, bio: str) -> bool:
     return True
 
 
-def unsuspendAccount(baseDir: str, nickname: str) -> None:
+def reenableAccount(baseDir: str, nickname: str) -> None:
     """Removes an account suspention
     """
     suspendedFilename = baseDir + '/accounts/suspended.txt'
@@ -897,7 +897,7 @@ def removeAccount(baseDir: str, nickname: str,
             if moderator.strip('\n') == nickname:
                 return False
 
-    unsuspendAccount(baseDir, nickname)
+    reenableAccount(baseDir, nickname)
     handle = nickname + '@' + domain
     removePassword(baseDir, nickname)
     _removeTagsForNickname(baseDir, nickname, domain, port)

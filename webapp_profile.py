@@ -685,11 +685,13 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     currPage = 1
     boxName = 'outbox'
     while ctr < maxItems and currPage < 4:
+        outboxFeedPathStr = \
+            '/users/' + nickname + '/' + boxName + '?page=' + \
+            str(currPage)
         outboxFeed = \
             personBoxJson({}, session, baseDir, domain,
                           port,
-                          '/users/' + nickname + '/' + boxName + '?page=' +
-                          str(currPage),
+                          outboxFeedPathStr,
                           httpPrefix,
                           10, boxName,
                           authorized, 0, False, 0)

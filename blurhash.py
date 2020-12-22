@@ -174,7 +174,8 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
 
     # Build final blurhash
     blurhash = ""
-    blurhash += _base83_encode((components_x - 1) + (components_y - 1) * 9, 1)
+    blurhashValue = (components_x - 1) + (components_y - 1) * 9
+    blurhash += _base83_encode(blurhashValue, 1)
     blurhash += _base83_encode(quant_max_ac_component, 1)
     blurhash += _base83_encode(dc_value, 4)
     for ac_value in ac_values:

@@ -110,8 +110,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 urlCtr += 1
             blockedPostsHtml = ''
             if blockedPostsLinks:
+                blockNoStr = 'blockNumber' + str(ctr)
                 blockedPostsHtml = \
-                    getContentWarningButton('blockNumber' + str(ctr),
+                    getContentWarningButton(blockNoStr,
                                             translate, blockedPostsLinks)
                 ctr += 1
 

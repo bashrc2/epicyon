@@ -1124,7 +1124,7 @@ if args.undoItemName:
     cachedWebfingers = {}
     print('Sending undo of shared item: ' + args.undoItemName)
 
-    sendUndoShareViaServer(session,
+    sendUndoShareViaServer(baseDir, session,
                            args.nickname, args.password,
                            domain, port,
                            httpPrefix,
@@ -1931,33 +1931,88 @@ if args.testdata:
 
     deleteAllPosts(baseDir, nickname, domain, 'inbox')
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
+
+    testFollowersOnly = False
+    testSaveToFile = True
+    testClientToServer = False
+    testCommentsEnabled = True
+    testAttachImageFilename = None
+    testMediaType = None
+    testImageDescription = None
+
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "like, this is totally just a #test, man",
-                     False, True, False, True, None, None, useBlurhash)
+                     "like this is totally just a #test man",
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
+                     useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
-                     False, True, False, True, None, None, useBlurhash)
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
+                     useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
-                     False, True, False, True, None, None, useBlurhash)
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
+                     useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
-                     False, True, False, True, None, None,
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
                      useBlurhash, 'someone')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
-                     False, True, False, True, 'img/logo.png',
-                     'Description of image', useBlurhash)
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     'img/logo.png', 'image/png',
+                     'Description of image',                     
+                     useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
-                     "man, these centralized sites are, like, the worst!",
-                     False, True, False, True, None, None, useBlurhash)
+                     "man these centralized sites are like the worst!",
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
+                     useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
-                     False, True, False, True, None, None, useBlurhash)
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
+                     useBlurhash)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
-                     False, True, False, True, None, None, useBlurhash)
+                     testFollowersOnly,
+                     testSaveToFile,
+                     testClientToServer,
+                     testCommentsEnabled,
+                     testAttachImageFilename,
+                     testMediaType, testImageDescription,
+                     useBlurhash)
 
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)

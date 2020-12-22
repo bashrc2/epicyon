@@ -579,7 +579,7 @@ def setTheme(baseDir: str, name: str, domain: str,
 
     if not result:
         # default
-        _setThemeDefault(baseDir)
+        _setThemeDefault(baseDir, allowLocalNetworkAccess)
         result = True
 
     variablesFile = baseDir + '/theme/' + name + '/theme.json'
