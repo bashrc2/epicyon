@@ -2831,21 +2831,21 @@ def testFunctions():
     callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
 
     for modName, modProperties in modules.items():
-        callGraphStr += '  subgraph ' + modName + ' {\n'
+        callGraphStr += '  subgraph cluster_' + modName + ' {\n'
+        callGraphStr += '    label = "' + modName + '";\n'
         callGraphStr += '    node [style=filled];\n'
         callGraphStr += '    '
         for name in modProperties['functions']:
             callGraphStr += '"' + name + '" '
         callGraphStr += ';\n'
-        callGraphStr += '    label = "' + modName + '";\n'
         callGraphStr += '    color=blue;\n'
         callGraphStr += '  }\n\n'
 
     for name, properties in functionProperties.items():
         if not properties['calls']:
             continue
-        # for calledFunc in properties['calls']:
-        #     callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+        for calledFunc in properties['calls']:
+            callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
 
     callGraphStr += '\n}\n'
     with open('epicyon.dot', 'w+') as fp:
