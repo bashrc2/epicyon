@@ -2851,6 +2851,8 @@ def testFunctions():
     with open('epicyon.dot', 'w+') as fp:
         fp.write(callGraphStr)
         print('Call graph saved to epicyon.dot')
+        print('Convert to image with: ' +
+              'dot -T epicyon.dot -o epicyon_diagram.jpg')
 
 
 def runAllTests():
