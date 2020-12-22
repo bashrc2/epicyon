@@ -49,8 +49,8 @@ from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
 from follow import followerOfPerson
-from follow import unfollowPerson
-from follow import unfollowerOfPerson
+from follow import unfollowAccount
+from follow import unfollowerOfAccount
 from follow import sendFollowRequest
 from person import createPerson
 from person import setDisplayNickname
@@ -73,7 +73,7 @@ from delete import sendDeleteViaServer
 from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
-from inbox import guessHashtagCategory
+from categories import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
@@ -978,7 +978,7 @@ def testNoOfFollowersOnDomain():
         noOfFollowersOnDomain(baseDir, nickname + '@' + domain, otherdomain)
     assert followersOnOtherDomain == 3
 
-    unfollowerOfPerson(baseDir, nickname, domain, 'sausagedog', otherdomain)
+    unfollowerOfAccount(baseDir, nickname, domain, 'sausagedog', otherdomain)
     followersOnOtherDomain = \
         noOfFollowersOnDomain(baseDir, nickname + '@' + domain, otherdomain)
     assert followersOnOtherDomain == 2
@@ -1074,7 +1074,7 @@ def testFollows():
             assert(False)
 
     assert(domainFound)
-    unfollowPerson(baseDir, nickname, domain, 'batman', 'mesh.com')
+    unfollowAccount(baseDir, nickname, domain, 'batman', 'mesh.com')
 
     domainFound = False
     for followingDomain in f:
@@ -2614,6 +2614,9 @@ def testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme'
     ]
+    excludeImports = [
+        'link'
+    ]
     # check that functions are called somewhere
     for name, properties in functionProperties.items():
         if name in exclusions:
@@ -2623,6 +2626,14 @@ def testFunctions():
                   ' in module ' + properties['module'] +
                   ' is not called anywhere')
         assert properties['calledInModule']
+        if name not in excludeImports:
+            for modName in properties['calledInModule']:
+                if modName == properties['module']:
+                    continue
+                importStr = 'from ' + properties['module'] + ' import ' + name
+                if importStr not in open(modName + '.py').read():
+                    print(importStr + ' not found in ' + modName + '.py')
+                    assert False
         print('Function: ' + name + ' ✓')
     # print(str(function))
     # print(str(functionProperties))

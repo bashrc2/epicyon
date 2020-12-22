@@ -39,7 +39,7 @@ from session import createSession
 from session import getJson
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
-from follow import unfollowerOfPerson
+from follow import unfollowerOfAccount
 from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
@@ -49,8 +49,8 @@ from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
 from blocking import isBlockedDomain
 from filters import isFiltered
-from announce import updateAnnounceCollection
-from announce import undoAnnounceCollectionEntry
+from utils import updateAnnounceCollection
+from utils import undoAnnounceCollectionEntry
 from httpsig import messageContentDigest
 from posts import validContentWarning
 from posts import downloadAnnounce
@@ -637,10 +637,10 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    if unfollowerOfPerson(baseDir,
-                          nicknameFollowing, domainFollowingFull,
-                          nicknameFollower, domainFollowerFull,
-                          debug):
+    if unfollowerOfAccount(baseDir,
+                           nicknameFollowing, domainFollowingFull,
+                           nicknameFollower, domainFollowerFull,
+                           debug):
         print(nicknameFollowing + '@' + domainFollowingFull + ': '
               'Follower ' + nicknameFollower + '@' + domainFollowerFull +
               ' was removed')

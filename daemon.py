@@ -87,7 +87,7 @@ from inbox import populateReplies
 from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import sendFollowRequest
-from follow import unfollowPerson
+from follow import unfollowAccount
 from follow import createInitialLastSeen
 from auth import authorize
 from auth import createPassword
@@ -2115,9 +2115,9 @@ class PubServer(BaseHTTPRequestHandler):
                 }
                 pathUsersSection = path.split('/users/')[1]
                 self.postToNickname = pathUsersSection.split('/')[0]
-                unfollowPerson(self.server.baseDir, self.postToNickname,
-                               self.server.domain,
-                               followingNickname, followingDomainFull)
+                unfollowAccount(self.server.baseDir, self.postToNickname,
+                                self.server.domain,
+                                followingNickname, followingDomainFull)
                 self._postToOutboxThread(unfollowJson)
 
         if callingDomain.endswith('.onion') and onionDomain:

@@ -212,10 +212,10 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     return alreadyFollowing
 
 
-def unfollowPerson(baseDir: str, nickname: str, domain: str,
-                   followNickname: str, followDomain: str,
-                   followFile='following.txt',
-                   debug=False) -> bool:
+def unfollowAccount(baseDir: str, nickname: str, domain: str,
+                    followNickname: str, followDomain: str,
+                    followFile='following.txt',
+                    debug=False) -> bool:
     """Removes a person to the follow list
     """
     if ':' in domain:
@@ -261,14 +261,14 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def unfollowerOfPerson(baseDir: str, nickname: str, domain: str,
-                       followerNickname: str, followerDomain: str,
-                       debug=False) -> bool:
+def unfollowerOfAccount(baseDir: str, nickname: str, domain: str,
+                        followerNickname: str, followerDomain: str,
+                        debug=False) -> bool:
     """Remove a follower of a person
     """
-    return unfollowPerson(baseDir, nickname, domain,
-                          followerNickname, followerDomain,
-                          'followers.txt', debug)
+    return unfollowAccount(baseDir, nickname, domain,
+                           followerNickname, followerDomain,
+                           'followers.txt', debug)
 
 
 def clearFollows(baseDir: str, nickname: str, domain: str,
@@ -1208,8 +1208,8 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
         getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull = getFullDomain(domainFollowing, portFollowing)
 
-    if unfollowPerson(baseDir, nicknameFollower, domainFollowerFull,
-                      nicknameFollowing, domainFollowingFull):
+    if unfollowAccount(baseDir, nicknameFollower, domainFollowerFull,
+                       nicknameFollowing, domainFollowingFull):
         if debug:
             print('DEBUG: ' + nicknameFollower + ' unfollowed ' +
                   nicknameFollowing + '@' + domainFollowingFull)
