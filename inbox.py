@@ -730,19 +730,19 @@ def _personReceiveUpdate(baseDir: str,
           ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
-    actor = updateDomainFull + '/users/' + updateNickname
-    if actor not in personJson['id']:
-        actor = updateDomainFull + '/profile/' + updateNickname
-        if actor not in personJson['id']:
-            actor = updateDomainFull + '/channel/' + updateNickname
-            if actor not in personJson['id']:
-                actor = updateDomainFull + '/accounts/' + updateNickname
-                if actor not in personJson['id']:
-                    if debug:
-                        print('actor: ' + actor)
-                        print('id: ' + personJson['id'])
-                        print('DEBUG: Actor does not match id')
-                    return False
+    usersPaths = ('users', 'profile', 'channel', 'accounts')
+    usersStrFound = False
+    for usersStr in usersPaths:
+        actor = updateDomainFull + '/' + usersStr + '/' + updateNickname
+        if actor in personJson['id']:
+            usersStrFound = True
+            break
+    if not usersStrFound:
+        if debug:
+            print('actor: ' + actor)
+            print('id: ' + personJson['id'])
+            print('DEBUG: Actor does not match id')
+        return False
     if updateDomainFull == domainFull:
         if debug:
             print('DEBUG: You can only receive actor updates ' +
