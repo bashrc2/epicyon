@@ -854,7 +854,7 @@ def testFollowBetweenServers():
                           True, __version__, False)
     print('sendResult: ' + str(sendResult))
 
-    for t in range(10):
+    for t in range(16):
         if os.path.isfile(bobDir + '/accounts/bob@' +
                           bobDomain + '/followers.txt'):
             if os.path.isfile(aliceDir + '/accounts/alice@' +
