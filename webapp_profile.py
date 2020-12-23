@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import isDormant
 from utils import getNicknameFromActor
@@ -61,11 +62,7 @@ def htmlProfileAfterSearch(cssCache: {},
                            defaultTimeline: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
-    if '/users/' in profileHandle or \
-       '/accounts/' in profileHandle or \
-       '/channel/' in profileHandle or \
-       '/profile/' in profileHandle or \
-       '/@' in profileHandle:
+    if hasUsersPath(profileHandle) or '/@' in profileHandle:
         searchNickname = getNicknameFromActor(profileHandle)
         searchDomain, searchPort = getDomainFromActor(profileHandle)
     else:

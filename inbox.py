@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
 from utils import isEventPost
@@ -604,10 +605,7 @@ def _receiveUndoFollow(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: follow request has no actor within object')
         return False
-    if '/users/' not in messageJson['object']['actor'] and \
-       '/accounts/' not in messageJson['object']['actor'] and \
-       '/channel/' not in messageJson['object']['actor'] and \
-       '/profile/' not in messageJson['object']['actor']:
+    if not hasUsersPath(messageJson['object']['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing ' +
                   'from actor within object')
@@ -668,10 +666,7 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: follow request has no actor')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')
         return False
@@ -859,10 +854,7 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' object has no type')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   messageJson['type'])
@@ -943,10 +935,7 @@ def _receiveLike(recentPostsCache: {},
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   messageJson['type'])
@@ -1014,10 +1003,7 @@ def _receiveUndoLike(recentPostsCache: {},
             print('DEBUG: ' + messageJson['type'] +
                   ' like object is not a string')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   messageJson['type'] + ' like')
@@ -1219,10 +1205,7 @@ def _receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
@@ -1303,19 +1286,13 @@ def _receiveAnnounce(recentPostsCache: {},
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: ' +
                   '"users" or "profile" missing from actor in ' +
                   messageJson['type'])
         return False
-    if '/users/' not in messageJson['object'] and \
-       '/accounts/' not in messageJson['object'] and \
-       '/channel/' not in messageJson['object'] and \
-       '/profile/' not in messageJson['object']:
+    if not hasUsersPath(messageJson['object']):
         if debug:
             print('DEBUG: ' +
                   '"users", "channel" or "profile" missing in ' +
@@ -1387,10 +1364,7 @@ def _receiveAnnounce(recentPostsCache: {},
                         if isinstance(attrib, str):
                             lookupActor = attrib
         if lookupActor:
-            if '/users/' in lookupActor or \
-               '/accounts/' in lookupActor or \
-               '/channel/' in lookupActor or \
-               '/profile/' in lookupActor:
+            if hasUsersPath(lookupActor):
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
@@ -1439,10 +1413,7 @@ def _receiveUndoAnnounce(recentPostsCache: {},
         return False
     if messageJson['object']['type'] != 'Announce':
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   messageJson['type'] + ' announce')
@@ -1688,10 +1659,7 @@ def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
     if not isinstance(lookupActor, str):
         return
 
-    if not ('/users/' in lookupActor or
-            '/accounts/' in lookupActor or
-            '/channel/' in lookupActor or
-            '/profile/' in lookupActor):
+    if not hasUsersPath(lookupActor):
         return
 
     if '/statuses/' in lookupActor:

@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import removePostFromCache
@@ -255,10 +256,7 @@ def bookmark(recentPostsCache: {},
         bookmarkedPostNickname = getNicknameFromActor(acBm)
         bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
     else:
-        if '/users/' in objectUrl or \
-           '/accounts/' in objectUrl or \
-           '/channel/' in objectUrl or \
-           '/profile/' in objectUrl:
+        if hasUsersPath(objectUrl):
             ou = objectUrl
             bookmarkedPostNickname = getNicknameFromActor(ou)
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)
@@ -322,10 +320,7 @@ def undoBookmark(recentPostsCache: {},
         bookmarkedPostNickname = getNicknameFromActor(acBm)
         bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
     else:
-        if '/users/' in objectUrl or \
-           '/accounts/' in objectUrl or \
-           '/channel/' in objectUrl or \
-           '/profile/' in objectUrl:
+        if hasUsersPath(objectUrl):
             ou = objectUrl
             bookmarkedPostNickname = getNicknameFromActor(ou)
             bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(ou)

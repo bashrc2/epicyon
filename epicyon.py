@@ -47,6 +47,7 @@ from tests import testClientToServer
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import setConfigParam
 from utils import getConfigParam
@@ -1318,10 +1319,7 @@ if args.actor:
         for prefix in prefixes:
             args.actor = args.actor.replace(prefix, '')
         args.actor = args.actor.replace('/@', '/users/')
-        if '/users/' not in args.actor and \
-           '/accounts/' not in args.actor and \
-           '/channel/' not in args.actor and \
-           '/profile/' not in args.actor:
+        if not hasUsersPath(args.actor):
             print('Expected actor format: ' +
                   'https://domain/@nick or https://domain/users/nick')
             sys.exit()
@@ -1391,10 +1389,7 @@ if args.actor:
     personUrl = None
     if wfRequest.get('errors'):
         print('wfRequest error: ' + str(wfRequest['errors']))
-        if '/users/' in args.actor or \
-           '/accounts/' in args.actor or \
-           '/profile/' in args.actor or \
-           '/channel/' in args.actor:
+        if hasUsersPath(args.actor):
             personUrl = originalActor
         else:
             sys.exit()

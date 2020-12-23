@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import urlPermitted
 from utils import getDomainFromActor
@@ -182,10 +183,7 @@ def receiveAcceptReject(session, baseDir: str,
         if debug:
             print('DEBUG: ' + messageJson['type'] + ' has no actor')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in ' +
                   messageJson['type'] + '. Assuming single user instance.')

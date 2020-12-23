@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
 from utils import getFollowersList
@@ -155,10 +156,7 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
             continue
         if link['type'] != 'application/activity+json':
             continue
-        if not ('/users/' in link['href'] or
-                '/accounts/' in link['href'] or
-                '/profile/' in link['href'] or
-                '/channel/' in link['href']):
+        if not hasUsersPath(link['href']):
             print('getUserUrl webfinger activity+json ' +
                   'contains single user instance actor ' +
                   str(sourceId) + ' ' + str(link))

@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from pprint import pprint
 import os
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import isSystemAccount
 from utils import getFollowersList
@@ -316,10 +317,7 @@ def _getNoOfFollows(baseDir: str, nickname: str, domain: str,
                 ctr += 1
             elif ((line.startswith('http') or
                    line.startswith('dat')) and
-                  ('/users/' in line or
-                   '/profile/' in line or
-                   '/accounts/' in line or
-                   '/channel/' in line)):
+                  hasUsersPath(line)):
                 ctr += 1
     return ctr
 
@@ -438,10 +436,7 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                         following['orderedItems'].append(url)
                 elif ((line.startswith('http') or
                        line.startswith('dat')) and
-                      ('/users/' in line or
-                       '/profile/' in line or
-                       '/accounts/' in line or
-                       '/channel/' in line)):
+                      hasUsersPath(line)):
                     # https://domain/users/nickname
                     pageCtr += 1
                     totalCtr += 1
@@ -616,10 +611,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: follow request has no actor')
         return False
-    if '/users/' not in messageJson['actor'] and \
-       '/accounts/' not in messageJson['actor'] and \
-       '/channel/' not in messageJson['actor'] and \
-       '/profile/' not in messageJson['actor']:
+    if not hasUsersPath(messageJson['actor']):
         if debug:
             print('DEBUG: users/profile/accounts/channel missing from actor')
         return False
@@ -641,10 +633,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                   'nickname. Assuming single user instance.')
     if not messageJson.get('to'):
         messageJson['to'] = messageJson['object']
-    if '/users/' not in messageJson['object'] and \
-       '/accounts/' not in messageJson['object'] and \
-       '/channel/' not in messageJson['object'] and \
-       '/profile/' not in messageJson['object']:
+    if not hasUsersPath(messageJson['object']):
         if debug:
             print('DEBUG: users/profile/channel/accounts ' +
                   'not found within object')

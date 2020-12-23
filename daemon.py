@@ -171,9 +171,10 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from categories import setHashtagCategory
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeHtml
-from categories import setHashtagCategory
 from utils import isEditor
 from utils import getImageExtensions
 from utils import mediaFileMimeType
@@ -2523,10 +2524,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             elif ('@' in searchStr or
                   ('://' in searchStr and
-                   ('/users/' in searchStr or
-                    '/profile/' in searchStr or
-                    '/accounts/' in searchStr or
-                    '/channel/' in searchStr))):
+                   hasUsersPath(searchStr))):
                 # profile search
                 nickname = getNicknameFromActor(actorStr)
                 if not self.server.session:
