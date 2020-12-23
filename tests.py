@@ -2865,10 +2865,12 @@ def testFunctions():
         callGraphStr += '  subgraph cluster_' + modName + ' {\n'
         callGraphStr += '    label = "' + modName + '";\n'
         callGraphStr += '    node [style=filled];\n'
-        callGraphStr += '    '
+        moduleFunctionsStr = ''
         for name in modProperties['functions']:
-            callGraphStr += '"' + name + '" '
-        callGraphStr += ';\n'
+            if name not in excludeFuncs:
+                moduleFunctionsStr += '"' + name + '" '
+        if moduleFunctionsStr:
+            callGraphStr += '    ' + moduleFunctionsStr + ';\n'
         callGraphStr += '    color=blue;\n'
         callGraphStr += '  }\n\n'
 
@@ -2876,14 +2878,16 @@ def testFunctions():
         if not properties['calls']:
             continue
         for calledFunc in properties['calls']:
-            callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+            if calledFunc not in excludeFuncs:
+                callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
 
     callGraphStr += '\n}\n'
     with open('epicyon.dot', 'w+') as fp:
         fp.write(callGraphStr)
         print('Call graph saved to epicyon.dot')
         print('Convert to image with: ' +
-              'sfdp -x -Goverlap=scale -Tx11 epicyon.dot')
+              'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
+              '-Gsep=+120 -Tx11 epicyon.dot')
 
 
 def runAllTests():
