@@ -2883,7 +2883,7 @@ def testFunctions():
         fp.write(callGraphStr)
         print('Call graph saved to epicyon.dot')
         print('Convert to image with: ' +
-              'dot -Tjpg epicyon.dot -o epicyon_diagram.jpg')
+              'sfdp -x -Goverlap=scale -Tx11 epicyon.dot')
 
 
 def runAllTests():
