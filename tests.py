@@ -2847,6 +2847,7 @@ def testFunctions():
         print('Function: ' + name + ' ✓')
 
     print('Constructing function call graph')
+    maxModuleCalls = 1
     for modName, modProperties in modules.items():
         lineCtr = 0
         for line in modules[modName]['lines']:
@@ -2863,12 +2864,30 @@ def testFunctions():
                         if modules[modName].get('calls'):
                             if modCall not in modules[modName]['calls']:
                                 modules[modName]['calls'].append(modCall)
+                                if len(modules[modName]['calls']) > \
+                                   maxModuleCalls:
+                                    maxModuleCalls = \
+                                        len(modules[modName]['calls'])
                         else:
                             modules[modName]['calls'] = [modCall]
             lineCtr += 1
     callGraphStr = 'digraph EpicyonModules {\n\n'
     callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
     callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
+    # colors of modules nodes
+    for modName, modProperties in modules.items():
+        if not modProperties.get('calls'):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor = yellow style=filled];\n'
+            continue
+        if len(modProperties['calls']) < int(maxModuleCalls / 4):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor = orange style=filled];\n'
+        else:
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor = red style=filled];\n'
+    callGraphStr += '\n'
+    # connections between modules
     for modName, modProperties in modules.items():
         if not modProperties.get('calls'):
             continue
