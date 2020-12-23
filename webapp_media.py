@@ -80,7 +80,7 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
         # French and German language
         # These have been chosen based on reported numbers of users
         # and the content of each has not been reviewed, so mileage could vary
-        peerTubeSites = ('peertube.mastodon.host', 'open.tube', 'share.tube',
+        peerTubeSites = ('peertube.mastodon.host', 'share.tube',
                          'tube.tr4sk.me', 'videos.elbinario.net',
                          'hkvideo.live',
                          'peertube.snargol.com', 'tube.22decembre.eu',
