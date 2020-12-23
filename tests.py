@@ -2613,9 +2613,10 @@ def getFunctionCalls(name: str, lines: [], startLineCtr: int,
     callsFunctions = []
     functionContentStr = ''
     for lineCtr in range(startLineCtr + 1, len(lines)):
-        if lines[lineCtr].startswith('def '):
+        lineStr = lines[lineCtr].strip()
+        if lineStr.startswith('def '):
             break
-        if lines[lineCtr].startswith('class '):
+        if lineStr.startswith('class '):
             break
         functionContentStr += lines[lineCtr]
     for funcName, properties in functionProperties.items():
@@ -2635,14 +2636,14 @@ def functionArgsMatch(callArgs: [], funcArgs: []):
     for a in callArgs:
         if a == 'self':
             continue
-        if '=' not in a:
+        if '=' not in a or a.startswith("'"):
             callArgsCtr += 1
 
     funcArgsCtr = 0
     for a in funcArgs:
         if a == 'self':
             continue
-        if '=' not in a:
+        if '=' not in a or a.startswith("'"):
             funcArgsCtr += 1
 
     return callArgsCtr >= funcArgsCtr
@@ -2670,7 +2671,7 @@ def testFunctions():
                 lines = f.readlines()
                 modules[modName]['lines'] = lines
                 for line in lines:
-                    if not line.startswith('def '):
+                    if not line.strip().startswith('def '):
                         continue
                     methodName = line.split('def ', 1)[1].split('(')[0]
                     methodArgs = \
@@ -2694,7 +2695,9 @@ def testFunctions():
         'pyjsonld'
     ]
     excludeFuncs = [
-        'link'
+        'link',
+        'set',
+        'get'
     ]
     # which modules is each function used within?
     for modName, modProperties in modules.items():
@@ -2702,7 +2705,11 @@ def testFunctions():
         for name, properties in functionProperties.items():
             lineCtr = 0
             for line in modules[modName]['lines']:
-                if line.startswith('def '):
+                lineStr = line.strip()
+                if lineStr.startswith('def '):
+                    lineCtr += 1
+                    continue
+                if lineStr.startswith('class '):
                     lineCtr += 1
                     continue
                 if name + '(' in line:
@@ -2735,7 +2742,22 @@ def testFunctions():
 
     # don't check these functions, because they are procedurally called
     exclusions = [
+        'do_GET',
+        'do_POST',
+        'do_HEAD',
+        '__run',
+        'globaltrace',
+        'localtrace',
+        'kill',
+        'clone',
+        'unregister_rdf_parser',
         'set_document_loader',
+        'has_property',
+        'has_value',
+        'add_value',
+        'get_values',
+        'remove_property',
+        'remove_value',
         'normalize',
         'get_document_loader',
         'runInboxQueueWatchdog',
@@ -2764,16 +2786,25 @@ def testFunctions():
         'setOrganizationScheme'
     ]
     excludeImports = [
-        'link'
+        'link',
+        'start'
     ]
     excludeLocal = [
         'pyjsonld',
         'daemon',
         'tests'
     ]
+    excludeMods = [
+        'pyjsonld'
+    ]
     # check that functions are called somewhere
     for name, properties in functionProperties.items():
+        if name.startswith('__'):
+            if name.endswith('__'):
+                continue
         if name in exclusions:
+            continue
+        if properties['module'] in excludeMods:
             continue
         isLocalFunction = False
         if not properties['calledInModule']:
@@ -2819,7 +2850,7 @@ def testFunctions():
     for modName, modProperties in modules.items():
         lineCtr = 0
         for line in modules[modName]['lines']:
-            if line.startswith('def '):
+            if line.strip().startswith('def '):
                 name = line.split('def ')[1].split('(')[0]
                 callsList = \
                     getFunctionCalls(name, modules[modName]['lines'],
