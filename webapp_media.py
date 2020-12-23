@@ -39,8 +39,7 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                 "allowfullscreen></iframe>\n</center>\n"
             return content
 
-    invidiousSites = ('https://invidio.us',
-                      'https://invidious.snopyta.org',
+    invidiousSites = ('https://invidious.snopyta.org',
                       'http://c7hqkpkpemu6e7emz5b4vy' +
                       'z7idjgdvgaaa3dyimmeojqbgpea3xqjoid.onion',
                       'http://axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
