@@ -2867,6 +2867,8 @@ def testFunctions():
         callGraphStr += '    node [style=filled];\n'
         moduleFunctionsStr = ''
         for name in modProperties['functions']:
+            if name.startswith('test'):
+                continue
             if name not in excludeFuncs:
                 moduleFunctionsStr += '"' + name + '" '
         if moduleFunctionsStr:
@@ -2878,6 +2880,8 @@ def testFunctions():
         if not properties['calls']:
             continue
         for calledFunc in properties['calls']:
+            if calledFunc.startswith('test'):
+                continue
             if calledFunc not in excludeFuncs:
                 callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
 
