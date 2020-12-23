@@ -2854,6 +2854,7 @@ def testFunctions():
                     'goldenrod', 'burlywood2', 'bisque1', 'brown1',
                     'chartreuse2', 'cornsilk', 'darksalmon')
     maxModuleCalls = 1
+    maxFunctionCalls = 1
     colorCtr = 0
     for modName, modProperties in modules.items():
         lineCtr = 0
@@ -2868,6 +2869,8 @@ def testFunctions():
                     getFunctionCalls(name, modules[modName]['lines'],
                                      lineCtr, functionProperties)
                 functionProperties[name]['calls'] = callsList.copy()
+                if len(callsList) > maxFunctionCalls:
+                    maxFunctionCalls = len(callsList)
                 # keep track of which module calls which other module
                 for fn in callsList:
                     modCall = functionProperties[fn]['module']
@@ -2889,14 +2892,17 @@ def testFunctions():
     for modName, modProperties in modules.items():
         if not modProperties.get('calls'):
             callGraphStr += '  "' + modName + \
-                '" [fillcolor = yellow style=filled];\n'
+                '" [fillcolor=yellow style=filled];\n'
             continue
-        if len(modProperties['calls']) < int(maxModuleCalls / 4):
+        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
             callGraphStr += '  "' + modName + \
-                '" [fillcolor = orange style=filled];\n'
+                '" [fillcolor=green style=filled];\n'
+        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=orange style=filled];\n'
         else:
             callGraphStr += '  "' + modName + \
-                '" [fillcolor = red style=filled];\n'
+                '" [fillcolor=red style=filled];\n'
     callGraphStr += '\n'
     # connections between modules
     for modName, modProperties in modules.items():
@@ -2920,24 +2926,39 @@ def testFunctions():
     for modName, modProperties in modules.items():
         callGraphStr += '  subgraph cluster_' + modName + ' {\n'
         callGraphStr += '    label = "' + modName + '";\n'
-        callGraphStr += '    node '
-        callGraphStr += '[style=filled fillcolor='
-        callGraphStr += modProperties['color'] + '];\n'
+        callGraphStr += '    node [style=filled];\n'
         moduleFunctionsStr = ''
         for name in modProperties['functions']:
             if name.startswith('test'):
                 continue
             if name not in excludeFuncs:
-                moduleFunctionsStr += '"' + name + '" '
+                if not functionProperties[name]['calls']:
+                    moduleFunctionsStr += \
+                        '  "' + name + '" [fillcolor=yellow style=filled];\n'
+                    continue
+                noOfCalls = len(functionProperties[name]['calls'])
+                if noOfCalls < int(maxFunctionCalls / 4):
+                    moduleFunctionsStr += '  "' + name + \
+                        '" [fillcolor=orange style=filled];\n'
+                else:
+                    moduleFunctionsStr += '  "' + name + \
+                        '" [fillcolor=red style=filled];\n'
+
         if moduleFunctionsStr:
-            callGraphStr += '    ' + moduleFunctionsStr + ';\n'
+            callGraphStr += moduleFunctionsStr + '\n'
         callGraphStr += '    color=blue;\n'
         callGraphStr += '  }\n\n'
 
     for name, properties in functionProperties.items():
         if not properties['calls']:
             continue
-        modColor = modules[properties['module']]['color']
+        noOfCalls = len(properties['calls'])
+        if noOfCalls <= int(maxFunctionCalls / 8):
+            modColor = 'blue'
+        elif noOfCalls < int(maxFunctionCalls / 4):
+            modColor = 'green'
+        else:
+            modColor = 'red'
         for calledFunc in properties['calls']:
             if calledFunc.startswith('test'):
                 continue
