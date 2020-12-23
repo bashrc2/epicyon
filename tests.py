@@ -2847,9 +2847,20 @@ def testFunctions():
         print('Function: ' + name + ' ✓')
 
     print('Constructing function call graph')
+    moduleColors = ('red', 'green', 'yellow', 'orange', 'purple', 'cyan',
+                    'darkgoldenrod3', 'darkolivegreen1', 'darkorange1',
+                    'darkorchid1', 'darkseagreen', 'darkslategray4',
+                    'deeppink1', 'deepskyblue1', 'dimgrey', 'gold1',
+                    'goldenrod', 'burlywood2', 'bisque1', 'brown1',
+                    'chartreuse2', 'cornsilk', 'darksalmon')
     maxModuleCalls = 1
+    colorCtr = 0
     for modName, modProperties in modules.items():
         lineCtr = 0
+        modules[modName]['color'] = moduleColors[colorCtr]
+        colorCtr += 1
+        if colorCtr >= len(moduleColors):
+            colorCtr = 0
         for line in modules[modName]['lines']:
             if line.strip().startswith('def '):
                 name = line.split('def ')[1].split('(')[0]
@@ -2909,7 +2920,9 @@ def testFunctions():
     for modName, modProperties in modules.items():
         callGraphStr += '  subgraph cluster_' + modName + ' {\n'
         callGraphStr += '    label = "' + modName + '";\n'
-        callGraphStr += '    node [style=filled];\n'
+        callGraphStr += '    node '
+        callGraphStr += '[style=filled fillcolor='
+        callGraphStr += modProperties['color'] + '];\n'
         moduleFunctionsStr = ''
         for name in modProperties['functions']:
             if name.startswith('test'):
@@ -2924,11 +2937,13 @@ def testFunctions():
     for name, properties in functionProperties.items():
         if not properties['calls']:
             continue
+        modColor = modules[properties['module']]['color']
         for calledFunc in properties['calls']:
             if calledFunc.startswith('test'):
                 continue
             if calledFunc not in excludeFuncs:
-                callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+                callGraphStr += '  "' + name + '" -> "' + calledFunc + \
+                    '" [color=' + modColor + '];\n'
 
     callGraphStr += '\n}\n'
     with open('epicyon.dot', 'w+') as fp:
