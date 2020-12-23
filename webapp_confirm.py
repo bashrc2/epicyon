@@ -28,7 +28,8 @@ def htmlConfirmDelete(cssCache: {},
                       wfRequest: {}, personCache: {},
                       callingDomain: str,
                       YTReplacementDomain: str,
-                      showPublishedDateOnly: bool) -> str:
+                      showPublishedDateOnly: bool,
+                      peertubeInstances: []) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -66,6 +67,7 @@ def htmlConfirmDelete(cssCache: {},
                              httpPrefix, projectVersion, 'outbox',
                              YTReplacementDomain,
                              showPublishedDateOnly,
+                             peertubeInstances,
                              False, False, False, False, False)
     deletePostStr += '<center>'
     deletePostStr += \

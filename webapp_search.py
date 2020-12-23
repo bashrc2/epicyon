@@ -506,7 +506,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       personCache: {},
                       port: int,
                       YTReplacementDomain: str,
-                      showPublishedDateOnly: bool) -> str:
+                      showPublishedDateOnly: bool,
+                      peertubeInstances: []) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith('!'):
@@ -579,6 +580,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  'search',
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
+                                 peertubeInstances,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -599,7 +601,8 @@ def htmlHashtagSearch(cssCache: {},
                       session, wfRequest: {}, personCache: {},
                       httpPrefix: str, projectVersion: str,
                       YTReplacementDomain: str,
-                      showPublishedDateOnly: bool) -> str:
+                      showPublishedDateOnly: bool,
+                      peertubeInstances: []) -> str:
     """Show a page containing search results for a hashtag
     """
     if hashtag.startswith('#'):
@@ -745,6 +748,7 @@ def htmlHashtagSearch(cssCache: {},
                                  'search',
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
+                                 peertubeInstances,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
                                  showPublicOnly,

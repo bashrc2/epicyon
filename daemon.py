@@ -2490,7 +2490,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       httpPrefix,
                                       self.server.projectVersion,
                                       self.server.YTReplacementDomain,
-                                      self.server.showPublishedDateOnly)
+                                      self.server.showPublishedDateOnly,
+                                      self.server.peertubeInstances)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
@@ -2541,7 +2542,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.personCache,
                                       port,
                                       self.server.YTReplacementDomain,
-                                      self.server.showPublishedDateOnly)
+                                      self.server.showPublishedDateOnly,
+                                      self.server.peertubeInstances)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
@@ -2585,7 +2587,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.projectVersion,
                                            self.server.YTReplacementDomain,
                                            self.server.showPublishedDateOnly,
-                                           self.server.defaultTimeline)
+                                           self.server.defaultTimeline,
+                                           self.server.peertubeInstances)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -5380,7 +5383,8 @@ class PubServer(BaseHTTPRequestHandler):
                               httpPrefix,
                               self.server.projectVersion,
                               self.server.YTReplacementDomain,
-                              self.server.showPublishedDateOnly)
+                              self.server.showPublishedDateOnly,
+                              self.server.peertubeInstances)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -6341,7 +6345,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   __version__, self.server.cachedWebfingers,
                                   self.server.personCache, callingDomain,
                                   self.server.YTReplacementDomain,
-                                  self.server.showPublishedDateOnly)
+                                  self.server.showPublishedDateOnly,
+                                  self.server.peertubeInstances)
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
@@ -6527,6 +6532,7 @@ class PubServer(BaseHTTPRequestHandler):
                 personCache = self.server.personCache
                 projectVersion = self.server.projectVersion
                 ytDomain = self.server.YTReplacementDomain
+                peertubeInstances = self.server.peertubeInstances
                 msg = \
                     htmlPostReplies(self.server.cssCache,
                                     recentPostsCache,
@@ -6543,7 +6549,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     httpPrefix,
                                     projectVersion,
                                     ytDomain,
-                                    self.server.showPublishedDateOnly)
+                                    self.server.showPublishedDateOnly,
+                                    peertubeInstances)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -6611,6 +6618,7 @@ class PubServer(BaseHTTPRequestHandler):
                 personCache = self.server.personCache
                 projectVersion = self.server.projectVersion
                 ytDomain = self.server.YTReplacementDomain
+                peertubeInstances = self.server.peertubeInstances
                 msg = \
                     htmlPostReplies(self.server.cssCache,
                                     recentPostsCache,
@@ -6627,7 +6635,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     httpPrefix,
                                     projectVersion,
                                     ytDomain,
-                                    self.server.showPublishedDateOnly)
+                                    self.server.showPublishedDateOnly,
+                                    peertubeInstances)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -6713,6 +6722,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.themeName,
                                     self.server.dormantMonths,
+                                    self.server.peertubeInstances,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -6796,6 +6806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.newswire,
                                                 self.server.themeName,
                                                 self.server.dormantMonths,
+                                                self.server.peertubeInstances,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -6900,6 +6911,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.YTReplacementDomain
                                 showPublishedDateOnly = \
                                     self.server.showPublishedDateOnly
+                                peertubeInstances = \
+                                    self.server.peertubeInstances
                                 cssCache = self.server.cssCache
                                 msg = \
                                     htmlIndividualPost(cssCache,
@@ -6919,7 +6932,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                        projectVersion,
                                                        likedBy,
                                                        ytDomain,
-                                                       showPublishedDateOnly)
+                                                       showPublishedDateOnly,
+                                                       peertubeInstances)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -7015,6 +7029,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.YTReplacementDomain
                     showPublishedDateOnly = \
                         self.server.showPublishedDateOnly
+                    peertubeInstances = \
+                        self.server.peertubeInstances
                     msg = \
                         htmlIndividualPost(self.server.cssCache,
                                            recentPostsCache,
@@ -7033,7 +7049,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            projectVersion,
                                            likedBy,
                                            ytDomain,
-                                           showPublishedDateOnly)
+                                           showPublishedDateOnly,
+                                           peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7165,7 +7182,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.rssIconAtTop,
                                         self.server.publishButtonAtTop,
                                         authorized,
-                                        self.server.themeName)
+                                        self.server.themeName,
+                                        self.server.peertubeInstances)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -7291,7 +7309,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
                                          self.server.publishButtonAtTop,
-                                         authorized, self.server.themeName)
+                                         authorized, self.server.themeName,
+                                         self.server.peertubeInstances)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -7410,7 +7429,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.iconsAsButtons,
                                          self.server.rssIconAtTop,
                                          self.server.publishButtonAtTop,
-                                         authorized, self.server.themeName)
+                                         authorized, self.server.themeName,
+                                         self.server.peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7530,7 +7550,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
                                        authorized,
-                                       self.server.themeName)
+                                       self.server.themeName,
+                                       self.server.peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7650,7 +7671,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
                                        authorized,
-                                       self.server.themeName)
+                                       self.server.themeName,
+                                       self.server.peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7779,7 +7801,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.rssIconAtTop,
                                       self.server.publishButtonAtTop,
                                       authorized,
-                                      self.server.themeName)
+                                      self.server.themeName,
+                                      self.server.peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7904,7 +7927,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.rssIconAtTop,
                                           self.server.publishButtonAtTop,
                                           authorized,
-                                          self.server.themeName)
+                                          self.server.themeName,
+                                          self.server.peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7990,7 +8014,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.iconsAsButtons,
                                    self.server.rssIconAtTop,
                                    self.server.publishButtonAtTop,
-                                   authorized, self.server.themeName)
+                                   authorized, self.server.themeName,
+                                   self.server.peertubeInstances)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8093,7 +8118,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.rssIconAtTop,
                                           self.server.publishButtonAtTop,
                                           authorized,
-                                          self.server.themeName)
+                                          self.server.themeName,
+                                          self.server.peertubeInstances)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8216,7 +8242,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.rssIconAtTop,
                                        self.server.publishButtonAtTop,
                                        authorized,
-                                       self.server.themeName)
+                                       self.server.themeName,
+                                       self.server.peertubeInstances)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8331,7 +8358,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.rssIconAtTop,
                                self.server.publishButtonAtTop,
                                authorized,
-                               self.server.themeName)
+                               self.server.themeName,
+                               self.server.peertubeInstances)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -8436,7 +8464,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.rssIconAtTop,
                                            self.server.publishButtonAtTop,
                                            authorized, moderationActionStr,
-                                           self.server.themeName)
+                                           self.server.themeName,
+                                           self.server.peertubeInstances)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8535,6 +8564,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.themeName,
                                     self.server.dormantMonths,
+                                    self.server.peertubeInstances,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -8630,6 +8660,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.themeName,
                                     self.server.dormantMonths,
+                                    self.server.peertubeInstances,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -8725,6 +8756,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.newswire,
                                     self.server.themeName,
                                     self.server.dormantMonths,
+                                    self.server.peertubeInstances,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -8795,6 +8827,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.newswire,
                                 self.server.themeName,
                                 self.server.dormantMonths,
+                                self.server.peertubeInstances,
                                 None, None).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -8860,7 +8893,8 @@ class PubServer(BaseHTTPRequestHandler):
                            translate,
                            nickname,
                            domain, port,
-                           maxPostsInBlogsFeed, pageNumber)
+                           maxPostsInBlogsFeed, pageNumber,
+                           self.server.peertubeInstances)
         if msg is not None:
             msg = msg.encode('utf-8')
             msglen = len(msg)
@@ -9774,7 +9808,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    self.server.domain,
                                    self.server.port,
-                                   maxPostsInBlogsFeed)
+                                   maxPostsInBlogsFeed,
+                                   self.server.peertubeInstances)
                 if msg is not None:
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
@@ -9870,7 +9905,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.translate,
                                        nickname, self.server.domain,
                                        self.server.domainFull,
-                                       postJsonObject)
+                                       postJsonObject,
+                                       self.server.peertubeInstances)
                     if msg is not None:
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
@@ -13599,6 +13635,9 @@ def runDaemon(sendThreadsTimeoutMins: int,
     httpd.iconsCache = {}
     httpd.fontsCache = {}
 
+    # TODO load peertube instances
+    httpd.peertubeInstances = []
+
     createInitialLastSeen(baseDir, httpPrefix)
 
     print('Creating inbox queue')
@@ -13619,7 +13658,8 @@ def runDaemon(sendThreadsTimeoutMins: int,
                               httpd.showPublishedDateOnly,
                               httpd.allowNewsFollowers,
                               httpd.maxFollowers,
-                              httpd.allowLocalNetworkAccess), daemon=True)
+                              httpd.allowLocalNetworkAccess,
+                              httpd.peertubeInstances), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

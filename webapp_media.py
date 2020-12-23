@@ -8,6 +8,7 @@ __status__ = "Production"
 
 
 def _addEmbeddedVideoFromSites(translate: {}, content: str,
+                               peertubeInstances: [],
                                width=400, height=300) -> str:
     """Adds embedded videos
     """
@@ -88,31 +89,38 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
         # and the content of each has not been reviewed, so mileage could vary
         # Also see https://peertube_isolation.frama.io/list/ for
         # adversarial instances
-        peerTubeSites = ('peertube.mastodon.host', 'share.tube',
-                         'tube.tr4sk.me', 'videos.elbinario.net',
-                         'hkvideo.live',
-                         'peertube.snargol.com', 'tube.22decembre.eu',
-                         'tube.fabrigli.fr', 'libretube.net', 'libre.video',
-                         'peertube.linuxrocks.online', 'spacepub.space',
-                         'video.ploud.jp', 'video.omniatv.com',
-                         'peertube.servebeer.com',
-                         'tube.tchncs.de', 'tubee.fr', 'video.alternanet.fr',
-                         'devtube.dev-wiki.de', 'video.samedi.pm',
-                         'video.irem.univ-paris-diderot.fr',
-                         'peertube.openstreetmap.fr', 'video.antopie.org',
-                         'scitech.video', 'tube.4aem.com', 'video.ploud.fr',
-                         'peervideo.net', 'video.valme.io',
-                         'videos.pair2jeux.tube',
-                         'vault.mle.party', 'hostyour.tv',
-                         'diode.zone', 'visionon.tv',
-                         'artitube.artifaille.fr', 'peertube.fr',
-                         'peertube.live', 'kolektiva.media',
-                         'tube.ac-lyon.fr', 'www.yiny.org', 'betamax.video',
-                         'tube.piweb.be', 'pe.ertu.be', 'peertube.social',
-                         'videos.lescommuns.org', 'peertube.nogafa.org',
-                         'skeptikon.fr', 'video.tedomum.net',
-                         'tube.p2p.legal', 'tilvids.com',
-                         'sikke.fi', 'exode.me', 'peertube.video')
+        if peertubeInstances:
+            peerTubeSites = peertubeInstances
+        else:
+            peerTubeSites = ('peertube.mastodon.host', 'share.tube',
+                             'tube.tr4sk.me', 'videos.elbinario.net',
+                             'hkvideo.live',
+                             'peertube.snargol.com', 'tube.22decembre.eu',
+                             'tube.fabrigli.fr', 'libretube.net',
+                             'libre.video',
+                             'peertube.linuxrocks.online', 'spacepub.space',
+                             'video.ploud.jp', 'video.omniatv.com',
+                             'peertube.servebeer.com',
+                             'tube.tchncs.de', 'tubee.fr',
+                             'video.alternanet.fr',
+                             'devtube.dev-wiki.de', 'video.samedi.pm',
+                             'video.irem.univ-paris-diderot.fr',
+                             'peertube.openstreetmap.fr', 'video.antopie.org',
+                             'scitech.video', 'tube.4aem.com',
+                             'video.ploud.fr',
+                             'peervideo.net', 'video.valme.io',
+                             'videos.pair2jeux.tube',
+                             'vault.mle.party', 'hostyour.tv',
+                             'diode.zone', 'visionon.tv',
+                             'artitube.artifaille.fr', 'peertube.fr',
+                             'peertube.live', 'kolektiva.media',
+                             'tube.ac-lyon.fr', 'www.yiny.org',
+                             'betamax.video',
+                             'tube.piweb.be', 'pe.ertu.be', 'peertube.social',
+                             'videos.lescommuns.org', 'peertube.nogafa.org',
+                             'skeptikon.fr', 'video.tedomum.net',
+                             'tube.p2p.legal', 'tilvids.com',
+                             'sikke.fi', 'exode.me', 'peertube.video')
         for site in peerTubeSites:
             if '"https://' + site in content:
                 url = content.split('"https://' + site)[1]
@@ -224,9 +232,11 @@ def _addEmbeddedVideo(translate: {}, content: str,
     return content
 
 
-def addEmbeddedElements(translate: {}, content: str) -> str:
+def addEmbeddedElements(translate: {}, content: str,
+                        peertubeInstances: []) -> str:
     """Adds embedded elements for various media types
     """
-    content = _addEmbeddedVideoFromSites(translate, content)
+    content = _addEmbeddedVideoFromSites(translate, content,
+                                         peertubeInstances)
     content = _addEmbeddedAudio(translate, content)
     return _addEmbeddedVideo(translate, content)

@@ -146,7 +146,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                nickname: str, domain: str, port: int,
                                postJsonObject: {},
                                allowDeletion: bool, boxname: str,
-                               showPublishedDateOnly: bool) -> None:
+                               showPublishedDateOnly: bool,
+                               peertubeInstances: []) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -171,6 +172,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          avatarUrl, True, allowDeletion,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
+                         peertubeInstances,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -2039,7 +2041,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        maxMentions: int, maxEmoji: int, translate: {},
                        unitTest: bool, YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
-                       allowLocalNetworkAccess: bool) -> bool:
+                       allowLocalNetworkAccess: bool,
+                       peertubeInstances: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2346,7 +2349,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    postJsonObject,
                                                    allowDeletion,
                                                    boxname,
-                                                   showPublishedDateOnly)
+                                                   showPublishedDateOnly,
+                                                   peertubeInstances)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2446,7 +2450,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   YTReplacementDomain: str,
                   showPublishedDateOnly: bool,
                   allowNewsFollowers: bool,
-                  maxFollowers: int, allowLocalNetworkAccess: bool) -> None:
+                  maxFollowers: int, allowLocalNetworkAccess: bool,
+                  peertubeInstances: []) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2863,7 +2868,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                translate, unitTest,
                                YTReplacementDomain,
                                showPublishedDateOnly,
-                               allowLocalNetworkAccess)
+                               allowLocalNetworkAccess,
+                               peertubeInstances)
             if debug:
                 pprint(queueJson['post'])
 

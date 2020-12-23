@@ -158,6 +158,7 @@ def _htmlBlogPostContent(authorized: bool,
                          nickname: str, domain: str, domainFull: str,
                          postJsonObject: {},
                          handle: str, restrictToDomain: bool,
+                         peertubeInstances: [],
                          blogSeparator='<hr>') -> str:
     """Returns the content for a single blog post
     """
@@ -231,7 +232,8 @@ def _htmlBlogPostContent(authorized: bool,
 
     if postJsonObject['object'].get('content'):
         contentStr = addEmbeddedElements(translate,
-                                         postJsonObject['object']['content'])
+                                         postJsonObject['object']['content'],
+                                         peertubeInstances)
         if postJsonObject['object'].get('tag'):
             contentStr = replaceEmojiFromTags(contentStr,
                                               postJsonObject['object']['tag'],
@@ -375,7 +377,8 @@ def _htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
 def htmlBlogPost(authorized: bool,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
-                 postJsonObject: {}) -> str:
+                 postJsonObject: {},
+                 peertubeInstances: []) -> str:
     """Returns a html blog post
     """
     blogStr = ''
@@ -390,7 +393,8 @@ def htmlBlogPost(authorized: bool,
                                     httpPrefix, translate,
                                     nickname, domain,
                                     domainFull, postJsonObject,
-                                    None, False)
+                                    None, False,
+                                    peertubeInstances)
 
     # show rss links
     blogStr += '<p class="rssfeed">'
@@ -417,7 +421,8 @@ def htmlBlogPost(authorized: bool,
 def htmlBlogPage(authorized: bool, session,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, port: int,
-                 noOfItems: int, pageNumber: int) -> str:
+                 noOfItems: int, pageNumber: int,
+                 peertubeInstances: []) -> str:
     """Returns a html blog page containing posts
     """
     if ' ' in nickname or '@' in nickname or \
@@ -477,7 +482,8 @@ def htmlBlogPage(authorized: bool, session,
                                         httpPrefix, translate,
                                         nickname, domain,
                                         domainFull, item,
-                                        None, True)
+                                        None, True,
+                                        peertubeInstances)
 
     if len(timelineJson['orderedItems']) >= noOfItems:
         blogStr += navigateStr
@@ -638,7 +644,8 @@ def _singleBlogAccountNickname(baseDir: str) -> str:
 def htmlBlogView(authorized: bool,
                  session, baseDir: str, httpPrefix: str,
                  translate: {}, domain: str, port: int,
-                 noOfItems: int) -> str:
+                 noOfItems: int,
+                 peertubeInstances: []) -> str:
     """Show the blog main page
     """
     blogStr = ''
@@ -654,7 +661,7 @@ def htmlBlogView(authorized: bool,
             return htmlBlogPage(authorized, session,
                                 baseDir, httpPrefix, translate,
                                 nickname, domain, port,
-                                noOfItems, 1)
+                                noOfItems, 1, peertubeInstances)
 
     domainFull = getFullDomain(domain, port)
 
