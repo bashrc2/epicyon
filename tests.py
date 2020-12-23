@@ -2846,7 +2846,7 @@ def testFunctions():
                     assert False
         print('Function: ' + name + ' ✓')
 
-    print('Constructing call graph')
+    print('Constructing function call graph')
     for modName, modProperties in modules.items():
         lineCtr = 0
         for line in modules[modName]['lines']:
@@ -2856,8 +2856,34 @@ def testFunctions():
                     getFunctionCalls(name, modules[modName]['lines'],
                                      lineCtr, functionProperties)
                 functionProperties[name]['calls'] = callsList.copy()
+                # keep track of which module calls which other module
+                for fn in callsList:
+                    modCall = functionProperties[fn]['module']
+                    if modCall != modName:
+                        if modules[modName].get('calls'):
+                            if modCall not in modules[modName]['calls']:
+                                modules[modName]['calls'].append(modCall)
+                        else:
+                            modules[modName]['calls'] = [modCall]
             lineCtr += 1
+    callGraphStr = 'digraph EpicyonModules {\n\n'
+    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
+    for modName, modProperties in modules.items():
+        if not modProperties.get('calls'):
+            continue
+        for modCall in modProperties['calls']:
+            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
+    callGraphStr += '\n}\n'
+    with open('epicyon_modules.dot', 'w+') as fp:
+        fp.write(callGraphStr)
+        print('Modules call graph saved to epicyon_modules.dot')
+        print('Plot using: ' +
+              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
+              '-Gsep=+100 -Tx11 epicyon_modules.dot')
+
     callGraphStr = 'digraph Epicyon {\n\n'
+    callGraphStr += '  size="8,6"; ratio=fill;\n'
     callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
     callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
 
@@ -2889,7 +2915,7 @@ def testFunctions():
     with open('epicyon.dot', 'w+') as fp:
         fp.write(callGraphStr)
         print('Call graph saved to epicyon.dot')
-        print('Convert to image with: ' +
+        print('Plot using: ' +
               'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
               '-Gsep=+120 -Tx11 epicyon.dot')
 
