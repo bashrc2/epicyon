@@ -27,7 +27,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           session, wfRequest: {}, personCache: {},
                           projectVersion: str,
                           YTReplacementDomain: str,
-                          showPublishedDateOnly: bool) -> str:
+                          showPublishedDateOnly: bool,
+                          peertubeInstances: []) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -65,6 +66,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
+                                         peertubeInstances,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -85,7 +87,9 @@ def htmlFrontScreen(rssIconAtTop: bool,
                     session, wfRequest: {}, personCache: {},
                     YTReplacementDomain: str,
                     showPublishedDateOnly: bool,
-                    newswire: {}, theme: str, extraJson=None,
+                    newswire: {}, theme: str,
+                    peertubeInstances: [],
+                    extraJson=None,
                     pageNumber=None, maxItemsPerPage=None) -> str:
     """Show the news instance front screen
     """
@@ -148,7 +152,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               session, wfRequest, personCache,
                               projectVersion,
                               YTReplacementDomain,
-                              showPublishedDateOnly) + licenseStr
+                              showPublishedDateOnly,
+                              peertubeInstances) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'

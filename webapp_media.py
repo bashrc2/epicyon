@@ -6,8 +6,30 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
+
+
+def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
+    """Loads peertube instances from file into the given list
+    """
+    peertubeList = None
+    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
+    if os.path.isfile(peertubeInstancesFilename):
+        with open(peertubeInstancesFilename, 'r') as fp:
+            peertubeStr = fp.read()
+            if peertubeStr:
+                peertubeStr = peertubeStr.replace('\r', '')
+                peertubeList = peertubeStr.split('\n')
+    if not peertubeList:
+        return
+    for url in peertubeList:
+        if url in peertubeInstances:
+            continue
+        peertubeInstances.append(url)
+
 
 def _addEmbeddedVideoFromSites(translate: {}, content: str,
+                               peertubeInstances: [],
                                width=400, height=300) -> str:
     """Adds embedded videos
     """
@@ -39,8 +61,14 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                 "allowfullscreen></iframe>\n</center>\n"
             return content
 
-    invidiousSites = ('https://invidio.us',
-                      'https://invidious.snopyta.org',
+    invidiousSites = ('https://invidious.snopyta.org',
+                      'https://yewtu.be',
+                      'https://tube.connect.cafe',
+                      'https://invidious.kavin.rocks',
+                      'https://invidiou.site',
+                      'https://invidious.tube',
+                      'https://invidious.xyz',
+                      'https://invidious.zapashcanon.fr',
                       'http://c7hqkpkpemu6e7emz5b4vy' +
                       'z7idjgdvgaaa3dyimmeojqbgpea3xqjoid.onion',
                       'http://axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
@@ -76,38 +104,59 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
             return content
 
     if '"https://' in content:
-        # A selection of the current larger peertube sites, mostly
-        # French and German language
-        # These have been chosen based on reported numbers of users
-        # and the content of each has not been reviewed, so mileage could vary
-        peerTubeSites = ('peertube.mastodon.host', 'open.tube', 'share.tube',
-                         'tube.tr4sk.me', 'videos.elbinario.net',
-                         'hkvideo.live',
-                         'peertube.snargol.com', 'tube.22decembre.eu',
-                         'tube.fabrigli.fr', 'libretube.net', 'libre.video',
-                         'peertube.linuxrocks.online', 'spacepub.space',
-                         'video.ploud.jp', 'video.omniatv.com',
-                         'peertube.servebeer.com',
-                         'tube.tchncs.de', 'tubee.fr', 'video.alternanet.fr',
-                         'devtube.dev-wiki.de', 'video.samedi.pm',
-                         'video.irem.univ-paris-diderot.fr',
-                         'peertube.openstreetmap.fr', 'video.antopie.org',
-                         'scitech.video', 'tube.4aem.com', 'video.ploud.fr',
-                         'peervideo.net', 'video.valme.io',
-                         'videos.pair2jeux.tube',
-                         'vault.mle.party', 'hostyour.tv',
-                         'diode.zone', 'visionon.tv',
-                         'artitube.artifaille.fr', 'peertube.fr',
-                         'peertube.live', 'kolektiva.media',
-                         'tube.ac-lyon.fr', 'www.yiny.org', 'betamax.video',
-                         'tube.piweb.be', 'pe.ertu.be', 'peertube.social',
-                         'videos.lescommuns.org', 'peertube.nogafa.org',
-                         'skeptikon.fr', 'video.tedomum.net',
-                         'tube.p2p.legal', 'tilvids.com',
-                         'sikke.fi', 'exode.me', 'peertube.video')
+        if peertubeInstances:
+            peerTubeSites = peertubeInstances
+        else:
+            # A default selection of the current larger peertube sites,
+            # mostly French and German language.
+            # These have only been semi-vetted, and so should be under
+            # continuous review.
+            # Also see https://peertube_isolation.frama.io/list/ for
+            # adversarial instances. Nothing in that list should be
+            # in the defaults below.
+            peerTubeSites = ('share.tube',
+                             'tube.22decembre.eu',
+                             'libre.video',
+                             'peertube.linuxrocks.online',
+                             'spacepub.space',
+                             'tube.tchncs.de',
+                             'video.irem.univ-paris-diderot.fr',
+                             'peertube.openstreetmap.fr',
+                             'video.antopie.org',
+                             'scitech.video',
+                             'video.ploud.fr',
+                             'diode.zone',
+                             'visionon.tv',
+                             'peertube.fr',
+                             'peertube.live',
+                             'kolektiva.media',
+                             'betamax.video',
+                             'peertube.social',
+                             'videos.lescommuns.org',
+                             'video.tedomum.net',
+                             'tilvids.com',
+                             'exode.me',
+                             'peertube.video')
         for site in peerTubeSites:
-            if '"https://' + site in content:
-                url = content.split('"https://' + site)[1]
+            site = site.strip()
+            if not site:
+                continue
+            if len(site) < 5:
+                continue
+            if '.' not in site:
+                continue
+            siteStr = site
+            if site.startswith('http://'):
+                site = site.replace('http://', '')
+            elif site.startswith('https://'):
+                site = site.replace('https://', '')
+            if site.endswith('.onion') or site.endswith('.i2p'):
+                siteStr = 'http://' + site
+            else:
+                siteStr = 'https://' + site
+            siteStr = '"' + siteStr
+            if siteStr in content:
+                url = content.split(siteStr)[1]
                 if '"' in url:
                     url = url.split('"')[0].replace('/watch/', '/embed/')
                     content = \
@@ -216,9 +265,11 @@ def _addEmbeddedVideo(translate: {}, content: str,
     return content
 
 
-def addEmbeddedElements(translate: {}, content: str) -> str:
+def addEmbeddedElements(translate: {}, content: str,
+                        peertubeInstances: []) -> str:
     """Adds embedded elements for various media types
     """
-    content = _addEmbeddedVideoFromSites(translate, content)
+    content = _addEmbeddedVideoFromSites(translate, content,
+                                         peertubeInstances)
     content = _addEmbeddedAudio(translate, content)
     return _addEmbeddedVideo(translate, content)

@@ -12,6 +12,7 @@ import binascii
 import os
 import secrets
 from utils import isSystemAccount
+from utils import hasUsersPath
 
 
 def _hashPassword(password: str) -> str:
@@ -89,10 +90,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
             print('DEBUG: basic auth - Authorixation header does not ' +
                   'contain a space character')
         return False
-    if '/users/' not in path and \
-       '/accounts/' not in path and \
-       '/channel/' not in path and \
-       '/profile/' not in path:
+    if not hasUsersPath(path):
         if debug:
             print('DEBUG: basic auth - ' +
                   'path for Authorization does not contain a user')

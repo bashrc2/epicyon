@@ -347,5 +347,7 @@
     "Filter out words": "过滤掉单词",
     "Unfilter": "取消过滤",
     "Unfilter words": "未过滤字词",
-    "Show Accounts": "显示帐户"
+    "Show Accounts": "显示帐户",
+    "Peertube Instances": "Peertube实例",
+    "Show video previews for the following Peertube sites.": "显示以下Peertube网站的视频预览。"
 }

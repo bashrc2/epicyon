@@ -854,7 +854,7 @@ def testFollowBetweenServers():
                           True, __version__, False)
     print('sendResult: ' + str(sendResult))
 
-    for t in range(10):
+    for t in range(16):
         if os.path.isfile(bobDir + '/accounts/bob@' +
                           bobDomain + '/followers.txt'):
             if os.path.isfile(aliceDir + '/accounts/alice@' +
@@ -2613,9 +2613,10 @@ def getFunctionCalls(name: str, lines: [], startLineCtr: int,
     callsFunctions = []
     functionContentStr = ''
     for lineCtr in range(startLineCtr + 1, len(lines)):
-        if lines[lineCtr].startswith('def '):
+        lineStr = lines[lineCtr].strip()
+        if lineStr.startswith('def '):
             break
-        if lines[lineCtr].startswith('class '):
+        if lineStr.startswith('class '):
             break
         functionContentStr += lines[lineCtr]
     for funcName, properties in functionProperties.items():
@@ -2635,14 +2636,14 @@ def functionArgsMatch(callArgs: [], funcArgs: []):
     for a in callArgs:
         if a == 'self':
             continue
-        if '=' not in a:
+        if '=' not in a or a.startswith("'"):
             callArgsCtr += 1
 
     funcArgsCtr = 0
     for a in funcArgs:
         if a == 'self':
             continue
-        if '=' not in a:
+        if '=' not in a or a.startswith("'"):
             funcArgsCtr += 1
 
     return callArgsCtr >= funcArgsCtr
@@ -2670,7 +2671,7 @@ def testFunctions():
                 lines = f.readlines()
                 modules[modName]['lines'] = lines
                 for line in lines:
-                    if not line.startswith('def '):
+                    if not line.strip().startswith('def '):
                         continue
                     methodName = line.split('def ', 1)[1].split('(')[0]
                     methodArgs = \
@@ -2694,7 +2695,9 @@ def testFunctions():
         'pyjsonld'
     ]
     excludeFuncs = [
-        'link'
+        'link',
+        'set',
+        'get'
     ]
     # which modules is each function used within?
     for modName, modProperties in modules.items():
@@ -2702,7 +2705,11 @@ def testFunctions():
         for name, properties in functionProperties.items():
             lineCtr = 0
             for line in modules[modName]['lines']:
-                if line.startswith('def '):
+                lineStr = line.strip()
+                if lineStr.startswith('def '):
+                    lineCtr += 1
+                    continue
+                if lineStr.startswith('class '):
                     lineCtr += 1
                     continue
                 if name + '(' in line:
@@ -2735,7 +2742,22 @@ def testFunctions():
 
     # don't check these functions, because they are procedurally called
     exclusions = [
+        'do_GET',
+        'do_POST',
+        'do_HEAD',
+        '__run',
+        'globaltrace',
+        'localtrace',
+        'kill',
+        'clone',
+        'unregister_rdf_parser',
         'set_document_loader',
+        'has_property',
+        'has_value',
+        'add_value',
+        'get_values',
+        'remove_property',
+        'remove_value',
         'normalize',
         'get_document_loader',
         'runInboxQueueWatchdog',
@@ -2764,16 +2786,25 @@ def testFunctions():
         'setOrganizationScheme'
     ]
     excludeImports = [
-        'link'
+        'link',
+        'start'
     ]
     excludeLocal = [
         'pyjsonld',
         'daemon',
         'tests'
     ]
+    excludeMods = [
+        'pyjsonld'
+    ]
     # check that functions are called somewhere
     for name, properties in functionProperties.items():
+        if name.startswith('__'):
+            if name.endswith('__'):
+                continue
         if name in exclusions:
+            continue
+        if properties['module'] in excludeMods:
             continue
         isLocalFunction = False
         if not properties['calledInModule']:
@@ -2815,18 +2846,80 @@ def testFunctions():
                     assert False
         print('Function: ' + name + ' ✓')
 
-    print('Constructing call graph')
+    print('Constructing function call graph')
+    moduleColors = ('red', 'green', 'yellow', 'orange', 'purple', 'cyan',
+                    'darkgoldenrod3', 'darkolivegreen1', 'darkorange1',
+                    'darkorchid1', 'darkseagreen', 'darkslategray4',
+                    'deeppink1', 'deepskyblue1', 'dimgrey', 'gold1',
+                    'goldenrod', 'burlywood2', 'bisque1', 'brown1',
+                    'chartreuse2', 'cornsilk', 'darksalmon')
+    maxModuleCalls = 1
+    maxFunctionCalls = 1
+    colorCtr = 0
     for modName, modProperties in modules.items():
         lineCtr = 0
+        modules[modName]['color'] = moduleColors[colorCtr]
+        colorCtr += 1
+        if colorCtr >= len(moduleColors):
+            colorCtr = 0
         for line in modules[modName]['lines']:
-            if line.startswith('def '):
+            if line.strip().startswith('def '):
                 name = line.split('def ')[1].split('(')[0]
                 callsList = \
                     getFunctionCalls(name, modules[modName]['lines'],
                                      lineCtr, functionProperties)
                 functionProperties[name]['calls'] = callsList.copy()
+                if len(callsList) > maxFunctionCalls:
+                    maxFunctionCalls = len(callsList)
+                # keep track of which module calls which other module
+                for fn in callsList:
+                    modCall = functionProperties[fn]['module']
+                    if modCall != modName:
+                        if modules[modName].get('calls'):
+                            if modCall not in modules[modName]['calls']:
+                                modules[modName]['calls'].append(modCall)
+                                if len(modules[modName]['calls']) > \
+                                   maxModuleCalls:
+                                    maxModuleCalls = \
+                                        len(modules[modName]['calls'])
+                        else:
+                            modules[modName]['calls'] = [modCall]
             lineCtr += 1
+    callGraphStr = 'digraph EpicyonModules {\n\n'
+    callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
+    callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
+    # colors of modules nodes
+    for modName, modProperties in modules.items():
+        if not modProperties.get('calls'):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=yellow style=filled];\n'
+            continue
+        if len(modProperties['calls']) <= int(maxModuleCalls / 8):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=green style=filled];\n'
+        elif len(modProperties['calls']) < int(maxModuleCalls / 4):
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=orange style=filled];\n'
+        else:
+            callGraphStr += '  "' + modName + \
+                '" [fillcolor=red style=filled];\n'
+    callGraphStr += '\n'
+    # connections between modules
+    for modName, modProperties in modules.items():
+        if not modProperties.get('calls'):
+            continue
+        for modCall in modProperties['calls']:
+            callGraphStr += '  "' + modName + '" -> "' + modCall + '";\n'
+    callGraphStr += '\n}\n'
+    with open('epicyon_modules.dot', 'w+') as fp:
+        fp.write(callGraphStr)
+        print('Modules call graph saved to epicyon_modules.dot')
+        print('Plot using: ' +
+              'sfdp -x -Goverlap=false -Goverlap_scaling=2 ' +
+              '-Gsep=+100 -Tx11 epicyon_modules.dot')
+
     callGraphStr = 'digraph Epicyon {\n\n'
+    callGraphStr += '  size="8,6"; ratio=fill;\n'
     callGraphStr += '  graph [fontsize=10 fontname="Verdana" compound=true];\n'
     callGraphStr += '  node [shape=record fontsize=10 fontname="Verdana"];\n\n'
 
@@ -2834,25 +2927,52 @@ def testFunctions():
         callGraphStr += '  subgraph cluster_' + modName + ' {\n'
         callGraphStr += '    label = "' + modName + '";\n'
         callGraphStr += '    node [style=filled];\n'
-        callGraphStr += '    '
+        moduleFunctionsStr = ''
         for name in modProperties['functions']:
-            callGraphStr += '"' + name + '" '
-        callGraphStr += ';\n'
+            if name.startswith('test'):
+                continue
+            if name not in excludeFuncs:
+                if not functionProperties[name]['calls']:
+                    moduleFunctionsStr += \
+                        '  "' + name + '" [fillcolor=yellow style=filled];\n'
+                    continue
+                noOfCalls = len(functionProperties[name]['calls'])
+                if noOfCalls < int(maxFunctionCalls / 4):
+                    moduleFunctionsStr += '  "' + name + \
+                        '" [fillcolor=orange style=filled];\n'
+                else:
+                    moduleFunctionsStr += '  "' + name + \
+                        '" [fillcolor=red style=filled];\n'
+
+        if moduleFunctionsStr:
+            callGraphStr += moduleFunctionsStr + '\n'
         callGraphStr += '    color=blue;\n'
         callGraphStr += '  }\n\n'
 
     for name, properties in functionProperties.items():
         if not properties['calls']:
             continue
+        noOfCalls = len(properties['calls'])
+        if noOfCalls <= int(maxFunctionCalls / 8):
+            modColor = 'blue'
+        elif noOfCalls < int(maxFunctionCalls / 4):
+            modColor = 'green'
+        else:
+            modColor = 'red'
         for calledFunc in properties['calls']:
-            callGraphStr += '  "' + name + '" -> "' + calledFunc + '";\n'
+            if calledFunc.startswith('test'):
+                continue
+            if calledFunc not in excludeFuncs:
+                callGraphStr += '  "' + name + '" -> "' + calledFunc + \
+                    '" [color=' + modColor + '];\n'
 
     callGraphStr += '\n}\n'
     with open('epicyon.dot', 'w+') as fp:
         fp.write(callGraphStr)
         print('Call graph saved to epicyon.dot')
-        print('Convert to image with: ' +
-              'dot -Tjpg epicyon.dot -o epicyon_diagram.jpg')
+        print('Plot using: ' +
+              'sfdp -x -Goverlap=prism -Goverlap_scaling=8 ' +
+              '-Gsep=+120 -Tx11 epicyon.dot')
 
 
 def runAllTests():

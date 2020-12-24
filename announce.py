@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import getStatusNumber
 from utils import createOutboxDir
@@ -143,10 +144,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
     announceNickname = None
     announceDomain = None
     announcePort = None
-    if '/users/' in objectUrl or \
-       '/accounts/' in objectUrl or \
-       '/channel/' in objectUrl or \
-       '/profile/' in objectUrl:
+    if hasUsersPath(objectUrl):
         announceNickname = getNicknameFromActor(objectUrl)
         announceDomain, announcePort = getDomainFromActor(objectUrl)
 

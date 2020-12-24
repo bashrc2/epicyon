@@ -19,6 +19,16 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def hasUsersPath(pathStr: str) -> bool:
+    """Whether there is a /users/ path (or equivalent) in the given string
+    """
+    usersList = ('users', 'accounts', 'channel', 'profile')
+    for usersStr in usersList:
+        if '/' + usersStr + '/' in pathStr:
+            return True
+    return False
+
+
 def validPostDate(published: str, maxAgeDays=7) -> bool:
     """Returns true if the published date is recent and is not in the future
     """

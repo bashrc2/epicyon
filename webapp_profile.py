@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import isDormant
 from utils import getNicknameFromActor
@@ -33,6 +34,7 @@ from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
+from briar import getBriarAddress
 from jami import getJamiAddress
 from filters import isFiltered
 from webapp_frontscreen import htmlFrontScreen
@@ -58,14 +60,11 @@ def htmlProfileAfterSearch(cssCache: {},
                            debug: bool, projectVersion: str,
                            YTReplacementDomain: str,
                            showPublishedDateOnly: bool,
-                           defaultTimeline: str) -> str:
+                           defaultTimeline: str,
+                           peertubeInstances: []) -> str:
     """Show a profile page after a search for a fediverse address
     """
-    if '/users/' in profileHandle or \
-       '/accounts/' in profileHandle or \
-       '/channel/' in profileHandle or \
-       '/profile/' in profileHandle or \
-       '/@' in profileHandle:
+    if hasUsersPath(profileHandle) or '/@' in profileHandle:
         searchNickname = getNicknameFromActor(profileHandle)
         searchDomain, searchPort = getDomainFromActor(profileHandle)
     else:
@@ -279,6 +278,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                  httpPrefix, projectVersion, 'inbox',
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
+                                 peertubeInstances,
                                  False, False, False, False, False)
         i += 1
         if i >= 20:
@@ -372,6 +372,7 @@ def htmlProfile(rssIconAtTop: bool,
                 YTReplacementDomain: str,
                 showPublishedDateOnly: bool,
                 newswire: {}, theme: str, dormantMonths: int,
+                peertubeInstances: [],
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -443,9 +444,11 @@ def htmlProfile(rssIconAtTop: bool,
     matrixAddress = getMatrixAddress(profileJson)
     ssbAddress = getSSBAddress(profileJson)
     toxAddress = getToxAddress(profileJson)
+    briarAddress = getBriarAddress(profileJson)
     jamiAddress = getJamiAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or jamiAddress or PGPpubKey or \
+       ssbAddress or toxAddress or briarAddress or \
+       jamiAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -473,6 +476,15 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
+        if briarAddress:
+            if briarAddress.startswith('briar://'):
+                donateSection += \
+                    '<p><label class="toxaddr">' + \
+                    briarAddress + '</label></p>\n'
+            else:
+                donateSection += \
+                    '<p>briar://<label class="toxaddr">' + \
+                    briarAddress + '</label></p>\n'
         if jamiAddress:
             donateSection += \
                 '<p>Jami: <label class="toxaddr">' + \
@@ -628,7 +640,8 @@ def htmlProfile(rssIconAtTop: bool,
                               session, wfRequest, personCache,
                               projectVersion,
                               YTReplacementDomain,
-                              showPublishedDateOnly) + licenseStr
+                              showPublishedDateOnly,
+                              peertubeInstances) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -674,7 +687,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       session, wfRequest: {}, personCache: {},
                       projectVersion: str,
                       YTReplacementDomain: str,
-                      showPublishedDateOnly: bool) -> str:
+                      showPublishedDateOnly: bool,
+                      peertubeInstances: []) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -712,6 +726,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
+                                         peertubeInstances,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -833,7 +848,8 @@ def _htmlProfileShares(actor: str, translate: {},
 
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
-                    defaultTimeline: str, theme: str) -> str:
+                    defaultTimeline: str, theme: str,
+                    peertubeInstances: []) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -873,6 +889,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     ssbAddress = ''
     blogAddress = ''
     toxAddress = ''
+    briarAddress = ''
     manuallyApprovesFollowers = ''
     actorJson = loadJson(actorFilename)
     if actorJson:
@@ -882,6 +899,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         ssbAddress = getSSBAddress(actorJson)
         blogAddress = getBlogAddress(actorJson)
         toxAddress = getToxAddress(actorJson)
+        briarAddress = getBriarAddress(actorJson)
         jamiAddress = getJamiAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
@@ -1029,6 +1047,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     themesDropdown = ''
     instanceStr = ''
     editorsStr = ''
+    peertubeStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
@@ -1145,6 +1164,21 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                        '<option value="' + themeName +
                                        '" selected>')
 
+            peertubeStr = \
+                '      <br><b><label class="labels">' + \
+                translate['Peertube Instances'] + '</label></b>\n'
+            idx = 'Show video previews for the following Peertube sites.'
+            peertubeStr += \
+                '      <br><label class="labels">' + \
+                translate[idx] + '</label>\n'
+            peertubeInstancesStr = ''
+            for url in peertubeInstances:
+                peertubeInstancesStr += url + '\n'
+            peertubeStr += \
+                '      <textarea id="message" name="ptInstances" ' + \
+                'style="height:200px">' + peertubeInstancesStr + \
+                '</textarea>\n'
+
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename)
 
     # top banner
@@ -1219,6 +1253,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
         toxAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Briar</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="briarAddress" value="' + \
+        briarAddress + '">\n'
 
     editProfileForm += '<label class="labels">Jami</label><br>\n'
     editProfileForm += \
@@ -1436,7 +1475,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += skillsStr + themesDropdown
-    editProfileForm += moderatorsStr + editorsStr
+    editProfileForm += moderatorsStr + editorsStr + peertubeStr
     editProfileForm += '    </div>\n' + instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \

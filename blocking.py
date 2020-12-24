@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import isEvil
@@ -246,10 +247,7 @@ def outboxBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s block object is not a status')
         return
-    if '/users/' not in messageId and \
-       '/accounts/' not in messageId and \
-       '/channel/' not in messageId and \
-       '/profile/' not in messageId:
+    if not hasUsersPath(messageId):
         if debug:
             print('DEBUG: c2s block object has no nickname')
         return
@@ -321,10 +319,7 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s undo block object is not a status')
         return
-    if '/users/' not in messageId and \
-       '/accounts/' not in messageId and \
-       '/channel/' not in messageId and \
-       '/profile/' not in messageId:
+    if not hasUsersPath(messageId):
         if debug:
             print('DEBUG: c2s undo block object has no nickname')
         return

@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import urlPermitted
@@ -87,10 +88,7 @@ def _like(recentPostsCache: {},
         likedPostNickname = getNicknameFromActor(actorLiked)
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
     else:
-        if '/users/' in objectUrl or \
-           '/accounts/' in objectUrl or \
-           '/channel/' in objectUrl or \
-           '/profile/' in objectUrl:
+        if hasUsersPath(objectUrl):
             likedPostNickname = getNicknameFromActor(objectUrl)
             likedPostDomain, likedPostPort = getDomainFromActor(objectUrl)
 

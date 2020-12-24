@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from datetime import datetime
+from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getNicknameFromActor
@@ -139,10 +140,7 @@ def outboxDelete(baseDir: str, httpPrefix: str,
         if debug:
             print('DEBUG: c2s delete object is not a status')
         return
-    if '/users/' not in messageId and \
-       '/accounts/' not in messageId and \
-       '/channel/' not in messageId and \
-       '/profile/' not in messageId:
+    if not hasUsersPath(messageId):
         if debug:
             print('DEBUG: c2s delete object has no nickname')
         return

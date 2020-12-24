@@ -1076,6 +1076,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          httpPrefix: str, projectVersion: str,
                          boxName: str, YTReplacementDomain: str,
                          showPublishedDateOnly: bool,
+                         peertubeInstances: [],
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -1483,7 +1484,8 @@ def individualPostAsHtml(allowDownloads: bool,
 
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
-        contentStr = addEmbeddedElements(translate, contentStr)
+        contentStr = addEmbeddedElements(translate, contentStr,
+                                         peertubeInstances)
         contentStr = insertQuestion(baseDir, translate,
                                     nickname, domain, port,
                                     contentStr, postJsonObject,
@@ -1499,7 +1501,8 @@ def individualPostAsHtml(allowDownloads: bool,
         # get the content warning text
         cwContentStr = objectContent + attachmentStr
         if not isPatch:
-            cwContentStr = addEmbeddedElements(translate, cwContentStr)
+            cwContentStr = addEmbeddedElements(translate, cwContentStr,
+                                               peertubeInstances)
             cwContentStr = \
                 insertQuestion(baseDir, translate, nickname, domain, port,
                                cwContentStr, postJsonObject, pageNumber)
@@ -1571,7 +1574,8 @@ def htmlIndividualPost(cssCache: {},
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
                        YTReplacementDomain: str,
-                       showPublishedDateOnly: bool) -> str:
+                       showPublishedDateOnly: bool,
+                       peertubeInstances: []) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1611,6 +1615,7 @@ def htmlIndividualPost(cssCache: {},
                              httpPrefix, projectVersion, 'inbox',
                              YTReplacementDomain,
                              showPublishedDateOnly,
+                             peertubeInstances,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1636,6 +1641,7 @@ def htmlIndividualPost(cssCache: {},
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
+                                         peertubeInstances,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1664,6 +1670,7 @@ def htmlIndividualPost(cssCache: {},
                                          httpPrefix, projectVersion, 'inbox',
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
+                                         peertubeInstances,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1680,7 +1687,8 @@ def htmlPostReplies(cssCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     httpPrefix: str, projectVersion: str,
                     YTReplacementDomain: str,
-                    showPublishedDateOnly: bool) -> str:
+                    showPublishedDateOnly: bool,
+                    peertubeInstances: []) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1696,6 +1704,7 @@ def htmlPostReplies(cssCache: {},
                                      httpPrefix, projectVersion, 'inbox',
                                      YTReplacementDomain,
                                      showPublishedDateOnly,
+                                     peertubeInstances,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

@@ -61,7 +61,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  publishButtonAtTop: bool,
                  authorized: bool,
                  moderationActionStr: str,
-                 theme: str) -> str:
+                 theme: str,
+                 peertubeInstances: []) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -566,6 +567,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              boxName,
                                              YTReplacementDomain,
                                              showPublishedDateOnly,
+                                             peertubeInstances,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -720,7 +722,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                iconsAsButtons: bool,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
-               authorized: bool, theme: str) -> str:
+               authorized: bool, theme: str,
+               peertubeInstances: []) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -739,7 +742,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -757,7 +760,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               iconsAsButtons: bool,
               rssIconAtTop: bool,
               publishButtonAtTop: bool,
-              authorized: bool, theme: str) -> str:
+              authorized: bool, theme: str,
+              peertubeInstances: []) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -776,7 +780,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -794,7 +798,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   iconsAsButtons: bool,
                   rssIconAtTop: bool,
                   publishButtonAtTop: bool,
-                  authorized: bool, theme: str) -> str:
+                  authorized: bool, theme: str,
+                  peertubeInstances: []) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -813,7 +818,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlEvents(cssCache: {}, defaultTimeline: str,
@@ -831,7 +836,8 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                iconsAsButtons: bool,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
-               authorized: bool, theme: str) -> str:
+               authorized: bool, theme: str,
+               peertubeInstances: []) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -850,7 +856,7 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -868,7 +874,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  iconsAsButtons: bool,
                  rssIconAtTop: bool,
                  publishButtonAtTop: bool,
-                 authorized: bool, theme: str) -> str:
+                 authorized: bool, theme: str,
+                 peertubeInstances: []) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -882,7 +889,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -900,7 +907,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      iconsAsButtons: bool,
                      rssIconAtTop: bool,
                      publishButtonAtTop: bool,
-                     authorized: bool, theme: str) -> str:
+                     authorized: bool, theme: str,
+                     peertubeInstances: []) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -915,7 +923,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -933,7 +941,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    iconsAsButtons: bool,
                    rssIconAtTop: bool,
                    publishButtonAtTop: bool,
-                   authorized: bool, theme: str) -> str:
+                   authorized: bool, theme: str,
+                   peertubeInstances: []) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -948,7 +957,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -966,7 +975,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    iconsAsButtons: bool,
                    rssIconAtTop: bool,
                    publishButtonAtTop: bool,
-                   authorized: bool, theme: str) -> str:
+                   authorized: bool, theme: str,
+                   peertubeInstances: []) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -981,7 +991,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1000,7 +1010,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       rssIconAtTop: bool,
                       publishButtonAtTop: bool,
                       authorized: bool,
-                      theme: str) -> str:
+                      theme: str,
+                      peertubeInstances: []) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1015,7 +1026,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1033,7 +1044,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   iconsAsButtons: bool,
                   rssIconAtTop: bool,
                   publishButtonAtTop: bool,
-                  authorized: bool, theme: str) -> str:
+                  authorized: bool, theme: str,
+                  peertubeInstances: []) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1048,7 +1060,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1066,7 +1078,8 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                iconsAsButtons: bool,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
-               authorized: bool, theme: str) -> str:
+               authorized: bool, theme: str,
+               peertubeInstances: []) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1082,4 +1095,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme)
+                        authorized, None, theme, peertubeInstances)

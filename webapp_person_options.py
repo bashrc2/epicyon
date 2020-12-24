@@ -39,6 +39,7 @@ def htmlPersonOptions(defaultTimeline: str,
                       ssbAddress: str,
                       blogAddress: str,
                       toxAddress: str,
+                      briarAddress: str,
                       jamiAddress: str,
                       PGPpubKey: str,
                       PGPfingerprint: str,
@@ -141,6 +142,15 @@ def htmlPersonOptions(defaultTimeline: str,
     if toxAddress:
         optionsStr += \
             '<p class="imText">Tox: ' + removeHtml(toxAddress) + '</p>\n'
+    if briarAddress:
+        if briarAddress.startswith('briar://'):
+            optionsStr += \
+                '<p class="imText">' + \
+                removeHtml(briarAddress) + '</p>\n'
+        else:
+            optionsStr += \
+                '<p class="imText">briar://' + \
+                removeHtml(briarAddress) + '</p>\n'
     if jamiAddress:
         optionsStr += \
             '<p class="imText">Jami: ' + removeHtml(jamiAddress) + '</p>\n'
