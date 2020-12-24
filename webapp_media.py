@@ -139,7 +139,13 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                              'peertube.video')
         for site in peerTubeSites:
             siteStr = site
-            if not site.startswith('http'):
+            if site.startswith('http://'):
+                site = site.replace('http://', '')
+            elif site.startswith('https://'):
+                site = site.replace('https://', '')
+            if site.endswith('.onion') or site.endswith('.i2p'):
+                siteStr = 'http://' + site
+            else:
                 siteStr = 'https://' + site
             siteStr = '"' + siteStr
             if siteStr in content:
