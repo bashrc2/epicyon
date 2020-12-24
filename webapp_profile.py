@@ -34,7 +34,7 @@ from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
-from tox import getBriarAddress
+from briar import getBriarAddress
 from jami import getJamiAddress
 from filters import isFiltered
 from webapp_frontscreen import htmlFrontScreen
