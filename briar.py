@@ -26,6 +26,8 @@ def getBriarAddress(actorJson: {}) -> str:
         propertyValue['value'] = propertyValue['value'].strip()
         if len(propertyValue['value']) < 50:
             continue
+        if not propertyValue['value'].startswith('briar://'):
+            continue
         if propertyValue['value'].lower() != propertyValue['value']:
             continue
         if '"' in propertyValue['value']:
@@ -46,6 +48,8 @@ def setBriarAddress(actorJson: {}, briarAddress: str) -> None:
     notBriarAddress = False
 
     if len(briarAddress) < 50:
+        notBriarAddress = True
+    if not briarAddress.startswith('briar://'):
         notBriarAddress = True
     if briarAddress.lower() != briarAddress:
         notBriarAddress = True
