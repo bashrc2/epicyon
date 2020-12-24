@@ -120,45 +120,42 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
             peerTubeSites = peertubeInstances
         else:
             # A default selection of the current larger peertube sites,
-            # mostly French and German language
-            # These have been chosen based on reported numbers of users
-            # and the content of each has not been reviewed, so mileage
-            # could vary
+            # mostly French and German language.
+            # These have only been semi-vetted, and so should be under
+            # continuous review.
             # Also see https://peertube_isolation.frama.io/list/ for
             # adversarial instances. Nothing in that list should be
             # in the defaults below.
-            peerTubeSites = ('peertube.mastodon.host', 'share.tube',
-                             'tube.tr4sk.me', 'videos.elbinario.net',
-                             'hkvideo.live',
-                             'peertube.snargol.com', 'tube.22decembre.eu',
-                             'tube.fabrigli.fr', 'libretube.net',
+            peerTubeSites = ('share.tube',
+                             'tube.22decembre.eu',
                              'libre.video',
-                             'peertube.linuxrocks.online', 'spacepub.space',
-                             'video.ploud.jp', 'video.omniatv.com',
-                             'peertube.servebeer.com',
-                             'tube.tchncs.de', 'tubee.fr',
-                             'video.alternanet.fr',
-                             'devtube.dev-wiki.de', 'video.samedi.pm',
+                             'peertube.linuxrocks.online',
+                             'spacepub.space',
+                             'tube.tchncs.de',
                              'video.irem.univ-paris-diderot.fr',
-                             'peertube.openstreetmap.fr', 'video.antopie.org',
-                             'scitech.video', 'tube.4aem.com',
+                             'peertube.openstreetmap.fr',
+                             'video.antopie.org',
+                             'scitech.video',
                              'video.ploud.fr',
-                             'peervideo.net', 'video.valme.io',
-                             'videos.pair2jeux.tube',
-                             'vault.mle.party', 'hostyour.tv',
-                             'diode.zone', 'visionon.tv',
-                             'artitube.artifaille.fr', 'peertube.fr',
-                             'peertube.live', 'kolektiva.media',
-                             'tube.ac-lyon.fr', 'www.yiny.org',
+                             'diode.zone',
+                             'visionon.tv',
+                             'peertube.fr',
+                             'peertube.live',
+                             'kolektiva.media',
                              'betamax.video',
-                             'tube.piweb.be', 'pe.ertu.be', 'peertube.social',
-                             'videos.lescommuns.org', 'peertube.nogafa.org',
-                             'skeptikon.fr', 'video.tedomum.net',
-                             'tube.p2p.legal', 'tilvids.com',
-                             'sikke.fi', 'exode.me', 'peertube.video')
+                             'peertube.social',
+                             'videos.lescommuns.org',
+                             'video.tedomum.net',
+                             'tilvids.com',
+                             'exode.me',
+                             'peertube.video')
         for site in peerTubeSites:
-            if '"https://' + site in content:
-                url = content.split('"https://' + site)[1]
+            siteStr = site
+            if not site.startswith('http'):
+                siteStr = 'https://' + site
+            siteStr = '"' + siteStr
+            if siteStr in content:
+                url = content.split(siteStr)[1]
                 if '"' in url:
                     url = url.split('"')[0].replace('/watch/', '/embed/')
                     content = \
