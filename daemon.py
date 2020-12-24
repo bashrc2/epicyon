@@ -136,6 +136,7 @@ from webapp_timeline import htmlInboxBlogs
 from webapp_timeline import htmlInboxNews
 from webapp_timeline import htmlInboxFeatures
 from webapp_timeline import htmlOutbox
+from webapp_media import loadPeertubeInstances
 from webapp_moderation import htmlAccountInfo
 from webapp_moderation import htmlModeration
 from webapp_moderation import htmlModerationInfo
@@ -13637,13 +13638,7 @@ def runDaemon(sendThreadsTimeoutMins: int,
 
     # load peertube instances from file into a list
     httpd.peertubeInstances = []
-    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
-    if os.path.isfile(peertubeInstancesFilename):
-        with open(peertubeInstancesFilename, 'r') as fp:
-            peertubeStr = fp.read()
-            if peertubeStr:
-                peertubeStr = peertubeStr.replace('\r', '')
-                httpd.peertubeInstances = peertubeStr.split('\n')
+    loadPeertubeInstances(baseDir, httpd.peertubeInstances)
 
     createInitialLastSeen(baseDir, httpPrefix)
 

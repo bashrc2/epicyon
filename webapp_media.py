@@ -6,6 +6,26 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
+
+
+def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
+    """Loads peertube instances from file into the given list
+    """
+    peertubeList = None
+    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
+    if os.path.isfile(peertubeInstancesFilename):
+        with open(peertubeInstancesFilename, 'r') as fp:
+            peertubeStr = fp.read()
+            if peertubeStr:
+                peertubeStr = peertubeStr.replace('\r', '')
+                peertubeList = peertubeStr.split('\n')
+    if peertubeList:
+        for url in peertubeList:
+            if url in peertubeInstances:
+                continue
+            peertubeInstances.append(url)
+
 
 def _addEmbeddedVideoFromSites(translate: {}, content: str,
                                peertubeInstances: [],
