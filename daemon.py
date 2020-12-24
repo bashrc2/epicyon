@@ -13635,8 +13635,15 @@ def runDaemon(sendThreadsTimeoutMins: int,
     httpd.iconsCache = {}
     httpd.fontsCache = {}
 
-    # TODO load peertube instances
+    # load peertube instances from file into a list
     httpd.peertubeInstances = []
+    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
+    if os.path.isfile(peertubeInstancesFilename):
+        with open(peertubeInstancesFilename, 'r') as fp:
+            peertubeStr = fp.read()
+            if peertubeStr:
+                peertubeStr = peertubeStr.replace('\r', '')
+                httpd.peertubeInstances = peertubeStr.split('\n')
 
     createInitialLastSeen(baseDir, httpPrefix)
 
