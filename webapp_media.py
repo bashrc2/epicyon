@@ -138,6 +138,13 @@ def _addEmbeddedVideoFromSites(translate: {}, content: str,
                              'exode.me',
                              'peertube.video')
         for site in peerTubeSites:
+            site = site.strip()
+            if not site:
+                continue
+            if len(site) < 5:
+                continue
+            if '.' not in site:
+                continue
             siteStr = site
             if site.startswith('http://'):
                 site = site.replace('http://', '')
