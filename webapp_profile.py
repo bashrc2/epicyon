@@ -34,6 +34,7 @@ from pgp import getEmailAddress
 from pgp import getPGPfingerprint
 from pgp import getPGPpubKey
 from tox import getToxAddress
+from tox import getBriarAddress
 from jami import getJamiAddress
 from filters import isFiltered
 from webapp_frontscreen import htmlFrontScreen
@@ -443,9 +444,11 @@ def htmlProfile(rssIconAtTop: bool,
     matrixAddress = getMatrixAddress(profileJson)
     ssbAddress = getSSBAddress(profileJson)
     toxAddress = getToxAddress(profileJson)
+    briarAddress = getBriarAddress(profileJson)
     jamiAddress = getJamiAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or jamiAddress or PGPpubKey or \
+       ssbAddress or toxAddress or briarAddress or \
+       jamiAddress or PGPpubKey or \
        PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
@@ -473,6 +476,10 @@ def htmlProfile(rssIconAtTop: bool,
             donateSection += \
                 '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
+        if briarAddress:
+            donateSection += \
+                '<p>Briar: <label class="toxaddr">' + \
+                briarAddress + '</label></p>\n'
         if jamiAddress:
             donateSection += \
                 '<p>Jami: <label class="toxaddr">' + \
@@ -877,6 +884,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     ssbAddress = ''
     blogAddress = ''
     toxAddress = ''
+    briarAddress = ''
     manuallyApprovesFollowers = ''
     actorJson = loadJson(actorFilename)
     if actorJson:
@@ -886,6 +894,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         ssbAddress = getSSBAddress(actorJson)
         blogAddress = getBlogAddress(actorJson)
         toxAddress = getToxAddress(actorJson)
+        briarAddress = getBriarAddress(actorJson)
         jamiAddress = getJamiAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
@@ -1239,6 +1248,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
         toxAddress + '">\n'
+
+    editProfileForm += '<label class="labels">Briar</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="briarAddress" value="' + \
+        briarAddress + '">\n'
 
     editProfileForm += '<label class="labels">Jami</label><br>\n'
     editProfileForm += \

@@ -39,6 +39,8 @@ from ssb import getSSBAddress
 from ssb import setSSBAddress
 from tox import getToxAddress
 from tox import setToxAddress
+from briar import getBriarAddress
+from briar import setBriarAddress
 from jami import getJamiAddress
 from jami import setJamiAddress
 from matrix import getMatrixAddress
@@ -4096,6 +4098,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setToxAddress(actorJson, '')
                             actorChanged = True
 
+                    # change briar address
+                    currentBriarAddress = getBriarAddress(actorJson)
+                    if fields.get('briarAddress'):
+                        if fields['briarAddress'] != currentBriarAddress:
+                            setBriarAddress(actorJson,
+                                            fields['briarAddress'])
+                            actorChanged = True
+                    else:
+                        if currentBriarAddress:
+                            setBriarAddress(actorJson, '')
+                            actorChanged = True
+
                     # change jami address
                     currentJamiAddress = getJamiAddress(actorJson)
                     if fields.get('jamiAddress'):
@@ -5162,6 +5176,7 @@ class PubServer(BaseHTTPRequestHandler):
             matrixAddress = None
             blogAddress = None
             toxAddress = None
+            briarAddress = None
             jamiAddress = None
             ssbAddress = None
             emailAddress = None
@@ -5176,6 +5191,7 @@ class PubServer(BaseHTTPRequestHandler):
                 ssbAddress = getSSBAddress(actorJson)
                 blogAddress = getBlogAddress(actorJson)
                 toxAddress = getToxAddress(actorJson)
+                briarAddress = getBriarAddress(actorJson)
                 jamiAddress = getJamiAddress(actorJson)
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
@@ -5192,7 +5208,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber, donateUrl,
                                     xmppAddress, matrixAddress,
                                     ssbAddress, blogAddress,
-                                    toxAddress, jamiAddress,
+                                    toxAddress, briarAddress,
+                                    jamiAddress,
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
                                     self.server.dormantMonths,
