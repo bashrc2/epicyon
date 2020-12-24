@@ -1033,6 +1033,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     themesDropdown = ''
     instanceStr = ''
     editorsStr = ''
+    peertubeStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
@@ -1148,6 +1149,21 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 themesDropdown.replace('<option value="' + themeName + '">',
                                        '<option value="' + themeName +
                                        '" selected>')
+
+            peertubeStr = \
+                '      <br><b><label class="labels">' + \
+                translate['Peertube Instances'] + '</label></b>\n'
+            idx = 'Show video previews for the following Peertube sites.'
+            peertubeStr += \
+                '      <br><label class="labels">' + \
+                translate[idx] + '</label>\n'
+            peertubeInstancesStr = ''
+            for url in peertubeInstances:
+                peertubeInstancesStr += url + '\n'
+            peertubeStr += \
+                '      <textarea id="message" name="ptInstances" ' + \
+                'style="height:200px">' + peertubeInstancesStr + \
+                '</textarea>\n'
 
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename)
 
@@ -1428,20 +1444,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="text" name="ytdomain" value="' + \
         YTReplacementDomain + '">\n'
 
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['Peertube Instances'] + '</label></b>\n'
-    idx = 'Show video previews for the following Peertube sites.'
-    editProfileForm += \
-        '      <br><label class="labels">' + \
-        translate[idx] + '</label>\n'
-    peertubeInstancesStr = ''
-    for url in peertubeInstances:
-        peertubeInstancesStr += url + '\n'
-    editProfileForm += \
-        '      <textarea id="message" name="ptInstances" ' + \
-        'style="height:200px">' + peertubeInstancesStr + '</textarea>\n'
-
     editProfileForm += '    </div>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
@@ -1454,7 +1456,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += skillsStr + themesDropdown
-    editProfileForm += moderatorsStr + editorsStr
+    editProfileForm += moderatorsStr + editorsStr + peertubeStr
     editProfileForm += '    </div>\n' + instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
