@@ -477,9 +477,14 @@ def htmlProfile(rssIconAtTop: bool,
                 '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
         if briarAddress:
-            donateSection += \
-                '<p>Briar: <label class="toxaddr">' + \
-                briarAddress + '</label></p>\n'
+            if briarAddress.startswith('briar://'):
+                donateSection += \
+                    '<p><label class="toxaddr">' + \
+                    briarAddress + '</label></p>\n'
+            else:
+                donateSection += \
+                    '<p>briar://<label class="toxaddr">' + \
+                    briarAddress + '</label></p>\n'
         if jamiAddress:
             donateSection += \
                 '<p>Jami: <label class="toxaddr">' + \

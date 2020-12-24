@@ -143,8 +143,14 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsStr += \
             '<p class="imText">Tox: ' + removeHtml(toxAddress) + '</p>\n'
     if briarAddress:
-        optionsStr += \
-            '<p class="imText">Briar: ' + removeHtml(briarAddress) + '</p>\n'
+        if briarAddress.startswith('briar://'):
+            optionsStr += \
+                '<p class="imText">' + \
+                removeHtml(briarAddress) + '</p>\n'
+        else:
+            optionsStr += \
+                '<p class="imText">briar://' + \
+                removeHtml(briarAddress) + '</p>\n'
     if jamiAddress:
         optionsStr += \
             '<p class="imText">Jami: ' + removeHtml(jamiAddress) + '</p>\n'
