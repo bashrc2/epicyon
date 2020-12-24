@@ -347,5 +347,7 @@
     "Filter out words": "Hidlo geiriau",
     "Unfilter": "Di-hid",
     "Unfilter words": "Geiriau di-hid",
-    "Show Accounts": "Dangos Cyfrifon"
+    "Show Accounts": "Dangos Cyfrifon",
+    "Peertube Instances": "Camau Peertube",
+    "Show video previews for the following Peertube sites.": "Dangos rhagolygon fideo ar gyfer y safleoedd Peertube canlynol."
 }

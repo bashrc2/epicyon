@@ -20,11 +20,24 @@ def loadPeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
             if peertubeStr:
                 peertubeStr = peertubeStr.replace('\r', '')
                 peertubeList = peertubeStr.split('\n')
-    if peertubeList:
-        for url in peertubeList:
-            if url in peertubeInstances:
-                continue
-            peertubeInstances.append(url)
+    if not peertubeList:
+        return
+    for url in peertubeList:
+        if url in peertubeInstances:
+            continue
+        peertubeInstances.append(url)
+
+
+def savePeertubeInstances(baseDir: str, peertubeInstances: []) -> None:
+    """Saves peertube instances to file from the given list
+    """
+    peertubeStr = ''
+    for url in peertubeInstances:
+        peertubeStr += url.strip() + '\n'
+
+    peertubeInstancesFilename = baseDir + '/accounts/peertube.txt'
+    with open(peertubeInstancesFilename, 'w+') as fp:
+        fp.write(peertubeStr)
 
 
 def _addEmbeddedVideoFromSites(translate: {}, content: str,

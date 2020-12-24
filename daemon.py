@@ -4565,6 +4565,27 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(allowedInstancesFilename):
                             os.remove(allowedInstancesFilename)
 
+                    # save peertube instances list
+                    peertubeInstancesFilename = \
+                        baseDir + '/accounts/peertube.txt'
+                    if fields.get('ptInstances'):
+                        self.server.peertubeInstances.clear()
+                        with open(peertubeInstancesFilename, 'w+') as aFile:
+                            aFile.write(fields['ptInstances'])
+                        ptInstancesList = fields['ptInstances'].split('\n')
+                        if ptInstancesList:
+                            for url in ptInstancesList:
+                                url = url.strip()
+                                if not url:
+                                    continue
+                                if url in self.server.peertubeInstances:
+                                    continue
+                                self.server.peertubeInstances.append(url)
+                    else:
+                        if os.path.isfile(peertubeInstancesFilename):
+                            os.remove(peertubeInstancesFilename)
+                        self.server.peertubeInstances.clear()
+
                     # save git project names list
                     gitProjectsFilename = \
                         baseDir + '/accounts/' + \
@@ -9381,6 +9402,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Show the edit profile screen
         """
         if '/users/' in path and path.endswith('/editprofile'):
+            peertubeInstances = self.server.peertubeInstances
             msg = htmlEditProfile(self.server.cssCache,
                                   translate,
                                   baseDir,
@@ -9388,7 +9410,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   port,
                                   httpPrefix,
                                   self.server.defaultTimeline,
-                                  self.server.themeName).encode('utf-8')
+                                  self.server.themeName,
+                                  peertubeInstances).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,

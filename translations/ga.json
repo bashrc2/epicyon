@@ -347,5 +347,7 @@
     "Filter out words": "Scag focail amach",
     "Unfilter": "Neamhleithleach",
     "Unfilter words": "Focail neamhleithleacha",
-    "Show Accounts": "Taispeáin Cuntais"
+    "Show Accounts": "Taispeáin Cuntais",
+    "Peertube Instances": "Imeachtaí Peertube",
+    "Show video previews for the following Peertube sites.": "Taispeáin réamhamharcanna físe do na suíomhanna Peertube seo a leanas."
 }

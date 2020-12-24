@@ -347,5 +347,7 @@
     "Filter out words": "تصفية الكلمات",
     "Unfilter": "غير مرشح",
     "Unfilter words": "الكلمات غير المصفاة",
-    "Show Accounts": "إظهار الحسابات"
+    "Show Accounts": "إظهار الحسابات",
+    "Peertube Instances": "مثيلات Peertube",
+    "Show video previews for the following Peertube sites.": "إظهار معاينات الفيديو لمواقع Peertube التالية."
 }

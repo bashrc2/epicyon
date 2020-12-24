@@ -347,5 +347,7 @@
     "Filter out words": "Filtrer les mots",
     "Unfilter": "Non filtrer",
     "Unfilter words": "Mots non filtrés",
-    "Show Accounts": "Afficher les comptes"
+    "Show Accounts": "Afficher les comptes",
+    "Peertube Instances": "Instances Peertube",
+    "Show video previews for the following Peertube sites.": "Afficher des aperçus vidéo pour les sites Peertube suivants."
 }
