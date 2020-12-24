@@ -4566,24 +4566,30 @@ class PubServer(BaseHTTPRequestHandler):
                             os.remove(allowedInstancesFilename)
 
                     # save peertube instances list
-                    peertubeInstancesFilename = \
+                    peertubeInstancesFile = \
                         baseDir + '/accounts/peertube.txt'
                     if fields.get('ptInstances'):
-                        self.server.peertubeInstances.clear()
-                        with open(peertubeInstancesFilename, 'w+') as aFile:
-                            aFile.write(fields['ptInstances'])
-                        ptInstancesList = fields['ptInstances'].split('\n')
-                        if ptInstancesList:
-                            for url in ptInstancesList:
-                                url = url.strip()
-                                if not url:
-                                    continue
-                                if url in self.server.peertubeInstances:
-                                    continue
-                                self.server.peertubeInstances.append(url)
+                        adminNickname = \
+                            getConfigParam(baseDir, 'admin')
+                        if adminNickname and \
+                           path.startswith('/users/' +
+                                           adminNickname + '/'):
+                            self.server.peertubeInstances.clear()
+                            with open(peertubeInstancesFile, 'w+') as aFile:
+                                aFile.write(fields['ptInstances'])
+                            ptInstancesList = \
+                                fields['ptInstances'].split('\n')
+                            if ptInstancesList:
+                                for url in ptInstancesList:
+                                    url = url.strip()
+                                    if not url:
+                                        continue
+                                    if url in self.server.peertubeInstances:
+                                        continue
+                                    self.server.peertubeInstances.append(url)
                     else:
-                        if os.path.isfile(peertubeInstancesFilename):
-                            os.remove(peertubeInstancesFilename)
+                        if os.path.isfile(peertubeInstancesFile):
+                            os.remove(peertubeInstancesFile)
                         self.server.peertubeInstances.clear()
 
                     # save git project names list
