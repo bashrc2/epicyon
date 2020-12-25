@@ -1,4 +1,6 @@
 {
+    "column-left-header-background": "#8b674e",
+    "column-left-header-color": "#d5c7b7",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "newswire-publish-icon": "True",
@@ -8,7 +10,7 @@
     "publish-button-at-top": "False",
     "banner-height": "25vh",
     "banner-height-mobile": "10vh",
-    "newswire-date-color": "yellow",
+    "newswire-date-color": "#ffd974",
     "main-bg-color": "#5c4e41",
     "login-bg-color": "#5c4e41",
     "options-bg-color": "#5c4e41",
