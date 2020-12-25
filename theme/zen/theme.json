@@ -1,4 +1,7 @@
 {
+    "lines-color": "#b6a188",
+    "day-number": "black",
+    "day-number2": "#bbb",
     "column-left-header-background": "#8b674e",
     "column-left-header-color": "#d5c7b7",
     "post-separator-margin-top": "10px",
@@ -12,6 +15,7 @@
     "banner-height-mobile": "10vh",
     "newswire-date-color": "#ffd974",
     "main-bg-color": "#5c4e41",
+    "calendar-bg-color": "#5c4e41",
     "login-bg-color": "#5c4e41",
     "options-bg-color": "#5c4e41",
     "post-bg-color": "#5c4e41",
