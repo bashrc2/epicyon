@@ -36,5 +36,8 @@
     "main-bg-color-dm": "#5c4a40",
     "main-header-color-roles": "#5c4e41",
     "dropdown-bg-color": "#504e41",
-    "dropdown-bg-color-hover": "#444"
+    "dropdown-bg-color-hover": "#444",
+    "header-font": "'Barlow-Regular'",
+    "*font-family": "'Barlow-Regular'",
+    "*src": "url('fonts/Barlow-Regular.woff2') format('woff2')"
 }
