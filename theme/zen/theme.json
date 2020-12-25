@@ -1,4 +1,5 @@
 {
+    "login-bg-color": "#212e3f",
     "lines-color": "#b6a188",
     "day-number": "black",
     "day-number2": "#bbb",
@@ -16,7 +17,6 @@
     "newswire-date-color": "#ffd974",
     "main-bg-color": "#5c4e41",
     "calendar-bg-color": "#5c4e41",
-    "login-bg-color": "#5c4e41",
     "options-bg-color": "#5c4e41",
     "post-bg-color": "#5c4e41",
     "timeline-posts-background-color": "#5c4e41",
