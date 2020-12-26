@@ -1506,6 +1506,8 @@ def individualPostAsHtml(allowDownloads: bool,
             cwContentStr = \
                 insertQuestion(baseDir, translate, nickname, domain, port,
                                cwContentStr, postJsonObject, pageNumber)
+            cwContentStr = \
+                switchWords(baseDir, nickname, domain, cwContentStr)
         if not isBlogPost(postJsonObject):
             # get the content warning button
             contentStr += \
