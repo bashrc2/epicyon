@@ -187,6 +187,25 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
+def getBrokenFavSubstitute() -> str:
+    """Substitute link used if a favicon is not available
+    """
+    return " onerror=\"this.onerror=null; this.src=''\""
+
+
+def getFavicon(url: str) -> str:
+    """Returns a favicon url from the given article link
+    """
+    if '://' not in url:
+        return None
+    domain = url.split('://')[1]
+    if '/' not in domain:
+        return url + '/favicon.ico'
+    else:
+        domain = domain.split('/')[0]
+    return url.split('://')[0] + '://' + domain + '/favicon.ico'
+
+
 def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                   translate: {}, positiveVoting: bool) -> str:
     """Converts a newswire dict into html
@@ -212,6 +231,13 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
 
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
+        url = item[1]
+        faviconUrl = getFavicon(url)
+        faviconLink = ''
+        if faviconUrl:
+            faviconLink = \
+                '<img loading="lazy" src="' + faviconUrl + '" ' + \
+                getBrokenFavSubstitute() + '/>'
         moderatedItem = item[5]
         htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
@@ -224,9 +250,10 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
 
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             htmlStr += '<p class="newswireItemVotedOn">' + \
-                '<a href="' + item[1] + '" target="_blank" ' + \
+                '<a href="' + url + '" target="_blank" ' + \
                 'rel="nofollow noopener noreferrer">' + \
-                '<span class="newswireItemVotedOn">' + title + \
+                '<span class="newswireItemVotedOn">' + \
+                faviconLink + title + \
                 '</span></a>' + totalVotesStr
             if moderator:
                 htmlStr += \
@@ -252,9 +279,9 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
             title = removeLongWords(item[0], 16, []).replace('\n', '<br>')
             if moderator and moderatedItem:
                 htmlStr += '<p class="newswireItemModerated">' + \
-                    '<a href="' + item[1] + '" target="_blank" ' + \
+                    '<a href="' + url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
-                    title + '</a>' + totalVotesStr
+                    faviconLink + title + '</a>' + totalVotesStr
                 htmlStr += ' ' + dateShown
                 htmlStr += '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
@@ -264,9 +291,9 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
-                    '<a href="' + item[1] + '" target="_blank" ' + \
+                    '<a href="' + url + '" target="_blank" ' + \
                     'rel="nofollow noopener noreferrer">' + \
-                    title + '</a>' + \
+                    faviconLink + title + '</a>' + \
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'

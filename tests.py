@@ -322,11 +322,12 @@ def createServerAlice(path: str, domain: str, port: int,
     maxNewswirePosts = 20
     dormantMonths = 3
     sendThreadsTimeoutMins = 30
+    maxFollowers = 10
     print('Server running: Alice')
     runDaemon(sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
-              2048, False, True, False, False, True, 10, False,
+              2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False,
               0, False, 1, False, False, False,
               5, True, True, 'en', __version__,
@@ -418,11 +419,12 @@ def createServerBob(path: str, domain: str, port: int,
     maxNewswirePosts = 20
     dormantMonths = 3
     sendThreadsTimeoutMins = 30
+    maxFollowers = 10
     print('Server running: Bob')
     runDaemon(sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
-              2048, False, True, False, False, True, 10, False,
+              2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
               5, True, True, 'en', __version__,
@@ -464,11 +466,12 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxNewswirePosts = 20
     dormantMonths = 3
     sendThreadsTimeoutMins = 30
+    maxFollowers = 10
     print('Server running: Eve')
     runDaemon(sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
-              2048, False, True, False, False, True, 10, False,
+              2048, False, True, False, False, True, maxFollowers,
               0, 100, 1024, 5, False, 0,
               False, 1, False, False, False,
               5, True, True, 'en', __version__,
@@ -851,7 +854,7 @@ def testFollowBetweenServers():
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
-                          True, __version__, False)
+                          True, __version__)
     print('sendResult: ' + str(sendResult))
 
     for t in range(16):

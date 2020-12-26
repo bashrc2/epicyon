@@ -68,14 +68,9 @@ def createInitialLastSeen(baseDir: str, httpPrefix: str) -> None:
 
 def _preApprovedFollower(baseDir: str,
                          nickname: str, domain: str,
-                         approveHandle: str,
-                         allowNewsFollowers: bool) -> bool:
+                         approveHandle: str) -> bool:
     """Is the given handle an already manually approved follower?
     """
-    # optionally allow the news account to be followed
-    if nickname == 'news' and allowNewsFollowers:
-        return True
-
     handle = nickname + '@' + domain
     accountDir = baseDir + '/accounts/' + handle
     approvedFilename = accountDir + '/approved.txt'
@@ -460,13 +455,12 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
 
 def _followApprovalRequired(baseDir: str, nicknameToFollow: str,
                             domainToFollow: str, debug: bool,
-                            followRequestHandle: str,
-                            allowNewsFollowers: bool) -> bool:
+                            followRequestHandle: str) -> bool:
     """ Returns the policy for follower approvals
     """
     # has this handle already been manually approved?
     if _preApprovedFollower(baseDir, nicknameToFollow, domainToFollow,
-                            followRequestHandle, allowNewsFollowers):
+                            followRequestHandle):
         return False
 
     manuallyApproveFollows = False
@@ -600,7 +594,6 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                          cachedWebfingers: {}, personCache: {},
                          messageJson: {}, federationList: [],
                          debug: bool, projectVersion: str,
-                         allowNewsFollowers: bool,
                          maxFollowers: int) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
@@ -651,11 +644,10 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                   'nickname for the account followed')
         return True
     if isSystemAccount(nicknameToFollow):
-        if not (nicknameToFollow == 'news' and allowNewsFollowers):
-            if debug:
-                print('DEBUG: Cannot follow system account - ' +
-                      nicknameToFollow)
-            return True
+        if debug:
+            print('DEBUG: Cannot follow system account - ' +
+                  nicknameToFollow)
+        return True
     if maxFollowers > 0:
         if _getNoOfFollowers(baseDir,
                              nicknameToFollow, domainToFollow,
@@ -683,8 +675,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     # what is the followers policy?
     approveHandle = nickname + '@' + domainFull
     if _followApprovalRequired(baseDir, nicknameToFollow,
-                               domainToFollow, debug, approveHandle,
-                               allowNewsFollowers):
+                               domainToFollow, debug, approveHandle):
         print('Follow approval is required')
         if domain.endswith('.onion'):
             if _noOfFollowRequests(baseDir,
@@ -877,7 +868,7 @@ def sendFollowRequest(session, baseDir: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
                       personCache: {}, debug: bool,
-                      projectVersion: str, allowNewsFollowers: bool) -> {}:
+                      projectVersion: str) -> {}:
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain, federationList):
@@ -910,7 +901,7 @@ def sendFollowRequest(session, baseDir: str,
     }
 
     if _followApprovalRequired(baseDir, nickname, domain, debug,
-                               followHandle, allowNewsFollowers):
+                               followHandle):
         # Remove any follow requests rejected for the account being followed.
         # It's assumed that if you are following someone then you are
         # ok with them following back. If this isn't the case then a rejected

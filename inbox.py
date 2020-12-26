@@ -2449,7 +2449,6 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
                   YTReplacementDomain: str,
                   showPublishedDateOnly: bool,
-                  allowNewsFollowers: bool,
                   maxFollowers: int, allowLocalNetworkAccess: bool,
                   peertubeInstances: []) -> None:
     """Processes received items and moves them to the appropriate
@@ -2739,7 +2738,6 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                 queueJson['post'],
                                 federationList,
                                 debug, projectVersion,
-                                allowNewsFollowers,
                                 maxFollowers):
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)

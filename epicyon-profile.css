@@ -999,10 +999,16 @@ div.container {
         color: var(--column-right-fg-color);
         line-height: var(--line-spacing-newswire);
     }
+    .newswireItem img {
+        width: 20px;
+    }
     .newswireItemModerated {
         font-size: var(--font-size-newswire);
         color: var(--newswire-item-moderated-color);
         line-height: var(--line-spacing-newswire);
+    }
+    .newswireItemModerated img {
+        width: 20px;
     }
     .newswireDateModerated {
         font-size: var(--font-size-newswire);
@@ -1018,6 +1024,9 @@ div.container {
         font-weight: bold;
         color: var(--column-right-fg-color-voted-on);
         line-height: var(--line-spacing-newswire);
+    }
+    .newswireItemVotedOn img {
+        width: 20px;
     }
     .newswireDate {
         font-size: var(--font-size-newswire);
@@ -1685,10 +1694,16 @@ div.container {
         color: var(--column-right-fg-color);
         line-height: var(--line-spacing-newswire);
     }
+    .newswireItem img {
+        width: 40px;
+    }
     .newswireItemModerated {
         font-size: var(--font-size-newswire-mobile);
         color: var(--newswire-item-moderated-color);
         line-height: var(--line-spacing-newswire);
+    }
+    .newswireItemModerated img {
+        width: 40px;
     }
     .newswireDateModerated {
         font-size: var(--font-size-newswire-mobile);
@@ -1704,6 +1719,9 @@ div.container {
         font-weight: bold;
         color: var(--column-right-fg-color-voted-on);
         line-height: var(--line-spacing-newswire);
+    }
+    .newswireItemVotedOn img {
+        width: 40px;
     }
     .newswireDate {
         font-size: var(--font-size-newswire-mobile);
