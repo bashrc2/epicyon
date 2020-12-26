@@ -2237,8 +2237,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.cachedWebfingers,
                                   self.server.personCache,
                                   debug,
-                                  self.server.projectVersion,
-                                  self.server.allowNewsFollowers)
+                                  self.server.projectVersion)
         if callingDomain.endswith('.onion') and onionDomain:
             originPathStr = 'http://' + onionDomain + usersPath
         elif (callingDomain.endswith('.i2p') and i2pDomain):
@@ -13364,7 +13363,6 @@ def runDaemon(sendThreadsTimeoutMins: int,
               fullWidthTimelineButtonHeader: bool,
               showPublishAsIcon: bool,
               maxFollowers: int,
-              allowNewsFollowers: bool,
               maxNewsPosts: int,
               maxMirroredArticles: int,
               maxNewswireFeedSizeKb: int,
@@ -13514,9 +13512,6 @@ def runDaemon(sendThreadsTimeoutMins: int,
 
     # maximum number of posts in the news timeline/outbox
     httpd.maxNewsPosts = maxNewsPosts
-
-    # whether or not to allow followers of the news account
-    httpd.allowNewsFollowers = allowNewsFollowers
 
     # The maximum number of tags per post which can be
     # attached to RSS feeds pulled in via the newswire
@@ -13704,7 +13699,6 @@ def runDaemon(sendThreadsTimeoutMins: int,
                               httpd.translate, unitTest,
                               httpd.YTReplacementDomain,
                               httpd.showPublishedDateOnly,
-                              httpd.allowNewsFollowers,
                               httpd.maxFollowers,
                               httpd.allowLocalNetworkAccess,
                               httpd.peertubeInstances), daemon=True)

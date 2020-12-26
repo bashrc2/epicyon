@@ -243,11 +243,6 @@ parser.add_argument("--fullWidthTimelineButtonHeader",
                     help="Whether to show the timeline " +
                     "button header containing inbox and outbox " +
                     "as the full width of the screen")
-parser.add_argument("--allowNewsFollowers",
-                    dest='allowNewsFollowers',
-                    type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Whether to allow the news account to be followed")
 parser.add_argument("--iconsAsButtons",
                     dest='iconsAsButtons',
                     type=str2bool, nargs='?',
@@ -2095,11 +2090,6 @@ sendThreadsTimeoutMins = \
 if sendThreadsTimeoutMins is not None:
     args.sendThreadsTimeoutMins = int(sendThreadsTimeoutMins)
 
-allowNewsFollowers = \
-    getConfigParam(baseDir, 'allowNewsFollowers')
-if allowNewsFollowers is not None:
-    args.allowNewsFollowers = bool(allowNewsFollowers)
-
 showPublishAsIcon = \
     getConfigParam(baseDir, 'showPublishAsIcon')
 if showPublishAsIcon is not None:
@@ -2154,7 +2144,6 @@ if __name__ == "__main__":
               args.fullWidthTimelineButtonHeader,
               args.showPublishAsIcon,
               args.maxFollowers,
-              args.allowNewsFollowers,
               args.maxNewsPosts,
               args.maxMirroredArticles,
               args.maxNewswireFeedSizeKb,
