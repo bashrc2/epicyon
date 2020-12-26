@@ -203,7 +203,7 @@ def getFavicon(url: str) -> str:
         return url + '/favicon.ico'
     else:
         domain = domain.split('/')[0]
-    return url.split('://')[0] + domain + '/favicon.ico'
+    return url.split('://')[0] + '://' + domain + '/favicon.ico'
 
 
 def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
