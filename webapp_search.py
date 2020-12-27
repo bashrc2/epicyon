@@ -292,7 +292,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     emojiStr += \
         '  <p class="followText">' + \
         translate['Enter an emoji name to search for'] + '</p>\n'
-    emojiStr += '  <form method="POST" action="' + \
+    emojiStr += '  <form role="search" method="POST" action="' + \
         actor + '/searchhandleemoji">\n'
     emojiStr += '    <input type="hidden" name="actor" value="' + \
         actor + '">\n'
