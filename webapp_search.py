@@ -350,7 +350,7 @@ def htmlSearch(cssCache: {}, translate: {},
         '*skill or :emoji: to search for'
     followStr += \
         '  <p class="followText">' + translate[idx] + '</p>\n'
-    followStr += '  <form method="POST" ' + \
+    followStr += '  <form role="search" method="POST" ' + \
         'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
