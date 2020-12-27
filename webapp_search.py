@@ -334,11 +334,13 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(searchBannerFilename):
         usersPath = '/users/' + searchNickname
         followStr += \
+            '<header>\n' + \
             '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '">\n'
         followStr += '<img loading="lazy" class="timeline-banner" src="' + \
-            usersPath + '/' + searchBannerFile + '" /></a>\n'
+            usersPath + '/' + searchBannerFile + '" /></a>\n' + \
+            '</header>\n'
 
     # show the search box
     followStr += '<div class="follow">\n'

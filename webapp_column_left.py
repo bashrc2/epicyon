@@ -325,11 +325,13 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # top banner
     editLinksForm += \
+        '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     editLinksForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>\n'
 
     editLinksForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

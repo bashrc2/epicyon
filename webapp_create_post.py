@@ -558,11 +558,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm = htmlHeaderWithExternalStyle(cssFilename)
 
     newPostForm += \
+        '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>\n'
 
     mentionsStr = ''
     for m in mentions:

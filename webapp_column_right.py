@@ -516,11 +516,13 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # top banner
     editNewswireForm += \
+        '<header>' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>'
 
     editNewswireForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
