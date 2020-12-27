@@ -1050,7 +1050,8 @@ def _getFooterWithIcons(showIcons: bool,
     if not showIcons:
         return None
 
-    footerStr = '\n      <div class="' + containerClassIcons + '">\n'
+    footerStr = '\n      <nav>\n'
+    footerStr += '      <div class="' + containerClassIcons + '">\n'
     footerStr += replyStr + announceStr + likeStr + bookmarkStr
     footerStr += deleteStr + muteStr + editStr
     if not isNewsPost(postJsonObject):
@@ -1061,6 +1062,7 @@ def _getFooterWithIcons(showIcons: bool,
             publishedLink.replace('/news/', '/news/statuses/') + \
             '" class="' + timeClass + '">' + publishedStr + '</a>\n'
     footerStr += '      </div>\n'
+    footerStr += '      </nav>\n'
     return footerStr
 
 
