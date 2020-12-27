@@ -297,6 +297,9 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'
+
+    if htmlStr:
+        htmlStr = '<nav>\n' + htmlStr + '</nav>\n'
     return htmlStr
 
 

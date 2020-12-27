@@ -171,6 +171,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             linksList = sharesList + linksList
 
     if linksList:
+        htmlStr += '<nav>\n'
         for lineStr in linksList:
             if ' ' not in lineStr:
                 if '#' not in lineStr:
@@ -215,6 +216,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                     htmlStr += \
                         '      <p>' + lineStr + '</p>\n'
                 linksFileContainsEntries = True
+        htmlStr += '</nav>\n'
 
     if firstSeparatorAdded:
         htmlStr += separatorStr
