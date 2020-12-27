@@ -193,7 +193,7 @@ def _getBrokenFavSubstitute() -> str:
     return " onerror=\"this.onerror=null; this.style='width:0%'; this.src=''\""
 
 
-def getNewswireFavicon(url: str) -> str:
+def _getNewswireFavicon(url: str) -> str:
     """Returns a favicon url from the given article link
     """
     if '://' not in url:
@@ -232,7 +232,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         url = item[1]
-        faviconUrl = getNewswireFavicon(url)
+        faviconUrl = _getNewswireFavicon(url)
         faviconLink = ''
         if faviconUrl:
             faviconLink = \
