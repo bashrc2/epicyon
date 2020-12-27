@@ -1482,6 +1482,8 @@ def individualPostAsHtml(allowDownloads: bool,
         objectContent = \
             postJsonObject['object']['content']
 
+    objectContent = '<article>' + objectContent + '</article>'
+
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
         contentStr = addEmbeddedElements(translate, contentStr,
