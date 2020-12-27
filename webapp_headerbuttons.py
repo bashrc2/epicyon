@@ -48,7 +48,7 @@ def headerButtonsTimeline(defaultTimeline: str,
     buttons for inbox, outbox, search, calendar, etc
     """
     # start of the button header with inbox, outbox, etc
-    tlStr = '<div class="containerHeader">\n'
+    tlStr = '<div class="containerHeader"><nav>\n'
     # first button
     if defaultTimeline == 'tlmedia':
         tlStr += \
@@ -322,5 +322,5 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += '</div>'
 
     # end of the button header with inbox, outbox, etc
-    tlStr += '    </div>\n'
+    tlStr += '    </nav></div>\n'
     return tlStr
