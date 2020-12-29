@@ -663,7 +663,7 @@ class PubServer(BaseHTTPRequestHandler):
             'text-align: center;">' + str(httpCode) + '</div>' \
             '<div style="font-size: 128px; ' \
             'text-align: center; font-variant: ' \
-            'small-caps;">' + httpDescription + '</div>' \
+            'small-caps;"><p role="alert">' + httpDescription + '</p></div>' \
             '<div style="text-align: center;">' + longDescription + '</div>' \
             '</body></html>'
         msg = msg.encode('utf-8')
