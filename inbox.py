@@ -1979,8 +1979,9 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
         try:
             with open(indexFilename, 'r+') as indexFile:
                 content = indexFile.read()
-                indexFile.seek(0, 0)
-                indexFile.write(destinationFilename + '\n' + content)
+                if destinationFilename + '\n' not in content:
+                    indexFile.seek(0, 0)
+                    indexFile.write(destinationFilename + '\n' + content)
                 return True
         except Exception as e:
             print('WARN: Failed to write entry to index ' + str(e))
