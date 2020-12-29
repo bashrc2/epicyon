@@ -316,6 +316,7 @@ a:focus {
     width: 90%;
     hyphens: auto;
     text-wrap: pretty;
+    white-space: nowrap;
 }
 
 .gitpatch {

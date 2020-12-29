@@ -493,6 +493,7 @@ a:focus {
     width: 100%;
     hyphens: auto;
     text-wrap: pretty;
+    white-space: nowrap;
 }
 
 .addedHashtag:link {
