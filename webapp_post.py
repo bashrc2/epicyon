@@ -1498,8 +1498,12 @@ def individualPostAsHtml(allowDownloads: bool,
         postID = 'post' + str(createPassword(8))
         contentStr = ''
         if postJsonObject['object'].get('summary'):
-            contentStr += \
-                '<b>' + str(postJsonObject['object']['summary']) + '</b>\n '
+            cwStr = str(postJsonObject['object']['summary'])
+            cwStr = \
+                addEmojiToDisplayName(baseDir, httpPrefix,
+                                      nickname, domain,
+                                      cwStr, False)
+            contentStr += '<b>' + cwStr + '</b>\n '
             if isModerationPost:
                 containerClass = 'container report'
         # get the content warning text

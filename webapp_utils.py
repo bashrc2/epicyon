@@ -576,7 +576,7 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,
 def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
                           nickname: str, domain: str,
                           displayName: str, inProfileName: bool) -> str:
-    """Adds emoji icons to display names on individual posts
+    """Adds emoji icons to display names or CW on individual posts
     """
     if ':' not in displayName:
         return displayName
