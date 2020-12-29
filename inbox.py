@@ -123,8 +123,9 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
                 try:
                     with open(tagsFilename, 'r+') as tagsFile:
                         content = tagsFile.read()
-                        tagsFile.seek(0, 0)
-                        tagsFile.write(tagline + content)
+                        if tagline not in content:
+                            tagsFile.seek(0, 0)
+                            tagsFile.write(tagline + content)
                 except Exception as e:
                     print('WARN: Failed to write entry to tags file ' +
                           tagsFilename + ' ' + str(e))

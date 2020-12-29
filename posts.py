@@ -668,8 +668,9 @@ def _updateHashtagsIndex(baseDir: str, tag: {}, newPostId: str) -> None:
             try:
                 with open(tagsFilename, 'r+') as tagsFile:
                     content = tagsFile.read()
-                    tagsFile.seek(0, 0)
-                    tagsFile.write(tagline+content)
+                    if tagline not in content:
+                        tagsFile.seek(0, 0)
+                        tagsFile.write(tagline + content)
             except Exception as e:
                 print('WARN: Failed to write entry to tags file ' +
                       tagsFilename + ' ' + str(e))
@@ -688,9 +689,10 @@ def _addSchedulePost(baseDir: str, nickname: str, domain: str,
             try:
                 with open(scheduleIndexFilename, 'r+') as scheduleFile:
                     content = scheduleFile.read()
-                    scheduleFile.seek(0, 0)
-                    scheduleFile.write(indexStr + '\n' + content)
-                    print('DEBUG: scheduled post added to index')
+                    if indexStr + '\n' not in content:
+                        scheduleFile.seek(0, 0)
+                        scheduleFile.write(indexStr + '\n' + content)
+                        print('DEBUG: scheduled post added to index')
             except Exception as e:
                 print('WARN: Failed to write entry to scheduled posts index ' +
                       scheduleIndexFilename + ' ' + str(e))
