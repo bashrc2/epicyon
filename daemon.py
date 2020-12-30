@@ -87,6 +87,7 @@ from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
 from inbox import getPersonPubKey
+from follow import isFollowingActor
 from follow import getFollowingFeed
 from follow import sendFollowRequest
 from follow import unfollowAccount
@@ -2419,6 +2420,7 @@ class PubServer(BaseHTTPRequestHandler):
                             domain: str, domainFull: str,
                             port: int, searchForEmoji: bool,
                             onionDomain: str, i2pDomain: str,
+                            GETstartTime, GETtimings: {},
                             debug: bool) -> None:
         """Receive a search query
         """
@@ -2570,27 +2572,41 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy = False
                         return
                 profilePathStr = path.replace('/searchhandle', '')
-                profileStr = \
-                    htmlProfileAfterSearch(self.server.cssCache,
-                                           self.server.recentPostsCache,
-                                           self.server.maxRecentPosts,
-                                           self.server.translate,
-                                           baseDir,
-                                           profilePathStr,
-                                           httpPrefix,
-                                           nickname,
-                                           domain,
-                                           port,
-                                           searchStr,
-                                           self.server.session,
-                                           self.server.cachedWebfingers,
-                                           self.server.personCache,
-                                           self.server.debug,
-                                           self.server.projectVersion,
-                                           self.server.YTReplacementDomain,
-                                           self.server.showPublishedDateOnly,
-                                           self.server.defaultTimeline,
-                                           self.server.peertubeInstances)
+
+                # are we already following the searched for handle?
+                if isFollowingActor(baseDir, nickname, domain,
+                                    searchStr):
+                    # TODO
+                    self._showPersonOptions(callingDomain, profilePathStr,
+                                            baseDir, httpPrefix,
+                                            domain, domainFull,
+                                            GETstartTime, GETtimings,
+                                            onionDomain, i2pDomain,
+                                            cookie, debug)
+                    return
+                else:
+                    showPublishedDateOnly = self.server.showPublishedDateOnly
+                    profileStr = \
+                        htmlProfileAfterSearch(self.server.cssCache,
+                                               self.server.recentPostsCache,
+                                               self.server.maxRecentPosts,
+                                               self.server.translate,
+                                               baseDir,
+                                               profilePathStr,
+                                               httpPrefix,
+                                               nickname,
+                                               domain,
+                                               port,
+                                               searchStr,
+                                               self.server.session,
+                                               self.server.cachedWebfingers,
+                                               self.server.personCache,
+                                               self.server.debug,
+                                               self.server.projectVersion,
+                                               self.server.YTReplacementDomain,
+                                               showPublishedDateOnly,
+                                               self.server.defaultTimeline,
+                                               self.server.peertubeInstances)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -12820,6 +12836,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      searchForEmoji,
                                      self.server.onionDomain,
                                      self.server.i2pDomain,
+                                     POSTstartTime, {},
                                      self.server.debug)
             return
 
