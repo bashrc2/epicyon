@@ -2577,7 +2577,16 @@ class PubServer(BaseHTTPRequestHandler):
                 # are we already following the searched for handle?
                 if isFollowingActor(baseDir, nickname, domain,
                                     searchStr):
-                    actor = searchStr
+                    if not hasUsersPath(searchStr):
+                        searchNickname = getNicknameFromActor(searchStr)
+                        searchDomain, searchPort = \
+                            getDomainFromActor(searchStr)
+                        actor = \
+                            httpPrefix + '://' + \
+                            getFullDomain(searchDomain, searchPort) + \
+                            '/users/' + searchNickname
+                    else:
+                        actor = searchStr
                     avatarUrl = \
                         getAvatarImageUrl(self.server.session,
                                           baseDir, httpPrefix,
@@ -2588,7 +2597,7 @@ class PubServer(BaseHTTPRequestHandler):
                         '?options=' + actor + ';1;' + \
                         '/avatars/' + avatarUrl.replace('/', '-')
                     print('profilePathStr: ' + profilePathStr)
-                    
+
                     self._showPersonOptions(callingDomain, profilePathStr,
                                             baseDir, httpPrefix,
                                             domain, domainFull,
