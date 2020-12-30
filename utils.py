@@ -1528,6 +1528,7 @@ def updateLikesCollection(recentPostsCache: {},
         for likeItem in postJsonObject['object']['likes']['items']:
             if likeItem.get('actor'):
                 if likeItem['actor'] == actor:
+                    # already liked
                     return
         newLike = {
             'type': 'Like',
