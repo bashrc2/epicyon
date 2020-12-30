@@ -117,6 +117,7 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webapp_utils import getAvatarImageUrl
 from webapp_utils import htmlHashtagBlocked
 from webapp_utils import htmlFollowingList
 from webapp_utils import setBlogAddress
@@ -2576,7 +2577,16 @@ class PubServer(BaseHTTPRequestHandler):
                 # are we already following the searched for handle?
                 if isFollowingActor(baseDir, nickname, domain,
                                     searchStr):
-                    # TODO
+                    actor = searchStr
+                    avatarUrl = \
+                        getAvatarImageUrl(self.server.session,
+                                          baseDir, httpPrefix,
+                                          actor,
+                                          self.server.personCache,
+                                          None, True)
+                    profilePathStr = profilePathStr + \
+                        '?options=' + actor + ';1;' + \
+                        '/actors/' + avatarUrl.replace('/', '-')
                     self._showPersonOptions(callingDomain, profilePathStr,
                                             baseDir, httpPrefix,
                                             domain, domainFull,
