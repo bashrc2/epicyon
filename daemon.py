@@ -2586,7 +2586,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           None, True)
                     profilePathStr = profilePathStr + \
                         '?options=' + actor + ';1;' + \
-                        '/actors/' + avatarUrl.replace('/', '-')
+                        '/avatars/' + avatarUrl.replace('/', '-')
                     self._showPersonOptions(callingDomain, profilePathStr,
                                             baseDir, httpPrefix,
                                             domain, domainFull,
