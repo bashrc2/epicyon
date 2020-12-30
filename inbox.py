@@ -157,14 +157,13 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     if boxname != 'tlevents' and boxname != 'outbox':
         boxname = 'inbox'
 
-    # wfRequest = {}
-    # requestHandle = nickname + '@' + domain
-    # if cachedWebfingers.get(requestHandle):
-    #     wfRequest = cachedWebfingers[requestHandle]
-    # elif cachedWebfingers.get(requestHandle + ':' + str(port)):
-    #     wfRequest = cachedWebfingers[requestHandle + ':' + str(port)]
-    # TODO: this may need to be changed
-    wfRequest = cachedWebfingers
+    # check if a cached version of the webfinger request exists
+    requestHandle = nickname + '@' + getFullDomain(domain, port)
+    if cachedWebfingers.get(requestHandle):
+        wfRequest = cachedWebfingers[requestHandle]
+    else:
+        # TODO this may not be correct
+        wfRequest = cachedWebfingers
 
     individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,

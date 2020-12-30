@@ -148,8 +148,12 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
     """
     print('getUserUrl: ' + str(sourceId) + ' ' + str(wfRequest))
     if not wfRequest.get('links'):
-        print('getUserUrl webfinger activity+json contains no links ' +
-              str(sourceId) + ' ' + str(wfRequest))
+        if sourceId == 72367:
+            print('getUserUrl failed to get display name for webfinger ' +
+                  str(wfRequest))
+        else:
+            print('getUserUrl webfinger activity+json contains no links ' +
+                  str(sourceId) + ' ' + str(wfRequest))
         return None
     for link in wfRequest['links']:
         if not (link.get('type') and link.get('href')):
