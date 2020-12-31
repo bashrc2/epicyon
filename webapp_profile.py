@@ -260,18 +260,10 @@ def htmlProfileAfterSearch(cssCache: {},
         if not item.get('object'):
             continue
 
-        # check if a cached version of the webfinger request exists
-        requestHandle = nickname + '@' + getFullDomain(domain, port)
-        if cachedWebfingers.get(requestHandle):
-            wfRequest = cachedWebfingers[requestHandle]
-        else:
-            # TODO this may not be correct
-            wfRequest = cachedWebfingers
-
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                                  translate, None, baseDir,
-                                 session, wfRequest, personCache,
+                                 session, cachedWebfingers, personCache,
                                  nickname, domain, port,
                                  item, avatarUrl, False, False,
                                  httpPrefix, projectVersion, 'inbox',
