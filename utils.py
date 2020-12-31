@@ -708,9 +708,10 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         try:
             with open(filename, 'r+') as f:
                 content = f.read()
-                f.seek(0, 0)
-                f.write(handleToFollow + '\n' + content)
-                print('DEBUG: follow added')
+                if handleToFollow + '\n' not in content:
+                    f.seek(0, 0)
+                    f.write(handleToFollow + '\n' + content)
+                    print('DEBUG: follow added')
         except Exception as e:
             print('WARN: Failed to write entry to follow file ' +
                   filename + ' ' + str(e))
@@ -1527,6 +1528,7 @@ def updateLikesCollection(recentPostsCache: {},
         for likeItem in postJsonObject['object']['likes']['items']:
             if likeItem.get('actor'):
                 if likeItem['actor'] == actor:
+                    # already liked
                     return
         newLike = {
             'type': 'Like',

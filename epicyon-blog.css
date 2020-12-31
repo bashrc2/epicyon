@@ -314,6 +314,9 @@ a:focus {
 .message {
     margin-left: 7%;
     width: 90%;
+    hyphens: auto;
+    text-wrap: pretty;
+    text-align: justify;
 }
 
 .gitpatch {

@@ -187,13 +187,13 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     return htmlStr
 
 
-def getBrokenFavSubstitute() -> str:
+def _getBrokenFavSubstitute() -> str:
     """Substitute link used if a favicon is not available
     """
-    return " onerror=\"this.onerror=null; this.src=''\""
+    return " onerror=\"this.onerror=null; this.style='width:0%'; this.src=''\""
 
 
-def getFavicon(url: str) -> str:
+def _getNewswireFavicon(url: str) -> str:
     """Returns a favicon url from the given article link
     """
     if '://' not in url:
@@ -232,12 +232,12 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         dateStrLink = dateStr.replace('T', ' ')
         dateStrLink = dateStrLink.replace('Z', '')
         url = item[1]
-        faviconUrl = getFavicon(url)
+        faviconUrl = _getNewswireFavicon(url)
         faviconLink = ''
         if faviconUrl:
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
-                getBrokenFavSubstitute() + '/>'
+                _getBrokenFavSubstitute() + '/>'
         moderatedItem = item[5]
         htmlStr += separatorStr
         if moderatedItem and 'vote:' + nickname in item[2]:
@@ -297,6 +297,9 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     totalVotesStr
                 htmlStr += ' <span class="newswireDate">'
                 htmlStr += dateShown + '</span></p>\n'
+
+    if htmlStr:
+        htmlStr = '<nav>\n' + htmlStr + '</nav>\n'
     return htmlStr
 
 
@@ -513,11 +516,13 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # top banner
     editNewswireForm += \
+        '<header>' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>'
 
     editNewswireForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

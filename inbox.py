@@ -123,8 +123,9 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
                 try:
                     with open(tagsFilename, 'r+') as tagsFile:
                         content = tagsFile.read()
-                        tagsFile.seek(0, 0)
-                        tagsFile.write(tagline + content)
+                        if tagline not in content:
+                            tagsFile.seek(0, 0)
+                            tagsFile.write(tagline + content)
                 except Exception as e:
                     print('WARN: Failed to write entry to tags file ' +
                           tagsFilename + ' ' + str(e))
@@ -156,18 +157,10 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     if boxname != 'tlevents' and boxname != 'outbox':
         boxname = 'inbox'
 
-    # wfRequest = {}
-    # requestHandle = nickname + '@' + domain
-    # if cachedWebfingers.get(requestHandle):
-    #     wfRequest = cachedWebfingers[requestHandle]
-    # elif cachedWebfingers.get(requestHandle + ':' + str(port)):
-    #     wfRequest = cachedWebfingers[requestHandle + ':' + str(port)]
-    # TODO: this may need to be changed
-    wfRequest = cachedWebfingers
-
     individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,
-                         baseDir, session, wfRequest, personCache,
+                         baseDir, session, cachedWebfingers,
+                         personCache,
                          nickname, domain, port, postJsonObject,
                          avatarUrl, True, allowDeletion,
                          httpPrefix, __version__, boxname, None,
@@ -964,13 +957,13 @@ def _receiveLike(recentPostsCache: {},
 
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
+    updateLikesCollection(recentPostsCache, baseDir, postFilename,
+                          messageJson['object'],
+                          messageJson['actor'], domain, debug)
     if not _alreadyLiked(baseDir,
                          handleName, handleDom,
                          messageJson['object'],
                          messageJson['actor']):
-        updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                              messageJson['object'],
-                              messageJson['actor'], domain, debug)
         _likeNotify(baseDir, domain, onionDomain, handle,
                     messageJson['actor'], messageJson['object'])
     return True
@@ -1979,8 +1972,9 @@ def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,
         try:
             with open(indexFilename, 'r+') as indexFile:
                 content = indexFile.read()
-                indexFile.seek(0, 0)
-                indexFile.write(destinationFilename + '\n' + content)
+                if destinationFilename + '\n' not in content:
+                    indexFile.seek(0, 0)
+                    indexFile.write(destinationFilename + '\n' + content)
                 return True
         except Exception as e:
             print('WARN: Failed to write entry to index ' + str(e))

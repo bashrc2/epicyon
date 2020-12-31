@@ -491,6 +491,9 @@ a:focus {
     margin-left: 0%;
     margin-right: 0%;
     width: 100%;
+    hyphens: auto;
+    text-wrap: pretty;
+    text-align: justify;
 }
 
 .addedHashtag:link {

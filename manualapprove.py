@@ -184,8 +184,10 @@ def manualApproveFollowRequest(session, baseDir: str,
                 try:
                     with open(followersFilename, 'r+') as followersFile:
                         content = followersFile.read()
-                        followersFile.seek(0, 0)
-                        followersFile.write(approveHandleFull + '\n' + content)
+                        if approveHandleFull + '\n' not in content:
+                            followersFile.seek(0, 0)
+                            followersFile.write(approveHandleFull + '\n' +
+                                                content)
                 except Exception as e:
                     print('WARN: Manual follow accept. ' +
                           'Failed to write entry to followers file ' + str(e))

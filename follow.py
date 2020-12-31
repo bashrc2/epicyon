@@ -725,8 +725,10 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                     try:
                         with open(followersFilename, 'r+') as followersFile:
                             content = followersFile.read()
-                            followersFile.seek(0, 0)
-                            followersFile.write(approveHandle + '\n' + content)
+                            if approveHandle + '\n' not in content:
+                                followersFile.seek(0, 0)
+                                followersFile.write(approveHandle + '\n' +
+                                                    content)
                     except Exception as e:
                         print('WARN: ' +
                               'Failed to write entry to followers file ' +

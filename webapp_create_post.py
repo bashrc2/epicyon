@@ -73,7 +73,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
                          dropdownReportSuffix: str) -> str:
     """Returns the html for a drop down list of new post types
     """
-    dropDownContent = '<div class="newPostDropdown">\n'
+    dropDownContent = '<nav><div class="newPostDropdown">\n'
     dropDownContent += '  <input type="checkbox" ' + \
         'id="my-newPostDropdown" value="" name="my-checkbox">\n'
     dropDownContent += '  <label for="my-newPostDropdown"\n'
@@ -157,7 +157,7 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             translate['Ask a question'] + '</a></li>\n'
 
     dropDownContent += '  </ul>\n'
-    dropDownContent += '</div>\n'
+    dropDownContent += '</div></nav>\n'
     return dropDownContent
 
 
@@ -558,11 +558,13 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
     newPostForm = htmlHeaderWithExternalStyle(cssFilename)
 
     newPostForm += \
+        '<header>\n' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '</header>\n'
 
     mentionsStr = ''
     for m in mentions:

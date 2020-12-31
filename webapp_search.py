@@ -292,7 +292,7 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     emojiStr += \
         '  <p class="followText">' + \
         translate['Enter an emoji name to search for'] + '</p>\n'
-    emojiStr += '  <form method="POST" action="' + \
+    emojiStr += '  <form role="search" method="POST" action="' + \
         actor + '/searchhandleemoji">\n'
     emojiStr += '    <input type="hidden" name="actor" value="' + \
         actor + '">\n'
@@ -334,11 +334,13 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(searchBannerFilename):
         usersPath = '/users/' + searchNickname
         followStr += \
+            '<header>\n' + \
             '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '">\n'
         followStr += '<img loading="lazy" class="timeline-banner" src="' + \
-            usersPath + '/' + searchBannerFile + '" /></a>\n'
+            usersPath + '/' + searchBannerFile + '" /></a>\n' + \
+            '</header>\n'
 
     # show the search box
     followStr += '<div class="follow">\n'
@@ -348,7 +350,7 @@ def htmlSearch(cssCache: {}, translate: {},
         '*skill or :emoji: to search for'
     followStr += \
         '  <p class="followText">' + translate[idx] + '</p>\n'
-    followStr += '  <form method="POST" ' + \
+    followStr += '  <form role="search" method="POST" ' + \
         'accept-charset="UTF-8" action="' + actor + '/searchhandle">\n'
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
@@ -502,7 +504,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       recentPostsCache: {},
                       maxRecentPosts: int,
                       session,
-                      wfRequest,
+                      cachedWebfingers,
                       personCache: {},
                       port: int,
                       YTReplacementDomain: str,
@@ -571,7 +573,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
             individualPostAsHtml(True, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
-                                 baseDir, session, wfRequest,
+                                 baseDir, session, cachedWebfingers,
                                  personCache,
                                  nickname, domain, port,
                                  postJsonObject,
@@ -598,7 +600,7 @@ def htmlHashtagSearch(cssCache: {},
                       translate: {},
                       baseDir: str, hashtag: str, pageNumber: int,
                       postsPerPage: int,
-                      session, wfRequest: {}, personCache: {},
+                      session, cachedWebfingers: {}, personCache: {},
                       httpPrefix: str, projectVersion: str,
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
@@ -738,7 +740,7 @@ def htmlHashtagSearch(cssCache: {},
             individualPostAsHtml(allowDownloads, recentPostsCache,
                                  maxRecentPosts,
                                  translate, None,
-                                 baseDir, session, wfRequest,
+                                 baseDir, session, cachedWebfingers,
                                  personCache,
                                  nickname, domain, port,
                                  postJsonObject,
@@ -776,7 +778,7 @@ def rssHashtagSearch(nickname: str, domain: str, port: int,
                      translate: {},
                      baseDir: str, hashtag: str,
                      postsPerPage: int,
-                     session, wfRequest: {}, personCache: {},
+                     session, cachedWebfingers: {}, personCache: {},
                      httpPrefix: str, projectVersion: str,
                      YTReplacementDomain: str) -> str:
     """Show an rss feed for a hashtag

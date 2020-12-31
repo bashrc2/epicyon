@@ -1050,7 +1050,8 @@ def _getFooterWithIcons(showIcons: bool,
     if not showIcons:
         return None
 
-    footerStr = '\n      <div class="' + containerClassIcons + '">\n'
+    footerStr = '\n      <nav>\n'
+    footerStr += '      <div class="' + containerClassIcons + '">\n'
     footerStr += replyStr + announceStr + likeStr + bookmarkStr
     footerStr += deleteStr + muteStr + editStr
     if not isNewsPost(postJsonObject):
@@ -1061,6 +1062,7 @@ def _getFooterWithIcons(showIcons: bool,
             publishedLink.replace('/news/', '/news/statuses/') + \
             '" class="' + timeClass + '">' + publishedStr + '</a>\n'
     footerStr += '      </div>\n'
+    footerStr += '      </nav>\n'
     return footerStr
 
 
@@ -1068,7 +1070,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          recentPostsCache: {}, maxRecentPosts: int,
                          translate: {},
                          pageNumber: int, baseDir: str,
-                         session, wfRequest: {}, personCache: {},
+                         session, cachedWebfingers: {}, personCache: {},
                          nickname: str, domain: str, port: int,
                          postJsonObject: {},
                          avatarUrl: str, showAvatarOptions: bool,
@@ -1153,7 +1155,8 @@ def individualPostAsHtml(allowDownloads: bool,
     if domainFull not in postActor:
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
-         avatarUrl2, displayName) = getPersonBox(baseDir, session, wfRequest,
+         avatarUrl2, displayName) = getPersonBox(baseDir, session,
+                                                 cachedWebfingers,
                                                  personCache,
                                                  projectVersion, httpPrefix,
                                                  nickname, domain, 'outbox',
@@ -1482,6 +1485,8 @@ def individualPostAsHtml(allowDownloads: bool,
         objectContent = \
             postJsonObject['object']['content']
 
+    objectContent = '<article>' + objectContent + '</article>'
+
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
         contentStr = addEmbeddedElements(translate, contentStr,
@@ -1494,8 +1499,12 @@ def individualPostAsHtml(allowDownloads: bool,
         postID = 'post' + str(createPassword(8))
         contentStr = ''
         if postJsonObject['object'].get('summary'):
-            contentStr += \
-                '<b>' + str(postJsonObject['object']['summary']) + '</b>\n '
+            cwStr = str(postJsonObject['object']['summary'])
+            cwStr = \
+                addEmojiToDisplayName(baseDir, httpPrefix,
+                                      nickname, domain,
+                                      cwStr, False)
+            contentStr += '<b>' + cwStr + '</b>\n '
             if isModerationPost:
                 containerClass = 'container report'
         # get the content warning text
@@ -1506,6 +1515,8 @@ def individualPostAsHtml(allowDownloads: bool,
             cwContentStr = \
                 insertQuestion(baseDir, translate, nickname, domain, port,
                                cwContentStr, postJsonObject, pageNumber)
+            cwContentStr = \
+                switchWords(baseDir, nickname, domain, cwContentStr)
         if not isBlogPost(postJsonObject):
             # get the content warning button
             contentStr += \
@@ -1569,7 +1580,8 @@ def individualPostAsHtml(allowDownloads: bool,
 def htmlIndividualPost(cssCache: {},
                        recentPostsCache: {}, maxRecentPosts: int,
                        translate: {},
-                       baseDir: str, session, wfRequest: {}, personCache: {},
+                       baseDir: str, session, cachedWebfingers: {},
+                       personCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
                        projectVersion: str, likedBy: str,
@@ -1609,7 +1621,7 @@ def htmlIndividualPost(cssCache: {},
     postStr += \
         individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                              translate, None,
-                             baseDir, session, wfRequest, personCache,
+                             baseDir, session, cachedWebfingers, personCache,
                              nickname, domain, port, postJsonObject,
                              None, True, False,
                              httpPrefix, projectVersion, 'inbox',
@@ -1633,7 +1645,7 @@ def htmlIndividualPost(cssCache: {},
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
-                                         baseDir, session, wfRequest,
+                                         baseDir, session, cachedWebfingers,
                                          personCache,
                                          nickname, domain, port,
                                          postJsonObject,
@@ -1663,7 +1675,7 @@ def htmlIndividualPost(cssCache: {},
                     individualPostAsHtml(True, recentPostsCache,
                                          maxRecentPosts,
                                          translate, None,
-                                         baseDir, session, wfRequest,
+                                         baseDir, session, cachedWebfingers,
                                          personCache,
                                          nickname, domain, port, item,
                                          None, True, False,
@@ -1683,7 +1695,7 @@ def htmlIndividualPost(cssCache: {},
 def htmlPostReplies(cssCache: {},
                     recentPostsCache: {}, maxRecentPosts: int,
                     translate: {}, baseDir: str,
-                    session, wfRequest: {}, personCache: {},
+                    session, cachedWebfingers: {}, personCache: {},
                     nickname: str, domain: str, port: int, repliesJson: {},
                     httpPrefix: str, projectVersion: str,
                     YTReplacementDomain: str,
@@ -1698,7 +1710,8 @@ def htmlPostReplies(cssCache: {},
                 individualPostAsHtml(True, recentPostsCache,
                                      maxRecentPosts,
                                      translate, None,
-                                     baseDir, session, wfRequest, personCache,
+                                     baseDir, session, cachedWebfingers,
+                                     personCache,
                                      nickname, domain, port, item,
                                      None, True, False,
                                      httpPrefix, projectVersion, 'inbox',
