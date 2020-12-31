@@ -72,6 +72,7 @@ from happening import saveEventPost
 from delete import removeOldHashtags
 from follow import isFollowingActor
 from categories import guessHashtagCategory
+from webfinger import webfingerHandle
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -162,8 +163,11 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
     if cachedWebfingers.get(requestHandle):
         wfRequest = cachedWebfingers[requestHandle]
     else:
-        # TODO this may not be correct
-        wfRequest = cachedWebfingers
+        wfRequest = webfingerHandle(session, requestHandle,
+                                    httpPrefix, cachedWebfingers,
+                                    domain, __version__)
+        if not wfRequest:
+            return
 
     individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
                          translate, pageNumber,

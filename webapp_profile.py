@@ -265,8 +265,11 @@ def htmlProfileAfterSearch(cssCache: {},
         if cachedWebfingers.get(requestHandle):
             wfRequest = cachedWebfingers[requestHandle]
         else:
-            # TODO this may not be correct
-            wfRequest = cachedWebfingers
+            wfRequest = webfingerHandle(session, requestHandle,
+                                        httpPrefix, cachedWebfingers,
+                                        domain, __version__)
+            if not wfRequest:
+                return None
 
         profileStr += \
             individualPostAsHtml(True, recentPostsCache, maxRecentPosts,
