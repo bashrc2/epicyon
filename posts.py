@@ -212,6 +212,8 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                  nickname: str, domain: str,
                  boxName='inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, str):
+    if not wfRequest:
+        return None, None, None, None, None, None, None
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
