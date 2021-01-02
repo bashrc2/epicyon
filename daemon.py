@@ -47,7 +47,6 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
-from person import getLockedAccount
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
@@ -178,6 +177,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeHtml

@@ -19,6 +19,16 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getLockedAccount(actorJson: {}) -> bool:
+    """Returns whether the given account requires follower approval
+    """
+    if not actorJson.get('manuallyApprovesFollowers'):
+        return False
+    if actorJson['manuallyApprovesFollowers'] is True:
+        return True
+    return False
+
+
 def hasUsersPath(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """

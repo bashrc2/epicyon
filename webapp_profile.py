@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import isDormant
@@ -164,6 +165,11 @@ def htmlProfileAfterSearch(cssCache: {},
     displayName = searchNickname
     if profileJson.get('name'):
         displayName = profileJson['name']
+
+    lockedAccount = getLockedAccount(profileJson)
+    if lockedAccount:
+        displayName += '🔒'
+
     profileDescription = ''
     if profileJson.get('summary'):
         profileDescription = profileJson['summary']
