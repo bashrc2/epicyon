@@ -328,14 +328,16 @@ def removeIdEnding(idStr: str) -> str:
 def getProtocolPrefixes() -> []:
     """Returns a list of valid prefixes
     """
-    return ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+    return ('https://', 'http://', 'ftp://',
+            'dat://', 'i2p://', 'gnunet://',
             'hyper://', 'gemini://', 'gopher://')
 
 
 def getLinkPrefixes() -> []:
     """Returns a list of valid web link prefixes
     """
-    return ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+    return ('https://', 'http://', 'ftp://',
+            'dat://', 'i2p://', 'gnunet://',
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 

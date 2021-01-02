@@ -2978,9 +2978,36 @@ def testFunctions():
               '-Gsep=+120 -Tx11 epicyon.dot')
 
 
+def testLinksWithinPost() -> None:
+    baseDir = os.getcwd()
+    nickname = 'test27636'
+    domain = 'rando.site'
+    port = 443
+    httpPrefix = 'https'
+    content = 'This is a test post with links.\n\n' + \
+        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+    postJsonObject = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         content,
+                         False, False, False, True,
+                         None, None, False, None)
+    assert postJsonObject['object']['content'] == \
+        '<p>This is a test post with links.<br><br>' + \
+        '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
+        'rel="nofollow noopener noreferrer" target="_blank">' + \
+        '<span class="invisible">ftp://</span>' + \
+        '<span class="ellipsis">' + \
+        'ftp.ncdc.noaa.gov/pub/data/ghcn/v4/</span>' + \
+        '</a><br><br><a href="https://freedombone.net" ' + \
+        'rel="nofollow noopener noreferrer" target="_blank">' + \
+        '<span class="invisible">https://</span>' + \
+        '<span class="ellipsis">freedombone.net</span></a></p>'
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testLinksWithinPost()
     testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()
