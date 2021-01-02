@@ -38,6 +38,7 @@ from tox import getToxAddress
 from briar import getBriarAddress
 from jami import getJamiAddress
 from filters import isFiltered
+from follow import isFollowerOfPerson
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
@@ -170,6 +171,12 @@ def htmlProfileAfterSearch(cssCache: {},
     if lockedAccount:
         displayName += '🔒'
 
+    followsYou = \
+        isFollowerOfPerson(baseDir,
+                           nickname, domain,
+                           searchNickname,
+                           searchDomainFull)
+
     profileDescription = ''
     if profileJson.get('summary'):
         profileDescription = profileJson['summary']
@@ -224,7 +231,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      searchNickname,
                                      searchDomainFull,
                                      translate,
-                                     displayName,
+                                     displayName, followsYou,
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl)
 
@@ -330,6 +337,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  searchDomainFull: str,
                                  translate: {},
                                  displayName: str,
+                                 followsYou: bool,
                                  profileDescriptionShort: str,
                                  avatarUrl: str, imageUrl: str) -> str:
     """The header of a searched for handle, containing background
@@ -352,6 +360,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
+    if followsYou:
+        htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
