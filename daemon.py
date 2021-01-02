@@ -47,6 +47,7 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import getLockedAccount
 from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
@@ -5214,11 +5215,13 @@ class PubServer(BaseHTTPRequestHandler):
             jamiAddress = None
             ssbAddress = None
             emailAddress = None
+            lockedAccount = False
             actorJson = getPersonFromCache(baseDir,
                                            optionsActor,
                                            self.server.personCache,
                                            True)
             if actorJson:
+                lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
                 xmppAddress = getXmppAddress(actorJson)
                 matrixAddress = getMatrixAddress(actorJson)
@@ -5247,7 +5250,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
                                     self.server.dormantMonths,
-                                    backToPath).encode('utf-8')
+                                    backToPath,
+                                    lockedAccount).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)

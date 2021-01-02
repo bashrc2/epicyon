@@ -45,7 +45,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       PGPfingerprint: str,
                       emailAddress: str,
                       dormantMonths: int,
-                      backToPath: str) -> str:
+                      backToPath: str,
+                      lockedAccount: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -112,6 +113,8 @@ def htmlPersonOptions(defaultTimeline: str,
         '" ' + getBrokenLinkSubstitute() + '/></a>\n'
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     handleShown = handle
+    if lockedAccount:
+        handleShown += '🔒'
     if dormant:
         handleShown += ' 💤'
     optionsStr += \

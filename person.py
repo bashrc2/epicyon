@@ -201,6 +201,16 @@ def getDefaultPersonContext() -> str:
     }
 
 
+def getLockedAccount(actorJson: {}) -> bool:
+    """Returns whether the given account requires follower approval
+    """
+    if not actorJson.get('manuallyApprovesFollowers'):
+        return False
+    if actorJson['manuallyApprovesFollowers'] is True:
+        return True
+    return False
+
+
 def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                       httpPrefix: str, saveToFile: bool,
                       manualFollowerApproval: bool,
