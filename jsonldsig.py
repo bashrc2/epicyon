@@ -93,7 +93,6 @@ def _verifyJws(payload: {}, jwsSignature: str, publicKeyPem: str) -> bool:
     """
     Verifies a signature using the given public key
     """
-    print('inbox signature: ' + str(jwsSignature))
     encodedHeader, encodedSignature = jwsSignature.split(b'..')
     signature = _b64safeDecode(encodedSignature)
     payload = b'.'.join([encodedHeader, payload])
