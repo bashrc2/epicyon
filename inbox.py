@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from jsonldsig import jsonldVerify
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
@@ -2701,6 +2702,38 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
         if debug:
             print('DEBUG: http header signature check success')
+
+        hasJsonSig = True
+
+        if not queueJson['post'].get('signature'):
+            print('WARN: jsonld inbox signature signature missing')
+            hasJsonSig = False
+
+        if not queueJson['post']['signature'].get('type'):
+            print('WARN: jsonld inbox signature type missing')
+            hasJsonSig = False
+
+#        if not jsonldVerify(queueJson['post'], pubKey):
+#            hasJsonSig = False
+#            if debug:
+#                print('**************************************')
+#                print('WARN: jsonld signature check failed ' +
+#                      str(queueJson['post']))
+#                print('--------------------------------------')
+#                print(keyId)
+#                print(pubKey)
+#                print('**************************************')
+#        else:
+#            if debug:
+#                print('jsonld inbox signature check success')
+#
+        if not hasJsonSig:
+            # json signature check failed
+            if os.path.isfile(queueFilename):
+                os.remove(queueFilename)
+            if len(queue) > 0:
+                queue.pop(0)
+            continue
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
