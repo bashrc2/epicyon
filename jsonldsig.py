@@ -93,9 +93,13 @@ def _verifyJws(payload: {}, jwsSignature: str, publicKeyPem: str) -> bool:
     """
     Verifies a signature using the given public key
     """
-    encodedHeader, encodedSignature = jwsSignature.split(b'..')
-    signature = _b64safeDecode(encodedSignature)
-    payload = b'.'.join([encodedHeader, payload])
+    if b'..' in jwsSignature:
+        encodedHeader, encodedSignature = jwsSignature.split(b'..')
+        signature = _b64safeDecode(encodedSignature)
+        payload = b'.'.join([encodedHeader, payload])
+    else:
+        signature = _b64safeDecode(jwsSignature)
+        payload = b'.'.join([payload])
     return _verifyRs256(payload, signature, publicKeyPem)
 
 
