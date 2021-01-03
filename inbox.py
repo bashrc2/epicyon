@@ -2706,8 +2706,16 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             print('DEBUG: http header signature check success')
 
         # check json signature
+        checkJsonSignature = False
         if queueJson['original'].get('@context') and \
            queueJson['original'].get('signature'):
+            if isinstance(queueJson['original']['signature'], dict):
+                if queueJson['original']['signature'].get('type') and \
+                   queueJson['original']['signature'].get('signatureValue'):
+                    if queueJson['original']['signature']['type'] == \
+                       'RsaSignature2017':
+                        checkJsonSignature = True
+        if checkJsonSignature:
             # use the original json message received, not one which may have
             # been modified along the way
             if not jsonldVerify(queueJson['original'], pubKey):
