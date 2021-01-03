@@ -2719,7 +2719,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             # use the original json message received, not one which may have
             # been modified along the way
             if not jsonldVerify(queueJson['original'], pubKey):
-                print('WARN: jsonld signature check failed ' +
+                print('WARN: jsonld inbox signature check failed ' +
                       keyId + ' ' + pubKey + ' ' +
                       str(queueJson['original']))
                 if os.path.isfile(queueFilename):
