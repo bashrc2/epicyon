@@ -116,6 +116,9 @@ def jsonldSign(jldDocument: {}, privateKeyPem: str) -> {}:
     """
     Produces a signed JSON-LD document with a Json Web Signature
     """
+    if not jldDocument.get('@context'):
+        print('WARN: json document must have @context to sign')
+        return jldDocument
     jldDocument = deepcopy(jldDocument)
     normalizedJldHash = _jsonldNormalize(jldDocument)
     jwsSignature = _signJws(normalizedJldHash, privateKeyPem)
@@ -135,6 +138,11 @@ def jsonldVerify(signedJldDocument: {}, publicKeyPem: str) -> bool:
     """
     Verifies the Json Web Signature of a signed JSON-LD Document
     """
+    if not isinstance(signedJldDocument, dict):
+        return False
+    if not signedJldDocument.get('@context'):
+        print('json document must have @context')
+        return False
     signedJldDocument = deepcopy(signedJldDocument)
     signature = signedJldDocument.pop('signature')
     jwsSignature = signature['signatureValue'].encode('utf-8')

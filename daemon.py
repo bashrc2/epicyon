@@ -1079,6 +1079,8 @@ class PubServer(BaseHTTPRequestHandler):
         elif self.headers.get('content-length'):
             headersDict['content-length'] = self.headers['content-length']
 
+        originalMessageJson = messageJson.copy()
+
         # For follow activities add a 'to' field, which is a copy
         # of the object field
         messageJson, toFieldExists = \
@@ -1097,7 +1099,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.httpPrefix,
                                  nickname,
                                  self.server.domainFull,
-                                 messageJson,
+                                 messageJson, originalMessageJson,
                                  messageBytesDecoded,
                                  headersDict,
                                  self.path,

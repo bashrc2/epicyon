@@ -1978,6 +1978,7 @@ def testRemoveTextFormatting():
 def testJsonld():
     print("testJsonld")
     jldDocument = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         "description": "My json document",
         "numberField": 83582,
         "object": {
@@ -2031,10 +2032,11 @@ def testJsonld():
     assert(signedDocument['signature']['type'] == 'RsaSignatureSuite2017')
     assert(jsonldVerify(signedDocument, publicKeyPem))
     # alter the signed document
-    # signedDocument['object']['content'] = 'forged content'
-    # assert(not jsonldVerify(signedDocument, publicKeyPem))
+    signedDocument['object']['content'] = 'forged content'
+    assert(not jsonldVerify(signedDocument, publicKeyPem))
 
     jldDocument2 = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         "description": "Another json document",
         "numberField": 13353,
         "object": {
@@ -2049,8 +2051,8 @@ def testJsonld():
     if signedDocument['signature']['signatureValue'] == \
        signedDocument2['signature']['signatureValue']:
         print('json signature has not changed for different documents')
-#    assert(signedDocument['signature']['signatureValue'] !=
-#           signedDocument2['signature']['signatureValue'])
+    assert(signedDocument['signature']['signatureValue'] !=
+           signedDocument2['signature']['signatureValue'])
 
 
 def testSiteIsActive():

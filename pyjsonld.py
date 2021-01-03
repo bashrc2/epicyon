@@ -234,7 +234,7 @@ def link(input_, ctx, options=None):
     return frame(input, frame, options)
 
 
-def normalize(input_, options=None):
+def normalize(input_: {}, options=None):
     """
     Performs JSON-LD normalization.
 
@@ -1015,6 +1015,13 @@ class JsonLdProcessor(object):
             raise JsonLdError(
                 'Could not convert input to RDF dataset before normalization.',
                 'jsonld.NormalizeError', cause=cause)
+
+        # check that the data is not empty
+        if '@default' in dataset:
+            if not dataset['@default']:
+                raise JsonLdError(
+                    'Could not convert input to RDF dataset.',
+                    'jsonld.NormalizeError', cause=None)
 
         # do normalization
         return self._normalize(dataset, options)

@@ -313,6 +313,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
 def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          nickname: str, domain: str,
                          postJsonObject: {},
+                         originalPostJsonObject: {},
                          messageBytes: str,
                          httpHeaders: {},
                          postPath: str, debug: bool) -> str:
@@ -437,6 +438,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
         'httpHeaders': httpHeaders,
         'path': postPath,
         'post': postJsonObject,
+        'original': originalPostJsonObject,
         'digest': digest,
         'filename': filename,
         'destination': destination
@@ -2703,24 +2705,30 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if debug:
             print('DEBUG: http header signature check success')
 
-        if not queueJson['post'].get('signature'):
-            print('WARN: jsonld inbox signature signature missing from ' +
-                  keyId)
-#        else:
-#            if not jsonldVerify(queueJson['post'], pubKey):
-#                hasJsonSig = False
-#                if debug:
-#                    print('**************************************')
-#                    print('WARN: jsonld signature check failed ' +
-#                          str(queueJson['post']))
-#                    print('--------------------------------------')
-#                    print(keyId)
-#                    print(pubKey)
-#                    print('**************************************')
-#            else:
-#                if debug:
-#                    print('jsonld inbox signature check success')
-#
+        # should the json signature be checked?
+        checkJsonSignature = False
+        if queueJson['original'].get('@context'):
+            checkJsonSignature = True
+            if not queueJson['original'].get('signature'):
+                print('WARN: jsonld inbox signature signature missing from ' +
+                      keyId)
+                checkJsonSignature = False
+
+        # check json signature
+        if checkJsonSignature:
+            # use the original json message received, not one which may have
+            # been modified along the way
+            if not jsonldVerify(queueJson['original'], pubKey):
+                print('WARN: jsonld signature check failed ' +
+                      keyId + ' ' + pubKey + ' ' +
+                      str(queueJson['original']))
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue) > 0:
+                    queue.pop(0)
+                continue
+            else:
+                print('jsonld inbox signature check success')
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
