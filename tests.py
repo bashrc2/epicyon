@@ -2030,6 +2030,9 @@ def testJsonld():
     assert(len(signedDocument['signature']['signatureValue']) > 50)
     assert(signedDocument['signature']['type'] == 'RsaSignatureSuite2017')
     assert(jsonldVerify(signedDocument, publicKeyPem))
+    # alter the signed document
+    # signedDocument['object']['content'] = 'forged content'
+    # assert(not jsonldVerify(signedDocument, publicKeyPem))
 
 
 def testSiteIsActive():
