@@ -2034,6 +2034,24 @@ def testJsonld():
     # signedDocument['object']['content'] = 'forged content'
     # assert(not jsonldVerify(signedDocument, publicKeyPem))
 
+    jldDocument2 = {
+        "description": "Another json document",
+        "numberField": 13353,
+        "object": {
+            "content": "More content"
+        }
+    }
+    signedDocument2 = testSignJsonld(jldDocument2, privateKeyPem)
+    assert(signedDocument2)
+    assert(signedDocument2.get('signature'))
+    assert(signedDocument2['signature'].get('signatureValue'))
+    # changed signature on different document
+    if signedDocument['signature']['signatureValue'] == \
+       signedDocument2['signature']['signatureValue']:
+        print('json signature has not changed for different documents')
+#    assert(signedDocument['signature']['signatureValue'] !=
+#           signedDocument2['signature']['signatureValue'])
+
 
 def testSiteIsActive():
     print('testSiteIsActive')
