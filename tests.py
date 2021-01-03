@@ -1981,7 +1981,7 @@ def testJsonld():
         "description": "My json document",
         "numberField": 83582,
         "object": {
-            "content": "Some content"
+            "content": "valid content"
         }
     }
     # privateKeyPem, publicKeyPem = generateRSAKey()
