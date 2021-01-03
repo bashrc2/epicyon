@@ -2679,9 +2679,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        # check the signature
+        # check the http header signature
         if debug:
-            print('DEBUG: checking http headers')
+            print('DEBUG: checking http header signature')
             pprint(queueJson['httpHeaders'])
         postStr = json.dumps(queueJson['post'])
         if not verifyPostHeaders(httpPrefix,
@@ -2700,7 +2700,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             continue
 
         if debug:
-            print('DEBUG: Signature check success')
+            print('DEBUG: http header signature check success')
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
