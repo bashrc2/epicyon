@@ -2705,17 +2705,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if debug:
             print('DEBUG: http header signature check success')
 
-        # should the json signature be checked?
-        checkJsonSignature = False
-        if queueJson['original'].get('@context'):
-            checkJsonSignature = True
-            if not queueJson['original'].get('signature'):
-                print('WARN: jsonld inbox signature signature missing from ' +
-                      keyId)
-                checkJsonSignature = False
-
         # check json signature
-        if checkJsonSignature:
+        if queueJson['original'].get('@context') and \
+           queueJson['original'].get('signature'):
             # use the original json message received, not one which may have
             # been modified along the way
             if not jsonldVerify(queueJson['original'], pubKey):
