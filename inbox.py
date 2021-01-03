@@ -2706,11 +2706,13 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         hasJsonSig = True
 
         if not queueJson['post'].get('signature'):
-            print('WARN: jsonld inbox signature signature missing')
+            print('WARN: jsonld inbox signature signature missing from ' +
+                  keyId)
             hasJsonSig = False
 
         if not queueJson['post']['signature'].get('type'):
-            print('WARN: jsonld inbox signature type missing')
+            print('WARN: jsonld inbox signature type missing from ' +
+                  keyId)
             hasJsonSig = False
 
 #        if not jsonldVerify(queueJson['post'], pubKey):
