@@ -177,6 +177,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeHtml
@@ -1078,6 +1079,8 @@ class PubServer(BaseHTTPRequestHandler):
         elif self.headers.get('content-length'):
             headersDict['content-length'] = self.headers['content-length']
 
+        originalMessageJson = messageJson.copy()
+
         # For follow activities add a 'to' field, which is a copy
         # of the object field
         messageJson, toFieldExists = \
@@ -1096,7 +1099,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.httpPrefix,
                                  nickname,
                                  self.server.domainFull,
-                                 messageJson,
+                                 messageJson, originalMessageJson,
                                  messageBytesDecoded,
                                  headersDict,
                                  self.path,
@@ -5214,11 +5217,13 @@ class PubServer(BaseHTTPRequestHandler):
             jamiAddress = None
             ssbAddress = None
             emailAddress = None
+            lockedAccount = False
             actorJson = getPersonFromCache(baseDir,
                                            optionsActor,
                                            self.server.personCache,
                                            True)
             if actorJson:
+                lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
                 xmppAddress = getXmppAddress(actorJson)
                 matrixAddress = getMatrixAddress(actorJson)
@@ -5247,7 +5252,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     PGPpubKey, PGPfingerprint,
                                     emailAddress,
                                     self.server.dormantMonths,
-                                    backToPath).encode('utf-8')
+                                    backToPath,
+                                    lockedAccount).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -13228,6 +13234,12 @@ class PubServer(BaseHTTPRequestHandler):
         # check the necessary properties are available
         if self.server.debug:
             print('DEBUG: Check message has params')
+
+        if not messageJson:
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
 
         if self.path.endswith('/inbox') or \
            self.path == '/sharedInbox':

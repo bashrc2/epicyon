@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from linked_data_sig import verifyJsonSignature
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
@@ -312,6 +313,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
 def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                          nickname: str, domain: str,
                          postJsonObject: {},
+                         originalPostJsonObject: {},
                          messageBytes: str,
                          httpHeaders: {},
                          postPath: str, debug: bool) -> str:
@@ -436,6 +438,7 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
         'httpHeaders': httpHeaders,
         'path': postPath,
         'post': postJsonObject,
+        'original': originalPostJsonObject,
         'digest': digest,
         'filename': filename,
         'destination': destination
@@ -2679,9 +2682,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        # check the signature
+        # check the http header signature
         if debug:
-            print('DEBUG: checking http headers')
+            print('DEBUG: checking http header signature')
             pprint(queueJson['httpHeaders'])
         postStr = json.dumps(queueJson['post'])
         if not verifyPostHeaders(httpPrefix,
@@ -2700,7 +2703,37 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             continue
 
         if debug:
-            print('DEBUG: Signature check success')
+            print('DEBUG: http header signature check success')
+
+        # check if a json signature exists on this post
+        checkJsonSignature = False
+        if queueJson['original'].get('@context') and \
+           queueJson['original'].get('signature'):
+            if isinstance(queueJson['original']['signature'], dict):
+                # see https://tools.ietf.org/html/rfc7515
+                jwebsig = queueJson['original']['signature']
+                # signature exists and is of the expected type
+                if jwebsig.get('type') and jwebsig.get('signatureValue'):
+                    if jwebsig['type'] == 'RsaSignature2017':
+                        checkJsonSignature = True
+        if checkJsonSignature:
+            # use the original json message received, not one which may have
+            # been modified along the way
+            if not verifyJsonSignature(queueJson['original'], pubKey):
+                if debug:
+                    print('WARN: jsonld inbox signature check failed ' +
+                          keyId + ' ' + pubKey + ' ' +
+                          str(queueJson['original']))
+                else:
+                    print('WARN: jsonld inbox signature check failed ' +
+                          keyId)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue) > 0:
+                    queue.pop(0)
+                continue
+            else:
+                print('jsonld inbox signature check success ' + keyId)
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent

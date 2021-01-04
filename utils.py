@@ -19,6 +19,16 @@ from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 
 
+def getLockedAccount(actorJson: {}) -> bool:
+    """Returns whether the given account requires follower approval
+    """
+    if not actorJson.get('manuallyApprovesFollowers'):
+        return False
+    if actorJson['manuallyApprovesFollowers'] is True:
+        return True
+    return False
+
+
 def hasUsersPath(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
@@ -328,14 +338,16 @@ def removeIdEnding(idStr: str) -> str:
 def getProtocolPrefixes() -> []:
     """Returns a list of valid prefixes
     """
-    return ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+    return ('https://', 'http://', 'ftp://',
+            'dat://', 'i2p://', 'gnunet://',
             'hyper://', 'gemini://', 'gopher://')
 
 
 def getLinkPrefixes() -> []:
     """Returns a list of valid web link prefixes
     """
-    return ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+    return ('https://', 'http://', 'ftp://',
+            'dat://', 'i2p://', 'gnunet://',
             'hyper://', 'gemini://', 'gopher://', 'briar:')
 
 

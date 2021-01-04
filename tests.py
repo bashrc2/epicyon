@@ -86,8 +86,8 @@ from content import replaceContentDuplicates
 from content import removeTextFormatting
 from content import removeHtmlTag
 from theme import setCSSparam
-from jsonldsig import testSignJsonld
-from jsonldsig import jsonldVerify
+from linked_data_sig import generateJsonSignature
+from linked_data_sig import verifyJsonSignature
 from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
 from newswire import getNewswireTags
@@ -1977,11 +1977,14 @@ def testRemoveTextFormatting():
 
 def testJsonld():
     print("testJsonld")
+
     jldDocument = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        "actor": "https://somesite.net/users/gerbil",
         "description": "My json document",
         "numberField": 83582,
         "object": {
-            "content": "Some content"
+            "content": "valid content"
         }
     }
     # privateKeyPem, publicKeyPem = generateRSAKey()
@@ -2022,14 +2025,43 @@ def testJsonld():
         'TwIDAQAB\n' \
         '-----END PUBLIC KEY-----'
 
-    signedDocument = testSignJsonld(jldDocument, privateKeyPem)
+    signedDocument = jldDocument.copy()
+    generateJsonSignature(signedDocument, privateKeyPem)
     assert(signedDocument)
     assert(signedDocument.get('signature'))
     assert(signedDocument['signature'].get('signatureValue'))
     assert(signedDocument['signature'].get('type'))
     assert(len(signedDocument['signature']['signatureValue']) > 50)
-    assert(signedDocument['signature']['type'] == 'RsaSignatureSuite2017')
-    assert(jsonldVerify(signedDocument, publicKeyPem))
+    # print(str(signedDocument['signature']))
+    assert(signedDocument['signature']['type'] == 'RsaSignature2017')
+    assert(verifyJsonSignature(signedDocument, publicKeyPem))
+
+    # alter the signed document
+    signedDocument['object']['content'] = 'forged content'
+    assert(not verifyJsonSignature(signedDocument, publicKeyPem))
+
+    jldDocument2 = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        "actor": "https://somesite.net/users/gerbil",
+        "description": "Another json document",
+        "numberField": 13353,
+        "object": {
+            "content": "More content"
+        }
+    }
+    signedDocument2 = jldDocument2.copy()
+    generateJsonSignature(signedDocument2, privateKeyPem)
+    assert(signedDocument2)
+    assert(signedDocument2.get('signature'))
+    assert(signedDocument2['signature'].get('signatureValue'))
+    # changed signature on different document
+    if signedDocument['signature']['signatureValue'] == \
+       signedDocument2['signature']['signatureValue']:
+        print('json signature has not changed for different documents')
+    assert '.' not in str(signedDocument['signature']['signatureValue'])
+    assert len(str(signedDocument['signature']['signatureValue'])) > 340
+    assert(signedDocument['signature']['signatureValue'] !=
+           signedDocument2['signature']['signatureValue'])
 
 
 def testSiteIsActive():
@@ -2978,9 +3010,36 @@ def testFunctions():
               '-Gsep=+120 -Tx11 epicyon.dot')
 
 
+def testLinksWithinPost() -> None:
+    baseDir = os.getcwd()
+    nickname = 'test27636'
+    domain = 'rando.site'
+    port = 443
+    httpPrefix = 'https'
+    content = 'This is a test post with links.\n\n' + \
+        'ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/\n\nhttps://freedombone.net'
+    postJsonObject = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         content,
+                         False, False, False, True,
+                         None, None, False, None)
+    assert postJsonObject['object']['content'] == \
+        '<p>This is a test post with links.<br><br>' + \
+        '<a href="ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v4/" ' + \
+        'rel="nofollow noopener noreferrer" target="_blank">' + \
+        '<span class="invisible">ftp://</span>' + \
+        '<span class="ellipsis">' + \
+        'ftp.ncdc.noaa.gov/pub/data/ghcn/v4/</span>' + \
+        '</a><br><br><a href="https://freedombone.net" ' + \
+        'rel="nofollow noopener noreferrer" target="_blank">' + \
+        '<span class="invisible">https://</span>' + \
+        '<span class="ellipsis">freedombone.net</span></a></p>'
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testLinksWithinPost()
     testReplyToPublicPost()
     testGetMentionedPeople()
     testGuessHashtagCategory()

@@ -18,6 +18,7 @@ from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from blocking import isBlocked
+from follow import isFollowerOfPerson
 from follow import isFollowingActor
 from followingCalendar import receivingCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -45,7 +46,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       PGPfingerprint: str,
                       emailAddress: str,
                       dormantMonths: int,
-                      backToPath: str) -> str:
+                      backToPath: str,
+                      lockedAccount: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -61,6 +63,7 @@ def htmlPersonOptions(defaultTimeline: str,
     blockStr = 'Block'
     nickname = None
     optionsNickname = None
+    followsYou = False
     if originPathStr.startswith('/users/'):
         nickname = originPathStr.split('/users/')[1]
         if '/' in nickname:
@@ -76,6 +79,10 @@ def htmlPersonOptions(defaultTimeline: str,
 
         optionsNickname = getNicknameFromActor(optionsActor)
         optionsDomainFull = getFullDomain(optionsDomain, optionsPort)
+        followsYou = \
+            isFollowerOfPerson(baseDir,
+                               nickname, domain,
+                               optionsNickname, optionsDomainFull)
         if isBlocked(baseDir, nickname, domain,
                      optionsNickname, optionsDomainFull):
             blockStr = 'Block'
@@ -112,11 +119,16 @@ def htmlPersonOptions(defaultTimeline: str,
         '" ' + getBrokenLinkSubstitute() + '/></a>\n'
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     handleShown = handle
+    if lockedAccount:
+        handleShown += '🔒'
     if dormant:
         handleShown += ' 💤'
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + handleShown + '</p>\n'
+    if followsYou:
+        optionsStr += \
+            '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \

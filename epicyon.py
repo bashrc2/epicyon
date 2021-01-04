@@ -478,7 +478,6 @@ if args.debug:
 if args.tests:
     runAllTests()
     sys.exit()
-
 if args.testsnetwork:
     print('Network Tests')
     testPostMessageBetweenServers()

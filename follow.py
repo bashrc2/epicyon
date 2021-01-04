@@ -175,8 +175,8 @@ def followerOfPerson(baseDir: str, nickname: str, domain: str,
                         federationList, debug, 'followers.txt')
 
 
-def _isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
-                        followerNickname: str, followerDomain: str) -> bool:
+def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
+                       followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?
     """
     if ':' in domain:
@@ -663,9 +663,9 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
                       baseDir + '/accounts/' + handleToFollow)
             return True
 
-    if _isFollowerOfPerson(baseDir,
-                           nicknameToFollow, domainToFollowFull,
-                           nickname, domainFull):
+    if isFollowerOfPerson(baseDir,
+                          nicknameToFollow, domainToFollowFull,
+                          nickname, domainFull):
         if debug:
             print('DEBUG: ' + nickname + '@' + domain +
                   ' is already a follower of ' +
