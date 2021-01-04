@@ -833,11 +833,11 @@ def load_document(url):
         # validate URL
         pieces = urllib_parse.urlparse(url)
         if (not all([pieces.scheme, pieces.netloc]) or
-            pieces.scheme not in ['http', 'https'] or
+            pieces.scheme not in ['http', 'https', 'dat'] or
             set(pieces.netloc) > set(
                 string.ascii_letters + string.digits + '-.:')):
             raise JsonLdError(
-                'URL could not be dereferenced; only "http" and "https" '
+                'URL could not be dereferenced; only http/https/dat '
                 'URLs are supported.',
                 'jsonld.InvalidUrl', {'url': url},
                 code='loading document failed')
