@@ -24,9 +24,7 @@ __all__ = [
     'JsonLdProcessor', 'JsonLdError', 'ActiveContextCache']
 
 import copy
-import gzip
 import hashlib
-import io
 import json
 import os
 import posixpath
@@ -37,7 +35,6 @@ import string
 import sys
 import traceback
 from collections import deque, namedtuple
-from contextlib import closing
 from numbers import Integral, Real
 
 try:
@@ -77,7 +74,6 @@ except ImportError:
 
 # support python 2
 if sys.version_info[0] >= 3:
-    from urllib.request import build_opener as urllib_build_opener
     from urllib.request import HTTPSHandler
     import urllib.parse as urllib_parse
     from http.client import HTTPSConnection
@@ -86,7 +82,6 @@ if sys.version_info[0] >= 3:
     def cmp(a, b):
         return (a > b) - (a < b)
 else:
-    from urllib2 import build_opener as urllib_build_opener
     from urllib2 import HTTPSHandler
     import urlparse as urllib_parse
     from httplib import HTTPSConnection
@@ -846,11 +841,6 @@ def load_document(url):
                 'URLs are supported.',
                 'jsonld.InvalidUrl', {'url': url},
                 code='loading document failed')
-        https_handler = VerifiedHTTPSHandler()
-        url_opener = urllib_build_opener(https_handler)
-        url_opener.addheaders = [
-            ('Accept', 'application/ld+json, application/json'),
-            ('Accept-Encoding', 'deflate')]
 
         if url == 'https://w3id.org/identity/v1':
             doc = {
@@ -866,37 +856,7 @@ def load_document(url):
                 'document': getActivitystreamsSchema()
             }
             return doc
-
-        with closing(url_opener.open(url)) as handle:
-            if handle.info().get('Content-Encoding') == 'gzip':
-                buf = io.BytesIO(handle.read())
-                f = gzip.GzipFile(fileobj=buf, mode='rb')
-                data = f.read()
-            else:
-                data = handle.read()
-            doc = {
-                'contextUrl': None,
-                'documentUrl': url,
-                'document': data.decode('utf8')
-            }
-            doc['documentUrl'] = handle.geturl()
-            headers = dict(handle.info())
-            content_type = headers.get('content-type')
-            link_header = headers.get('link')
-            if link_header and content_type != 'application/ld+json':
-                link_header = parse_link_header(link_header).get(
-                    LINK_HEADER_REL)
-                # only 1 related link header permitted
-                if isinstance(link_header, list):
-                    raise JsonLdError(
-                        'URL could not be dereferenced, it has more than one '
-                        'associated HTTP Link Header.',
-                        'jsonld.LoadDocumentError',
-                        {'url': url},
-                        code='multiple context link headers')
-                if link_header:
-                    doc['contextUrl'] = link_header['target']
-        return doc
+        return None
     except JsonLdError as e:
         raise e
     except Exception as cause:
