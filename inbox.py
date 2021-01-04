@@ -2720,16 +2720,20 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             # use the original json message received, not one which may have
             # been modified along the way
             if not verifyJsonSignature(queueJson['original'], pubKey):
-                print('WARN: jsonld inbox signature check failed ' +
-                      keyId + ' ' + pubKey + ' ' +
-                      str(queueJson['original']))
+                if debug:
+                    print('WARN: jsonld inbox signature check failed ' +
+                          keyId + ' ' + pubKey + ' ' +
+                          str(queueJson['original']))
+                else:
+                    print('WARN: jsonld inbox signature check failed ' +
+                          keyId)
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue) > 0:
                     queue.pop(0)
                 continue
             else:
-                print('jsonld inbox signature check success')
+                print('jsonld inbox signature check success ' + keyId)
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent
