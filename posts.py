@@ -65,7 +65,7 @@ from blocking import isBlocked
 from blocking import isBlockedDomain
 from filters import isFiltered
 from git import convertPostToPatch
-from jsonldsig import jsonldSign
+from linked_data_sig import generateJsonSignature
 from petnames import resolvePetnames
 
 
@@ -1794,7 +1794,8 @@ def sendPost(projectVersion: str,
 
     if not postJsonObject.get('signature'):
         try:
-            signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
+            signedPostJsonObject = postJsonObject.copy()
+            generateJsonSignature(signedPostJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
         except Exception as e:
             print('WARN: failed to JSON-LD sign post, ' + str(e))
@@ -2122,7 +2123,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     if not postJsonObject.get('signature'):
         try:
-            signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
+            signedPostJsonObject = postJsonObject.copy()
+            generateJsonSignature(signedPostJsonObject, privateKeyPem)
             postJsonObject = signedPostJsonObject
         except Exception as e:
             print('WARN: failed to JSON-LD sign post, ' + str(e))

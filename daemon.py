@@ -13235,6 +13235,12 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Check message has params')
 
+        if not messageJson:
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
+
         if self.path.endswith('/inbox') or \
            self.path == '/sharedInbox':
             if not inboxMessageHasParams(messageJson):
