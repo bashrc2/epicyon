@@ -444,6 +444,7 @@ def getV1Schema() -> {}:
 
 
 def getActivitystreamsSchema() -> {}:
+    # https://www.w3.org/ns/activitystreams
     return {
         "@context": {
             "@vocab": "_:",
