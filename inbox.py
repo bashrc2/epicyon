@@ -2745,11 +2745,12 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 else:
                     print('WARN: jsonld inbox signature check failed ' +
                           keyId)
-                if os.path.isfile(queueFilename):
-                    os.remove(queueFilename)
-                if len(queue) > 0:
-                    queue.pop(0)
-                continue
+                if verifyAllSignatures:
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
+                    if len(queue) > 0:
+                        queue.pop(0)
+                    continue
             else:
                 print('jsonld inbox signature check success ' + keyId)
 
