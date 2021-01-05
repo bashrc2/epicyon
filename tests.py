@@ -3041,6 +3041,23 @@ def testLinksWithinPost() -> None:
         '<span class="invisible">https://</span>' + \
         '<span class="ellipsis">freedombone.net</span></a></p>'
 
+    content = "<p>Some text</p><p>Other text</p><p>More text</p>" + \
+        "<pre><code>Errno::EOHNOES (No such file or rodent @ " + \
+        "ik_right - /tmp/blah.png)<br></code></pre><p>" + \
+        "(<a href=\"https://welllookeyhere.maam/error.txt\" " + \
+        "rel=\"nofollow noopener noreferrer\" target=\"_blank\">" + \
+        "wuh</a>)</p><p>Oh yeah like for sure</p>" + \
+        "<p>Ground sloth tin opener</p>" + \
+        "<p><a href=\"https://whocodedthis.huh/tags/" + \
+        "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
+        "target=\"_blank\">#<span>taggedthing</span></a></p>"
+    postJsonObject = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         content,
+                         False, False, False, True,
+                         None, None, False, None)
+    assert postJsonObject['object']['content'] == content
+
 
 def runAllTests():
     print('Running tests...')
