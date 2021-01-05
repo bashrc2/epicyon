@@ -2734,9 +2734,12 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        if checkJsonSignature and verifyAllSignatures:
+        if checkJsonSignature:
             # use the original json message received, not one which may have
             # been modified along the way
+            print('Test: jsonld inbox signature check test ' +
+                  keyId + ' ' + pubKey + ' ' +
+                  str(queueJson['original']))
             if not verifyJsonSignature(queueJson['original'], pubKey):
                 if debug:
                     print('WARN: jsonld inbox signature check failed ' +
