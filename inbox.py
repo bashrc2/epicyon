@@ -2734,7 +2734,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        if checkJsonSignature:
+        if checkJsonSignature and verifyAllSignatures:
             # use the original json message received, not one which may have
             # been modified along the way
             if not verifyJsonSignature(queueJson['original'], pubKey):
@@ -2745,12 +2745,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 else:
                     print('WARN: jsonld inbox signature check failed ' +
                           keyId)
-                if verifyAllSignatures:
-                    if os.path.isfile(queueFilename):
-                        os.remove(queueFilename)
-                    if len(queue) > 0:
-                        queue.pop(0)
-                    continue
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue) > 0:
+                    queue.pop(0)
+                continue
             else:
                 print('jsonld inbox signature check success ' + keyId)
 
