@@ -1457,6 +1457,7 @@ class JsonLdProcessor(object):
             if 'format' in opts:
                 del opts['format']
             opts['produceGeneralizedRdf'] = False
+            print('to_rdf: ' + str(input_))
             dataset = self.to_rdf(input_, opts)
         except JsonLdError as cause:
             raise JsonLdError(
