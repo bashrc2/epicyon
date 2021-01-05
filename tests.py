@@ -323,8 +323,10 @@ def createServerAlice(path: str, domain: str, port: int,
     dormantMonths = 3
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
+    verifyAllSignatures = True
     print('Server running: Alice')
-    runDaemon(sendThreadsTimeoutMins,
+    runDaemon(verifyAllSignatures,
+              sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,
@@ -420,8 +422,10 @@ def createServerBob(path: str, domain: str, port: int,
     dormantMonths = 3
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
+    verifyAllSignatures = True
     print('Server running: Bob')
-    runDaemon(sendThreadsTimeoutMins,
+    runDaemon(verifyAllSignatures,
+              sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,
@@ -467,8 +471,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     dormantMonths = 3
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
+    verifyAllSignatures = True
     print('Server running: Eve')
-    runDaemon(sendThreadsTimeoutMins,
+    runDaemon(verifyAllSignatures,
+              sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
               2048, False, True, False, False, True, maxFollowers,

@@ -2447,7 +2447,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   YTReplacementDomain: str,
                   showPublishedDateOnly: bool,
                   maxFollowers: int, allowLocalNetworkAccess: bool,
-                  peertubeInstances: []) -> None:
+                  peertubeInstances: [],
+                  verifyAllSignatures: bool) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -2716,6 +2717,16 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if jwebsig.get('type') and jwebsig.get('signatureValue'):
                     if jwebsig['type'] == 'RsaSignature2017':
                         checkJsonSignature = True
+
+        if verifyAllSignatures and \
+           not checkJsonSignature:
+            print('inbox post does not have a jsonld signature ' + keyId)
+            if os.path.isfile(queueFilename):
+                os.remove(queueFilename)
+            if len(queue) > 0:
+                queue.pop(0)
+            continue
+
         if checkJsonSignature:
             # use the original json message received, not one which may have
             # been modified along the way

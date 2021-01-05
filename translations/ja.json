@@ -350,5 +350,6 @@
     "Show Accounts": "アカウントを表示する",
     "Peertube Instances": "Peertubeインスタンス",
     "Show video previews for the following Peertube sites.": "次のPeertubeサイトのビデオプレビューを表示します。",
-    "Follows you": "あなたについていきます"
+    "Follows you": "あなたについていきます",
+    "Verify all signatures": "すべての署名を確認する"
 }

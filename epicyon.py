@@ -267,6 +267,12 @@ parser.add_argument("--allowLocalNetworkAccess",
                     help="Whether to allow access to local network " +
                     "addresses. This might be useful when deploying in " +
                     "a mesh network")
+parser.add_argument("--verifyAllSignatures",
+                    dest='verifyAllSignatures',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Whether to require that all incoming " +
+                    "posts have valid jsonld signatures")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -2119,6 +2125,11 @@ allowLocalNetworkAccess = \
 if allowLocalNetworkAccess is not None:
     args.allowLocalNetworkAccess = bool(allowLocalNetworkAccess)
 
+verifyAllSignatures = \
+    getConfigParam(baseDir, 'verifyAllSignatures')
+if verifyAllSignatures is not None:
+    args.verifyAllSignatures = bool(verifyAllSignatures)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2132,7 +2143,8 @@ if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.sendThreadsTimeoutMins,
+    runDaemon(args.verifyAllSignatures,
+              args.sendThreadsTimeoutMins,
               args.dormantMonths,
               args.maxNewswirePosts,
               args.allowLocalNetworkAccess,
