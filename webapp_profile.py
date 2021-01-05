@@ -1106,6 +1106,16 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             instanceStr += \
                 '  <input type="file" id="instanceLogo" name="instanceLogo"'
             instanceStr += '      accept="' + imageFormats + '">'
+            if getConfigParam(baseDir, "verifyAllSignatures"):
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="verifyallsignatures" checked> ' + \
+                    translate['Verify all signatures'] + '<br>\n'
+            else:
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="verifyallsignatures"> ' + \
+                    translate['Verify all signatures'] + '<br>\n'
             instanceStr += '</div>'
 
             moderators = ''

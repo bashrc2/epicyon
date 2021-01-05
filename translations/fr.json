@@ -350,5 +350,6 @@
     "Show Accounts": "Afficher les comptes",
     "Peertube Instances": "Instances Peertube",
     "Show video previews for the following Peertube sites.": "Afficher des aperçus vidéo pour les sites Peertube suivants.",
-    "Follows you": "Vous suit"
+    "Follows you": "Vous suit",
+    "Verify all signatures": "Vérifier toutes les signatures"
 }

@@ -4274,11 +4274,25 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['summary'] = ''
                             actorChanged = True
 
-                    # change moderators list
-                    if fields.get('moderators'):
-                        adminNickname = \
-                            getConfigParam(baseDir, 'admin')
-                        if adminNickname:
+                    adminNickname = \
+                        getConfigParam(baseDir, 'admin')
+
+                    if adminNickname:
+                        # whether to require jsonld signatures
+                        # on all incoming posts
+                        if path.startswith('/users/' +
+                                           adminNickname + '/'):
+                            verifyAllSignatures = False
+                            if fields.get('verifyallsignatures'):
+                                if fields['verifyallsignatures'] == 'on':
+                                    verifyAllSignatures = True
+                            self.server.verifyAllSignatures = \
+                                verifyAllSignatures
+                            setConfigParam(baseDir, "verifyAllSignatures",
+                                           verifyAllSignatures)
+
+                        # change moderators list
+                        if fields.get('moderators'):
                             if path.startswith('/users/' +
                                                adminNickname + '/'):
                                 moderatorsFile = \
@@ -4334,11 +4348,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     'instance',
                                                     'moderator')
 
-                    # change site editors list
-                    if fields.get('editors'):
-                        adminNickname = \
-                            getConfigParam(baseDir, 'admin')
-                        if adminNickname:
+                        # change site editors list
+                        if fields.get('editors'):
                             if path.startswith('/users/' +
                                                adminNickname + '/'):
                                 editorsFile = \
@@ -13400,7 +13411,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(sendThreadsTimeoutMins: int,
+def runDaemon(verifyAllSignatures: bool,
+              sendThreadsTimeoutMins: int,
               dormantMonths: int,
               maxNewswirePosts: int,
               allowLocalNetworkAccess: bool,
@@ -13479,6 +13491,9 @@ def runDaemon(sendThreadsTimeoutMins: int,
 
     # maximum number of posts to appear in the newswire on the right column
     httpd.maxNewswirePosts = maxNewswirePosts
+
+    # whether to require that all incoming posts have valid jsonld signatures
+    httpd.verifyAllSignatures = verifyAllSignatures
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance
@@ -13749,7 +13764,8 @@ def runDaemon(sendThreadsTimeoutMins: int,
                               httpd.showPublishedDateOnly,
                               httpd.maxFollowers,
                               httpd.allowLocalNetworkAccess,
-                              httpd.peertubeInstances), daemon=True)
+                              httpd.peertubeInstances,
+                              verifyAllSignatures), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
