@@ -2726,6 +2726,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                     if jwebsig['type'] == 'RsaSignature2017':
                         if hasValidContext(originalJson):
                             checkJsonSignature = True
+                        else:
+                            print('unrecognised @context: ' +
+                                  originalJson['@context'])
 
         # strict enforcement of json signatures
         if verifyAllSignatures and \
