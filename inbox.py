@@ -2724,6 +2724,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                     if jwebsig['type'] == 'RsaSignature2017':
                         checkJsonSignature = True
 
+        # strict enforcement of json signatures
         if verifyAllSignatures and \
            not checkJsonSignature:
             print('inbox post does not have a jsonld signature ' + keyId)
