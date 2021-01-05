@@ -74,6 +74,7 @@ from happening import saveEventPost
 from delete import removeOldHashtags
 from follow import isFollowingActor
 from categories import guessHashtagCategory
+from context import hasValidContext
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2714,20 +2715,23 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
         # check if a json signature exists on this post
         checkJsonSignature = False
-        if queueJson['original'].get('@context') and \
-           queueJson['original'].get('signature'):
-            if isinstance(queueJson['original']['signature'], dict):
+        originalJson = queueJson['original']
+        if originalJson.get('@context') and \
+           originalJson.get('signature'):
+            if isinstance(originalJson['signature'], dict):
                 # see https://tools.ietf.org/html/rfc7515
-                jwebsig = queueJson['original']['signature']
+                jwebsig = originalJson['signature']
                 # signature exists and is of the expected type
                 if jwebsig.get('type') and jwebsig.get('signatureValue'):
                     if jwebsig['type'] == 'RsaSignature2017':
-                        checkJsonSignature = True
+                        if hasValidContext(originalJson):
+                            checkJsonSignature = True
 
         # strict enforcement of json signatures
         if verifyAllSignatures and \
            not checkJsonSignature:
-            print('inbox post does not have a jsonld signature ' + keyId)
+            print('inbox post does not have a jsonld signature ' +
+                  keyId + ' ' + str(originalJson))
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -2737,22 +2741,18 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if checkJsonSignature:
             # use the original json message received, not one which may have
             # been modified along the way
-            print('Test: jsonld inbox signature check test ' +
-                  keyId + ' ' + pubKey + ' ' +
-                  str(queueJson['original']))
-            if not verifyJsonSignature(queueJson['original'], pubKey):
+            if not verifyJsonSignature(originalJson, pubKey):
                 if debug:
                     print('WARN: jsonld inbox signature check failed ' +
-                          keyId + ' ' + pubKey + ' ' +
-                          str(queueJson['original']))
+                          keyId + ' ' + pubKey + ' ' + str(originalJson))
                 else:
                     print('WARN: jsonld inbox signature check failed ' +
                           keyId)
-                if os.path.isfile(queueFilename):
-                    os.remove(queueFilename)
-                if len(queue) > 0:
-                    queue.pop(0)
-                continue
+                # if os.path.isfile(queueFilename):
+                #     os.remove(queueFilename)
+                # if len(queue) > 0:
+                #     queue.pop(0)
+                # continue
             else:
                 print('jsonld inbox signature check success ' + keyId)
 

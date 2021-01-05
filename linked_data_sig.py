@@ -22,6 +22,7 @@ except ImportError:
     from Crypto.Signature import PKCS1_v1_5
 
 from pyjsonld import normalize
+from context import hasValidContext
 
 
 def _options_hash(doc: {}) -> str:
@@ -70,6 +71,8 @@ def verifyJsonSignature(doc: {}, publicKeyPem: str) -> bool:
     """Returns True if the given ActivityPub post was sent
     by an actor having the given public key
     """
+    if not hasValidContext(doc):
+        return False
     key = RSA.importKey(publicKeyPem)
     to_be_signed = _options_hash(doc) + _doc_hash(doc)
     signature = doc["signature"]["signatureValue"]
@@ -85,7 +88,8 @@ def generateJsonSignature(doc: {}, privateKeyPem: str) -> None:
     """
     if not doc.get('actor'):
         return
-
+    if not hasValidContext(doc):
+        return
     options = {
         "type": "RsaSignature2017",
         "creator": doc["actor"] + "#main-key",
