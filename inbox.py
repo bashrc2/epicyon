@@ -11,6 +11,7 @@ import os
 import datetime
 import time
 from linked_data_sig import verifyJsonSignature
+from utils import getConfigParam
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
@@ -2536,19 +2537,24 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             continue
 
         # clear the daily quotas for maximum numbers of received posts
-        if currTime-quotasLastUpdateDaily > 60 * 60 * 24:
+        if currTime - quotasLastUpdateDaily > 60 * 60 * 24:
             quotasDaily = {
                 'domains': {},
                 'accounts': {}
             }
             quotasLastUpdateDaily = currTime
 
-        # clear the per minute quotas for maximum numbers of received posts
-        if currTime-quotasLastUpdatePerMin > 60:
+        if currTime - quotasLastUpdatePerMin > 60:
+            # clear the per minute quotas for maximum numbers of received posts
             quotasPerMin = {
                 'domains': {},
                 'accounts': {}
             }
+            # also check if the json signature enforcement has changed
+            verifyAllSigs = getConfigParam(baseDir, "verifyAllSignatures")
+            if verifyAllSigs is not None:
+                verifyAllSignatures = verifyAllSigs
+            # change the last time that this was done
             quotasLastUpdatePerMin = currTime
 
         # limit the number of posts which can arrive per domain per day
