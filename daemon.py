@@ -4856,6 +4856,12 @@ class PubServer(BaseHTTPRequestHandler):
         faviconFilename = \
             baseDir + '/theme/' + self.server.themeName + \
             '/icons/' + favFilename
+        if not favFilename.endswith('.ico'):
+            if not os.path.isfile(faviconFilename):
+                if favFilename.endswith('.webp'):
+                    favFilename = favFilename.replace('.webp', '.ico')
+                elif favFilename.endswith('.avif'):
+                    favFilename = favFilename.replace('.avif', '.ico')
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
