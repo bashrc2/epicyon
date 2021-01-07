@@ -9730,19 +9730,19 @@ class PubServer(BaseHTTPRequestHandler):
                                             GETstartTime, GETtimings)
             return
 
-        # favicon image
-        if 'favicon.ico' in self.path:
-            self._getFavicon(callingDomain, self.server.baseDir,
-                             self.server.debug,
-                             'favicon.ico')
-            return
-
         # default newswire favicon, for links to sites which
         # have no favicon
         if 'newswire_favicon.ico' in self.path:
             self._getFavicon(callingDomain, self.server.baseDir,
                              self.server.debug,
                              'newswire_favicon.ico')
+            return
+
+        # favicon image
+        if 'favicon.ico' in self.path:
+            self._getFavicon(callingDomain, self.server.baseDir,
+                             self.server.debug,
+                             'favicon.ico')
             return
 
         # check authorization
