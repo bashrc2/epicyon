@@ -190,7 +190,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
 def _getBrokenFavSubstitute() -> str:
     """Substitute link used if a favicon is not available
     """
-    return " onerror=\"this.onerror=null; this.style='width:0%'; this.src=''\""
+    return " onerror=\"this.onerror=null; this.src='/default_favicon.ico'\""
 
 
 def _getNewswireFavicon(url: str) -> str:
