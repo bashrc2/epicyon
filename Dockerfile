@@ -8,8 +8,6 @@ RUN apt-get update && \
     python3-dateutil \
     python3-idna \
     python3-requests \
-    python3-numpy \
-    python3-pil.imagetk \
     python3-pip \
     python3-setuptools \
     python3-socks \
