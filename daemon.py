@@ -11977,7 +11977,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
-                                     self.server.useBlurHash,
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
@@ -12032,7 +12031,6 @@ class PubServer(BaseHTTPRequestHandler):
                                    False, False, False, commentsEnabled,
                                    filename, attachmentMediaType,
                                    fields['imageDescription'],
-                                   self.server.useBlurHash,
                                    fields['replyTo'], fields['replyTo'],
                                    fields['subject'],
                                    fields['schedulePost'],
@@ -12112,8 +12110,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             postJsonObject['object'],
                                             filename,
                                             attachmentMediaType,
-                                            imgDescription,
-                                            self.server.useBlurHash)
+                                            imgDescription)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain)
@@ -12144,7 +12141,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, False, False, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
-                                       self.server.useBlurHash,
                                        fields['replyTo'],
                                        fields['replyTo'],
                                        fields['subject'],
@@ -12177,7 +12173,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
-                                            self.server.useBlurHash,
                                             fields['replyTo'],
                                             fields['replyTo'],
                                             fields['subject'],
@@ -12230,7 +12225,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     False, False, commentsEnabled,
                                     filename, attachmentMediaType,
                                     fields['imageDescription'],
-                                    self.server.useBlurHash,
                                     fields['subject'],
                                     fields['schedulePost'],
                                     fields['eventDate'],
@@ -12268,7 +12262,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                 commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
-                                                self.server.useBlurHash,
                                                 fields['replyTo'],
                                                 fields['replyTo'],
                                                 fields['subject'],
@@ -12307,7 +12300,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             True, False, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
-                                            self.server.useBlurHash,
                                             None, None,
                                             fields['subject'],
                                             True, fields['schedulePost'],
@@ -12340,7 +12332,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      True, False, False, True,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
-                                     self.server.useBlurHash,
                                      self.server.debug, fields['subject'])
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
@@ -12371,7 +12362,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
-                                       self.server.useBlurHash,
                                        fields['subject'],
                                        int(fields['duration']))
                 if messageJson:
@@ -13464,7 +13454,6 @@ def runDaemon(verifyAllSignatures: bool,
               domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
               allowDeletion=False, debug=False, unitTest=False,
               instanceOnlySkillsSearch=False, sendThreads=[],
-              useBlurHash=False,
               manualFollowerApproval=True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
@@ -13520,7 +13509,6 @@ def runDaemon(verifyAllSignatures: bool,
     httpd.manualFollowerApproval = manualFollowerApproval
     httpd.onionDomain = onionDomain
     httpd.i2pDomain = i2pDomain
-    httpd.useBlurHash = useBlurHash
     httpd.mediaInstance = mediaInstance
     httpd.blogsInstance = blogsInstance
     httpd.newsInstance = newsInstance

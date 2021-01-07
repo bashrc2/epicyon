@@ -24,8 +24,8 @@ On Arch/Parabola:
 
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
-               imagemagick python-pillow python-requests \
-	       perl-image-exiftool python-numpy python-dateutil \
+               imagemagick python-requests \
+	       perl-image-exiftool python-dateutil \
 	       certbot flake8 bandit
 sudo pip3 install pyqrcode pypng
 ```
@@ -35,9 +35,9 @@ Or on Debian:
 ``` bash
 sudo apt install -y \
     tor python3-socks imagemagick \
-    python3-numpy python3-setuptools \
+    python3-setuptools \
     python3-crypto python3-pycryptodome \
-    python3-dateutil python3-pil.imagetk \
+    python3-dateutil \
     python3-idna python3-requests \
     python3-django-timezone-field \
     libimage-exiftool-perl python3-flake8 \

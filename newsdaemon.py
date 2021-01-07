@@ -542,7 +542,6 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
             rssDescription = removeHtmlTag(rssDescription, 'height')
 
         followersOnly = False
-        useBlurhash = False
         # NOTE: the id when the post is created will not be
         # consistent (it's based on the current time, not the
         # published time), so we change that later
@@ -550,7 +549,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                               domain, port, httpPrefix,
                               rssDescription,
                               followersOnly, False,
-                              None, None, None, useBlurhash,
+                              None, None, None,
                               rssTitle)
         if not blog:
             continue
