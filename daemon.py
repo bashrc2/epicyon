@@ -4837,18 +4837,17 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _getFavicon(self, callingDomain: str,
                     baseDir: str, debug: bool,
-                    favFile='favicon.ico') -> None:
+                    favFilename: str) -> None:
         """Return the site favicon or default newswire favicon
         """
         favType = 'image/x-icon'
-        favFilename = favFile
         if self._hasAccept(callingDomain):
             if 'image/webp' in self.headers['Accept']:
                 favType = 'image/webp'
-                favFilename = favFile.split('.')[0] + '.webp'
+                favFilename = favFilename.split('.')[0] + '.webp'
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
-                favFilename = favFile.split('.')[0] + '.avif'
+                favFilename = favFilename.split('.')[0] + '.avif'
         if not self.server.themeName:
             self.themeName = getConfigParam(baseDir, 'theme')
         if not self.server.themeName:
