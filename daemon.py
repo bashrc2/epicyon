@@ -1127,6 +1127,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico') or \
+           self.path.startswith('/newswire_favicon.ico') or \
            self.path.startswith('/categories.xml') or \
            self.path.startswith('/newswire.xml'):
             return False
@@ -4835,18 +4836,19 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout', 'send manifest')
 
     def _getFavicon(self, callingDomain: str,
-                    baseDir: str, debug: bool) -> None:
-        """Return the favicon
+                    baseDir: str, debug: bool,
+                    favFile='favicon.ico') -> None:
+        """Return the site favicon or default newswire favicon
         """
         favType = 'image/x-icon'
-        favFilename = 'favicon.ico'
+        favFilename = favFile
         if self._hasAccept(callingDomain):
             if 'image/webp' in self.headers['Accept']:
                 favType = 'image/webp'
-                favFilename = 'favicon.webp'
+                favFilename = favFile.split('.')[0] + '.webp'
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
-                favFilename = 'favicon.avif'
+                favFilename = favFile.split('.')[0] + '.avif'
         if not self.server.themeName:
             self.themeName = getConfigParam(baseDir, 'theme')
         if not self.server.themeName:
@@ -9731,7 +9733,16 @@ class PubServer(BaseHTTPRequestHandler):
         # favicon image
         if 'favicon.ico' in self.path:
             self._getFavicon(callingDomain, self.server.baseDir,
-                             self.server.debug)
+                             self.server.debug,
+                             'favicon.ico')
+            return
+
+        # default newswire favicon, for links to sites which
+        # have no favicon
+        if 'newswire_favicon.ico' in self.path:
+            self._getFavicon(callingDomain, self.server.baseDir,
+                             self.server.debug,
+                             'newswire_favicon.ico')
             return
 
         # check authorization

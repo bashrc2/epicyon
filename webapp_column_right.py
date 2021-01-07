@@ -197,10 +197,10 @@ def _getNewswireFavicon(url: str) -> str:
     """Returns a favicon url from the given article link
     """
     if '://' not in url:
-        return None
+        return '/newswire_favicon.ico'
     if url.startswith('http://'):
         if not (url.endswith('.onion') or url.endswith('.i2p')):
-            return None
+            return '/newswire_favicon.ico'
     domain = url.split('://')[1]
     if '/' not in domain:
         return url + '/favicon.ico'
