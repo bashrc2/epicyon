@@ -118,7 +118,6 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto othernick@domain --message "bees!" \
                    --warning "bee-related content" --attach bees.png \
                    --imagedescription "bees on flowers" \
-                   --blurhash \
                    --password [c2s password]
 ```
 

@@ -375,9 +375,6 @@ parser.add_argument('--attach', dest='attach', type=str,
                     default=None, help='File to attach to a post')
 parser.add_argument('--imagedescription', dest='imageDescription', type=str,
                     default=None, help='Description of an attached image')
-parser.add_argument("--blurhash", type=str2bool, nargs='?',
-                    const=True, default=False,
-                    help="Create blurhash for an image")
 parser.add_argument('--warning', '--warn', '--cwsubject', '--subject',
                     dest='subject', type=str, default=None,
                     help='Subject of content warning')
@@ -1002,7 +999,6 @@ if args.message:
     followersOnly = args.followersonly
     clientToServer = args.client
     attachedImageDescription = args.imageDescription
-    useBlurhash = args.blurhash
     sendThreads = []
     postLog = []
     personCache = {}
@@ -1023,7 +1019,7 @@ if args.message:
                       toNickname, toDomain, toPort, ccUrl,
                       httpPrefix, sendMessage, followersOnly,
                       args.commentsEnabled, attach, mediaType,
-                      attachedImageDescription, useBlurhash,
+                      attachedImageDescription,
                       cachedWebfingers, personCache, isArticle,
                       args.debug, replyTo, replyTo, subject)
     for i in range(10):
@@ -1864,7 +1860,6 @@ if args.unfilterStr:
     sys.exit()
 
 if args.testdata:
-    useBlurhash = False
     nickname = 'testuser567'
     password = 'boringpassword'
     print('Generating some test data for user: ' + nickname)
@@ -1942,8 +1937,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     useBlurhash)
+                     testMediaType, testImageDescription)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Zoiks!!!",
                      testFollowersOnly,
@@ -1951,8 +1945,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     useBlurhash)
+                     testMediaType, testImageDescription)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
@@ -1960,8 +1953,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     useBlurhash)
+                     testMediaType, testImageDescription)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "Getting kinda spooky around here",
                      testFollowersOnly,
@@ -1970,7 +1962,7 @@ if args.testdata:
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription,
-                     useBlurhash, 'someone')
+                     'someone')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "And they would have gotten away with it too" +
                      "if it wasn't for those pesky hackers",
@@ -1979,8 +1971,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
-                     'Description of image',
-                     useBlurhash)
+                     'Description of image')
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
@@ -1988,8 +1979,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     useBlurhash)
+                     testMediaType, testImageDescription)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "another mystery solved #test",
                      testFollowersOnly,
@@ -1997,8 +1987,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     useBlurhash)
+                     testMediaType, testImageDescription)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "let's go bowling",
                      testFollowersOnly,
@@ -2006,8 +1995,7 @@ if args.testdata:
                      testClientToServer,
                      testCommentsEnabled,
                      testAttachImageFilename,
-                     testMediaType, testImageDescription,
-                     useBlurhash)
+                     testMediaType, testImageDescription)
 
     domainFull = domain + ':' + str(port)
     clearFollows(baseDir, nickname, domain)
@@ -2179,4 +2167,4 @@ if __name__ == "__main__":
               args.accountMaxPostsPerDay,
               args.allowdeletion, debug, False,
               args.instanceOnlySkillsSearch, [],
-              args.blurhash, not args.noapproval)
+              not args.noapproval)

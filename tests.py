@@ -256,7 +256,6 @@ def createServerAlice(path: str, domain: str, port: int,
     httpPrefix = 'http'
     proxyType = None
     password = 'alicepass'
-    useBlurhash = True
     maxReplies = 64
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
@@ -289,8 +288,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription,
-                         useBlurhash)
+                         testImageDescription)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Curiouser and curiouser!",
                          testFollowersOnly,
@@ -299,8 +297,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription,
-                         useBlurhash)
+                         testImageDescription)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "In the gardens of memory, in the palace " +
                          "of dreams, that is where you and I shall meet",
@@ -310,8 +307,7 @@ def createServerAlice(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription,
-                         useBlurhash)
+                         testImageDescription)
     global testServerAliceRunning
     testServerAliceRunning = True
     maxMentions = 10
@@ -338,7 +334,7 @@ def createServerAlice(path: str, domain: str, port: int,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
-              allowDeletion, True, True, False, sendThreads, False,
+              allowDeletion, True, True, False, sendThreads,
               False)
 
 
@@ -356,7 +352,6 @@ def createServerBob(path: str, domain: str, port: int,
     proxyType = None
     clientToServer = False
     password = 'bobpass'
-    useBlurhash = False
     maxReplies = 64
     domainMaxPostsPerDay = 1000
     accountMaxPostsPerDay = 1000
@@ -388,8 +383,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription,
-                         useBlurhash)
+                         testImageDescription)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "One of the things I've realised is that " +
                          "I am very simple",
@@ -399,8 +393,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription,
-                         useBlurhash)
+                         testImageDescription)
         createPublicPost(path, nickname, domain, port, httpPrefix,
                          "Quantum physics is a bit of a passion of mine",
                          testFollowersOnly,
@@ -409,8 +402,7 @@ def createServerBob(path: str, domain: str, port: int,
                          testCommentsEnabled,
                          testAttachImageFilename,
                          testMediaType,
-                         testImageDescription,
-                         useBlurhash)
+                         testImageDescription)
     global testServerBobRunning
     testServerBobRunning = True
     maxMentions = 10
@@ -437,7 +429,7 @@ def createServerBob(path: str, domain: str, port: int,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
-              allowDeletion, True, True, False, sendThreads, False,
+              allowDeletion, True, True, False, sendThreads,
               False)
 
 
@@ -485,7 +477,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               proxyType, maxReplies, allowDeletion, True, True, False,
-              sendThreads, False, False)
+              sendThreads, False)
 
 
 def testPostMessageBetweenServers():
@@ -574,7 +566,6 @@ def testPostMessageBetweenServers():
     attachedImageFilename = baseDir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
-    useBlurhash = True
     isArticle = False
     # nothing in Alice's outbox
     outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
@@ -590,7 +581,7 @@ def testPostMessageBetweenServers():
                  followersOnly,
                  saveToFile, clientToServer, True,
                  attachedImageFilename, mediaType,
-                 attachedImageDescription, useBlurhash, federationList,
+                 attachedImageDescription, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -890,7 +881,6 @@ def testFollowBetweenServers():
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
-    useBlurhash = False
     isArticle = False
     sendResult = \
         sendPost(__version__,
@@ -898,7 +888,7 @@ def testFollowBetweenServers():
                  'bob', bobDomain, bobPort, ccUrl,
                  httpPrefix, 'Alice message', followersOnly, saveToFile,
                  clientToServer, True,
-                 None, None, None, useBlurhash, federationList,
+                 None, None, None, federationList,
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers,
                  alicePersonCache, isArticle, inReplyTo,
                  inReplyToAtomUri, subject)
@@ -1178,7 +1168,6 @@ def testCreatePerson():
     port = 80
     httpPrefix = 'https'
     clientToServer = False
-    useBlurhash = False
     baseDir = currDir + '/.tests_createperson'
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
@@ -1197,7 +1186,7 @@ def testCreatePerson():
     archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "G'day world!", False, True, clientToServer,
-                     True, None, None, useBlurhash, None, None,
+                     True, None, None, None, None,
                      'Not suitable for Vogons')
 
     os.chdir(currDir)
@@ -1401,7 +1390,6 @@ def testClientToServer():
     attachedImageFilename = baseDir+'/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
-    useBlurhash = False
     isArticle = False
     cachedWebfingers = {}
     personCache = {}
@@ -1420,7 +1408,7 @@ def testClientToServer():
                           httpPrefix, 'Sent from my ActivityPub client',
                           followersOnly, True,
                           attachedImageFilename, mediaType,
-                          attachedImageDescription, useBlurhash,
+                          attachedImageDescription,
                           cachedWebfingers, personCache, isArticle,
                           True, None, None, None)
     print('sendResult: ' + str(sendResult))
@@ -3040,6 +3028,23 @@ def testLinksWithinPost() -> None:
         'rel="nofollow noopener noreferrer" target="_blank">' + \
         '<span class="invisible">https://</span>' + \
         '<span class="ellipsis">freedombone.net</span></a></p>'
+
+    content = "<p>Some text</p><p>Other text</p><p>More text</p>" + \
+        "<pre><code>Errno::EOHNOES (No such file or rodent @ " + \
+        "ik_right - /tmp/blah.png)<br></code></pre><p>" + \
+        "(<a href=\"https://welllookeyhere.maam/error.txt\" " + \
+        "rel=\"nofollow noopener noreferrer\" target=\"_blank\">" + \
+        "wuh</a>)</p><p>Oh yeah like for sure</p>" + \
+        "<p>Ground sloth tin opener</p>" + \
+        "<p><a href=\"https://whocodedthis.huh/tags/" + \
+        "taggedthing\" class=\"mention hashtag\" rel=\"tag\" " + \
+        "target=\"_blank\">#<span>taggedthing</span></a></p>"
+    postJsonObject = \
+        createPublicPost(baseDir, nickname, domain, port, httpPrefix,
+                         content,
+                         False, False, False, True,
+                         None, None, False, None)
+    assert postJsonObject['object']['content'] == content
 
 
 def runAllTests():

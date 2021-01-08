@@ -1127,6 +1127,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico') or \
+           self.path.startswith('/newswire_favicon.ico') or \
            self.path.startswith('/categories.xml') or \
            self.path.startswith('/newswire.xml'):
             return False
@@ -4835,18 +4836,18 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout', 'send manifest')
 
     def _getFavicon(self, callingDomain: str,
-                    baseDir: str, debug: bool) -> None:
-        """Return the favicon
+                    baseDir: str, debug: bool,
+                    favFilename: str) -> None:
+        """Return the site favicon or default newswire favicon
         """
         favType = 'image/x-icon'
-        favFilename = 'favicon.ico'
         if self._hasAccept(callingDomain):
             if 'image/webp' in self.headers['Accept']:
                 favType = 'image/webp'
-                favFilename = 'favicon.webp'
+                favFilename = favFilename.split('.')[0] + '.webp'
             if 'image/avif' in self.headers['Accept']:
                 favType = 'image/avif'
-                favFilename = 'favicon.avif'
+                favFilename = favFilename.split('.')[0] + '.avif'
         if not self.server.themeName:
             self.themeName = getConfigParam(baseDir, 'theme')
         if not self.server.themeName:
@@ -4855,6 +4856,12 @@ class PubServer(BaseHTTPRequestHandler):
         faviconFilename = \
             baseDir + '/theme/' + self.server.themeName + \
             '/icons/' + favFilename
+        if not favFilename.endswith('.ico'):
+            if not os.path.isfile(faviconFilename):
+                if favFilename.endswith('.webp'):
+                    favFilename = favFilename.replace('.webp', '.ico')
+                elif favFilename.endswith('.avif'):
+                    favFilename = favFilename.replace('.avif', '.ico')
         if not os.path.isfile(faviconFilename):
             # default favicon
             faviconFilename = \
@@ -9728,10 +9735,19 @@ class PubServer(BaseHTTPRequestHandler):
                                             GETstartTime, GETtimings)
             return
 
+        # default newswire favicon, for links to sites which
+        # have no favicon
+        if 'newswire_favicon.ico' in self.path:
+            self._getFavicon(callingDomain, self.server.baseDir,
+                             self.server.debug,
+                             'newswire_favicon.ico')
+            return
+
         # favicon image
         if 'favicon.ico' in self.path:
             self._getFavicon(callingDomain, self.server.baseDir,
-                             self.server.debug)
+                             self.server.debug,
+                             'favicon.ico')
             return
 
         # check authorization
@@ -11961,7 +11977,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      False, False, False, commentsEnabled,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
-                                     self.server.useBlurHash,
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
@@ -12016,7 +12031,6 @@ class PubServer(BaseHTTPRequestHandler):
                                    False, False, False, commentsEnabled,
                                    filename, attachmentMediaType,
                                    fields['imageDescription'],
-                                   self.server.useBlurHash,
                                    fields['replyTo'], fields['replyTo'],
                                    fields['subject'],
                                    fields['schedulePost'],
@@ -12096,8 +12110,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             postJsonObject['object'],
                                             filename,
                                             attachmentMediaType,
-                                            imgDescription,
-                                            self.server.useBlurHash)
+                                            imgDescription)
 
                         replaceYouTube(postJsonObject,
                                        self.server.YTReplacementDomain)
@@ -12128,7 +12141,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        False, False, False, commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
-                                       self.server.useBlurHash,
                                        fields['replyTo'],
                                        fields['replyTo'],
                                        fields['subject'],
@@ -12161,7 +12173,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             commentsEnabled,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
-                                            self.server.useBlurHash,
                                             fields['replyTo'],
                                             fields['replyTo'],
                                             fields['subject'],
@@ -12214,7 +12225,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     False, False, commentsEnabled,
                                     filename, attachmentMediaType,
                                     fields['imageDescription'],
-                                    self.server.useBlurHash,
                                     fields['subject'],
                                     fields['schedulePost'],
                                     fields['eventDate'],
@@ -12252,7 +12262,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                 commentsEnabled,
                                                 filename, attachmentMediaType,
                                                 fields['imageDescription'],
-                                                self.server.useBlurHash,
                                                 fields['replyTo'],
                                                 fields['replyTo'],
                                                 fields['subject'],
@@ -12291,7 +12300,6 @@ class PubServer(BaseHTTPRequestHandler):
                                             True, False, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
-                                            self.server.useBlurHash,
                                             None, None,
                                             fields['subject'],
                                             True, fields['schedulePost'],
@@ -12324,7 +12332,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      True, False, False, True,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
-                                     self.server.useBlurHash,
                                      self.server.debug, fields['subject'])
                 if messageJson:
                     if self._postToOutbox(messageJson, __version__, nickname):
@@ -12355,7 +12362,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        commentsEnabled,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
-                                       self.server.useBlurHash,
                                        fields['subject'],
                                        int(fields['duration']))
                 if messageJson:
@@ -13448,7 +13454,6 @@ def runDaemon(verifyAllSignatures: bool,
               domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
               allowDeletion=False, debug=False, unitTest=False,
               instanceOnlySkillsSearch=False, sendThreads=[],
-              useBlurHash=False,
               manualFollowerApproval=True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
@@ -13504,7 +13509,6 @@ def runDaemon(verifyAllSignatures: bool,
     httpd.manualFollowerApproval = manualFollowerApproval
     httpd.onionDomain = onionDomain
     httpd.i2pDomain = i2pDomain
-    httpd.useBlurHash = useBlurHash
     httpd.mediaInstance = mediaInstance
     httpd.blogsInstance = blogsInstance
     httpd.newsInstance = newsInstance

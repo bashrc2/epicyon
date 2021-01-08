@@ -15,7 +15,6 @@
  * http signatures and basic auth
  * Compatible with http (onion addresses), https and dat
  * Minimal dependencies.
- * Support image blurhashes
  * Data minimization principle. Configurable post expiry time
  * Likes and repeats only visible to authorized viewers
  * ReplyGuy mitigation - maxmimum replies per post or posts per day
