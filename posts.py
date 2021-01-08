@@ -146,7 +146,7 @@ def _cleanHtml(rawHtml: str) -> str:
 def getUserUrl(wfRequest: {}, sourceId=0) -> str:
     """Gets the actor url from a webfinger request
     """
-    print('getUserUrl: ' + str(sourceId) + ' ' + str(wfRequest))
+    # print('getUserUrl: ' + str(sourceId) + ' ' + str(wfRequest))
     if not wfRequest.get('links'):
         if sourceId == 72367:
             print('getUserUrl failed to get display name for webfinger ' +
