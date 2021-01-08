@@ -7118,11 +7118,11 @@ class PubServer(BaseHTTPRequestHandler):
                 # graph info
                 if not authorized:
                     pjo = postJsonObject
-                    self._removePostInteractions(pjo)
                     if not isPublicPost(pjo):
                         self._404()
                         self.server.GETbusy = False
                         return True
+                    self._removePostInteractions(pjo)
 
                 if self._requestHTTP():
                     recentPostsCache = \
