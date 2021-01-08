@@ -65,6 +65,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import isDM
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -6996,6 +6997,10 @@ class PubServer(BaseHTTPRequestHandler):
                             # more social graph info
                             if not authorized:
                                 pjo = postJsonObject
+                                if isDM(pjo):
+                                    self._404()
+                                    self.server.GETbusy = False
+                                    return True
                                 self._removePostInteractions(pjo)
                             if self._requestHTTP():
                                 recentPostsCache = \
@@ -7114,6 +7119,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if not authorized:
                     pjo = postJsonObject
                     self._removePostInteractions(pjo)
+                    if isDM(pjo):
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
 
                 if self._requestHTTP():
                     recentPostsCache = \
