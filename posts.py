@@ -171,7 +171,7 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
                   domain: str, depth=0) -> {}:
-    if depth > 10:
+    if depth > 10:        
         return None
 
     feedJson = getJson(session, feedUrl, asHeader, None,
@@ -195,7 +195,7 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
                 userFeed = \
                     parseUserFeed(session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
-                                  domain, depth+1)
+                                  domain, depth + 1)
                 if userFeed:
                     for item in userFeed:
                         yield item
@@ -3091,6 +3091,8 @@ def _createBoxIndexed(recentPostsCache: {},
         if not authorized:
             if p.get('object'):
                 if isinstance(p['object'], dict):
+                    if isDM(p):
+                        continue
                     if p['object'].get('likes'):
                         p['likes'] = {'items': []}
                     if p['object'].get('replies'):
