@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import isPublicPost
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
@@ -3091,7 +3092,7 @@ def _createBoxIndexed(recentPostsCache: {},
         if not authorized:
             if p.get('object'):
                 if isinstance(p['object'], dict):
-                    if isDM(p):
+                    if not isPublicPost(p):
                         continue
                     if p['object'].get('likes'):
                         p['likes'] = {'items': []}

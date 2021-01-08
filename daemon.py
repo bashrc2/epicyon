@@ -65,7 +65,6 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
-from posts import isDM
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -178,6 +177,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import isPublicPost
 from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -6997,7 +6997,7 @@ class PubServer(BaseHTTPRequestHandler):
                             # more social graph info
                             if not authorized:
                                 pjo = postJsonObject
-                                if isDM(pjo):
+                                if not isPublicPost(pjo):
                                     self._404()
                                     self.server.GETbusy = False
                                     return True
@@ -7119,7 +7119,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not authorized:
                     pjo = postJsonObject
                     self._removePostInteractions(pjo)
-                    if isDM(pjo):
+                    if not isPublicPost(pjo):
                         self._404()
                         self.server.GETbusy = False
                         return True
