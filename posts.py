@@ -171,7 +171,7 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
                   domain: str, depth=0) -> {}:
-    if depth > 10:        
+    if depth > 10:
         return None
 
     feedJson = getJson(session, feedUrl, asHeader, None,
@@ -3086,7 +3086,7 @@ def _createBoxIndexed(recentPostsCache: {},
         # created by individualPostAsHtml
         p['hasReplies'] = hasReplies
 
-        # Don't show likes, replies or shares (announces) to
+        # Don't show likes, replies, DMs or shares (announces) to
         # unauthorized viewers
         if not authorized:
             if p.get('object'):
