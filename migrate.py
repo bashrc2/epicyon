@@ -120,36 +120,26 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         return ctr
     with open(followingFilename, "r") as f:
         followingHandles = f.readlines()
+
         movedToHandle = movedToNickname + '@' + movedToDomainFull
-        movedToHandleLower = movedToHandle.lower()
         handleLower = handle.lower()
-        # does the new handle already exist in the following list?
-        alreadyFollowingHandle = False
-        for followHandle in followingHandles:
-            if followHandle.strip("\n").strip("\r").lower() == \
-               movedToHandleLower:
-                alreadyFollowingHandle = True
-        if not alreadyFollowingHandle:
-            # replace the old handle with the new one
-            with open(followingFilename, 'w+') as f:
-                for followHandle in followingHandles:
-                    if followHandle.strip("\n").strip("\r").lower() != \
-                       handleLower:
-                        f.write(followHandle)
-                    else:
-                        f.write(movedToHandleLower + '\n')
-                        ctr += 1
-                        print('Follow moved from ' + handleLower +
-                              ' to ' + movedToHandleLower)
-        else:
-            # remove the old handle
-            with open(followingFilename, 'w+') as f:
-                for followHandle in followingHandles:
-                    if followHandle.strip("\n").strip("\r").lower() != \
-                       handleLower:
-                        f.write(followHandle)
-                    else:
-                        ctr += 1
+
+        # unfollow the old handle
+        with open(followingFilename, 'w+') as f:
+            for followHandle in followingHandles:
+                if followHandle.strip("\n").strip("\r").lower() != \
+                   handleLower:
+                    f.write(followHandle)
+                else:
+                    handleNickname = handle.split('@')[0]
+                    handleDomain = handle.split('@')[1]
+                    unfollowAccount(baseDir, nickname, domain,
+                                    handleNickname,
+                                    handleDomain,
+                                    followFile, debug)
+                    ctr += 1
+                    print('Unfollowed ' + handle + ' who has moved to ' +
+                          movedToHandle)
     return ctr
 
 
