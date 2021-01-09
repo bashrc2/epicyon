@@ -2565,6 +2565,17 @@ class PubServer(BaseHTTPRequestHandler):
             elif ('@' in searchStr or
                   ('://' in searchStr and
                    hasUsersPath(searchStr))):
+                if searchStr.endswith(':') or \
+                   searchStr.endswith(';') or \
+                   searchStr.endswith('.'):
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        actorStr = 'http://' + onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        actorStr = 'http://' + i2pDomain + usersPath
+                    self._redirect_headers(actorStr + '/search',
+                                           cookie, callingDomain)
+                    self.server.POSTbusy = False
+                    return
                 # profile search
                 nickname = getNicknameFromActor(actorStr)
                 if not self.server.session:
@@ -2580,8 +2591,7 @@ class PubServer(BaseHTTPRequestHandler):
                 profilePathStr = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
-                if isFollowingActor(baseDir, nickname, domain,
-                                    searchStr):
+                if isFollowingActor(baseDir, nickname, domain, searchStr):
                     if not hasUsersPath(searchStr):
                         searchNickname = getNicknameFromActor(searchStr)
                         searchDomain, searchPort = \

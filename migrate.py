@@ -124,6 +124,9 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         movedToHandle = movedToNickname + '@' + movedToDomainFull
         handleLower = handle.lower()
 
+        refollowFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/refollow.txt'
+
         # unfollow the old handle
         with open(followingFilename, 'w+') as f:
             for followHandle in followingHandles:
@@ -140,6 +143,14 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                     ctr += 1
                     print('Unfollowed ' + handle + ' who has moved to ' +
                           movedToHandle)
+
+                    # save the new handles to the refollow list
+                    if os.path.isfile(refollowFilename):
+                        with open(refollowFilename, 'a+') as f:
+                            f.write(movedToHandle + '\n')
+                    else:
+                        with open(refollowFilename, 'w+') as f:
+                            f.write(movedToHandle + '\n')
     return ctr
 
 
