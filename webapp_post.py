@@ -1161,6 +1161,8 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorWf = cachedWebfingers
         if cachedWebfingers.get(postActorHandle):
             postActorWf = cachedWebfingers[postActorHandle]
+            if postActorWf.get(postActorHandle):
+                postActorWf = postActorWf[postActorHandle]
 
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
