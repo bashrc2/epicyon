@@ -1153,10 +1153,19 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # get the display name
     if domainFull not in postActor:
+        # lookup the correct webfinger for the postActor
+        postActorNickname = getNicknameFromActor(postActor)
+        postActorDomain, postActorPort = getNicknameFromActor(postActor)
+        postActorDomainFull = getFullDomain(postActorDomain, postActorPort)
+        postActorHandle = postActorNickname + '@' + postActorDomainFull
+        postActorWf = cachedWebfingers
+        if cachedWebfingers.get(postActorHandle):
+            postActorWf = cachedWebfingers[postActorHandle]
+
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
          avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                 cachedWebfingers,
+                                                 postActorWf,
                                                  personCache,
                                                  projectVersion, httpPrefix,
                                                  nickname, domain, 'outbox',
