@@ -1155,7 +1155,7 @@ def individualPostAsHtml(allowDownloads: bool,
     if domainFull not in postActor:
         # lookup the correct webfinger for the postActor
         postActorNickname = getNicknameFromActor(postActor)
-        postActorDomain, postActorPort = getNicknameFromActor(postActor)
+        postActorDomain, postActorPort = getDomainFromActor(postActor)
         postActorDomainFull = getFullDomain(postActorDomain, postActorPort)
         postActorHandle = postActorNickname + '@' + postActorDomainFull
         postActorWf = cachedWebfingers
