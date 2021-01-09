@@ -142,6 +142,10 @@ def runPostSchedule(baseDir: str, httpd, maxScheduledPosts: int):
             for account in dirs:
                 if '@' not in account:
                     continue
+                if account.startswith('inbox@'):
+                    continue
+                if account.startswith('news@'):
+                    continue
                 # scheduled posts index for this account
                 scheduleIndexFilename = \
                     baseDir + '/accounts/' + account + '/schedule.index'
