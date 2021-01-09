@@ -219,8 +219,9 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     }
     if not wfRequest.get('errors'):
         if len(wfRequest.items()) == 1:
-            wfRequest = wfRequest.items()[0]
-            print('wfRequest changed to ' + str(wfRequest))
+            for wfkey, wf in wfRequest.items():
+                wfRequest = wf
+                print('wfRequest changed to ' + str(wfRequest))
         personUrl = getUserUrl(wfRequest, sourceId)
     else:
         if nickname == 'dev':
