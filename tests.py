@@ -2799,7 +2799,6 @@ def testFunctions():
         'threadSendPost',
         'sendToFollowers',
         'expireCache',
-        'migrateAccount',
         'getMutualsOfPerson',
         'runPostsQueue',
         'runSharesExpire',

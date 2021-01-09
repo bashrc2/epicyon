@@ -73,6 +73,7 @@ from shares import addShare
 from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
+from migrate import migrateAccounts
 import argparse
 
 
@@ -321,6 +322,9 @@ parser.add_argument("--i2p", type=str2bool, nargs='?',
 parser.add_argument("--tor", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Route via Tor")
+parser.add_argument("--migrations", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Migrate moved accounts")
 parser.add_argument("--tests", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Run unit tests")
@@ -1303,6 +1307,33 @@ if args.hyper:
     httpPrefix = 'hyper'
 if args.i2p:
     httpPrefix = 'http'
+
+if args.migrations:
+    cachedWebfingers = {}
+    if args.http or domain.endswith('.onion'):
+        httpPrefix = 'http'
+        port = 80
+        proxyType = 'tor'
+    elif domain.endswith('.i2p'):
+        httpPrefix = 'http'
+        port = 80
+        proxyType = 'i2p'
+    elif args.gnunet:
+        httpPrefix = 'gnunet'
+        port = 80
+        proxyType = 'gnunet'
+    else:
+        httpPrefix = 'https'
+        port = 443
+    session = createSession(proxyType)
+    ctr = migrateAccounts(baseDir, session,
+                          httpPrefix, cachedWebfingers,
+                          True)
+    if ctr == 0:
+        print('No followed accounts have moved')
+    else:
+        print(str(ctr) + ' followed accounts were migrated')
+    sys.exit()
 
 if args.actor:
     originalActor = args.actor
