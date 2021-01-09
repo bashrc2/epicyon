@@ -47,8 +47,12 @@ def validPostDate(published: str, maxAgeDays=7) -> bool:
     daysDiff = datetime.datetime.utcnow() - baselineTime
     nowDaysSinceEpoch = daysDiff.days
 
-    postTimeObject = \
-        datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+    try:
+        postTimeObject = \
+            datetime.datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+    except BaseException:
+        return False
+
     daysDiff = postTimeObject - baselineTime
     postDaysSinceEpoch = daysDiff.days
 
