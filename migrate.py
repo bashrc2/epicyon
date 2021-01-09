@@ -19,12 +19,12 @@ from follow import unfollowAccount
 def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
                                     session,
                                     httpPrefix: str, cachedWebfingers: {},
-                                    followFile: str, debug: bool) -> int:
+                                    debug: bool) -> int:
     """Goes through all follows for an account and updates any that have moved
     """
     ctr = 0
     followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/' + followFile
+        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
     if not os.path.isfile(followingFilename):
         return ctr
     with open(followingFilename, "r") as f:
@@ -35,14 +35,14 @@ def _moveFollowingHandlesForAccount(baseDir: str, nickname: str, domain: str,
                 _updateMovedHandle(baseDir, nickname, domain,
                                    followHandle, session,
                                    httpPrefix, cachedWebfingers,
-                                   followFile, debug)
+                                   debug)
     return ctr
 
 
 def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
                        handle: str, session,
                        httpPrefix: str, cachedWebfingers: {},
-                       followFile: str, debug: bool) -> int:
+                       debug: bool) -> int:
     """Check if an account has moved, and if so then alter following.txt
     for each account.
     Returns 1 if moved, 0 otherwise
@@ -112,45 +112,65 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         # so just unfollow them
         unfollowAccount(baseDir, nickname, domain,
                         movedToNickname, movedToDomainFull,
-                        followFile, debug)
+                        'following.txt', debug)
         return ctr
+
     followingFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/' + followFile
-    if not os.path.isfile(followingFilename):
-        return ctr
-    with open(followingFilename, "r") as f:
-        followingHandles = f.readlines()
+        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    if os.path.isfile(followingFilename):
+        with open(followingFilename, "r") as f:
+            followingHandles = f.readlines()
 
-        movedToHandle = movedToNickname + '@' + movedToDomainFull
-        handleLower = handle.lower()
+            movedToHandle = movedToNickname + '@' + movedToDomainFull
+            handleLower = handle.lower()
 
-        refollowFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + '/refollow.txt'
+            refollowFilename = \
+                baseDir + '/accounts/' + \
+                nickname + '@' + domain + '/refollow.txt'
 
-        # unfollow the old handle
-        with open(followingFilename, 'w+') as f:
-            for followHandle in followingHandles:
-                if followHandle.strip("\n").strip("\r").lower() != \
-                   handleLower:
-                    f.write(followHandle)
-                else:
-                    handleNickname = handle.split('@')[0]
-                    handleDomain = handle.split('@')[1]
-                    unfollowAccount(baseDir, nickname, domain,
-                                    handleNickname,
-                                    handleDomain,
-                                    followFile, debug)
-                    ctr += 1
-                    print('Unfollowed ' + handle + ' who has moved to ' +
-                          movedToHandle)
-
-                    # save the new handles to the refollow list
-                    if os.path.isfile(refollowFilename):
-                        with open(refollowFilename, 'a+') as f:
-                            f.write(movedToHandle + '\n')
+            # unfollow the old handle
+            with open(followingFilename, 'w+') as f:
+                for followHandle in followingHandles:
+                    if followHandle.strip("\n").strip("\r").lower() != \
+                       handleLower:
+                        f.write(followHandle)
                     else:
-                        with open(refollowFilename, 'w+') as f:
-                            f.write(movedToHandle + '\n')
+                        handleNickname = handle.split('@')[0]
+                        handleDomain = handle.split('@')[1]
+                        unfollowAccount(baseDir, nickname, domain,
+                                        handleNickname,
+                                        handleDomain,
+                                        'following.txt', debug)
+                        ctr += 1
+                        print('Unfollowed ' + handle + ' who has moved to ' +
+                              movedToHandle)
+
+                        # save the new handles to the refollow list
+                        if os.path.isfile(refollowFilename):
+                            with open(refollowFilename, 'a+') as f:
+                                f.write(movedToHandle + '\n')
+                        else:
+                            with open(refollowFilename, 'w+') as f:
+                                f.write(movedToHandle + '\n')
+
+    followersFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/followers.txt'
+    if os.path.isfile(followersFilename):
+        with open(followersFilename, "r") as f:
+            followerHandles = f.readlines()
+
+            handleLower = handle.lower()
+
+            # remove followers who have moved
+            with open(followersFilename, 'w+') as f:
+                for followerHandle in followerHandles:
+                    if followerHandle.strip("\n").strip("\r").lower() != \
+                       handleLower:
+                        f.write(followerHandle)
+                    else:
+                        ctr += 1
+                        print('Removed follower who has moved ' + handle)
+
     return ctr
 
 
@@ -176,7 +196,6 @@ def migrateAccounts(baseDir: str, session,
             ctr += \
                 _moveFollowingHandlesForAccount(baseDir, nickname, domain,
                                                 session, httpPrefix,
-                                                cachedWebfingers,
-                                                'following.txt', debug)
+                                                cachedWebfingers, debug)
         break
     return ctr
