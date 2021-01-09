@@ -213,14 +213,14 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                  nickname: str, domain: str,
                  boxName='inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, str):
-    if len(wfRequest.items()) == 1:
-        wfRequest = wfRequest.items()[0]
-        print('wfRequest changed to ' + str(wfRequest))
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not wfRequest.get('errors'):
+        if len(wfRequest.items()) == 1:
+            wfRequest = wfRequest.items()[0]
+            print('wfRequest changed to ' + str(wfRequest))
         personUrl = getUserUrl(wfRequest, sourceId)
     else:
         if nickname == 'dev':
