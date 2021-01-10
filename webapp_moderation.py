@@ -158,8 +158,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     if blockedFollowers:
         blockedFollowers.sort()
-        infoForm += '<div class="accountInfoDomains">\n'
         infoForm += '<h1>' + translate['Blocked followers'] + '</h1>\n'
+        infoForm += '<div class="accountInfoDomains">\n'
         for actor in blockedFollowers:
             followerNickname = getNicknameFromActor(actor)
             followerDomain, followerPort = getDomainFromActor(actor)
