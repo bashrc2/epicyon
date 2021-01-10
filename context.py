@@ -25,12 +25,12 @@ def hasValidContext(postJsonObject: {}) -> bool:
             if not isinstance(url, str):
                 continue
             if url not in validContexts:
-                print('Invalid @context: ' + url)
+                print('Unrecognized @context: ' + url)
                 return False
     elif isinstance(postJsonObject['@context'], str):
         url = postJsonObject['@context']
         if url not in validContexts:
-            print('Invalid @context: ' + url)
+            print('Unrecognized @context: ' + url)
             return False
     else:
         # not a list or string

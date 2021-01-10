@@ -248,6 +248,7 @@ from newsdaemon import runNewswireDaemon
 from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
+from context import hasValidContext
 import os
 
 
@@ -1040,6 +1041,14 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return 2
 
+        # check that the incoming message has a fully recognized
+        # linked data context
+        if not hasValidContext(messageJson):
+            print('Message arriving at inbox queue has no valid context')
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
         # check for blocked domains so that they can be rejected early
         messageDomain = None
         if messageJson.get('actor'):
@@ -1050,6 +1059,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 self.server.POSTbusy = False
                 return 3
+        else:
+            print('Message arriving at inbox queue has no actor')
+            self._400()
+            self.server.POSTbusy = False
+            return 3
 
         # if the inbox queue is full then return a busy code
         if len(self.server.inboxQueue) >= self.server.maxQueueLength:
