@@ -61,6 +61,7 @@ from webapp_utils import getBrokenLinkSubstitute
 from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
+from webfinger import webfingerHandle
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -1158,10 +1159,10 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorDomain, postActorPort = getDomainFromActor(postActor)
         postActorDomainFull = getFullDomain(postActorDomain, postActorPort)
         postActorHandle = postActorNickname + '@' + postActorDomainFull
-        postActorWf = cachedWebfingers
-        if cachedWebfingers.get(postActorHandle):
-            postActorWf = cachedWebfingers[postActorHandle]
-            print('postActorWf: ' + postActorHandle + ' ' + str(postActorWf))
+        postActorWf = \
+            webfingerHandle(session, postActorHandle, httpPrefix,
+                            cachedWebfingers,
+                            domain, __version__)
 
         # check for situations where the webfinger contains a single key
         # which is the handle, with the webfinger content as the item
@@ -1172,14 +1173,19 @@ def individualPostAsHtml(allowDownloads: bool,
                     postActorWf = wf
                     print('wfRequest changed to ' + str(postActorWf))
 
-        (inboxUrl, pubKeyId, pubKey,
-         fromPersonId, sharedInbox,
-         avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                 postActorWf,
-                                                 personCache,
-                                                 projectVersion, httpPrefix,
-                                                 nickname, domain, 'outbox',
-                                                 72367)
+        avatarUrl2 = None
+        displayName = None
+        if postActorWf:
+            (inboxUrl, pubKeyId, pubKey,
+             fromPersonId, sharedInbox,
+             avatarUrl2, displayName) = getPersonBox(baseDir, session,
+                                                     postActorWf,
+                                                     personCache,
+                                                     projectVersion,
+                                                     httpPrefix,
+                                                     nickname, domain,
+                                                     'outbox', 72367)
+
         _logPostTiming(enableTimingLog, postStartTime, '6')
 
         if avatarUrl2:
