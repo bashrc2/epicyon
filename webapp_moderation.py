@@ -161,7 +161,11 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         infoForm += '<div class="accountInfoDomains">\n'
         infoForm += '<h1>' + translate['Blocked followers'] + '</h1>\n'
         for actor in blockedFollowers:
-            infoForm += '<a href="' + actor + '">' + actor + '</a><br><br>\n'
+            followerNickname = getNicknameFromActor(actor)
+            followerDomain, followerPort = getDomainFromActor(actor)
+            followerDomainFull = getFullDomain(followerDomain, followerPort)
+            infoForm += '<a href="' + actor + '">' + \
+                followerNickname + '@' + followerDomainFull + '</a><br><br>\n'
         infoForm += '</div>\n'
 
     infoForm += htmlFooter()
