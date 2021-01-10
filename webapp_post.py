@@ -1164,15 +1164,6 @@ def individualPostAsHtml(allowDownloads: bool,
                             cachedWebfingers,
                             domain, __version__)
 
-        # check for situations where the webfinger contains a single key
-        # which is the handle, with the webfinger content as the item
-        if len(postActorWf.items()) == 1:
-            for wfkey, wf in postActorWf.items():
-                print('Single webfinger key: ' + wfkey + ' ' + postActorHandle)
-                if wfkey == postActorHandle:
-                    postActorWf = wf
-                    print('wfRequest changed to ' + str(postActorWf))
-
         avatarUrl2 = None
         displayName = None
         if postActorWf:
