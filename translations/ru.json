@@ -351,5 +351,6 @@
     "Peertube Instances": "Экземпляры Peertube",
     "Show video previews for the following Peertube sites.": "Показать превью видео для следующих сайтов Peertube.",
     "Follows you": "Следует за вами",
-    "Verify all signatures": "Проверить все подписи"
+    "Verify all signatures": "Проверить все подписи",
+    "Blocked followers": "Заблокированные подписчики"
 }

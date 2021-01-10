@@ -351,5 +351,6 @@
     "Peertube Instances": "Peertube实例",
     "Show video previews for the following Peertube sites.": "显示以下Peertube网站的视频预览。",
     "Follows you": "跟着你",
-    "Verify all signatures": "验证所有签名"
+    "Verify all signatures": "验证所有签名",
+    "Blocked followers": "被封锁的追随者"
 }

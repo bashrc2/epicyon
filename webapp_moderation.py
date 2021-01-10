@@ -7,10 +7,12 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import getFullDomain
 from utils import isEditor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from posts import downloadFollowersCollection
 from posts import getPublicPostInfo
 from posts import isModerator
 from webapp_timeline import htmlTimeline
@@ -19,6 +21,8 @@ from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from blocking import isBlockedDomain
+from blocking import isBlocked
+from session import createSession
 
 
 def htmlModeration(cssCache: {}, defaultTimeline: str,
@@ -76,25 +80,42 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     searchDomain, searchPort = getDomainFromActor(searchHandle)
 
     searchHandle = searchNickname + '@' + searchDomain
+    searchActor = \
+        httpPrefix + '://' + searchDomain + '/users/' + searchNickname
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
-        translate['Account Information'] + ':</a> <a href="' + \
-        httpPrefix + '://' + searchDomain + '/users/' + searchNickname + \
-        '">' + searchHandle + '</a></h1><br>'
+        translate['Account Information'] + ':</a> <a href="' + searchActor + \
+        '">' + searchHandle + '</a></h1><br>\n'
 
-    infoForm += translate[msgStr1] + '</center><br><br>'
+    infoForm += translate[msgStr1] + '</center><br><br>\n'
 
     proxyType = 'tor'
     if not os.path.isfile('/usr/bin/tor'):
         proxyType = None
     if domain.endswith('.i2p'):
         proxyType = None
-    domainDict = getPublicPostInfo(None,
+
+    session = createSession(proxyType)
+
+    domainDict = getPublicPostInfo(session,
                                    baseDir, searchNickname, searchDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
                                    __version__)
-    infoForm += '<div class="accountInfoDomains">'
+
+    # get a list of any blocked followers
+    followersList = \
+        downloadFollowersCollection(session, httpPrefix, searchActor, 1, 5)
+    blockedFollowers = []
+    for followerActor in followersList:
+        followerNickname = getNicknameFromActor(followerActor)
+        followerDomain, followerPort = getDomainFromActor(followerActor)
+        followerDomainFull = getFullDomain(followerDomain, followerPort)
+        if isBlocked(baseDir, nickname, domain,
+                     followerNickname, followerDomainFull):
+            blockedFollowers.append(followerActor)
+
+    infoForm += '<div class="accountInfoDomains">\n'
     usersPath = '/users/' + nickname + '/accountinfo'
     ctr = 1
     for postDomain, blockedPostUrls in domainDict.items():
@@ -122,7 +143,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 '?handle=' + searchHandle + '">'
             infoForm += '<button class="buttonhighlighted"><span>' + \
                 translate['Unblock'] + '</span></button></a> ' + \
-                blockedPostsHtml
+                blockedPostsHtml + '\n'
         else:
             infoForm += \
                 '<a href="' + usersPath + '?blockdomain=' + postDomain + \
@@ -130,10 +151,19 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             if postDomain != domain:
                 infoForm += '<button class="button"><span>' + \
                     translate['Block'] + '</span></button>'
-            infoForm += '</a>'
-        infoForm += '<br>'
+            infoForm += '</a>\n'
+        infoForm += '<br>\n'
 
-    infoForm += '</div>'
+    infoForm += '</div>\n'
+
+    if blockedFollowers:
+        blockedFollowers.sort()
+        infoForm += '<div class="accountInfoDomains">\n'
+        infoForm += '<h1>' + translate['Blocked followers'] + '</h1>\n'
+        for actor in blockedFollowers:
+            infoForm += '<a href="' + actor + '">' + actor + '</a><br>\n'
+        infoForm += '</div>\n'
+
     infoForm += htmlFooter()
     return infoForm
 

@@ -3393,10 +3393,10 @@ def downloadFollowersCollection(session, httpPrefix,
         }
     result = []
     for pageCtr in range(noOfPages):
+        url = actor + '/followers?page=' + str(pageNumber + pageCtr)
         followersJson = \
-            getJson(session, actor + '/followers?page=' +
-                    str(pageNumber + pageCtr),
-                    sessionHeaders, None, __version__, httpPrefix, None)
+            getJson(session, url, sessionHeaders, None, __version__,
+                    httpPrefix, None)
         if followersJson:
             if followersJson.get('orderedItems'):
                 result += followersJson['orderedItems']

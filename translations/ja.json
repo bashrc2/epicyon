@@ -351,5 +351,6 @@
     "Peertube Instances": "Peertubeインスタンス",
     "Show video previews for the following Peertube sites.": "次のPeertubeサイトのビデオプレビューを表示します。",
     "Follows you": "あなたについていきます",
-    "Verify all signatures": "すべての署名を確認する"
+    "Verify all signatures": "すべての署名を確認する",
+    "Blocked followers": "ブロックされたフォロワー"
 }
