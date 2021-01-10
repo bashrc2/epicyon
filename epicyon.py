@@ -75,6 +75,7 @@ from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
 import argparse
+from webapp_utils import downloadFollowersCollection
 
 
 def str2bool(v) -> bool:
@@ -157,6 +158,10 @@ parser.add_argument('--maxFollowers',
                     default=2000,
                     help='Maximum number of followers per account. ' +
                     'Zero for no limit.')
+parser.add_argument('--followers',
+                    dest='followers', type=str,
+                    default='',
+                    help='Show list of followers for the given actor')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,
                     default=512,
                     help='The maximum number of recent posts to store in RAM')
@@ -1462,6 +1467,121 @@ if args.actor:
             pprint(personJson)
         else:
             print('Failed to get ' + personUrl)
+    sys.exit()
+
+if args.followers:
+    originalActor = args.followers
+    if '/@' in args.followers or \
+       '/users/' in args.followers or \
+       args.followers.startswith('http') or \
+       args.followers.startswith('dat'):
+        # format: https://domain/@nick
+        prefixes = getProtocolPrefixes()
+        for prefix in prefixes:
+            args.followers = args.followers.replace(prefix, '')
+        args.followers = args.followers.replace('/@', '/users/')
+        if not hasUsersPath(args.followers):
+            print('Expected actor format: ' +
+                  'https://domain/@nick or https://domain/users/nick')
+            sys.exit()
+        if '/users/' in args.followers:
+            nickname = args.followers.split('/users/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/users/')[0]
+        elif '/profile/' in args.followers:
+            nickname = args.followers.split('/profile/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/profile/')[0]
+        elif '/channel/' in args.followers:
+            nickname = args.followers.split('/channel/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/channel/')[0]
+        elif '/accounts/' in args.followers:
+            nickname = args.followers.split('/accounts/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/accounts/')[0]
+    else:
+        # format: @nick@domain
+        if '@' not in args.followers:
+            print('Syntax: --actor nickname@domain')
+            sys.exit()
+        if args.followers.startswith('@'):
+            args.followers = args.followers[1:]
+        if '@' not in args.followers:
+            print('Syntax: --actor nickname@domain')
+            sys.exit()
+        nickname = args.followers.split('@')[0]
+        domain = args.followers.split('@')[1]
+        domain = domain.replace('\n', '').replace('\r', '')
+    cachedWebfingers = {}
+    if args.http or domain.endswith('.onion'):
+        httpPrefix = 'http'
+        port = 80
+        proxyType = 'tor'
+    elif domain.endswith('.i2p'):
+        httpPrefix = 'http'
+        port = 80
+        proxyType = 'i2p'
+    elif args.gnunet:
+        httpPrefix = 'gnunet'
+        port = 80
+        proxyType = 'gnunet'
+    else:
+        httpPrefix = 'https'
+        port = 443
+    session = createSession(proxyType)
+    if nickname == 'inbox':
+        nickname = domain
+
+    handle = nickname + '@' + domain
+    wfRequest = webfingerHandle(session, handle,
+                                httpPrefix, cachedWebfingers,
+                                None, __version__)
+    if not wfRequest:
+        print('Unable to webfinger ' + handle)
+        sys.exit()
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        sys.exit()
+
+    personUrl = None
+    if wfRequest.get('errors'):
+        print('wfRequest error: ' + str(wfRequest['errors']))
+        if hasUsersPath(args.followers):
+            personUrl = originalActor
+        else:
+            sys.exit()
+
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if not personUrl:
+        personUrl = getUserUrl(wfRequest)
+    if nickname == domain:
+        personUrl = personUrl.replace('/users/', '/actor/')
+        personUrl = personUrl.replace('/accounts/', '/actor/')
+        personUrl = personUrl.replace('/channel/', '/actor/')
+        personUrl = personUrl.replace('/profile/', '/actor/')
+    if not personUrl:
+        # try single user instance
+        personUrl = httpPrefix + '://' + domain
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+    if '/channel/' in personUrl or '/accounts/' in personUrl:
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+
+    followersList = \
+        downloadFollowersCollection(session, httpPrefix, personUrl, 1, 3)
+    if followersList:
+        for actor in followersList:
+            print(actor)
     sys.exit()
 
 if args.addaccount:
