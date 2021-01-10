@@ -3376,6 +3376,37 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     return postDomains
 
 
+def downloadFollowersCollection(session, httpPrefix,
+                                actor: str, pageNumber=1,
+                                noOfPages=1) -> []:
+    """Returns a list of followers for the given actor
+    by downloading the json for their followers collection
+    """
+    prof = 'https://www.w3.org/ns/activitystreams'
+    if '/channel/' not in actor or '/accounts/' not in actor:
+        sessionHeaders = {
+            'Accept': 'application/activity+json; profile="' + prof + '"'
+        }
+    else:
+        sessionHeaders = {
+            'Accept': 'application/ld+json; profile="' + prof + '"'
+        }
+    result = []
+    for pageCtr in range(noOfPages):
+        followersJson = \
+            getJson(session, actor + '/followers?page=' +
+                    str(pageNumber + pageCtr),
+                    sessionHeaders, None, __version__, httpPrefix, None)
+        if followersJson:
+            if followersJson.get('orderedItems'):
+                result += followersJson['orderedItems']
+            else:
+                break
+        else:
+            break
+    return result
+
+
 def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                       proxyType: str, port: int, httpPrefix: str,
                       debug: bool, projectVersion: str) -> []:

@@ -15,6 +15,7 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from posts import downloadFollowersCollection
 from posts import getPublicPostDomains
 from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
@@ -75,7 +76,6 @@ from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
 import argparse
-from webapp_utils import downloadFollowersCollection
 
 
 def str2bool(v) -> bool:
