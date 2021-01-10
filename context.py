@@ -11,7 +11,7 @@ validContexts = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
-    "https://raitisoja.com/apschema/v1.21"
+    "*/apschema/v1.21"
 )
 
 
@@ -25,13 +25,29 @@ def hasValidContext(postJsonObject: {}) -> bool:
             if not isinstance(url, str):
                 continue
             if url not in validContexts:
-                print('Unrecognized @context: ' + url)
-                return False
+                wildcardFound = False
+                for c in validContexts:
+                    if c.startswith('*'):
+                        c = c.replace('*', '')
+                        if url.endswith(c):
+                            wildcardFound = True
+                            break
+                if not wildcardFound:
+                    print('Unrecognized @context: ' + url)
+                    return False
     elif isinstance(postJsonObject['@context'], str):
         url = postJsonObject['@context']
         if url not in validContexts:
-            print('Unrecognized @context: ' + url)
-            return False
+            wildcardFound = False
+            for c in validContexts:
+                if c.startswith('*'):
+                    c = c.replace('*', '')
+                    if url.endswith(c):
+                        wildcardFound = True
+                        break
+            if not wildcardFound:
+                print('Unrecognized @context: ' + url)
+                return False
     else:
         # not a list or string
         return False
@@ -39,7 +55,7 @@ def hasValidContext(postJsonObject: {}) -> bool:
 
 
 def getApschemaV1_21() -> {}:
-    # https://raitisoja.com/apschema/v1.21
+    # https://domain/apschema/v1.21
     return {
         "@context": {
             "zot": "https://raitisoja.com/apschema#",
