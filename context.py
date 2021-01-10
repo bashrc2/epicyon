@@ -11,6 +11,7 @@ validContexts = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
+    "*/apschema/v1.9"
     "*/apschema/v1.21"
 )
 
@@ -52,6 +53,48 @@ def hasValidContext(postJsonObject: {}) -> bool:
         # not a list or string
         return False
     return True
+
+
+def getApschemaV1_9() -> {}:
+    # https://domain/apschema/v1.9
+    return {
+        "@context": {
+            "zot": "https://hub.disroot.org/apschema#",
+            "id": "@id",
+            "type": "@type",
+            "commentPolicy": "as:commentPolicy",
+            "meData": "zot:meData",
+            "meDataType": "zot:meDataType",
+            "meEncoding": "zot:meEncoding",
+            "meAlgorithm": "zot:meAlgorithm",
+            "meCreator": "zot:meCreator",
+            "meSignatureValue": "zot:meSignatureValue",
+            "locationAddress": "zot:locationAddress",
+            "locationPrimary": "zot:locationPrimary",
+            "locationDeleted": "zot:locationDeleted",
+            "nomadicLocation": "zot:nomadicLocation",
+            "nomadicHubs": "zot:nomadicHubs",
+            "emojiReaction": "zot:emojiReaction",
+            "expires": "zot:expires",
+            "directMessage": "zot:directMessage",
+            "schema": "http://schema.org#",
+            "PropertyValue": "schema:PropertyValue",
+            "value": "schema:value",
+            "magicEnv": {
+                "@id": "zot:magicEnv",
+                "@type": "@id"
+            },
+            "nomadicLocations": {
+                "@id": "zot:nomadicLocations",
+                "@type": "@id"
+            },
+            "ostatus": "http://ostatus.org#",
+            "conversation": "ostatus:conversation",
+            "diaspora": "https://diasporafoundation.org/ns/",
+            "guid": "diaspora:guid",
+            "Hashtag": "as:Hashtag"
+        }
+    }
 
 
 def getApschemaV1_21() -> {}:

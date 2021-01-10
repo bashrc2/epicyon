@@ -37,6 +37,7 @@ import traceback
 from collections import deque, namedtuple
 from numbers import Integral, Real
 
+from context import getApschemaV1_9
 from context import getApschemaV1_21
 from context import getV1Schema
 from context import getV1SecuritySchema
@@ -397,7 +398,14 @@ def load_document(url):
                 'document': getActivitystreamsSchema()
             }
             return doc
-        elif url == 'https://raitisoja.com/apschema/v1.21':
+        elif url.endswith('/apschema/v1.9'):
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': getApschemaV1_9()
+            }
+            return doc
+        elif url.endswith('/apschema/v1.21'):
             doc = {
                 'contextUrl': None,
                 'documentUrl': url,
