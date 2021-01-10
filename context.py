@@ -11,8 +11,9 @@ validContexts = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
-    "*/apschema/v1.9"
-    "*/apschema/v1.21"
+    "*/apschema/v1.9",
+    "*/apschema/v1.21",
+    "*/litepub-0.1.jsonld"
 )
 
 
@@ -125,6 +126,51 @@ def getApschemaV1_21() -> {}:
             "value": "schema:value",
             "discoverable": "toot:discoverable"
         }
+    }
+
+
+def getLitepubV0_1() -> {}:
+    # https://domain/schemas/litepub-0.1.jsonld
+    return {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            "https://w3id.org/security/v1",
+            {
+                "Emoji": "toot:Emoji",
+                "Hashtag": "as:Hashtag",
+                "PropertyValue": "schema:PropertyValue",
+                "atomUri": "ostatus:atomUri",
+                "conversation": {
+                    "@id": "ostatus:conversation",
+                    "@type": "@id"
+                },
+                "discoverable": "toot:discoverable",
+                "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+                "capabilities": "litepub:capabilities",
+                "ostatus": "http://ostatus.org#",
+                "schema": "http://schema.org#",
+                "toot": "http://joinmastodon.org/ns#",
+                "value": "schema:value",
+                "sensitive": "as:sensitive",
+                "litepub": "http://litepub.social/ns#",
+                "invisible": "litepub:invisible",
+                "directMessage": "litepub:directMessage",
+                "listMessage": {
+                    "@id": "litepub:listMessage",
+                    "@type": "@id"
+                },
+                "oauthRegistrationEndpoint": {
+                    "@id": "litepub:oauthRegistrationEndpoint",
+                    "@type": "@id"
+                },
+                "EmojiReact": "litepub:EmojiReact",
+                "ChatMessage": "litepub:ChatMessage",
+                "alsoKnownAs": {
+                    "@id": "as:alsoKnownAs",
+                    "@type": "@id"
+                }
+            }
+        ]
     }
 
 
