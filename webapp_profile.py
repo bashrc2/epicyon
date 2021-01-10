@@ -1530,10 +1530,20 @@ def _individualFollowAsHtml(translate: {},
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
     if domain not in followUrl:
+        # lookup the correct webfinger for the followUrl
+        followUrlNickname = getNicknameFromActor(followUrl)
+        followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
+        followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
+        followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
+        followUrlWf = \
+            webfingerHandle(session, followUrlHandle, httpPrefix,
+                            cachedWebfingers,
+                            domain, __version__)
+
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
          avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                 cachedWebfingers,
+                                                 followUrlWf,
                                                  personCache, projectVersion,
                                                  httpPrefix, nickname,
                                                  domain, 'outbox', 43036)
