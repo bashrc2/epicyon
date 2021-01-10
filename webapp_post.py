@@ -1163,6 +1163,15 @@ def individualPostAsHtml(allowDownloads: bool,
             postActorWf = cachedWebfingers[postActorHandle]
             print('postActorWf: ' + postActorHandle + ' ' + str(postActorWf))
 
+        # check for situations where the webfinger contains a single key
+        # which is the handle, with the webfinger content as the item
+        if len(postActorWf.items()) == 1:
+            for wfkey, wf in postActorWf.items():
+                print('Single webfinger key: ' + wfkey + ' ' + postActorHandle)
+                if wfkey == postActorHandle:
+                    postActorWf = wf
+                    print('wfRequest changed to ' + str(postActorWf))
+
         (inboxUrl, pubKeyId, pubKey,
          fromPersonId, sharedInbox,
          avatarUrl2, displayName) = getPersonBox(baseDir, session,
