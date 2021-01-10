@@ -218,10 +218,10 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not wfRequest.get('errors'):
-        if len(wfRequest.items()) == 1:
-            for wfkey, wf in wfRequest.items():
-                wfRequest = wf
-                print('wfRequest changed to ' + str(wfRequest))
+        # if len(wfRequest.items()) == 1:
+        #     for wfkey, wf in wfRequest.items():
+        #         wfRequest = wf
+        #         print('wfRequest changed to ' + str(wfRequest))
         personUrl = getUserUrl(wfRequest, sourceId)
     else:
         if nickname == 'dev':
