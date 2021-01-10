@@ -3399,7 +3399,9 @@ def downloadFollowersCollection(session, httpPrefix,
                     httpPrefix, None)
         if followersJson:
             if followersJson.get('orderedItems'):
-                result += followersJson['orderedItems']
+                for followerActor in followersJson['orderedItems']:
+                    if followerActor not in result:
+                        result.append(followerActor)
             else:
                 break
         else:
