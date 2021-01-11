@@ -181,7 +181,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         infoForm += \
             '<p>' + \
             translate['Receives posts from the following accounts'] + \
-            '</p>\n'
+            ':</p>\n'
         for actor in blockedFollowing:
             followingNickname = getNicknameFromActor(actor)
             followingDomain, followingPort = getDomainFromActor(actor)
@@ -199,7 +199,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         infoForm += \
             '<p>' + \
             translate['Sends out posts to the following accounts'] + \
-            '</p>\n'
+            ':</p>\n'
         for actor in blockedFollowers:
             followerNickname = getNicknameFromActor(actor)
             followerDomain, followerPort = getDomainFromActor(actor)
