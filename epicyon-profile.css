@@ -1125,6 +1125,7 @@ div.container {
         filter: brightness(var(--icon-brightness-change));
     }
     .col-right img.rightColEdit {
+	float: right;
         background: transparent;
         width: var(--column-right-icon-size);
     }
