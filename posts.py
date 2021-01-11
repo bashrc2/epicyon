@@ -477,6 +477,10 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     plainText = plainText.replace('.', ' ')
     plainText = plainText.replace(';', ' ')
     wordsList = plainText.split(' ')
+    commonWords = (
+        'that', 'some', 'about', 'then', 'they', 'were',
+        'also', 'from', 'with', 'this', 'have', 'more'
+    )
     for word in wordsList:
         wordLen = len(word)
         if wordLen < 3:
@@ -484,6 +488,12 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         if wordLen < 4:
             if word.upper() != word:
                 continue
+        if '&' in word or \
+           '"' in word or \
+           '@' in word:
+            continue
+        if word in commonWords:
+            continue
         if wordFrequency.get(word):
             wordFrequency[word] += 1
         else:
