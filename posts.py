@@ -484,7 +484,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         'need', 'here', 'would', 'these', 'into', 'very',
         'well', 'when', 'what', 'your', 'there', 'which',
         'even', 'there', 'such', 'just', 'those', 'only',
-        'will', 'much'
+        'will', 'much', 'than'
     )
     for word in wordsList:
         wordLen = len(word)
@@ -500,7 +500,7 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
             continue
         if word.endswith(':'):
             word = word.replace(':', '')
-        if word in commonWords:
+        if word.lower() in commonWords:
             continue
         if wordFrequency.get(word):
             wordFrequency[word] += 1
