@@ -484,7 +484,8 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
         'need', 'here', 'would', 'these', 'into', 'very',
         'well', 'when', 'what', 'your', 'there', 'which',
         'even', 'there', 'such', 'just', 'those', 'only',
-        'will', 'much', 'than'
+        'will', 'much', 'than', 'them', 'each', 'goes',
+        'been', 'over', 'their', 'where', 'could', 'though'
     )
     for word in wordsList:
         wordLen = len(word)
