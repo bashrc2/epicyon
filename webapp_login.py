@@ -61,6 +61,9 @@ def htmlLogin(cssCache: {}, translate: {},
     elif os.path.isfile(baseDir + '/accounts/login.gif'):
         loginImage = 'login.gif'
         loginImageFilename = baseDir + '/accounts/' + loginImage
+    elif os.path.isfile(baseDir + '/accounts/login.svg'):
+        loginImage = 'login.svg'
+        loginImageFilename = baseDir + '/accounts/' + loginImage
     elif os.path.isfile(baseDir + '/accounts/login.webp'):
         loginImage = 'login.webp'
         loginImageFilename = baseDir + '/accounts/' + loginImage

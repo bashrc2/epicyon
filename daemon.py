@@ -290,6 +290,7 @@ class PubServer(BaseHTTPRequestHandler):
         if path.endswith('.png') or \
            path.endswith('.jpg') or \
            path.endswith('.gif') or \
+           path.endswith('.svg') or \
            path.endswith('.avif') or \
            path.endswith('.webp'):
             return True
@@ -2865,6 +2866,8 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = mediaFilenameBase + '.jpg'
         if self.headers['Content-type'].endswith('gif'):
             mediaFilename = mediaFilenameBase + '.gif'
+        if self.headers['Content-type'].endswith('svg+xml'):
+            mediaFilename = mediaFilenameBase + '.svg'
         if self.headers['Content-type'].endswith('webp'):
             mediaFilename = mediaFilenameBase + '.webp'
         if self.headers['Content-type'].endswith('avif'):
@@ -5376,6 +5379,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaImageType = 'webp'
                 elif emojiFilename.endswith('.avif'):
                     mediaImageType = 'avif'
+                elif emojiFilename.endswith('.svg'):
+                    mediaImageType = 'svg+xml'
                 else:
                     mediaImageType = 'gif'
                 with open(emojiFilename, 'rb') as avFile:
@@ -9326,6 +9331,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaFileType = 'webp'
                 elif mediaFilename.endswith('.avif'):
                     mediaFileType = 'avif'
+                elif mediaFilename.endswith('.svg'):
+                    mediaFileType = 'svg+xml'
                 else:
                     mediaFileType = 'gif'
                 with open(mediaFilename, 'rb') as avFile:
@@ -9384,6 +9391,8 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaImageType = 'gif'
                         elif avatarFile.endswith('.avif'):
                             mediaImageType = 'avif'
+                        elif avatarFile.endswith('.svg'):
+                            mediaImageType = 'svg+xml'
                         else:
                             mediaImageType = 'webp'
                         with open(avatarFilename, 'rb') as avFile:
@@ -10310,6 +10319,7 @@ class PubServer(BaseHTTPRequestHandler):
         # image on login screen or qrcode
         if self.path == '/login.png' or \
            self.path == '/login.gif' or \
+           self.path == '/login.svg' or \
            self.path == '/login.webp' or \
            self.path == '/login.avif' or \
            self.path == '/login.jpeg' or \
@@ -11910,6 +11920,7 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.jpg') or \
                    filename.endswith('.webp') or \
                    filename.endswith('.avif') or \
+                   filename.endswith('.svg') or \
                    filename.endswith('.gif'):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)

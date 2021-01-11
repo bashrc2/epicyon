@@ -133,7 +133,7 @@ def isEditor(baseDir: str, nickname: str) -> bool:
 def getImageExtensions() -> []:
     """Returns a list of the possible image file extensions
     """
-    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif')
+    return ('png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg')
 
 
 def getVideoExtensions() -> []:
@@ -1725,6 +1725,7 @@ def mediaFileMimeType(filename: str) -> str:
         'jpg': 'image/jpeg',
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
+        'svg': 'image/svg+xml',
         'webp': 'image/webp',
         'avif': 'image/avif',
         'mp3': 'audio/mpeg',

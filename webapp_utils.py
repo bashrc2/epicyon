@@ -295,6 +295,7 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
         'jpg': 'jpeg',
         'jpeg': 'jpeg',
         'gif': 'gif',
+        'svg': 'svg+xml',
         'webp': 'webp',
         'avif': 'avif'
     }
@@ -653,12 +654,14 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
            mediaType == 'image/jpeg' or \
            mediaType == 'image/webp' or \
            mediaType == 'image/avif' or \
+           mediaType == 'image/svg+xml' or \
            mediaType == 'image/gif':
             if attach['url'].endswith('.png') or \
                attach['url'].endswith('.jpg') or \
                attach['url'].endswith('.jpeg') or \
                attach['url'].endswith('.webp') or \
                attach['url'].endswith('.avif') or \
+               attach['url'].endswith('.svg') or \
                attach['url'].endswith('.gif'):
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
