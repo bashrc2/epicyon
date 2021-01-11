@@ -14,6 +14,7 @@ from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getPostAttachmentsAsHtml
 from webapp_media import addEmbeddedElements
+from utils import getConfigParam
 from utils import getFullDomain
 from utils import getMediaFormats
 from utils import getNicknameFromActor
@@ -386,7 +387,9 @@ def htmlBlogPost(authorized: bool,
     cssFilename = baseDir + '/epicyon-blog.css'
     if os.path.isfile(baseDir + '/blog.css'):
         cssFilename = baseDir + '/blog.css'
-    blogStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogStr += _htmlBlogPostContent(authorized, baseDir,
@@ -433,7 +436,9 @@ def htmlBlogPage(authorized: bool, session,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    blogStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     _htmlBlogRemoveCwButton(blogStr, translate)
 
     blogsIndex = baseDir + '/accounts/' + \
@@ -653,7 +658,9 @@ def htmlBlogView(authorized: bool,
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
-    blogStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    blogStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     if _noOfBlogAccounts(baseDir) <= 1:
         nickname = _singleBlogAccountNickname(baseDir)
@@ -755,7 +762,9 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     dateAndLocation += '<input type="text" name="location">'
     dateAndLocation += '</div>'
 
-    editBlogForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    editBlogForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     editBlogForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

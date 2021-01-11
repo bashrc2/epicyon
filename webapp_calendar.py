@@ -10,6 +10,7 @@ import os
 from datetime import datetime
 from datetime import date
 from shutil import copyfile
+from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -52,7 +53,9 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    deletePostStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    deletePostStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     deletePostStr += \
         '<center><h1>' + postTime + ' ' + str(year) + '/' + \
         str(monthNumber) + \
@@ -109,7 +112,9 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
@@ -290,7 +295,9 @@ def htmlCalendar(cssCache: {}, translate: {},
     if '/users/' in actor:
         calActor = '/users/' + actor.split('/users/')[1]
 
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \

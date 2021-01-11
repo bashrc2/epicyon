@@ -22,6 +22,7 @@ from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import locatePost
@@ -1705,7 +1706,10 @@ def htmlIndividualPost(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    return htmlHeaderWithExternalStyle(cssFilename) + postStr + htmlFooter()
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        postStr + htmlFooter()
 
 
 def htmlPostReplies(cssCache: {},
@@ -1740,4 +1744,7 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    return htmlHeaderWithExternalStyle(cssFilename) + repliesStr + htmlFooter()
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        repliesStr + htmlFooter()

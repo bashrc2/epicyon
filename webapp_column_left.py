@@ -260,7 +260,9 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     if ':' in domain:
         domain = domain.split(':')[0]
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
     htmlStr += \
@@ -321,7 +323,9 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
 
-    editLinksForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    editLinksForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # top banner
     editLinksForm += \

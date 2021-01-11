@@ -37,7 +37,9 @@ def htmlTermsOfService(cssCache: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    TOSForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    TOSForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     TOSForm += '<div class="container">' + TOSText + '</div>\n'
     if adminNickname:
         adminActor = httpPrefix + '://' + domainFull + \

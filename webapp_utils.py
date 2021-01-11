@@ -42,7 +42,10 @@ def htmlFollowingList(cssCache: {}, baseDir: str,
             if os.path.isfile(baseDir + '/epicyon.css'):
                 cssFilename = baseDir + '/epicyon.css'
 
-            followingListHtml = htmlHeaderWithExternalStyle(cssFilename)
+            instanceTitle = \
+                getConfigParam(baseDir, 'instanceTitle')
+            followingListHtml = htmlHeaderWithExternalStyle(cssFilename,
+                                                            instanceTitle)
             for followingAddress in followingList:
                 if followingAddress:
                     followingListHtml += \
@@ -61,7 +64,10 @@ def htmlHashtagBlocked(cssCache: {}, baseDir: str, translate: {}) -> str:
     if os.path.isfile(baseDir + '/suspended.css'):
         cssFilename = baseDir + '/suspended.css'
 
-    blockedHashtagForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    blockedHashtagForm = htmlHeaderWithExternalStyle(cssFilename,
+                                                     instanceTitle)
     blockedHashtagForm += '<div><center>\n'
     blockedHashtagForm += \
         '  <p class="screentitle">' + \
@@ -521,7 +527,8 @@ def getRightImageFile(baseDir: str,
                          nickname, domain, theme)
 
 
-def htmlHeaderWithExternalStyle(cssFilename: str, lang='en') -> str:
+def htmlHeaderWithExternalStyle(cssFilename: str, instanceTitle: str,
+                                lang='en') -> str:
     htmlStr = '<!DOCTYPE html>\n'
     htmlStr += '<html lang="' + lang + '">\n'
     htmlStr += '  <head>\n'
@@ -530,7 +537,7 @@ def htmlHeaderWithExternalStyle(cssFilename: str, lang='en') -> str:
     htmlStr += '    <link rel="stylesheet" href="' + cssFile + '">\n'
     htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
     htmlStr += '    <meta name="theme-color" content="grey">\n'
-    htmlStr += '    <title>Epicyon</title>\n'
+    htmlStr += '    <title>' + instanceTitle + '</title>\n'
     htmlStr += '  </head>\n'
     htmlStr += '  <body>\n'
     return htmlStr

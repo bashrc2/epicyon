@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 from datetime import datetime
 from utils import getNicknameFromActor
+from utils import getConfigParam
 from categories import getHashtagCategories
 from categories import getHashtagCategory
 from webapp_utils import getSearchBannerFile
@@ -246,7 +247,9 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/search.css'):
         cssFilename = baseDir + '/search.css'
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \

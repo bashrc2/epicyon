@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from utils import isSystemAccount
 from utils import getDomainFromActor
+from utils import getConfigParam
 from person import personBoxJson
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -170,7 +171,9 @@ def htmlFrontScreen(rssIconAtTop: bool,
     profileFooterStr += '  </tbody>\n'
     profileFooterStr += '</table>\n'
 
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename) + \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
         profileStr + profileFooterStr + htmlFooter()
     return profileStr

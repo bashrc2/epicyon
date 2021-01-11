@@ -129,7 +129,9 @@ def htmlLogin(cssCache: {}, translate: {},
     if not autocomplete:
         autocompleteStr = 'autocomplete="off" value=""'
 
-    loginForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    loginForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     loginForm += '<br>\n'
     loginForm += '<form method="POST" action="/login">\n'
     loginForm += '  <div class="imgcontainer">\n'

@@ -12,6 +12,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getImageFormats
 from utils import getMediaFormats
+from utils import getConfigParam
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -555,7 +556,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += '<input type="text" name="category">\n'
         dateAndLocation += '</div>\n'
 
-    newPostForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    newPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     newPostForm += \
         '<header>\n' + \

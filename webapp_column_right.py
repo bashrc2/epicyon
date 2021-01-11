@@ -15,6 +15,7 @@ from utils import loadJson
 from utils import votesOnNewswireItem
 from utils import getNicknameFromActor
 from utils import isEditor
+from utils import getConfigParam
 from posts import isModerator
 from webapp_utils import getRightImageFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -342,7 +343,9 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # top banner
     bannerFile, bannerFilename = \
@@ -452,7 +455,9 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
 
     showPublishButton = editor
 
-    htmlStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    htmlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
@@ -515,7 +520,9 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     bannerFile, bannerFilename = \
         getBannerFile(baseDir, nickname, domain, theme)
 
-    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    editNewswireForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # top banner
     editNewswireForm += \
@@ -631,7 +638,9 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/links.css'):
         cssFilename = baseDir + '/links.css'
 
-    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    editNewsPostForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     editNewsPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + path + '/newseditdata">\n'

@@ -12,6 +12,7 @@ from utils import isEditor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import getConfigParam
 from posts import downloadFollowCollection
 from posts import getPublicPostInfo
 from posts import isModerator
@@ -74,7 +75,9 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    infoForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     searchNickname = getNicknameFromActor(searchHandle)
     searchDomain, searchPort = getDomainFromActor(searchHandle)
@@ -248,7 +251,9 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    infoForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \

@@ -109,7 +109,9 @@ def htmlPersonOptions(defaultTimeline: str,
             '"><button class="button" name="submitDonate">' + \
             translate['Donate'] + '</button></a>\n'
 
-    optionsStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'

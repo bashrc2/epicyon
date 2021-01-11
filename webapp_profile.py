@@ -288,7 +288,10 @@ def htmlProfileAfterSearch(cssCache: {},
         if i >= 20:
             break
 
-    return htmlHeaderWithExternalStyle(cssFilename) + profileStr + htmlFooter()
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        profileStr + htmlFooter()
 
 
 def _getProfileHeader(baseDir: str, nickname: str, domain: str,
@@ -680,8 +683,10 @@ def htmlProfile(rssIconAtTop: bool,
                                nickname, domainFull,
                                extraJson) + licenseStr
 
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename) + \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
         profileStr + htmlFooter()
     return profileStr
 
@@ -1196,7 +1201,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 'style="height:200px">' + peertubeInstancesStr + \
                 '</textarea>\n'
 
-    editProfileForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # top banner
     editProfileForm += \

@@ -37,7 +37,9 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    aboutForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    aboutForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     aboutForm += '<div class="container">' + aboutText + '</div>'
     if onionDomain:
         aboutForm += \
