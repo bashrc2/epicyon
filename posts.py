@@ -476,13 +476,15 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     plainText = removeHtml(content)
     plainText = plainText.replace('.', ' ')
     plainText = plainText.replace(';', ' ')
+    plainText = plainText.replace('?', ' ')
     wordsList = plainText.split(' ')
     commonWords = (
         'that', 'some', 'about', 'then', 'they', 'were',
         'also', 'from', 'with', 'this', 'have', 'more',
         'need', 'here', 'would', 'these', 'into', 'very',
         'well', 'when', 'what', 'your', 'there', 'which',
-        'even', 'there', 'such', 'just', 'those', 'only'
+        'even', 'there', 'such', 'just', 'those', 'only',
+        'will', 'much'
     )
     for word in wordsList:
         wordLen = len(word)
@@ -493,8 +495,11 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
                 continue
         if '&' in word or \
            '"' in word or \
-           '@' in word:
+           '@' in word or \
+           '://' in word:
             continue
+        if word.endswith(':'):
+            word = word.replace(':', '')
         if word in commonWords:
             continue
         if wordFrequency.get(word):
