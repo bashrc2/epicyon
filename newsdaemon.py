@@ -23,7 +23,6 @@ from newswire import getDictFromNewswire
 # from posts import sendSignedJson
 from posts import createNewsPost
 from posts import archivePostsForPerson
-from content import removeHtmlTag
 from content import dangerousMarkup
 from content import validHashTag
 from utils import removeHtml
