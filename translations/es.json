@@ -352,5 +352,8 @@
     "Show video previews for the following Peertube sites.": "Muestre vistas previas de video para los siguientes sitios de Peertube.",
     "Follows you": "Te sigue",
     "Verify all signatures": "Verificar todas las firmas",
-    "Blocked followers": "Seguidores bloqueadas"
+    "Blocked followers": "Seguidores bloqueadas",
+    "Blocked following": "",
+    "Receives posts from the following accounts": "",
+    "Sends out posts to the following accounts": ""
 }

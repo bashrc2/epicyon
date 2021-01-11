@@ -12,7 +12,7 @@ from utils import isEditor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from posts import downloadFollowersCollection
+from posts import downloadFollowCollection
 from posts import getPublicPostInfo
 from posts import isModerator
 from webapp_timeline import htmlTimeline
@@ -105,7 +105,8 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     # get a list of any blocked followers
     followersList = \
-        downloadFollowersCollection(session, httpPrefix, searchActor, 1, 5)
+        downloadFollowCollection('followers', session,
+                                 httpPrefix, searchActor, 1, 5)
     blockedFollowers = []
     for followerActor in followersList:
         followerNickname = getNicknameFromActor(followerActor)
@@ -114,6 +115,19 @@ def htmlAccountInfo(cssCache: {}, translate: {},
         if isBlocked(baseDir, nickname, domain,
                      followerNickname, followerDomainFull):
             blockedFollowers.append(followerActor)
+
+    # get a list of any blocked following
+    followingList = \
+        downloadFollowCollection('following', session,
+                                 httpPrefix, searchActor, 1, 5)
+    blockedFollowing = []
+    for followingActor in followingList:
+        followingNickname = getNicknameFromActor(followingActor)
+        followingDomain, followingPort = getDomainFromActor(followingActor)
+        followingDomainFull = getFullDomain(followingDomain, followingPort)
+        if isBlocked(baseDir, nickname, domain,
+                     followingNickname, followingDomainFull):
+            blockedFollowing.append(followingActor)
 
     infoForm += '<div class="accountInfoDomains">\n'
     usersPath = '/users/' + nickname + '/accountinfo'
@@ -156,10 +170,32 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     infoForm += '</div>\n'
 
+    if blockedFollowing:
+        blockedFollowing.sort()
+        infoForm += '<div class="accountInfoDomains">\n'
+        infoForm += '<h1>' + translate['Blocked following'] + '</h1>\n'
+        infoForm += \
+            '<p>' + \
+            translate['Receives posts from the following accounts'] + \
+            '</p>\n'
+        for actor in blockedFollowing:
+            followingNickname = getNicknameFromActor(actor)
+            followingDomain, followingPort = getDomainFromActor(actor)
+            followingDomainFull = \
+                getFullDomain(followingDomain, followingPort)
+            infoForm += '<a href="' + actor + '">' + \
+                followingNickname + '@' + followingDomainFull + \
+                '</a><br><br>\n'
+        infoForm += '</div>\n'
+
     if blockedFollowers:
         blockedFollowers.sort()
         infoForm += '<div class="accountInfoDomains">\n'
         infoForm += '<h1>' + translate['Blocked followers'] + '</h1>\n'
+        infoForm += \
+            '<p>' + \
+            translate['Sends out posts to the following accounts'] + \
+            '</p>\n'
         for actor in blockedFollowers:
             followerNickname = getNicknameFromActor(actor)
             followerDomain, followerPort = getDomainFromActor(actor)

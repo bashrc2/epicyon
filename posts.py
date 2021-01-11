@@ -3376,11 +3376,12 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     return postDomains
 
 
-def downloadFollowersCollection(session, httpPrefix,
-                                actor: str, pageNumber=1,
-                                noOfPages=1) -> []:
-    """Returns a list of followers for the given actor
-    by downloading the json for their followers collection
+def downloadFollowCollection(followType: str,
+                             session, httpPrefix,
+                             actor: str, pageNumber=1,
+                             noOfPages=1) -> []:
+    """Returns a list of following/followers for the given actor
+    by downloading the json for their following/followers collection
     """
     prof = 'https://www.w3.org/ns/activitystreams'
     if '/channel/' not in actor or '/accounts/' not in actor:
@@ -3393,7 +3394,7 @@ def downloadFollowersCollection(session, httpPrefix,
         }
     result = []
     for pageCtr in range(noOfPages):
-        url = actor + '/followers?page=' + str(pageNumber + pageCtr)
+        url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
         followersJson = \
             getJson(session, url, sessionHeaders, None, __version__,
                     httpPrefix, None)

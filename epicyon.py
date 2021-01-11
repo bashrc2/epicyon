@@ -15,7 +15,7 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
-from posts import downloadFollowersCollection
+from posts import downloadFollowCollection
 from posts import getPublicPostDomains
 from posts import getPublicPostDomainsBlocked
 from posts import sendBlockViaServer
@@ -1578,7 +1578,8 @@ if args.followers:
         }
 
     followersList = \
-        downloadFollowersCollection(session, httpPrefix, personUrl, 1, 3)
+        downloadFollowCollection('followers', session,
+                                 httpPrefix, personUrl, 1, 3)
     if followersList:
         for actor in followersList:
             print(actor)

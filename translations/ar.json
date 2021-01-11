@@ -352,5 +352,8 @@
     "Show video previews for the following Peertube sites.": "إظهار معاينات الفيديو لمواقع Peertube التالية.",
     "Follows you": "يتبعك",
     "Verify all signatures": "تحقق من جميع التوقيعات",
-    "Blocked followers": "المتابعون المحظورون"
+    "Blocked followers": "المتابعون المحظورون",
+    "Blocked following": "",
+    "Receives posts from the following accounts": "",
+    "Sends out posts to the following accounts": ""
 }

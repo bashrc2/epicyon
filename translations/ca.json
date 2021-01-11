@@ -352,5 +352,8 @@
     "Show video previews for the following Peertube sites.": "Mostra les previsualitzacions de vídeo dels següents llocs de Peertube.",
     "Follows you": "Et segueix",
     "Verify all signatures": "Verifiqueu totes les signatures",
-    "Blocked followers": "Seguidors bloquejats"
+    "Blocked followers": "Seguidors bloquejats",
+    "Blocked following": "",
+    "Receives posts from the following accounts": "",
+    "Sends out posts to the following accounts": ""
 }
