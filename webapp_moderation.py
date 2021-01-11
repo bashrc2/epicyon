@@ -205,6 +205,32 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 followerNickname + '@' + followerDomainFull + '</a><br><br>\n'
         infoForm += '</div>\n'
 
+    if wordFrequency:
+        maxCount = 1
+        for word, count in wordFrequency.items():
+            if count > maxCount:
+                maxCount = count
+        minimumWordCount = int(maxCount / 2)
+        if minimumWordCount >= 3:
+            infoForm += '<div class="accountInfoDomains">\n'
+            infoForm += '<h1>' + translate['Word frequencies'] + '</h1>\n'
+            wordSwarm = ''
+            ctr = 0
+            for word, count in wordFrequency.items():
+                if count >= minimumWordCount:
+                    if ctr > 0:
+                        wordSwarm += ' '
+                    if count < maxCount - int(maxCount / 4):
+                        wordSwarm += word
+                    else:
+                        if count != maxCount:
+                            wordSwarm += '<b>' + word + '</b>'
+                        else:
+                            wordSwarm += '<b><i>' + word + '</i></b>'
+                    ctr += 1
+            infoForm += wordSwarm
+            infoForm += '</div>\n'
+
     infoForm += htmlFooter()
     return infoForm
 
