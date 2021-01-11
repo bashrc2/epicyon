@@ -136,6 +136,7 @@
     --publish-button-bottom-offset: 10px;
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
+    --post-separator-background: transparent;
     --post-separator-margin-top: 0;
     --post-separator-margin-bottom: 0;
     --post-separator-width: 95%;
@@ -186,7 +187,7 @@ body, html {
 }
 
 .postSeparatorImage img {
-    background-color: transparent;
+    background-color: var(--post-separator-background);
     padding-top: var(--post-separator-margin-top);
     padding-bottom: var(--post-separator-margin-bottom);
     width: var(--post-separator-width);
