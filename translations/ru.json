@@ -353,7 +353,7 @@
     "Follows you": "Следует за вами",
     "Verify all signatures": "Проверить все подписи",
     "Blocked followers": "Заблокированные подписчики",
-    "Blocked following": "",
-    "Receives posts from the following accounts": "",
-    "Sends out posts to the following accounts": ""
+    "Blocked following": "Заблокировано подписок",
+    "Receives posts from the following accounts": "Получает сообщения от следующих аккаунтов",
+    "Sends out posts to the following accounts": "Отправляет сообщения на следующие аккаунты"
 }

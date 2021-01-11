@@ -353,7 +353,7 @@
     "Follows you": "あなたについていきます",
     "Verify all signatures": "すべての署名を確認する",
     "Blocked followers": "ブロックされたフォロワー",
-    "Blocked following": "",
-    "Receives posts from the following accounts": "",
-    "Sends out posts to the following accounts": ""
+    "Blocked following": "次のブロック",
+    "Receives posts from the following accounts": "以下のアカウントから投稿を受け取ります",
+    "Sends out posts to the following accounts": "以下のアカウントに投稿を送信します"
 }

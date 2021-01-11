@@ -353,7 +353,7 @@
     "Follows you": "Vous suit",
     "Verify all signatures": "Vérifier toutes les signatures",
     "Blocked followers": "Abonnés bloqués",
-    "Blocked following": "",
-    "Receives posts from the following accounts": "",
-    "Sends out posts to the following accounts": ""
+    "Blocked following": "Bloqué suite",
+    "Receives posts from the following accounts": "Reçoit les publications des comptes suivants",
+    "Sends out posts to the following accounts": "Envoie des messages aux comptes suivants"
 }

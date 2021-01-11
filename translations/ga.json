@@ -353,7 +353,7 @@
     "Follows you": "Leanann tú",
     "Verify all signatures": "Fíoraigh gach síniú",
     "Blocked followers": "Leanúna blocáilte",
-    "Blocked following": "",
-    "Receives posts from the following accounts": "",
-    "Sends out posts to the following accounts": ""
+    "Blocked following": "Blocáilte ina dhiaidh",
+    "Receives posts from the following accounts": "Faigheann sé poist ó na cuntais seo a leanas",
+    "Sends out posts to the following accounts": "Seoltar poist chuig na cuntais seo a leanas"
 }
