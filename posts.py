@@ -479,7 +479,9 @@ def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
     wordsList = plainText.split(' ')
     commonWords = (
         'that', 'some', 'about', 'then', 'they', 'were',
-        'also', 'from', 'with', 'this', 'have', 'more'
+        'also', 'from', 'with', 'this', 'have', 'more',
+        'need', 'here', 'would', 'these', 'into', 'very',
+        'well', 'when', 'what', 'your'
     )
     for word in wordsList:
         wordLen = len(word)
