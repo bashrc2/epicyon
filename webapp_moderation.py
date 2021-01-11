@@ -97,11 +97,12 @@ def htmlAccountInfo(cssCache: {}, translate: {},
 
     session = createSession(proxyType)
 
+    wordFrequency = {}
     domainDict = getPublicPostInfo(session,
                                    baseDir, searchNickname, searchDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
-                                   __version__)
+                                   __version__, wordFrequency)
 
     # get a list of any blocked followers
     followersList = \

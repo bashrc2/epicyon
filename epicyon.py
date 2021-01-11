@@ -564,12 +564,14 @@ if args.postDomains:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
+    wordFrequency = {}
     domainList = []
     domainList = getPublicPostDomains(None,
                                       baseDir, nickname, domain,
                                       proxyType, args.port,
                                       httpPrefix, debug,
-                                      __version__, domainList)
+                                      __version__,
+                                      wordFrequency, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()
@@ -602,12 +604,14 @@ if args.postDomainsBlocked:
             args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
+    wordFrequency = {}
     domainList = []
     domainList = getPublicPostDomainsBlocked(None,
                                              baseDir, nickname, domain,
                                              proxyType, args.port,
                                              httpPrefix, debug,
-                                             __version__, domainList)
+                                             __version__,
+                                             wordFrequency, domainList)
     for postDomain in domainList:
         print(postDomain)
     sys.exit()

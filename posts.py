@@ -469,6 +469,27 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
     return personPosts
 
 
+def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
+    """Creates a dictionary containing words and the number of times
+    that they appear
+    """
+    plainText = removeHtml(content)
+    plainText = plainText.replace('.', ' ')
+    plainText = plainText.replace(';', ' ')
+    wordsList = plainText.split(' ')
+    for word in wordsList:
+        wordLen = len(word)
+        if wordLen < 3:
+            continue
+        if wordLen < 4:
+            if word.upper() != word:
+                continue
+        if wordFrequency.get(word):
+            wordFrequency[word] += 1
+        else:
+            wordFrequency[word] = 1
+
+
 def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    maxMentions: int,
                    maxEmoji: int, maxAttachments: int,
@@ -476,7 +497,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    personCache: {},
                    debug: bool,
                    projectVersion: str, httpPrefix: str,
-                   domain: str, domainList=[]) -> []:
+                   domain: str,
+                   wordFrequency: {},
+                   domainList=[]) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -503,6 +526,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             continue
         if not isinstance(item['object'], dict):
             continue
+        if item['object'].get('content'):
+            _updateWordFrequency(item['object']['content'],
+                                 wordFrequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
@@ -3334,7 +3360,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
-                         domainList=[]) -> []:
+                         wordFrequency: {}, domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -3371,7 +3397,8 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
         getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, debug,
-                       projectVersion, httpPrefix, domain, domainList)
+                       projectVersion, httpPrefix, domain,
+                       wordFrequency, domainList)
     postDomains.sort()
     return postDomains
 
@@ -3412,7 +3439,8 @@ def downloadFollowCollection(followType: str,
 
 def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                       proxyType: str, port: int, httpPrefix: str,
-                      debug: bool, projectVersion: str) -> []:
+                      debug: bool, projectVersion: str,
+                      wordFrequency: {}) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -3450,7 +3478,8 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
         getPostDomains(session, personUrl, maxPosts, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, debug,
-                       projectVersion, httpPrefix, domain, [])
+                       projectVersion, httpPrefix, domain,
+                       wordFrequency, [])
     postDomains.sort()
     domainsInfo = {}
     for d in postDomains:
@@ -3476,7 +3505,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
                                 nickname: str, domain: str,
                                 proxyType: str, port: int, httpPrefix: str,
                                 debug: bool, projectVersion: str,
-                                domainList=[]) -> []:
+                                wordFrequency: {}, domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
@@ -3484,7 +3513,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
         getPublicPostDomains(session, baseDir, nickname, domain,
                              proxyType, port, httpPrefix,
                              debug, projectVersion,
-                             domainList)
+                             wordFrequency, domainList)
     if not postDomains:
         return []
 
@@ -3532,9 +3561,10 @@ def checkDomains(session, baseDir: str,
                  nickname: str, domain: str,
                  proxyType: str, port: int, httpPrefix: str,
                  debug: bool, projectVersion: str,
-                 maxBlockedDomains: int, singleCheck: bool):
+                 maxBlockedDomains: int, singleCheck: bool) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
+    wordFrequency = {}
     nonMutuals = _getNonMutualsOfPerson(baseDir, nickname, domain)
     if not nonMutuals:
         print('No non-mutual followers were found')
@@ -3558,7 +3588,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
-                                            debug, projectVersion, [])
+                                            debug, projectVersion,
+                                            wordFrequency, [])
             if blockedDomains:
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += handle + '\n'
@@ -3577,7 +3608,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
-                                            debug, projectVersion, [])
+                                            debug, projectVersion,
+                                            wordFrequency, [])
             if blockedDomains:
                 print(handle)
                 for d in blockedDomains:
