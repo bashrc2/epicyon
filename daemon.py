@@ -267,7 +267,7 @@ maxPostsInNewsFeed = 10
 maxPostsInRSSFeed = 10
 
 # number of follows/followers per page
-followsPerPage = 12
+followsPerPage = 6
 
 # number of item shares per page
 sharesPerPage = 12
