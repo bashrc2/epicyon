@@ -1528,36 +1528,34 @@ def _individualFollowAsHtml(translate: {},
                             buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
-    nickname = getNicknameFromActor(followUrl)
-    domain, port = getDomainFromActor(followUrl)
-    titleStr = '@' + nickname + '@' + domain
+    followUrlNickname = getNicknameFromActor(followUrl)
+    followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
+    followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
+    titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
     if dormant:
         titleStr += ' 💤'
     avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
-    if domain not in followUrl:
-        # lookup the correct webfinger for the followUrl
-        followUrlNickname = getNicknameFromActor(followUrl)
-        followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
-        followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
-        followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
-        followUrlWf = \
-            webfingerHandle(session, followUrlHandle, httpPrefix,
-                            cachedWebfingers,
-                            domain, __version__)
 
-        (inboxUrl, pubKeyId, pubKey,
-         fromPersonId, sharedInbox,
-         avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                 followUrlWf,
-                                                 personCache, projectVersion,
-                                                 httpPrefix, nickname,
-                                                 domain, 'outbox', 43036)
-        if avatarUrl2:
-            avatarUrl = avatarUrl2
-        if displayName:
-            titleStr = displayName + ' ' + titleStr
+    # lookup the correct webfinger for the followUrl
+    followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
+    followUrlWf = \
+        webfingerHandle(session, followUrlHandle, httpPrefix,
+                        cachedWebfingers,
+                        domain, __version__)
+
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     avatarUrl2, displayName) = getPersonBox(baseDir, session,
+                                             followUrlWf,
+                                             personCache, projectVersion,
+                                             httpPrefix, followUrlNickname,
+                                             domain, 'outbox', 43036)
+    if avatarUrl2:
+        avatarUrl = avatarUrl2
+    if displayName:
+        titleStr = displayName + ' ' + titleStr
 
     buttonsStr = ''
     if authorized:
