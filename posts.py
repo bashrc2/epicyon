@@ -284,6 +284,9 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     displayName = None
     if personJson.get('name'):
         displayName = removeHtml(personJson['name'])
+        # have they moved?
+        if personJson.get('movedTo'):
+            displayname += ' ⌂'
 
     storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
