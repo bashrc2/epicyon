@@ -1532,8 +1532,6 @@ def _individualFollowAsHtml(translate: {},
     followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
     followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
     titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
-    if dormant:
-        titleStr += ' 💤'
     avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
@@ -1555,7 +1553,10 @@ def _individualFollowAsHtml(translate: {},
     if avatarUrl2:
         avatarUrl = avatarUrl2
     if displayName:
-        titleStr = displayName + ' ' + titleStr
+        titleStr = displayName
+
+    if dormant:
+        titleStr += ' 💤'
 
     buttonsStr = ''
     if authorized:
