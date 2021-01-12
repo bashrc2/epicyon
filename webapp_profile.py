@@ -903,8 +903,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     toxAddress = ''
     briarAddress = ''
     manuallyApprovesFollowers = ''
+    movedTo = ''
     actorJson = loadJson(actorFilename)
     if actorJson:
+        if actorJson.get('movedTo'):
+            movedTo = actorJson['movedTo']
         donateUrl = getDonationUrl(actorJson)
         xmppAddress = getXmppAddress(actorJson)
         matrixAddress = getMatrixAddress(actorJson)
@@ -1247,6 +1250,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
         bioStr + '</textarea>\n'
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Moved to new account address'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="movedTo" value="' + movedTo + '">\n'
     editProfileForm += '<label class="labels">' + \
         translate['Donations link'] + '</label><br>\n'
     editProfileForm += \

@@ -4224,6 +4224,21 @@ class PubServer(BaseHTTPRequestHandler):
                             setDonationUrl(actorJson, '')
                             actorChanged = True
 
+                    # account moved to new address
+                    movedTo = ''
+                    if actorJson.get('movedTo'):
+                        movedTo = actorJson['movedTo']
+                    if fields.get('movedTo'):
+                        if fields['movedTo'] != movedTo and \
+                           '://' in fields['movedTo'] and \
+                           '.' in fields['movedTo']:
+                            actorJson['movedTo'] = movedTo
+                            actorChanged = True
+                    else:
+                        if movedTo:
+                            del actorJson['movedTo']
+                            actorChanged = True
+
                     # change instance title
                     if fields.get('instanceTitle'):
                         currInstanceTitle = \
