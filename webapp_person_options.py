@@ -47,7 +47,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       emailAddress: str,
                       dormantMonths: int,
                       backToPath: str,
-                      lockedAccount: bool) -> str:
+                      lockedAccount: bool,
+                      movedTo: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -123,6 +124,8 @@ def htmlPersonOptions(defaultTimeline: str,
     handleShown = handle
     if lockedAccount:
         handleShown += '🔒'
+    if movedTo:
+        handleShown += ' ⌂'
     if dormant:
         handleShown += ' 💤'
     optionsStr += \
@@ -131,6 +134,15 @@ def htmlPersonOptions(defaultTimeline: str,
     if followsYou:
         optionsStr += \
             '  <p class="optionsText">' + translate['Follows you'] + '</p>\n'
+    if movedTo:
+        newNickname = getNicknameFromActor(movedTo)
+        newDomain, newPort = getDomainFromActor(movedTo)
+        if newNickname and newDomain:
+            newHandle = newNickname + '@' + newDomain
+            optionsStr += \
+                '  <p class="optionsText">' + \
+                translate['New account'] + \
+                ': <a href="' + movedTo + '">' + newHandle + '</a></p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \

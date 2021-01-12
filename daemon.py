@@ -5264,11 +5264,14 @@ class PubServer(BaseHTTPRequestHandler):
             ssbAddress = None
             emailAddress = None
             lockedAccount = False
+            movedTo = ''
             actorJson = getPersonFromCache(baseDir,
                                            optionsActor,
                                            self.server.personCache,
                                            True)
             if actorJson:
+                if actorJson.get('movedTo'):
+                    movedTo = actorJson['movedTo']
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
                 xmppAddress = getXmppAddress(actorJson)
@@ -5299,7 +5302,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     emailAddress,
                                     self.server.dormantMonths,
                                     backToPath,
-                                    lockedAccount).encode('utf-8')
+                                    lockedAccount,
+                                    movedTo).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
