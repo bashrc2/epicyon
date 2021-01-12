@@ -170,6 +170,10 @@ def htmlProfileAfterSearch(cssCache: {},
     lockedAccount = getLockedAccount(profileJson)
     if lockedAccount:
         displayName += '🔒'
+    movedTo = ''
+    if profileJson.get('movedTo'):
+        movedTo = profileJson['movedTo']
+        displayName += ' ⌂'
 
     followsYou = \
         isFollowerOfPerson(baseDir,
@@ -233,7 +237,8 @@ def htmlProfileAfterSearch(cssCache: {},
                                      translate,
                                      displayName, followsYou,
                                      profileDescriptionShort,
-                                     avatarUrl, imageUrl)
+                                     avatarUrl, imageUrl,
+                                     movedTo)
 
     domainFull = getFullDomain(domain, port)
 
@@ -301,7 +306,7 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                       avatarDescription: str,
                       profileDescriptionShort: str,
                       loginButton: str, avatarUrl: str,
-                      theme: str) -> str:
+                      theme: str, movedTo: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -321,6 +326,15 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
+    if movedTo:
+        newNickname = getNicknameFromActor(movedTo)
+        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomainFull = getFullDomain(newDomain, newPort)
+        if newNickname and newDomain:
+            htmlStr += \
+                '    <p>' + translate['New account'] + ': ' + \
+                '<a href="' + movedTo + '">@' + \
+                newNickname + '@' + newDomainFull + '</a><br>\n'
     htmlStr += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
@@ -342,7 +356,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  displayName: str,
                                  followsYou: bool,
                                  profileDescriptionShort: str,
-                                 avatarUrl: str, imageUrl: str) -> str:
+                                 avatarUrl: str, imageUrl: str,
+                                 movedTo: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -365,6 +380,15 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
     if followsYou:
         htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
+    if movedTo:
+        newNickname = getNicknameFromActor(movedTo)
+        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomainFull = getFullDomain(newDomain, newPort)
+        if newNickname and newDomain:
+            newHandle = newNickname + '@' + newDomainFull
+            htmlStr += '        <p>' + translate['New account'] + \
+                ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
@@ -588,6 +612,10 @@ def htmlProfile(rssIconAtTop: bool,
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
 
+    movedTo = ''
+    if profileJson.get('movedTo'):
+        movedTo = profileJson['movedTo']
+
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
         _getProfileHeader(baseDir, nickname, domain,
@@ -595,7 +623,8 @@ def htmlProfile(rssIconAtTop: bool,
                           defaultTimeline, displayName,
                           avatarDescription,
                           profileDescriptionShort,
-                          loginButton, avatarUrl, theme)
+                          loginButton, avatarUrl, theme,
+                          movedTo)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'

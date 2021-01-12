@@ -142,7 +142,7 @@ def htmlPersonOptions(defaultTimeline: str,
             optionsStr += \
                 '  <p class="optionsText">' + \
                 translate['New account'] + \
-                ': <a href="' + movedTo + '">' + newHandle + '</a></p>\n'
+                ': <a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
