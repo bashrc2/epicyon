@@ -351,5 +351,12 @@
     "Peertube Instances": "Imeachtaí Peertube",
     "Show video previews for the following Peertube sites.": "Taispeáin réamhamharcanna físe do na suíomhanna Peertube seo a leanas.",
     "Follows you": "Leanann tú",
-    "Verify all signatures": "Fíoraigh gach síniú"
+    "Verify all signatures": "Fíoraigh gach síniú",
+    "Blocked followers": "Leanúna blocáilte",
+    "Blocked following": "Blocáilte ina dhiaidh",
+    "Receives posts from the following accounts": "Faigheann sé poist ó na cuntais seo a leanas",
+    "Sends out posts to the following accounts": "Seoltar poist chuig na cuntais seo a leanas",
+    "Word frequencies": "Minicíochtaí focal",
+    "New account": "Cuntas nua",
+    "Moved to new account address": "Ar athraíodh a ionad go seoladh cuntas nua"
 }

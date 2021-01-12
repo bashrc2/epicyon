@@ -180,8 +180,9 @@ def postImage(session, attachImageFilename: str, federationList: [],
     if not (attachImageFilename.endswith('.jpg') or
             attachImageFilename.endswith('.jpeg') or
             attachImageFilename.endswith('.png') or
+            attachImageFilename.endswith('.svg') or
             attachImageFilename.endswith('.gif')):
-        print('Image must be png, jpg, or gif')
+        print('Image must be png, jpg, gif or svg')
         return None
     if not os.path.isfile(attachImageFilename):
         print('Image not found: ' + attachImageFilename)
@@ -191,6 +192,8 @@ def postImage(session, attachImageFilename: str, federationList: [],
         contentType = 'image/png'
     if attachImageFilename.endswith('.gif'):
         contentType = 'image/gif'
+    if attachImageFilename.endswith('.svg'):
+        contentType = 'image/svg+xml'
     headers['Content-type'] = contentType
 
     with open(attachImageFilename, 'rb') as avFile:

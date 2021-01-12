@@ -352,4 +352,4 @@ def webfingerUpdate(baseDir: str, nickname: str, domain: str,
 
     if _webfingerUpdateFromProfile(wfJson, actorJson):
         if saveJson(wfJson, filename):
-            cachedWebfingers[handle] = wfJson
+            storeWebfingerInCache(handle, wfJson, cachedWebfingers)

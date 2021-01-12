@@ -347,5 +347,12 @@
     "Peertube Instances": "Peertube Instances",
     "Show video previews for the following Peertube sites.": "Show video previews for the following Peertube sites.",
     "Follows you": "Follows you",
-    "Verify all signatures": "Verify all signatures"
+    "Verify all signatures": "Verify all signatures",
+    "Blocked followers": "Blocked followers",
+    "Blocked following": "Blocked following",
+    "Receives posts from the following accounts": "Receives posts from the following accounts",
+    "Sends out posts to the following accounts": "Sends out posts to the following accounts",
+    "Word frequencies": "Word frequencies",
+    "New account": "New account",
+    "Moved to new account address": "Moved to new account address"
 }

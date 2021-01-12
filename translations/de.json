@@ -351,5 +351,12 @@
     "Peertube Instances": "Peertube-Instanzen",
     "Show video previews for the following Peertube sites.": "Zeigen Sie eine Videovorschau für die folgenden Peertube-Websites an.",
     "Follows you": "Folgt dir",
-    "Verify all signatures": "Überprüfen Sie alle Signaturen"
+    "Verify all signatures": "Überprüfen Sie alle Signaturen",
+    "Blocked followers": "Blockierte Follower",
+    "Blocked following": "Folgendes blockiert",
+    "Receives posts from the following accounts": "Erhält Beiträge von folgenden Konten",
+    "Sends out posts to the following accounts": "Sendet Beiträge an die folgenden Konten",
+    "Word frequencies": "Worthäufigkeiten",
+    "New account": "Neues Konto",
+    "Moved to new account address": "An neue Kontoadresse verschoben"
 }

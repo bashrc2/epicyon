@@ -22,6 +22,7 @@ from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import locatePost
@@ -61,6 +62,7 @@ from webapp_utils import getBrokenLinkSubstitute
 from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
+from webfinger import webfingerHandle
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -1153,14 +1155,29 @@ def individualPostAsHtml(allowDownloads: bool,
 
     # get the display name
     if domainFull not in postActor:
-        (inboxUrl, pubKeyId, pubKey,
-         fromPersonId, sharedInbox,
-         avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                 cachedWebfingers,
-                                                 personCache,
-                                                 projectVersion, httpPrefix,
-                                                 nickname, domain, 'outbox',
-                                                 72367)
+        # lookup the correct webfinger for the postActor
+        postActorNickname = getNicknameFromActor(postActor)
+        postActorDomain, postActorPort = getDomainFromActor(postActor)
+        postActorDomainFull = getFullDomain(postActorDomain, postActorPort)
+        postActorHandle = postActorNickname + '@' + postActorDomainFull
+        postActorWf = \
+            webfingerHandle(session, postActorHandle, httpPrefix,
+                            cachedWebfingers,
+                            domain, __version__)
+
+        avatarUrl2 = None
+        displayName = None
+        if postActorWf:
+            (inboxUrl, pubKeyId, pubKey,
+             fromPersonId, sharedInbox,
+             avatarUrl2, displayName) = getPersonBox(baseDir, session,
+                                                     postActorWf,
+                                                     personCache,
+                                                     projectVersion,
+                                                     httpPrefix,
+                                                     nickname, domain,
+                                                     'outbox', 72367)
+
         _logPostTiming(enableTimingLog, postStartTime, '6')
 
         if avatarUrl2:
@@ -1689,7 +1706,10 @@ def htmlIndividualPost(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    return htmlHeaderWithExternalStyle(cssFilename) + postStr + htmlFooter()
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        postStr + htmlFooter()
 
 
 def htmlPostReplies(cssCache: {},
@@ -1724,4 +1744,7 @@ def htmlPostReplies(cssCache: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    return htmlHeaderWithExternalStyle(cssFilename) + repliesStr + htmlFooter()
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        repliesStr + htmlFooter()

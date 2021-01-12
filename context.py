@@ -11,7 +11,9 @@ validContexts = (
     "https://www.w3.org/ns/activitystreams",
     "https://w3id.org/identity/v1",
     "https://w3id.org/security/v1",
-    "https://raitisoja.com/apschema/v1.21"
+    "*/apschema/v1.9",
+    "*/apschema/v1.21",
+    "*/litepub-0.1.jsonld"
 )
 
 
@@ -25,21 +27,79 @@ def hasValidContext(postJsonObject: {}) -> bool:
             if not isinstance(url, str):
                 continue
             if url not in validContexts:
-                print('Invalid @context: ' + url)
-                return False
+                wildcardFound = False
+                for c in validContexts:
+                    if c.startswith('*'):
+                        c = c.replace('*', '')
+                        if url.endswith(c):
+                            wildcardFound = True
+                            break
+                if not wildcardFound:
+                    print('Unrecognized @context: ' + url)
+                    return False
     elif isinstance(postJsonObject['@context'], str):
         url = postJsonObject['@context']
         if url not in validContexts:
-            print('Invalid @context: ' + url)
-            return False
+            wildcardFound = False
+            for c in validContexts:
+                if c.startswith('*'):
+                    c = c.replace('*', '')
+                    if url.endswith(c):
+                        wildcardFound = True
+                        break
+            if not wildcardFound:
+                print('Unrecognized @context: ' + url)
+                return False
     else:
         # not a list or string
         return False
     return True
 
 
+def getApschemaV1_9() -> {}:
+    # https://domain/apschema/v1.9
+    return {
+        "@context": {
+            "zot": "https://hub.disroot.org/apschema#",
+            "id": "@id",
+            "type": "@type",
+            "commentPolicy": "as:commentPolicy",
+            "meData": "zot:meData",
+            "meDataType": "zot:meDataType",
+            "meEncoding": "zot:meEncoding",
+            "meAlgorithm": "zot:meAlgorithm",
+            "meCreator": "zot:meCreator",
+            "meSignatureValue": "zot:meSignatureValue",
+            "locationAddress": "zot:locationAddress",
+            "locationPrimary": "zot:locationPrimary",
+            "locationDeleted": "zot:locationDeleted",
+            "nomadicLocation": "zot:nomadicLocation",
+            "nomadicHubs": "zot:nomadicHubs",
+            "emojiReaction": "zot:emojiReaction",
+            "expires": "zot:expires",
+            "directMessage": "zot:directMessage",
+            "schema": "http://schema.org#",
+            "PropertyValue": "schema:PropertyValue",
+            "value": "schema:value",
+            "magicEnv": {
+                "@id": "zot:magicEnv",
+                "@type": "@id"
+            },
+            "nomadicLocations": {
+                "@id": "zot:nomadicLocations",
+                "@type": "@id"
+            },
+            "ostatus": "http://ostatus.org#",
+            "conversation": "ostatus:conversation",
+            "diaspora": "https://diasporafoundation.org/ns/",
+            "guid": "diaspora:guid",
+            "Hashtag": "as:Hashtag"
+        }
+    }
+
+
 def getApschemaV1_21() -> {}:
-    # https://raitisoja.com/apschema/v1.21
+    # https://domain/apschema/v1.21
     return {
         "@context": {
             "zot": "https://raitisoja.com/apschema#",
@@ -66,6 +126,51 @@ def getApschemaV1_21() -> {}:
             "value": "schema:value",
             "discoverable": "toot:discoverable"
         }
+    }
+
+
+def getLitepubV0_1() -> {}:
+    # https://domain/schemas/litepub-0.1.jsonld
+    return {
+        "@context": [
+            "https://www.w3.org/ns/activitystreams",
+            "https://w3id.org/security/v1",
+            {
+                "Emoji": "toot:Emoji",
+                "Hashtag": "as:Hashtag",
+                "PropertyValue": "schema:PropertyValue",
+                "atomUri": "ostatus:atomUri",
+                "conversation": {
+                    "@id": "ostatus:conversation",
+                    "@type": "@id"
+                },
+                "discoverable": "toot:discoverable",
+                "manuallyApprovesFollowers": "as:manuallyApprovesFollowers",
+                "capabilities": "litepub:capabilities",
+                "ostatus": "http://ostatus.org#",
+                "schema": "http://schema.org#",
+                "toot": "http://joinmastodon.org/ns#",
+                "value": "schema:value",
+                "sensitive": "as:sensitive",
+                "litepub": "http://litepub.social/ns#",
+                "invisible": "litepub:invisible",
+                "directMessage": "litepub:directMessage",
+                "listMessage": {
+                    "@id": "litepub:listMessage",
+                    "@type": "@id"
+                },
+                "oauthRegistrationEndpoint": {
+                    "@id": "litepub:oauthRegistrationEndpoint",
+                    "@type": "@id"
+                },
+                "EmojiReact": "litepub:EmojiReact",
+                "ChatMessage": "litepub:ChatMessage",
+                "alsoKnownAs": {
+                    "@id": "as:alsoKnownAs",
+                    "@type": "@id"
+                }
+            }
+        ]
     }
 
 

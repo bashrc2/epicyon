@@ -67,11 +67,13 @@ def instancesGraph(baseDir: str, handles: str,
                                                 projectVersion, httpPrefix,
                                                 nickname, domain, 'outbox',
                                                 27261)
+        wordFrequency = {}
         postDomains = \
             getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                            maxAttachments, federationList,
                            personCache, debug,
-                           projectVersion, httpPrefix, domain, [])
+                           projectVersion, httpPrefix, domain,
+                           wordFrequency, [])
         postDomains.sort()
         for fedDomain in postDomains:
             dotLineStr = '    "' + domain + '" -> "' + fedDomain + '";\n'

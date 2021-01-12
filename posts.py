@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import isPublicPost
 from utils import hasUsersPath
 from utils import validPostDate
 from utils import getFullDomain
@@ -146,10 +147,10 @@ def _cleanHtml(rawHtml: str) -> str:
 def getUserUrl(wfRequest: {}, sourceId=0) -> str:
     """Gets the actor url from a webfinger request
     """
-    # print('getUserUrl: ' + str(sourceId) + ' ' + str(wfRequest))
     if not wfRequest.get('links'):
         if sourceId == 72367:
-            print('getUserUrl failed to get display name for webfinger ' +
+            print('getUserUrl ' + str(sourceId) +
+                  ' failed to get display name for webfinger ' +
                   str(wfRequest))
         else:
             print('getUserUrl webfinger activity+json contains no links ' +
@@ -283,6 +284,9 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     displayName = None
     if personJson.get('name'):
         displayName = removeHtml(personJson['name'])
+        # have they moved?
+        if personJson.get('movedTo'):
+            displayName += ' ⌂'
 
     storePersonInCache(baseDir, personUrl, personJson, personCache, True)
 
@@ -468,6 +472,46 @@ def _getPosts(session, outboxUrl: str, maxPosts: int,
     return personPosts
 
 
+def _updateWordFrequency(content: str, wordFrequency: {}) -> None:
+    """Creates a dictionary containing words and the number of times
+    that they appear
+    """
+    plainText = removeHtml(content)
+    plainText = plainText.replace('.', ' ')
+    plainText = plainText.replace(';', ' ')
+    plainText = plainText.replace('?', ' ')
+    wordsList = plainText.split(' ')
+    commonWords = (
+        'that', 'some', 'about', 'then', 'they', 'were',
+        'also', 'from', 'with', 'this', 'have', 'more',
+        'need', 'here', 'would', 'these', 'into', 'very',
+        'well', 'when', 'what', 'your', 'there', 'which',
+        'even', 'there', 'such', 'just', 'those', 'only',
+        'will', 'much', 'than', 'them', 'each', 'goes',
+        'been', 'over', 'their', 'where', 'could', 'though'
+    )
+    for word in wordsList:
+        wordLen = len(word)
+        if wordLen < 3:
+            continue
+        if wordLen < 4:
+            if word.upper() != word:
+                continue
+        if '&' in word or \
+           '"' in word or \
+           '@' in word or \
+           '://' in word:
+            continue
+        if word.endswith(':'):
+            word = word.replace(':', '')
+        if word.lower() in commonWords:
+            continue
+        if wordFrequency.get(word):
+            wordFrequency[word] += 1
+        else:
+            wordFrequency[word] = 1
+
+
 def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    maxMentions: int,
                    maxEmoji: int, maxAttachments: int,
@@ -475,7 +519,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    personCache: {},
                    debug: bool,
                    projectVersion: str, httpPrefix: str,
-                   domain: str, domainList=[]) -> []:
+                   domain: str,
+                   wordFrequency: {},
+                   domainList=[]) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -502,6 +548,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             continue
         if not isinstance(item['object'], dict):
             continue
+        if item['object'].get('content'):
+            _updateWordFrequency(item['object']['content'],
+                                 wordFrequency)
         if item['object'].get('inReplyTo'):
             if isinstance(item['object']['inReplyTo'], str):
                 postDomain, postPort = \
@@ -3091,7 +3140,7 @@ def _createBoxIndexed(recentPostsCache: {},
         if not authorized:
             if p.get('object'):
                 if isinstance(p['object'], dict):
-                    if isDM(p):
+                    if not isPublicPost(p):
                         continue
                     if p['object'].get('likes'):
                         p['likes'] = {'items': []}
@@ -3333,7 +3382,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
                          proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
-                         domainList=[]) -> []:
+                         wordFrequency: {}, domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts
     """
     if not session:
@@ -3370,14 +3419,50 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
         getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, debug,
-                       projectVersion, httpPrefix, domain, domainList)
+                       projectVersion, httpPrefix, domain,
+                       wordFrequency, domainList)
     postDomains.sort()
     return postDomains
 
 
+def downloadFollowCollection(followType: str,
+                             session, httpPrefix,
+                             actor: str, pageNumber=1,
+                             noOfPages=1) -> []:
+    """Returns a list of following/followers for the given actor
+    by downloading the json for their following/followers collection
+    """
+    prof = 'https://www.w3.org/ns/activitystreams'
+    if '/channel/' not in actor or '/accounts/' not in actor:
+        sessionHeaders = {
+            'Accept': 'application/activity+json; profile="' + prof + '"'
+        }
+    else:
+        sessionHeaders = {
+            'Accept': 'application/ld+json; profile="' + prof + '"'
+        }
+    result = []
+    for pageCtr in range(noOfPages):
+        url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
+        followersJson = \
+            getJson(session, url, sessionHeaders, None, __version__,
+                    httpPrefix, None)
+        if followersJson:
+            if followersJson.get('orderedItems'):
+                for followerActor in followersJson['orderedItems']:
+                    if followerActor not in result:
+                        result.append(followerActor)
+            else:
+                break
+        else:
+            break
+    return result
+
+
 def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
                       proxyType: str, port: int, httpPrefix: str,
-                      debug: bool, projectVersion: str) -> []:
+                      debug: bool, projectVersion: str,
+                      wordFrequency: {}) -> []:
     """ Returns a dict of domains referenced within public posts
     """
     if not session:
@@ -3415,7 +3500,8 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
         getPostDomains(session, personUrl, maxPosts, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, debug,
-                       projectVersion, httpPrefix, domain, [])
+                       projectVersion, httpPrefix, domain,
+                       wordFrequency, [])
     postDomains.sort()
     domainsInfo = {}
     for d in postDomains:
@@ -3441,7 +3527,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
                                 nickname: str, domain: str,
                                 proxyType: str, port: int, httpPrefix: str,
                                 debug: bool, projectVersion: str,
-                                domainList=[]) -> []:
+                                wordFrequency: {}, domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts which
     are globally blocked on this instance
     """
@@ -3449,7 +3535,7 @@ def getPublicPostDomainsBlocked(session, baseDir: str,
         getPublicPostDomains(session, baseDir, nickname, domain,
                              proxyType, port, httpPrefix,
                              debug, projectVersion,
-                             domainList)
+                             wordFrequency, domainList)
     if not postDomains:
         return []
 
@@ -3497,9 +3583,10 @@ def checkDomains(session, baseDir: str,
                  nickname: str, domain: str,
                  proxyType: str, port: int, httpPrefix: str,
                  debug: bool, projectVersion: str,
-                 maxBlockedDomains: int, singleCheck: bool):
+                 maxBlockedDomains: int, singleCheck: bool) -> None:
     """Checks follower accounts for references to globally blocked domains
     """
+    wordFrequency = {}
     nonMutuals = _getNonMutualsOfPerson(baseDir, nickname, domain)
     if not nonMutuals:
         print('No non-mutual followers were found')
@@ -3523,7 +3610,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
-                                            debug, projectVersion, [])
+                                            debug, projectVersion,
+                                            wordFrequency, [])
             if blockedDomains:
                 if len(blockedDomains) > maxBlockedDomains:
                     followerWarningStr += handle + '\n'
@@ -3542,7 +3630,8 @@ def checkDomains(session, baseDir: str,
                                             nonMutualNickname,
                                             nonMutualDomain,
                                             proxyType, port, httpPrefix,
-                                            debug, projectVersion, [])
+                                            debug, projectVersion,
+                                            wordFrequency, [])
             if blockedDomains:
                 print(handle)
                 for d in blockedDomains:

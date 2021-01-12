@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 import urllib.parse
 from datetime import datetime
+from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import loadJson
@@ -50,7 +51,9 @@ def htmlSearchEmoji(cssCache: {}, translate: {},
     emojiLookupFilename = baseDir + '/emoji/emoji.json'
 
     # create header
-    emojiForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    emojiForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     emojiForm += '<center><h1>' + \
         translate['Emoji Search'] + \
         '</h1></center>'
@@ -110,8 +113,10 @@ def htmlSearchSharedItems(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
     sharedItemsForm = \
-        htmlHeaderWithExternalStyle(cssFilename)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     sharedItemsForm += \
         '<center><h1>' + \
         '<a href="' + actor + '/search">' + \
@@ -285,7 +290,9 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
 
-    emojiStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    emojiStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     emojiStr += '<div class="follow">\n'
     emojiStr += '  <div class="followAvatar">\n'
     emojiStr += '  <center>\n'
@@ -325,7 +332,9 @@ def htmlSearch(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/search.css'):
         cssFilename = baseDir + '/search.css'
 
-    followStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    followStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # show a banner above the search box
     searchBannerFile, searchBannerFilename = \
@@ -459,7 +468,9 @@ def htmlSkillsSearch(actor: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    skillSearchForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     skillSearchForm += \
         '<center><h1><a href = "' + actor + '/search">' + \
         translate['Skills search'] + ': ' + \
@@ -525,8 +536,10 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
     historySearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # add the page title
     domainFull = getFullDomain(domain, port)
@@ -650,8 +663,10 @@ def htmlHashtagSearch(cssCache: {},
         endIndex = noOfLines - 1
 
     # add the page title
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
     hashtagSearchForm = \
-        htmlHeaderWithExternalStyle(cssFilename)
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     if nickname:
         hashtagSearchForm += '<center>\n' + \
             '<h1><a href="/users/' + nickname + '/search">#' + \

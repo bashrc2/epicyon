@@ -7,10 +7,13 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import getFullDomain
 from utils import isEditor
 from utils import loadJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import getConfigParam
+from posts import downloadFollowCollection
 from posts import getPublicPostInfo
 from posts import isModerator
 from webapp_timeline import htmlTimeline
@@ -19,6 +22,8 @@ from webapp_utils import getContentWarningButton
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from blocking import isBlockedDomain
+from blocking import isBlocked
+from session import createSession
 
 
 def htmlModeration(cssCache: {}, defaultTimeline: str,
@@ -70,31 +75,65 @@ def htmlAccountInfo(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    infoForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     searchNickname = getNicknameFromActor(searchHandle)
     searchDomain, searchPort = getDomainFromActor(searchHandle)
 
     searchHandle = searchNickname + '@' + searchDomain
+    searchActor = \
+        httpPrefix + '://' + searchDomain + '/users/' + searchNickname
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \
-        translate['Account Information'] + ':</a> <a href="' + \
-        httpPrefix + '://' + searchDomain + '/users/' + searchNickname + \
-        '">' + searchHandle + '</a></h1><br>'
+        translate['Account Information'] + ':</a> <a href="' + searchActor + \
+        '">' + searchHandle + '</a></h1><br>\n'
 
-    infoForm += translate[msgStr1] + '</center><br><br>'
+    infoForm += translate[msgStr1] + '</center><br><br>\n'
 
     proxyType = 'tor'
     if not os.path.isfile('/usr/bin/tor'):
         proxyType = None
     if domain.endswith('.i2p'):
         proxyType = None
-    domainDict = getPublicPostInfo(None,
+
+    session = createSession(proxyType)
+
+    wordFrequency = {}
+    domainDict = getPublicPostInfo(session,
                                    baseDir, searchNickname, searchDomain,
                                    proxyType, searchPort,
                                    httpPrefix, debug,
-                                   __version__)
-    infoForm += '<div class="accountInfoDomains">'
+                                   __version__, wordFrequency)
+
+    # get a list of any blocked followers
+    followersList = \
+        downloadFollowCollection('followers', session,
+                                 httpPrefix, searchActor, 1, 5)
+    blockedFollowers = []
+    for followerActor in followersList:
+        followerNickname = getNicknameFromActor(followerActor)
+        followerDomain, followerPort = getDomainFromActor(followerActor)
+        followerDomainFull = getFullDomain(followerDomain, followerPort)
+        if isBlocked(baseDir, nickname, domain,
+                     followerNickname, followerDomainFull):
+            blockedFollowers.append(followerActor)
+
+    # get a list of any blocked following
+    followingList = \
+        downloadFollowCollection('following', session,
+                                 httpPrefix, searchActor, 1, 5)
+    blockedFollowing = []
+    for followingActor in followingList:
+        followingNickname = getNicknameFromActor(followingActor)
+        followingDomain, followingPort = getDomainFromActor(followingActor)
+        followingDomainFull = getFullDomain(followingDomain, followingPort)
+        if isBlocked(baseDir, nickname, domain,
+                     followingNickname, followingDomainFull):
+            blockedFollowing.append(followingActor)
+
+    infoForm += '<div class="accountInfoDomains">\n'
     usersPath = '/users/' + nickname + '/accountinfo'
     ctr = 1
     for postDomain, blockedPostUrls in domainDict.items():
@@ -122,7 +161,7 @@ def htmlAccountInfo(cssCache: {}, translate: {},
                 '?handle=' + searchHandle + '">'
             infoForm += '<button class="buttonhighlighted"><span>' + \
                 translate['Unblock'] + '</span></button></a> ' + \
-                blockedPostsHtml
+                blockedPostsHtml + '\n'
         else:
             infoForm += \
                 '<a href="' + usersPath + '?blockdomain=' + postDomain + \
@@ -130,10 +169,71 @@ def htmlAccountInfo(cssCache: {}, translate: {},
             if postDomain != domain:
                 infoForm += '<button class="button"><span>' + \
                     translate['Block'] + '</span></button>'
-            infoForm += '</a>'
-        infoForm += '<br>'
+            infoForm += '</a>\n'
+        infoForm += '<br>\n'
 
-    infoForm += '</div>'
+    infoForm += '</div>\n'
+
+    if blockedFollowing:
+        blockedFollowing.sort()
+        infoForm += '<div class="accountInfoDomains">\n'
+        infoForm += '<h1>' + translate['Blocked following'] + '</h1>\n'
+        infoForm += \
+            '<p>' + \
+            translate['Receives posts from the following accounts'] + \
+            ':</p>\n'
+        for actor in blockedFollowing:
+            followingNickname = getNicknameFromActor(actor)
+            followingDomain, followingPort = getDomainFromActor(actor)
+            followingDomainFull = \
+                getFullDomain(followingDomain, followingPort)
+            infoForm += '<a href="' + actor + '">' + \
+                followingNickname + '@' + followingDomainFull + \
+                '</a><br><br>\n'
+        infoForm += '</div>\n'
+
+    if blockedFollowers:
+        blockedFollowers.sort()
+        infoForm += '<div class="accountInfoDomains">\n'
+        infoForm += '<h1>' + translate['Blocked followers'] + '</h1>\n'
+        infoForm += \
+            '<p>' + \
+            translate['Sends out posts to the following accounts'] + \
+            ':</p>\n'
+        for actor in blockedFollowers:
+            followerNickname = getNicknameFromActor(actor)
+            followerDomain, followerPort = getDomainFromActor(actor)
+            followerDomainFull = getFullDomain(followerDomain, followerPort)
+            infoForm += '<a href="' + actor + '">' + \
+                followerNickname + '@' + followerDomainFull + '</a><br><br>\n'
+        infoForm += '</div>\n'
+
+    if wordFrequency:
+        maxCount = 1
+        for word, count in wordFrequency.items():
+            if count > maxCount:
+                maxCount = count
+        minimumWordCount = int(maxCount / 2)
+        if minimumWordCount >= 3:
+            infoForm += '<div class="accountInfoDomains">\n'
+            infoForm += '<h1>' + translate['Word frequencies'] + '</h1>\n'
+            wordSwarm = ''
+            ctr = 0
+            for word, count in wordFrequency.items():
+                if count >= minimumWordCount:
+                    if ctr > 0:
+                        wordSwarm += ' '
+                    if count < maxCount - int(maxCount / 4):
+                        wordSwarm += word
+                    else:
+                        if count != maxCount:
+                            wordSwarm += '<b>' + word + '</b>'
+                        else:
+                            wordSwarm += '<b><i>' + word + '</i></b>'
+                    ctr += 1
+            infoForm += wordSwarm
+            infoForm += '</div>\n'
+
     infoForm += htmlFooter()
     return infoForm
 
@@ -151,7 +251,9 @@ def htmlModerationInfo(cssCache: {}, translate: {},
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    infoForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    infoForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     infoForm += \
         '<center><h1><a href="/users/' + nickname + '/moderation">' + \

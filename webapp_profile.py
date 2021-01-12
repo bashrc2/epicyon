@@ -170,6 +170,10 @@ def htmlProfileAfterSearch(cssCache: {},
     lockedAccount = getLockedAccount(profileJson)
     if lockedAccount:
         displayName += '🔒'
+    movedTo = ''
+    if profileJson.get('movedTo'):
+        movedTo = profileJson['movedTo']
+        displayName += ' ⌂'
 
     followsYou = \
         isFollowerOfPerson(baseDir,
@@ -233,7 +237,8 @@ def htmlProfileAfterSearch(cssCache: {},
                                      translate,
                                      displayName, followsYou,
                                      profileDescriptionShort,
-                                     avatarUrl, imageUrl)
+                                     avatarUrl, imageUrl,
+                                     movedTo)
 
     domainFull = getFullDomain(domain, port)
 
@@ -288,7 +293,10 @@ def htmlProfileAfterSearch(cssCache: {},
         if i >= 20:
             break
 
-    return htmlHeaderWithExternalStyle(cssFilename) + profileStr + htmlFooter()
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    return htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
+        profileStr + htmlFooter()
 
 
 def _getProfileHeader(baseDir: str, nickname: str, domain: str,
@@ -298,7 +306,7 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                       avatarDescription: str,
                       profileDescriptionShort: str,
                       loginButton: str, avatarUrl: str,
-                      theme: str) -> str:
+                      theme: str, movedTo: str) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -318,6 +326,15 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
+    if movedTo:
+        newNickname = getNicknameFromActor(movedTo)
+        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomainFull = getFullDomain(newDomain, newPort)
+        if newNickname and newDomain:
+            htmlStr += \
+                '    <p>' + translate['New account'] + ': ' + \
+                '<a href="' + movedTo + '">@' + \
+                newNickname + '@' + newDomainFull + '</a><br>\n'
     htmlStr += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
@@ -339,7 +356,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  displayName: str,
                                  followsYou: bool,
                                  profileDescriptionShort: str,
-                                 avatarUrl: str, imageUrl: str) -> str:
+                                 avatarUrl: str, imageUrl: str,
+                                 movedTo: str) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -362,6 +380,15 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
     if followsYou:
         htmlStr += '        <p><b>' + translate['Follows you'] + '</b></p>\n'
+    if movedTo:
+        newNickname = getNicknameFromActor(movedTo)
+        newDomain, newPort = getDomainFromActor(movedTo)
+        newDomainFull = getFullDomain(newDomain, newPort)
+        if newNickname and newDomain:
+            newHandle = newNickname + '@' + newDomainFull
+            htmlStr += '        <p>' + translate['New account'] + \
+                ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
@@ -585,6 +612,10 @@ def htmlProfile(rssIconAtTop: bool,
         avatarDescription = avatarDescription.replace('<p>', '')
         avatarDescription = avatarDescription.replace('</p>', '')
 
+    movedTo = ''
+    if profileJson.get('movedTo'):
+        movedTo = profileJson['movedTo']
+
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
         _getProfileHeader(baseDir, nickname, domain,
@@ -592,7 +623,8 @@ def htmlProfile(rssIconAtTop: bool,
                           defaultTimeline, displayName,
                           avatarDescription,
                           profileDescriptionShort,
-                          loginButton, avatarUrl, theme)
+                          loginButton, avatarUrl, theme,
+                          movedTo)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -680,8 +712,10 @@ def htmlProfile(rssIconAtTop: bool,
                                nickname, domainFull,
                                extraJson) + licenseStr
 
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
     profileStr = \
-        htmlHeaderWithExternalStyle(cssFilename) + \
+        htmlHeaderWithExternalStyle(cssFilename, instanceTitle) + \
         profileStr + htmlFooter()
     return profileStr
 
@@ -898,8 +932,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     toxAddress = ''
     briarAddress = ''
     manuallyApprovesFollowers = ''
+    movedTo = ''
     actorJson = loadJson(actorFilename)
     if actorJson:
+        if actorJson.get('movedTo'):
+            movedTo = actorJson['movedTo']
         donateUrl = getDonationUrl(actorJson)
         xmppAddress = getXmppAddress(actorJson)
         matrixAddress = getMatrixAddress(actorJson)
@@ -1196,7 +1233,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 'style="height:200px">' + peertubeInstancesStr + \
                 '</textarea>\n'
 
-    editProfileForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # top banner
     editProfileForm += \
@@ -1240,6 +1279,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
         bioStr + '</textarea>\n'
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Moved to new account address'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="movedTo" value="' + movedTo + '">\n'
     editProfileForm += '<label class="labels">' + \
         translate['Donations link'] + '</label><br>\n'
     editProfileForm += \
@@ -1521,26 +1566,35 @@ def _individualFollowAsHtml(translate: {},
                             buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
-    nickname = getNicknameFromActor(followUrl)
-    domain, port = getDomainFromActor(followUrl)
-    titleStr = '@' + nickname + '@' + domain
-    if dormant:
-        titleStr += ' 💤'
+    followUrlNickname = getNicknameFromActor(followUrl)
+    followUrlDomain, followUrlPort = getDomainFromActor(followUrl)
+    followUrlDomainFull = getFullDomain(followUrlDomain, followUrlPort)
+    titleStr = '@' + followUrlNickname + '@' + followUrlDomainFull
     avatarUrl = getPersonAvatarUrl(baseDir, followUrl, personCache, True)
     if not avatarUrl:
         avatarUrl = followUrl + '/avatar.png'
-    if domain not in followUrl:
-        (inboxUrl, pubKeyId, pubKey,
-         fromPersonId, sharedInbox,
-         avatarUrl2, displayName) = getPersonBox(baseDir, session,
-                                                 cachedWebfingers,
-                                                 personCache, projectVersion,
-                                                 httpPrefix, nickname,
-                                                 domain, 'outbox', 43036)
-        if avatarUrl2:
-            avatarUrl = avatarUrl2
-        if displayName:
-            titleStr = displayName + ' ' + titleStr
+
+    # lookup the correct webfinger for the followUrl
+    followUrlHandle = followUrlNickname + '@' + followUrlDomainFull
+    followUrlWf = \
+        webfingerHandle(session, followUrlHandle, httpPrefix,
+                        cachedWebfingers,
+                        domain, __version__)
+
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     avatarUrl2, displayName) = getPersonBox(baseDir, session,
+                                             followUrlWf,
+                                             personCache, projectVersion,
+                                             httpPrefix, followUrlNickname,
+                                             domain, 'outbox', 43036)
+    if avatarUrl2:
+        avatarUrl = avatarUrl2
+    if displayName:
+        titleStr = displayName
+
+    if dormant:
+        titleStr += ' 💤'
 
     buttonsStr = ''
     if authorized:

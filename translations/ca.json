@@ -351,5 +351,12 @@
     "Peertube Instances": "Instàncies de Peertube",
     "Show video previews for the following Peertube sites.": "Mostra les previsualitzacions de vídeo dels següents llocs de Peertube.",
     "Follows you": "Et segueix",
-    "Verify all signatures": "Verifiqueu totes les signatures"
+    "Verify all signatures": "Verifiqueu totes les signatures",
+    "Blocked followers": "Seguidors bloquejats",
+    "Blocked following": "Seguiment bloquejat",
+    "Receives posts from the following accounts": "Rep publicacions dels comptes següents",
+    "Sends out posts to the following accounts": "Envia publicacions als comptes següents",
+    "Word frequencies": "Freqüències de paraules",
+    "New account": "Compte nou",
+    "Moved to new account address": "S'ha mogut a l'adreça del compte nova"
 }

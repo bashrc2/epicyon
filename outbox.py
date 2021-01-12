@@ -134,6 +134,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                 extensions = {
                     "jpeg": "jpg",
                     "gif": "gif",
+                    "svg": "svg",
                     "webp": "webp",
                     "avif": "avif",
                     "audio/mpeg": "mp3",

@@ -177,6 +177,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import isPublicPost
 from utils import getLockedAccount
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -247,6 +248,7 @@ from newsdaemon import runNewswireDaemon
 from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
+from context import hasValidContext
 import os
 
 
@@ -265,7 +267,7 @@ maxPostsInNewsFeed = 10
 maxPostsInRSSFeed = 10
 
 # number of follows/followers per page
-followsPerPage = 12
+followsPerPage = 6
 
 # number of item shares per page
 sharesPerPage = 12
@@ -288,6 +290,7 @@ class PubServer(BaseHTTPRequestHandler):
         if path.endswith('.png') or \
            path.endswith('.jpg') or \
            path.endswith('.gif') or \
+           path.endswith('.svg') or \
            path.endswith('.avif') or \
            path.endswith('.webp'):
             return True
@@ -1039,6 +1042,14 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return 2
 
+        # check that the incoming message has a fully recognized
+        # linked data context
+        if not hasValidContext(messageJson):
+            print('Message arriving at inbox queue has no valid context')
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
         # check for blocked domains so that they can be rejected early
         messageDomain = None
         if messageJson.get('actor'):
@@ -1049,6 +1060,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 self.server.POSTbusy = False
                 return 3
+        else:
+            print('Message arriving at inbox queue has no actor')
+            self._400()
+            self.server.POSTbusy = False
+            return 3
 
         # if the inbox queue is full then return a busy code
         if len(self.server.inboxQueue) >= self.server.maxQueueLength:
@@ -2564,6 +2580,17 @@ class PubServer(BaseHTTPRequestHandler):
             elif ('@' in searchStr or
                   ('://' in searchStr and
                    hasUsersPath(searchStr))):
+                if searchStr.endswith(':') or \
+                   searchStr.endswith(';') or \
+                   searchStr.endswith('.'):
+                    if callingDomain.endswith('.onion') and onionDomain:
+                        actorStr = 'http://' + onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and i2pDomain):
+                        actorStr = 'http://' + i2pDomain + usersPath
+                    self._redirect_headers(actorStr + '/search',
+                                           cookie, callingDomain)
+                    self.server.POSTbusy = False
+                    return
                 # profile search
                 nickname = getNicknameFromActor(actorStr)
                 if not self.server.session:
@@ -2579,8 +2606,7 @@ class PubServer(BaseHTTPRequestHandler):
                 profilePathStr = path.replace('/searchhandle', '')
 
                 # are we already following the searched for handle?
-                if isFollowingActor(baseDir, nickname, domain,
-                                    searchStr):
+                if isFollowingActor(baseDir, nickname, domain, searchStr):
                     if not hasUsersPath(searchStr):
                         searchNickname = getNicknameFromActor(searchStr)
                         searchDomain, searchPort = \
@@ -2840,6 +2866,8 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = mediaFilenameBase + '.jpg'
         if self.headers['Content-type'].endswith('gif'):
             mediaFilename = mediaFilenameBase + '.gif'
+        if self.headers['Content-type'].endswith('svg+xml'):
+            mediaFilename = mediaFilenameBase + '.svg'
         if self.headers['Content-type'].endswith('webp'):
             mediaFilename = mediaFilenameBase + '.webp'
         if self.headers['Content-type'].endswith('avif'):
@@ -4196,6 +4224,21 @@ class PubServer(BaseHTTPRequestHandler):
                             setDonationUrl(actorJson, '')
                             actorChanged = True
 
+                    # account moved to new address
+                    movedTo = ''
+                    if actorJson.get('movedTo'):
+                        movedTo = actorJson['movedTo']
+                    if fields.get('movedTo'):
+                        if fields['movedTo'] != movedTo and \
+                           '://' in fields['movedTo'] and \
+                           '.' in fields['movedTo']:
+                            actorJson['movedTo'] = movedTo
+                            actorChanged = True
+                    else:
+                        if movedTo:
+                            del actorJson['movedTo']
+                            actorChanged = True
+
                     # change instance title
                     if fields.get('instanceTitle'):
                         currInstanceTitle = \
@@ -5236,11 +5279,14 @@ class PubServer(BaseHTTPRequestHandler):
             ssbAddress = None
             emailAddress = None
             lockedAccount = False
+            movedTo = ''
             actorJson = getPersonFromCache(baseDir,
                                            optionsActor,
                                            self.server.personCache,
                                            True)
             if actorJson:
+                if actorJson.get('movedTo'):
+                    movedTo = actorJson['movedTo']
                 lockedAccount = getLockedAccount(actorJson)
                 donateUrl = getDonationUrl(actorJson)
                 xmppAddress = getXmppAddress(actorJson)
@@ -5271,7 +5317,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     emailAddress,
                                     self.server.dormantMonths,
                                     backToPath,
-                                    lockedAccount).encode('utf-8')
+                                    lockedAccount,
+                                    movedTo).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -5351,6 +5398,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaImageType = 'webp'
                 elif emojiFilename.endswith('.avif'):
                     mediaImageType = 'avif'
+                elif emojiFilename.endswith('.svg'):
+                    mediaImageType = 'svg+xml'
                 else:
                     mediaImageType = 'gif'
                 with open(emojiFilename, 'rb') as avFile:
@@ -6996,6 +7045,10 @@ class PubServer(BaseHTTPRequestHandler):
                             # more social graph info
                             if not authorized:
                                 pjo = postJsonObject
+                                if not isPublicPost(pjo):
+                                    self._404()
+                                    self.server.GETbusy = False
+                                    return True
                                 self._removePostInteractions(pjo)
                             if self._requestHTTP():
                                 recentPostsCache = \
@@ -7113,6 +7166,10 @@ class PubServer(BaseHTTPRequestHandler):
                 # graph info
                 if not authorized:
                     pjo = postJsonObject
+                    if not isPublicPost(pjo):
+                        self._404()
+                        self.server.GETbusy = False
+                        return True
                     self._removePostInteractions(pjo)
 
                 if self._requestHTTP():
@@ -9293,6 +9350,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaFileType = 'webp'
                 elif mediaFilename.endswith('.avif'):
                     mediaFileType = 'avif'
+                elif mediaFilename.endswith('.svg'):
+                    mediaFileType = 'svg+xml'
                 else:
                     mediaFileType = 'gif'
                 with open(mediaFilename, 'rb') as avFile:
@@ -9351,6 +9410,8 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaImageType = 'gif'
                         elif avatarFile.endswith('.avif'):
                             mediaImageType = 'avif'
+                        elif avatarFile.endswith('.svg'):
+                            mediaImageType = 'svg+xml'
                         else:
                             mediaImageType = 'webp'
                         with open(avatarFilename, 'rb') as avFile:
@@ -10277,6 +10338,7 @@ class PubServer(BaseHTTPRequestHandler):
         # image on login screen or qrcode
         if self.path == '/login.png' or \
            self.path == '/login.gif' or \
+           self.path == '/login.svg' or \
            self.path == '/login.webp' or \
            self.path == '/login.avif' or \
            self.path == '/login.jpeg' or \
@@ -11877,6 +11939,7 @@ class PubServer(BaseHTTPRequestHandler):
                    filename.endswith('.jpg') or \
                    filename.endswith('.webp') or \
                    filename.endswith('.avif') or \
+                   filename.endswith('.svg') or \
                    filename.endswith('.gif'):
                     postImageFilename = filename.replace('.temp', '')
                     print('Removing metadata from ' + postImageFilename)

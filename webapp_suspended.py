@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 
@@ -19,7 +20,9 @@ def htmlSuspended(cssCache: {}, baseDir: str) -> str:
     if os.path.isfile(baseDir + '/suspended.css'):
         cssFilename = baseDir + '/suspended.css'
 
-    suspendedForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    suspendedForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     suspendedForm += '<div><center>\n'
     suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
     suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>\n'

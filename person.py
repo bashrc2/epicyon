@@ -60,8 +60,9 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     if not (imageFilename.endswith('.png') or
             imageFilename.endswith('.jpg') or
             imageFilename.endswith('.jpeg') or
+            imageFilename.endswith('.svg') or
             imageFilename.endswith('.gif')):
-        print('Profile image must be png, jpg or gif format')
+        print('Profile image must be png, jpg, gif or svg format')
         return False
 
     if imageFilename.startswith('~/'):
@@ -95,6 +96,9 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     if imageFilename.endswith('.gif'):
         mediaType = 'image/gif'
         iconFilename = iconFilenameBase + '.gif'
+    if imageFilename.endswith('.svg'):
+        mediaType = 'image/svg+xml'
+        iconFilename = iconFilenameBase + '.svg'
     profileFilename = baseDir + '/accounts/' + handle + '/' + iconFilename
 
     personJson = loadJson(personFilename)
@@ -591,7 +595,7 @@ def personLookup(domain: str, path: str, baseDir: str) -> {}:
     else:
         notPersonLookup = ('/inbox', '/outbox', '/outboxarchive',
                            '/followers', '/following', '/featured',
-                           '.png', '.jpg', '.gif', '.mpv')
+                           '.png', '.jpg', '.gif', '.svg', '.mpv')
         for ending in notPersonLookup:
             if path.endswith(ending):
                 return None

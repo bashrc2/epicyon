@@ -23,9 +23,9 @@ from newswire import getDictFromNewswire
 # from posts import sendSignedJson
 from posts import createNewsPost
 from posts import archivePostsForPerson
-from content import removeHtmlTag
 from content import dangerousMarkup
 from content import validHashTag
+from utils import removeHtml
 from utils import getFullDomain
 from utils import loadJson
 from utils import saveJson
@@ -506,14 +506,7 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
         rssDescription = ''
 
         # get the rss description if it exists
-        rssDescription = _removeControlCharacters(item[4])
-        if rssDescription.startswith('<![CDATA['):
-            rssDescription = rssDescription.replace('<![CDATA[', '')
-            rssDescription = rssDescription.replace(']]>', '')
-            rssDescription = rssDescription.replace(']]', '')
-        if '&' in rssDescription:
-            rssDescription = html.unescape(rssDescription)
-        rssDescription = '<p>' + rssDescription + '<p>'
+        rssDescription = '<p>' + removeHtml(item[4]) + '<p>'
 
         mirrored = item[7]
         postUrl = url
@@ -526,20 +519,9 @@ def _convertRSStoActivityPub(baseDir: str, httpPrefix: str,
                 postUrl += '/index.html'
 
         # add the off-site link to the description
-        if rssDescription and \
-           not dangerousMarkup(rssDescription, allowLocalNetworkAccess):
-            rssDescription += \
-                '<br><a href="' + postUrl + '">' + \
-                translate['Read more...'] + '</a>'
-        else:
-            rssDescription = \
-                '<a href="' + postUrl + '">' + \
-                translate['Read more...'] + '</a>'
-
-        # remove image dimensions
-        if '<img' in rssDescription:
-            rssDescription = removeHtmlTag(rssDescription, 'width')
-            rssDescription = removeHtmlTag(rssDescription, 'height')
+        rssDescription += \
+            '<br><a href="' + postUrl + '">' + \
+            translate['Read more...'] + '</a>'
 
         followersOnly = False
         # NOTE: the id when the post is created will not be

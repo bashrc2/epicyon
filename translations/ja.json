@@ -351,5 +351,12 @@
     "Peertube Instances": "Peertubeインスタンス",
     "Show video previews for the following Peertube sites.": "次のPeertubeサイトのビデオプレビューを表示します。",
     "Follows you": "あなたについていきます",
-    "Verify all signatures": "すべての署名を確認する"
+    "Verify all signatures": "すべての署名を確認する",
+    "Blocked followers": "ブロックされたフォロワー",
+    "Blocked following": "次のブロック",
+    "Receives posts from the following accounts": "以下のアカウントから投稿を受け取ります",
+    "Sends out posts to the following accounts": "以下のアカウントに投稿を送信します",
+    "Word frequencies": "単語の頻度",
+    "New account": "新しいアカウント",
+    "Moved to new account address": "新しいアカウントアドレスに移動しました"
 }

@@ -61,6 +61,9 @@ def htmlLogin(cssCache: {}, translate: {},
     elif os.path.isfile(baseDir + '/accounts/login.gif'):
         loginImage = 'login.gif'
         loginImageFilename = baseDir + '/accounts/' + loginImage
+    elif os.path.isfile(baseDir + '/accounts/login.svg'):
+        loginImage = 'login.svg'
+        loginImageFilename = baseDir + '/accounts/' + loginImage
     elif os.path.isfile(baseDir + '/accounts/login.webp'):
         loginImage = 'login.webp'
         loginImageFilename = baseDir + '/accounts/' + loginImage
@@ -129,7 +132,9 @@ def htmlLogin(cssCache: {}, translate: {},
     if not autocomplete:
         autocompleteStr = 'autocomplete="off" value=""'
 
-    loginForm = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    loginForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     loginForm += '<br>\n'
     loginForm += '<form method="POST" action="/login">\n'
     loginForm += '  <div class="imgcontainer">\n'

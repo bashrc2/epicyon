@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import time
+from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
@@ -255,7 +256,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             eventsButton + '"><span>' + translate['Events'] + \
             '</span></button></a>'
 
-    tlStr = htmlHeaderWithExternalStyle(cssFilename)
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    tlStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '4')
 
