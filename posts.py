@@ -217,6 +217,10 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
+    if not wfRequest:
+        print('No webfinger given')
+        return None, None, None, None, None, None, None
+
     if not wfRequest.get('errors'):
         personUrl = getUserUrl(wfRequest, sourceId)
     else:
