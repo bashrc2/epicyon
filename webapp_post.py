@@ -1521,7 +1521,8 @@ def individualPostAsHtml(allowDownloads: bool,
                 addEmojiToDisplayName(baseDir, httpPrefix,
                                       nickname, domain,
                                       cwStr, False)
-            contentStr += '<label class="cw">' + cwStr + '</label>\n '
+            contentStr += \
+                '<label class="cw"><summary>' + cwStr + '</summary></label>\n '
             if isModerationPost:
                 containerClass = 'container report'
         # get the content warning text
