@@ -1522,7 +1522,7 @@ def individualPostAsHtml(allowDownloads: bool,
                                       nickname, domain,
                                       cwStr, False)
             contentStr += \
-                '<label class="cw"><summary>' + cwStr + '</summary></label>\n '
+                '<label class="cw">' + cwStr + '</label>\n '
             if isModerationPost:
                 containerClass = 'container report'
         # get the content warning text
