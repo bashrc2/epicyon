@@ -17,6 +17,8 @@
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
+    --cw-color: #dddddd;
+    --cw-style: normal;
     --column-left-fg-color: #dddddd;
     --column-right-fg-color: yellow;
     --column-right-fg-color-voted-on: red;
@@ -176,6 +178,11 @@ body, html {
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
+}
+
+.cw {
+    font-style: var(--cw-style);
+    color: var(--cw-color);
 }
 
 .leftColIcons {
