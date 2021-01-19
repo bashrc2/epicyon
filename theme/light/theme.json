@@ -1,4 +1,8 @@
 {
+    "button-selected": "#999",
+    "button-background": "#bbbbbb",
+    "button-background-hover": "#999",
+    "column-left-header-background": "#bbbbbb",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
