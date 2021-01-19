@@ -99,7 +99,7 @@
     "main-bg-color-reply": "white",
     "main-bg-color-report": "white",
     "main-header-color-roles": "#ebebf0",
-    "cw-color": "black",
+    "cw-color": "#777",
     "main-fg-color": "black",
     "login-fg-color": "black",
     "options-fg-color": "black",
