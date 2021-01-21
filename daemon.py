@@ -4718,6 +4718,7 @@ class PubServer(BaseHTTPRequestHandler):
                             'https://w3id.org/security/v1',
                             getDefaultPersonContext()
                         ]
+                        actorJson['discoverable'] = True
                         randomizeActorImages(actorJson)
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,

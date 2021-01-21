@@ -170,38 +170,33 @@ def getDefaultPersonContext() -> str:
     """Gets the default actor context
     """
     return {
-        'Emoji': 'toot:Emoji',
-        'Hashtag': 'as:Hashtag',
-        'IdentityProof': 'toot:IdentityProof',
-        'PropertyValue': 'schema:PropertyValue',
-        'alsoKnownAs': {
-            '@id': 'as:alsoKnownAs', '@type': '@id'
-        },
-        'focalPoint': {
-            '@container': '@list', '@id': 'toot:focalPoint'
-        },
-        'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
-        'movedTo': {
-            '@id': 'as:movedTo', '@type': '@id'
-        },
-        'schema': 'http://schema.org#',
-        'value': 'schema:value',
         'Curve25519Key': 'toot:Curve25519Key',
         'Device': 'toot:Device',
         'Ed25519Key': 'toot:Ed25519Key',
         'Ed25519Signature': 'toot:Ed25519Signature',
         'EncryptedMessage': 'toot:EncryptedMessage',
-        'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
-        'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
-        'messageFranking': 'toot:messageFranking',
-        'publicKeyBase64': 'toot:publicKeyBase64',
+        'IdentityProof': 'toot:IdentityProof',
+        'PropertyValue': 'schema:PropertyValue',
+        'alsoKnownAs': {'@id': 'as:alsoKnownAs', '@type': '@id'},
+        'cipherText': 'toot:cipherText',
+        'claim': {'@id': 'toot:claim', '@type': '@id'},
+        'deviceId': 'toot:deviceId',
+        'devices': {'@id': 'toot:devices', '@type': '@id'},
         'discoverable': 'toot:discoverable',
-        'orgSchema': 'toot:orgSchema',
-        'shares': 'toot:shares',
-        'skills': 'toot:skills',
-        'roles': 'toot:roles',
-        'availability': 'toot:availability',
-        'nomadicLocations': 'toot:nomadicLocations'
+        'featured': {'@id': 'toot:featured', '@type': '@id'},
+        'featuredTags': {'@id': 'toot:featuredTags', '@type': '@id'},
+        'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
+        'focalPoint': {'@container': '@list', '@id': 'toot:focalPoint'},
+        'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
+        'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+        'messageFranking': 'toot:messageFranking',
+        'messageType': 'toot:messageType',
+        'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
+        'publicKeyBase64': 'toot:publicKeyBase64',
+        'schema': 'http://schema.org#',
+        'suspended': 'toot:suspended',
+        'toot': 'http://joinmastodon.org/ns#',
+        'value': 'schema:value'
     }
 
 
@@ -262,17 +257,18 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
             'https://w3id.org/security/v1',
             getDefaultPersonContext()
         ],
-        'attachment': [],
         'alsoKnownAs': [],
-        'discoverable': False,
+        'attachment': [],
         'devices': personId + '/collections/devices',
         'endpoints': {
-            'id': personId+'/endpoints',
-            'sharedInbox': httpPrefix+'://'+domain+'/inbox',
+            'id': personId + '/endpoints',
+            'sharedInbox': httpPrefix+'://' + domain + '/inbox',
         },
-        'followers': personId+'/followers',
-        'following': personId+'/following',
-        'shares': personId+'/shares',
+        'featured': personId + '/collections/featured',
+        'featuredTags': personId + '/collections/tags',
+        'followers': personId + '/followers',
+        'following': personId + '/following',
+        'shares': personId + '/shares',
         'orgSchema': None,
         'skills': {},
         'roles': {},
@@ -290,26 +286,19 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         },
         'inbox': inboxStr,
         'manuallyApprovesFollowers': approveFollowers,
-        'discoverable': False,
+        'discoverable': True,
         'name': personName,
-        'outbox': personId+'/outbox',
+        'outbox': personId + '/outbox',
         'preferredUsername': personName,
         'summary': '',
         'publicKey': {
-            'id': personId+'#main-key',
+            'id': personId + '#main-key',
             'owner': personId,
             'publicKeyPem': publicKeyPem
         },
         'tag': [],
         'type': personType,
-        'url': personUrl,
-        'nomadicLocations': [{
-            'id': personId,
-            'type': 'nomadicLocation',
-            'locationAddress': 'acct:' + nickname + '@' + domain,
-            'locationPrimary': True,
-            'locationDeleted': False
-        }]
+        'url': personUrl
     }
 
     if nickname == 'inbox':
