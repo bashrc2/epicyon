@@ -8969,7 +8969,7 @@ class PubServer(BaseHTTPRequestHandler):
                           'votersCount': 'toot:votersCount'}],
             'id': httpPrefix + '://' + domainFull + path,
             'orderedItems': [],
-            'totalItems': 1,
+            'totalItems': 0,
             'type': 'OrderedCollection'
         }
         msg = json.dumps(featuredCollection,
@@ -8987,7 +8987,19 @@ class PubServer(BaseHTTPRequestHandler):
         actor/collections/featuredTags
         TODO add ability to set a featured tags
         """
-        featuredTagsCollection = {}
+        featuredTagsCollection = {
+            '@context': ['https://www.w3.org/ns/activitystreams',
+                         {'atomUri': 'ostatus:atomUri',
+                          'conversation': 'ostatus:conversation',
+                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
+                          'sensitive': 'as:sensitive',
+                          'toot': 'http://joinmastodon.org/ns#',
+                          'votersCount': 'toot:votersCount'}],
+            'id': httpPrefix + '://' + domainFull + path,
+            'orderedItems': [],
+            'totalItems': 0,
+            'type': 'OrderedCollection'
+        }
         msg = json.dumps(featuredTagsCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
