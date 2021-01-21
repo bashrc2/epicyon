@@ -118,8 +118,8 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
     return ctr
 
 
-def _getPersonKey(nickname: str, domain: str, baseDir: str, keyType='public',
-                  debug=False):
+def getPersonKey(nickname: str, domain: str, baseDir: str, keyType='public',
+                 debug=False):
     """Returns the public or private key of a person
     """
     handle = nickname + '@' + domain
@@ -1837,7 +1837,7 @@ def sendPost(projectVersion: str,
                         None, None, None, None, None)
 
     # get the senders private key
-    privateKeyPem = _getPersonKey(nickname, domain, baseDir, 'private')
+    privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private')
     if len(privateKeyPem) == 0:
         return 6
 
@@ -2159,7 +2159,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     # sharedInbox is optional
 
     # get the senders private key
-    privateKeyPem = _getPersonKey(nickname, domain, baseDir, 'private', debug)
+    privateKeyPem = getPersonKey(nickname, domain, baseDir, 'private', debug)
     if len(privateKeyPem) == 0:
         if debug:
             print('DEBUG: Private key not found for ' +

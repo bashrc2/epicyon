@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
 import sys
 import json
 import time
+from time import gmtime, strftime
 import locale
 import urllib.parse
 import datetime
@@ -65,6 +66,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import getPersonKey
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -221,6 +223,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from httpsig import signPostHeaders
 from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
@@ -9065,13 +9068,27 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show profile posts')
         else:
             if self._fetchAuthenticated():
-                if atPath:
-                    print('@ detected actor ' + str(actorJson))
                 msg = json.dumps(actorJson,
                                  ensure_ascii=False).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('application/json', msglen,
                                   None, callingDomain)
+                nickname = path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                privateKeyPem = \
+                    getPersonKey(nickname, domain, baseDir, 'private', debug)
+                if len(privateKeyPem) > 0:
+                    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+                    boxpath = '/inbox'
+                    signatureHeader = \
+                        signPostHeaders(dateStr, privateKeyPem, nickname,
+                                        domain, port,
+                                        callingDomain, 443,
+                                        boxpath, httpPrefix, None)
+                    self.headers['signature'] = signatureHeader
+                if atPath:
+                    print('@ detected actor ' + str(actorJson))
                 self._write(msg)
             else:
                 self._404()
