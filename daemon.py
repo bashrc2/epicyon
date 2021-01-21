@@ -590,6 +590,32 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('ETag', etag)
         self.end_headers()
 
+    def _set_headers_with_sig(self, fileFormat: str, length: int,
+                              baseDir: str, path: str,
+                              domain: str, domainFull: str, port: int,
+                              httpPrefix: str,
+                              callingDomain: str, debug: bool,
+                              jsonStr: str) -> None:
+        self._set_headers_base(fileFormat, length, None, callingDomain)
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        privateKeyPem = \
+            getPersonKey(nickname, domain, baseDir, 'private', debug)
+        if len(privateKeyPem) > 0:
+            boxPath = '/inbox'
+            signatureHeaderJson = \
+                createSignedHeader(privateKeyPem, nickname,
+                                   domain, port,
+                                   callingDomain, port,
+                                   boxPath,
+                                   httpPrefix, True, jsonStr)
+            for headerName, headerItem in signatureHeaderJson.items():
+                self.send_header(headerName, headerItem)
+            self.send_header('User-Agent', 'Epicyon/' + __version__ +
+                             '; +' + httpPrefix + '://' + domainFull + '/')
+        self.end_headers()
+
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
                           data, cookie: str, callingDomain: str) -> None:
         datalen = len(data)
@@ -9070,26 +9096,11 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = json.dumps(actorJson,
                                  ensure_ascii=False).encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('application/json', msglen,
-                                  None, callingDomain)
-                nickname = path.split('/users/')[1]
-                if '/' in nickname:
-                    nickname = nickname.split('/')[0]
-                privateKeyPem = \
-                    getPersonKey(nickname, domain, baseDir, 'private', debug)
-                if len(privateKeyPem) > 0:
-                    boxPath = '/inbox'
-                    signatureHeaderJson = \
-                        createSignedHeader(privateKeyPem, nickname,
-                                           domain, port,
-                                           callingDomain, port,
-                                           boxPath,
-                                           httpPrefix, False, None)
-                    for headerName, headerItem in signatureHeaderJson.items():
-                        self.headers[headerName] = headerItem
-                    self.headers['User-Agent'] = \
-                        'Epicyon/' + __version__ + \
-                        '; +' + httpPrefix + '://' + domainFull + '/'
+                self._set_headers_with_sig('application/json', msglen,
+                                           baseDir, path,
+                                           domain, domainFull, port,
+                                           httpPrefix,
+                                           callingDomain, debug, msg)
                 if atPath:
                     print('@ detected outgoing actor: ' + str(actorJson))
                     print('@ detected outgoing headers: ' +
