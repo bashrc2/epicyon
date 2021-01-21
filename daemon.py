@@ -9768,9 +9768,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout')
 
         # replace https://domain/@nick with https://domain/users/nick
+        atPath = False
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
-            print('@ detected: ' + str(self.headers))
+            atPath = True
+            print('@ detected: ' + str(self.headers).replace('\n', ', '))
 
         # redirect music to #nowplaying list
         if self.path == '/music' or self.path == '/nowplaying':
@@ -9859,6 +9861,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'create session', 'hasAccept')
+        if atPath:
+            print('@ detected: html ' + str(htmlGET))
+            print('@ detected: path ' + self.path)
 
         # get css
         # Note that this comes before the busy flag to avoid conflicts
