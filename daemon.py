@@ -3873,7 +3873,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not actorJson.get('discoverable'):
                         # discoverable in profile directory
                         # which isn't implemented in Epicyon
-                        actorJson['discoverable'] = False
+                        actorJson['discoverable'] = True
                         actorChanged = True
                     if not actorJson['@context'][2].get('orgSchema'):
                         actorJson['@context'][2]['orgSchema'] = \
@@ -3891,10 +3891,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if not actorJson['@context'][2].get('availability'):
                         actorJson['@context'][2]['availaibility'] = \
                             'toot:availability'
-                    if not actorJson['@context'][2].get('nomadicLocations'):
-                        actorJson['@context'][2]['nomadicLocations'] = \
-                            'toot:nomadicLocations'
-                        actorChanged = True
                     if actorJson.get('capabilityAcquisitionEndpoint'):
                         del actorJson['capabilityAcquisitionEndpoint']
                         actorChanged = True

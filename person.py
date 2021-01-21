@@ -540,16 +540,6 @@ def personUpgradeActor(baseDir: str, personJson: {},
         return
     if not personJson:
         personJson = loadJson(filename)
-    if not personJson.get('nomadicLocations'):
-        personJson['nomadicLocations'] = [{
-            'id': personJson['id'],
-            'type': 'nomadicLocation',
-            'locationAddress':'acct:'+handle,
-            'locationPrimary':True,
-            'locationDeleted':False
-        }]
-        print('Nomadic locations added to to actor ' + handle)
-        updateActor = True
 
     if updateActor:
         saveJson(personJson, filename)
