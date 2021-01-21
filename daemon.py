@@ -8979,6 +8979,22 @@ class PubServer(BaseHTTPRequestHandler):
                           None, callingDomain)
         self._write(msg)
 
+    def _getFeaturedTagsCollection(self, callingDomain: str,
+                                   path: str,
+                                   httpPrefix: str,
+                                   domainFull: str):
+        """Returns the featured tags collections in
+        actor/collections/featuredTags
+        TODO add ability to set a featured tags
+        """
+        featuredTagsCollection = {}
+        msg = json.dumps(featuredTagsCollection,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json', msglen,
+                          None, callingDomain)
+        self._write(msg)
+
     def _showPersonProfile(self, authorized: bool,
                            callingDomain: str, path: str,
                            baseDir: str, httpPrefix: str,
@@ -10013,6 +10029,13 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.path,
                                         self.server.httpPrefix,
                                         self.server.domainFull)
+            return
+
+        if usersInPath and self.path.endswith('/collections/featuredTags'):
+            self._getFeaturedTagsCollection(callingDomain,
+                                            self.path,
+                                            self.server.httpPrefix,
+                                            self.server.domainFull)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
