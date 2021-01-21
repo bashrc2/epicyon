@@ -9760,7 +9760,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_GET(self):
         # if an image is received
         if self.headers.get('Accept'):
-            if 'image/' in self.headers['Accept']:
+            if 'image' in self.headers['Accept']:
                 print('image GET header: ' + str(self.headers).replace('\n', ', '))
         
         callingDomain = self.server.domainFull
