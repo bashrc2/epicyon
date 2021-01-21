@@ -10,7 +10,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
 import sys
 import json
 import time
-from time import gmtime, strftime
 import locale
 import urllib.parse
 import datetime
@@ -223,7 +222,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
-from httpsig import signPostHeaders
+from httpsig import createSignedHeader
 from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
@@ -9079,17 +9078,19 @@ class PubServer(BaseHTTPRequestHandler):
                 privateKeyPem = \
                     getPersonKey(nickname, domain, baseDir, 'private', debug)
                 if len(privateKeyPem) > 0:
-                    dateStr = strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-                    boxpath = '/inbox'
-                    signatureHeader = \
-                        signPostHeaders(dateStr, privateKeyPem, nickname,
-                                        domain, port,
-                                        callingDomain, 443,
-                                        boxpath, httpPrefix, None)
-                    self.headers['signature'] = signatureHeader
+                    boxPath = '/inbox'
+                    signatureHeaderJson = \
+                        createSignedHeader(privateKeyPem, nickname,
+                                           domain, port,
+                                           callingDomain, port,
+                                           boxPath,
+                                           httpPrefix, False, None)
+                    self.headers.clear()
+                    for headerName, headerItem in signatureHeaderJson.items():
+                        self.headers[headerName] = headerItem
                 if atPath:
-                    print('@ detected actor: ' + str(actorJson))
-                    print('@ detected headers: ' +
+                    print('@ detected outgoing actor: ' + str(actorJson))
+                    print('@ detected outgoing headers: ' +
                           str(self.headers).replace('\n', ', '))
                 self._write(msg)
             else:
