@@ -4924,7 +4924,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(faviconFilename,
                                    favType,
                                    favBinary, None,
-                                   callingDomain)
+                                   self.server.domainFull)
             self._write(favBinary)
             if debug:
                 print('Sent favicon from cache: ' + callingDomain)
@@ -4936,7 +4936,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(faviconFilename,
                                            favType,
                                            favBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(favBinary)
                     self.server.iconsCache[favFilename] = favBinary
                     if self.server.debug:
@@ -4975,7 +4975,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(fontFilename,
                                        fontType,
                                        fontBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(fontBinary)
                 if debug:
                     print('font sent from cache: ' +
@@ -4991,7 +4991,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(fontFilename,
                                                fontType,
                                                fontBinary, None,
-                                               callingDomain)
+                                               self.server.domainFull)
                         self._write(fontBinary)
                         self.server.fontsCache[fontStr] = fontBinary
                     if debug:
@@ -5371,7 +5371,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers_etag(mediaFilename, mediaFileType,
                                            mediaBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show emoji done',
@@ -5411,7 +5411,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(emojiFilename,
                                            'image/' + mediaImageType,
                                            mediaBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'background shown done',
@@ -5447,7 +5447,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeTypeStr,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 return
             else:
@@ -5458,7 +5458,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(mediaFilename,
                                                mimeType,
                                                mediaBinary, None,
-                                               callingDomain)
+                                               self.server.domainFull)
                         self._write(mediaBinary)
                         self.server.iconsCache[mediaStr] = mediaBinary
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5484,7 +5484,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'icon shown done',
@@ -9255,7 +9255,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(qrFilename)
                 self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'login screen logo done',
@@ -9294,7 +9294,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -9336,7 +9336,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -9425,7 +9425,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(mediaFilename,
                                            'image/' + mediaFileType,
                                            mediaBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show media done',
@@ -10377,7 +10377,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(mediaFilename)
                     self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'profile.css done',
@@ -10417,7 +10417,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(screenFilename)
                     self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'manifest logo done',
@@ -10463,7 +10463,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(iconFilename,
                                            mimeTypeStr,
                                            mediaBinary, cookie,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show screenshot done',
