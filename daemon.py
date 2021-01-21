@@ -9010,15 +9010,13 @@ class PubServer(BaseHTTPRequestHandler):
                            onionDomain: str, i2pDomain: str,
                            GETstartTime, GETtimings: {},
                            proxyType: str, cookie: str,
-                           debug: str, atPath: bool) -> bool:
+                           debug: str) -> bool:
         """Shows the profile for a person
         """
         # look up a person
         actorJson = personLookup(domain, path, baseDir)
         if not actorJson:
             return False
-        if atPath:
-            print('@ detected _showPersonProfile')
         if self._requestHTTP():
             if not self.server.session:
                 print('Starting new session during person lookup')
@@ -9066,10 +9064,6 @@ class PubServer(BaseHTTPRequestHandler):
                 msglen = len(msg)
                 self._set_headers('application/ld+json', msglen,
                                   cookie, callingDomain)
-                if atPath:
-                    print('@ detected outgoing actor: ' + str(actorJson))
-                    print('@ detected outgoing headers: ' +
-                          str(self.headers).replace('\n', ', '))
                 self._write(msg)
             else:
                 self._404()
@@ -9757,11 +9751,6 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def do_GET(self):
-        # if an image is received
-        if self.headers.get('Accept'):
-            if 'image' in self.headers['Accept']:
-                print('image GET header: ' + str(self.headers['Accept']))
-
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
             callingDomain = self.headers['Host']
@@ -9839,11 +9828,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout')
 
         # replace https://domain/@nick with https://domain/users/nick
-        atPath = False
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
-            atPath = True
-            print('@ detected: ' + str(self.headers).replace('\n', ', '))
 
         # redirect music to #nowplaying list
         if self.path == '/music' or self.path == '/nowplaying':
@@ -9932,9 +9918,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'create session', 'hasAccept')
-        if atPath:
-            print('@ detected: html ' + str(htmlGET))
-            print('@ detected: path ' + self.path)
 
         # get css
         # Note that this comes before the busy flag to avoid conflicts
@@ -11864,8 +11847,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.i2pDomain,
                                    GETstartTime, GETtimings,
                                    self.server.proxyType,
-                                   cookie, self.server.debug,
-                                   atPath):
+                                   cookie, self.server.debug):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
