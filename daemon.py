@@ -8955,62 +8955,64 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # look up a person
         actorJson = personLookup(domain, path, baseDir)
-        if actorJson:
-            if self._requestHTTP():
+        if not actorJson:
+            return False
+        if atPath:
+            print('@ detected _showPersonProfile')
+        if self._requestHTTP():
+            if not self.server.session:
+                print('Starting new session during person lookup')
+                self.server.session = createSession(proxyType)
                 if not self.server.session:
-                    print('Starting new session during person lookup')
-                    self.server.session = createSession(proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during person lookup')
-                        self._404()
-                        self.server.GETbusy = False
-                        return True
-                msg = \
-                    htmlProfile(self.server.rssIconAtTop,
-                                self.server.cssCache,
-                                self.server.iconsAsButtons,
-                                self.server.defaultTimeline,
-                                self.server.recentPostsCache,
-                                self.server.maxRecentPosts,
-                                self.server.translate,
-                                self.server.projectVersion,
-                                baseDir,
-                                httpPrefix,
-                                authorized,
-                                actorJson, 'posts',
-                                self.server.session,
-                                self.server.cachedWebfingers,
-                                self.server.personCache,
-                                self.server.YTReplacementDomain,
-                                self.server.showPublishedDateOnly,
-                                self.server.newswire,
-                                self.server.themeName,
-                                self.server.dormantMonths,
-                                self.server.peertubeInstances,
-                                None, None).encode('utf-8')
-                msglen = len(msg)
-                self._set_headers('text/html', msglen,
-                                  cookie, callingDomain)
-                self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show profile 4 done',
-                                          'show profile posts')
-            else:
-                if self._fetchAuthenticated():
-                    if atPath:
-                        print('@ deteceted actor ' + str(actorJson))
-                    msg = json.dumps(actorJson,
-                                     ensure_ascii=False).encode('utf-8')
-                    msglen = len(msg)
-                    self._set_headers('application/json', msglen,
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
+                    print('ERROR: GET failed to create session ' +
+                          'during person lookup')
                     self._404()
-            self.server.GETbusy = False
-            return True
-        return False
+                    self.server.GETbusy = False
+                    return True
+            msg = \
+                htmlProfile(self.server.rssIconAtTop,
+                            self.server.cssCache,
+                            self.server.iconsAsButtons,
+                            self.server.defaultTimeline,
+                            self.server.recentPostsCache,
+                            self.server.maxRecentPosts,
+                            self.server.translate,
+                            self.server.projectVersion,
+                            baseDir,
+                            httpPrefix,
+                            authorized,
+                            actorJson, 'posts',
+                            self.server.session,
+                            self.server.cachedWebfingers,
+                            self.server.personCache,
+                            self.server.YTReplacementDomain,
+                            self.server.showPublishedDateOnly,
+                            self.server.newswire,
+                            self.server.themeName,
+                            self.server.dormantMonths,
+                            self.server.peertubeInstances,
+                            None, None).encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show profile 4 done',
+                                      'show profile posts')
+        else:
+            if self._fetchAuthenticated():
+                if atPath:
+                    print('@ detected actor ' + str(actorJson))
+                msg = json.dumps(actorJson,
+                                 ensure_ascii=False).encode('utf-8')
+                msglen = len(msg)
+                self._set_headers('application/json', msglen,
+                                  None, callingDomain)
+                self._write(msg)
+            else:
+                self._404()
+        self.server.GETbusy = False
+        return True
 
     def _showBlogPage(self, authorized: bool,
                       callingDomain: str, path: str,
