@@ -9085,9 +9085,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            callingDomain, port,
                                            boxPath,
                                            httpPrefix, False, None)
-                    self.headers.clear()
                     for headerName, headerItem in signatureHeaderJson.items():
                         self.headers[headerName] = headerItem
+                    self.headers['User-Agent'] = \
+                        'Epicyon/' + __version__ + \
+                        '; +' + httpPrefix + '://' + domainFull + '/'
                 if atPath:
                     print('@ detected outgoing actor: ' + str(actorJson))
                     print('@ detected outgoing headers: ' +
