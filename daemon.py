@@ -9770,6 +9770,7 @@ class PubServer(BaseHTTPRequestHandler):
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
+            print('@ detected: ' + str(self.headers))
 
         # redirect music to #nowplaying list
         if self.path == '/music' or self.path == '/nowplaying':
