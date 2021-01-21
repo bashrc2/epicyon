@@ -9932,6 +9932,12 @@ class PubServer(BaseHTTPRequestHandler):
             print('@ detected: html ' + str(htmlGET))
             print('@ detected: path ' + self.path)
 
+        # if an image is received
+        if not htmlGET:
+            if self.headers.get('Accept'):
+                if 'image/' in self.headers['Accept']:
+                    print('image GET header: ' + str(self.headers).replace('\n', ', '))
+
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
