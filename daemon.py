@@ -9886,7 +9886,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/sharedInbox' or \
            self.path == '/users/inbox' or \
            self.path == '/actor/inbox' or \
-           self.path == '/users/'+self.server.domain:
+           self.path == '/users/' + self.server.domain:
             # if shared inbox is not enabled
             if not self.server.enableSharedInbox:
                 self._503()
@@ -9964,6 +9964,10 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.debug)
             return
 
+        usersInPath = False
+        if '/users/' in self.path:
+            usersInPath = True
+
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'sharedInbox enabled', 'rss3 done')
 
@@ -10027,7 +10031,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # list of registered devices for e2ee
         # see https://github.com/tootsuite/mastodon/pull/13820
-        if authorized and '/users/' in self.path:
+        if authorized and usersInPath:
             if self.path.endswith('/collections/devices'):
                 nickname = self.path.split('/users/')
                 if '/' in nickname:
@@ -10053,7 +10057,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'blog view done',
                                   'registered devices done')
 
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
                 self._showPersonOptions(callingDomain, self.path,
@@ -10171,7 +10175,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'terms of service done')
 
         # show a list of who you are following
-        if htmlGET and authorized and '/users/' in self.path and \
+        if htmlGET and authorized and usersInPath and \
            self.path.endswith('/followingaccounts'):
             nickname = getNicknameFromActor(self.path)
             followingFilename = \
@@ -10388,7 +10392,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'login screen logo done')
 
         # QR code for account handle
-        if '/users/' in self.path and \
+        if usersInPath and \
            self.path.endswith('/qrcode.png'):
             if self._showQRcode(callingDomain, self.path,
                                 self.server.baseDir,
@@ -10402,7 +10406,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'account qrcode done')
 
         # search screen banner image
-        if '/users/' in self.path:
+        if usersInPath:
             if self.path.endswith('/search_banner.png'):
                 if self._searchScreenBanner(callingDomain, self.path,
                                             self.server.baseDir,
@@ -10702,7 +10706,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'hashtag search done')
 
         # show or hide buttons in the web interface
-        if htmlGET and '/users/' in self.path and \
+        if htmlGET and usersInPath and \
            self.path.endswith('/minimal') and \
            authorized:
             nickname = self.path.split('/users/')[1]
@@ -10722,7 +10726,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if self.path.endswith('/search') or \
                '/search?' in self.path:
                 if '?' in self.path:
@@ -10766,7 +10770,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'search screen shown done')
 
         # Show the calendar for a user
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if '/calendar' in self.path:
                 # show the calendar screen
                 msg = htmlCalendar(self.server.cssCache,
@@ -10788,7 +10792,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'calendar shown done')
 
         # Show confirmation for deleting a calendar event
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if '/eventdelete' in self.path and \
                '?time=' in self.path and \
                '?id=' in self.path:
@@ -10808,7 +10812,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'calendar delete shown done')
 
         # search for emoji by name
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if self.path.endswith('/searchemoji'):
                 # show the search screen
                 msg = htmlSearchEmojiTextEntry(self.server.cssCache,
@@ -11326,7 +11330,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'individual post done',
                                   'post replies done')
 
-        if self.path.endswith('/roles') and '/users/' in self.path:
+        if self.path.endswith('/roles') and usersInPath:
             if self._showRoles(authorized,
                                callingDomain, self.path,
                                self.server.baseDir,
@@ -11346,7 +11350,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show roles done')
 
         # show skills on the profile page
-        if self.path.endswith('/skills') and '/users/' in self.path:
+        if self.path.endswith('/skills') and usersInPath:
             if self._showSkills(authorized,
                                 callingDomain, self.path,
                                 self.server.baseDir,
@@ -11367,7 +11371,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get an individual post from the path
         # /users/nickname/statuses/number
-        if '/statuses/' in self.path and '/users/' in self.path:
+        if '/statuses/' in self.path and usersInPath:
             if self._showIndividualPost(authorized,
                                         callingDomain, self.path,
                                         self.server.baseDir,
@@ -11554,7 +11558,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show shares 2 done')
 
         # block a domain from htmlAccountInfo
-        if authorized and '/users/' in self.path and \
+        if authorized and usersInPath and \
            '/accountinfo?blockdomain=' in self.path and \
            '?handle=' in self.path:
             nickname = self.path.split('/users/')[1]
@@ -11590,7 +11594,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # unblock a domain from htmlAccountInfo
-        if authorized and '/users/' in self.path and \
+        if authorized and usersInPath and \
            '/accountinfo?unblockdomain=' in self.path and \
            '?handle=' in self.path:
             nickname = self.path.split('/users/')[1]
@@ -12904,8 +12908,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)
 
+        usersInPath = False
+        if '/users/' in self.path:
+            usersInPath = True
+
         # moderator action buttons
-        if authorized and '/users/' in self.path and \
+        if authorized and usersInPath and \
            self.path.endswith('/moderationaction'):
             self._moderatorActions(self.path, callingDomain, cookie,
                                    self.server.baseDir,
@@ -13145,7 +13153,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 15)
 
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
-            if '/users/' in self.path:
+            if usersInPath:
                 if authorized:
                     self.outboxAuthenticated = True
                     pathUsersSection = self.path.split('/users/')[1]
@@ -13192,7 +13200,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # receive images to the outbox
         if self.headers['Content-type'].startswith('image/') and \
-           '/users/' in self.path:
+           usersInPath:
             self._receiveImage(length, callingDomain, cookie,
                                authorized, self.path,
                                self.server.baseDir,
@@ -13368,7 +13376,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
-        if '/users/' in self.path:
+        if usersInPath:
             pathUsersSection = self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
                 if self.server.debug:
