@@ -8950,7 +8950,7 @@ class PubServer(BaseHTTPRequestHandler):
                            onionDomain: str, i2pDomain: str,
                            GETstartTime, GETtimings: {},
                            proxyType: str, cookie: str,
-                           debug: str) -> bool:
+                           debug: str, atPath: bool) -> bool:
         """Shows the profile for a person
         """
         # look up a person
@@ -8998,6 +8998,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           'show profile posts')
             else:
                 if self._fetchAuthenticated():
+                    if atPath:
+                        print('@ deteceted actor ' + str(actorJson))
                     msg = json.dumps(actorJson,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
@@ -11779,7 +11781,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.i2pDomain,
                                    GETstartTime, GETtimings,
                                    self.server.proxyType,
-                                   cookie, self.server.debug):
+                                   cookie, self.server.debug,
+                                   atPath):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
