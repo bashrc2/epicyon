@@ -9093,14 +9093,15 @@ class PubServer(BaseHTTPRequestHandler):
                                       'show profile posts')
         else:
             if self._fetchAuthenticated():
-                msg = json.dumps(actorJson,
-                                 ensure_ascii=False).encode('utf-8')
+                msgStr = json.dumps(actorJson,
+                                 ensure_ascii=False)
+                msg = msgStr.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers_with_sig('application/json', msglen,
                                            baseDir, path,
                                            domain, domainFull, port,
                                            httpPrefix,
-                                           callingDomain, debug, msg)
+                                           callingDomain, debug, msgStr)
                 if atPath:
                     print('@ detected outgoing actor: ' + str(actorJson))
                     print('@ detected outgoing headers: ' +
