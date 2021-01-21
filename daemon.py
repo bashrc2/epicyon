@@ -8951,6 +8951,34 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _getFeaturedCollection(self, callingDomain: str,
+                               path: str,
+                               httpPrefix: str,
+                               domainFull: str):
+        """Returns the featured posts collections in
+        actor/collections/featured
+        TODO add ability to set a featured post
+        """
+        featuredCollection = {
+            '@context': ['https://www.w3.org/ns/activitystreams',
+                         {'atomUri': 'ostatus:atomUri',
+                          'conversation': 'ostatus:conversation',
+                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
+                          'sensitive': 'as:sensitive',
+                          'toot': 'http://joinmastodon.org/ns#',
+                          'votersCount': 'toot:votersCount'}],
+            'id': httpPrefix + '://' + domainFull + path,
+            'orderedItems': [],
+            'totalItems': 1,
+            'type': 'OrderedCollection'
+        }
+        msg = json.dumps(featuredCollection,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json', msglen,
+                          None, callingDomain)
+        self._write(msg)
+
     def _showPersonProfile(self, authorized: bool,
                            callingDomain: str, path: str,
                            baseDir: str, httpPrefix: str,
@@ -9979,6 +10007,13 @@ class PubServer(BaseHTTPRequestHandler):
         usersInPath = False
         if '/users/' in self.path:
             usersInPath = True
+
+        if usersInPath and self.path.endswith('/collections/featured'):
+            self._getFeaturedCollection(callingDomain,
+                                        self.path,
+                                        self.server.httpPrefix,
+                                        self.server.domainFull)
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'sharedInbox enabled', 'rss3 done')
