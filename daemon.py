@@ -4718,7 +4718,14 @@ class PubServer(BaseHTTPRequestHandler):
                             'https://w3id.org/security/v1',
                             getDefaultPersonContext()
                         ]
-                        actorJson['discoverable'] = True
+                        if actorJson.get('nomadicLocations'):
+                            del actorJson['nomadicLocations']
+                        if not actorJson.get('featured'):
+                            actorJson['featured'] = \
+                                actorJson['id'] + '/collections/featured'
+                        if not actorJson.get('featuredTags'):
+                            actorJson['featuredTags'] = \
+                                actorJson['id'] + '/collections/tags'
                         randomizeActorImages(actorJson)
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,
