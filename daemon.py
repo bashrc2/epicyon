@@ -8954,8 +8954,8 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the profile for a person
         """
         # look up a person
-        getPerson = personLookup(domain, path, baseDir)
-        if getPerson:
+        actorJson = personLookup(domain, path, baseDir)
+        if actorJson:
             if self._requestHTTP():
                 if not self.server.session:
                     print('Starting new session during person lookup')
@@ -8978,7 +8978,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 baseDir,
                                 httpPrefix,
                                 authorized,
-                                getPerson, 'posts',
+                                actorJson, 'posts',
                                 self.server.session,
                                 self.server.cachedWebfingers,
                                 self.server.personCache,
@@ -8998,7 +8998,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           'show profile posts')
             else:
                 if self._fetchAuthenticated():
-                    msg = json.dumps(getPerson,
+                    msg = json.dumps(actorJson,
                                      ensure_ascii=False).encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('application/json', msglen,
