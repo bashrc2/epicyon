@@ -527,6 +527,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _logout_headers(self, fileFormat: str, length: int,
@@ -539,6 +540,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _logout_redirect(self, redirect: str, cookie: str,
@@ -554,6 +556,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
@@ -573,6 +576,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('Referrer-Policy', 'origin')
         self.send_header('Accept-Ranges', 'none')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
@@ -658,6 +662,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str,
@@ -678,6 +683,7 @@ class PubServer(BaseHTTPRequestHandler):
         msgLenStr = str(len(msg))
         self.send_header('Content-Length', msgLenStr)
         self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
         if not self._write(msg):
             print('Error when showing ' + str(httpCode))
