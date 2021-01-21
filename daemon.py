@@ -221,7 +221,6 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
-from httpsig import createSignedHeader
 from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
@@ -9382,7 +9381,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers_etag(bgFilename,
                                                    'image/' + ext,
                                                    bgBinary, None,
-                                                   callingDomain)
+                                                   self.server.domainFull)
                             self._write(bgBinary)
                             self._benchmarkGETtimings(GETstartTime,
                                                       GETtimings,
@@ -9486,7 +9485,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers_etag(avatarFilename,
                                                    'image/' + mediaImageType,
                                                    mediaBinary, None,
-                                                   callingDomain)
+                                                   self.server.domainFull)
                             self._write(mediaBinary)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'icon shown done',
@@ -9761,8 +9760,8 @@ class PubServer(BaseHTTPRequestHandler):
         # if an image is received
         if self.headers.get('Accept'):
             if 'image' in self.headers['Accept']:
-                print('image GET header: ' + str(self.headers).replace('\n', ', '))
-        
+                print('image GET header: ' + str(self.headers['Accept']))
+
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
             callingDomain = self.headers['Host']
@@ -10581,7 +10580,7 @@ class PubServer(BaseHTTPRequestHandler):
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
-            self._showCachedAvatar(callingDomain, self.path,
+            self._showCachedAvatar(self.server.domainFull, self.path,
                                    self.server.baseDir,
                                    GETstartTime, GETtimings)
             return
