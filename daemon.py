@@ -65,7 +65,6 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
-from posts import getPersonKey
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -588,33 +587,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_base(fileFormat, length, None, callingDomain)
         if etag:
             self.send_header('ETag', etag)
-        self.end_headers()
-
-    def _set_headers_with_sig(self, fileFormat: str, length: int,
-                              baseDir: str, path: str,
-                              domain: str, domainFull: str, port: int,
-                              httpPrefix: str,
-                              callingDomain: str, debug: bool,
-                              jsonStr: str) -> None:
-        self._set_headers_base(fileFormat, length, None, callingDomain)
-        nickname = path.split('/users/')[1]
-        if '/' in nickname:
-            nickname = nickname.split('/')[0]
-        privateKeyPem = \
-            getPersonKey(nickname, domain, baseDir, 'private', debug)
-        if len(privateKeyPem) > 0:
-            boxPath = '/inbox'
-            signatureHeaderJson = \
-                createSignedHeader(privateKeyPem, nickname,
-                                   domain, port,
-                                   callingDomain, port,
-                                   boxPath,
-                                   httpPrefix, True, jsonStr)
-            print('@ detected signatureHeaderJson: ' + str(signatureHeaderJson))
-            for headerName, headerItem in signatureHeaderJson.items():
-                self.send_header(headerName, headerItem)
-            self.send_header('User-Agent', 'Epicyon/' + __version__ +
-                             '; +' + httpPrefix + '://' + domainFull + '/')
         self.end_headers()
 
     def _set_headers_etag(self, mediaFilename: str, fileFormat: str,
