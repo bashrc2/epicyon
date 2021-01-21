@@ -610,6 +610,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    callingDomain, port,
                                    boxPath,
                                    httpPrefix, True, jsonStr)
+            print('@ detected signatureHeaderJson: ' + str(signatureHeaderJson))
             for headerName, headerItem in signatureHeaderJson.items():
                 self.send_header(headerName, headerItem)
             self.send_header('User-Agent', 'Epicyon/' + __version__ +
