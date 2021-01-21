@@ -9088,7 +9088,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         boxpath, httpPrefix, None)
                     self.headers['signature'] = signatureHeader
                 if atPath:
-                    print('@ detected actor ' + str(actorJson))
+                    print('@ detected actor: ' + str(actorJson))
+                    print('@ detected headers: ' +
+                          str(self.headers).replace('\n', ', '))
                 self._write(msg)
             else:
                 self._404()
