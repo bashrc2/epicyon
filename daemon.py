@@ -4311,6 +4311,35 @@ class PubServer(BaseHTTPRequestHandler):
                             del actorJson['movedTo']
                             actorChanged = True
 
+                    # Other accounts (alsoKnownAs)
+                    alsoKnownAs = []
+                    if actorJson.get('alsoKnownAs'):
+                        alsoKnownAs = actorJson['alsoKnownAs']
+                    if fields.get('alsoKnownAs'):
+                        alsoKnownAsStr = ''
+                        alsoKnownAsCtr = 0
+                        for altActor in alsoKnownAs:
+                            if alsoKnownAsCtr > 0:
+                                alsoKnownAsStr += ', '
+                            alsoKnownAsStr += altActor
+                            alsoKnownAsCtr += 1
+                        if fields['alsoKnownAs'] != alsoKnownAsStr and \
+                           '://' in fields['alsoKnownAs'] and \
+                           '@' not in fields['alsoKnownAs'] and \
+                           '.' in fields['alsoKnownAs']:
+                            newAlsoKnownAs = fields['alsoKnownAs'].split(',')
+                            alsoKnownAs = []
+                            for altActor in newAlsoKnownAs:
+                                altActor = altActor.strip()
+                                if '://' in altActor and '.' in altActor:
+                                    alsoKnownAs.append(altActor)
+                            actorJson['alsoKnownAs'] = alsoKnownAs
+                            actorChanged = True
+                    else:
+                        if alsoKnownAs:
+                            del actorJson['alsoKnownAs']
+                            actorChanged = True
+
                     # change instance title
                     if fields.get('instanceTitle'):
                         currInstanceTitle = \

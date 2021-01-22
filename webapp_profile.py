@@ -1324,6 +1324,22 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <textarea id="message" name="bio" style="height:200px">' + \
         bioStr + '</textarea>\n'
 
+    alsoKnownAsStr = ''
+    if actorJson.get('alsoKnownAs'):
+        alsoKnownAs = actorJson['alsoKnownAs']
+        ctr = 0
+        for altActor in alsoKnownAs:
+            if ctr > 0:
+                alsoKnownAsStr += ', '
+            ctr += 1
+            alsoKnownAsStr += altActor
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Other accounts'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="otherAccounts" value="' + alsoKnownAsStr + '">\n'
+
     editProfileForm += '<label class="labels">' + \
         translate['Moved to new account address'] + ':</label><br>\n'
     editProfileForm += \
