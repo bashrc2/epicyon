@@ -796,6 +796,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not path.startswith('/api/v1/'):
             return False
         print('mastodon api v1: ' + path)
+        print('mastodon api v1: authorized ' + str(authorized))
+        print('mastodon api v1: nickname ' + str(nickname))
 
         sendJson = None
         sendJsonStr = ''
