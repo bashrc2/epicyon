@@ -526,7 +526,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
-        self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -539,7 +540,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
-        self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -555,7 +557,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
-        self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -574,7 +577,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
-        self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
         self.send_header('Referrer-Policy', 'origin')
         self.send_header('Accept-Ranges', 'none')
@@ -661,7 +665,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
-        self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
@@ -682,7 +687,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         msgLenStr = str(len(msg))
         self.send_header('Content-Length', msgLenStr)
-        self.send_header('X-Robots-Tag', 'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
         if not self._write(msg):
