@@ -813,8 +813,18 @@ class PubServer(BaseHTTPRequestHandler):
         if mastoId is not None:
             pathNickname = getNicknameFromMastoApiV1Id(mastoId)
             if pathNickname:
-                sendJson = getMastoApiV1Account(baseDir, pathNickname, domain)
-                sendJsonStr = 'masto API account sent for ' + nickname
+                if '/followers?' in path or '/following?' in path:
+                    path = path.split('?')[0]
+                if path.endswith('/followers'):
+                    sendJson = []
+                    sendJsonStr = 'masto API followers sent for ' + nickname
+                if path.endswith('/following'):
+                    sendJson = []
+                    sendJsonStr = 'masto API following sent for ' + nickname
+                else:
+                    sendJson = \
+                        getMastoApiV1Account(baseDir, pathNickname, domain)
+                    sendJsonStr = 'masto API account sent for ' + nickname
 
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
