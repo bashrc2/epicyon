@@ -25,6 +25,7 @@ from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
+from mastoapiv1 import getMastoApiV1Account
 from metadata import metaDataInstance
 from metadata import metaDataNodeInfo
 from pgp import getEmailAddress
@@ -781,17 +782,37 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _mastoApiV1(self, callingDomain: str, authorized: bool) -> bool:
+    def _mastoApiV1(self, path: str, callingDomain: str,
+                    authorized: bool,
+                    baseDir: str, nickname: str, domain: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
         """
-        if not self.path.startswith('/api/v1/'):
+        if not path.startswith('/api/v1/'):
             return False
         if self.server.debug:
-            print('DEBUG: mastodon api v1 ' + self.path)
+            print('DEBUG: mastodon api v1 ' + path)
+        if authorized and nickname:
+            if path == '/api/v1/accounts/:id':
+                acctJson = getMastoApiV1Account(baseDir, nickname, domain)
+                msg = json.dumps(instanceJson).encode('utf-8')
+                msglen = len(msg)
+                if self._hasAccept(callingDomain):
+                    if 'application/ld+json' in self.headers['Accept']:
+                        self._set_headers('application/ld+json', msglen,
+                                          None, callingDomain)
+                    else:
+                        self._set_headers('application/json', msglen,
+                                          None, callingDomain)
+                else:
+                    self._set_headers('application/ld+json', msglen,
+                                      None, callingDomain)
+                self._write(msg)
+                print('masto API account sent for ' + nickname)
+                return True
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
-        if adminNickname and self.path == '/api/v1/instance':
+        if adminNickname and path == '/api/v1/instance':
             instanceDescriptionShort = \
                 getConfigParam(self.server.baseDir,
                                'instanceDescriptionShort')
@@ -829,7 +850,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             print('instance metadata sent')
             return True
-        if self.path.startswith('/api/v1/instance/peers'):
+        if path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
             # On a large instance you are somewhat lost in the crowd, but on
@@ -851,7 +872,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             print('instance peers metadata sent')
             return True
-        if self.path.startswith('/api/v1/instance/activity'):
+        if path.startswith('/api/v1/instance/activity'):
             # This is just a dummy result.
             msg = json.dumps([]).encode('utf-8')
             msglen = len(msg)
@@ -871,8 +892,11 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _mastoApi(self, callingDomain: str, authorized: bool) -> bool:
-        return self._mastoApiV1(callingDomain, authorized)
+    def _mastoApi(self, path: str, callingDomain: str,
+                  authorized: bool,
+                  baseDir: str, nickname: str, domain: str) -> bool:
+        return self._mastoApiV1(path, callingDomain, authorized,
+                                baseDir, nickname, domain)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -9892,7 +9916,10 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show logout', 'isAuthorized')
 
         # minimal mastodon api
-        if self._mastoApi(callingDomain, authorized):
+        if self._mastoApi(self.path, callingDomain, authorized,
+                          self.server.baseDir,
+                          self.authorizedNickname,
+                          self.server.domain):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
