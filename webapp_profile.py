@@ -310,7 +310,8 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                       avatarDescription: str,
                       profileDescriptionShort: str,
                       loginButton: str, avatarUrl: str,
-                      theme: str, movedTo: str) -> str:
+                      theme: str, movedTo: str,
+                      alsoKnownAs: []) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -339,6 +340,23 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                 '    <p>' + translate['New account'] + ': ' + \
                 '<a href="' + movedTo + '">@' + \
                 newNickname + '@' + newDomainFull + '</a><br>\n'
+    elif alsoKnownAs:
+        htmlStr += \
+            '    <p>' + translate['Other accounts'] + ': '
+
+        if isinstance(alsoKnownAs, list):
+            ctr = 0
+            for altActor in alsoKnownAs:
+                if ctr > 0:
+                    htmlStr += ' '
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(altActor)
+                htmlStr += \
+                    '<a href="' + altActor + '">' + altDomain + '</a>'
+        elif isinstance(alsoKnownAs, str):
+            altDomain, altPort = getDomainFromActor(alsoKnownAs)
+            htmlStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+        htmlStr += '</p>\n'
     htmlStr += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
@@ -638,6 +656,10 @@ def htmlProfile(rssIconAtTop: bool,
     if profileJson.get('movedTo'):
         movedTo = profileJson['movedTo']
 
+    alsoKnownAs = None
+    if profileJson.get('alsoKnownAs'):
+        alsoKnownAs = profileJson['alsoKnownAs']
+
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
         _getProfileHeader(baseDir, nickname, domain,
@@ -646,7 +668,7 @@ def htmlProfile(rssIconAtTop: bool,
                           avatarDescription,
                           profileDescriptionShort,
                           loginButton, avatarUrl, theme,
-                          movedTo)
+                          movedTo, alsoKnownAs)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
