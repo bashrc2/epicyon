@@ -793,24 +793,17 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: mastodon api v1 ' + path)
+
+        sendJson = None
+        sendJsonStr = ''
+
+        # authorized parts of the api
         if authorized and nickname:
             if path == '/api/v1/accounts/:id':
-                acctJson = getMastoApiV1Account(baseDir, nickname, domain)
-                msg = json.dumps(instanceJson).encode('utf-8')
-                msglen = len(msg)
-                if self._hasAccept(callingDomain):
-                    if 'application/ld+json' in self.headers['Accept']:
-                        self._set_headers('application/ld+json', msglen,
-                                          None, callingDomain)
-                    else:
-                        self._set_headers('application/json', msglen,
-                                          None, callingDomain)
-                else:
-                    self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
-                self._write(msg)
-                print('masto API account sent for ' + nickname)
-                return True
+                sendJson = getMastoApiV1Account(baseDir, nickname, domain)
+                sendJsonStr = 'masto API account sent for ' + nickname
+
+        # Parts of the api which don't need authorization
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
             instanceDescriptionShort = \
@@ -823,7 +816,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  'instanceDescription')
             instanceTitle = getConfigParam(self.server.baseDir,
                                            'instanceTitle')
-            instanceJson = \
+            sendJson = \
                 metaDataInstance(instanceTitle,
                                  instanceDescriptionShort,
                                  instanceDescription,
@@ -835,29 +828,21 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.registration,
                                  self.server.systemLanguage,
                                  self.server.projectVersion)
-            msg = json.dumps(instanceJson).encode('utf-8')
-            msglen = len(msg)
-            if self._hasAccept(callingDomain):
-                if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
-                else:
-                    self._set_headers('application/json', msglen,
-                                      None, callingDomain)
-            else:
-                self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
-            self._write(msg)
-            print('instance metadata sent')
-            return True
-        if path.startswith('/api/v1/instance/peers'):
+            sendJsonStr = 'masto API instance metadata sent'
+        elif path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
             # On a large instance you are somewhat lost in the crowd, but on
             # small instances a full list of peers would convey a lot of
             # information about the interests of a small number of accounts
-            msg = json.dumps(['mastodon.social',
-                              self.server.domainFull]).encode('utf-8')
+            sendJson = ['mastodon.social', self.server.domainFull]
+            sendJsonStr = 'masto API peers metadata sent'
+        elif path.startswith('/api/v1/instance/activity'):
+            sendJson = []
+            sendJsonStr = 'masto API activity metadata sent'
+
+        if sendJson is not None:
+            msg = json.dumps(sendJson).encode('utf-8')
             msglen = len(msg)
             if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
@@ -870,25 +855,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json', msglen,
                                   None, callingDomain)
             self._write(msg)
-            print('instance peers metadata sent')
+            if sendJsonStr:
+                print(sendJsonStr)
             return True
-        if path.startswith('/api/v1/instance/activity'):
-            # This is just a dummy result.
-            msg = json.dumps([]).encode('utf-8')
-            msglen = len(msg)
-            if self._hasAccept(callingDomain):
-                if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
-                else:
-                    self._set_headers('application/json', msglen,
-                                      None, callingDomain)
-            else:
-                self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
-            self._write(msg)
-            print('instance activity metadata sent')
-            return True
+
+        # no api endpoints were matched
         self._404()
         return True
 

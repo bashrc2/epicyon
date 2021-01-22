@@ -28,7 +28,7 @@ def getMastoApiV1Account(baseDir: str, nickname: str, domain: str) -> {}:
         "acct": nickname,
         "display_name": accountJson['preferredUsername'],
         "locked": accountJson['manuallyApprovesFollowers'],
-#        "created_at": "",
+        "created_at": "",
         "followers_count": 0,
         "following_count": 0,
         "statuses_count": 0,
