@@ -1,4 +1,8 @@
 {
+    "button-selected": "#999",
+    "button-background": "#bbbbbb",
+    "button-background-hover": "#999",
+    "column-left-header-background": "#bbbbbb",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
     "icons-as-buttons": "False",
@@ -32,6 +36,7 @@
     "main-bg-color-reply": "white",
     "main-bg-color-report": "#e3dbf0",
     "main-header-color-roles": "#ebebf0",
+    "cw-color": "#777",
     "main-fg-color": "#2d2c37",
     "login-fg-color": "#2d2c37",
     "options-fg-color": "#2d2c37",

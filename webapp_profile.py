@@ -229,6 +229,10 @@ def htmlProfileAfterSearch(cssCache: {},
         if profileJson['image'].get('url'):
             imageUrl = profileJson['image']['url']
 
+    alsoKnownAs = None
+    if profileJson.get('alsoKnownAs'):
+        alsoKnownAs = profileJson['alsoKnownAs']
+
     profileStr = \
         _getProfileHeaderAfterSearch(baseDir,
                                      nickname, defaultTimeline,
@@ -238,7 +242,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      displayName, followsYou,
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl,
-                                     movedTo)
+                                     movedTo, alsoKnownAs)
 
     domainFull = getFullDomain(domain, port)
 
@@ -306,7 +310,8 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                       avatarDescription: str,
                       profileDescriptionShort: str,
                       loginButton: str, avatarUrl: str,
-                      theme: str, movedTo: str) -> str:
+                      theme: str, movedTo: str,
+                      alsoKnownAs: []) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -335,6 +340,23 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                 '    <p>' + translate['New account'] + ': ' + \
                 '<a href="' + movedTo + '">@' + \
                 newNickname + '@' + newDomainFull + '</a><br>\n'
+    elif alsoKnownAs:
+        htmlStr += \
+            '    <p>' + translate['Other accounts'] + ': '
+
+        if isinstance(alsoKnownAs, list):
+            ctr = 0
+            for altActor in alsoKnownAs:
+                if ctr > 0:
+                    htmlStr += ' '
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(altActor)
+                htmlStr += \
+                    '<a href="' + altActor + '">' + altDomain + '</a>'
+        elif isinstance(alsoKnownAs, str):
+            altDomain, altPort = getDomainFromActor(alsoKnownAs)
+            htmlStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+        htmlStr += '</p>\n'
     htmlStr += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
@@ -357,7 +379,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  followsYou: bool,
                                  profileDescriptionShort: str,
                                  avatarUrl: str, imageUrl: str,
-                                 movedTo: str) -> str:
+                                 movedTo: str,
+                                 alsoKnownAs: []) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -388,6 +411,23 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             newHandle = newNickname + '@' + newDomainFull
             htmlStr += '        <p>' + translate['New account'] + \
                 ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+    elif alsoKnownAs:
+        htmlStr += \
+            '        <p>' + translate['Other accounts'] + ': '
+
+        if isinstance(alsoKnownAs, list):
+            ctr = 0
+            for altActor in alsoKnownAs:
+                if ctr > 0:
+                    htmlStr += ' '
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(altActor)
+                htmlStr += \
+                    '<a href="' + altActor + '">' + altDomain + '</a>'
+        elif isinstance(alsoKnownAs, str):
+            altDomain, altPort = getDomainFromActor(alsoKnownAs)
+            htmlStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+        htmlStr += '</p>\n'
 
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
@@ -616,6 +656,10 @@ def htmlProfile(rssIconAtTop: bool,
     if profileJson.get('movedTo'):
         movedTo = profileJson['movedTo']
 
+    alsoKnownAs = None
+    if profileJson.get('alsoKnownAs'):
+        alsoKnownAs = profileJson['alsoKnownAs']
+
     avatarUrl = profileJson['icon']['url']
     profileHeaderStr = \
         _getProfileHeader(baseDir, nickname, domain,
@@ -624,7 +668,7 @@ def htmlProfile(rssIconAtTop: bool,
                           avatarDescription,
                           profileDescriptionShort,
                           loginButton, avatarUrl, theme,
-                          movedTo)
+                          movedTo, alsoKnownAs)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -1279,6 +1323,22 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
         bioStr + '</textarea>\n'
+
+    alsoKnownAsStr = ''
+    if actorJson.get('alsoKnownAs'):
+        alsoKnownAs = actorJson['alsoKnownAs']
+        ctr = 0
+        for altActor in alsoKnownAs:
+            if ctr > 0:
+                alsoKnownAsStr += ', '
+            ctr += 1
+            alsoKnownAsStr += altActor
+
+    editProfileForm += '<label class="labels">' + \
+        translate['Other accounts'] + ':</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" placeholder="https://..." ' + \
+        'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
 
     editProfileForm += '<label class="labels">' + \
         translate['Moved to new account address'] + ':</label><br>\n'

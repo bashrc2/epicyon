@@ -25,6 +25,9 @@ from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
+from mastoapiv1 import getMastoApiV1Account
+from mastoapiv1 import getMastApiV1Id
+from mastoapiv1 import getNicknameFromMastoApiV1Id
 from metadata import metaDataInstance
 from metadata import metaDataNodeInfo
 from pgp import getEmailAddress
@@ -526,7 +529,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
-        self.send_header('X-Robots-Tag', 'noindex')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _logout_headers(self, fileFormat: str, length: int,
@@ -538,7 +543,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate',
                          'title="Login to Epicyon", Basic realm="epicyon"')
-        self.send_header('X-Robots-Tag', 'noindex')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _logout_redirect(self, redirect: str, cookie: str,
@@ -553,7 +560,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
-        self.send_header('X-Robots-Tag', 'noindex')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _set_headers_base(self, fileFormat: str, length: int, cookie: str,
@@ -571,8 +580,10 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
-        self.send_header('X-Robots-Tag', 'noindex')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
         self.send_header('X-Clacks-Overhead', 'GNU Natalie Nguyen')
+        self.send_header('Referrer-Policy', 'origin')
         self.send_header('Accept-Ranges', 'none')
 
     def _set_headers(self, fileFormat: str, length: int, cookie: str,
@@ -657,7 +668,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
-        self.send_header('X-Robots-Tag', 'noindex')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str,
@@ -677,7 +690,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         msgLenStr = str(len(msg))
         self.send_header('Content-Length', msgLenStr)
-        self.send_header('X-Robots-Tag', 'noindex')
+        self.send_header('X-Robots-Tag',
+                         'noindex, nofollow, noarchive, nosnippet')
+        self.send_header('Referrer-Policy', 'origin')
         self.end_headers()
         if not self._write(msg):
             print('Error when showing ' + str(httpCode))
@@ -769,26 +784,101 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _mastoApi(self, callingDomain: str) -> bool:
+    def _mastoApiV1(self, path: str, callingDomain: str,
+                    authorized: bool,
+                    httpPrefix: str,
+                    baseDir: str, nickname: str, domain: str,
+                    domainFull: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
         """
-        if not self.path.startswith('/api/v1/'):
+        if not path.startswith('/api/v1/'):
             return False
-        if self.server.debug:
-            print('DEBUG: mastodon api ' + self.path)
+        print('mastodon api v1: ' + path)
+        print('mastodon api v1: authorized ' + str(authorized))
+        print('mastodon api v1: nickname ' + str(nickname))
+
+        sendJson = None
+        sendJsonStr = ''
+
+        # parts of the api needing authorization
+        if authorized and nickname:
+            if path == '/api/v1/accounts/verify_credentials':
+                sendJson = getMastoApiV1Account(baseDir, nickname, domain)
+                sendJsonStr = 'masto API account sent for ' + nickname
+
+        # Parts of the api which don't need authorization
+        mastoId = getMastApiV1Id(path)
+        if mastoId is not None:
+            pathNickname = getNicknameFromMastoApiV1Id(mastoId)
+            if pathNickname:
+                originalPath = path
+                if '/followers?' in path or \
+                   '/following?' in path or \
+                   '/search?' in path or \
+                   '/relationships?' in path or \
+                   '/statuses?' in path:
+                    path = path.split('?')[0]
+                if path.endswith('/followers'):
+                    sendJson = []
+                    sendJsonStr = 'masto API followers sent for ' + nickname
+                elif path.endswith('/following'):
+                    sendJson = []
+                    sendJsonStr = 'masto API following sent for ' + nickname
+                elif path.endswith('/statuses'):
+                    sendJson = []
+                    sendJsonStr = 'masto API statuses sent for ' + nickname
+                elif path.endswith('/search'):
+                    sendJson = []
+                    sendJsonStr = 'masto API search sent ' + originalPath
+                elif path.endswith('/relationships'):
+                    sendJson = []
+                    sendJsonStr = \
+                        'masto API relationships sent ' + originalPath
+                else:
+                    sendJson = \
+                        getMastoApiV1Account(baseDir, pathNickname, domain)
+                    sendJsonStr = 'masto API account sent for ' + nickname
+
+        if path.startswith('/api/v1/blocks'):
+            sendJson = []
+            sendJsonStr = 'masto API instance blocks sent'
+        elif path.startswith('/api/v1/favorites'):
+            sendJson = []
+            sendJsonStr = 'masto API favorites sent'
+        elif path.startswith('/api/v1/follow_requests'):
+            sendJson = []
+            sendJsonStr = 'masto API follow requests sent'
+        elif path.startswith('/api/v1/mutes'):
+            sendJson = []
+            sendJsonStr = 'masto API mutes sent'
+        elif path.startswith('/api/v1/notifications'):
+            sendJson = []
+            sendJsonStr = 'masto API notifications sent'
+        elif path.startswith('/api/v1/reports'):
+            sendJson = []
+            sendJsonStr = 'masto API reports sent'
+        elif path.startswith('/api/v1/statuses'):
+            sendJson = []
+            sendJsonStr = 'masto API statuses sent'
+        elif path.startswith('/api/v1/timelines'):
+            sendJson = []
+            sendJsonStr = 'masto API timelines sent'
+
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
-        if adminNickname and self.path == '/api/v1/instance':
+        if adminNickname and path == '/api/v1/instance':
             instanceDescriptionShort = \
                 getConfigParam(self.server.baseDir,
                                'instanceDescriptionShort')
-            instanceDescriptionShort = 'Yet another Epicyon Instance'
+            if not instanceDescriptionShort:
+                instanceDescriptionShort = \
+                    self.server.translate['Yet another Epicyon Instance']
             instanceDescription = getConfigParam(self.server.baseDir,
                                                  'instanceDescription')
             instanceTitle = getConfigParam(self.server.baseDir,
                                            'instanceTitle')
-            instanceJson = \
+            sendJson = \
                 metaDataInstance(instanceTitle,
                                  instanceDescriptionShort,
                                  instanceDescription,
@@ -800,29 +890,21 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.registration,
                                  self.server.systemLanguage,
                                  self.server.projectVersion)
-            msg = json.dumps(instanceJson).encode('utf-8')
-            msglen = len(msg)
-            if self._hasAccept(callingDomain):
-                if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
-                else:
-                    self._set_headers('application/json', msglen,
-                                      None, callingDomain)
-            else:
-                self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
-            self._write(msg)
-            print('instance metadata sent')
-            return True
-        if self.path.startswith('/api/v1/instance/peers'):
+            sendJsonStr = 'masto API instance metadata sent'
+        elif path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
             # On a large instance you are somewhat lost in the crowd, but on
             # small instances a full list of peers would convey a lot of
             # information about the interests of a small number of accounts
-            msg = json.dumps(['mastodon.social',
-                              self.server.domainFull]).encode('utf-8')
+            sendJson = ['mastodon.social', self.server.domainFull]
+            sendJsonStr = 'masto API peers metadata sent'
+        elif path.startswith('/api/v1/instance/activity'):
+            sendJson = []
+            sendJsonStr = 'masto API activity metadata sent'
+
+        if sendJson is not None:
+            msg = json.dumps(sendJson).encode('utf-8')
             msglen = len(msg)
             if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
@@ -835,27 +917,21 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json', msglen,
                                   None, callingDomain)
             self._write(msg)
-            print('instance peers metadata sent')
+            if sendJsonStr:
+                print(sendJsonStr)
             return True
-        if self.path.startswith('/api/v1/instance/activity'):
-            # This is just a dummy result.
-            msg = json.dumps([]).encode('utf-8')
-            msglen = len(msg)
-            if self._hasAccept(callingDomain):
-                if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json', msglen,
-                                      None, callingDomain)
-                else:
-                    self._set_headers('application/json', msglen,
-                                      None, callingDomain)
-            else:
-                self._set_headers('application/ld+json', msglen,
-                                  None, callingDomain)
-            self._write(msg)
-            print('instance activity metadata sent')
-            return True
+
+        # no api endpoints were matched
         self._404()
         return True
+
+    def _mastoApi(self, path: str, callingDomain: str,
+                  authorized: bool, httpPrefix: str,
+                  baseDir: str, nickname: str, domain: str,
+                  domainFull: str) -> bool:
+        return self._mastoApiV1(path, callingDomain, authorized,
+                                httpPrefix, baseDir, nickname, domain,
+                                domainFull)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -3872,7 +3948,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not actorJson.get('discoverable'):
                         # discoverable in profile directory
                         # which isn't implemented in Epicyon
-                        actorJson['discoverable'] = False
+                        actorJson['discoverable'] = True
                         actorChanged = True
                     if not actorJson['@context'][2].get('orgSchema'):
                         actorJson['@context'][2]['orgSchema'] = \
@@ -3890,10 +3966,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if not actorJson['@context'][2].get('availability'):
                         actorJson['@context'][2]['availaibility'] = \
                             'toot:availability'
-                    if not actorJson['@context'][2].get('nomadicLocations'):
-                        actorJson['@context'][2]['nomadicLocations'] = \
-                            'toot:nomadicLocations'
-                        actorChanged = True
                     if actorJson.get('capabilityAcquisitionEndpoint'):
                         del actorJson['capabilityAcquisitionEndpoint']
                         actorChanged = True
@@ -4237,6 +4309,35 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if movedTo:
                             del actorJson['movedTo']
+                            actorChanged = True
+
+                    # Other accounts (alsoKnownAs)
+                    alsoKnownAs = []
+                    if actorJson.get('alsoKnownAs'):
+                        alsoKnownAs = actorJson['alsoKnownAs']
+                    if fields.get('alsoKnownAs'):
+                        alsoKnownAsStr = ''
+                        alsoKnownAsCtr = 0
+                        for altActor in alsoKnownAs:
+                            if alsoKnownAsCtr > 0:
+                                alsoKnownAsStr += ', '
+                            alsoKnownAsStr += altActor
+                            alsoKnownAsCtr += 1
+                        if fields['alsoKnownAs'] != alsoKnownAsStr and \
+                           '://' in fields['alsoKnownAs'] and \
+                           '@' not in fields['alsoKnownAs'] and \
+                           '.' in fields['alsoKnownAs']:
+                            newAlsoKnownAs = fields['alsoKnownAs'].split(',')
+                            alsoKnownAs = []
+                            for altActor in newAlsoKnownAs:
+                                altActor = altActor.strip()
+                                if '://' in altActor and '.' in altActor:
+                                    alsoKnownAs.append(altActor)
+                            actorJson['alsoKnownAs'] = alsoKnownAs
+                            actorChanged = True
+                    else:
+                        if alsoKnownAs:
+                            del actorJson['alsoKnownAs']
                             actorChanged = True
 
                     # change instance title
@@ -4718,6 +4819,14 @@ class PubServer(BaseHTTPRequestHandler):
                             'https://w3id.org/security/v1',
                             getDefaultPersonContext()
                         ]
+                        if actorJson.get('nomadicLocations'):
+                            del actorJson['nomadicLocations']
+                        if not actorJson.get('featured'):
+                            actorJson['featured'] = \
+                                actorJson['id'] + '/collections/featured'
+                        if not actorJson.get('featuredTags'):
+                            actorJson['featuredTags'] = \
+                                actorJson['id'] + '/collections/tags'
                         randomizeActorImages(actorJson)
                         saveJson(actorJson, actorFilename)
                         webfingerUpdate(baseDir,
@@ -4920,7 +5029,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers_etag(faviconFilename,
                                    favType,
                                    favBinary, None,
-                                   callingDomain)
+                                   self.server.domainFull)
             self._write(favBinary)
             if debug:
                 print('Sent favicon from cache: ' + callingDomain)
@@ -4932,7 +5041,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(faviconFilename,
                                            favType,
                                            favBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(favBinary)
                     self.server.iconsCache[favFilename] = favBinary
                     if self.server.debug:
@@ -4971,7 +5080,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(fontFilename,
                                        fontType,
                                        fontBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(fontBinary)
                 if debug:
                     print('font sent from cache: ' +
@@ -4987,7 +5096,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(fontFilename,
                                                fontType,
                                                fontBinary, None,
-                                               callingDomain)
+                                               self.server.domainFull)
                         self._write(fontBinary)
                         self.server.fontsCache[fontStr] = fontBinary
                     if debug:
@@ -5279,6 +5388,7 @@ class PubServer(BaseHTTPRequestHandler):
             ssbAddress = None
             emailAddress = None
             lockedAccount = False
+            alsoKnownAs = None
             movedTo = ''
             actorJson = getPersonFromCache(baseDir,
                                            optionsActor,
@@ -5299,6 +5409,8 @@ class PubServer(BaseHTTPRequestHandler):
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
+                if actorJson.get('alsoKnownAs'):
+                    alsoKnownAs = actorJson['alsoKnownAs']
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
                                     self.server.translate,
@@ -5318,7 +5430,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     backToPath,
                                     lockedAccount,
-                                    movedTo).encode('utf-8')
+                                    movedTo, alsoKnownAs).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -5367,7 +5479,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers_etag(mediaFilename, mediaFileType,
                                            mediaBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show emoji done',
@@ -5407,7 +5519,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(emojiFilename,
                                            'image/' + mediaImageType,
                                            mediaBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'background shown done',
@@ -5443,7 +5555,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeTypeStr,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 return
             else:
@@ -5454,7 +5566,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers_etag(mediaFilename,
                                                mimeType,
                                                mediaBinary, None,
-                                               callingDomain)
+                                               self.server.domainFull)
                         self._write(mediaBinary)
                         self.server.iconsCache[mediaStr] = mediaBinary
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -5480,7 +5592,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers_etag(mediaFilename,
                                        mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'icon shown done',
@@ -8943,6 +9055,62 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _getFeaturedCollection(self, callingDomain: str,
+                               path: str,
+                               httpPrefix: str,
+                               domainFull: str):
+        """Returns the featured posts collections in
+        actor/collections/featured
+        TODO add ability to set a featured post
+        """
+        featuredCollection = {
+            '@context': ['https://www.w3.org/ns/activitystreams',
+                         {'atomUri': 'ostatus:atomUri',
+                          'conversation': 'ostatus:conversation',
+                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
+                          'sensitive': 'as:sensitive',
+                          'toot': 'http://joinmastodon.org/ns#',
+                          'votersCount': 'toot:votersCount'}],
+            'id': httpPrefix + '://' + domainFull + path,
+            'orderedItems': [],
+            'totalItems': 0,
+            'type': 'OrderedCollection'
+        }
+        msg = json.dumps(featuredCollection,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json', msglen,
+                          None, callingDomain)
+        self._write(msg)
+
+    def _getFeaturedTagsCollection(self, callingDomain: str,
+                                   path: str,
+                                   httpPrefix: str,
+                                   domainFull: str):
+        """Returns the featured tags collections in
+        actor/collections/featuredTags
+        TODO add ability to set a featured tags
+        """
+        featuredTagsCollection = {
+            '@context': ['https://www.w3.org/ns/activitystreams',
+                         {'atomUri': 'ostatus:atomUri',
+                          'conversation': 'ostatus:conversation',
+                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
+                          'sensitive': 'as:sensitive',
+                          'toot': 'http://joinmastodon.org/ns#',
+                          'votersCount': 'toot:votersCount'}],
+            'id': httpPrefix + '://' + domainFull + path,
+            'orderedItems': [],
+            'totalItems': 0,
+            'type': 'OrderedCollection'
+        }
+        msg = json.dumps(featuredTagsCollection,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json', msglen,
+                          None, callingDomain)
+        self._write(msg)
+
     def _showPersonProfile(self, authorized: bool,
                            callingDomain: str, path: str,
                            baseDir: str, httpPrefix: str,
@@ -8954,61 +9122,61 @@ class PubServer(BaseHTTPRequestHandler):
         """Shows the profile for a person
         """
         # look up a person
-        getPerson = personLookup(domain, path, baseDir)
-        if getPerson:
-            if self._requestHTTP():
+        actorJson = personLookup(domain, path, baseDir)
+        if not actorJson:
+            return False
+        if self._requestHTTP():
+            if not self.server.session:
+                print('Starting new session during person lookup')
+                self.server.session = createSession(proxyType)
                 if not self.server.session:
-                    print('Starting new session during person lookup')
-                    self.server.session = createSession(proxyType)
-                    if not self.server.session:
-                        print('ERROR: GET failed to create session ' +
-                              'during person lookup')
-                        self._404()
-                        self.server.GETbusy = False
-                        return True
-                msg = \
-                    htmlProfile(self.server.rssIconAtTop,
-                                self.server.cssCache,
-                                self.server.iconsAsButtons,
-                                self.server.defaultTimeline,
-                                self.server.recentPostsCache,
-                                self.server.maxRecentPosts,
-                                self.server.translate,
-                                self.server.projectVersion,
-                                baseDir,
-                                httpPrefix,
-                                authorized,
-                                getPerson, 'posts',
-                                self.server.session,
-                                self.server.cachedWebfingers,
-                                self.server.personCache,
-                                self.server.YTReplacementDomain,
-                                self.server.showPublishedDateOnly,
-                                self.server.newswire,
-                                self.server.themeName,
-                                self.server.dormantMonths,
-                                self.server.peertubeInstances,
-                                None, None).encode('utf-8')
+                    print('ERROR: GET failed to create session ' +
+                          'during person lookup')
+                    self._404()
+                    self.server.GETbusy = False
+                    return True
+            msg = \
+                htmlProfile(self.server.rssIconAtTop,
+                            self.server.cssCache,
+                            self.server.iconsAsButtons,
+                            self.server.defaultTimeline,
+                            self.server.recentPostsCache,
+                            self.server.maxRecentPosts,
+                            self.server.translate,
+                            self.server.projectVersion,
+                            baseDir,
+                            httpPrefix,
+                            authorized,
+                            actorJson, 'posts',
+                            self.server.session,
+                            self.server.cachedWebfingers,
+                            self.server.personCache,
+                            self.server.YTReplacementDomain,
+                            self.server.showPublishedDateOnly,
+                            self.server.newswire,
+                            self.server.themeName,
+                            self.server.dormantMonths,
+                            self.server.peertubeInstances,
+                            None, None).encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('text/html', msglen,
+                              cookie, callingDomain)
+            self._write(msg)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show profile 4 done',
+                                      'show profile posts')
+        else:
+            if self._fetchAuthenticated():
+                msgStr = json.dumps(actorJson, ensure_ascii=False)
+                msg = msgStr.encode('utf-8')
                 msglen = len(msg)
-                self._set_headers('text/html', msglen,
+                self._set_headers('application/ld+json', msglen,
                                   cookie, callingDomain)
                 self._write(msg)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show profile 4 done',
-                                          'show profile posts')
             else:
-                if self._fetchAuthenticated():
-                    msg = json.dumps(getPerson,
-                                     ensure_ascii=False).encode('utf-8')
-                    msglen = len(msg)
-                    self._set_headers('application/json', msglen,
-                                      None, callingDomain)
-                    self._write(msg)
-                else:
-                    self._404()
-            self.server.GETbusy = False
-            return True
-        return False
+                self._404()
+        self.server.GETbusy = False
+        return True
 
     def _showBlogPage(self, authorized: bool,
                       callingDomain: str, path: str,
@@ -9189,7 +9357,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(qrFilename)
                 self._set_headers_etag(qrFilename, mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'login screen logo done',
@@ -9228,7 +9396,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -9270,7 +9438,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mimeType = mediaFileMimeType(bannerFilename)
                 self._set_headers_etag(bannerFilename, mimeType,
                                        mediaBinary, None,
-                                       callingDomain)
+                                       self.server.domainFull)
                 self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'account qrcode done',
@@ -9315,7 +9483,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers_etag(bgFilename,
                                                    'image/' + ext,
                                                    bgBinary, None,
-                                                   callingDomain)
+                                                   self.server.domainFull)
                             self._write(bgBinary)
                             self._benchmarkGETtimings(GETstartTime,
                                                       GETtimings,
@@ -9359,7 +9527,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(mediaFilename,
                                            'image/' + mediaFileType,
                                            mediaBinary, None,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                 self._benchmarkGETtimings(GETstartTime, GETtimings,
                                           'show media done',
@@ -9419,7 +9587,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers_etag(avatarFilename,
                                                    'image/' + mediaImageType,
                                                    mediaBinary, None,
-                                                   callingDomain)
+                                                   self.server.domainFull)
                             self._write(mediaBinary)
                         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                   'icon shown done',
@@ -9722,14 +9890,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'start', '_nodeinfo[callingDomain]')
 
-        # minimal mastodon api
-        if self._mastoApi(callingDomain):
-            return
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  '_nodeinfo[callingDomain]',
-                                  '_mastoApi[callingDomain]')
-
         if self.path == '/logout':
             if not self.server.newsInstance:
                 msg = \
@@ -9822,6 +9982,19 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'isAuthorized')
 
+        # minimal mastodon api
+        if self._mastoApi(self.path, callingDomain, authorized,
+                          self.server.httpPrefix,
+                          self.server.baseDir,
+                          self.authorizedNickname,
+                          self.server.domain,
+                          self.server.domainFull):
+            return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  '_nodeinfo[callingDomain]',
+                                  '_mastoApi[callingDomain]')
+
         if not self.server.session:
             print('Starting new session during GET')
             self.server.session = createSession(self.server.proxyType)
@@ -9880,7 +10053,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/sharedInbox' or \
            self.path == '/users/inbox' or \
            self.path == '/actor/inbox' or \
-           self.path == '/users/'+self.server.domain:
+           self.path == '/users/' + self.server.domain:
             # if shared inbox is not enabled
             if not self.server.enableSharedInbox:
                 self._503()
@@ -9958,6 +10131,24 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.debug)
             return
 
+        usersInPath = False
+        if '/users/' in self.path:
+            usersInPath = True
+
+        if usersInPath and self.path.endswith('/collections/featured'):
+            self._getFeaturedCollection(callingDomain,
+                                        self.path,
+                                        self.server.httpPrefix,
+                                        self.server.domainFull)
+            return
+
+        if usersInPath and self.path.endswith('/collections/featuredTags'):
+            self._getFeaturedTagsCollection(callingDomain,
+                                            self.path,
+                                            self.server.httpPrefix,
+                                            self.server.domainFull)
+            return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'sharedInbox enabled', 'rss3 done')
 
@@ -10021,7 +10212,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # list of registered devices for e2ee
         # see https://github.com/tootsuite/mastodon/pull/13820
-        if authorized and '/users/' in self.path:
+        if authorized and usersInPath:
             if self.path.endswith('/collections/devices'):
                 nickname = self.path.split('/users/')
                 if '/' in nickname:
@@ -10047,7 +10238,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'blog view done',
                                   'registered devices done')
 
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
                 self._showPersonOptions(callingDomain, self.path,
@@ -10165,7 +10356,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'terms of service done')
 
         # show a list of who you are following
-        if htmlGET and authorized and '/users/' in self.path and \
+        if htmlGET and authorized and usersInPath and \
            self.path.endswith('/followingaccounts'):
             nickname = getNicknameFromActor(self.path)
             followingFilename = \
@@ -10282,7 +10473,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(mediaFilename)
                     self._set_headers_etag(mediaFilename, mimeType,
                                            mediaBinary, cookie,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'profile.css done',
@@ -10322,7 +10513,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mimeType = mediaFileMimeType(screenFilename)
                     self._set_headers_etag(screenFilename, mimeType,
                                            mediaBinary, cookie,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'manifest logo done',
@@ -10368,7 +10559,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers_etag(iconFilename,
                                            mimeTypeStr,
                                            mediaBinary, cookie,
-                                           callingDomain)
+                                           self.server.domainFull)
                     self._write(mediaBinary)
                     self._benchmarkGETtimings(GETstartTime, GETtimings,
                                               'show screenshot done',
@@ -10382,7 +10573,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'login screen logo done')
 
         # QR code for account handle
-        if '/users/' in self.path and \
+        if usersInPath and \
            self.path.endswith('/qrcode.png'):
             if self._showQRcode(callingDomain, self.path,
                                 self.server.baseDir,
@@ -10396,7 +10587,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'account qrcode done')
 
         # search screen banner image
-        if '/users/' in self.path:
+        if usersInPath:
             if self.path.endswith('/search_banner.png'):
                 if self._searchScreenBanner(callingDomain, self.path,
                                             self.server.baseDir,
@@ -10485,7 +10676,7 @@ class PubServer(BaseHTTPRequestHandler):
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
-            self._showCachedAvatar(callingDomain, self.path,
+            self._showCachedAvatar(self.server.domainFull, self.path,
                                    self.server.baseDir,
                                    GETstartTime, GETtimings)
             return
@@ -10696,7 +10887,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'hashtag search done')
 
         # show or hide buttons in the web interface
-        if htmlGET and '/users/' in self.path and \
+        if htmlGET and usersInPath and \
            self.path.endswith('/minimal') and \
            authorized:
             nickname = self.path.split('/users/')[1]
@@ -10716,7 +10907,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if self.path.endswith('/search') or \
                '/search?' in self.path:
                 if '?' in self.path:
@@ -10760,7 +10951,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'search screen shown done')
 
         # Show the calendar for a user
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if '/calendar' in self.path:
                 # show the calendar screen
                 msg = htmlCalendar(self.server.cssCache,
@@ -10782,7 +10973,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'calendar shown done')
 
         # Show confirmation for deleting a calendar event
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if '/eventdelete' in self.path and \
                '?time=' in self.path and \
                '?id=' in self.path:
@@ -10802,7 +10993,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'calendar delete shown done')
 
         # search for emoji by name
-        if htmlGET and '/users/' in self.path:
+        if htmlGET and usersInPath:
             if self.path.endswith('/searchemoji'):
                 # show the search screen
                 msg = htmlSearchEmojiTextEntry(self.server.cssCache,
@@ -11320,7 +11511,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'individual post done',
                                   'post replies done')
 
-        if self.path.endswith('/roles') and '/users/' in self.path:
+        if self.path.endswith('/roles') and usersInPath:
             if self._showRoles(authorized,
                                callingDomain, self.path,
                                self.server.baseDir,
@@ -11340,7 +11531,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show roles done')
 
         # show skills on the profile page
-        if self.path.endswith('/skills') and '/users/' in self.path:
+        if self.path.endswith('/skills') and usersInPath:
             if self._showSkills(authorized,
                                 callingDomain, self.path,
                                 self.server.baseDir,
@@ -11361,7 +11552,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get an individual post from the path
         # /users/nickname/statuses/number
-        if '/statuses/' in self.path and '/users/' in self.path:
+        if '/statuses/' in self.path and usersInPath:
             if self._showIndividualPost(authorized,
                                         callingDomain, self.path,
                                         self.server.baseDir,
@@ -11548,7 +11739,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show shares 2 done')
 
         # block a domain from htmlAccountInfo
-        if authorized and '/users/' in self.path and \
+        if authorized and usersInPath and \
            '/accountinfo?blockdomain=' in self.path and \
            '?handle=' in self.path:
             nickname = self.path.split('/users/')[1]
@@ -11584,7 +11775,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # unblock a domain from htmlAccountInfo
-        if authorized and '/users/' in self.path and \
+        if authorized and usersInPath and \
            '/accountinfo?unblockdomain=' in self.path and \
            '?handle=' in self.path:
             nickname = self.path.split('/users/')[1]
@@ -12898,8 +13089,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 3)
 
+        usersInPath = False
+        if '/users/' in self.path:
+            usersInPath = True
+
         # moderator action buttons
-        if authorized and '/users/' in self.path and \
+        if authorized and usersInPath and \
            self.path.endswith('/moderationaction'):
             self._moderatorActions(self.path, callingDomain, cookie,
                                    self.server.baseDir,
@@ -13139,7 +13334,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 15)
 
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
-            if '/users/' in self.path:
+            if usersInPath:
                 if authorized:
                     self.outboxAuthenticated = True
                     pathUsersSection = self.path.split('/users/')[1]
@@ -13186,7 +13381,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # receive images to the outbox
         if self.headers['Content-type'].startswith('image/') and \
-           '/users/' in self.path:
+           usersInPath:
             self._receiveImage(length, callingDomain, cookie,
                                authorized, self.path,
                                self.server.baseDir,
@@ -13362,7 +13557,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
-        if '/users/' in self.path:
+        if usersInPath:
             pathUsersSection = self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
                 if self.server.debug:

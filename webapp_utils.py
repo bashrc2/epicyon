@@ -167,8 +167,8 @@ def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
     """
-    return '       <details><summary><b>' + \
-        translate['SHOW MORE'] + '</b></summary>' + \
+    return '       <details><summary class="cw">' + \
+        translate['SHOW MORE'] + '</summary>' + \
         '<div id="' + postID + '">' + content + \
         '</div></details>\n'
 

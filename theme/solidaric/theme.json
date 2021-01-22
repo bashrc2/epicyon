@@ -40,6 +40,7 @@
     "main-bg-color-reply": "white",
     "main-bg-color-report": "white",
     "main-header-color-roles": "#ebebf0",
+    "cw-color": "#2d2c37",
     "main-fg-color": "#2d2c37",
     "login-fg-color": "#2d2c37",
     "options-fg-color": "#2d2c37",

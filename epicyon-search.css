@@ -10,6 +10,8 @@
     --border-color: #505050;
     --font-size-header: 18px;
     --font-color-header: #ccc;
+    --cw-color: #dddddd;
+    --cw-style: normal;
     --font-size: 40px;
     --font-size2: 24px;
     --font-size3: 38px;
@@ -98,6 +100,11 @@ a:visited:hover {
 
 a:focus {
     border: 2px solid var(--focus-color);
+}
+
+.cw {
+    font-style: var(--cw-style);
+    color: var(--cw-color);
 }
 
 .domainHistogramLeft {

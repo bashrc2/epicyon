@@ -92,6 +92,8 @@ from newsdaemon import hashtagRuleTree
 from newsdaemon import hashtagRuleResolve
 from newswire import getNewswireTags
 from newswire import parseFeedDate
+from mastoapiv1 import getMastoApiV1IdFromNickname
+from mastoapiv1 import getNicknameFromMastoApiV1Id
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3046,9 +3048,21 @@ def testLinksWithinPost() -> None:
     assert postJsonObject['object']['content'] == content
 
 
+def testMastoApi():
+    print('testMastoApi')
+    nickname = 'ThisIsATestNickname'
+    mastoId = getMastoApiV1IdFromNickname(nickname)
+    assert(mastoId)
+    nickname2 = getNicknameFromMastoApiV1Id(mastoId)
+    if nickname2 != nickname:
+        print(nickname + ' != ' + nickname2)
+    assert nickname2 == nickname
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testMastoApi()
     testLinksWithinPost()
     testReplyToPublicPost()
     testGetMentionedPeople()
