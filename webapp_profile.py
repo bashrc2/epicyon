@@ -229,6 +229,10 @@ def htmlProfileAfterSearch(cssCache: {},
         if profileJson['image'].get('url'):
             imageUrl = profileJson['image']['url']
 
+    alsoKnownAs = None
+    if profileJson.get('alsoKnownAs'):
+        alsoKnownAs = profileJson['alsoKnownAs']
+
     profileStr = \
         _getProfileHeaderAfterSearch(baseDir,
                                      nickname, defaultTimeline,
@@ -238,7 +242,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                      displayName, followsYou,
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl,
-                                     movedTo)
+                                     movedTo, alsoKnownAs)
 
     domainFull = getFullDomain(domain, port)
 
@@ -357,7 +361,8 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  followsYou: bool,
                                  profileDescriptionShort: str,
                                  avatarUrl: str, imageUrl: str,
-                                 movedTo: str) -> str:
+                                 movedTo: str,
+                                 alsoKnownAs: []) -> str:
     """The header of a searched for handle, containing background
     image and avatar
     """
@@ -388,6 +393,23 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             newHandle = newNickname + '@' + newDomainFull
             htmlStr += '        <p>' + translate['New account'] + \
                 ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+    elif alsoKnownAs:
+        htmlStr += \
+            '        <p>' + translate['Other accounts'] + ': '
+
+        if isinstance(alsoKnownAs, list):
+            ctr = 0
+            for altActor in alsoKnownAs:
+                if ctr > 0:
+                    htmlStr += ' '
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(altActor)
+                htmlStr += \
+                    '<a href="' + altActor + '">' + altDomain + '</a>'
+        elif isinstance(alsoKnownAs, str):
+            altDomain, altPort = getDomainFromActor(alsoKnownAs)
+            htmlStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+        htmlStr += '</p>\n'
 
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
