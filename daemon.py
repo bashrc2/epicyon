@@ -818,7 +818,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if path.endswith('/followers'):
                     sendJson = []
                     sendJsonStr = 'masto API followers sent for ' + nickname
-                if path.endswith('/following'):
+                elif path.endswith('/following'):
                     sendJson = []
                     sendJsonStr = 'masto API following sent for ' + nickname
                 else:
