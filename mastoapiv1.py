@@ -10,6 +10,42 @@ import os
 from utils import loadJson
 
 
+def getMastApiV1Id(path: str) -> int:
+    """Extracts the mastodon Id number from the given path
+    """
+    mastoId = None
+    idPath = '/api/v1/accounts/:'
+    if not path.startswith(idPath):
+        return None
+    mastoIdStr = path.replace(idPath, '')
+    if '/' in mastoIdStr:
+        mastoIdStr = mastoIdStr.split('/')[0]
+    if mastoIdStr.isdigit():
+        mastoId = int(mastoIdStr)
+        return mastoId
+    return None
+
+
+def getMastoApiV1IdFromNickname(nickname: str) -> int:
+    """Given an account nickname return the corresponding mastodon id
+    """
+    return int.from_bytes(nickname.encode('utf-8'), 'little')
+
+
+def _intToBytes(num: int) -> str:
+    if num == 0:
+        return b""
+    else:
+        return _intToBytes(num // 256) + bytes([num % 256])
+
+
+def getNicknameFromMastoApiV1Id(mastoId: int) -> str:
+    """Given the mastodon Id return the nickname
+    """
+    nickname = _intToBytes(mastoId).decode()
+    return nickname[::-1]
+
+
 def getMastoApiV1Account(baseDir: str, nickname: str, domain: str) -> {}:
     """See https://github.com/McKael/mastodon-documentation/
     blob/master/Using-the-API/API.md#account
@@ -23,7 +59,7 @@ def getMastoApiV1Account(baseDir: str, nickname: str, domain: str) -> {}:
     if not accountJson:
         return {}
     mastoAccountJson = {
-        "id": accountJson['id'],
+        "id": getMastoApiV1IdFromNickname(nickname),
         "username": nickname,
         "acct": nickname,
         "display_name": accountJson['preferredUsername'],

@@ -26,6 +26,8 @@ from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerUpdate
 from mastoapiv1 import getMastoApiV1Account
+from mastoapiv1 import getMastApiV1Id
+from mastoapiv1 import getNicknameFromMastoApiV1Id
 from metadata import metaDataInstance
 from metadata import metaDataNodeInfo
 from pgp import getEmailAddress
@@ -805,21 +807,11 @@ class PubServer(BaseHTTPRequestHandler):
                 sendJsonStr = 'masto API account sent for ' + nickname
 
         # Parts of the api which don't need authorization
-        idStr = httpPrefix + '://' + domainFull + '/users/'
-        idPath = '/api/v1/accounts/:' + idStr
-        pathNickname = None
-        if path.startswith(idPath):
-            pathNickname = path.replace(idPath, '')
-            if '/' in pathNickname:
-                pathNickname = pathNickname.split('/')[0]
-            if '?' in pathNickname:
-                pathNickname = pathNickname.split('?')[0]
-            sendJson = getMastoApiV1Account(baseDir, pathNickname, domain)
-            sendJsonStr = 'masto API account sent for ' + nickname
-        if nickname:
-            if path.startswith(idPath) or \
-               path == '/api/v1/accounts/verify_credentials':
-                sendJson = getMastoApiV1Account(baseDir, nickname, domain)
+        mastoId = getMastApiV1Id(path)
+        if mastoId is not None:
+            pathNickname = getNicknameFromMastoApiV1Id(mastoId)
+            if pathNickname:
+                sendJson = getMastoApiV1Account(baseDir, pathNickname, domain)
                 sendJsonStr = 'masto API account sent for ' + nickname
 
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
