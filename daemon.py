@@ -789,7 +789,9 @@ class PubServer(BaseHTTPRequestHandler):
             instanceDescriptionShort = \
                 getConfigParam(self.server.baseDir,
                                'instanceDescriptionShort')
-            instanceDescriptionShort = 'Yet another Epicyon Instance'
+            if not instanceDescriptionShort:
+                instanceDescriptionShort = \
+                    self.server.translate['Yet another Epicyon Instance']
             instanceDescription = getConfigParam(self.server.baseDir,
                                                  'instanceDescription')
             instanceTitle = getConfigParam(self.server.baseDir,
