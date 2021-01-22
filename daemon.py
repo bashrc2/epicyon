@@ -784,7 +784,9 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _mastoApiV1(self, path: str, callingDomain: str,
                     authorized: bool,
-                    baseDir: str, nickname: str, domain: str) -> bool:
+                    httpPrefix: str,
+                    baseDir: str, nickname: str, domain: str,
+                    domainFull: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -797,13 +799,30 @@ class PubServer(BaseHTTPRequestHandler):
         sendJson = None
         sendJsonStr = ''
 
-        # authorized parts of the api
+        # parts of the api needing authorization
         if authorized and nickname:
-            if path == '/api/v1/accounts/:id':
+            if path == '/api/v1/accounts/verify_credentials':
                 sendJson = getMastoApiV1Account(baseDir, nickname, domain)
                 sendJsonStr = 'masto API account sent for ' + nickname
 
         # Parts of the api which don't need authorization
+        idStr = httpPrefix + '://' + domainFull + '/users/'
+        idPath = '/api/v1/accounts/:' + idStr
+        pathNickname = None
+        if path.startswith(idPath):
+            pathNickname = path.replace(idPath, '')
+            if '/' in pathNickname:
+                pathNickname = pathNickname.split('/')[0]
+            if '?' in pathNickname:
+                pathNickname = pathNickname.split('?')[0]
+            sendJson = getMastoApiV1Account(baseDir, pathNickname, domain)
+            sendJsonStr = 'masto API account sent for ' + nickname
+        if nickname:
+            if path.startswith(idPath) or \
+               path == '/api/v1/accounts/verify_credentials':
+                sendJson = getMastoApiV1Account(baseDir, nickname, domain)
+                sendJsonStr = 'masto API account sent for ' + nickname
+
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
             instanceDescriptionShort = \
@@ -864,10 +883,12 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def _mastoApi(self, path: str, callingDomain: str,
-                  authorized: bool,
-                  baseDir: str, nickname: str, domain: str) -> bool:
+                  authorized: bool, httpPrefix: str,
+                  baseDir: str, nickname: str, domain: str,
+                  domainFull: str) -> bool:
         return self._mastoApiV1(path, callingDomain, authorized,
-                                baseDir, nickname, domain)
+                                httpPrefix, baseDir, nickname, domain,
+                                domainFull)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -9888,9 +9909,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # minimal mastodon api
         if self._mastoApi(self.path, callingDomain, authorized,
+                          self.server.httpPrefix,
                           self.server.baseDir,
                           self.authorizedNickname,
-                          self.server.domain):
+                          self.server.domain,
+                          self.server.domainFull):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
