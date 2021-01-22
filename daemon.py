@@ -781,7 +781,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _mastoApi(self, callingDomain: str) -> bool:
+    def _mastoApiV1(self, callingDomain: str, authorized: bool) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -789,7 +789,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.path.startswith('/api/v1/'):
             return False
         if self.server.debug:
-            print('DEBUG: mastodon api ' + self.path)
+            print('DEBUG: mastodon api v1 ' + self.path)
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
         if adminNickname and self.path == '/api/v1/instance':
             instanceDescriptionShort = \
@@ -870,6 +870,9 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         self._404()
         return True
+
+    def _mastoApi(self, callingDomain: str, authorized: bool) -> bool:
+        return self._mastoApiV1(callingDomain, authorized)
 
     def _nodeinfo(self, callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
@@ -9796,14 +9799,6 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'start', '_nodeinfo[callingDomain]')
 
-        # minimal mastodon api
-        if self._mastoApi(callingDomain):
-            return
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                  '_nodeinfo[callingDomain]',
-                                  '_mastoApi[callingDomain]')
-
         if self.path == '/logout':
             if not self.server.newsInstance:
                 msg = \
@@ -9895,6 +9890,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show logout', 'isAuthorized')
+
+        # minimal mastodon api
+        if self._mastoApi(callingDomain, authorized):
+            return
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  '_nodeinfo[callingDomain]',
+                                  '_mastoApi[callingDomain]')
 
         if not self.server.session:
             print('Starting new session during GET')
