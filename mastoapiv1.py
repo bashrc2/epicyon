@@ -62,7 +62,7 @@ def getMastoApiV1Account(baseDir: str, nickname: str, domain: str) -> {}:
         "id": getMastoApiV1IdFromNickname(nickname),
         "username": nickname,
         "acct": nickname,
-        "display_name": accountJson['preferredUsername'],
+        "display_name": accountJson['name'],
         "locked": accountJson['manuallyApprovesFollowers'],
         "created_at": "",
         "followers_count": 0,
