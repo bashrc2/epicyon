@@ -813,7 +813,12 @@ class PubServer(BaseHTTPRequestHandler):
         if mastoId is not None:
             pathNickname = getNicknameFromMastoApiV1Id(mastoId)
             if pathNickname:
-                if '/followers?' in path or '/following?' in path:
+                originalPath = path
+                if '/followers?' in path or \
+                   '/following?' in path or \
+                   '/search?' in path or \
+                   '/relationships?' in path or \
+                   '/statuses?' in path:
                     path = path.split('?')[0]
                 if path.endswith('/followers'):
                     sendJson = []
@@ -821,10 +826,45 @@ class PubServer(BaseHTTPRequestHandler):
                 elif path.endswith('/following'):
                     sendJson = []
                     sendJsonStr = 'masto API following sent for ' + nickname
+                elif path.endswith('/statuses'):
+                    sendJson = []
+                    sendJsonStr = 'masto API statuses sent for ' + nickname
+                elif path.endswith('/search'):
+                    sendJson = []
+                    sendJsonStr = 'masto API search sent ' + originalPath
+                elif path.endswith('/relationships'):
+                    sendJson = []
+                    sendJsonStr = \
+                        'masto API relationships sent ' + originalPath
                 else:
                     sendJson = \
                         getMastoApiV1Account(baseDir, pathNickname, domain)
                     sendJsonStr = 'masto API account sent for ' + nickname
+
+        if path.startswith('/api/v1/blocks'):
+            sendJson = []
+            sendJsonStr = 'masto API instance blocks sent'
+        elif path.startswith('/api/v1/favorites'):
+            sendJson = []
+            sendJsonStr = 'masto API favorites sent'
+        elif path.startswith('/api/v1/follow_requests'):
+            sendJson = []
+            sendJsonStr = 'masto API follow requests sent'
+        elif path.startswith('/api/v1/mutes'):
+            sendJson = []
+            sendJsonStr = 'masto API mutes sent'
+        elif path.startswith('/api/v1/notifications'):
+            sendJson = []
+            sendJsonStr = 'masto API notifications sent'
+        elif path.startswith('/api/v1/reports'):
+            sendJson = []
+            sendJsonStr = 'masto API reports sent'
+        elif path.startswith('/api/v1/statuses'):
+            sendJson = []
+            sendJsonStr = 'masto API statuses sent'
+        elif path.startswith('/api/v1/timelines'):
+            sendJson = []
+            sendJsonStr = 'masto API timelines sent'
 
         adminNickname = getConfigParam(self.server.baseDir, 'admin')
         if adminNickname and path == '/api/v1/instance':
