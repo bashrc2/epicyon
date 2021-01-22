@@ -793,8 +793,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not path.startswith('/api/v1/'):
             return False
-        if self.server.debug:
-            print('DEBUG: mastodon api v1 ' + path)
+        print('mastodon api v1: ' + path)
 
         sendJson = None
         sendJsonStr = ''
