@@ -1338,7 +1338,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['Other accounts'] + ':</label><br>\n'
     editProfileForm += \
         '      <input type="text" placeholder="https://..." ' + \
-        'name="otherAccounts" value="' + alsoKnownAsStr + '">\n'
+        'name="alsoKnownAs" value="' + alsoKnownAsStr + '">\n'
 
     editProfileForm += '<label class="labels">' + \
         translate['Moved to new account address'] + ':</label><br>\n'
