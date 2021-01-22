@@ -5359,6 +5359,7 @@ class PubServer(BaseHTTPRequestHandler):
             ssbAddress = None
             emailAddress = None
             lockedAccount = False
+            alsoKnownAs = None
             movedTo = ''
             actorJson = getPersonFromCache(baseDir,
                                            optionsActor,
@@ -5379,6 +5380,8 @@ class PubServer(BaseHTTPRequestHandler):
                 emailAddress = getEmailAddress(actorJson)
                 PGPpubKey = getPGPpubKey(actorJson)
                 PGPfingerprint = getPGPfingerprint(actorJson)
+                if actorJson.get('alsoKnownAs'):
+                    alsoKnownAs = actorJson['alsoKnownAs']
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
                                     self.server.translate,
@@ -5398,7 +5401,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     backToPath,
                                     lockedAccount,
-                                    movedTo).encode('utf-8')
+                                    movedTo, alsoKnownAs).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)

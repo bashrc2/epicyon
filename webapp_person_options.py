@@ -48,7 +48,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       dormantMonths: int,
                       backToPath: str,
                       lockedAccount: bool,
-                      movedTo: str) -> str:
+                      movedTo: str,
+                      alsoKnownAs: []) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -143,6 +144,24 @@ def htmlPersonOptions(defaultTimeline: str,
                 '  <p class="optionsText">' + \
                 translate['New account'] + \
                 ': <a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
+    elif alsoKnownAs:
+        optionsStr += \
+            '  <p class="optionsText">' + \
+            translate['Other accounts'] + ': '
+
+        if isinstance(alsoKnownAs, list):
+            ctr = 0
+            for altActor in alsoKnownAs:
+                if ctr > 0:
+                    optionsStr += ' '
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(altActor)
+                optionsStr += \
+                    '<a href="' + altActor + '">' + altDomain + '</a>'
+        elif isinstance(alsoKnownAs, str):
+            altDomain, altPort = getDomainFromActor(alsoKnownAs)
+            optionsStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+        optionsStr += '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
