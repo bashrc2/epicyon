@@ -4335,7 +4335,8 @@ class PubServer(BaseHTTPRequestHandler):
                             for altActor in newAlsoKnownAs:
                                 altActor = altActor.strip()
                                 if '://' in altActor and '.' in altActor:
-                                    alsoKnownAs.append(altActor)
+                                    if altActor not in alsoKnownAs:
+                                        alsoKnownAs.append(altActor)
                             actorJson['alsoKnownAs'] = alsoKnownAs
                             actorChanged = True
                     else:
