@@ -4327,6 +4327,9 @@ class PubServer(BaseHTTPRequestHandler):
                            '://' in fields['alsoKnownAs'] and \
                            '@' not in fields['alsoKnownAs'] and \
                            '.' in fields['alsoKnownAs']:
+                            if ';' in fields['alsoKnownAs']:
+                                fields['alsoKnownAs'] = \
+                                    fields['alsoKnownAs'].replace(';', ',')
                             newAlsoKnownAs = fields['alsoKnownAs'].split(',')
                             alsoKnownAs = []
                             for altActor in newAlsoKnownAs:
