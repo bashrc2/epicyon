@@ -28,7 +28,7 @@
  * Designed for intermittent connectivity. Assume network disruptions
  * Limited visibility of follows/followers
  * Suitable for single board computers
- * Progressive Web App interface. Doesn't need native apps on mobile.
+ * Progressive Web App interface. Doesn't need native apps on mobile
  * Integration with RSS feeds, for reading news or blogs
  * Moderation capabilities for posts, hashtags and blocks
 
