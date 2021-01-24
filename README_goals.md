@@ -7,7 +7,9 @@
  * Server-to-server and client-to-server protocols supported
  * Implemented in a common language (Python 3)
  * Keyword filtering.
+ * Attention to accessibility and should be usable in lynx with a screen reader
  * Remove metadata from attached images, avatars and backgrounds
+ * Support for multiple themes, with ability to create custom themes
  * Being able to build crowdsouced organizations with roles and skills
  * Sharings collection, similar to the gnusocial sharings plugin
  * Quotas for received posts per day, per domain and per account
