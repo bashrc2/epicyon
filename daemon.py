@@ -12238,6 +12238,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # remove the pinned content from profile screen
                         unpinPost(self.server.baseDir,
                                   nickname, self.server.domain)
+                        return 1
 
                 messageJson = \
                     createPublicPost(self.server.baseDir,
