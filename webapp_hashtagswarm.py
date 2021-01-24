@@ -114,6 +114,7 @@ def _getHashtagDomainHistogram(domainHistogram: {}, translate: {}) -> str:
 def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
     """Returns a tag swarm of today's hashtags
     """
+    maxTagLength = 42
     currTime = datetime.utcnow()
     daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
     daysSinceEpochStr = str(daysSinceEpoch) + ' '
@@ -150,6 +151,9 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                 continue
 
             hashTagName = f.split('.')[0]
+            if len(hashTagName) > maxTagLength:
+                # NoIncrediblyLongAndBoringHashtagsShownHere
+                continue
             if '#' + hashTagName + '\n' in blockedStr:
                 continue
             with open(tagsFilename, 'r') as fp:
@@ -193,8 +197,9 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                         if os.path.isfile(categoryFilename):
                             categoryStr = \
                                 getHashtagCategory(baseDir, hashTagName)
-                            if categoryStr not in categorySwarm:
-                                categorySwarm.append(categoryStr)
+                            if len(categoryStr) < maxTagLength:
+                                if categoryStr not in categorySwarm:
+                                    categorySwarm.append(categoryStr)
                         break
         break
 
