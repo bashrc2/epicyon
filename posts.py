@@ -162,10 +162,11 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
             continue
         if link['type'] != 'application/activity+json':
             continue
-        if not hasUsersPath(link['href']):
-            print('getUserUrl webfinger activity+json ' +
-                  'contains single user instance actor ' +
-                  str(sourceId) + ' ' + str(link))
+        if '/@' not in link['href']:
+            if not hasUsersPath(link['href']):
+                print('getUserUrl webfinger activity+json ' +
+                      'contains single user instance actor ' +
+                      str(sourceId) + ' ' + str(link))
         return link['href']
     return None
 
