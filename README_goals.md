@@ -46,6 +46,7 @@ The following are considered antifeatures of other social network systems, since
  * Direct payment mechanisms, although integration with other services may be possible
  * Any variety of blockchain
  * Sponsored posts
+ * Enterprise features for use cases applicable only to businesses. Epicyon could be used in a small business, but it's not primarily designed for that
  * Collaborative editing of posts, although you could do that outside of this system using etherpad, or similar
  * Anonymous posts from random internet users published under a single generic instance account
  * Hierarchies of roles beyond ordinary moderation, such as X requires special agreement from Y before sending a post
