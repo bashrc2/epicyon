@@ -1285,6 +1285,15 @@ def pinPost(baseDir: str, nickname: str, domain: str,
         pinFile.close()
 
 
+def unpinPost(baseDir: str, nickname: str, domain: str) -> None:
+    """Removes pinned content for then given account
+    """
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    pinnedFilename = accountDir + '/pinToProfile.txt'
+    if os.path.isfile(pinnedFilename):
+        os.remove(pinnedFilename)
+
+
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,

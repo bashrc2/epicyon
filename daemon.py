@@ -69,6 +69,7 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import pinPost
+from posts import unpinPost
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -12226,12 +12227,17 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 privateEvent = True
 
-            if not fields.get('pinToProfile'):
-                pinToProfile = False
-            else:
-                pinToProfile = True
-
             if postType == 'newpost':
+                if not fields.get('pinToProfile'):
+                    pinToProfile = False
+                else:
+                    pinToProfile = True
+                    # is the post message empty?
+                    if not fields['message']:
+                        # remove the pinned content from profile screen
+                        unpinPost(self.server.baseDir,
+                                  nickname, self.server.domain)
+
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
