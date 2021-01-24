@@ -167,6 +167,8 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
                 print('getUserUrl webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(sourceId) + ' ' + str(link))
+        else:
+            return link['href'].replace('/@', '/users/')
         return link['href']
     return None
 
