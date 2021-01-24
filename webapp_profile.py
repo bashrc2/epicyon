@@ -313,7 +313,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
                       profileDescriptionShort: str,
                       loginButton: str, avatarUrl: str,
                       theme: str, movedTo: str,
-                      alsoKnownAs: []) -> str:
+                      alsoKnownAs: [],
+                      pinnedContent) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -377,6 +378,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     htmlStr += loginButton
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
+    if pinnedContent:
+        htmlStr += pinnedContent
     return htmlStr
 
 
@@ -679,6 +682,15 @@ def htmlProfile(rssIconAtTop: bool,
         alsoKnownAs = profileJson['alsoKnownAs']
 
     avatarUrl = profileJson['icon']['url']
+
+    # get pinned post content
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    pinnedFilename = accountDir + '/pinToProfile.txt'
+    pinnedContent = None
+    if os.path.isfile(pinnedFilename):
+        with open(pinnedFilename, 'r') as pinFile:
+            pinnedContent = pinFile.read()
+
     profileHeaderStr = \
         _getProfileHeader(baseDir, httpPrefix,
                           nickname, domain,
@@ -687,7 +699,8 @@ def htmlProfile(rssIconAtTop: bool,
                           avatarDescription,
                           profileDescriptionShort,
                           loginButton, avatarUrl, theme,
-                          movedTo, alsoKnownAs)
+                          movedTo, alsoKnownAs,
+                          pinnedContent)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'

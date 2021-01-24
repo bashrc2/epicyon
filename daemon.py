@@ -68,6 +68,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import pinPost
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -12219,10 +12220,16 @@ class PubServer(BaseHTTPRequestHandler):
                 commentsEnabled = False
             else:
                 commentsEnabled = True
+
             if not fields.get('privateEvent'):
                 privateEvent = False
             else:
                 privateEvent = True
+
+            if not fields.get('pinToProfile'):
+                pinToProfile = False
+            else:
+                pinToProfile = True
 
             if postType == 'newpost':
                 messageJson = \
@@ -12242,7 +12249,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-
+                    if pinToProfile:
+                        pinPost(self.server.baseDir,
+                                nickname, self.server.domain,
+                                messageJson['object']['content'])
+                        return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,

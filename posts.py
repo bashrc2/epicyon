@@ -1273,6 +1273,18 @@ def _postIsAddressedToFollowers(baseDir: str,
     return addressedToFollowers
 
 
+def pinPost(baseDir: str, nickname: str, domain: str,
+            pinnedContent: str) -> None:
+    """Pins the given post Id to the profile of then given account
+    """
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    pinnedFilename = accountDir + '/pinToProfile.txt'
+    pinFile = open(pinnedFilename, "w+")
+    if pinFile:
+        pinFile.write(pinnedContent)
+        pinFile.close()
+
+
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
