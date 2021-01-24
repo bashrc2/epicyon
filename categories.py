@@ -32,6 +32,7 @@ def getHashtagCategory(baseDir: str, hashtag: str) -> str:
 def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
     """Returns a dictionary containing hashtag categories
     """
+    maxTagLength = 42
     hashtagCategories = {}
 
     if recent:
@@ -47,6 +48,8 @@ def getHashtagCategories(baseDir: str, recent=False, category=None) -> None:
             if not os.path.isfile(categoryFilename):
                 continue
             hashtag = f.split('.')[0]
+            if len(hashtag) > maxTagLength:
+                continue
             with open(categoryFilename, 'r') as fp:
                 categoryStr = fp.read()
 
