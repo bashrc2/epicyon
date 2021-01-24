@@ -363,6 +363,16 @@ class PubServer(BaseHTTPRequestHandler):
         print('Voting on message ' + messageId)
         print('Vote for: ' + answer)
         commentsEnabled = True
+        attachImageFilename = None
+        mediaType = None
+        imageDescription = None
+        inReplyTo = messageId
+        inReplyToAtomUri = messageId
+        subject = None
+        schedulePost = False
+        eventDate = None
+        eventTime = None
+        location = None
         messageJson = \
             createPublicPost(self.server.baseDir,
                              nickname,
@@ -370,9 +380,15 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.httpPrefix,
                              answer, False, False, False,
                              commentsEnabled,
-                             None, None, None, True,
-                             messageId, messageId, None,
-                             False, None, None, None)
+                             attachImageFilename, mediaType,
+                             imageDescription,
+                             inReplyTo,
+                             inReplyToAtomUri,
+                             subject,
+                             schedulePost,
+                             eventDate,
+                             eventTime,
+                             location)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
