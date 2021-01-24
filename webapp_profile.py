@@ -376,10 +376,10 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         '/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
-    htmlStr += '      </figcaption>\n'
-    htmlStr += '    </figure>\n\n'
     if pinnedContent:
         htmlStr += pinnedContent
+    htmlStr += '      </figcaption>\n'
+    htmlStr += '    </figure>\n\n'
     return htmlStr
 
 
