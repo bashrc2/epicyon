@@ -242,7 +242,8 @@ def htmlProfileAfterSearch(cssCache: {},
                                      displayName, followsYou,
                                      profileDescriptionShort,
                                      avatarUrl, imageUrl,
-                                     movedTo, alsoKnownAs)
+                                     movedTo, profileJson['id'],
+                                     alsoKnownAs)
 
     domainFull = getFullDomain(domain, port)
 
@@ -303,7 +304,8 @@ def htmlProfileAfterSearch(cssCache: {},
         profileStr + htmlFooter()
 
 
-def _getProfileHeader(baseDir: str, nickname: str, domain: str,
+def _getProfileHeader(baseDir: str, httpPrefix: str,
+                      nickname: str, domain: str,
                       domainFull: str, translate: {},
                       defaultTimeline: str,
                       displayName: str,
@@ -311,7 +313,8 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                       profileDescriptionShort: str,
                       loginButton: str, avatarUrl: str,
                       theme: str, movedTo: str,
-                      alsoKnownAs: []) -> str:
+                      alsoKnownAs: [],
+                      pinnedContent) -> str:
     """The header of the profile screen, containing background
     image and avatar
     """
@@ -341,22 +344,30 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
                 '<a href="' + movedTo + '">@' + \
                 newNickname + '@' + newDomainFull + '</a><br>\n'
     elif alsoKnownAs:
-        htmlStr += \
+        otherAccountsHtml = \
             '    <p>' + translate['Other accounts'] + ': '
 
+        actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+        ctr = 0
         if isinstance(alsoKnownAs, list):
-            ctr = 0
             for altActor in alsoKnownAs:
+                if altActor == actor:
+                    continue
                 if ctr > 0:
-                    htmlStr += ' '
+                    otherAccountsHtml += ' '
                 ctr += 1
                 altDomain, altPort = getDomainFromActor(altActor)
-                htmlStr += \
+                otherAccountsHtml += \
                     '<a href="' + altActor + '">' + altDomain + '</a>'
         elif isinstance(alsoKnownAs, str):
-            altDomain, altPort = getDomainFromActor(alsoKnownAs)
-            htmlStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
-        htmlStr += '</p>\n'
+            if alsoKnownAs != actor:
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(alsoKnownAs)
+                otherAccountsHtml += \
+                    '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+        otherAccountsHtml += '</p>\n'
+        if ctr > 0:
+            htmlStr += otherAccountsHtml
     htmlStr += \
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
@@ -365,6 +376,8 @@ def _getProfileHeader(baseDir: str, nickname: str, domain: str,
         '/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
+    if pinnedContent:
+        htmlStr += pinnedContent
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
     return htmlStr
@@ -379,7 +392,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
                                  followsYou: bool,
                                  profileDescriptionShort: str,
                                  avatarUrl: str, imageUrl: str,
-                                 movedTo: str,
+                                 movedTo: str, actor: str,
                                  alsoKnownAs: []) -> str:
     """The header of a searched for handle, containing background
     image and avatar
@@ -412,22 +425,30 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             htmlStr += '        <p>' + translate['New account'] + \
                 ': < a href="' + movedTo + '">@' + newHandle + '</a></p>\n'
     elif alsoKnownAs:
-        htmlStr += \
+        otherAccountshtml = \
             '        <p>' + translate['Other accounts'] + ': '
 
+        ctr = 0
         if isinstance(alsoKnownAs, list):
-            ctr = 0
             for altActor in alsoKnownAs:
+                if altActor == actor:
+                    continue
                 if ctr > 0:
-                    htmlStr += ' '
+                    otherAccountshtml += ' '
                 ctr += 1
                 altDomain, altPort = getDomainFromActor(altActor)
-                htmlStr += \
+                otherAccountshtml += \
                     '<a href="' + altActor + '">' + altDomain + '</a>'
         elif isinstance(alsoKnownAs, str):
-            altDomain, altPort = getDomainFromActor(alsoKnownAs)
-            htmlStr += '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
-        htmlStr += '</p>\n'
+            if alsoKnownAs != actor:
+                ctr += 1
+                altDomain, altPort = getDomainFromActor(alsoKnownAs)
+                otherAccountshtml += \
+                    '<a href="' + alsoKnownAs + '">' + altDomain + '</a>'
+
+        otherAccountshtml += '</p>\n'
+        if ctr > 0:
+            htmlStr += otherAccountshtml
 
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += '      </figcaption>\n'
@@ -661,14 +682,25 @@ def htmlProfile(rssIconAtTop: bool,
         alsoKnownAs = profileJson['alsoKnownAs']
 
     avatarUrl = profileJson['icon']['url']
+
+    # get pinned post content
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    pinnedFilename = accountDir + '/pinToProfile.txt'
+    pinnedContent = None
+    if os.path.isfile(pinnedFilename):
+        with open(pinnedFilename, 'r') as pinFile:
+            pinnedContent = pinFile.read()
+
     profileHeaderStr = \
-        _getProfileHeader(baseDir, nickname, domain,
+        _getProfileHeader(baseDir, httpPrefix,
+                          nickname, domain,
                           domainFull, translate,
                           defaultTimeline, displayName,
                           avatarDescription,
                           profileDescriptionShort,
                           loginButton, avatarUrl, theme,
-                          movedTo, alsoKnownAs)
+                          movedTo, alsoKnownAs,
+                          pinnedContent)
 
     profileStr = profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'

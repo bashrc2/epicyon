@@ -485,6 +485,12 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 'name="commentsEnabled" checked><label class="labels"> ' + \
                 translate['Allow replies.'] + '</label></p>\n'
 
+        if endpoint == 'newpost':
+            dateAndLocation += \
+                '<p><input type="checkbox" class="profilecheckbox" ' + \
+                'name="pinToProfile"><label class="labels"> ' + \
+                translate['Pin this post to your profile.'] + '</label></p>\n'
+
         if not inReplyTo and endpoint != 'newevent':
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \

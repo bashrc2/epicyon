@@ -3,544 +3,532 @@
 <channel>
     <title>#categories</title>
 <item>
-  <title>sport</title>
-  <description>billiard darts swim motorsport snooker marathon hockey diving baseball Millwall sailing athletics skating skiing sport football</description>
+  <title>retro</title>
+  <description>retrocomputer A500 atarist commodore teletext floppy 8bit atari trs80 floppydisk retrocomputing C64 plan9 80s microcomputing omm retrogaming z80 8bitdo retro retropie amiga bbcmicro microcomputer bbsing</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>sport</title>
+  <description>billiard darts swim motorsport snooker marathon hockey bouldering diving baseball Millwall sailing athletics dumpsterdiving skating skiing sport football</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>events</title>
-  <description>neverforget award OONIbday waybackwednesday notifications throwbackthursday adventskalender live Day deepthoughts thingaday screenshotsaturday thursdaythoughts beethoven250thbirthday humanrightsday followfriday afediversechristmas wednesdaymotivation showerthoughts beethoven anarchymonday 100DaysToOffload ff holiday christmas week concert festival FridayFolklore screenshottuesday dontstarve onthisday livestream BowieDay sunday screenshotsunday liverpool adayinthelife day ccc InternationalCheetahDay interestingtimes christmaslights meetup</description>
+  <description>neverforget award OONIbday waybackwednesday IndigenousPeoplesDay5 notifications throwbackthursday adventskalender live Day deepthoughts thingaday screenshotsaturday thursdaythoughts beethoven250thbirthday humanrightsday followfriday afediversechristmas wednesdaymotivation PostLikeYouThinkACrabWouldSunday showerthoughts beethoven anarchymonday 100DaysToOffload 0day ff holiday ipv4flagday christmas week concert festival FridayFolklore screenshottuesday dontstarve onthisday livestream BowieDay sunday weekendvibes screenshotsunday VerseThursday liverpool adayinthelife day ccc InternationalCheetahDay interestingtimes sideprojectsunday birthday christmaslights meetup</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>gafam</title>
-  <description>zuckerberg caringissharing ads apple antitrust SpringerEnteignen ABoringDystopia GoogleDown AppleSearch bankruptBezos youtube ffs facebook interoperability amazon boycottinstagram amazonring Gafam googleplus degooglisation siri Facebook LeiharbeitAbschaffen advertising monopolies adtech fuckgoogle plottertwitter microsoft dtm twitter caffeine skype chrome hildebrandt youtubedl degoogled youtubers google sharingiscaring gis walledgarden dt dotcoms deleteyoutube Instagram fascistbook FuckGoogle degoogle fuschia appleiie ungoogled ring stopgoogle affordances googledown gafam inspiring fuckoffgoogle deletefacebook fuckoffgoogleandco office365 instagram MatrixEffect playstore bigtech whatsapp deleteamazon</description>
+  <description>zuckerberg caringissharing ads apple antitrust SpringerEnteignen ABoringDystopia GoogleDown AppleSearch bankruptBezos googlesearch youtube Goggle headset ffs facebook interoperability amazon farcebook boycottinstagram amazonring Gafam googleplus degooglisation siri Facebook LeiharbeitAbschaffen advertising monopolies adtech fuckgoogle plottertwitter microsoft dtm twitter skype chrome hildebrandt corporateGiant uitkeringen youtubedl degoogled youtubers google gis walledgarden GAFCAM dt dotcoms deleteyoutube Instagram walledgardens fascistbook FuckGoogle degoogle fuschia appleiie deleteinstagram ungoogled ring stopgoogle affordances googledown gafam inspiring fuckoffgoogle deletefacebook fuckoffgoogleandco office365 instagram playstore bigtech whatsapp deleteamazon bluesky</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>activitypub</title>
-  <description>followerpower FederatedSocialMedia Fediverse activitypub activertypub pleroma losttoot PeerTube gofed fediblock lazyfedi federation instances fedilab pixiv mastotips mastodev mastotip friendica hiveway misskey siskin followers fediart blocking Pixelfed contentwarnings pixelfed fediverseplaysjackbox mapeocolaborativo fedidb block FediMemories Feditip Fediseminar onlyfedi socialcg monal tusky peertubers imagedescription feditips fedizens Mastodon following epicyon development peertubeadmin collaboration mastomagic dev fediadmin pixeldev fosstodon instanceblock mastodonmonday isolategab fedireads PeertubeMastodonHost Bookwyrm federated socialhome greenfediverse microblocks fedivers MastodonMondays fediverse imagedescriptions mastoadmin smithereen blabber mastodon fedi fediplay peertube developer lab mobilizon gemifedi</description>
+  <description>followerpower FederatedSocialMedia Fediverse activitypub activertypub pleroma losttoot PeerTube gofed pixelfedlabs fediblock lazyfedi federation instances fedilab pixiv mastotips fedilabfeature mastodev mastotip friendica hiveway mastodonart misskey joinmastodon siskin followers fediart blocking Pixelfed contentwarnings pixelfed fediverseplaysjackbox mapeocolaborativo fedidb block FediMemories Feditip fablab Fediseminar onlyfedi socialcg monal tusky peertubers imagedescription joinpeertube feditips fedizens Mastodon following map epicyon development peertubeadmin collaboration mastomagic YearOfTheFediverse dev fediadmin pixeldev timeline socialmedia fosstodon instanceblock mastodonmonday isolategab greenmastodon fedireads PeertubeMastodonHost Bookwyrm federated socialhome greenfediverse microblocks fedivers MastodonMondays fediverse imagedescriptions Fedilab mastoadmin smithereen blabber FediverseFutures mastodon fedi fediplay peertube lab mobilizon gemifedi</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>programming</title>
-  <description>Easer cpp report programming css objects Python FrancisBacon2020 mixers webdev gui release ada schutzstreifen rustlang ocaml program request_reaction uptronics hypocritcal profiles typescript forums vscode publiccode computerscience vieprivée early adventofcode cgit scripting warn spyware git solid trevornoah zinccoop tailwindcss raku fedidev c sourcecode publiekecode misc framaforms WendyLPatrick grep django gmic sackthelot gitportal gitlab relevance_P1Y kingparrot Leiharbeit programmer haskell OpenSourceHardware Tarifvertrag unicode frgmntscnr github digitalmarketsact freecodecamp openrc tuskydev threema algorithms lisp digitaldefenders forge pleaseshare HirsuteHippo resnetting fourtwenty libraries drivers freecode javascript fragment cpm code elisp patterns eq html terminal rust sauerkraut request spiritbomb r dramasystem go esbuild documentary golang clojurescript ruby contractpatch computers racket bugreport python indiedev kabelfernsehen alternatives OpenSource Scheibenwischer</description>
+  <description>Easer cpp programming css objects Python digitalisierung FrancisBacon2020 mixers webdev gui release ada schutzstreifen proofofwork rustlang ocaml program DigitalSouveräneSchule request_reaction uptronics hypocritcal profiles typescript forums vscode publiccode computerscience vieprivée early adventofcode cgit scripting warn git solid trevornoah zinccoop tailwindcss penguicon raku fedidev c sourcecode publiekecode framaforms WendyLPatrick grep django gmic sackthelot gitportal gitlab decoder relevance_P1Y kingparrot Leiharbeit programmer haskell OpenSourceHardware Tarifvertrag unicode gerrit frgmntscnr github digitalmarketsact freecodecamp openrc tuskydev threema algorithms lisp digitaldefenders forge pleaseshare HirsuteHippo resnetting fourtwenty developers libraries drivers freecode javascript fragment cpm code elisp commands patterns eq html terminal rust request spiritbomb r dramasystem go esbuild documentary golang clojurescript ruby contractpatch obsolescence_programmée computers developer racket bugreport mercurial python indiedev kabelfernsehen alternatives OpenSource Scheibenwischer</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>nature</title>
-  <description>hiking wat StormBella morning trees lichen light birds nature frogs sunrise moutains coldwater inaturalist forest morningcrew australianwildlife capybara enlightenment natur deforestation morningwalk amphibians</description>
+  <description>hiking wat StormBella morning trees lichen badger light birds nature frogs sunrise moutains coldwater inaturalist forest morningcrew australianwildlife capybara goodmorning enlightenment natur deforestation morningwalk amphibians</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>writing</title>
-  <description>blog tootfic authors poem magazine smallstories blogging smallpoems writing blogs noblogo microfiction interactivestorytelling westernjournal quote WriteFreely storytelling goodreads creativewriting journal poetry</description>
+  <description>blog tootfic authors poem blogPages magazine smallstories blogging smallpoems writing blogs noblogo microfiction interactivestorytelling westernjournal quote WriteFreely storytelling goodreads creativewriting zines journalists journal poetry</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>hardware</title>
-  <description>plugandplay purism opennic PersonalComputer cyberdeck PineCUBE keyboards screenless pinebook modem analogcomputing TrueDelta keyboard ArmWorkstation daretocare laptops printmaker cybredeck computing laptop solarpunk recycling lenovo fairelectronics fuse ibm 3dprinting MechcanicalKeyboards hardware retrohardware openhardware raspberrypi barcode pinetime pinebookpro PinebookPro 3dprint arm paperComputer amd openpower devopa thinkpad raspberrypi4 print electronic</description>
+  <description>iot plugandplay purism opennic PersonalComputer cyberdeck PineCUBE keyboards electron screenless homebrewcomputing pinebook modem analogcomputing TrueDelta keyboard screenprinting ArmWorkstation daretocare laptops electronics printmaker deck cybredeck computing laptop solarpunk recycling theatrelighting lenovo fairelectronics fuse ibm 3dprinting MechcanicalKeyboards hardware retrohardware openhardware raspberrypi barcode PlanetComputer pinetime pinebookpro PinebookPro 3dprint mechanicalkeyboard arm PinePower paperComputer amd openpower devopa thinkpad raspberrypi4 print electronic</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>places</title>
-  <description>lapaz luanda asunción nouakchott conakry kyiv moscow saipan gibraltar dublin KlimaGerechtigkeit catalunya dannibleibt avarua hargeisa delhi niamey chișinău colombo brasília phnompenh mbabane danni belgrade belmopan pyongyang hannover ulaanbaatar oranjestad gaborone seattle ndjamena raw singapore kingedwardpoint abidjan nuuk pretoria papeete malé zagreb gitega abudhabi flyingfishcove castries georgetown hagåtña cassette borikua basseterre hamburg kinshasa suva valparaíso athens roseau baku charlotteamalie antananarivo domi pristina videocalls santiago sukhumi berlin uptronicsberlin funafuti libreville stopchasseacourre puertorico hanoi philipsburg tehran banjul prague andorralavella daw yerevan portauprince dakar paramaribo tifariti capetown tirana klima ankara ipswich managua lisbon bishkek amsterdam portonovo santodomingo bangkok bucharest kathmandu aden madrid sanjuan vienna kingston kabul damascus stockholm douglas willemstad thehague panamacity RassismusTötet beirut amman newdelhi tórshavn nouméa oslo alofi gustavia paris video cockburntown ottawa classical stepanakert portofspain klimakrise fsberlin honiara asmara florida nicosia helsinki taipei tegucigalpa tokyo tashkent larochelle MadeInEU sarajevo algiers KlimaKrise nairobi muscat monaco riyadh lusaka wellington bissau juba mariehamn klimaatcrisis majuro buenosaires ngerulmud dhaka guatemalacity washington vatican kuwaitcity londonboaters bern mexicocity bratislava bridgetown delhipolice tunis manila stanley matautu copenhagen barcelona lomé budapest ouagadougou mogadishu freetown victoria brazzaville portmoresby ashgabat kampala elaaiún vilnius bloemfontein sucre london marseille pagopago bradesestate oakland vaduz addis nürnberg naypyidaw CassetteNavigation khartoum baghdad bandar moroni lehavre portvila kingstown ChrisCrawford reykjavík manama accra windhoek nukualofa ciutatvella tbilisi canberra quito maputo cetinje putrajaya ramallah bogotá dodoma harare havana warsaw münster valletta localberlin ljubljana bamako kualalumpur podgorica rabat cotonou plymouth seoul Portland dushanbe bangui aotearoa westisland tskhinvali palikir caracas jamestown rome munich ass freestuffberlin sãotomé jakarta daressalaam sansalvador apia essex yaren cairo jerusalem brussels kigali southtarawa beijing minsk montevideo vientiane maseru hamilton doha tripoli celtic portlouis lima adamstown deventer weimar abuja lilongwe nassau lobamba heathrow nyc strawberry montreal dili riga assembly lesbos monrovia nursultan gab sanjosé klimaatrechtvaardigheid marigot islamabad malabo tallinn sahara thimphu yaoundé praia bujumbura washingtondc sofia skopje</description>
+  <description>lapaz luanda asunción nouakchott conakry kyiv moscow saipan gibraltar dublin KlimaGerechtigkeit catalunya dannibleibt avarua hargeisa delhi niamey chișinău freestuff colombo brasília phnompenh mbabane danni belgrade belmopan pyongyang hannover ulaanbaatar oranjestad Reykjavik gaborone seattle ndjamena raw singapore kingedwardpoint abidjan nuuk asshole pretoria papeete malé zagreb gitega abudhabi flyingfishcove castries georgetown hagåtña cassette borikua basseterre hamburg kinshasa suva valparaíso athens roseau baku charlotteamalie antananarivo domi pristina videocalls santiago sukhumi berlin uptronicsberlin funafuti libreville stopchasseacourre puertorico ClimateChange hanoi philipsburg tehran banjul prague andorralavella daw yerevan portauprince dakar paramaribo tifariti capetown tirana klima ankara ipswich managua lisbon bishkek amsterdam portonovo santodomingo bangkok bucharest kathmandu aden madrid sanjuan vienna kingston kabul damascus stockholm douglas willemstad thehague panamacity RassismusTötet beirut amman newdelhi tórshavn nouméa oslo alofi gustavia paris video cockburntown ottawa classical stepanakert portofspain klimakrise class fsberlin honiara berniememe asmara florida nicosia helsinki taipei tegucigalpa tokyo tashkent larochelle MadeInEU sarajevo algiers KlimaKrise nairobi muscat monaco riyadh lusaka wellington bissau juba mariehamn klimaatcrisis majuro buenosaires ngerulmud dhaka guatemalacity washington vatican kuwaitcity londonboaters SystemChangeNotClimateChange bern mexicocity bratislava myasstodontownhall bridgetown prince delhipolice crowsnestpass tunis manila stanley matautu copenhagen barcelona lomé budapest ouagadougou mogadishu freetown victoria brazzaville portmoresby ashgabat kampala elaaiún vilnius bloemfontein sucre london passalong marseille berniesanders pagopago bradesestate oakland vaduz addis nürnberg naypyidaw CassetteNavigation khartoum baghdad bandar moroni lehavre portvila kingstown ChrisCrawford reykjavík manama accra windhoek nukualofa classic ciutatvella tbilisi canberra quito maputo cetinje putrajaya ramallah bogotá dodoma harare havana warsaw münster valletta localberlin ljubljana bamako kualalumpur podgorica rabat cotonou plymouth seoul Portland dushanbe bangui aotearoa westisland tskhinvali palikir caracas jamestown rome munich ass freestuffberlin bass sãotomé jakarta daressalaam sansalvador seo apia essex yaren cairo jerusalem brussels kigali southtarawa beijing minsk montevideo vientiane maseru hamilton doha tripoli celtic portlouis lima adamstown deventer weimar abuja lilongwe nassau lobamba heathrow nyc strawberry montreal dili riga assembly lesbos monrovia nursultan gab sanjosé klimaatrechtvaardigheid marigot islamabad fb malabo tallinn sahara thimphu yaoundé praia bujumbura washingtondc sofia skopje</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>music</title>
-  <description>musicprodution punk ourbeats indiemusic streetpunk bikepunks bandcamp musicians jamendo ipod skinheadmusic rap mp3 indie Music EnvoieStopHashtagAu81212 thecure vaporwave dubstep synthwave bootstrap oi rave freemusic nowplaying hiphop experimentalmusic spotify liberapay fedimusic musicbrainz soundcloud frankiegoestohollywood ccmusic typographie dj newwave dorkwave producing musicproduction lastfm funkwhale punkwear retrosynth NowPlaying libremusicproduction MusicAdvent coinkydink arianagrande synth music np darkwave mastomusic grapheneos metal fediversemusic cyberpunkmusic BandcampFriday</description>
+  <description>musicprodution punk ourbeats vollgasindiekrise indieweb indiemusic streetpunk bikepunks bandcamp musicians jamendo ipod skinheadmusic rap shoegaze mp3 indie Music EnvoieStopHashtagAu81212 thecure posthardcore vaporwave IndustrialMusicForIndustrialPeople Mixtip dubstep synthwave bootstrap oi rave freemusic nowplaying hiphop hardcore experimentalmusic spotify liberapay fedimusic musicbrainz soundcloud frankiegoestohollywood ccmusic typographie dj newwave dorkwave producing musicproduction lastfm funkwhale punkwear retrosynth NowPlaying libremusicproduction MusicAdvent coinkydink arianagrande synth music np graphics darkwave mastomusic grapheneos metal polychromatic funk fediversemusic cyberpunkmusic BandcampFriday</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>politics</title>
-  <description>TakeOurPowerBack trump cia community wageslavery immigration dissent liberation fascism techtuesday skyofmywindow techthursday freedomofspeech fascisme rojava humanrights leftists Socialism ukpol FreeKeithLamar Antifascisme copwatch capitalismkills petition BorisJohnson freedom abolitionnow anarchism DefundThePolice technews polizeigewalt smalltech antifascists oilwars kommunismus bjp ThirdRunway hierarchy election republicans solidarity techwear sky_of_my_window generalstrike antipolitics digitalfreedom mayday hatespeech fascists lowtech a11y burntheprisons cyberlaw peerproduction corporations iww freeassange commons corporatewatch wageslave uspol frontex communism RemoveThePolice Immigration neoliberalism socialecology MutualAid capitalism technology prisons wealth conspiracytheories corporatecrime communist KeirStarmer taoteching anarchismus politics inclusivity HeroesResist brightgreen anarchisme DominicCummings nzpol Bookchin ClemencyNow brexit totalitarianism privatisation TyskySour Labour freethemall green BAME decolonizeyourmind privilege antikapitalisme AbolishPrisonsAbolishPolice surfaceworldblows ecofascism SocietalChange facialrecognition corruption anarchy Feminism propaganda endsars decolonization digitalrights feminism polizei neo xp 18Source censorshipBook radicaltech conspiracy redandanarchistskinheads radicaldemocracy PritiPatel latestagecapitalism racist MexicanRevolution elections RussellMaroonShoatz commonspub white prisoners warrants policebrutality borisjohnson Anarchist press mutuality whitehouse freedomofexpression censorship decolonize emmet decenterwhiteness Biden ChineseAppBan cooperative modi law deathtoamerica manipulation firetotheprisons britpol Capitalism surveillancecapitalism leftist Revolution ukpolitics JeremyCorbyn blacklivesmatter FreeAlabamaMovement rentstrike dsa techno migration mutualaid multipleexposure AbolishPrison anarchists fascist socialcoop anarchistprisoners polizeiproblem uselection IDPol Antifa Slavetrade met ourstreets freespeech refugees acab ecology SurveillanceCapitalism freewestpapua sunnytech tech</description>
+  <description>Riot riot TakeOurPowerBack trump Anarchy cia alwaysantifascist community wageslavery immigration dissent liberation laws fascism techtuesday skyofmywindow techthursday freedomofspeech anarchist freeexpression fascisme rojava humanrights crime leftists Socialism ukpol FreeKeithLamar Antifascisme copwatch capitalismkills petition BorisJohnson meteorología freedom techdirt abolitionnow anarchism DefundThePolice technews legal polizeigewalt smalltech antifascists oilwars kommunismus bjp ThirdRunway hierarchy election republicans solidarity techwear sky_of_my_window mybodymychoice generalstrike fuckBiden antipolitics digitalfreedom mayday hatespeech fascists lowtech LateStageOfCapitalism ciencia a11y burntheprisons cyberlaw peerproduction corporations iww freeassange commons corporatewatch wageslave uspol frontex communism RemoveThePolice makecapitalismhistory Immigration neoliberalism socialecology MutualAid capitalism technology prisons wealth conspiracytheories corporatecrime DirectAction communist KeirStarmer taoteching anarchismus politics inclusivity HeroesResist brightgreen poc anarchisme DominicCummings nzpol Bookchin ClemencyNow Inauguration2021 brexit totalitarianism privatisation TyskySour Labour freethemall green BAME decolonizeyourmind alternative privilege antikapitalisme AbolishPrisonsAbolishPolice surfaceworldblows ecofascism SocietalChange facialrecognition corruption anarchy Feminism propaganda endsars decolonization digitalrights feminism polizei neo democracy Govts xp powerpolitics 18Source censorshipBook radicaltech conspiracy anarchistbookclub redandanarchistskinheads radicaldemocracy PritiPatel latestagecapitalism racist MexicanRevolution elections RussellMaroonShoatz commonspub white prisoners warrants policebrutality borisjohnson Anarchist press Anarchism mutuality whitehouse metager freedomofexpression censorship decolonize keinmenschistillegal emmet decenterwhiteness Biden ChineseAppBan cooperative modi antifa law deathtoamerica manipulation firetotheprisons britpol Capitalism surveillancecapitalism leftist Revolution ukpolitics glenngreenwald JeremyCorbyn blacklivesmatter FreeAlabamaMovement mononeon rentstrike dsa lawandorder techno migration mutualaid multipleexposure AbolishPrison anarchists fascist socialcoop DefundSurveillanceCapitalism anarchistprisoners whistleblowers polizeiproblem speech uselection IDPol Antifa deathtofascism Slavetrade met ourstreets extremist freespeech refugees BernieSanders acab ecology SurveillanceCapitalism antifascism freewestpapua sunnytech tech</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>food</title>
-  <description>vitamind cake margarine zwartepiet dessert salsa caviar theexpanse BellaSpielt cookery pietons food skillet spiel liquor milk bolognese recipe foodporn yeast drinking plate waffle biscuit glaze omelette filet pastry wine hamburger juice Amazfish sourdough nuts gras toast broth batter foodie spiele ketchup divoc seasoning mayo soup pan voc imateapot teamcapy mayonnaise vegan dish avocado spice bakery cooking yogurt crumble cider butter mastokitchen cook pottery mastocook cobbler steak pizza soda fedikitchen aroma oil angelfish flour cream nutella pie cuisine tartar tea marinade mushroom entree lfi bread salad beans fresh syrup fermentation mushrooms cookie wordstoliveby curd soysauce pudding beer baking fish foodwaste wheat pot TeamFerment stew chocolate paste wok recipes olive burger candy kitchen coffee bagel taste SpieleWinter2020 meat noodle raclette caramel rice eggs grill poutine lard croissant pasta foods cheese oregano drink muffin foie sauce soy vore pandemie cocoa sandwich mousse chili vinegar</description>
+  <description>vitamind cake margarine zwartepiet dessert salsa caviar theexpanse BellaSpielt cookery pietons food skillet spiel liquor milk bolognese recipe foodporn yeast drinking plate waffle biscuit glaze omelette filet pastry wine hamburger juice Amazfish sourdough nuts gras toast broth batter foodie spiele ketchup divoc seasoning mayo soup pan voc imateapot teamcapy mayonnaise vegan dish avocado spice bakery butterfly cooking yogurt thecandycrystalrainbowcodex crumble cider caffeine butter mastokitchen cook pottery mastocook cobbler steak pizza soda fedikitchen aroma oil angelfish flour cream nutella pie cuisine potse tartar kropotkin tea marinade mushroom entree lfi bread salad beans fresh syrup fermentation mushrooms cookie wordstoliveby curd soysauce pudding beer baking peterkropotkin fish foodwaste wheat pot TeamFerment sauerkraut stew chocolate paste wok recipes olive burger candy spanish kitchen coffee bagel taste SpieleWinter2020 meat noodle raclette caramel rice eggs grill poutine lard croissant pasta vegane foods cheese oregano drink muffin foie sauce soy growyourfood vore pandemie cocoa sandwich mousse chili vinegar</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>farming</title>
   <description>johndeere</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>countries</title>
-  <description>romania burma lithuania solomon chile Instanz fiji tajikistan benin paraguay eeuu senegal ukraine italy brunei nicaragua guyana Pflanzenbestimmung euphoria zambia iceland morocco netherlands swaziland bosnian solo suriname winningatlife elsalvador russia samoa european czech belarus hayabusa2 kyrgyzstan uk abuse translation sanmarino catalonia panama japan buyused venezuela gambia freeNukem kuwait barbados papua greece switzerland uae nigeria usa angola honduras djibouti laos sierraleone cambodia ych vietnam neofeud seychelles marshall kazakhstan estonia tonga stlucia burundi bangladesh egypt mali congo us jordan speedrun grenada israel psychic algeria ghana bosnia translations russian industrial eritrea bhutan ios hungary saudi slovenia tig czechosvlovakia bahamas australia kiribati togo koreanorth poland Überbevölkerung malawi capeverde run armenia american hautrauswasgeht bahrain mozambique beleuchtung southsudan syria micronesia maldives iran indigenous sweden ethiopia cuba liberia canada burkina somalia Chile scotland aur vaticancity easttimor austria turkey yemen Bolivia denmark trunk madagascar finland philippines ivorycoast haiti ecuador Portugal azerbaijan gasuk spain albania afghanistan europe mauritania dominica thailand belize westpapuauprising macedonia montenegro qatar mongolia costarica boatingeurope birdsofkenya latvia uzbekistan kabelaufklärung ireland iraq malaysia mexico mauritius oman chad nz georgia zimbabwe france serbia lesotho oddmuse tunisia argentina czechia cameroon namibia sudan indonesia colombia tuvalu britainology beckychambers turkmenistan tanzania germany neuhier norway comoros auteursrecht guatemala Thailand kosovo andorra wales servus pakistan belgium china antigua life koreasouth newzealand einzelfall rwanda luxembourg libya italyisntreal nauru Anarchismus moldova palau taiwan kenya trinidad eu botswana CuriosidadesVariadas jamaica vanuatu cyprus aminus3 malta polychromatic niger westpapua busse unitedstates myanmar saintvincent guinea nepal peru uganda uruguay india lebanon neurodiversity southafrica croatia europeanunion bolivia chinese dominican srilanka bulgaria slovakia speedrunning gabon psychedelicart stkitts liechtenstein brazil shutdowncanada</description>
+  <description>romania burma lithuania solomon chile Instanz fiji tajikistan benin paraguay eeuu icelandtrip senegal ukraine italy brunei nicaragua guyana Pflanzenbestimmung euphoria zambia iceland morocco netherlands swaziland bosnian solo suriname winningatlife elsalvador russia samoa european czech belarus hayabusa2 kyrgyzstan uk abuse translation sanmarino catalonia panama africa japan buyused venezuela gambia freeNukem kuwait barbados papua greece switzerland uae nigeria usa angola honduras djibouti laos sierraleone cambodia ych vietnam neofeud seychelles marshall kazakhstan estonia tonga stlucia burundi bangladesh egypt mali congo us jordan speedrun grenada israel psychic algeria ghana bosnia translations russian industrial eritrea bhutan ios hungary saudi slovenia tig czechosvlovakia bahamas australia kiribati togo koreanorth poland Überbevölkerung malawi capeverde run armenia american hautrauswasgeht bahrain mozambique beleuchtung southsudan syria micronesia maldives iran indigenous nonprofitindustrialcomplex sweden ethiopia cuba liberia canada burkina somalia Chile scotland aur russiaToday vaticancity easttimor austria turkey yemen Bolivia denmark trunk USBased madagascar finland philippines ivorycoast haiti ecuador Portugal azerbaijan gasuk spain albania afghanistan europe mauritania dominica ökonomisierung thailand belize westpapuauprising nerdlife macedonia montenegro thenetherlands qatar mongolia costarica boatingeurope birdsofkenya latvia uzbekistan kabelaufklärung ireland iraq malaysia mexico mauritius oman chad nz de georgia zimbabwe france serbia lesotho oddmuse tunisia argentina czechia cameroon namibia sudan indonesia colombia kryptowährung tuvalu britainology beckychambers turkmenistan tanzania germany neuhier norway comoros auteursrecht guatemala Thailand kosovo andorra wales servus pakistan belgium china antigua life koreasouth newzealand visiticeland einzelfall rwanda luxembourg libya indywales italyisntreal nauru Anarchismus moldova palau taiwan kenya trinidad eu botswana CuriosidadesVariadas jamaica vanuatu cyprus aminus3 malta Icelandic niger westpapua busse unitedstates myanmar saintvincent guinea nepal peru uganda uruguay india lebanon neurodiversity southafrica croatia europeanunion bolivia chinese dominican srilanka bulgaria slovakia speedrunning gabon psychedelicart stkitts liechtenstein neofeudalism brazil shutdowncanada</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>cycling</title>
-  <description>bicycle cycling bike thingsonbikes Snowbike cyclist</description>
+  <description>bicycle cycling bike motorbike thingsonbikes Snowbike cyclist</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>phones</title>
-  <description>mobileapp pine fdroid plasmamobile android linuxmobile phones smartphone iOS14 linuxphones mobilelinux QWERTYphones siskinim Smartphones plasma phosh BriarProject librem5 osm pinetab pinephone mobile pine64 fairphone ubuntutouch Android ubports osmand vodafone linuxonmobile iphones postmarketos iOS microg mobileKüfA</description>
+  <description>mobileapp mobian pine fdroid plasmamobile android ubportsqanda linuxmobile phone phones Mobian smartphone sms4you iOS14 linuxphones mobilelinux QWERTYphones siskinim Smartphones androiddev plasma phosh BriarProject librem5 ubportsinstaller osm linuxphone pinetab pinephone mobile pine64 fairphone ubuntutouch Android ubports osmand vodafone linuxonmobile iphones postmarketos iOS microg mobileKüfA</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>security</title>
-  <description>signalboost encrypt letsencrypt autoritäreretatismus omemo password cryptography solarwinds communityalgorithmictrust infosec gchq IHaveSomethingToHide IronySec cryptowars supplychainattacks UseAMaskUseTor cyberattack security tor e2e bruceschneier vpn openssh openssl e2ee ed25519 encryption ssh misshaialert crypto giftofencryption malware opsec keepass torsocks nsa protonvpn yubikey nitrokey openpgp castor9 gpgtools gpg fotopiastory cybersecurity CryptoWars signal noscript trust cryptocurrency cryptomator openvpn datasecurity encryptiost securitynow tracking cloudflare</description>
+  <description>securedrop signalboost encrypt letsencrypt autoritäreretatismus omemo messenger password keepassxc cryptography solarwinds communityalgorithmictrust infosec gchq IHaveSomethingToHide IronySec cryptowars supplychainattacks UseAMaskUseTor cyberattack security tor shortstory e2e bruceschneier vpn openssh openssl cryptoart spyware e2ee ed25519 torproject encryption ssh misshaialert encryptionsist crypto giftofencryption malware righttorepair opsec keepass TastySecurity torsocks nsa protonvpn yubikey nitrokey openpgp castor9 gpgtools gpg fotopiastory cybersecurity Tor CryptoWars signal noscript trust itsecurity cryptocurrency cryptomator signalmessenger openvpn datasecurity autorotate regulators leak drugstore encryptiost securitynow storage tracking cloudflare</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>science</title>
-  <description>math womeninstem supercollider nextgeneration dna archaeologist dawkins graphTheory psychology biology generation gene paleontology</description>
+  <description>energyflow math STEM stem womeninstem supercollider nextgeneration dna archaeologist generalstreik dawkins graphTheory psychology biology chemistry geology geography physics botany botanical zoology ecology science generation gene paleontology anthropology linguistic epidemiology biotech biomedical bioengineering archeology ethnology climatology oceanography meterology</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>pandemic</title>
   <description>covid19 corona psmeandmywholefamilycaughtcovidfromwork Coronavirus CoronaWarnApp facemasks vaccines vaccine pandemic contacttracing tier4 covid coronavirus masks virus Lockdown rna codid19 COVID19 YesWeWork ContactTracing COVID</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>software</title>
-  <description>app freedombox windows libre nginx Framasoft invidious drm publicdomain kubernetes fossmendations jami FuckOffZoom quicksy whiteboard free docker freesoftware gimp foss matrix thefreethoughtproject filesystems nextcloud wechat openscad TabOrder ikiwiki Linux FreeSoftware rocketchat outreachy lyft nitter discord opensource diaspora yunohost littlebigdetails cabal conferencing libreboot accessibility devops owncast emacs freiesoftware writefreely email chatapps HappyNewYear floss plugins deltachat application uifail FOSS bittorrent vlc zoom tiling gpl FriendofGNOME usability obnam snap cryptpad software OwnStream upstream slack zrythm gnu mumble grsync freecad telegram containers blockchain irssi mcclim mutt design gameoftrees backup rotonde freetube GNU thunderbird sysadmin parler apps chat licensing screenreaders LINMOBapps profanity Tankklappe ffmpeg fossandcrafts lemmy OSM agpl distributedledger ghostscript win10 element chatty nativeApp jitsi wordpress ux rsync libreoffice dino plugin OCUPACAOCARLOSMARIGHELLA openoffice</description>
+  <description>ui app freedombox windows libre nginx Framasoft invidious drm publicdomain kubernetes fossmendations freedoom jami FuckOffZoom quicksy whiteboard free docker freesoftware gimp foss matrix designjustice thefreethoughtproject filesystems nextcloud wechat openscad TabOrder ikiwiki Linux FreeSoftware rocketchat thanksfreesw outreachy synapse lyft nitter discord opensource diaspora yunohost oss littlebigdetails cabal conferencing libreboot accessibility devops owncast emacs freiesoftware writefreely bigbluebutton email chatapps HappyNewYear floss plugins libresoftware deltachat application uifail FOSS bittorrent vlc zoom tiling gpl GNOME FriendofGNOME usability obnam snap cryptpad software OwnStream upstream slack Element zrythm gnu mumble grsync freecad telegram containers blockchain irssi mcclim mutt design gameoftrees backup LinuxSpotted rotonde freetube GNU thunderbird sysadmin parler apps chat licensing screenreaders LINMOBapps profanity Tankklappe ffmpeg fossandcrafts lemmy reboot OSM freesw agpl strafmaatschappij distributedledger principiadiscordia ghostscript win10 elemental element chatty nativeApp MatrixEffect jitsi wordpress ux rsync libreoffice dino plugin xwiki openoffice discordia sounddesign</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>internet</title>
+  <description>decentralised immersiveweb dotcons i2p spam firefox redecentralize decentral wikipedia rtmp dataprotection decentralization inclusiónsocial decentralize w3c dotConism selfhosted maille torrent data sitejs publicserviceinternet internetarchaeology WordPress darkages self contentmoderation distributed mydata decentralizedweb socialhub router protection dataretention bigdata selfhosting communityhosting brave icann selfsustaining hosting discourse weblate PeerToPeer dns openstandards nojs oauth hypercore CDNsAreEvil protonmail standards yourdataisyourdata internetfreedom gemini webui InternetCrimeFamily internetBanking SmallWeb cw distributedcoop xmpp semanticweb socialnetwork selfie website content highavailability domains ntp socialnetworks metadata Meme proton disco icmp videocast jabber webbrowsers decentralized wiki ssb darknet cookies darkweb netcat darktable Reddit server browser cloudy IPFS p2p social antisocial www ilovewikipedia web WebsiteStatus netshutdowns twitch im 9front theserverroom domain OpenStreetMap filesharing rss openstreetmap ipns mozilla voicemail mail i2pd ipfs internetradio browsers wikidata decentralizeit netscape mixcloud gmail openculture letthenetwork cyberspace messaging offthegrid cloud internet decentralisation serverMeddling sneakernet internetarchive godot dweb js dark beakerbrowser openweb onlineharms dot thepiratebay ftp internetshutdowns fixtheweb lazyweb socialweb mozillahubs webmention</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>history</title>
+  <description>heirloom history makeinghistory anarchisthistory</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>gardening</title>
-  <description>sporespondence blockade inde independant deno cabbage bundeswehr onions bordeaux datenschleuder florespondence garden thyme DailyFlowers acu permaculture papuamerdeka flowers gardening de devilslettuce fahrräder golden</description>
+  <description>sporespondence blockade inde mastogarden deno cabbage bundeswehr onions bordeaux datenschleuder florespondence garden thyme DailyFlowers acu kinderbijslag permaculture papuamerdeka lag gardens flowers gardening plants devilslettuce fahrräder golden toeslagenaffaire</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>conferences</title>
-  <description>debconf talk fossdem FreedomBoxSummit apconf2020 schmoocon summit confidenceTricks minidebconf rc3worldleaks emacsconf MCH2021 ox defcon flossevent conf rC3 rC3World conference flossconf apconf rC3one C3 config</description>
+  <description>debconf talk fossdem FreedomBoxSummit apconf2020 schmoocon summit confidenceTricks minidebconf rc3worldleaks emacsconf MCH2021 ox defcon flossevent conf rC3 rC3World conference flossconf apconf rC3one smalltalk C3 config</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>news</title>
+  <description>report news Wikileaks newsletter newsflash rt bbc doubledownnews journalism SkyNews</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>cats</title>
-  <description>Cat dailycatpic dxp DailyCatVid dx katze CatsOfMastodon Leopard catbellies LapCats</description>
+  <description>Cat dailycatpic dxp DailyCatVid dx katze kotorico CatsOfMastodon Leopard catbellies LapCats</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>employment</title>
-  <description>InterviewQuestions mywork reproductivework bullshitjobs antiwork kreaturworks worklog hire hirefedi carework nowhiring work letthenetwork jobs sexworker</description>
+  <description>InterviewQuestions mywork reproductivework bullshitjobs antiwork kreaturworks worklog hire hirefedi carework nowhiring obs obsolescence work jobs sexworker</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>radio</title>
-  <description>cbradio hamr whydopeopledoshitlikethis amateurradio radiohost oshw localization vantascape vantaradio ca radio healthcare listening hamradio FreeAllPoliticalPrisoners card10 radiobroadcasting 3dcad radioshow local noshame osh hackerpublicradio california listeningtonow radiobroadcast spazradio anonradio io</description>
+  <description>cbradio hamr why whydopeopledoshitlikethis macintosh amateurradio radiohost oshw localization vantascape vantaradio ca radio healthcare listening hamradio FreeAllPoliticalPrisoners card10 radiobroadcasting radioshow local noshame osh hackerpublicradio california listeningtonow radiobroadcast mastoradio spazradio anonradio io</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>economics</title>
+  <description>workercoop bank bitcoin theWorkshop feministeconomics WealthConcentration disabilitycrowdfund coops valuesovereignty funding platformcoop usebitcoin workercoops economics value business platformcooperatives shopping displacement shop plaintextaccounting crowdfund RIPpla bankingCartel startups HenryGeorge plant crowdfunding limitstogrowth companies sharingiscaring techcoops disability micropatronage lgbtcrowdfund monetize smallbusiness pla kommerzialisierung GitPay gdp deplatforming coop smallbusinesses whyBitcoin infoshop limits values banks planetary plannedObsolence</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>years</title>
   <description>newyearsresolutions Year2020 year 1yrago newyear happynewyear 5yrsago newyearseve</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>linux</title>
-  <description>osdev opensuse linuxisnotanos elementaryos cli kde Debian11 slackware mobian openwrt distros nixos nix DebianBullseye shareyourdesktop wireguard linuxaudio nixpkgs gtk debian trisquel gnome linuxposting showyourdesktop windowmanager desktop ubuntu gnulinux justlinuxthings xubuntu unix fedora centos gentoo usergroup systemd linuxgaming Debian distro destinationlinux gtk3 qubesos i3wm kubuntu haiku linuxisnotaplatform linux EMMS netbsd termux btrfs reproduciblebuilds artix gtk4 archlinuxarm archlinux rhel debianinstaller linuxisajoke</description>
+  <description>osdev opensuse linuxisnotanos elementaryos cli shell kde Debian11 slackware openwrt distros nixos nix DebianBullseye ubuntubuzz shareyourdesktop wireguard linuxaudio nixpkgs gtk debian trisquel gnome linuxposting showyourdesktop windowmanager desktop platform ubuntu gnulinux justlinuxthings xubuntu unix fedora centos openmandriva gentoo liveusb usergroup systemd linuxgaming Debian distro destinationlinux gtk3 qubesos i3wm kubuntu JuiceFS haiku linuxisnotaplatform linux EMMS netbsd termux btrfs reproduciblebuilds artix gtk4 archlinuxarm bash archlinux GNUlinux rhel debianinstaller debianindia linuxisajoke</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>photos</title>
-  <description>nikon 90mm photography photo photogrpahy tokyocameraclub photos photoshop camera cameras myphoto picture streetphotography</description>
+  <description>nikon 90mm photography photo photogrpahy tokyocameraclub photos photoshop camera cameras myphoto picture streetphotography photoreference</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>internet</title>
-  <description>immersiveweb dotcons i2p spam firefox redecentralize decentral wikipedia rtmp decentralization inclusiónsocial decentralize w3c torrent data sitejs publicserviceinternet internetarchaeology WordPress darkages self contentmoderation distributed router dataretention bigdata selfhosting communityhosting icann hosting discourse weblate PeerToPeer dns openstandards nojs oauth hypercore CDNsAreEvil protonmail standards yourdataisyourdata internetfreedom gemini webui SmallWeb distributedcoop xmpp semanticweb socialnetwork selfie content domains ntp socialnetworks Meme proton disco icmp videocast jabber webbrowsers decentralized wiki ssb darknet cookies darkweb netcat darktable Reddit server browser cloudy IPFS p2p social antisocial www ilovewikipedia web WebsiteStatus netshutdowns twitch 9front theserverroom socialmedia domain OpenStreetMap filesharing rss ipns mozilla voicemail mail i2pd ipfs internetradio browsers decentralizeit netscape openculture cyberspace messaging offthegrid cloud internet decentralisation serverMeddling internetarchive godot js dark openweb onlineharms dot thepiratebay ftp internetshutdowns fixtheweb socialweb mozillahubs</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>crafts</title>
-  <description>topic_imadethis hackerexchange textile upholstery hackgregator dust3d hackers hackerspaces sanding sundiy knitting hack biohacking wip jewelry diy upcycling woodworking origami makers quilting hacker quilt 3dmodel woodwork ceramics embroidery</description>
+  <description>coloredpencil topic_imadethis hackerexchange textile upholstery hackgregator dust3d hackers hackerspaces sanding solvespace sundiy maker knitting hack biohacking wip jewelry diy upcycling woodworking 3dcad origami makers quilting hacker quilt 3dmodel tinkering hacking woodwork ceramics embroidery shacks teardown</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>pets</title>
-  <description>catpics catofmastodon reEducationCamp mastodogs catbehaviour Coolcats dogsofmastodon gentrification fostercats cats kittens pet dog caturday catsofmastodon cute catstodon dogs mastocats notpixiethecat londoninnercitykitties cat catcontent</description>
+  <description>catpics catofmastodon TheRabbitHole reEducationCamp mastodogs rats catbehaviour Coolcats petrats dogsofmastodon gentrification broadcats fostercats cats kittens pet dog caturday catsofmastodon cute catstodon dogs mastocats notpixiethecat londoninnercitykitties cat furry catcontent</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>art</title>
-  <description>paperart Linke water urban glassart artvsartist2020 abstract bsd earthship dccomics circuitsculpture watercolor memes autisticartist barrigòtic art open krita urbanart queerart deviantart adultcolouring collage jordanlynngribbleart openai harmreductionart openmoko wallpaper agriculture streetart coverart stickers fiberart MastoArt particl ParticlV3 culture opencl fiberarts polArt ink painting opencoop digitalart comic artwork openbsd mandala xkcd comics santa mastoart illustration artopencall gnuimagemanipulationprogram os wireart cartoon webcomic furryart DisabledArtist openstreetmap sticker artbreeder arttherapy TattoosOfTheFediverse artvsartist abstractart sculpture artist meme cultureshipnames concretepoetry artwithopensource opencallforartists commissionsopen peppertop visionaryart blackartist zines zine furry genart pixelart alisajart WaterDrinkers opencollective openrailwaymap JuliaHartleyBrewer artistsOfMastodon</description>
+  <description>paperart CreativeToots Linke water urban glassart artalley artvsartist2020 abstract bsd earthship dccomics circuitsculpture watercolor memes autisticartist barrigòtic art open krita urbanart queerart deviantart adultcolouring source collage jordanlynngribbleart linkedin thinkabout openai harmreductionart openmoko openra wallpaper agriculture streetart coverart stickers fiberart MastoArt particl ParticlV3 culture opencl fiberarts polArt ink painting opencoop digitalart comic artwork openbsd mandala politicalcartoon xkcd comics mastoart illustration artopencall gnuimagemanipulationprogram os wireart cartoon webcomic furryart DisabledArtist pink sticker enbyart artbreeder arttherapy TattoosOfTheFediverse digitalpainting artvsartist abstractart drawing sculpture artist meme cultureshipnames concretepoetry artwithopensource commissions opencallforartists commissionsopen fountainpenink peppertop visionaryart blackartist zine artists genart stickerei pixelart alisajart WaterDrinkers opencollective openrailwaymap JuliaHartleyBrewer artistsOfMastodon</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>news</title>
-  <description>news Wikileaks newsletter newsflash rt bbc doubledownnews journalism SkyNews</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>games</title>
-  <description>minecraft tetris99 TerraNil runequest boardgames computergames fucknintendo gameassets FediDesign gamedesign chess nintendoswitch mud indiegame game 0ad gameart opengameart sign ttrpg gamedev guildwars2 TetrisGore gaming gameing nintendo Gamesphere rpg tetris dosgaming DnD cyber2077 tarot cyberpunk2077 gamesforcats FreeNukum supermariomaker2 neopets minetest guildwars dnd games</description>
+  <description>minecraft tetris99 ageofempires TerraNil runequest boardgames computergames fucknintendo gameassets FediDesign gamedesign chess nintendoswitch mud indiegame game 0ad gameart opengameart sign asset ttrpg gamedev guildwars2 TetrisGore gaming gamemaker gameing nintendo roleplayinggames Gamesphere rpg tetris dosgaming DnD cyber2077 tarot cyberpunk2077 gamesforcats FreeNukum supermariomaker2 neopets minetest guildwars dnd games</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>legal</title>
-  <description>eek hfgkarlsruhe amro SpreekJeUitBekenKleur GameSphere OnlineHarmsBill laipower gdpr intros Anticritique learning energyflow rms digitalservicesact geekproblem dmca</description>
+  <description>eek hfgkarlsruhe amro SpreekJeUitBekenKleur GameSphere OnlineHarmsBill laipower gdpr intros Anticritique learning peekier rms mojeek digitalservicesact geekproblem dmca</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>climate</title>
-  <description>energy renewables clouds renewableenergy amp climateemergency climate windenergy coal sciencefiction skypack globalwarming climatechange weather climatecamp windpower pollution science fossilfuels sky climatescience climateaction climatecrisis</description>
+  <description>energy renewables clouds renewableenergy amp climateemergency climate windenergy coal sciencefiction skypack globalwarming climatechange weather climatecamp windpower pollution global science fossilfuels sky climatescience climateaction climatecrisis</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
-  <title>retro</title>
-  <description>A500 atarist commodore teletext floppy 8bit atari trs80 floppydisk retrocomputing C64 plan9 80s microcomputing omm retrogaming z80 8bitdo retro retropie commissions amiga bbcmicro microcomputer bbsing</description>
+  <title>audio</title>
+  <description>feed audioproduction pulseaudio audi audiofeedback audio</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>indymedia</title>
-  <description>visionontv tredtionalmedia globleIMC indymediaback pga indymedia hs2IMC indymediaIMC network roadsIMC omn tv roadstonowhereIMC UKIMC 4opens openmedianetwork</description>
+  <description>visionontv tredtionalmedia degeek globleIMC indymediaback pga indymedia networking hs2IMC indymediaIMC network roadsIMC stupidindivialisam omn tv roadstonowhereIMC UKIMC 4opens openmedianetwork</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>media</title>
-  <description>livestreaming mainstreaming stream trad streaming weAreAllCrazy maiabeyrouti sustainability diymedia submedia theatlantic traditionalmedia videos wikimedia railroads taina ai realmedia media independentmedia</description>
+  <description>livestreaming mainstreaming stream trad selfsustainable kawaiipunkstreams mainstream streaming weAreAllCrazy maiabeyrouti sustainability diymedia submedia theatlantic traditionalmedia videos newsmedia wikimedia railroads taina ai realmedia media independentmedia theintercept</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>activism</title>
-  <description>protestor grassroot FreeLibreOpen g20 bekannt riseup sflc DanniVive reuse fsfe softwarefreedom ann activist xr SustainableUserFreedom directaction eff change openrightsgroup protest JeffreySDukes actiondirecte kroymann HS2 ngo MarcWittmann fsf StopHS2 grassroots antireport ClimateJustice BLM changeisinyourhands conservancy JefferySaunders Kolektiva XR freeolabini announcement isolateByoblu annieleonard</description>
+  <description>protestor grassroot FreeLibreOpen g20 bekannt riseup sflc DanniVive reuse fsfe softwarefreedom ann activist xr SustainableUserFreedom directaction eff change openrightsgroup protest JeffreySDukes actiondirecte kroymann HS2 ngo MarcWittmann fsf StopHS2 grassroots antireport ClimateJustice BLM changeisinyourhands conservancy ngos JefferySaunders LiliannePloumen mongodb Kolektiva XR freeolabini announcement isolateByoblu annieleonard</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>questions</title>
   <description>askmastodon askfedi question askmasto askfediverse ask askfosstodon</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>birds</title>
-  <description>RainbowBeeEater pigeonlover bird</description>
+  <description>RainbowBeeEater pigeon pigeonlover bird</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>ethics</title>
-  <description>digitalethics ethics ethicallicense ethical</description>
+  <description>digitalethics ethics ethicallicense license ethical</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>disability</title>
   <description>ableism disabled</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>economics</title>
-  <description>bitcoin theWorkshop feministeconomics WealthConcentration disabilitycrowdfund coops valuesovereignty funding platformcoop workercoops economics value shop crowdfund RIPpla startups HenryGeorge crowdfunding limitstogrowth micropatronage lgbtcrowdfund monetize smallbusiness pla GitPay gdp coop smallbusinesses infoshop limits</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>podcasts</title>
-  <description>podcasting IntergalacticWasabiHour podcast tilde til tilderadio tildes podcasts tildeverse smallisbeautiful fertilizers tilvids</description>
+  <description>podcasting IntergalacticWasabiHour podcast tilde til postmarketOSpodcast tilderadio tildes podcasts tildeverse smallisbeautiful fertilizers tilvids</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>gender</title>
+  <description>broketrans transwomen transcrowdfund womensart female nonbinary trans transpositivity transphobia women estradiol queer ragingqueerenergy genderQuiz gender genderqueerpositivity woman transrights</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>culture</title>
   <description>etiquette</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>funding</title>
-  <description>donate disabledcrowdfund fundraiser patreon</description>
+  <description>donate disabledcrowdfund fundraiser led patreon</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>identity</title>
   <description>boomer</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>political</title>
-  <description>copservation linguisticProgramming</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>fashion</title>
-  <description>brasil fashionistas fashionesta bras fashion socks patches</description>
+  <description>brasil fashionistas fashionesta bras fashionista fashion socks patches feditats</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>techbros</title>
+  <description>einfachredeneben redhat hackernews red reddit redis</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>month</title>
   <description>april july march chapril october november august june december september may feburary january month</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>people</title>
+  <description>Andrychów RichardDWolff noamchomsky monbiot aldoushuxley aaronswartz relationships AskVanta James Mary John Patricia Robert Bob Jennifer Michael Linda William Elizabeth David Barbara Richard Susan Joseph Jessica Thomas Sarah Charles Karen Christopher Chris Nancy Daniel Lisa Matthew Margaret Anthony Betty Donald Sandra Mark Ashley Paul Dorothy Steven Kimberly Andrew Emily Kenneth Donna Joshua Michelle Kevin Carol Brian Amanda George Melissa Edward Deborah Ronald Stephanie Timothy Rebecca Jason Laura Jeffrey Jeff Sharon Ryan Cynthia Jacob Kathleen Gary Amy Nicholas Shirley Eric Angela Jonathan Helen Stephen Anna Larry Brenda Justin Pamela Scott Nicole Brandon Samantha Benjamin Katherine Samuel Emma Frank Ruth Gregory Christine Raymond Catherine	Alexander Debra Patrick	Rachel Jack Carolyn Dennis Janet Jerry Virginia Tyler Maria Aaron Heather Jose Diane Henry Julie Adam Joyce Douglas Victoria Nathan Kelly Peter Christina Zachary Lauren Kyle Joan Walter Evelyn Harold Olivia Jeremy Judith Ethan Megan Carl Cheryl Keith Martha Roger Andrea Gerald Frances Christian Hannah Terry Jacqueline Sean Ann Arthur	Gloria Austin Jean Noah	Kathryn Lawrence Alice Jesse Teresa Joe	Sara Bryan Janice Billy Doris Jordan Madison Albert Julia Dylan Grace Bruce Judy Willie Abigail Gabriel	Marie Alan Denise Juan Beverly Logan Amber Wayne Theresa Ralph Marilyn Roy Danielle Eugene Diana Randy Brittany Vincent Natalie Russell Sophia Louis Rose Philip Isabella Bobby Alexis Johnny Kayla Bradley Charlotte james mary john patricia robert bob jennifer michael linda william elizabeth david barbara richard susan joseph jessica thomas sarah charles karen christopher chris nancy daniel lisa matthew margaret anthony betty donald sandra mark ashley paul dorothy steven kimberly andrew emily kenneth donna joshua michelle kevin carol brian amanda george melissa edward deborah ronald stephanie timothy rebecca jason laura jeffrey jeff sharon ryan cynthia jacob kathleen gary amy nicholas shirley eric angela jonathan helen stephen anna larry brenda justin pamela scott nicole brandon samantha benjamin katherine samuel emma frank ruth gregory christine raymond catherinealexander debra patrickrachel jack carolyn dennis janet jerry virginia tyler maria aaron heather jose diane henry julie adam joyce douglas victoria nathan kelly peter christina zachary lauren kyle joan walter evelyn harold olivia jeremy judith ethan megan carl cheryl keith martha roger andrea gerald frances christian hannah terry jacqueline sean ann arthurgloria austin jean noahkathryn lawrence alice jesse teresa joesara bryan janice billy doris jordan madison albert julia dylan grace bruce judy willie abigail gabrielmarie alan denise juan beverly logan amber wayne theresa ralph marilyn roy danielle eugene diana randy brittany vincent natalie russell sophia louis rose philip isabella bobby alexis johnny kayla bradley charlotte</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>books</title>
-  <description>justhollythings earthsea ebooks book amreading failbook bookwyrm bookreview theLibrary wayfarers fakebook books bookreviews ebook epub cookbook</description>
+  <description>justhollythings bookclub earthsea ebooks book amreading failbook bookwyrm bookreview reading theLibrary wayfarers fakebook books bookreviews ebook epub cookbook</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>comedy</title>
   <description>laugh humour satire irony standup funny humor</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>techbros</title>
-  <description>einfachredeneben redhat hackernews red reddit</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>health</title>
-  <description>medical burnout cannabis medicine treatment EmotionalFirstAid maryjane autistic neurodivergent health meds marijuana mentalhealth</description>
+  <description>medical burnout cannabis medicine treatment EmotionalFirstAid safeabortion4all maryjane autistic neurodivergent health motion meds marijuana mentalhealth healthy</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>facts</title>
   <description>funfact didyouknow lifehack</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>ai</title>
   <description>machinelearning</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>seasons</title>
-  <description>spring autumn winter summer solstice wintersolstice</description>
+  <description>spring autumn winter ice santa summer solstice wintersolstice</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>gender</title>
-  <description>transwomen transcrowdfund womensart female nonbinary trans transpositivity transphobia women estradiol queer genderQuiz genderqueerpositivity woman transrights</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>philosophy</title>
-  <description>minimalism maximalist maximalism stoic postmodernism minimalist</description>
+  <description>minimalism maximalist maximalism philosophy stoic postmodernism minimalist</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>history</title>
-  <description>history anarchisthistory</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>fiction</title>
   <description>cyberpunk thehobbit fiction genrefiction</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>introductions</title>
   <description>newhere firsttoot recommends Introduction Introductions introduction intro introductions</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>audio</title>
-  <description>audioproduction audi audiofeedback audio</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>scifi</title>
   <description>startrekdiscovery startrek starwars babylon5</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>bots</title>
   <description>bot humanrobotinteraction</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>religion</title>
-  <description>neopagan pagan catholic</description>
+  <description>neopagan pagan catholic genesis</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>help</title>
   <description>mastohelp helpful help</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>obituaries</title>
-  <description>rip</description>
+  <description>tripadvisor rip</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>privacy</title>
+  <description>Privacy privacypolicy surveillancetech privacymatters surveillance dataprivacy privacywashing privacy WhatsappPrivacy</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>astronomy</title>
-  <description>amateurastronomy astronomy space jupiter BackYardAstronomy moon saturn milkyway</description>
+  <description>telescope mercury venus mars amateurastronomy astronomy space jupiter saturn neptune uranus pluto BackYardAstronomy moon saturn milkyway asteroid galaxy nebula blackhole observatory</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>photography</title>
   <description>landscapephotography</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>privacy</title>
-  <description>privacypolicy surveillancetech privacymatters surveillance dataprivacy privacy WhatsappPrivacy</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>moderation</title>
   <description>fedblock</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>entertainment</title>
+  <description>legallyblonde watching Thundercat entertainment me meow un nowwatching themandalorian nt</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>languages</title>
   <description>lojban gaelic</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>environment</title>
   <description>s climatechaos</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>election</title>
   <description>voted vote</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
-  <title>#music</title>
-  <description>trance</description>
+  <title>other</title>
+  <description>independant itscomplicated misc OCUPACAOCARLOSMARIGHELLA</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
+</item>
+<item>
+  <title>microcontroller</title>
+  <description>esp32 microcontroller arduino</description>
+  <link/>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>licenses</title>
   <description>copyright creative creativetoots common creativecommons</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>education</title>
   <description>education teach tutorial</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
-  <title>microcontroller</title>
-  <description>microcontroller arduino</description>
+  <title>war</title>
+  <description>weaponsofmathdestruction wmd WMD siege fort weapons tank guns military bomber warplane conflict battle antiwar civilwar army navy airforce landmine</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>people</title>
-  <description>monbiot aldoushuxley relationships AskVanta</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>scotland</title>
   <description>glasgow highlands edinburgh loch</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>entertainment</title>
-  <description>watching Thundercat thisisthetypeofmemethatilikecauseitcontainsreptiles entertainment me meow un nowwatching themandalorian</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>#software</title>
-  <description>flatpak</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>microcontrollers</title>
   <description>esp8266 esp32</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
-</item>
-<item>
-  <title>war</title>
-  <description>weapons</description>
-  <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>france</title>
   <description>Macronavirus</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>travel</title>
   <description>travel taxi</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 <item>
   <title>architecture</title>
   <description>concrete</description>
   <link/>
-  <pubDate>Sun, 10 Jan 2021 20:09:37 UT</pubDate>
+  <pubDate>Sun, 24 Jan 2021 10:52:55 UT</pubDate>
 </item>
 </channel>
 </rss>

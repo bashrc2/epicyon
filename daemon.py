@@ -68,6 +68,9 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import pinPost
+from posts import jsonPinPost
+from posts import undoPinnedPost
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -360,6 +363,16 @@ class PubServer(BaseHTTPRequestHandler):
         print('Voting on message ' + messageId)
         print('Vote for: ' + answer)
         commentsEnabled = True
+        attachImageFilename = None
+        mediaType = None
+        imageDescription = None
+        inReplyTo = messageId
+        inReplyToAtomUri = messageId
+        subject = None
+        schedulePost = False
+        eventDate = None
+        eventTime = None
+        location = None
         messageJson = \
             createPublicPost(self.server.baseDir,
                              nickname,
@@ -367,9 +380,15 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.httpPrefix,
                              answer, False, False, False,
                              commentsEnabled,
-                             None, None, None, True,
-                             messageId, messageId, None,
-                             False, None, None, None)
+                             attachImageFilename, mediaType,
+                             imageDescription,
+                             inReplyTo,
+                             inReplyToAtomUri,
+                             subject,
+                             schedulePost,
+                             eventDate,
+                             eventTime,
+                             location)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -4327,12 +4346,16 @@ class PubServer(BaseHTTPRequestHandler):
                            '://' in fields['alsoKnownAs'] and \
                            '@' not in fields['alsoKnownAs'] and \
                            '.' in fields['alsoKnownAs']:
+                            if ';' in fields['alsoKnownAs']:
+                                fields['alsoKnownAs'] = \
+                                    fields['alsoKnownAs'].replace(';', ',')
                             newAlsoKnownAs = fields['alsoKnownAs'].split(',')
                             alsoKnownAs = []
                             for altActor in newAlsoKnownAs:
                                 altActor = altActor.strip()
                                 if '://' in altActor and '.' in altActor:
-                                    alsoKnownAs.append(altActor)
+                                    if altActor not in alsoKnownAs:
+                                        alsoKnownAs.append(altActor)
                             actorJson['alsoKnownAs'] = alsoKnownAs
                             actorChanged = True
                     else:
@@ -9056,26 +9079,17 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _getFeaturedCollection(self, callingDomain: str,
+                               baseDir: str,
                                path: str,
                                httpPrefix: str,
+                               nickname: str, domain: str,
                                domainFull: str):
         """Returns the featured posts collections in
         actor/collections/featured
-        TODO add ability to set a featured post
         """
-        featuredCollection = {
-            '@context': ['https://www.w3.org/ns/activitystreams',
-                         {'atomUri': 'ostatus:atomUri',
-                          'conversation': 'ostatus:conversation',
-                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
-                          'sensitive': 'as:sensitive',
-                          'toot': 'http://joinmastodon.org/ns#',
-                          'votersCount': 'toot:votersCount'}],
-            'id': httpPrefix + '://' + domainFull + path,
-            'orderedItems': [],
-            'totalItems': 0,
-            'type': 'OrderedCollection'
-        }
+        featuredCollection = \
+            jsonPinPost(baseDir, httpPrefix,
+                        nickname, domain, domainFull)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -10136,9 +10150,14 @@ class PubServer(BaseHTTPRequestHandler):
             usersInPath = True
 
         if usersInPath and self.path.endswith('/collections/featured'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
             self._getFeaturedCollection(callingDomain,
+                                        self.server.baseDir,
                                         self.path,
                                         self.server.httpPrefix,
+                                        nickname, self.server.domain,
                                         self.server.domainFull)
             return
 
@@ -12164,7 +12183,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not citationsButtonPress:
                 # process the received text fields from the POST
                 if not fields.get('message') and \
-                   not fields.get('imageDescription'):
+                   not fields.get('imageDescription') and \
+                   not fields.get('pinToProfile'):
                     return -1
                 if fields.get('submitPost'):
                     if fields['submitPost'] != \
@@ -12215,12 +12235,24 @@ class PubServer(BaseHTTPRequestHandler):
                 commentsEnabled = False
             else:
                 commentsEnabled = True
+
             if not fields.get('privateEvent'):
                 privateEvent = False
             else:
                 privateEvent = True
 
             if postType == 'newpost':
+                if not fields.get('pinToProfile'):
+                    pinToProfile = False
+                else:
+                    pinToProfile = True
+                    # is the post message empty?
+                    if not fields['message']:
+                        # remove the pinned content from profile screen
+                        undoPinnedPost(self.server.baseDir,
+                                       nickname, self.server.domain)
+                        return 1
+
                 messageJson = \
                     createPublicPost(self.server.baseDir,
                                      nickname,
@@ -12238,7 +12270,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-
+                    if pinToProfile:
+                        pinPost(self.server.baseDir,
+                                nickname, self.server.domain,
+                                messageJson['object']['content'])
+                        return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
