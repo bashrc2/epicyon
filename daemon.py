@@ -12170,7 +12170,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not citationsButtonPress:
                 # process the received text fields from the POST
                 if not fields.get('message') and \
-                   not fields.get('imageDescription'):
+                   not fields.get('imageDescription') and \
+                   not fields.get('pinToProfile'):
                     return -1
                 if fields.get('submitPost'):
                     if fields['submitPost'] != \
