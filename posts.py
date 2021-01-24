@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import fileLastModified
 from utils import isPublicPost
 from utils import hasUsersPath
 from utils import validPostDate
@@ -1285,13 +1286,74 @@ def pinPost(baseDir: str, nickname: str, domain: str,
         pinFile.close()
 
 
-def unpinPost(baseDir: str, nickname: str, domain: str) -> None:
+def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
     """Removes pinned content for then given account
     """
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
     pinnedFilename = accountDir + '/pinToProfile.txt'
     if os.path.isfile(pinnedFilename):
         os.remove(pinnedFilename)
+
+
+def jsonPinPost(baseDir: str, httpPrefix: str,
+                nickname: str, domain: str,
+                domainFull: str) -> {}:
+    """Returns a pinned post as json
+    """
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain
+    pinnedFilename = accountDir + '/pinToProfile.txt'
+    itemsList = []
+    pinnedPostJson = {}
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    if os.path.isfile(pinnedFilename):
+        pinFile = open(pinnedFilename, "r")
+        pinnedContent = None
+        if pinFile:
+            pinnedContent = pinFile.read()
+            pinFile.close()
+        if pinnedContent:
+            pinnedPostJson = {
+                'atomUri': actor + '/pinned',
+                'attachment': [],
+                'attributedTo': actor,
+                'cc': [
+                    actor + '/followers'
+                ],
+                'content': pinnedContent,
+                'contentMap': {
+                    'en': pinnedContent
+                },
+                'id': actor + '/pinned',
+                'inReplyTo': None,
+                'inReplyToAtomUri': None,
+                'published': fileLastModified(pinnedFilename),
+                'replies': {},
+                'sensitive': False,
+                'summary': None,
+                'tag': [],
+                'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                'type': 'Note',
+                'url': actor.replace('/users/', '/@') + '/pinned'
+            }
+            itemsList = [pinnedPostJson]
+    return {
+        '@context': [
+            'https://www.w3.org/ns/activitystreams',
+            {
+                'atomUri': 'ostatus:atomUri',
+                'conversation': 'ostatus:conversation',
+                'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
+                'ostatus': 'http://ostatus.org#',
+                'sensitive': 'as:sensitive',
+                'toot': 'http://joinmastodon.org/ns#',
+                'votersCount': 'toot:votersCount'
+            }
+        ],
+        'id': actor + '/collections/featured',
+        'orderedItems': itemsList,
+        'totalItems': len(itemsList),
+        'type': 'OrderedCollection'
+    }
 
 
 def createPublicPost(baseDir: str,

@@ -69,7 +69,8 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import pinPost
-from posts import unpinPost
+from posts import jsonPinPost
+from posts import undoPinnedPost
 from posts import isModerator
 from posts import mutePost
 from posts import unmutePost
@@ -9062,26 +9063,17 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _getFeaturedCollection(self, callingDomain: str,
+                               baseDir: str,
                                path: str,
                                httpPrefix: str,
+                               nickname: str, domain: str,
                                domainFull: str):
         """Returns the featured posts collections in
         actor/collections/featured
-        TODO add ability to set a featured post
         """
-        featuredCollection = {
-            '@context': ['https://www.w3.org/ns/activitystreams',
-                         {'atomUri': 'ostatus:atomUri',
-                          'conversation': 'ostatus:conversation',
-                          'inReplyToAtomUri': 'ostatus:inReplyToAtomUri',
-                          'sensitive': 'as:sensitive',
-                          'toot': 'http://joinmastodon.org/ns#',
-                          'votersCount': 'toot:votersCount'}],
-            'id': httpPrefix + '://' + domainFull + path,
-            'orderedItems': [],
-            'totalItems': 0,
-            'type': 'OrderedCollection'
-        }
+        featuredCollection = \
+            jsonPinPost(baseDir, httpPrefix,
+                        nickname, domain, domainFull)
         msg = json.dumps(featuredCollection,
                          ensure_ascii=False).encode('utf-8')
         msglen = len(msg)
@@ -10142,9 +10134,14 @@ class PubServer(BaseHTTPRequestHandler):
             usersInPath = True
 
         if usersInPath and self.path.endswith('/collections/featured'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
             self._getFeaturedCollection(callingDomain,
+                                        self.server.baseDir,
                                         self.path,
                                         self.server.httpPrefix,
+                                        nickname, self.server.domain,
                                         self.server.domainFull)
             return
 
@@ -12236,8 +12233,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # is the post message empty?
                     if not fields['message']:
                         # remove the pinned content from profile screen
-                        unpinPost(self.server.baseDir,
-                                  nickname, self.server.domain)
+                        undoPinnedPost(self.server.baseDir,
+                                       nickname, self.server.domain)
                         return 1
 
                 messageJson = \
