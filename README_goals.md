@@ -1,12 +1,12 @@
 # Epicyon Project Goals
 
  * A minimal ActivityPub server, comparable to an email MTA
- * "Small Tech" ethos. Not many accounts per instance.
+ * "Small Tech" ethos. Not many accounts per instance
  * Centering people and personal computing, not corporate or organizational accounts abstracting people away
  * AGPLv3+
  * Server-to-server and client-to-server protocols supported
  * Implemented in a common language (Python 3)
- * Keyword filtering.
+ * Keyword filtering
  * Attention to accessibility and should be usable in lynx with a screen reader
  * Remove metadata from attached images, avatars and backgrounds
  * Support for multiple themes, with ability to create custom themes
@@ -19,7 +19,7 @@
  * http signatures and basic auth
  * json-LD signatures on outgoing posts, optional on incoming
  * Compatible with http (onion addresses, i2p), https and hypercore
- * Minimal dependencies.
+ * Minimal dependencies
  * Dependencies are maintained Debian packages
  * Data minimization principle. Configurable post expiry time
  * Likes and repeats only visible to authorized viewers
