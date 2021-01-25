@@ -68,6 +68,8 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import outboxMessageCreateWrap
+from posts import getPinnedPostAsJson
 from posts import pinPost
 from posts import jsonPinPost
 from posts import undoPinnedPost
@@ -10150,7 +10152,34 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in self.path:
             usersInPath = True
 
-        if usersInPath and self.path.endswith('/collections/featured'):
+        if not htmlGET and \
+           usersInPath and self.path.endswith('/pinned'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            pinnedPostJson = \
+                getPinnedPostAsJson(self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    nickname, self.server.domain,
+                                    self.server.domainFull)
+            messageJson = {}
+            if pinnedPostJson:
+                messageJson = \
+                    outboxMessageCreateWrap(self.server.httpPrefix,
+                                            nickname,
+                                            self.server.domain,
+                                            self.server.port,
+                                            pinnedPostJson)
+            msg = json.dumps(messageJson,
+                             ensure_ascii=False).encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('application/json',
+                              msglen, None, callingDomain)
+            self._write(msg)
+            return
+
+        if not htmlGET and \
+           usersInPath and self.path.endswith('/collections/featured'):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
@@ -10162,7 +10191,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull)
             return
 
-        if usersInPath and self.path.endswith('/collections/featuredTags'):
+        if not htmlGET and \
+           usersInPath and self.path.endswith('/collections/featuredTags'):
             self._getFeaturedTagsCollection(callingDomain,
                                             self.path,
                                             self.server.httpPrefix,
