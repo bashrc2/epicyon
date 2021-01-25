@@ -10170,6 +10170,11 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain,
                                             self.server.port,
                                             pinnedPostJson)
+                messageJson['id'] = pinnedPostJson['id'] + '/activity'
+                messageJson['object']['id'] = pinnedPostJson['id']
+                messageJson['object']['url'] = \
+                    pinnedPostJson['id'].replace('/users/', '/@')
+                messageJson['object']['atomUri'] = pinnedPostJson['id']
             msg = json.dumps(messageJson,
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)
