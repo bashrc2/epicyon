@@ -10164,17 +10164,17 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.domainFull)
             messageJson = {}
             if pinnedPostJson:
+                postId = pinnedPostJson['id']
                 messageJson = \
                     outboxMessageCreateWrap(self.server.httpPrefix,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
                                             pinnedPostJson)
-                messageJson['id'] = pinnedPostJson['id'] + '/activity'
-                messageJson['object']['id'] = pinnedPostJson['id']
-                messageJson['object']['url'] = \
-                    pinnedPostJson['id'].replace('/users/', '/@')
-                messageJson['object']['atomUri'] = pinnedPostJson['id']
+                messageJson['id'] = postId + '/activity'
+                messageJson['object']['id'] = postId
+                messageJson['object']['url'] = postId.replace('/users/', '/@')
+                messageJson['object']['atomUri'] = postId
             msg = json.dumps(messageJson,
                              ensure_ascii=False).encode('utf-8')
             msglen = len(msg)
