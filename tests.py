@@ -3069,7 +3069,6 @@ def testDomainHandling():
     testDomain = '192.168.5.153'
     assert decodedHost(testDomain) == testDomain
     testDomain = 'xn--espaa-rta.icom.museum'
-    print(decodedHost(testDomain))
     assert decodedHost(testDomain) == "españa.icom.museum"
 
 
