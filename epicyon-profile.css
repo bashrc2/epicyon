@@ -538,6 +538,16 @@ a:focus {
     border-radius: 0px;
 }
 
+.emoji {
+    float: none;
+    width: 50px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    border-radius: 0px;
+    vertical-align: middle;
+}
+
 .container img.emoji {
     float: none;
     width: 50px;
