@@ -17,7 +17,6 @@ from socket import error as SocketError
 import errno
 from functools import partial
 import pyqrcode
-import idna
 # for saving images
 from hashlib import sha256
 from hashlib import sha1
@@ -184,6 +183,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import decodedHost
 from utils import isPublicPost
 from utils import getLockedAccount
 from utils import hasUsersPath
@@ -9876,11 +9876,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
-            # IDNA decoding is an idempotent operation so this
-            # should not break 'normal' domains.
-            # For non-IDNA domains perhaps this behaviour should
-            # be disabled: TODO add config option?
-            callingDomain = idna.decode(self.headers['Host'])
+            callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \
@@ -12039,9 +12035,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
-            # As in the GET handler this should be idempotent but
-            # for security maybe make configurable.
-            callingDomain = idna.decode(self.headers['Host'])
+            callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \
@@ -12992,9 +12986,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
-            # As notes in the GET handler, this should be idempotent
-            # but should be configurable just in case
-            callingDomain = idna.decode(self.headers['Host'])
+            callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \

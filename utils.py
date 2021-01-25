@@ -14,9 +14,34 @@ import json
 from socket import error as SocketError
 import errno
 import urllib.request
+import idna
 from pprint import pprint
 from calendar import monthrange
 from followingCalendar import addPersonToCalendar
+
+
+def _localNetworkHost(host: str) -> bool:
+    """Returns true if the given host is on the local network
+    """
+    if host.startswith('192.') or \
+       host.startswith('127.') or \
+       host.startswith('10.'):
+        return True
+    return False
+
+
+def decodedHost(host: str) -> str:
+    """Convert hostname to internationalized domain
+    https://en.wikipedia.org/wiki/Internationalized_domain_name
+    """
+    if ':' not in host:
+       if not _localNetworkHost(host):
+           if not host.endswith('.onion'):
+               if not host.endswith('.i2p'):
+                   # For domains on ports numbers don't use idna
+                   # eg. mydomain:8000
+                   return idna.decode(host)
+    return host
 
 
 def getLockedAccount(actorJson: {}) -> bool:
