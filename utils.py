@@ -36,12 +36,11 @@ def decodedHost(host: str) -> str:
     https://en.wikipedia.org/wiki/Internationalized_domain_name
     """
     if ':' not in host:
-       if not _localNetworkHost(host):
-           if not host.endswith('.onion'):
-               if not host.endswith('.i2p'):
-                   # For domains on ports numbers don't use idna
-                   # eg. mydomain:8000
-                   return idna.decode(host)
+        # eg. mydomain:8000
+        if not _localNetworkHost(host):
+            if not host.endswith('.onion'):
+                if not host.endswith('.i2p'):
+                    return idna.decode(host)
     return host
 
 

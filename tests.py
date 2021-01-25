@@ -33,6 +33,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import decodedHost
 from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
@@ -3059,9 +3060,23 @@ def testMastoApi():
     assert nickname2 == nickname
 
 
+def testDomainHandling():
+    print('testDomainHandling')
+    testDomain = 'localhost'
+    assert decodedHost(testDomain) == testDomain
+    testDomain = '127.0.0.1:60'
+    assert decodedHost(testDomain) == testDomain
+    testDomain = '192.168.5.153'
+    assert decodedHost(testDomain) == testDomain
+    testDomain = 'xn--espaa-rta.icom.museum'
+    print(decodedHost(testDomain))
+    assert decodedHost(testDomain) == "españa.icom.museum"
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testDomainHandling()
     testMastoApi()
     testLinksWithinPost()
     testReplyToPublicPost()
