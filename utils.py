@@ -23,7 +23,8 @@ from followingCalendar import addPersonToCalendar
 def _localNetworkHost(host: str) -> bool:
     """Returns true if the given host is on the local network
     """
-    if host.startswith('192.') or \
+    if host.startswith('localhost') or \
+       host.startswith('192.') or \
        host.startswith('127.') or \
        host.startswith('10.'):
         return True
