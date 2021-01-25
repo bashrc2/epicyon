@@ -14,7 +14,7 @@ from webapp_utils import htmlFooter
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
-              domainFull: str, onionDomain: str) -> str:
+              domainFull: str, onionDomain: str, translate: {}) -> str:
     """Show the about screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -50,8 +50,10 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
         adminActor = '/users/' + adminNickname
         aboutForm += \
             '<div class="container"><center>\n' + \
-            '<p class="administeredby">Administered by <a href="' + \
-            adminActor + '">' + adminNickname + '</a></p>\n' + \
-            '</center></div>\n'
+            '<p class="administeredby">' + \
+            translate['Administered by'] + ' <a href="' + \
+            adminActor + '">' + adminNickname + '</a>. ' + \
+            translate['Version'] + ' ' + __version__ + \
+            '</p>\n</center></div>\n'
     aboutForm += htmlFooter()
     return aboutForm

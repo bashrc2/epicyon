@@ -10440,20 +10440,21 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.onionDomain,
-                              None)
+                              None, self.server.translate)
             elif callingDomain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.i2pDomain,
-                              None)
+                              None, self.server.translate)
             else:
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir,
                               self.server.httpPrefix,
                               self.server.domainFull,
-                              self.server.onionDomain)
+                              self.server.onionDomain,
+                              self.server.translate)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
