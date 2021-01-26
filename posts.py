@@ -1,7 +1,7 @@
 __filename__ = "posts.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
@@ -1298,14 +1298,13 @@ def undoPinnedPost(baseDir: str, nickname: str, domain: str) -> None:
         os.remove(pinnedFilename)
 
 
-def jsonPinPost(baseDir: str, httpPrefix: str,
-                nickname: str, domain: str,
-                domainFull: str) -> {}:
-    """Returns a pinned post as json
+def getPinnedPostAsJson(baseDir: str, httpPrefix: str,
+                        nickname: str, domain: str,
+                        domainFull: str) -> {}:
+    """Returns the pinned profile post as json
     """
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
     pinnedFilename = accountDir + '/pinToProfile.txt'
-    itemsList = []
     pinnedPostJson = {}
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     if os.path.isfile(pinnedFilename):
@@ -1338,7 +1337,23 @@ def jsonPinPost(baseDir: str, httpPrefix: str,
                 'type': 'Note',
                 'url': actor.replace('/users/', '/@') + '/pinned'
             }
-            itemsList = [pinnedPostJson]
+    return pinnedPostJson
+
+
+def jsonPinPost(baseDir: str, httpPrefix: str,
+                nickname: str, domain: str,
+                domainFull: str) -> {}:
+    """Returns a pinned post as json
+    """
+    pinnedPostJson = \
+        getPinnedPostAsJson(baseDir, httpPrefix,
+                            nickname, domain,
+                            domainFull)
+    itemsList = []
+    if pinnedPostJson:
+        itemsList = [pinnedPostJson]
+
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     return {
         '@context': [
             'https://www.w3.org/ns/activitystreams',

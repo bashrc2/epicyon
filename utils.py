@@ -1,7 +1,7 @@
 __filename__ = "utils.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
@@ -14,9 +14,34 @@ import json
 from socket import error as SocketError
 import errno
 import urllib.request
+import idna
 from pprint import pprint
 from calendar import monthrange
 from followingCalendar import addPersonToCalendar
+
+
+def _localNetworkHost(host: str) -> bool:
+    """Returns true if the given host is on the local network
+    """
+    if host.startswith('localhost') or \
+       host.startswith('192.') or \
+       host.startswith('127.') or \
+       host.startswith('10.'):
+        return True
+    return False
+
+
+def decodedHost(host: str) -> str:
+    """Convert hostname to internationalized domain
+    https://en.wikipedia.org/wiki/Internationalized_domain_name
+    """
+    if ':' not in host:
+        # eg. mydomain:8000
+        if not _localNetworkHost(host):
+            if not host.endswith('.onion'):
+                if not host.endswith('.i2p'):
+                    return idna.decode(host)
+    return host
 
 
 def getLockedAccount(actorJson: {}) -> bool:
@@ -1096,7 +1121,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'tlreplies', 'tlmedia', 'tlblogs',
                      'tlevents', 'tlblogs', 'tlfeatures',
                      'moderation', 'moderationaction',
-                     'activity', 'undo',
+                     'activity', 'undo', 'pinned',
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses', 'tags',
                      'accounts', 'channels', 'profile',

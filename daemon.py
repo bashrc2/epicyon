@@ -1,7 +1,7 @@
 __filename__ = "daemon.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
@@ -68,6 +68,8 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import outboxMessageCreateWrap
+from posts import getPinnedPostAsJson
 from posts import pinPost
 from posts import jsonPinPost
 from posts import undoPinnedPost
@@ -183,6 +185,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import decodedHost
 from utils import isPublicPost
 from utils import getLockedAccount
 from utils import hasUsersPath
@@ -9875,7 +9878,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_GET(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
-            callingDomain = self.headers['Host']
+            callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \
@@ -10149,7 +10152,39 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in self.path:
             usersInPath = True
 
-        if usersInPath and self.path.endswith('/collections/featured'):
+        if not htmlGET and \
+           usersInPath and self.path.endswith('/pinned'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            pinnedPostJson = \
+                getPinnedPostAsJson(self.server.baseDir,
+                                    self.server.httpPrefix,
+                                    nickname, self.server.domain,
+                                    self.server.domainFull)
+            messageJson = {}
+            if pinnedPostJson:
+                postId = pinnedPostJson['id']
+                messageJson = \
+                    outboxMessageCreateWrap(self.server.httpPrefix,
+                                            nickname,
+                                            self.server.domain,
+                                            self.server.port,
+                                            pinnedPostJson)
+                messageJson['id'] = postId + '/activity'
+                messageJson['object']['id'] = postId
+                messageJson['object']['url'] = postId.replace('/users/', '/@')
+                messageJson['object']['atomUri'] = postId
+            msg = json.dumps(messageJson,
+                             ensure_ascii=False).encode('utf-8')
+            msglen = len(msg)
+            self._set_headers('application/json',
+                              msglen, None, callingDomain)
+            self._write(msg)
+            return
+
+        if not htmlGET and \
+           usersInPath and self.path.endswith('/collections/featured'):
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
@@ -10161,7 +10196,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.domainFull)
             return
 
-        if usersInPath and self.path.endswith('/collections/featuredTags'):
+        if not htmlGET and \
+           usersInPath and self.path.endswith('/collections/featuredTags'):
             self._getFeaturedTagsCollection(callingDomain,
                                             self.path,
                                             self.server.httpPrefix,
@@ -10404,20 +10440,21 @@ class PubServer(BaseHTTPRequestHandler):
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.onionDomain,
-                              None)
+                              None, self.server.translate)
             elif callingDomain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir, 'http',
                               self.server.i2pDomain,
-                              None)
+                              None, self.server.translate)
             else:
                 msg = \
                     htmlAbout(self.server.cssCache,
                               self.server.baseDir,
                               self.server.httpPrefix,
                               self.server.domainFull,
-                              self.server.onionDomain)
+                              self.server.onionDomain,
+                              self.server.translate)
             msg = msg.encode('utf-8')
             msglen = len(msg)
             self._login_headers('text/html', msglen, callingDomain)
@@ -12034,7 +12071,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
-            callingDomain = self.headers['Host']
+            callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \
@@ -12985,7 +13022,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         callingDomain = self.server.domainFull
         if self.headers.get('Host'):
-            callingDomain = self.headers['Host']
+            callingDomain = decodedHost(self.headers['Host'])
             if self.server.onionDomain:
                 if callingDomain != self.server.domain and \
                    callingDomain != self.server.domainFull and \

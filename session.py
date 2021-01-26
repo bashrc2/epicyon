@@ -1,7 +1,7 @@
 __filename__ = "session.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
@@ -54,7 +54,7 @@ def createSession(proxyType: str):
 
 
 def getJson(session, url: str, headers: {}, params: {},
-            version='1.1.0', httpPrefix='https',
+            version='1.2.0', httpPrefix='https',
             domain='testdomain') -> {}:
     if not isinstance(url, str):
         print('url: ' + str(url))
