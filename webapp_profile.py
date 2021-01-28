@@ -377,7 +377,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
     if pinnedContent:
-        htmlStr += pinnedContent
+        htmlStr += '📎' + pinnedContent
     htmlStr += '      </figcaption>\n'
     htmlStr += '    </figure>\n\n'
     return htmlStr
