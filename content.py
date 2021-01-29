@@ -527,6 +527,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
         followCtr = 0
         for follow in following:
             if '@' not in follow:
+                followCtr += 1
                 continue
             pet = petnames[followCtr].replace('\n', '')
             if pet:
