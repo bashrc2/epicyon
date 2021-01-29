@@ -1,4 +1,6 @@
 {
+    "time-vertical-align": "0%",
+    "time-vertical-align-mobile": "1.5%",
     "post-separator-margin-top": "10px",
     "post-separator-margin-bottom": "10px",
     "column-left-header-background": "#35244d",
