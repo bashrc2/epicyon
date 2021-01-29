@@ -1,4 +1,6 @@
 {
+    "post-separator-margin-top": "10px",
+    "post-separator-margin-bottom": "10px",
     "column-left-header-background": "#35244d",
     "newswire-publish-icon": "True",
     "full-width-timeline-buttons": "False",
