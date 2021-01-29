@@ -51,8 +51,8 @@
     --font-size-tox: 16px;
     --font-size-tox2: 18px;
     --time-color: #aaa;
-    --time-vertical-align: 4px;
-    --time-vertical-align-mobile: 25px;
+    --time-vertical-align: 0%;
+    --time-vertical-align-mobile: 1.5%;
     --publish-button-text: #FFFFFF;
     --button-margin: 5px;
     --button-left-margin: none;
