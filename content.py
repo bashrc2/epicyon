@@ -14,6 +14,7 @@ from utils import getImageExtensions
 from utils import loadJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
+from petnames import getPetName
 
 
 def removeHtmlTag(htmlStr: str, tag: str) -> str:
@@ -489,7 +490,7 @@ def tagExists(tagType: str, tagName: str, tags: {}) -> bool:
     return False
 
 
-def _addMention(wordStr: str, httpPrefix: str, following: str,
+def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
                 replaceMentions: {}, recipients: [], tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and
     recipients list
@@ -501,9 +502,12 @@ def _addMention(wordStr: str, httpPrefix: str, following: str,
         # if no domain was specified. eg. @nick
         possibleNickname = possibleHandle
         for follow in following:
-            if follow.startswith(possibleNickname + '@'):
-                replaceDomain = \
-                    follow.replace('\n', '').replace('\r', '').split('@')[1]
+            if '@' not in follow:
+                continue
+            followNick = follow.split('@')[0]
+            if possibleNickname == followNick:
+                followStr = follow.replace('\n', '').replace('\r', '')
+                replaceDomain = followStr.split('@')[1]
                 recipientActor = httpPrefix + "://" + \
                     replaceDomain + "/users/" + possibleNickname
                 if recipientActor not in recipients:
@@ -519,6 +523,33 @@ def _addMention(wordStr: str, httpPrefix: str, following: str,
                     "\" class=\"u-url mention\">@<span>" + possibleNickname + \
                     "</span></a></span>"
                 return True
+        # try replacing petnames with mentions
+        followCtr = 0
+        for follow in following:
+            if '@' not in follow:
+                continue
+            pet = petnames[followCtr].replace('\n', '')
+            if pet:
+                if possibleNickname == pet:
+                    followStr = follow.replace('\n', '').replace('\r', '')
+                    replaceNickname = followStr.split('@')[0]
+                    replaceDomain = followStr.split('@')[1]
+                    recipientActor = httpPrefix + "://" + \
+                        replaceDomain + "/users/" + replaceNickname
+                    if recipientActor not in recipients:
+                        recipients.append(recipientActor)
+                    tags[wordStr] = {
+                        'href': recipientActor,
+                        'name': wordStr,
+                        'type': 'Mention'
+                    }
+                    replaceMentions[wordStr] = \
+                        "<span class=\"h-card\"><a href=\"" + httpPrefix + \
+                        "://" + replaceDomain + "/@" + replaceNickname + \
+                        "\" class=\"u-url mention\">@<span>" + \
+                        replaceNickname + "</span></a></span>"
+                    return True
+            followCtr += 1
         return False
     possibleNickname = None
     possibleDomain = None
@@ -752,10 +783,14 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
     following = None
+    petnames = None
     if '@' in words:
         if os.path.isfile(followingFilename):
             with open(followingFilename, "r") as f:
                 following = f.readlines()
+                for handle in following:
+                    pet = getPetName(baseDir, nickname, domain, handle)
+                    petnames.append(pet + '\n')
 
     # extract mentions and tags from words
     longWordsList = []
@@ -769,7 +804,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                 longWordsList.append(wordStr)
             firstChar = wordStr[0]
             if firstChar == '@':
-                if _addMention(wordStr, httpPrefix, following,
+                if _addMention(wordStr, httpPrefix, following, petnames,
                                replaceMentions, recipients, hashtags):
                     prevWordStr = ''
                     continue
