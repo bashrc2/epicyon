@@ -151,7 +151,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                postJsonObject: {},
                                allowDeletion: bool, boxname: str,
                                showPublishedDateOnly: bool,
-                               peertubeInstances: []) -> None:
+                               peertubeInstances: [],
+                               allowLocalNetworkAccess: bool) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -168,7 +169,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          avatarUrl, True, allowDeletion,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
-                         peertubeInstances,
+                         peertubeInstances, allowLocalNetworkAccess,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -1259,7 +1260,8 @@ def _receiveAnnounce(recentPostsCache: {},
                      sendThreads: [], postLog: [], cachedWebfingers: {},
                      personCache: {}, messageJson: {}, federationList: [],
                      debug: bool, translate: {},
-                     YTReplacementDomain: str) -> bool:
+                     YTReplacementDomain: str,
+                     allowLocalNetworkAccess: bool) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1338,7 +1340,8 @@ def _receiveAnnounce(recentPostsCache: {},
     postJsonObject = downloadAnnounce(session, baseDir, httpPrefix,
                                       nickname, domain, messageJson,
                                       __version__, translate,
-                                      YTReplacementDomain)
+                                      YTReplacementDomain,
+                                      allowLocalNetworkAccess)
     if not postJsonObject:
         if domain not in messageJson['object'] and \
            onionDomain not in messageJson['object']:
@@ -2119,7 +2122,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         messageJson,
                         federationList,
                         debug, translate,
-                        YTReplacementDomain):
+                        YTReplacementDomain,
+                        allowLocalNetworkAccess):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2299,7 +2303,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
-                            translate, YTReplacementDomain):
+                            translate, YTReplacementDomain,
+                            allowLocalNetworkAccess):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
@@ -2349,7 +2354,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    allowDeletion,
                                                    boxname,
                                                    showPublishedDateOnly,
-                                                   peertubeInstances)
+                                                   peertubeInstances,
+                                                   allowLocalNetworkAccess)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *

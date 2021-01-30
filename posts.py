@@ -57,6 +57,7 @@ from utils import votesOnNewswireItem
 from utils import removeHtml
 from media import attachMedia
 from media import replaceYouTube
+from content import dangerousMarkup
 from content import tagExists
 from content import removeLongWords
 from content import addHtmlTags
@@ -2908,7 +2909,8 @@ def isDM(postJsonObject: {}) -> bool:
 def isImageMedia(session, baseDir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  postJsonObject: {}, translate: {},
-                 YTReplacementDomain: str) -> bool:
+                 YTReplacementDomain: str,
+                 allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2916,7 +2918,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              __version__, translate,
-                             YTReplacementDomain)
+                             YTReplacementDomain,
+                             allowLocalNetworkAccess)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3831,7 +3834,8 @@ def _rejectAnnounce(announceFilename: str):
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
-                     translate: {}, YTReplacementDomain: str) -> {}:
+                     translate: {}, YTReplacementDomain: str,
+                     allowLocalNetworkAccess: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -3919,12 +3923,11 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             return None
         if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename)
-            # pprint(announcedJson)
             return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Article':
+            # You can only announce Note or Article types
             _rejectAnnounce(announceFilename)
-            # pprint(announcedJson)
             return None
         if not announcedJson.get('content'):
             _rejectAnnounce(announceFilename)
@@ -3935,16 +3938,20 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if not validPostDate(announcedJson['published']):
             _rejectAnnounce(announceFilename)
             return None
-        if isFiltered(baseDir, nickname, domain, announcedJson['content']):
+
+        # Check the content of the announce
+        contentStr = announcedJson['content']
+        if dangerousMarkup(contentStr, allowLocalNetworkAccess):
+            _rejectAnnounce(announceFilename)
+            return None
+        if isFiltered(baseDir, nickname, domain, contentStr):
             _rejectAnnounce(announceFilename)
             return None
         # remove any long words
-        announcedJson['content'] = \
-            removeLongWords(announcedJson['content'], 40, [])
+        announcedJson['content'] = removeLongWords(contentStr, 40, [])
 
         # remove text formatting, such as bold/italics
-        announcedJson['content'] = \
-            removeTextFormatting(announcedJson['content'])
+        announcedJson['content'] = removeTextFormatting(contentStr)
 
         # wrap in create to be consistent with other posts
         announcedJson = \
@@ -3952,8 +3959,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                                     actorNickname, actorDomain, actorPort,
                                     announcedJson)
         if announcedJson['type'] != 'Create':
+            # Create wrap failed
             _rejectAnnounce(announceFilename)
-            # pprint(announcedJson)
             return None
 
         # labelAccusatoryPost(postJsonObject, translate)

@@ -1081,6 +1081,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          boxName: str, YTReplacementDomain: str,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
+                         allowLocalNetworkAccess: bool,
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -1231,7 +1232,8 @@ def individualPostAsHtml(allowDownloads: bool,
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
-                             YTReplacementDomain)
+                             YTReplacementDomain,
+                             allowLocalNetworkAccess)
         if not postJsonAnnounce:
             return ''
         postJsonObject = postJsonAnnounce
@@ -1605,7 +1607,8 @@ def htmlIndividualPost(cssCache: {},
                        projectVersion: str, likedBy: str,
                        YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
-                       peertubeInstances: []) -> str:
+                       peertubeInstances: [],
+                       allowLocalNetworkAccess: bool) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1646,6 +1649,7 @@ def htmlIndividualPost(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances,
+                             allowLocalNetworkAccess,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1672,6 +1676,7 @@ def htmlIndividualPost(cssCache: {},
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
+                                         allowLocalNetworkAccess,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1701,6 +1706,7 @@ def htmlIndividualPost(cssCache: {},
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
+                                         allowLocalNetworkAccess,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1721,7 +1727,8 @@ def htmlPostReplies(cssCache: {},
                     httpPrefix: str, projectVersion: str,
                     YTReplacementDomain: str,
                     showPublishedDateOnly: bool,
-                    peertubeInstances: []) -> str:
+                    peertubeInstances: [],
+                    allowLocalNetworkAccess: bool) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1739,6 +1746,7 @@ def htmlPostReplies(cssCache: {},
                                      YTReplacementDomain,
                                      showPublishedDateOnly,
                                      peertubeInstances,
+                                     allowLocalNetworkAccess,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'
