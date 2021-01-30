@@ -96,6 +96,7 @@
     --column-right-width: 10vw;
     --column-left-mobile-margin: 2%;
     --column-left-top-margin: 0;
+    --column-right-top-margin: 0;
     --column-left-header-style: uppercase;
     --column-left-header-background: #555;
     --column-left-header-color: #fff;
@@ -1133,6 +1134,7 @@ div.container {
         overflow: hidden;
     }
     .col-right {
+        margin-top: var(--column-right-top-margin);
         border: var(--column-right-border-width) solid var(--column-left-border-color);
         background-color: var(--column-left-color);
         color: var(--column-left-fg-color);
