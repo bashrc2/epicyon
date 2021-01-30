@@ -79,6 +79,7 @@ if [ ! -d /etc/torrc.d ]; then
 fi
 if ! grep -q '%include /etc/torrc.d' /etc/tor/torrc; then
     echo '%include /etc/torrc.d' >> /etc/tor/torrc
+    systemctl restart tor
 fi
 
 if [ ! -f /etc/torrc.d/epicyon ]; then
@@ -257,7 +258,7 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '    index index.html;';
   echo '';
   echo '    location /newsmirror {';
-  echo '      root /var/www/${ONION_DOMAIN}/htdocs;';
+  echo "      root /var/www/${ONION_DOMAIN}/htdocs;";
   echo '      try_files $uri =404;';
   echo '    }';
   echo '';
