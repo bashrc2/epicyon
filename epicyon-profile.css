@@ -1134,7 +1134,6 @@ div.container {
         overflow: hidden;
     }
     .col-right {
-        margin-top: var(--column-right-top-margin);
         border: var(--column-right-border-width) solid var(--column-left-border-color);
         background-color: var(--column-left-color);
         color: var(--column-left-fg-color);
@@ -1158,7 +1157,7 @@ div.container {
     .col-right img.rightColImg {
         background: var(--column-left-color);
         width: 100%;
-        margin: 0 0;
+        margin-top: var(--column-right-top-margin);
         padding: 0 0;
     }
     .likesCount {
