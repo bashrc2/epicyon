@@ -3944,14 +3944,19 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):
             _rejectAnnounce(announceFilename)
             return None
+
         if isFiltered(baseDir, nickname, domain, contentStr):
             _rejectAnnounce(announceFilename)
             return None
+
         # remove any long words
-        announcedJson['content'] = removeLongWords(contentStr, 40, [])
+        contentStr = removeLongWords(contentStr, 40, [])
 
         # remove text formatting, such as bold/italics
-        announcedJson['content'] = removeTextFormatting(contentStr)
+        contentStr = removeTextFormatting(contentStr)
+
+        # set the content after santitization
+        announcedJson['content'] = contentStr
 
         # wrap in create to be consistent with other posts
         announcedJson = \
