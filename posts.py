@@ -3915,10 +3915,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename)
             return None
-        if '/users/' not in announcedJson['id'] and \
-           '/accounts/' not in announcedJson['id'] and \
-           '/channel/' not in announcedJson['id'] and \
-           '/profile/' not in announcedJson['id']:
+        if not hasUsersPath(announcedJson['id']):
             _rejectAnnounce(announceFilename)
             return None
         if not announcedJson.get('type'):
