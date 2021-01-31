@@ -295,6 +295,10 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         displayName = personJson['name']
         if dangerousMarkup(personJson['name'], False):
             displayName = '*ADVERSARY*'
+        elif isFiltered(baseDir,
+                        nickname, domain,
+                        displayName):
+            displayName = '*FILTERED*'
         # have they moved?
         if personJson.get('movedTo'):
             displayName += ' ⌂'
