@@ -49,6 +49,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
+from utils import dangerousMarkup
 from follow import followerOfPerson
 from follow import unfollowAccount
 from follow import unfollowerOfAccount
@@ -77,7 +78,6 @@ from inbox import validInboxFilenames
 from categories import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
-from content import dangerousMarkup
 from content import dangerousCSS
 from content import addWebLinks
 from content import replaceEmojiFromTags

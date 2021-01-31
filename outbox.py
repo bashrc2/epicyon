@@ -17,6 +17,7 @@ from posts import sendToNamedAddresses
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getDomainFromActor
+from utils import dangerousMarkup
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -36,7 +37,6 @@ from bookmarks import outboxUndoBookmark
 from delete import outboxDelete
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
-from content import dangerousMarkup
 
 
 def postMessageToOutbox(messageJson: {}, postToNickname: str,

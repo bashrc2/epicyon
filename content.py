@@ -14,6 +14,7 @@ from utils import getImageExtensions
 from utils import loadJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
+from utils import dangerousMarkup
 from petnames import getPetName
 
 
@@ -152,38 +153,6 @@ def htmlReplaceQuoteMarks(content: str) -> str:
                 openQuote = not openQuote
             ctr += 1
     return newContent
-
-
-def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
-    """Returns true if the given content contains dangerous html markup
-    """
-    if '<' not in content:
-        return False
-    if '>' not in content:
-        return False
-    contentSections = content.split('<')
-    invalidPartials = ()
-    if not allowLocalNetworkAccess:
-        invalidPartials = ('localhost', '127.0.', '192.168', '10.0.')
-    invalidStrings = ('script', 'canvas', 'style', 'abbr',
-                      'frame', 'iframe', 'html', 'body',
-                      'hr', 'allow-popups', 'allow-scripts')
-    for markup in contentSections:
-        if '>' not in markup:
-            continue
-        markup = markup.split('>')[0].strip()
-        for partialMatch in invalidPartials:
-            if partialMatch in markup:
-                return True
-        if ' ' not in markup:
-            for badStr in invalidStrings:
-                if badStr in markup:
-                    return True
-        else:
-            for badStr in invalidStrings:
-                if badStr + ' ' in markup:
-                    return True
-    return False
 
 
 def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:

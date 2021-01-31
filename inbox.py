@@ -54,6 +54,7 @@ from blocking import isBlockedDomain
 from filters import isFiltered
 from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
+from utils import dangerousMarkup
 from httpsig import messageContentDigest
 from posts import validContentWarning
 from posts import downloadAnnounce
@@ -69,7 +70,6 @@ from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
-from content import dangerousMarkup
 from happening import saveEventPost
 from delete import removeOldHashtags
 from follow import isFollowingActor

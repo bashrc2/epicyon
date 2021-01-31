@@ -23,7 +23,6 @@ from newswire import getDictFromNewswire
 # from posts import sendSignedJson
 from posts import createNewsPost
 from posts import archivePostsForPerson
-from content import dangerousMarkup
 from content import validHashTag
 from utils import removeHtml
 from utils import getFullDomain
@@ -31,6 +30,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getStatusNumber
 from utils import clearFromPostCaches
+from utils import dangerousMarkup
 from inbox import storeHashTags
 from session import createSession
 

@@ -55,9 +55,9 @@ from utils import locateNewsVotes
 from utils import locateNewsArrival
 from utils import votesOnNewswireItem
 from utils import removeHtml
+from utils import dangerousMarkup
 from media import attachMedia
 from media import replaceYouTube
-from content import dangerousMarkup
 from content import tagExists
 from content import removeLongWords
 from content import addHtmlTags
@@ -292,7 +292,9 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             avatarUrl = personJson['icon']['url']
     displayName = None
     if personJson.get('name'):
-        displayName = removeHtml(personJson['name'])
+        displayName = personJson['name']
+        if dangerousMarkup(personJson['name'], False):
+            displayName = '*ADVERSARY*'
         # have they moved?
         if personJson.get('movedTo'):
             displayName += ' ⌂'

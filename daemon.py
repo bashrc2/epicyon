@@ -217,10 +217,10 @@ from utils import urlPermitted
 from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
+from utils import dangerousMarkup
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
-from content import dangerousMarkup
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
