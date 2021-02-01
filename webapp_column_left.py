@@ -90,6 +90,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             htmlStr += \
                 '\n      <center>\n' + \
                 '        <img class="leftColImg" ' + \
+                'alt="' + translate['Left column image'] + '" ' + \
                 'loading="lazy" src="/users/' + \
                 nickname + '/' + leftImageFile + '" />\n' + \
                 '      </center>\n'

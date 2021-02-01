@@ -838,8 +838,8 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
             '<div class="' + separatorClass + '"><center>' + \
-            '<img src="/icons/' + filename + '"/>' + \
-            '</center></div>\n'
+            '<img src="/icons/' + filename + '" ' + \
+            'alt="" /></center></div>\n'
     return separatorStr
 
 

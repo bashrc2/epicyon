@@ -324,6 +324,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
+        'alt="' + translate['Background image'] + '" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
     htmlStr += '      <figcaption>\n'
     htmlStr += \
@@ -331,6 +332,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
         '          <img loading="lazy" src="' + avatarUrl + '" ' + \
+        'alt="' + translate['Avatar image'] + '" ' + \
         ' class="title"></a>\n'
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
@@ -403,6 +405,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
+        'alt="' + translate['Background image'] + '" ' + \
         'src="' + imageUrl + '" /></a>\n'
     htmlStr += '      <figcaption>\n'
     if avatarUrl:
@@ -411,6 +414,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             translate['Switch to timeline view'] + '">\n'
         htmlStr += \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
+            'alt="' + translate['Avatar image'] + '" ' + \
             ' class="title"></a>\n'
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \

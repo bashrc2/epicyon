@@ -388,8 +388,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
-    tlStr += '<img loading="lazy" class="timeline-banner" src="' + \
-        usersPath + '/' + bannerFile + '" /></a>\n' + \
+    tlStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="' + translate['Timeline banner image'] + '" ' + \
+        'src="' + usersPath + '/' + bannerFile + '" /></a>\n' + \
         '</header>\n'
 
     if fullWidthTimelineButtonHeader:

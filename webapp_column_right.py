@@ -92,6 +92,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             htmlStr += \
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
+                'alt="' + translate['Right column image'] + '" ' + \
                 'loading="lazy" src="/users/' + \
                 nickname + '/' + rightImageFile + '" />\n' + \
                 '      </center>\n'
