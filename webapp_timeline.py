@@ -370,7 +370,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '<div class="transparent">' + \
         '<label class="transparent">' + \
         '<a class="skip-main" href="#timeline">' + \
-        translate['Skip to timeline'] + '</a></label>' + \
+        translate['Skip to timeline'] + '</a></label> ' + \
         '<label class="transparent">' + \
         '<a href="/users/' + nickname + '">' + \
         translate['Switch to profile view'] + '</a></label>' + \
