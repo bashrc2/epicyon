@@ -134,7 +134,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '/users/' + nickname + '/editnewswire">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
-                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit.png" /></a>\n'
 
