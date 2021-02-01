@@ -705,7 +705,17 @@ def htmlProfile(rssIconAtTop: bool,
                           movedTo, alsoKnownAs,
                           pinnedContent)
 
-    profileStr = profileHeaderStr + donateSection
+    profileStr = \
+        '<div class="transparent">' + \
+        '<label class="transparent">' + \
+        '<a class="skip-main" href="#buttonheader">' + \
+        translate['Skip to timeline'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        translate['Switch to timeline view'] + '</a></label>' + \
+        '</div>\n'
+
+    profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
     profileStr += \
