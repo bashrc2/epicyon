@@ -90,8 +90,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             htmlStr += \
                 '\n      <center>\n' + \
                 '        <img class="leftColImg" ' + \
-                'alt="' + translate['Left column image'] + '" ' + \
-                'loading="lazy" src="/users/' + \
+                'alt="" loading="lazy" src="/users/' + \
                 nickname + '/' + leftImageFile + '" />\n' + \
                 '      </center>\n'
 
@@ -269,6 +268,7 @@ def htmlLinksMobile(cssCache: {}, baseDir: str,
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="' + translate['Switch to timeline view'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += '<div class="col-left-mobile">\n'
@@ -334,7 +334,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
-    editLinksForm += '<img loading="lazy" class="timeline-banner" src="' + \
+    editLinksForm += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt = "" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
         '</header>\n'
 

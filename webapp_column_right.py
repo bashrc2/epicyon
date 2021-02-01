@@ -92,8 +92,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             htmlStr += \
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
-                'alt="' + translate['Right column image'] + '" ' + \
-                'loading="lazy" src="/users/' + \
+                'alt="" loading="lazy" src="/users/' + \
                 nickname + '/' + rightImageFile + '" />\n' + \
                 '      </center>\n'
 
@@ -359,8 +358,7 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
         translate['Go Back'] + '" alt="' + \
         translate['Go Back'] + '">\n'
     htmlStr += '<img loading="lazy" class="timeline-banner" ' + \
-        'alt="' + translate['Timeline banner image'] + '" ' + \
-        'src="' + \
+        'alt="" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += \
