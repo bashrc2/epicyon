@@ -372,6 +372,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '<a class="skip-main" href="#timeline">' + \
         translate['Skip to timeline'] + '</a></label> | ' + \
         '<label class="transparent">' + \
+        '<a class="skip-newswire" href="#newswire">' + \
+        translate['Skip to Newswire'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a class="skip-links" href="#links">' + \
+        translate['Skip to Links'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
         '<a href="/users/' + nickname + '">' + \
         translate['Switch to profile view'] + '</a></label>' + \
         '</div>\n'
@@ -420,7 +426,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                              httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
                              True, False, theme)
-    tlStr += '  <td valign="top" class="col-left">' + \
+    tlStr += '  <td valign="top" class="col-left" ' + \
+        'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
     tlStr += '  <td valign="top" class="col-center">\n'
@@ -626,7 +633,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            rssIconAtTop, publishButtonAtTop,
                                            authorized, True, theme)
     tlStr += '    </main>\n'
-    tlStr += '  <td valign="top" class="col-right">' + \
+    tlStr += '  <td valign="top" class="col-right" ' + \
+        'id="newswire" tabindex="-1">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
 
