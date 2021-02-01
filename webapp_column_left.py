@@ -116,7 +116,7 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             '/users/' + nickname + '/editlinks">' + \
             '<img class="' + editImageClass + \
             '" loading="lazy" alt="' + \
-            translate['Edit Links'] + '" title="' + \
+            translate['Edit Links'] + ' | " title="' + \
             translate['Edit Links'] + '" src="/' + \
             'icons/edit.png" /></a>\n'
 

@@ -124,7 +124,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '/users/' + nickname + '/editnewswire">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
-                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit_notify.png" /></a>\n'
         else:
@@ -143,14 +143,14 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '        <a href="/categories.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
-        translate['Hashtag Categories RSS Feed'] + '" title="' + \
+        translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
         'icons/categoriesrss.png" /></a>\n'
     rssIconStr += \
         '        <a href="/newswire.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
-        translate['Newswire RSS Feed'] + '" title="' + \
+        translate['Newswire RSS Feed'] + ' | " title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         'icons/logorss.png" /></a>\n'
     if rssIconAtTop:
