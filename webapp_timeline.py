@@ -369,6 +369,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     tlStr += \
         '<div class="transparent">' + \
         '<label class="transparent">' + \
+        '<a href="/users/' + nickname + '">' + \
+        translate['Switch to profile view'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
         '<a class="skip-main" href="#timeline">' + \
         translate['Skip to timeline'] + '</a></label> | ' + \
         '<label class="transparent">' + \
@@ -376,10 +379,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Skip to Newswire'] + '</a></label> | ' + \
         '<label class="transparent">' + \
         '<a class="skip-links" href="#links">' + \
-        translate['Skip to Links'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '">' + \
-        translate['Switch to profile view'] + '</a></label>' + \
+        translate['Skip to Links'] + '</a></label>' + \
         '</div>\n'
 
     # banner and row of buttons
