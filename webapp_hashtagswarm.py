@@ -263,7 +263,7 @@ def htmlSearchHashtagCategory(cssCache: {}, translate: {},
     if os.path.isfile(searchBannerFilename):
         htmlStr += '<a href="' + actor + '/search">\n'
         htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
-            actor + '/' + searchBannerFile + '" /></a>\n'
+            actor + '/' + searchBannerFile + '" alt="" /></a>\n'
 
     htmlStr += '<div class="follow">'
     htmlStr += '<center><br><br><br>'
