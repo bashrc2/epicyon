@@ -363,12 +363,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
 
-    # This creates a link to the profile page when viewed
-    # in lynx, but should be invisible in a graphical web browser
+    # This creates a link to skip to the timeline and change to
+    # profile view when accessed within lynx, but should be
+    # invisible in a graphical web browser
     tlStr += \
-        '<div class="transparent"><label class="transparent">' + \
+        '<div class="transparent">' + \
+        '<label class="transparent">' + \
+        '<a class="skip-main" href="#timeline">' + \
+        translate['Skip to timeline'] + '</a></label>' + \
+        '<label class="transparent">' + \
         '<a href="/users/' + nickname + '">' + \
-        translate['Switch to profile view'] + '</a></label></div>\n'
+        translate['Switch to profile view'] + '</a></label>' + \
+        '</div>\n'
 
     # banner and row of buttons
     tlStr += \
@@ -418,6 +424,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         leftColumnStr + '  </td>\n'
     # center column containing posts
     tlStr += '  <td valign="top" class="col-center">\n'
+    tlStr += '    <main id="timeline" tabindex="-1">\n'
 
     if not fullWidthTimelineButtonHeader:
         tlStr += \
@@ -618,6 +625,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
                                            authorized, True, theme)
+    tlStr += '    </main>\n'
     tlStr += '  <td valign="top" class="col-right">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
