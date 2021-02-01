@@ -140,7 +140,7 @@ def htmlLogin(cssCache: {}, translate: {},
     loginForm += '  <div class="imgcontainer">\n'
     loginForm += \
         '    <img loading="lazy" src="' + loginImage + \
-        '" alt="login image" class="loginimage">\n'
+        '" alt="" class="loginimage">\n'
     loginForm += loginText + TOSstr + '\n'
     loginForm += '  </div>\n'
     loginForm += '\n'
