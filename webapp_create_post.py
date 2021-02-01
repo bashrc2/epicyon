@@ -572,7 +572,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     newPostForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
+        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n' + \
         '</header>\n'
 
     mentionsStr = ''
