@@ -375,8 +375,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
-        '<img class="qrcode" src="/icons' + \
-        '/qrcode.png" /></a></p>\n'
+        '<img class="qrcode" alt="' + translate['QR Code'] + \
+        '" src="/icons/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
     if pinnedContent:
