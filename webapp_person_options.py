@@ -120,7 +120,7 @@ def htmlPersonOptions(defaultTimeline: str,
     optionsStr += '  <center>\n'
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
-        '" ' + getBrokenLinkSubstitute() + '/></a>\n'
+        '" alt="" ' + getBrokenLinkSubstitute() + '/></a>\n'
     handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     handleShown = handle
     if lockedAccount:
