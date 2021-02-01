@@ -348,7 +348,7 @@ def htmlSearch(cssCache: {}, translate: {},
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '">\n'
         followStr += '<img loading="lazy" class="timeline-banner" src="' + \
-            usersPath + '/' + searchBannerFile + '" /></a>\n' + \
+            usersPath + '/' + searchBannerFile + '" alt="" /></a>\n' + \
             '</header>\n'
 
     # show the search box
@@ -496,7 +496,7 @@ def htmlSkillsSearch(actor: str,
                 actor + '/skills">'
             skillSearchForm += \
                 '<img loading="lazy" src="' + avatarUrl + \
-                '"/><span class="search-result-text">' + actorName + \
+                '" alt="" /><span class="search-result-text">' + actorName + \
                 '</span></a></div>'
             ctr += 1
             if ctr >= postsPerPage:
