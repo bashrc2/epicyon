@@ -1613,6 +1613,10 @@ if args.addaccount:
     if os.path.isdir(baseDir + '/deactivated/' + nickname + '@' + domain):
         print('Account is deactivated')
         sys.exit()
+    if domain.endswith('.onion') or \
+       domain.endswith('.i2p'):
+       port = 80
+       httpPrefix = 'http'
     createPerson(baseDir, nickname, domain, port, httpPrefix,
                  True, not args.noapproval, args.password.strip())
     if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
