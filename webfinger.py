@@ -221,6 +221,7 @@ def webfingerLookup(path: str, baseDir: str,
     handle = None
     if 'resource=acct:' in path:
         handle = path.split('resource=acct:')[1].strip()
+        handle = urllib.parse.unquote(handle)
         if debug:
             print('DEBUG: WEBFINGER handle ' + handle)
     else:
