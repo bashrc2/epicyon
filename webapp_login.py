@@ -138,9 +138,12 @@ def htmlLogin(cssCache: {}, translate: {},
     loginForm += '<br>\n'
     loginForm += '<form method="POST" action="/login">\n'
     loginForm += '  <div class="imgcontainer">\n'
+    instanceTitle = getConfigParam(baseDir, 'instanceTitle')
+    if not instanceTitle:
+        instanceTitle = "Epicyon"
     loginForm += \
         '    <img loading="lazy" src="' + loginImage + \
-        '" alt="" class="loginimage">\n'
+        '" alt="' + instanceTitle + '" class="loginimage">\n'
     loginForm += loginText + TOSstr + '\n'
     loginForm += '  </div>\n'
     loginForm += '\n'
