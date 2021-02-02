@@ -76,9 +76,13 @@ def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
 
 
 def prepareHtmlPostNickname(nickname: str, postHtml: str) -> str:
-    """Replaces links on html post icons, such as Reply, Repeat
-    relative to the given nickname
-    href="/users/sally? becomes href="/users/nickname?
+    """html posts stored in memory are for all accounts on the instance
+    and they're indexed by id. However, some incoming posts may be
+    destined for multiple accounts (followers). This creates a problem
+    where the icon links whose urls begin with href="/users/nickname?
+    need to be changed for different nicknames to display correctly
+    within their timelines.
+    This function changes the nicknames for the icon links.
     """
     # replace the nickname
     usersStr = ' href="/users/'
