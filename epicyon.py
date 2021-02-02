@@ -868,7 +868,11 @@ configPort = getConfigParam(baseDir, 'port')
 if configPort:
     port = configPort
 else:
-    port = 8085
+    if domain.endswith('.onion') or \
+       domain.endswith('.i2p'):
+        port = 80
+    else:
+        port = 443
 
 configProxyPort = getConfigParam(baseDir, 'proxyPort')
 if configProxyPort:
@@ -1615,8 +1619,8 @@ if args.addaccount:
         sys.exit()
     if domain.endswith('.onion') or \
        domain.endswith('.i2p'):
-       port = 80
-       httpPrefix = 'http'
+        port = 80
+        httpPrefix = 'http'
     createPerson(baseDir, nickname, domain, port, httpPrefix,
                  True, not args.noapproval, args.password.strip())
     if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
