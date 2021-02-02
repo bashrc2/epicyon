@@ -1831,11 +1831,16 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
     for attempt in range(20):
         postResult = None
         unauthorized = False
+        if debug:
+            print('Getting postJsonString for ' + inboxUrl)
         try:
             postResult, unauthorized = \
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
                                debug)
+            if debug:
+                print('Obtained postJsonString for ' + inboxUrl +
+                      ' unauthorized: ' + str(unauthorized))
         except Exception as e:
             print('ERROR: postJsonString failed ' + str(e))
         if unauthorized:

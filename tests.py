@@ -95,6 +95,7 @@ from newswire import getNewswireTags
 from newswire import parseFeedDate
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
+from webapp_post import prepareHtmlPostNickname
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3072,9 +3073,25 @@ def testDomainHandling():
     assert decodedHost(testDomain) == "españa.icom.museum"
 
 
+def testPrepareHtmlPostNickname():
+    print('testPrepareHtmlPostNickname')
+    postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
+    postHtml += '<a class="imageAnchor" href="/users/bob?repeatprivate='
+    result = prepareHtmlPostNickname('alice', postHtml)
+    assert result == postHtml.replace('/bob?', '/alice?')
+
+    postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
+    postHtml += '<a class="imageAnchor" href="/users/bob;repeatprivate='
+    expectedHtml = '<a class="imageAnchor" href="/users/alice?replyfollowers='
+    expectedHtml += '<a class="imageAnchor" href="/users/bob;repeatprivate='
+    result = prepareHtmlPostNickname('alice', postHtml)
+    assert result == expectedHtml
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testPrepareHtmlPostNickname()
     testDomainHandling()
     testMastoApi()
     testLinksWithinPost()

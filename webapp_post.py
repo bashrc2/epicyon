@@ -75,7 +75,42 @@ def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
         print('TIMING INDIV ' + debugId + ' = ' + str(timeDiff))
 
 
-def preparePostFromHtmlCache(postHtml: str, boxName: str,
+def prepareHtmlPostNickname(nickname: str, postHtml: str) -> str:
+    """Replaces links on html post icons, such as Reply, Repeat
+    relative to the given nickname
+    href="/users/sally? becomes href="/users/nickname?
+    """
+    # replace the nickname
+    usersStr = ' href="/users/'
+    if usersStr not in postHtml:
+        return postHtml
+
+    userFound = True
+    postStr = postHtml
+    newPostStr = ''
+    while userFound:
+        if usersStr not in postStr:
+            newPostStr += postStr
+            break
+
+        # the next part, after href="/users/nickname?
+        nextStr = postStr.split(usersStr, 1)[1]
+        if '?' in nextStr:
+            nextStr = nextStr.split('?', 1)[1]
+        else:
+            newPostStr += postStr
+            break
+
+        # append the previous text to the result
+        newPostStr += postStr.split(usersStr)[0]
+        newPostStr += usersStr + nickname + '?'
+
+        # post is now the next part
+        postStr = nextStr
+    return newPostStr
+
+
+def preparePostFromHtmlCache(nickname: str, postHtml: str, boxName: str,
                              pageNumber: int) -> str:
     """Sets the page number on a cached html post
     """
@@ -91,7 +126,7 @@ def preparePostFromHtmlCache(postHtml: str, boxName: str,
     withPageNumber = postHtml.replace(';-999;', ';' + str(pageNumber) + ';')
     withPageNumber = withPageNumber.replace('?page=-999',
                                             '?page=' + str(pageNumber))
-    return withPageNumber
+    return prepareHtmlPostNickname(nickname, withPageNumber)
 
 
 def _saveIndividualPostAsHtmlToCache(baseDir: str,
@@ -173,7 +208,8 @@ def _getPostFromRecentCache(session,
     if not postHtml:
         return None
 
-    postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
+    postHtml = \
+        preparePostFromHtmlCache(nickname, postHtml, boxName, pageNumber)
     updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                            postJsonObject, postHtml)
     _logPostTiming(enableTimingLog, postStartTime, '3')

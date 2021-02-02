@@ -563,7 +563,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                             if recentPostsCache['html'].get(postId):
                                 currTlStr = recentPostsCache['html'][postId]
                                 currTlStr = \
-                                    preparePostFromHtmlCache(currTlStr,
+                                    preparePostFromHtmlCache(nickname,
+                                                             currTlStr,
                                                              boxName,
                                                              pageNumber)
                                 _logTimelineTiming(enableTimingLog,
