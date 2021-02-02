@@ -1757,6 +1757,11 @@ def siteIsActive(url: str) -> bool:
     """
     if not url.startswith('http'):
         return False
+    if '.onion/' in url or '.i2p/' in url or \
+       url.endswith('.onion') or \
+       url.endswith('.i2p'):
+        # skip this check for onion and i2p
+        return True
     try:
         req = urllib.request.Request(url)
         urllib.request.urlopen(req, timeout=10)  # nosec
