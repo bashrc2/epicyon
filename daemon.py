@@ -1136,7 +1136,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if self.server.restartInboxQueueInProgress:
             self._503()
-            print('Message arrrived but currently restarting inbox queue')
+            print('Message arrived but currently restarting inbox queue')
             self.server.POSTbusy = False
             return 2
 
