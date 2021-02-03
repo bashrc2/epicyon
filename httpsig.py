@@ -250,7 +250,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     signature = base64.b64decode(signatureDict['signature'])
 
     try:
-        pkcs1_15.new(publicKeyPem).verify(headerDigest, signature)
+        pubKey = pkcs1_15.new(publicKeyPem)
+        pubKey.verify(headerDigest, signature)
         return True
     except (ValueError, TypeError):
         if debug:
