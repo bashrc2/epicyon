@@ -8,6 +8,17 @@ fi
 
 echo "Starting static analysis"
 
+for sourceFile in epicyon/*.py
+do
+    result=$($cmd "$sourceFile")
+    if [ "$result" ]; then
+	echo ''
+	echo "$result"
+	exit 1
+    fi
+    echo -n '.'
+done
+
 for sourceFile in *.py
 do
     result=$($cmd "$sourceFile")
