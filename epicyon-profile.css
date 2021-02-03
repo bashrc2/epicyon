@@ -51,8 +51,8 @@
     --font-size-tox: 16px;
     --font-size-tox2: 18px;
     --time-color: #aaa;
-    --time-vertical-align: 4px;
-    --time-vertical-align-mobile: 25px;
+    --time-vertical-align: 0%;
+    --time-vertical-align-mobile: 1.5%;
     --publish-button-text: #FFFFFF;
     --button-margin: 5px;
     --button-left-margin: none;
@@ -96,6 +96,7 @@
     --column-right-width: 10vw;
     --column-left-mobile-margin: 2%;
     --column-left-top-margin: 0;
+    --column-right-top-margin: 0;
     --column-left-header-style: uppercase;
     --column-left-header-background: #555;
     --column-left-header-color: #fff;
@@ -1156,7 +1157,7 @@ div.container {
     .col-right img.rightColImg {
         background: var(--column-left-color);
         width: 100%;
-        margin: 0 0;
+        margin-top: var(--column-right-top-margin);
         padding: 0 0;
     }
     .likesCount {

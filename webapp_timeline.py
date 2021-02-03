@@ -63,7 +63,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  authorized: bool,
                  moderationActionStr: str,
                  theme: str,
-                 peertubeInstances: []) -> str:
+                 peertubeInstances: [],
+                 allowLocalNetworkAccess: bool) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -362,12 +363,25 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
 
-    # This creates a link to the profile page when viewed
-    # in lynx, but should be invisible in a graphical web browser
+    # This creates a link to skip to the timeline and change to
+    # profile view when accessed within lynx, but should be
+    # invisible in a graphical web browser
     tlStr += \
-        '<div class="transparent"><label class="transparent">' + \
+        '<div class="transparent">' + \
+        '<label class="transparent">' + \
         '<a href="/users/' + nickname + '">' + \
-        translate['Switch to profile view'] + '</a></label></div>\n'
+        translate['Switch to profile view'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a class="skip-main" href="' + usersPath + '/' + boxName + \
+        '#timeline">' + \
+        translate['Skip to timeline'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a class="skip-newswire" href="#newswire">' + \
+        translate['Skip to Newswire'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a class="skip-links" href="#links">' + \
+        translate['Skip to Links'] + '</a></label>' + \
+        '</div>\n'
 
     # banner and row of buttons
     tlStr += \
@@ -375,8 +389,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         '<a href="/users/' + nickname + '" title="' + \
         translate['Switch to profile view'] + '" alt="' + \
         translate['Switch to profile view'] + '">\n'
-    tlStr += '<img loading="lazy" class="timeline-banner" src="' + \
-        usersPath + '/' + bannerFile + '" /></a>\n' + \
+    tlStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="" ' + \
+        'src="' + usersPath + '/' + bannerFile + '" /></a>\n' + \
         '</header>\n'
 
     if fullWidthTimelineButtonHeader:
@@ -413,10 +428,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                              httpPrefix, translate,
                              editor, False, None, rssIconAtTop,
                              True, False, theme)
-    tlStr += '  <td valign="top" class="col-left">' + \
+    tlStr += '  <td valign="top" class="col-left" ' + \
+        'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
     tlStr += '  <td valign="top" class="col-center">\n'
+    tlStr += '    <main id="timeline" tabindex="-1">\n'
 
     if not fullWidthTimelineButtonHeader:
         tlStr += \
@@ -546,7 +563,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                             if recentPostsCache['html'].get(postId):
                                 currTlStr = recentPostsCache['html'][postId]
                                 currTlStr = \
-                                    preparePostFromHtmlCache(currTlStr,
+                                    preparePostFromHtmlCache(nickname,
+                                                             currTlStr,
                                                              boxName,
                                                              pageNumber)
                                 _logTimelineTiming(enableTimingLog,
@@ -574,6 +592,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              YTReplacementDomain,
                                              showPublishedDateOnly,
                                              peertubeInstances,
+                                             allowLocalNetworkAccess,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
@@ -616,7 +635,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
                                            authorized, True, theme)
-    tlStr += '  <td valign="top" class="col-right">' + \
+    tlStr += '    </main>\n'
+    tlStr += '  <td valign="top" class="col-right" ' + \
+        'id="newswire" tabindex="-1">' + \
         rightColumnStr + '  </td>\n'
     tlStr += '  </tr>\n'
 
@@ -730,7 +751,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
                authorized: bool, theme: str,
-               peertubeInstances: []) -> str:
+               peertubeInstances: [],
+               allowLocalNetworkAccess: bool) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -750,7 +772,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -770,7 +793,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               rssIconAtTop: bool,
               publishButtonAtTop: bool,
               authorized: bool, theme: str,
-              peertubeInstances: []) -> str:
+              peertubeInstances: [],
+              allowLocalNetworkAccess: bool) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -790,7 +814,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -810,7 +835,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   rssIconAtTop: bool,
                   publishButtonAtTop: bool,
                   authorized: bool, theme: str,
-                  peertubeInstances: []) -> str:
+                  peertubeInstances: [],
+                  allowLocalNetworkAccess: bool) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -830,7 +856,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlEvents(cssCache: {}, defaultTimeline: str,
@@ -850,7 +877,8 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
                authorized: bool, theme: str,
-               peertubeInstances: []) -> str:
+               peertubeInstances: [],
+               allowLocalNetworkAccess: bool) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -870,7 +898,8 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -890,7 +919,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  rssIconAtTop: bool,
                  publishButtonAtTop: bool,
                  authorized: bool, theme: str,
-                 peertubeInstances: []) -> str:
+                 peertubeInstances: [],
+                 allowLocalNetworkAccess: bool) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -905,7 +935,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -925,7 +956,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      rssIconAtTop: bool,
                      publishButtonAtTop: bool,
                      authorized: bool, theme: str,
-                     peertubeInstances: []) -> str:
+                     peertubeInstances: [],
+                     allowLocalNetworkAccess: bool) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -941,7 +973,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -961,7 +994,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    rssIconAtTop: bool,
                    publishButtonAtTop: bool,
                    authorized: bool, theme: str,
-                   peertubeInstances: []) -> str:
+                   peertubeInstances: [],
+                   allowLocalNetworkAccess: bool) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -977,7 +1011,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -997,7 +1032,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    rssIconAtTop: bool,
                    publishButtonAtTop: bool,
                    authorized: bool, theme: str,
-                   peertubeInstances: []) -> str:
+                   peertubeInstances: [],
+                   allowLocalNetworkAccess: bool) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1013,7 +1049,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1034,7 +1071,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       publishButtonAtTop: bool,
                       authorized: bool,
                       theme: str,
-                      peertubeInstances: []) -> str:
+                      peertubeInstances: [],
+                      allowLocalNetworkAccess: bool) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1050,7 +1088,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1070,7 +1109,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   rssIconAtTop: bool,
                   publishButtonAtTop: bool,
                   authorized: bool, theme: str,
-                  peertubeInstances: []) -> str:
+                  peertubeInstances: [],
+                  allowLocalNetworkAccess: bool) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1086,7 +1126,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         positiveVoting, showPublishAsIcon,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1106,7 +1147,8 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                rssIconAtTop: bool,
                publishButtonAtTop: bool,
                authorized: bool, theme: str,
-               peertubeInstances: []) -> str:
+               peertubeInstances: [],
+               allowLocalNetworkAccess: bool) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1123,4 +1165,5 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         newswire, False, False, positiveVoting,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
-                        authorized, None, theme, peertubeInstances)
+                        authorized, None, theme, peertubeInstances,
+                        allowLocalNetworkAccess)

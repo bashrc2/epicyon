@@ -92,7 +92,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             htmlStr += \
                 '\n      <center>\n' + \
                 '          <img class="rightColImg" ' + \
-                'loading="lazy" src="/users/' + \
+                'alt="" loading="lazy" src="/users/' + \
                 nickname + '/' + rightImageFile + '" />\n' + \
                 '      </center>\n'
 
@@ -123,7 +123,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '/users/' + nickname + '/editnewswire">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
-                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit_notify.png" /></a>\n'
         else:
@@ -133,7 +133,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 '/users/' + nickname + '/editnewswire">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
-                translate['Edit newswire'] + '" title="' + \
+                translate['Edit newswire'] + ' | " title="' + \
                 translate['Edit newswire'] + '" src="/' + \
                 'icons/edit.png" /></a>\n'
 
@@ -142,14 +142,14 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
         '        <a href="/categories.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
-        translate['Hashtag Categories RSS Feed'] + '" title="' + \
+        translate['Hashtag Categories RSS Feed'] + ' | " title="' + \
         translate['Hashtag Categories RSS Feed'] + '" src="/' + \
         'icons/categoriesrss.png" /></a>\n'
     rssIconStr += \
         '        <a href="/newswire.xml">' + \
         '<img class="' + editImageClass + \
         '" loading="lazy" alt="' + \
-        translate['Newswire RSS Feed'] + '" title="' + \
+        translate['Newswire RSS Feed'] + ' | " title="' + \
         translate['Newswire RSS Feed'] + '" src="/' + \
         'icons/logorss.png" /></a>\n'
     if rssIconAtTop:
@@ -241,6 +241,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
         if faviconUrl:
             faviconLink = \
                 '<img loading="lazy" src="' + faviconUrl + '" ' + \
+                'alt="" ' + \
                 _getBrokenFavSubstitute() + '/>'
         moderatedItem = item[5]
         htmlStr += separatorStr
@@ -265,6 +266,7 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                     '/newswireunvote=' + dateStrLink + '" ' + \
                     'title="' + translate['Remove Vote'] + '">'
                 htmlStr += '<img loading="lazy" class="voteicon" src="/' + \
+                    'alt="' + translate['Remove Vote'] + '" ' + \
                     'icons/vote.png" /></a></p>\n'
             else:
                 htmlStr += ' <span class="newswireDateVotedOn">'
@@ -290,8 +292,9 @@ def _htmlNewswire(baseDir: str, newswire: {}, nickname: str, moderator: bool,
                 htmlStr += '<a href="/users/' + nickname + \
                     '/newswirevote=' + dateStrLink + '" ' + \
                     'title="' + translate['Vote'] + '">'
-                htmlStr += '<img class="voteicon" src="/' + \
-                    'icons/vote.png" /></a>'
+                htmlStr += '<img class="voteicon" ' + \
+                    'alt="' + translate['Vote'] + '" ' + \
+                    'src="/icons/vote.png" /></a>'
                 htmlStr += '</p>\n'
             else:
                 htmlStr += '<p class="newswireItem">' + \
@@ -354,7 +357,8 @@ def htmlCitations(baseDir: str, nickname: str, domain: str,
         '<a href="/users/' + nickname + '/newblog" title="' + \
         translate['Go Back'] + '" alt="' + \
         translate['Go Back'] + '">\n'
-    htmlStr += '<img loading="lazy" class="timeline-banner" src="' + \
+    htmlStr += '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += \
@@ -464,6 +468,7 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
     htmlStr += \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         '<img loading="lazy" class="timeline-banner" ' + \
+        'alt="' + translate['Timeline banner image'] + '" ' + \
         'src="/users/' + nickname + '/' + bannerFile + '" /></a>\n'
 
     htmlStr += '<div class="col-right-mobile">\n'
@@ -531,8 +536,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['Switch to timeline view'] + '" alt="' + \
         translate['Switch to timeline view'] + '">\n'
     editNewswireForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n' + \
-        '</header>'
+        '/users/' + nickname + '/' + bannerFile + '" ' + \
+        'alt="" /></a>\n</header>'
 
     editNewswireForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

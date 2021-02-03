@@ -48,7 +48,7 @@
     "Location": "Location",
     "Login": "Login",
     "Edit": "Edit",
-    "Switch to timeline view": "Switch to timeline view",
+    "Switch to timeline view": "Timeline view",
     "Approve": "Approve",
     "Deny": "Deny",
     "Posts": "Posts",
@@ -63,7 +63,7 @@
     "Your browser does not support the video element.": "Your browser does not support the video element.",
     "Create a new post": "New post",
     "Create a new DM": "Create a new DM",
-    "Switch to profile view": "Switch to profile view",
+    "Switch to profile view": "Profile view",
     "Inbox": "Inbox",
     "Outbox": "Outbox",
     "Search and follow": "Search/follow",
@@ -363,5 +363,8 @@
     "Other accounts": "Other accounts",
     "Pin this post to your profile.": "Pin this post to your profile.",
     "Administered by": "Administered by",
-    "Version": "Version"
+    "Version": "Version",
+    "Skip to timeline": "Skip to timeline",
+    "Skip to Newswire": "Skip to Newswire",
+    "Skip to Links": "Skip to Links"
 }

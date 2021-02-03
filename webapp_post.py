@@ -75,7 +75,46 @@ def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
         print('TIMING INDIV ' + debugId + ' = ' + str(timeDiff))
 
 
-def preparePostFromHtmlCache(postHtml: str, boxName: str,
+def prepareHtmlPostNickname(nickname: str, postHtml: str) -> str:
+    """html posts stored in memory are for all accounts on the instance
+    and they're indexed by id. However, some incoming posts may be
+    destined for multiple accounts (followers). This creates a problem
+    where the icon links whose urls begin with href="/users/nickname?
+    need to be changed for different nicknames to display correctly
+    within their timelines.
+    This function changes the nicknames for the icon links.
+    """
+    # replace the nickname
+    usersStr = ' href="/users/'
+    if usersStr not in postHtml:
+        return postHtml
+
+    userFound = True
+    postStr = postHtml
+    newPostStr = ''
+    while userFound:
+        if usersStr not in postStr:
+            newPostStr += postStr
+            break
+
+        # the next part, after href="/users/nickname?
+        nextStr = postStr.split(usersStr, 1)[1]
+        if '?' in nextStr:
+            nextStr = nextStr.split('?', 1)[1]
+        else:
+            newPostStr += postStr
+            break
+
+        # append the previous text to the result
+        newPostStr += postStr.split(usersStr)[0]
+        newPostStr += usersStr + nickname + '?'
+
+        # post is now the next part
+        postStr = nextStr
+    return newPostStr
+
+
+def preparePostFromHtmlCache(nickname: str, postHtml: str, boxName: str,
                              pageNumber: int) -> str:
     """Sets the page number on a cached html post
     """
@@ -91,7 +130,7 @@ def preparePostFromHtmlCache(postHtml: str, boxName: str,
     withPageNumber = postHtml.replace(';-999;', ';' + str(pageNumber) + ';')
     withPageNumber = withPageNumber.replace('?page=-999',
                                             '?page=' + str(pageNumber))
-    return withPageNumber
+    return prepareHtmlPostNickname(nickname, withPageNumber)
 
 
 def _saveIndividualPostAsHtmlToCache(baseDir: str,
@@ -173,7 +212,8 @@ def _getPostFromRecentCache(session,
     if not postHtml:
         return None
 
-    postHtml = preparePostFromHtmlCache(postHtml, boxName, pageNumber)
+    postHtml = \
+        preparePostFromHtmlCache(nickname, postHtml, boxName, pageNumber)
     updateRecentPostsCache(recentPostsCache, maxRecentPosts,
                            postJsonObject, postHtml)
     _logPostTiming(enableTimingLog, postStartTime, '3')
@@ -1081,6 +1121,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          boxName: str, YTReplacementDomain: str,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
+                         allowLocalNetworkAccess: bool,
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -1231,7 +1272,8 @@ def individualPostAsHtml(allowDownloads: bool,
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
-                             YTReplacementDomain)
+                             YTReplacementDomain,
+                             allowLocalNetworkAccess)
         if not postJsonAnnounce:
             return ''
         postJsonObject = postJsonAnnounce
@@ -1605,7 +1647,8 @@ def htmlIndividualPost(cssCache: {},
                        projectVersion: str, likedBy: str,
                        YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
-                       peertubeInstances: []) -> str:
+                       peertubeInstances: [],
+                       allowLocalNetworkAccess: bool) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1646,6 +1689,7 @@ def htmlIndividualPost(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances,
+                             allowLocalNetworkAccess,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1672,6 +1716,7 @@ def htmlIndividualPost(cssCache: {},
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
+                                         allowLocalNetworkAccess,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1701,6 +1746,7 @@ def htmlIndividualPost(cssCache: {},
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
+                                         allowLocalNetworkAccess,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1721,7 +1767,8 @@ def htmlPostReplies(cssCache: {},
                     httpPrefix: str, projectVersion: str,
                     YTReplacementDomain: str,
                     showPublishedDateOnly: bool,
-                    peertubeInstances: []) -> str:
+                    peertubeInstances: [],
+                    allowLocalNetworkAccess: bool) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1739,6 +1786,7 @@ def htmlPostReplies(cssCache: {},
                                      YTReplacementDomain,
                                      showPublishedDateOnly,
                                      peertubeInstances,
+                                     allowLocalNetworkAccess,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

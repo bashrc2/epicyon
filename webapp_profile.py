@@ -63,7 +63,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            YTReplacementDomain: str,
                            showPublishedDateOnly: bool,
                            defaultTimeline: str,
-                           peertubeInstances: []) -> str:
+                           peertubeInstances: [],
+                           allowLocalNetworkAccess: bool) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if hasUsersPath(profileHandle) or '/@' in profileHandle:
@@ -292,7 +293,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                  httpPrefix, projectVersion, 'inbox',
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
-                                 peertubeInstances,
+                                 peertubeInstances, allowLocalNetworkAccess,
                                  False, False, False, False, False)
         i += 1
         if i >= 20:
@@ -323,6 +324,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
+        'alt="" ' + \
         'src="/users/' + nickname + '/image_' + theme + '.png" /></a>\n'
     htmlStr += '      <figcaption>\n'
     htmlStr += \
@@ -330,7 +332,7 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n' + \
         '          <img loading="lazy" src="' + avatarUrl + '" ' + \
-        ' class="title"></a>\n'
+        'alt=""  class="title"></a>\n'
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + nickname + '@' + domainFull + '</b><br>\n'
@@ -372,8 +374,8 @@ def _getProfileHeader(baseDir: str, httpPrefix: str,
         '    <a href="/users/' + nickname + \
         '/qrcode.png" alt="' + translate['QR Code'] + '" title="' + \
         translate['QR Code'] + '">' + \
-        '<img class="qrcode" src="/icons' + \
-        '/qrcode.png" /></a></p>\n'
+        '<img class="qrcode" alt="' + translate['QR Code'] + \
+        '" src="/icons/qrcode.png" /></a></p>\n'
     htmlStr += '        <p>' + profileDescriptionShort + '</p>\n'
     htmlStr += loginButton
     if pinnedContent:
@@ -402,6 +404,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
         nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '">\n'
     htmlStr += '        <img class="profileBackground" ' + \
+        'alt="" ' + \
         'src="' + imageUrl + '" /></a>\n'
     htmlStr += '      <figcaption>\n'
     if avatarUrl:
@@ -410,7 +413,7 @@ def _getProfileHeaderAfterSearch(baseDir: str,
             translate['Switch to timeline view'] + '">\n'
         htmlStr += \
             '          <img loading="lazy" src="' + avatarUrl + '" ' + \
-            ' class="title"></a>\n'
+            'alt="" class="title"></a>\n'
     htmlStr += '        <h1>' + displayName + '</h1>\n'
     htmlStr += \
         '    <p><b>@' + searchNickname + '@' + searchDomainFull + '</b><br>\n'
@@ -468,6 +471,7 @@ def htmlProfile(rssIconAtTop: bool,
                 showPublishedDateOnly: bool,
                 newswire: {}, theme: str, dormantMonths: int,
                 peertubeInstances: [],
+                allowLocalNetworkAccess: bool,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -487,6 +491,7 @@ def htmlProfile(rssIconAtTop: bool,
                                YTReplacementDomain,
                                showPublishedDateOnly,
                                newswire, theme, extraJson,
+                               allowLocalNetworkAccess,
                                pageNumber, maxItemsPerPage)
 
     domain, port = getDomainFromActor(profileJson['id'])
@@ -702,7 +707,18 @@ def htmlProfile(rssIconAtTop: bool,
                           movedTo, alsoKnownAs,
                           pinnedContent)
 
-    profileStr = profileHeaderStr + donateSection
+    # Links for keyboard navigation
+    profileStr = \
+        '<div class="transparent">' + \
+        '<label class="transparent">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        translate['Switch to timeline view'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a class="skip-main" href="#buttonheader">' + \
+        translate['Skip to timeline'] + '</a></label>' + \
+        '</div>\n'
+
+    profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
     profileStr += \
@@ -756,7 +772,8 @@ def htmlProfile(rssIconAtTop: bool,
                               projectVersion,
                               YTReplacementDomain,
                               showPublishedDateOnly,
-                              peertubeInstances) + licenseStr
+                              peertubeInstances,
+                              allowLocalNetworkAccess) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -805,7 +822,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       projectVersion: str,
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
-                      peertubeInstances: []) -> str:
+                      peertubeInstances: [],
+                      allowLocalNetworkAccess: bool) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -844,6 +862,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          YTReplacementDomain,
                                          showPublishedDateOnly,
                                          peertubeInstances,
+                                         allowLocalNetworkAccess,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr

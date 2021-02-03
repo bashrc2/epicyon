@@ -55,6 +55,7 @@ from utils import locateNewsVotes
 from utils import locateNewsArrival
 from utils import votesOnNewswireItem
 from utils import removeHtml
+from utils import dangerousMarkup
 from media import attachMedia
 from media import replaceYouTube
 from content import tagExists
@@ -291,7 +292,13 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
             avatarUrl = personJson['icon']['url']
     displayName = None
     if personJson.get('name'):
-        displayName = removeHtml(personJson['name'])
+        displayName = personJson['name']
+        if dangerousMarkup(personJson['name'], False):
+            displayName = '*ADVERSARY*'
+        elif isFiltered(baseDir,
+                        nickname, domain,
+                        displayName):
+            displayName = '*FILTERED*'
         # have they moved?
         if personJson.get('movedTo'):
             displayName += ' ⌂'
@@ -1824,11 +1831,16 @@ def threadSendPost(session, postJsonStr: str, federationList: [],
     for attempt in range(20):
         postResult = None
         unauthorized = False
+        if debug:
+            print('Getting postJsonString for ' + inboxUrl)
         try:
             postResult, unauthorized = \
                 postJsonString(session, postJsonStr, federationList,
                                inboxUrl, signatureHeaderJson,
                                debug)
+            if debug:
+                print('Obtained postJsonString for ' + inboxUrl +
+                      ' unauthorized: ' + str(unauthorized))
         except Exception as e:
             print('ERROR: postJsonString failed ' + str(e))
         if unauthorized:
@@ -2908,7 +2920,8 @@ def isDM(postJsonObject: {}) -> bool:
 def isImageMedia(session, baseDir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  postJsonObject: {}, translate: {},
-                 YTReplacementDomain: str) -> bool:
+                 YTReplacementDomain: str,
+                 allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2916,7 +2929,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              __version__, translate,
-                             YTReplacementDomain)
+                             YTReplacementDomain,
+                             allowLocalNetworkAccess)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3831,7 +3845,8 @@ def _rejectAnnounce(announceFilename: str):
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
-                     translate: {}, YTReplacementDomain: str) -> {}:
+                     translate: {}, YTReplacementDomain: str,
+                     allowLocalNetworkAccess: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -3911,20 +3926,16 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename)
             return None
-        if '/users/' not in announcedJson['id'] and \
-           '/accounts/' not in announcedJson['id'] and \
-           '/channel/' not in announcedJson['id'] and \
-           '/profile/' not in announcedJson['id']:
+        if not hasUsersPath(announcedJson['id']):
             _rejectAnnounce(announceFilename)
             return None
         if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename)
-            # pprint(announcedJson)
             return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Article':
+            # You can only announce Note or Article types
             _rejectAnnounce(announceFilename)
-            # pprint(announcedJson)
             return None
         if not announcedJson.get('content'):
             _rejectAnnounce(announceFilename)
@@ -3935,16 +3946,25 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if not validPostDate(announcedJson['published']):
             _rejectAnnounce(announceFilename)
             return None
-        if isFiltered(baseDir, nickname, domain, announcedJson['content']):
+
+        # Check the content of the announce
+        contentStr = announcedJson['content']
+        if dangerousMarkup(contentStr, allowLocalNetworkAccess):
             _rejectAnnounce(announceFilename)
             return None
+
+        if isFiltered(baseDir, nickname, domain, contentStr):
+            _rejectAnnounce(announceFilename)
+            return None
+
         # remove any long words
-        announcedJson['content'] = \
-            removeLongWords(announcedJson['content'], 40, [])
+        contentStr = removeLongWords(contentStr, 40, [])
 
         # remove text formatting, such as bold/italics
-        announcedJson['content'] = \
-            removeTextFormatting(announcedJson['content'])
+        contentStr = removeTextFormatting(contentStr)
+
+        # set the content after santitization
+        announcedJson['content'] = contentStr
 
         # wrap in create to be consistent with other posts
         announcedJson = \
@@ -3952,8 +3972,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                                     actorNickname, actorDomain, actorPort,
                                     announcedJson)
         if announcedJson['type'] != 'Create':
+            # Create wrap failed
             _rejectAnnounce(announceFilename)
-            # pprint(announcedJson)
             return None
 
         # labelAccusatoryPost(postJsonObject, translate)

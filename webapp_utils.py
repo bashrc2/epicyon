@@ -591,24 +591,24 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
 
     displayName = displayName.replace('<p>', '').replace('</p>', '')
     emojiTags = {}
-    print('TAG: displayName before tags: ' + displayName)
+#    print('TAG: displayName before tags: ' + displayName)
     displayName = \
         addHtmlTags(baseDir, httpPrefix,
                     nickname, domain, displayName, [], emojiTags)
     displayName = displayName.replace('<p>', '').replace('</p>', '')
-    print('TAG: displayName after tags: ' + displayName)
+#    print('TAG: displayName after tags: ' + displayName)
     # convert the emoji dictionary to a list
     emojiTagsList = []
     for tagName, tag in emojiTags.items():
         emojiTagsList.append(tag)
-    print('TAG: emoji tags list: ' + str(emojiTagsList))
+#    print('TAG: emoji tags list: ' + str(emojiTagsList))
     if not inProfileName:
         displayName = \
             replaceEmojiFromTags(displayName, emojiTagsList, 'post header')
     else:
         displayName = \
             replaceEmojiFromTags(displayName, emojiTagsList, 'profile')
-    print('TAG: displayName after tags 2: ' + displayName)
+#    print('TAG: displayName after tags 2: ' + displayName)
 
     # remove any stray emoji
     while ':' in displayName:
@@ -619,8 +619,8 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
         displayName = displayName.replace(':' + emojiStr + ':', '').strip()
         if prevDisplayName == displayName:
             break
-        print('TAG: displayName after tags 3: ' + displayName)
-    print('TAG: displayName after tag replacements: ' + displayName)
+#        print('TAG: displayName after tags 3: ' + displayName)
+#    print('TAG: displayName after tag replacements: ' + displayName)
 
     return displayName
 
@@ -838,8 +838,8 @@ def htmlPostSeparator(baseDir: str, column: str) -> str:
     if os.path.isfile(separatorImageFilename):
         separatorStr = \
             '<div class="' + separatorClass + '"><center>' + \
-            '<img src="/icons/' + filename + '"/>' + \
-            '</center></div>\n'
+            '<img src="/icons/' + filename + '" ' + \
+            'alt="" /></center></div>\n'
     return separatorStr
 
 

@@ -16,10 +16,10 @@ if [[ "$1" == 'remove' ]]; then
     rm "/etc/nginx/sites-availale/${username}"
     rm -rf ${install_destination}
     if [ -d /var/www/cache ]; then
-	rm -rf /var/www/cache
+        rm -rf /var/www/cache
     fi
     if [ -d /srv/http/cache ]; then
-	rm -rf /srv/http/cache
+        rm -rf /srv/http/cache
     fi
     userdel -r ${username}
     echo 'Epicyon onion instance removed'
@@ -37,18 +37,36 @@ if [ -f /usr/bin/pacman ]; then
     pacman -Syy
     pacman -S --noconfirm tor python-pip python-pysocks python-pycryptodome \
            imagemagick python-pillow python-requests \
-	   perl-image-exiftool python-numpy python-dateutil \
-	   certbot flake8 git qrencode bandit
+           perl-image-exiftool python-numpy python-dateutil \
+           certbot flake8 git qrencode bandit
     pip3 install pyLD pyqrcode pypng
 else
     apt-get update
     apt-get -y install imagemagick python3-crypto python3-pycryptodome \
-	    python3-dateutil python3-idna python3-requests \
-	    python3-numpy python3-pil.imagetk python3-pip \
-	    python3-setuptools python3-socks python3-idna \
-	    libimage-exiftool-perl python3-flake8 python3-pyld \
-	    python3-django-timezone-field tor nginx git qrencode \
-	    python3-pyqrcode python3-png python3-bandit
+            python3-dateutil python3-idna python3-requests \
+            python3-numpy python3-pil.imagetk python3-pip \
+            python3-setuptools python3-socks python3-idna \
+            libimage-exiftool-perl python3-flake8 python3-pyld \
+            python3-django-timezone-field tor nginx git qrencode \
+            python3-pyqrcode python3-png python3-bandit
+fi
+
+if [[ "$(uname -a)" == *'Debian'* ]]; then
+    echo 'Fixing the tor daemon'
+    { echo '[Unit]';
+      echo 'Description=Anonymizing overlay network for TCP (multi-instance-master)';
+      echo '';
+      echo '[Service]';
+      echo 'Type=simple';
+      echo 'User=root';
+      echo 'Group=debian-tor';
+      echo 'ExecStart=/usr/bin/tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /etc/tor/torrc --RunAsDaemon 0';
+      echo '';
+      echo '[Install]';
+      echo 'WantedBy=multi-user.target'; } > /lib/systemd/system/tor.service
+    cp /lib/systemd/system/tor.service /root/tor.service
+    systemctl daemon-reload
+    systemctl restart tor
 fi
 
 echo 'Cloning the epicyon repo'
@@ -56,8 +74,8 @@ if [ ! -d ${install_destination} ]; then
     git clone https://gitlab.com/bashrc2/epicyon ${install_destination}
 
     if [ ! -d ${install_destination} ]; then
-	echo 'Epicyon repo failed to clone'
-	exit 3
+        echo 'Epicyon repo failed to clone'
+        exit 3
     fi
 fi
 
@@ -79,6 +97,7 @@ if [ ! -d /etc/torrc.d ]; then
 fi
 if ! grep -q '%include /etc/torrc.d' /etc/tor/torrc; then
     echo '%include /etc/torrc.d' >> /etc/tor/torrc
+    systemctl restart tor
 fi
 
 if [ ! -f /etc/torrc.d/epicyon ]; then
@@ -185,7 +204,7 @@ if [ ! -f /etc/nginx/nginx.conf ]; then
       echo '}'; } > /etc/nginx/nginx.conf
 else
     if ! grep -q 'include /etc/nginx/sites-enabled' /etc/nginx/nginx.conf; then
-	echo 'include /etc/nginx/sites-enabled/*.conf;' >> /etc/nginx/nginx.conf
+        echo 'include /etc/nginx/sites-enabled/*.conf;' >> /etc/nginx/nginx.conf
     fi
 fi
 if [ ! -d /etc/nginx/conf.d ]; then
@@ -200,25 +219,25 @@ fi
 
 if [ -f /usr/bin/pacman ]; then
     if [ ! -f /lib/systemd/system/nginx.service ]; then
-	echo 'Creating nginx daemon'
-	{ echo '[Unit]';
-	  echo 'Description=A high performance web server and a reverse proxy server';
-	  echo 'Documentation=man:nginx(8)';
-	  echo 'After=network.target nss-lookup.target';
-	  echo ''
-	  echo '[Service]';
-	  echo 'Type=forking';
-	  echo 'PIDFile=/run/nginx.pid';
-	  echo "ExecStartPre=$(which nginx) -t -q -g 'daemon on; master_process on;'";
-	  echo "ExecStart=$(which nginx) -g 'daemon on; master_process on;'";
-	  echo "ExecReload=$(which nginx) -g 'daemon on; master_process on;' -s reload";
-	  echo 'ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid';
-	  echo 'TimeoutStopSec=5';
-	  echo 'KillMode=mixed';
-	  echo '';
-	  echo '[Install]';
-	  echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/nginx.service
-	systemctl enable nginx
+        echo 'Creating nginx daemon'
+        { echo '[Unit]';
+          echo 'Description=A high performance web server and a reverse proxy server';
+          echo 'Documentation=man:nginx(8)';
+          echo 'After=network.target nss-lookup.target';
+          echo ''
+          echo '[Service]';
+          echo 'Type=forking';
+          echo 'PIDFile=/run/nginx.pid';
+          echo "ExecStartPre=$(which nginx) -t -q -g 'daemon on; master_process on;'";
+          echo "ExecStart=$(which nginx) -g 'daemon on; master_process on;'";
+          echo "ExecReload=$(which nginx) -g 'daemon on; master_process on;' -s reload";
+          echo 'ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid';
+          echo 'TimeoutStopSec=5';
+          echo 'KillMode=mixed';
+          echo '';
+          echo '[Install]';
+          echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/nginx.service
+        systemctl enable nginx
     fi
 fi
 
@@ -257,7 +276,7 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '    index index.html;';
   echo '';
   echo '    location /newsmirror {';
-  echo '      root /var/www/${ONION_DOMAIN}/htdocs;';
+  echo "      root /var/www/${ONION_DOMAIN}/htdocs;";
   echo '      try_files $uri =404;';
   echo '    }';
   echo '';

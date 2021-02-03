@@ -49,6 +49,7 @@ from utils import saveJson
 from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
+from utils import dangerousMarkup
 from follow import followerOfPerson
 from follow import unfollowAccount
 from follow import unfollowerOfAccount
@@ -77,7 +78,6 @@ from inbox import validInboxFilenames
 from categories import guessHashtagCategory
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
-from content import dangerousMarkup
 from content import dangerousCSS
 from content import addWebLinks
 from content import replaceEmojiFromTags
@@ -95,6 +95,7 @@ from newswire import getNewswireTags
 from newswire import parseFeedDate
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
+from webapp_post import prepareHtmlPostNickname
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3072,9 +3073,25 @@ def testDomainHandling():
     assert decodedHost(testDomain) == "españa.icom.museum"
 
 
+def testPrepareHtmlPostNickname():
+    print('testPrepareHtmlPostNickname')
+    postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
+    postHtml += '<a class="imageAnchor" href="/users/bob?repeatprivate='
+    result = prepareHtmlPostNickname('alice', postHtml)
+    assert result == postHtml.replace('/bob?', '/alice?')
+
+    postHtml = '<a class="imageAnchor" href="/users/bob?replyfollowers='
+    postHtml += '<a class="imageAnchor" href="/users/bob;repeatprivate='
+    expectedHtml = '<a class="imageAnchor" href="/users/alice?replyfollowers='
+    expectedHtml += '<a class="imageAnchor" href="/users/bob;repeatprivate='
+    result = prepareHtmlPostNickname('alice', postHtml)
+    assert result == expectedHtml
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testPrepareHtmlPostNickname()
     testDomainHandling()
     testMastoApi()
     testLinksWithinPost()
