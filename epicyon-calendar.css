@@ -28,7 +28,7 @@
 
 @font-face {
   font-family: 'Bedstead';
-  font-style: var(--calendar-header-font-style);
+  font-style: italic;
   font-weight: normal;
   font-display: block;
   src: url('./fonts/bedstead.otf') format('opentype');
