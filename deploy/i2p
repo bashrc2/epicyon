@@ -68,7 +68,7 @@ if [ -f /usr/bin/pacman ]; then
     pip3 install pyLD pyqrcode pypng
 else
     apt-get update
-    apt-get -y install imagemagick python3-crypto python3-cryptography \
+    apt-get -y install imagemagick python3-cryptography \
 	    python3-dateutil python3-idna python3-requests \
 	    python3-numpy python3-pil.imagetk python3-pip \
 	    python3-setuptools python3-socks python3-idna \
