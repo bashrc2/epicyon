@@ -23,7 +23,7 @@ You will need python version 3.7 or later.
 On Arch/Parabola:
 
 ``` bash
-sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
+sudo pacman -S tor python-pip python-pysocks python-cryptography \
                imagemagick python-requests \
 	       perl-image-exiftool python-dateutil \
 	       certbot flake8 bandit
@@ -36,7 +36,7 @@ Or on Debian:
 sudo apt install -y \
     tor python3-socks imagemagick \
     python3-setuptools \
-    python3-crypto python3-pycryptodome \
+    python3-crypto python3-cryptography \
     python3-dateutil \
     python3-idna python3-requests \
     python3-django-timezone-field \

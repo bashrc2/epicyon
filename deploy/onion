@@ -35,14 +35,14 @@ EPICYON_PORT=7157
 echo 'Adding Epicyon dependencies'
 if [ -f /usr/bin/pacman ]; then
     pacman -Syy
-    pacman -S --noconfirm tor python-pip python-pysocks python-pycryptodome \
+    pacman -S --noconfirm tor python-pip python-pysocks python-cryptography \
            imagemagick python-pillow python-requests \
            perl-image-exiftool python-numpy python-dateutil \
            certbot flake8 git qrencode bandit
     pip3 install pyLD pyqrcode pypng
 else
     apt-get update
-    apt-get -y install imagemagick python3-crypto python3-pycryptodome \
+    apt-get -y install imagemagick python3-crypto python3-cryptography \
             python3-dateutil python3-idna python3-requests \
             python3-numpy python3-pil.imagetk python3-pip \
             python3-setuptools python3-socks python3-idna \
