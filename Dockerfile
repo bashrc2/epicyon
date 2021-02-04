@@ -3,8 +3,7 @@ ENV DOMAIN=localhost
 RUN apt-get update && \
     apt-get -y install \
     imagemagick \
-    python3-crypto \
-    python3-pycryptodome \
+    python3-cryptography \
     python3-dateutil \
     python3-idna \
     python3-requests \

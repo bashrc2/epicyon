@@ -1,4 +1,5 @@
 {
+    "popcorn": "1F37F",
     "1stplacemedal": "1F947",
     "abbutton": "1F18E",
     "abutton": "1F170",
@@ -541,6 +542,7 @@
     "arch": "arch",
     "archlinux": "arch",
     "debian": "debian",
+    "devuan": "devuan",
     "zorin": "zorin",
     "solus": "solus",
     "fedora": "fedora",

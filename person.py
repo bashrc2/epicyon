@@ -13,10 +13,9 @@ import shutil
 import pyqrcode
 from random import randint
 from pathlib import Path
-try:
-    from Cryptodome.PublicKey import RSA
-except ImportError:
-    from Crypto.PublicKey import RSA
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 from shutil import copyfile
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
@@ -44,9 +43,23 @@ from utils import getConfigParam
 
 
 def generateRSAKey() -> (str, str):
-    key = RSA.generate(2048)
-    privateKeyPem = key.exportKey("PEM").decode("utf-8")
-    publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
+    key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+    privateKeyPem = key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    pubkey = key.public_key()
+    publicKeyPem = pubkey.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    privateKeyPem = privateKeyPem.decode("utf-8")
+    publicKeyPem = publicKeyPem.decode("utf-8")
     return privateKeyPem, publicKeyPem
 
 

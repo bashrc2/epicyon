@@ -6,13 +6,6 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-import base64
-try:
-    from Cryptodome.PublicKey import RSA
-    from Cryptodome.Util import number
-except ImportError:
-    from Crypto.PublicKey import RSA
-    from Crypto.Util import number
 import os
 import urllib.parse
 from session import getJson
@@ -97,19 +90,6 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     return result
 
 
-def _generateMagicKey(publicKeyPem) -> str:
-    """See magic_key method in
-       https://github.com/tootsuite/mastodon/blob/
-       707ddf7808f90e3ab042d7642d368c2ce8e95e6f/app/models/account.rb
-    """
-    privkey = RSA.importKey(publicKeyPem)
-    modBytes = number.long_to_bytes(privkey.n)
-    mod = base64.urlsafe_b64encode(modBytes).decode("utf-8")
-    expBytes = number.long_to_bytes(privkey.e)
-    pubexp = base64.urlsafe_b64encode(expBytes).decode("utf-8")
-    return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
-
-
 def storeWebfingerEndpoint(nickname: str, domain: str, port: int,
                            baseDir: str, wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
@@ -168,10 +148,6 @@ def createWebfingerEndpoint(nickname: str, domain: str, port: int,
                 "href": personId,
                 "rel": "self",
                 "type": "application/activity+json"
-            },
-            {
-                "href": _generateMagicKey(publicKeyPem),
-                "rel": "magic-public-key"
             }
         ],
         "subject": subjectStr
