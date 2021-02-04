@@ -541,6 +541,7 @@
     "arch": "arch",
     "archlinux": "arch",
     "debian": "debian",
+    "devuan": "devuan",
     "zorin": "zorin",
     "solus": "solus",
     "fedora": "fedora",
