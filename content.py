@@ -760,7 +760,8 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                 following = f.readlines()
                 for handle in following:
                     pet = getPetName(baseDir, nickname, domain, handle)
-                    petnames.append(pet + '\n')
+                    if pet:
+                        petnames.append(pet + '\n')
 
     # extract mentions and tags from words
     longWordsList = []
