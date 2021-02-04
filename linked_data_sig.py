@@ -11,18 +11,15 @@ __status__ = "Production"
 import base64
 import hashlib
 from datetime import datetime
-
-try:
-    from Cryptodome.PublicKey import RSA
-    from Cryptodome.Hash import SHA256
-    from Cryptodome.Signature import pkcs1_5 as PKCS1_v1_5
-except ImportError:
-    from Crypto.PublicKey import RSA
-    from Crypto.Hash import SHA256
-    from Crypto.Signature import PKCS1_v1_5
-
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import utils as hazutils
 from pyjsonld import normalize
 from context import hasValidContext
+from utils import getSHA256
 
 
 def _options_hash(doc: {}) -> str:
@@ -73,14 +70,23 @@ def verifyJsonSignature(doc: {}, publicKeyPem: str) -> bool:
     """
     if not hasValidContext(doc):
         return False
-    key = RSA.importKey(publicKeyPem)
+    pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
+                                 backend=default_backend())
     to_be_signed = _options_hash(doc) + _doc_hash(doc)
     signature = doc["signature"]["signatureValue"]
-    signer = PKCS1_v1_5.new(key)  # type: ignore
-    digest = SHA256.new()
-    digest.update(to_be_signed.encode("utf-8"))
+
+    digest = getSHA256(to_be_signed.encode("utf-8"))
     base64sig = base64.b64decode(signature)
-    return signer.verify(digest, base64sig)  # type: ignore
+
+    try:
+        pubkey.verify(
+            base64sig,
+            digest,
+            padding.PKCS1v15(),
+            hazutils.Prehashed(hashes.SHA256()))
+        return True
+    except BaseException:
+        return False
 
 
 def generateJsonSignature(doc: {}, privateKeyPem: str) -> None:
@@ -98,9 +104,11 @@ def generateJsonSignature(doc: {}, privateKeyPem: str) -> None:
     doc["signature"] = options
     to_be_signed = _options_hash(doc) + _doc_hash(doc)
 
-    key = RSA.importKey(privateKeyPem)
-    signer = PKCS1_v1_5.new(key)
-    digest = SHA256.new()
-    digest.update(to_be_signed.encode("utf-8"))
-    sig = base64.b64encode(signer.sign(digest))  # type: ignore
+    key = load_pem_private_key(privateKeyPem.encode('utf-8'),
+                               None, backend=default_backend())
+    digest = getSHA256(to_be_signed.encode("utf-8"))
+    signature = key.sign(digest,
+                         padding.PKCS1v15(),
+                         hazutils.Prehashed(hashes.SHA256()))
+    sig = base64.b64encode(signature)
     options["signatureValue"] = sig.decode("utf-8")

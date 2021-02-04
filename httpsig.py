@@ -19,17 +19,12 @@ import base64
 from time import gmtime, strftime
 import datetime
 from utils import getFullDomain
-
-
-def _getSHA256(msg: str):
-    digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-    digest.update(msg)
-    return digest.finalize()
+from utils import getSHA256
 
 
 def messageContentDigest(messageBodyJsonStr: str) -> str:
     msg = messageBodyJsonStr.encode('utf-8')
-    hashResult = _getSHA256(msg)
+    hashResult = getSHA256(msg)
     return base64.b64encode(hashResult).decode('utf-8')
 
 
@@ -80,7 +75,7 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
     signedHeaderText = signedHeaderText.strip()
     # signedHeaderText.encode('ascii') matches
-    headerDigest = _getSHA256(signedHeaderText.encode('ascii'))
+    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
     # print('headerDigest2: ' + str(headerDigest))
 
     # Sign the digest
@@ -252,7 +247,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         print('DEBUG: signedHeaderList: ' + str(signedHeaderList))
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
-    headerDigest = _getSHA256(signedHeaderText.encode('ascii'))
+    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
 
     # Get the signature, verify with public key, return result
     signature = base64.b64decode(signatureDict['signature'])

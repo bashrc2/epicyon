@@ -18,6 +18,16 @@ import idna
 from pprint import pprint
 from calendar import monthrange
 from followingCalendar import addPersonToCalendar
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+
+
+def getSHA256(msg: str):
+    """Returns a SHA256 hash of the given string
+    """
+    digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
+    digest.update(msg)
+    return digest.finalize()
 
 
 def _localNetworkHost(host: str) -> bool:
