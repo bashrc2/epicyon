@@ -710,9 +710,9 @@ def htmlProfile(rssIconAtTop: bool,
 
     # keyboard navigation
     userPathStr = '/users/' + nickname
-    userTimelineStr = '/users/' + nickname + '/' + defaultTimeline,
+    deft = defaultTimeline
     navLinks = {
-        translate['Switch to timeline view']: userTimelineStr,
+        translate['Switch to timeline view']: userPathStr + '/' + deft,
         translate['Edit']: userPathStr + '/editprofile',
         translate['Following']: userPathStr + '/following#buttonheader',
         translate['Followers']: userPathStr + '/followers#buttonheader',
