@@ -707,15 +707,21 @@ def htmlProfile(rssIconAtTop: bool,
                           movedTo, alsoKnownAs,
                           pinnedContent)
 
-    # Links for keyboard navigation
+    # Normally invisible links for keyboard navigation
     profileStr = \
         '<div class="transparent">' + \
         '<label class="transparent">' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
         translate['Switch to timeline view'] + '</a></label> | ' + \
         '<label class="transparent">' + \
+        '<a href="/users/' + nickname + '/editprofile">' + \
+        translate['Edit'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
         '<a class="skip-main" href="#buttonheader">' + \
-        translate['Skip to timeline'] + '</a></label>' + \
+        translate['Skip to timeline'] + '</a></label> |' + \
+        '<label class="transparent">' + \
+        '<a href="/logout">' + \
+        translate['Logout'] + '</a></label>' + \
         '</div>\n'
 
     profileStr += profileHeaderStr + donateSection
