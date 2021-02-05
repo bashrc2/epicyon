@@ -365,13 +365,24 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     translate['Post'] + '</span></button></a>'
 
     # keyboard navigation
+    calendarStr = translate['Calendar']
+    if newCalendarEvent:
+        calendarStr = '*' + calendarStr + '*'
+    dmStr = translate['DM']
+    if newDM:
+        dmStr = '*' + dmStr + '*'
+    repliesStr = translate['Replies']
+    if newReply:
+        repliesStr = '*' + repliesStr + '*'
     navLinks = {
         translate['Switch to profile view']: '/users/' + nickname,
         translate['Inbox']: usersPath + '/inbox#timeline',
-        translate['DM']: usersPath + '/dm#timeline',
-        translate['Replies']: usersPath + '/tlreplies#timeline',
-        translate['Outbox']: usersPath + '/inbox#timeline',
+        translate['Search and follow']: usersPath + '/search',
         translate['Create a new post']: usersPath + '/newpost',
+        calendarStr: usersPath + '/calendar',
+        dmStr: usersPath + '/dm#timeline',
+        repliesStr: usersPath + '/tlreplies#timeline',
+        translate['Outbox']: usersPath + '/inbox#timeline',
         translate['Bookmarks']: usersPath + '/tlbookmarks#timeline',
         translate['Shares']: usersPath + '/tlshares#timeline',
         translate['Blogs']: usersPath + '/tlblogs#timeline',
