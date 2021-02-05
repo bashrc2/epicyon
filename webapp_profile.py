@@ -714,9 +714,8 @@ def htmlProfile(rssIconAtTop: bool,
     navLinks = {
         translate['Switch to timeline view']: userTimelineStr,
         translate['Edit']: userPathStr + '/editprofile',
-        translate['Skip to timeline']: '#buttonheader',
         translate['Logout']: '/logout'
-    }
+    }    
     profileStr = htmlKeyboardNavigation(navLinks)
 
     profileStr += profileHeaderStr + donateSection

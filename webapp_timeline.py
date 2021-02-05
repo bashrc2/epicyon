@@ -367,9 +367,18 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # keyboard navigation
     navLinks = {
         translate['Switch to profile view']: '/users/' + nickname,
-        translate['Skip to timeline']: usersPath + '/' + boxName + '#timeline',
+        translate['Inbox']: usersPath + '/inbox#timeline',
+        translate['DM']: usersPath + '/dm#timeline',
+        translate['Replies']: usersPath + '/tlreplies#timeline',
+        translate['Outbox']: usersPath + '/inbox#timeline',
+        translate['Create a new post']: usersPath + '/newpost',
+        translate['Bookmarks']: usersPath + '/tlbookmarks#timeline',
+        translate['Shares']: usersPath + '/tlshares#timeline',
+        translate['Blogs']: usersPath + '/tlblogs#timeline',
+        translate['Events']: usersPath + '/tlevents#timeline',
         translate['Skip to Newswire']: '#newswire',
-        translate['Skip to Links']: '#links'
+        translate['Skip to Links']: '#links',
+        translate['Mod']: usersPath + '/moderation#timeline'
     }
     tlStr += htmlKeyboardNavigation(navLinks)
 
