@@ -888,7 +888,7 @@ def htmlKeyboardNavigation(banner: str, links: {},
     htmlStr = '<div class="transparent"><ul>'
 
     if banner:
-        htmlStr += banner.replace('\n', '<br>') + '<br>'
+        htmlStr += banner + '<br>'
 
     # show new follower approvals
     if usersPath and translate and followApprovals:

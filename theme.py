@@ -422,6 +422,18 @@ def _setThemeFonts(baseDir: str, themeName: str) -> None:
         break
 
 
+def getTextModeBanner(baseDir: str) -> str:
+    """Returns the banner used for shell browsers, like Lynx
+    """
+    textModeBannerFilename = baseDir + '/accounts/banner.txt'
+    if os.path.isfile(textModeBannerFilename):
+        with open(textModeBannerFilename, 'r') as fp:
+            bannerStr = fp.read()
+            if bannerStr:
+                return bannerStr.replace('\n', '<br>')
+    return None
+
+
 def _setThemeImages(baseDir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults

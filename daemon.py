@@ -230,6 +230,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import getTextModeBanner
 from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
@@ -4171,6 +4172,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.themeName = fields['themeDropdown']
                         setTheme(baseDir, self.server.themeName, domain,
                                  allowLocalNetworkAccess)
+                        self.server.textModeBanner = \
+                            getTextModeBanner(self.server.baseDir)
                         self.server.iconsCache = {}
                         self.server.fontsCache = {}
                         self.server.showPublishAsIcon = \
@@ -4620,6 +4623,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
+                                self.server.textModeBanner = \
+                                    getTextModeBanner(self.server.baseDir)
                                 self.server.iconsCache = {}
                                 self.server.fontsCache = {}
                                 self.server.showPublishAsIcon = \
@@ -13880,7 +13885,7 @@ def runDaemon(verifyAllSignatures: bool,
         return False
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx
-    httpd.textModeBanner = None
+    httpd.textModeBanner = getTextModeBanner(baseDir)
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess
