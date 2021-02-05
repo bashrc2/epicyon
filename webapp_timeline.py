@@ -363,9 +363,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
 
-    # This creates a link to skip to the timeline and change to
-    # profile view when accessed within lynx, but should be
-    # invisible in a graphical web browser
+    # keyboard navigation
     tlStr += \
         '<div class="transparent">' + \
         '<label class="transparent">' + \

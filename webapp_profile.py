@@ -707,7 +707,7 @@ def htmlProfile(rssIconAtTop: bool,
                           movedTo, alsoKnownAs,
                           pinnedContent)
 
-    # Normally invisible links for keyboard navigation
+    # keyboard navigation
     profileStr = \
         '<div class="transparent">' + \
         '<label class="transparent">' + \
