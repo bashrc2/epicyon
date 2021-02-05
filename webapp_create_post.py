@@ -76,8 +76,9 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<nav><div class="newPostDropdown">\n'
-    dropDownContent += '  <input type="checkbox" ' + \
-        'id="my-newPostDropdown" value="" name="my-checkbox">\n'
+    if not noDropDown:
+        dropDownContent += '  <input type="checkbox" ' + \
+            'id="my-newPostDropdown" value="" name="my-checkbox">\n'
     dropDownContent += '  <label for="my-newPostDropdown"\n'
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
