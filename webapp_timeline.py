@@ -14,6 +14,7 @@ from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
+from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -364,22 +365,13 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     translate['Post'] + '</span></button></a>'
 
     # keyboard navigation
-    tlStr += \
-        '<div class="transparent">' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '">' + \
-        translate['Switch to profile view'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-main" href="' + usersPath + '/' + boxName + \
-        '#timeline">' + \
-        translate['Skip to timeline'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-newswire" href="#newswire">' + \
-        translate['Skip to Newswire'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-links" href="#links">' + \
-        translate['Skip to Links'] + '</a></label>' + \
-        '</div>\n'
+    navLinks = {
+        translate['Switch to profile view']: '/users/' + nickname,
+        translate['Skip to timeline']: usersPath + '/' + boxName + '#timeline',
+        translate['Skip to Newswire']: '#newswire',
+        translate['Skip to Links']: '#links'
+    }
+    tlStr += htmlKeyboardNavigation(navLinks)
 
     # banner and row of buttons
     tlStr += \

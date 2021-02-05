@@ -878,3 +878,15 @@ def getAvatarImageUrl(session,
         avatarUrl = postActor + '/avatar.png'
 
     return avatarUrl
+
+
+def htmlKeyboardNavigation(links: {}) -> str:
+    """Given a set of links return the html for keyboard navigation
+    """
+    htmlStr = '<div class="transparent">'
+    for title, url in links.items():
+        htmlStr += '<label class="transparent">' + \
+            '<a href="' + url + '">' + \
+            title + '</a></label> | '
+    htmlStr += '</div>'
+    return htmlStr

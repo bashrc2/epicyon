@@ -40,6 +40,7 @@ from jami import getJamiAddress
 from filters import isFiltered
 from follow import isFollowerOfPerson
 from webapp_frontscreen import htmlFrontScreen
+from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -708,21 +709,15 @@ def htmlProfile(rssIconAtTop: bool,
                           pinnedContent)
 
     # keyboard navigation
-    profileStr = \
-        '<div class="transparent">' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
-        translate['Switch to timeline view'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '/editprofile">' + \
-        translate['Edit'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-main" href="#buttonheader">' + \
-        translate['Skip to timeline'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a href="/logout">' + \
-        translate['Logout'] + '</a></label>' + \
-        '</div>\n'
+    userPathStr = '/users/' + nickname
+    userTimelineStr = '/users/' + nickname + '/' + defaultTimeline,
+    navLinks = {
+        translate['Switch to timeline view']: userTimelineStr,
+        translate['Edit']: userPathStr + '/editprofile',
+        translate['Skip to timeline']: '#buttonheader',
+        translate['Logout']: '/logout'
+    }
+    profileStr = htmlKeyboardNavigation(navLinks)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -1339,15 +1334,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # keyboard navigation
-    editProfileForm += \
-        '<div class="transparent">' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '">' + \
-        translate['Switch to profile view'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
-        translate['Switch to timeline view'] + '</a></label>' + \
-        '</div>\n'
+    userPathStr = '/users/' + nickname
+    userTimalineStr = '/users/' + nickname + '/' + defaultTimeline
+    navLinks = {
+        translate['Switch to profile view']: userPathStr,
+        translate['Switch to timeline view']: userTimalineStr
+    }
+    editProfileForm += htmlKeyboardNavigation(navLinks)
 
     # top banner
     editProfileForm += \
