@@ -635,7 +635,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            False, None, True,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
-                                           authorized, True, theme)
+                                           authorized, True, theme,
+                                           defaultTimeline)
     tlStr += '    </main>\n'
     tlStr += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">' + \

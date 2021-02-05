@@ -169,7 +169,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               httpPrefix, translate,
                               False, False, newswire, False,
                               False, None, False, False,
-                              False, True, authorized, True, theme)
+                              False, True, authorized, True, theme,
+                              defaultTimeline)
     profileFooterStr += '      </td>\n'
     profileFooterStr += '  </tr>\n'
     profileFooterStr += '  </tbody>\n'
