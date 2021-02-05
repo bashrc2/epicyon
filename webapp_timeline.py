@@ -388,9 +388,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Blogs']: usersPath + '/tlblogs#timeline',
         translate['Events']: usersPath + '/tlevents#timeline',
         translate['Skip to Newswire']: '#newswire',
-        translate['Skip to Links']: '#links',
-        translate['Mod']: usersPath + '/moderation'
+        translate['Skip to Links']: '#links'
     }
+    if moderator:
+        navLinks[translate['Mod']] = usersPath + '/moderation'
     tlStr += htmlKeyboardNavigation(navLinks)
 
     # banner and row of buttons
