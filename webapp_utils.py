@@ -885,9 +885,8 @@ def htmlKeyboardNavigation(links: {}) -> str:
     """
     htmlStr = '<div class="transparent">'
     for title, url in links.items():
-        title = str(title)
         htmlStr += '<label class="transparent">' + \
-            '<a href="' + url + '">' + \
-            title + '</a></label> | '
+            '<a href="' + str(url) + '">' + \
+            str(title) + '</a></label> | '
     htmlStr += '</div>'
     return htmlStr
