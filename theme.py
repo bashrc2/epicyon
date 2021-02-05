@@ -439,6 +439,15 @@ def _setThemeImages(baseDir: str, name: str) -> None:
     rightColImageFilename = \
         baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
 
+    textModeBannerFilename = \
+        baseDir + '/theme/' + themeNameLower + '/banner.txt'
+    if os.path.isfile(textModeBannerFilename):
+        try:
+            copyfile(textModeBannerFilename,
+                     baseDir + '/accounts/banner.txt')
+        except BaseException:
+            pass
+
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
     extensions = getImageExtensions()
