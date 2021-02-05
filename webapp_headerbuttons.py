@@ -53,25 +53,25 @@ def headerButtonsTimeline(defaultTimeline: str,
     if defaultTimeline == 'tlmedia':
         tlStr += \
             '<a href="' + usersPath + \
-            '/tlmedia"><button class="' + \
+            '/tlmedia" tabindex="-1"><button class="' + \
             mediaButton + '"><span>' + translate['Media'] + \
             '</span></button></a>'
     elif defaultTimeline == 'tlblogs':
         tlStr += \
             '<a href="' + usersPath + \
-            '/tlblogs"><button class="' + \
+            '/tlblogs" tabindex="-1"><button class="' + \
             blogsButton + '"><span>' + translate['Blogs'] + \
             '</span></button></a>'
     elif defaultTimeline == 'tlfeatures':
         tlStr += \
             '<a href="' + usersPath + \
-            '/tlfeatures"><button class="' + \
+            '/tlfeatures" tabindex="-1"><button class="' + \
             featuresButton + '"><span>' + translate['Features'] + \
             '</span></button></a>'
     else:
         tlStr += \
             '<a href="' + usersPath + \
-            '/inbox"><button class="' + \
+            '/inbox" tabindex="-1"><button class="' + \
             inboxButton + '"><span>' + \
             translate['Inbox'] + '</span></button></a>'
 
@@ -83,7 +83,7 @@ def headerButtonsTimeline(defaultTimeline: str,
     if not featuresHeader:
         tlStr += \
             '<a href="' + usersPath + \
-            '/dm"><button class="' + dmButton + \
+            '/dm" tabindex="-1"><button class="' + dmButton + \
             '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
             '</span></button></a>'
 
@@ -92,8 +92,8 @@ def headerButtonsTimeline(defaultTimeline: str,
             nickname + '@' + domain + '/tlreplies.index'
         if os.path.isfile(repliesIndexFilename):
             tlStr += \
-                '<a href="' + usersPath + '/tlreplies"><button class="' + \
-                repliesButton + '"><span>' + \
+                '<a href="' + usersPath + '/tlreplies" tabindex="-1">' + \
+                '<button class="' + repliesButton + '"><span>' + \
                 htmlHighlightLabel(translate['Replies'], newReply) + \
                 '</span></button></a>'
 
@@ -102,14 +102,14 @@ def headerButtonsTimeline(defaultTimeline: str,
         if not minimal and not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \
-                '/tlmedia"><button class="' + \
+                '/tlmedia" tabindex="-1"><button class="' + \
                 mediaButton + '"><span>' + translate['Media'] + \
                 '</span></button></a>'
     else:
         if not minimal:
             tlStr += \
                 '<a href="' + usersPath + \
-                '/inbox"><button class="' + \
+                '/inbox" tabindex="-1"><button class="' + \
                 inboxButton+'"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
@@ -123,14 +123,14 @@ def headerButtonsTimeline(defaultTimeline: str,
                     titleStr = translate['Article']
                 tlStr += \
                     '<a href="' + usersPath + \
-                    '/tlblogs"><button class="' + \
+                    '/tlblogs" tabindex="-1"><button class="' + \
                     blogsButton + '"><span>' + titleStr + \
                     '</span></button></a>'
         else:
             if not minimal:
                 tlStr += \
                     '<a href="' + usersPath + \
-                    '/inbox"><button class="' + \
+                    '/inbox" tabindex="-1"><button class="' + \
                     inboxButton + '"><span>' + translate['Inbox'] + \
                     '</span></button></a>'
 
@@ -140,7 +140,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         if not featuresHeader:
             tlStr += \
                 '<a href="' + usersPath + \
-                '/inbox"><button class="' + \
+                '/inbox" tabindex="-1"><button class="' + \
                 inboxButton + '"><span>' + translate['Inbox'] + \
                 '</span></button></a>'
 
@@ -155,14 +155,14 @@ def headerButtonsTimeline(defaultTimeline: str,
                 happeningStr += \
                     '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '">' + \
+                    '?day=' + str(now.day) + '" tabindex="-1">' + \
                     '<button class="buttonevent">' + \
                     translate['Happening Today'] + '</button></a>'
             else:
                 happeningStr += \
                     '<a href="' + usersPath + '/calendar?year=' + \
                     str(now.year) + '?month=' + str(now.month) + \
-                    '?day=' + str(now.day) + '">' + \
+                    '?day=' + str(now.day) + '" tabindex="-1">' + \
                     '<button class="button">' + \
                     translate['Happening Today'] + '</button></a>'
 
@@ -171,12 +171,14 @@ def headerButtonsTimeline(defaultTimeline: str,
                 if not iconsAsButtons:
                     happeningStr += \
                         '<a href="' + usersPath + \
-                        '/calendar"><button class="buttonevent">' + \
+                        '/calendar" tabindex="-1">' + \
+                        '<button class="buttonevent">' + \
                         translate['Happening This Week'] + '</button></a>'
                 else:
                     happeningStr += \
                         '<a href="' + usersPath + \
-                        '/calendar"><button class="button">' + \
+                        '/calendar" tabindex="-1">' + \
+                        '<button class="button">' + \
                         translate['Happening This Week'] + '</button></a>'
         else:
             # happening this week button
@@ -184,12 +186,14 @@ def headerButtonsTimeline(defaultTimeline: str,
                 if not iconsAsButtons:
                     happeningStr += \
                         '<a href="' + usersPath + \
-                        '/calendar"><button class="buttonevent">' + \
+                        '/calendar" tabindex="-1">' + \
+                        '<button class="buttonevent">' + \
                         translate['Happening This Week'] + '</button></a>'
                 else:
                     happeningStr += \
                         '<a href="' + usersPath + \
-                        '/calendar"><button class="button">' + \
+                        '/calendar" tabindex="-1">' + \
+                        '<button class="button">' + \
                         translate['Happening This Week'] + '</button></a>'
 
     if not featuresHeader:
@@ -197,7 +201,8 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + usersPath + \
             '/outbox"><button class="' + \
-            sentButton + '"><span>' + translate['Outbox'] + \
+            sentButton + '" tabindex="-1">' + \
+            '<span>' + translate['Outbox'] + \
             '</span></button></a>'
 
         # add other buttons
@@ -219,7 +224,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             # the search button
             tlStr += \
                 '<a href="' + usersPath + \
-                '/search"><button class="button">' + \
+                '/search" tabindex="-1"><button class="button">' + \
                 '<span>' + translate['Search'] + \
                 '</span></button></a>'
 
@@ -245,7 +250,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         else:
             tlStr += \
                 '<a href="' + usersPath + calendarPath + \
-                '"><button class="button">' + \
+                '" tabindex="-1"><button class="button">' + \
                 '<span>' + translate['Calendar'] + \
                 '</span></button></a>'
 
@@ -262,13 +267,13 @@ def headerButtonsTimeline(defaultTimeline: str,
         else:
             tlStr += \
                 '<a href="' + usersPath + '/minimal' + \
-                '"><button class="button">' + \
+                '" tabindex="-1"><button class="button">' + \
                 '<span>' + translate['Show/Hide Buttons'] + \
                 '</span></button></a>'
 
     if featuresHeader:
         tlStr += \
-            '<a href="' + usersPath + '/inbox">' + \
+            '<a href="' + usersPath + '/inbox" tabindex="-1">' + \
             '<button class="button">' + \
             '<span>' + translate['User'] + '</span></button></a>'
 
@@ -286,7 +291,7 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + \
             usersPath + '/newswiremobile' + \
-            '"><button class="buttonMobile">' + \
+            '" tabindex="-1"><button class="buttonMobile">' + \
             '<span>' + translate['Newswire'] + \
             '</span></button></a>'
 
@@ -304,13 +309,13 @@ def headerButtonsTimeline(defaultTimeline: str,
         tlStr += \
             '<a href="' + \
             usersPath + '/linksmobile' + \
-            '"><button class="buttonMobile">' + \
+            '" tabindex="-1"><button class="buttonMobile">' + \
             '<span>' + translate['Links'] + \
             '</span></button></a>'
 
     if featuresHeader:
         tlStr += \
-            '<a href="' + usersPath + '/editprofile">' + \
+            '<a href="' + usersPath + '/editprofile" tabindex="-1">' + \
             '<button class="buttonDesktop">' + \
             '<span>' + translate['Settings'] + '</span></button></a>'
 
