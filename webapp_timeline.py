@@ -392,7 +392,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     }
     if moderator:
         navLinks[translate['Mod']] = usersPath + '/moderation'
-    tlStr += htmlKeyboardNavigation(navLinks)
+    tlStr += htmlKeyboardNavigation(navLinks,
+                                    usersPath, translate, followApprovals)
 
     # banner and row of buttons
     tlStr += \

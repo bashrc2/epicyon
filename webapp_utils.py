@@ -880,10 +880,21 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
-def htmlKeyboardNavigation(links: {}) -> str:
+def htmlKeyboardNavigation(links: {},
+                           usersPath=None, translate=None,
+                           followApprovals=False) -> str:
     """Given a set of links return the html for keyboard navigation
     """
     htmlStr = '<div class="transparent"><ul>'
+
+    # show new follower approvals
+    if usersPath and translate and followApprovals:
+        htmlStr += '<label class="transparent">' + \
+            '<a href="' + usersPath + '/followers#timeline">' + \
+            translate['Approve follow requests'] + '</a>' + \
+            '</label><br><br>'
+
+    # show the list of links
     for title, url in links.items():
         htmlStr += '<li><label class="transparent">' + \
             '<a href="' + str(url) + '">' + \
