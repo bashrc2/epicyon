@@ -375,6 +375,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     repliesStr = translate['Replies']
     if newReply:
         repliesStr = '*' + repliesStr + '*'
+    sharesStr = translate['Shares']
+    if newShare:
+        sharesStr = '*' + sharesStr + '*'
     navLinks = {
         translate['Switch to profile view']: '/users/' + nickname,
         translate['Inbox']: usersPath + '/inbox#timeline',
@@ -385,7 +388,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         repliesStr: usersPath + '/tlreplies#timeline',
         translate['Outbox']: usersPath + '/inbox#timeline',
         translate['Bookmarks']: usersPath + '/tlbookmarks#timeline',
-        translate['Shares']: usersPath + '/tlshares#timeline',
+        sharesStr: usersPath + '/tlshares#timeline',
         translate['Blogs']: usersPath + '/tlblogs#timeline',
         translate['Events']: usersPath + '/tlevents#timeline',
         translate['Skip to Newswire']: '#newswire',
