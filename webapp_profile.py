@@ -473,6 +473,7 @@ def htmlProfile(rssIconAtTop: bool,
                 newswire: {}, theme: str, dormantMonths: int,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
+                textModeBanner: str,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -721,7 +722,7 @@ def htmlProfile(rssIconAtTop: bool,
         translate['Shares']: userPathStr + '/shares#timeline',
         translate['Logout']: '/logout'
     }
-    profileStr = htmlKeyboardNavigation(navLinks)
+    profileStr = htmlKeyboardNavigation(textModeBanner, navLinks)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -995,7 +996,8 @@ def _htmlProfileShares(actor: str, translate: {},
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
-                    peertubeInstances: []) -> str:
+                    peertubeInstances: [],
+                    textModeBanner: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -1349,7 +1351,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['Switch to profile view']: userPathStr,
         translate['Switch to timeline view']: userTimalineStr
     }
-    editProfileForm += htmlKeyboardNavigation(navLinks)
+    editProfileForm += htmlKeyboardNavigation(textModeBanner, navLinks)
 
     # top banner
     editProfileForm += \

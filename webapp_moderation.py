@@ -43,7 +43,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                    publishButtonAtTop: bool,
                    authorized: bool, moderationActionStr: str,
                    theme: str, peertubeInstances: [],
-                   allowLocalNetworkAccess: bool) -> str:
+                   allowLocalNetworkAccess: bool,
+                   textModeBanner: str) -> str:
     """Show the moderation feed as html
     This is what you see when selecting the "mod" timeline
     """
@@ -58,7 +59,8 @@ def htmlModeration(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, moderationActionStr, theme,
-                        peertubeInstances, allowLocalNetworkAccess)
+                        peertubeInstances, allowLocalNetworkAccess,
+                        textModeBanner)
 
 
 def htmlAccountInfo(cssCache: {}, translate: {},

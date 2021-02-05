@@ -880,7 +880,7 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
-def htmlKeyboardNavigation(links: {},
+def htmlKeyboardNavigation(banner: str, links: {},
                            usersPath=None, translate=None,
                            followApprovals=False) -> str:
     """Given a set of links return the html for keyboard navigation
