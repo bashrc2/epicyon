@@ -389,7 +389,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Events']: usersPath + '/tlevents#timeline',
         translate['Skip to Newswire']: '#newswire',
         translate['Skip to Links']: '#links',
-        translate['Mod']: usersPath + '/moderation#timeline'
+        translate['Mod']: usersPath + '/moderation'
     }
     tlStr += htmlKeyboardNavigation(navLinks)
 
