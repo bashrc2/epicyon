@@ -718,7 +718,7 @@ def htmlProfile(rssIconAtTop: bool,
         translate['Edit'] + '</a></label> | ' + \
         '<label class="transparent">' + \
         '<a class="skip-main" href="#buttonheader">' + \
-        translate['Skip to timeline'] + '</a></label> |' + \
+        translate['Skip to timeline'] + '</a></label> | ' + \
         '<label class="transparent">' + \
         '<a href="/logout">' + \
         translate['Logout'] + '</a></label>' + \
@@ -1338,13 +1338,18 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         getConfigParam(baseDir, 'instanceTitle')
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
-    # top banner
+    # keyboard navigation
     editProfileForm += \
+        '<div class="transparent">' + \
+        '<label class="transparent">' + \
         '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
         translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        translate['Switch to timeline view'] + '"></label>' + \
+        '</div>\n'
+
+    # top banner
     editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
 
     editProfileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
