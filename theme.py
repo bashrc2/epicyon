@@ -441,6 +441,8 @@ def _setThemeImages(baseDir: str, name: str) -> None:
 
     textModeBannerFilename = \
         baseDir + '/theme/' + themeNameLower + '/banner.txt'
+    if os.path.isfile(baseDir + '/accounts/banner.txt'):
+        os.remove(baseDir + '/accounts/banner.txt')
     if os.path.isfile(textModeBannerFilename):
         try:
             copyfile(textModeBannerFilename,
