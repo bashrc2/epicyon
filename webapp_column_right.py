@@ -68,7 +68,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
             titleStr = translate['Publish a news article']
         publishButtonStr = \
             '        <a href="' + \
-            '/users/' + nickname + '/newblog" ' + \
+            '/users/' + nickname + '/newblog?nodropdown" ' + \
             'title="' + titleStr + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
@@ -167,7 +167,7 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                 titleStr = translate['Publish a news article']
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/newblog">' + \
+                '/users/' + nickname + '/newblog?nodropdown">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
                 titleStr + '" title="' + \

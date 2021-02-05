@@ -2078,7 +2078,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName).encode('utf-8')
+                              self.server.themeName,
+                              True).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2176,7 +2177,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName).encode('utf-8')
+                              self.server.themeName,
+                              True).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -9711,7 +9713,8 @@ class PubServer(BaseHTTPRequestHandler):
                      inReplyToUrl: str, replyToList: [],
                      shareDescription: str, replyPageNumber: int,
                      domain: str, domainFull: str,
-                     GETstartTime, GETtimings: {}, cookie) -> bool:
+                     GETstartTime, GETtimings: {}, cookie,
+                     noDropDown: bool) -> bool:
         """Shows the new post screen
         """
         isNewPostEndpoint = False
@@ -9740,7 +9743,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName).encode('utf-8')
+                              self.server.themeName,
+                              noDropDown).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -9982,6 +9986,12 @@ class PubServer(BaseHTTPRequestHandler):
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
+
+        # turn off dropdowns on new post screen
+        noDropDown = False
+        if self.path.endswith('?nodropdown'):
+            noDropDown = True
+            self.path = self.path.replace('?nodropdown', '')
 
         # redirect music to #nowplaying list
         if self.path == '/music' or self.path == '/nowplaying':
@@ -11556,7 +11566,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  GETstartTime, GETtimings,
-                                 cookie):
+                                 cookie, noDropDown):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
