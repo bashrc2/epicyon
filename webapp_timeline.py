@@ -279,14 +279,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
-                '/newdm"><img loading="lazy" src="/' + \
+                '/newdm?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new DM'] + \
                 '" alt="| ' + translate['Create a new DM'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr += \
-                '<a href="' + usersPath + '/newdm">' + \
+                '<a href="' + usersPath + '/newdm?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
     elif (boxName == 'tlblogs' or
@@ -309,28 +309,28 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
-                '/newevent"><img loading="lazy" src="/' + \
+                '/newevent?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new event'] + '" alt="| ' + \
                 translate['Create a new event'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr += \
-                '<a href="' + usersPath + '/newevent">' + \
+                '<a href="' + usersPath + '/newevent?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif boxName == 'tlshares':
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
-                '/newshare"><img loading="lazy" src="/' + \
+                '/newshare?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new shared item'] + '" alt="| ' + \
                 translate['Create a new shared item'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr += \
-                '<a href="' + usersPath + '/newshare">' + \
+                '<a href="' + usersPath + '/newshare?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     else:
