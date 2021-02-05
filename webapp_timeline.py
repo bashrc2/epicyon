@@ -433,7 +433,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         leftColumnStr + '  </td>\n'
     # center column containing posts
     tlStr += '  <td valign="top" class="col-center">\n'
-    tlStr += '    <main id="timeline" tabindex="-1">\n'
 
     if not fullWidthTimelineButtonHeader:
         tlStr += \
@@ -533,6 +532,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
+
+    tlStr += '    <main id="timeline" tabindex="-1">\n'
 
     # show the posts
     itemCtr = 0
