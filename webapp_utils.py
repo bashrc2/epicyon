@@ -883,10 +883,10 @@ def getAvatarImageUrl(session,
 def htmlKeyboardNavigation(links: {}) -> str:
     """Given a set of links return the html for keyboard navigation
     """
-    htmlStr = '<div class="transparent">'
+    htmlStr = '<div class="transparent"><ul>'
     for title, url in links.items():
-        htmlStr += '<label class="transparent">' + \
+        htmlStr += '<li><label class="transparent">' + \
             '<a href="' + str(url) + '">' + \
-            str(title) + '</a></label> | '
-    htmlStr += '</div>'
+            str(title) + '</a></label></li>'
+    htmlStr += '</ul></div>'
     return htmlStr
