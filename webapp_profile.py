@@ -1350,6 +1350,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '</div>\n'
 
     # top banner
+    editProfileForm += \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">'
     editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
         '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
 
