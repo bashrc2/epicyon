@@ -714,13 +714,13 @@ def htmlProfile(rssIconAtTop: bool,
     navLinks = {
         translate['Switch to timeline view']: userPathStr + '/' + deft,
         translate['Edit']: userPathStr + '/editprofile',
-        translate['Following']: userPathStr + '/following#buttonheader',
-        translate['Followers']: userPathStr + '/followers#buttonheader',
-        translate['Roles']: userPathStr + '/roles#buttonheader',
-        translate['Skills']: userPathStr + '/skills#buttonheader',
-        translate['Shares']: userPathStr + '/shares#buttonheader',
+        translate['Following']: userPathStr + '/following#timeline',
+        translate['Followers']: userPathStr + '/followers#timeline',
+        translate['Roles']: userPathStr + '/roles#timeline',
+        translate['Skills']: userPathStr + '/skills#timeline',
+        translate['Shares']: userPathStr + '/shares#timeline',
         translate['Logout']: '/logout'
-    }    
+    }
     profileStr = htmlKeyboardNavigation(navLinks)
 
     profileStr += profileHeaderStr + donateSection
@@ -754,6 +754,9 @@ def htmlProfile(rssIconAtTop: bool,
     profileStr += logoutStr + editProfileStr
     profileStr += '  </center>'
     profileStr += '</div>'
+
+    # start of #timeline
+    profileStr += '<div id="timeline">\n'
 
     profileStr += followApprovalsSection
 
@@ -809,6 +812,8 @@ def htmlProfile(rssIconAtTop: bool,
             _htmlProfileShares(actor, translate,
                                nickname, domainFull,
                                extraJson) + licenseStr
+    # end of #timeline
+    profileStr += '</div>'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
