@@ -1342,9 +1342,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '<div class="transparent">' + \
         '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '"></label>' + \
+        '<a href="/users/' + nickname + '">' + \
+        translate['Switch to profile view'] + '</a></label> | ' + \
+        '<label class="transparent">' + \
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
+        translate['Switch to timeline view'] + '</a></label>' + \
         '</div>\n'
 
     # top banner
