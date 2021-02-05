@@ -714,6 +714,11 @@ def htmlProfile(rssIconAtTop: bool,
     navLinks = {
         translate['Switch to timeline view']: userTimelineStr,
         translate['Edit']: userPathStr + '/editprofile',
+        translate['Following']: userPathStr + '/following#buttonheader',
+        translate['Followers']: userPathStr + '/followers#buttonheader',
+        translate['Roles']: userPathStr + '/roles#buttonheader',
+        translate['Skills']: userPathStr + '/skills#buttonheader',
+        translate['Shares']: userPathStr + '/shares#buttonheader',
         translate['Logout']: '/logout'
     }    
     profileStr = htmlKeyboardNavigation(navLinks)
