@@ -714,21 +714,22 @@ def htmlProfile(rssIconAtTop: bool,
     userPathStr = '/users/' + nickname
     deft = defaultTimeline
     menuTimeline = \
-        htmlHideFromScreenReader('🏠 ') + translate['Switch to timeline view']
+        htmlHideFromScreenReader('🏠') + ' ' + \
+        translate['Switch to timeline view']
     menuEdit = \
-        htmlHideFromScreenReader('✍ ') + translate['Edit']
+        htmlHideFromScreenReader('✍') + ' ' + translate['Edit']
     menuFollowing = \
-        htmlHideFromScreenReader('👥 ') + translate['Following']
+        htmlHideFromScreenReader('👥') + ' ' + translate['Following']
     menuFollowers = \
-        htmlHideFromScreenReader('👪 ') + translate['Followers']
+        htmlHideFromScreenReader('👪') + ' ' + translate['Followers']
     menuRoles = \
-        htmlHideFromScreenReader('🤚 ') + translate['Roles']
+        htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
     menuSkills = \
-        htmlHideFromScreenReader('🛠️') + translate['Skills']
+        htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
     menuShares = \
-        htmlHideFromScreenReader('🤝️') + translate['Shares']
+        htmlHideFromScreenReader('🤝') + ' ' + translate['Shares']
     menuLogout = \
-        htmlHideFromScreenReader('❎️') + translate['Logout']
+        htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
     navLinks = {
         menuTimeline: userPathStr + '/' + deft,
         menuEdit: userPathStr + '/editprofile',
@@ -1365,9 +1366,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     userPathStr = '/users/' + nickname
     userTimalineStr = '/users/' + nickname + '/' + defaultTimeline
     menuTimeline = \
-        htmlHideFromScreenReader('🏠 ') + translate['Switch to timeline view']
+        htmlHideFromScreenReader('🏠') + ' ' + \
+        translate['Switch to timeline view']
     menuProfile = \
-        htmlHideFromScreenReader('👤 ') + translate['Switch to profile view']
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
     navLinks = {
         menuProfile: userPathStr,
         menuTimeline: userTimalineStr

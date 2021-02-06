@@ -380,33 +380,40 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if newShare:
         sharesStr = '*' + sharesStr + '*'
     menuProfile = \
-        htmlHideFromScreenReader('👤 ') + translate['Switch to profile view']
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
     menuInbox = \
-        htmlHideFromScreenReader('📥 ') + translate['Inbox']
+        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
     menuOutbox = \
-        htmlHideFromScreenReader('📤 ') + translate['Outbox']
+        htmlHideFromScreenReader('📤') + ' ' + translate['Outbox']
     menuSearch = \
-        htmlHideFromScreenReader('🔍 ') + translate['Search and follow']
+        htmlHideFromScreenReader('🔍') + ' ' + \
+        translate['Search and follow']
     menuCalendar = \
-        htmlHideFromScreenReader('📅 ') + calendarStr
+        htmlHideFromScreenReader('📅') + ' ' + calendarStr
     menuDM = \
-        htmlHideFromScreenReader('✉ ') + dmStr
+        htmlHideFromScreenReader('✉') + ' ' + dmStr
     menuReplies = \
-        htmlHideFromScreenReader('↩️') + repliesStr
+        htmlHideFromScreenReader('↩') + ' ' + repliesStr
     menuBookmarks = \
-        htmlHideFromScreenReader('🔖 ') + translate['Bookmarks']
+        htmlHideFromScreenReader('🔖') + ' ' + \
+        translate['Bookmarks']
     menuShares = \
-        htmlHideFromScreenReader('🤝️') + sharesStr
+        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
     menuEvents = \
-        htmlHideFromScreenReader('🎫️') + translate['Events']
+        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
     menuBlogs = \
-        htmlHideFromScreenReader('📝️') + translate['Blogs']
+        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
     menuNewswire = \
-        htmlHideFromScreenReader('📰️') + translate['Newswire']
+        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
     menuLinks = \
-        htmlHideFromScreenReader('🔗️') + translate['Links']
+        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
     menuNewPost = \
-        htmlHideFromScreenReader('➕️') + translate['Create a new post']
+        htmlHideFromScreenReader('➕') + ' ' + \
+        translate['Create a new post']
+    menuModeration = \
+        htmlHideFromScreenReader('⚡️') + ' ' + \
+        translate['Mod']
     navLinks = {
         menuProfile: '/users/' + nickname,
         menuInbox: usersPath + '/inbox#timeline',
@@ -424,7 +431,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuLinks: '#links'
     }
     if moderator:
-        navLinks[translate['Mod']] = usersPath + '/moderation'
+        navLinks[menuModeration] = usersPath + '/moderation'
     tlStr += htmlKeyboardNavigation(textModeBanner, navLinks,
                                     usersPath, translate, followApprovals)
 
