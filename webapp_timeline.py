@@ -524,40 +524,57 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Information about current blocks/suspensions'] + \
-            '" name="submitInfo" value="' + translate['Info'] + '">\n'
+            '" alt="' + \
+            translate['Information about current blocks/suspensions'] + \
+            ' | " ' + \
+            'name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Remove the above item'] + \
-            '" name="submitRemove" value="' + \
+            translate['Remove the above item'] + '"' + \
+            'alt="' + translate['Remove the above item'] + ' | " ' + \
+            'name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
 
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Suspend the above account nickname'] + \
-            '" name="submitSuspend" value="' + translate['Suspend'] + '">\n'
+            translate['Suspend the above account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Suspend the above account nickname'] + ' | " ' + \
+            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
+            translate['Remove a suspension for an account nickname'] + '"' + \
+            'alt="' + \
             translate['Remove a suspension for an account nickname'] + \
-            '" name="submitUnsuspend" value="' + \
+            ' | " ' + \
+            'name="submitUnsuspend" value="' + \
             translate['Unsuspend'] + '">\n'
 
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Block an account on another instance'] + \
-            '" name="submitBlock" value="' + translate['Block'] + '">\n'
+            translate['Block an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Block an account on another instance'] + ' | " ' + \
+            'name="submitBlock" value="' + translate['Block'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Unblock an account on another instance'] + \
-            '" name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+            translate['Unblock an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Unblock an account on another instance'] + ' | " ' + \
+            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
 
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Filter out words'] + \
-            '" name="submitFilter" value="' + translate['Filter'] + '">\n'
+            translate['Filter out words'] + '" ' + \
+            'alt="' + \
+            translate['Filter out words'] + ' | " ' + \
+            'name="submitFilter" value="' + translate['Filter'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Unfilter words'] + \
-            '" name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+            translate['Unfilter words'] + '" ' + \
+            'alt="' + \
+            translate['Unfilter words'] + ' | " ' + \
+            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
 
         tlStr += '</div>\n</form>\n'
 
