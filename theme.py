@@ -465,6 +465,21 @@ def _setThemeImages(baseDir: str, name: str) -> None:
     rightColImageFilename = \
         baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
 
+    textModeLogoFilename = \
+        baseDir + '/theme/' + themeNameLower + '/logo.txt'
+    if os.path.isfile(textModeLogoFilename):
+        try:
+            copyfile(textModeLogoFilename,
+                     baseDir + '/accounts/logo.txt')
+        except BaseException:
+            pass
+    else:
+        try:
+            copyfile(baseDir + '/img/logo.txt',
+                     baseDir + '/accounts/logo.txt')
+        except BaseException:
+            pass
+
     textModeBannerFilename = \
         baseDir + '/theme/' + themeNameLower + '/banner.txt'
     if os.path.isfile(baseDir + '/accounts/banner.txt'):
