@@ -494,10 +494,20 @@ def evilIncarnate() -> []:
 
 
 def isEvil(domain: str) -> bool:
+    # https://www.youtube.com/watch?v=5qw1hcevmdU
     if not isinstance(domain, str):
         print('WARN: Malformed domain ' + str(domain))
         return True
-    # https://www.youtube.com/watch?v=5qw1hcevmdU
+    # if a domain contains any of these strings then it is
+    # declaring itself to be hostile
+    evilEmporium = (
+        'nazi', 'extremis', 'extreemis', 'gendercritic',
+        'kiwifarm', 'illegal', 'raplst', 'rapist',
+        'antivax', 'plandemic'
+    )
+    for hostileStr in evilEmporium:
+        if hostileStr in domain:
+            return True
     evilDomains = evilIncarnate()
     for concentratedEvil in evilDomains:
         if domain.endswith(concentratedEvil):
