@@ -434,6 +434,20 @@ def getTextModeBanner(baseDir: str) -> str:
     return None
 
 
+def getTextModeLogo(baseDir: str) -> str:
+    """Returns the login screen logo used for shell browsers, like Lynx
+    """
+    textModeLogoFilename = baseDir + '/accounts/logo.txt'
+    if not os.path.isfile(textModeLogoFilename):
+        textModeLogoFilename = baseDir + '/img/logo.txt'
+
+    with open(textModeLogoFilename, 'r') as fp:
+        logoStr = fp.read()
+        if logoStr:
+            return logoStr.replace('\n', '<br>')
+    return None
+
+
 def _setThemeImages(baseDir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
