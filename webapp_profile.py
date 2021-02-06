@@ -41,6 +41,7 @@ from filters import isFiltered
 from follow import isFollowerOfPerson
 from webapp_frontscreen import htmlFrontScreen
 from webapp_utils import htmlKeyboardNavigation
+from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -712,15 +713,31 @@ def htmlProfile(rssIconAtTop: bool,
     # keyboard navigation
     userPathStr = '/users/' + nickname
     deft = defaultTimeline
+    menuTimeline = \
+        htmlHideFromScreenReader('🏠 ') + translate['Switch to timeline view']
+    menuEdit = \
+        htmlHideFromScreenReader('✍ ') + translate['Edit']
+    menuFollowing = \
+        htmlHideFromScreenReader('👥 ') + translate['Following']
+    menuFollowers = \
+        htmlHideFromScreenReader('👪 ') + translate['Followers']
+    menuRoles = \
+        htmlHideFromScreenReader('🤚 ') + translate['Roles']
+    menuSkills = \
+        htmlHideFromScreenReader('🛠️') + translate['Skills']
+    menuShares = \
+        htmlHideFromScreenReader('🤝️') + translate['Shares']
+    menuLogout = \
+        htmlHideFromScreenReader('❎️') + translate['Logout']
     navLinks = {
-        translate['Switch to timeline view']: userPathStr + '/' + deft,
-        translate['Edit']: userPathStr + '/editprofile',
-        translate['Following']: userPathStr + '/following#timeline',
-        translate['Followers']: userPathStr + '/followers#timeline',
-        translate['Roles']: userPathStr + '/roles#timeline',
-        translate['Skills']: userPathStr + '/skills#timeline',
-        translate['Shares']: userPathStr + '/shares#timeline',
-        translate['Logout']: '/logout'
+        menuTimeline: userPathStr + '/' + deft,
+        menuEdit: userPathStr + '/editprofile',
+        menuFollowing: userPathStr + '/following#timeline',
+        menuFollowers: userPathStr + '/followers#timeline',
+        menuRoles: userPathStr + '/roles#timeline',
+        menuSkills: userPathStr + '/skills#timeline',
+        menuShares: userPathStr + '/shares#timeline',
+        menuLogout: '/logout'
     }
     profileStr = htmlKeyboardNavigation(textModeBanner, navLinks)
 
@@ -1347,9 +1364,13 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     # keyboard navigation
     userPathStr = '/users/' + nickname
     userTimalineStr = '/users/' + nickname + '/' + defaultTimeline
+    menuTimeline = \
+        htmlHideFromScreenReader('🏠 ') + translate['Switch to timeline view']
+    menuProfile = \
+        htmlHideFromScreenReader('👤 ') + translate['Switch to profile view']
     navLinks = {
-        translate['Switch to profile view']: userPathStr,
-        translate['Switch to timeline view']: userTimalineStr
+        menuProfile: userPathStr,
+        menuTimeline: userTimalineStr
     }
     editProfileForm += htmlKeyboardNavigation(textModeBanner, navLinks)
 

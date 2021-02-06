@@ -880,6 +880,12 @@ def getAvatarImageUrl(session,
     return avatarUrl
 
 
+def htmlHideFromScreenReader(htmlStr: str) -> str:
+    """Returns html which is hidden from screen readers
+    """
+    return '<span aria-hidden="true">' + htmlStr + '</span>'
+
+
 def htmlKeyboardNavigation(banner: str, links: {},
                            usersPath=None, translate=None,
                            followApprovals=False) -> str:

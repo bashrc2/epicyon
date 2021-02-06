@@ -15,6 +15,7 @@ from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
 from webapp_utils import htmlKeyboardNavigation
+from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -378,21 +379,49 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     sharesStr = translate['Shares']
     if newShare:
         sharesStr = '*' + sharesStr + '*'
+    menuProfile = \
+        htmlHideFromScreenReader('👤 ') + translate['Switch to profile view']
+    menuInbox = \
+        htmlHideFromScreenReader('📥 ') + translate['Inbox']
+    menuOutbox = \
+        htmlHideFromScreenReader('📤 ') + translate['Outbox']
+    menuSearch = \
+        htmlHideFromScreenReader('🔍 ') + translate['Search and follow']
+    menuCalendar = \
+        htmlHideFromScreenReader('📅 ') + calendarStr
+    menuDM = \
+        htmlHideFromScreenReader('✉ ') + dmStr
+    menuReplies = \
+        htmlHideFromScreenReader('↩️') + repliesStr
+    menuBookmarks = \
+        htmlHideFromScreenReader('🔖 ') + translate['Bookmarks']
+    menuShares = \
+        htmlHideFromScreenReader('🤝️') + sharesStr
+    menuEvents = \
+        htmlHideFromScreenReader('🎫️') + translate['Events']
+    menuBlogs = \
+        htmlHideFromScreenReader('📝️') + translate['Blogs']
+    menuNewswire = \
+        htmlHideFromScreenReader('📰️') + translate['Newswire']
+    menuLinks = \
+        htmlHideFromScreenReader('🔗️') + translate['Links']
+    menuNewPost = \
+        htmlHideFromScreenReader('➕️') + translate['Create a new post']
     navLinks = {
-        translate['Switch to profile view']: '/users/' + nickname,
-        translate['Inbox']: usersPath + '/inbox#timeline',
-        translate['Search and follow']: usersPath + '/search',
-        translate['Create a new post']: usersPath + '/newpost',
-        calendarStr: usersPath + '/calendar',
-        dmStr: usersPath + '/dm#timeline',
-        repliesStr: usersPath + '/tlreplies#timeline',
-        translate['Outbox']: usersPath + '/inbox#timeline',
-        translate['Bookmarks']: usersPath + '/tlbookmarks#timeline',
-        sharesStr: usersPath + '/tlshares#timeline',
-        translate['Blogs']: usersPath + '/tlblogs#timeline',
-        translate['Events']: usersPath + '/tlevents#timeline',
-        translate['Skip to Newswire']: '#newswire',
-        translate['Skip to Links']: '#links'
+        menuProfile: '/users/' + nickname,
+        menuInbox: usersPath + '/inbox#timeline',
+        menuSearch: usersPath + '/search',
+        menuNewPost: usersPath + '/newpost',
+        menuCalendar: usersPath + '/calendar',
+        menuDM: usersPath + '/dm#timeline',
+        menuReplies: usersPath + '/tlreplies#timeline',
+        menuOutbox: usersPath + '/inbox#timeline',
+        menuBookmarks: usersPath + '/tlbookmarks#timeline',
+        menuShares: usersPath + '/tlshares#timeline',
+        menuBlogs: usersPath + '/tlblogs#timeline',
+        menuEvents: usersPath + '/tlevents#timeline',
+        menuNewswire: '#newswire',
+        menuLinks: '#links'
     }
     if moderator:
         navLinks[translate['Mod']] = usersPath + '/moderation'
