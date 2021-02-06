@@ -369,16 +369,16 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # keyboard navigation
     calendarStr = translate['Calendar']
     if newCalendarEvent:
-        calendarStr = '*' + calendarStr + '*'
+        calendarStr = '<strong>' + calendarStr + '</strong>'
     dmStr = translate['DM']
     if newDM:
-        dmStr = '*' + dmStr + '*'
+        dmStr = '<strong>' + dmStr + '</strong>'
     repliesStr = translate['Replies']
     if newReply:
-        repliesStr = '*' + repliesStr + '*'
+        repliesStr = '<strong>' + repliesStr + '</strong>'
     sharesStr = translate['Shares']
     if newShare:
-        sharesStr = '*' + sharesStr + '*'
+        sharesStr = '<strong>' + sharesStr + '</strong>'
     menuProfile = \
         htmlHideFromScreenReader('👤') + ' ' + \
         translate['Switch to profile view']
