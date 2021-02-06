@@ -431,7 +431,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuLinks: '#links'
     }
     if moderator:
-        navLinks[menuModeration] = usersPath + '/moderation#timeline'
+        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
     tlStr += htmlKeyboardNavigation(textModeBanner, navLinks,
                                     usersPath, translate, followApprovals)
 
@@ -507,7 +507,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
         tlStr += \
-            '<form method="POST" action="/users/' + \
+            '<form id="modtimeline" method="POST" action="/users/' + \
             nickname + '/moderationaction">'
         tlStr += '<div class="container">\n'
         idx = 'Nickname or URL. Block using *@domain or nickname@domain'
