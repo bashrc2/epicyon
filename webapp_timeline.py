@@ -502,7 +502,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
 
-    tlStr += '  <div class="timeline-posts">\n'
+    tlStr += '  <div id="timeline" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
@@ -584,8 +584,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
-
-    tlStr += '    <main id="timeline" tabindex="-1">\n'
 
     # show the posts
     itemCtr = 0
