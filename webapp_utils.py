@@ -898,10 +898,10 @@ def htmlKeyboardNavigation(banner: str, links: {},
 
     # show new follower approvals
     if usersPath and translate and followApprovals:
-        htmlStr += '<label class="transparent">' + \
+        htmlStr += '<strong><label class="transparent">' + \
             '<a href="' + usersPath + '/followers#timeline">' + \
             translate['Approve follow requests'] + '</a>' + \
-            '</label><br><br>'
+            '</label></strong><br><br>'
 
     # show the list of links
     for title, url in links.items():
