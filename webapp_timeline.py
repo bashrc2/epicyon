@@ -671,11 +671,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
 
-    # end of timeline-posts
-    tlStr += '  </div>\n'
+    if itemCtr > 0:
+        # end of timeline-posts
+        tlStr += '  </div>\n'
 
-    # end of column-center
-    tlStr += '  </td>\n'
+        # end of column-center
+        tlStr += '  </td>\n'
 
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
