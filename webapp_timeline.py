@@ -392,9 +392,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     menuCalendar = \
         htmlHideFromScreenReader('📅') + ' ' + calendarStr
     menuDM = \
-        htmlHideFromScreenReader('✉') + ' ' + dmStr
+        htmlHideFromScreenReader('📩') + ' ' + dmStr
     menuReplies = \
-        htmlHideFromScreenReader('↩') + ' ' + repliesStr
+        htmlHideFromScreenReader('📨') + ' ' + repliesStr
     menuBookmarks = \
         htmlHideFromScreenReader('🔖') + ' ' + \
         translate['Bookmarks']
