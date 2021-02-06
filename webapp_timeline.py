@@ -530,7 +530,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             'name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Remove the above item'] + '"' + \
+            translate['Remove the above item'] + '" ' + \
             'alt="' + translate['Remove the above item'] + ' | " ' + \
             'name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
@@ -543,7 +543,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Remove a suspension for an account nickname'] + '"' + \
+            translate['Remove a suspension for an account nickname'] + '" ' + \
             'alt="' + \
             translate['Remove a suspension for an account nickname'] + \
             ' | " ' + \
