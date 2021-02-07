@@ -48,6 +48,7 @@ from content import getMentionsFromHtml
 from content import switchWords
 from person import isPersonSnoozed
 from announce import announcedByPerson
+from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import getAvatarImageUrl
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import updateAvatarImageCache
@@ -430,6 +431,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
         likeTitle = translate['Like this post']
+        likeEmoji = ''
         likeCount = noOfLikes(postJsonObject)
 
         _logPostTiming(enableTimingLog, postStartTime, '12.1')
@@ -447,6 +449,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
                 likeIcon = 'like.png'
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
+                likeEmoji = htmlHideFromScreenReader('👍') + ' '
 
         _logPostTiming(enableTimingLog, postStartTime, '12.2')
 
@@ -467,7 +470,7 @@ def _getLikeIconHtml(nickname: str, domainFull: str,
         likeStr += \
             '          ' + \
             '<img loading="lazy" title="' + likeTitle + likeCountStr + \
-            '" alt="' + likeTitle + \
+            '" alt="' + likeEmoji + likeTitle + \
             ' |" src="/icons/' + likeIcon + '"/></a>\n'
     return likeStr
 
