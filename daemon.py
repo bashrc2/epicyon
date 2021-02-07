@@ -11043,7 +11043,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir, self.path,
                                  self.server.domain,
                                  self.server.defaultTimeline,
-                                 self.server.themeName).encode('utf-8')
+                                 self.server.themeName,
+                                 self.server.textModeBanner).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
