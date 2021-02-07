@@ -15,6 +15,8 @@ from content import dangerousCSS
 
 
 def _getThemeFiles() -> []:
+    """Gets the list of theme style sheets
+    """
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
             'options.css', 'search.css', 'links.css')
@@ -39,6 +41,8 @@ def getThemesList(baseDir: str) -> []:
 
 
 def _setThemeInConfig(baseDir: str, name: str) -> bool:
+    """Sets the theme with the given name within config.json
+    """
     configFilename = baseDir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
@@ -118,6 +122,8 @@ def _setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
 
 
 def getTheme(baseDir: str) -> str:
+    """Gets the current theme name from config.json
+    """
     configFilename = baseDir + '/config.json'
     if os.path.isfile(configFilename):
         configJson = loadJson(configFilename, 0)
@@ -128,6 +134,8 @@ def getTheme(baseDir: str) -> str:
 
 
 def _removeTheme(baseDir: str):
+    """Removes the current theme style sheets
+    """
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
@@ -606,6 +614,8 @@ def setNewsAvatar(baseDir: str, name: str,
 
 def setTheme(baseDir: str, name: str, domain: str,
              allowLocalNetworkAccess: bool) -> bool:
+    """Sets the theme with the given name as the current theme
+    """
     result = False
 
     prevThemeName = getTheme(baseDir)
