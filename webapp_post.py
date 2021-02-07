@@ -244,15 +244,19 @@ def _getAvatarImageHtml(showAvatarOptions: bool,
                 ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
             avatarLink += \
                 '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + \
-                '" src="' + avatarUrl + '" ' + avatarPosition + \
+                translate['Show options for this person'] + '" ' + \
+                'alt="👤 ' + \
+                translate['Show options for this person'] + '" ' + \
+                'src="' + avatarUrl + '" ' + avatarPosition + \
                 getBrokenLinkSubstitute() + '/></a>\n'
         else:
             # don't link to the person options for the news account
             avatarLink += \
                 '        <img loading="lazy" title="' + \
-                translate['Show options for this person'] + \
-                '" src="' + avatarUrl + '" ' + avatarPosition + \
+                translate['Show options for this person'] + '" ' + \
+                'alt="👤 ' + \
+                translate['Show options for this person'] + '" ' + \
+                'src="' + avatarUrl + '" ' + avatarPosition + \
                 getBrokenLinkSubstitute() + '/>\n'
     return avatarLink.strip()
 
