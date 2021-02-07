@@ -703,6 +703,7 @@ input[type=number] {
 }
 
 .transparent hr {
+    border: 0;
     color: transparent;
     background: transparent;
     font-size: 0px;
@@ -1153,7 +1154,7 @@ div.container {
         filter: brightness(var(--icon-brightness-change));
     }
     .col-right img.rightColEdit {
-	float: right;
+        float: right;
         background: transparent;
         width: var(--column-right-icon-size);
     }
