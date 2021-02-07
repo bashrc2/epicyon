@@ -456,6 +456,37 @@ def getTextModeLogo(baseDir: str) -> str:
     return None
 
 
+def _setTextModeTheme(baseDir: str, name: str) -> None:
+    # set the text mode logo which appears on the login screen
+    # in browsers such as Lynx
+    textModeLogoFilename = \
+        baseDir + '/theme/' + name + '/logo.txt'
+    if os.path.isfile(textModeLogoFilename):
+        try:
+            copyfile(textModeLogoFilename,
+                     baseDir + '/accounts/logo.txt')
+        except BaseException:
+            pass
+    else:
+        try:
+            copyfile(baseDir + '/img/logo.txt',
+                     baseDir + '/accounts/logo.txt')
+        except BaseException:
+            pass
+
+    # set the text mode banner which appears in browsers such as Lynx
+    textModeBannerFilename = \
+        baseDir + '/theme/' + name + '/banner.txt'
+    if os.path.isfile(baseDir + '/accounts/banner.txt'):
+        os.remove(baseDir + '/accounts/banner.txt')
+    if os.path.isfile(textModeBannerFilename):
+        try:
+            copyfile(textModeBannerFilename,
+                     baseDir + '/accounts/banner.txt')
+        except BaseException:
+            pass
+
+
 def _setThemeImages(baseDir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
@@ -473,31 +504,7 @@ def _setThemeImages(baseDir: str, name: str) -> None:
     rightColImageFilename = \
         baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
 
-    textModeLogoFilename = \
-        baseDir + '/theme/' + themeNameLower + '/logo.txt'
-    if os.path.isfile(textModeLogoFilename):
-        try:
-            copyfile(textModeLogoFilename,
-                     baseDir + '/accounts/logo.txt')
-        except BaseException:
-            pass
-    else:
-        try:
-            copyfile(baseDir + '/img/logo.txt',
-                     baseDir + '/accounts/logo.txt')
-        except BaseException:
-            pass
-
-    textModeBannerFilename = \
-        baseDir + '/theme/' + themeNameLower + '/banner.txt'
-    if os.path.isfile(baseDir + '/accounts/banner.txt'):
-        os.remove(baseDir + '/accounts/banner.txt')
-    if os.path.isfile(textModeBannerFilename):
-        try:
-            copyfile(textModeBannerFilename,
-                     baseDir + '/accounts/banner.txt')
-        except BaseException:
-            pass
+    _setTextModeTheme(baseDir, themeNameLower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
