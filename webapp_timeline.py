@@ -604,7 +604,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # separator between posts which only appears in shell browsers
     # such as Lynx and is not read by screen readers
-    textModeSeparator = '<hr>'
+    textModeSeparator = \
+        '<div class="transparent"><hr></div>'
 
     # show the posts
     itemCtr = 0
