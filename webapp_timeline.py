@@ -590,8 +590,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
 
+    # separator between posts which only appears in shell browsers
+    # such as Lynx and is not read by screen readers
+    textModeSeparator = \
+        '<div class="transparent"><hr></div>'
+
     # page up arrow
     if pageNumber > 1:
+        tlStr += textModeSeparator
         tlStr += \
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
@@ -601,11 +607,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page up'] + '" alt="' + \
             translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
-
-    # separator between posts which only appears in shell browsers
-    # such as Lynx and is not read by screen readers
-    textModeSeparator = \
-        '<div class="transparent"><hr></div>'
 
     # show the posts
     itemCtr = 0
