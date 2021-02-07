@@ -388,12 +388,14 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
         # don't allow announce/repeat of your own posts
         announceIcon = 'repeat_inactive.png'
         announceLink = 'repeat'
+        announceEmoji = ''
         if not isPublicRepeat:
             announceLink = 'repeatprivate'
         announceTitle = translate['Repeat this post']
 
         if announcedByPerson(postJsonObject, nickname, domainFull):
             announceIcon = 'repeat.png'
+            announceEmoji = '🔁 '
             if not isPublicRepeat:
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
@@ -409,7 +411,7 @@ def _getAnnounceIconHtml(nickname: str, domainFull: str,
         announceStr += \
             '          ' + \
             '<img loading="lazy" title="' + translate['Repeat this post'] + \
-            '" alt="' + translate['Repeat this post'] + \
+            '" alt="' + announceEmoji + translate['Repeat this post'] + \
             ' |" src="/icons/' + announceIcon + '"/></a>\n'
     return announceStr
 
@@ -491,10 +493,12 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
 
     bookmarkIcon = 'bookmark_inactive.png'
     bookmarkLink = 'bookmark'
+    bookmarkEmoji = ''
     bookmarkTitle = translate['Bookmark this post']
     if bookmarkedByPerson(postJsonObject, nickname, domainFull):
         bookmarkIcon = 'bookmark.png'
         bookmarkLink = 'unbookmark'
+        bookmarkEmoji = '🔖 '
         bookmarkTitle = translate['Undo the bookmark']
     _logPostTiming(enableTimingLog, postStartTime, '12.6')
     bookmarkStr = \
@@ -507,7 +511,7 @@ def _getBookmarkIconHtml(nickname: str, domainFull: str,
     bookmarkStr += \
         '        ' + \
         '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
-        bookmarkTitle + ' |" src="/icons' + \
+        bookmarkEmoji + bookmarkTitle + ' |" src="/icons' + \
         '/' + bookmarkIcon + '"/></a>\n'
     return bookmarkStr
 
@@ -550,7 +554,7 @@ def _getMuteIconHtml(isMuted: bool,
             translate['Undo mute'] + '">\n'
         muteStr += \
             '          ' + \
-            '<img loading="lazy" alt="' + translate['Undo mute'] + \
+            '<img loading="lazy" alt="🔇 ' + translate['Undo mute'] + \
             ' |" title="' + translate['Undo mute'] + \
             '" src="/icons/unmute.png"/></a>\n'
     return muteStr
