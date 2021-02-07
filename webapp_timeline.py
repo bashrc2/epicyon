@@ -683,6 +683,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # page down arrow
     if itemCtr > 2:
+        tlStr += textModeSeparator
         tlStr += \
             '      <center>\n' + \
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
@@ -692,6 +693,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
+        tlStr += textModeSeparator
 
     # end of timeline-posts
     tlStr += '  </div>\n'
