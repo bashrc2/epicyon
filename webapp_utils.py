@@ -908,8 +908,5 @@ def htmlKeyboardNavigation(banner: str, links: {},
         htmlStr += '<li><label class="transparent">' + \
             '<a href="' + str(url) + '">' + \
             str(title) + '</a></label></li>'
-    htmlStr += '</ul>'
-    for i in range(16):
-        htmlStr += '<br>'
-    htmlStr += '</div>'
+    htmlStr += '</ul></div>'
     return htmlStr
