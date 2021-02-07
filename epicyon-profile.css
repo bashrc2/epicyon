@@ -702,6 +702,14 @@ input[type=number] {
     height: 0px;
 }
 
+.transparent hr {
+    color: transparent;
+    background: transparent;
+    font-size: 0px;
+    line-height: 0px;
+    height: 0px;
+}
+
 .labelsright {
     float: right;
     font-size: var(--font-size);
