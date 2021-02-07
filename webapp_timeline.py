@@ -602,6 +602,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page up'] + '"></a>\n' + \
             '  </center>\n'
 
+    # separator between posts which only appears in shell browsers
+    # such as Lynx and is not read by screen readers
+    textModeSeparator = \
+        '<div class="transparent">' + \
+        '<pre aria-label=""><hr></pre></div>'
+
     # show the posts
     itemCtr = 0
     if timelineJson:
@@ -670,7 +676,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 if currTlStr:
                     itemCtr += 1
-                    tlStr += currTlStr
+                    tlStr += textModeSeparator + currTlStr
                     if separatorStr:
                         tlStr += separatorStr
         if boxName == 'tlmedia':
