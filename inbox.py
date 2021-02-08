@@ -105,6 +105,8 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
             continue
+        if not isinstance(tag['type'], str):
+            continue
         if tag['type'] != 'Hashtag':
             continue
         if not tag.get('name'):
@@ -274,6 +276,28 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             # print('inboxMessageHasParams: ' +
             #       param + ' ' + str(messageJson))
             return False
+
+    # actor should be a string
+    if not isinstance(messageJson['actor'], str):
+        print('WARN: actor should be a string, but is actually: ' +
+              str(messageJson['actor']))
+        return False
+
+    # type should be a string
+    if not isinstance(messageJson['type'], str):
+        print('WARN: type from ' + str(messageJson['actor']) +
+              ' should be a string, but is actually: ' +
+              str(messageJson['type']))
+        return False
+
+    # object should be a dict or a string
+    if not isinstance(messageJson['object'], dict):
+        if not isinstance(messageJson['object'], str):
+            print('WARN: object from ' + str(messageJson['actor']) +
+                  ' should be a dict or string, but is actually: ' +
+                  str(messageJson['object']))
+            return False
+
     if not messageJson.get('to'):
         allowedWithoutToParam = ['Like', 'Follow', 'Join', 'Request',
                                  'Accept', 'Capability', 'Undo']
