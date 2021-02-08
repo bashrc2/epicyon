@@ -158,7 +158,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         repliesButton = 'buttonhighlighted'
     mediaButton = 'button'
     bookmarksButton = 'button'
-    eventsButton = 'button'
+#    eventsButton = 'button'
     sentButton = 'button'
     sharesButton = 'button'
     if newShare:
@@ -196,8 +196,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             sharesButton = 'buttonselectedhighlighted'
     elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
-    elif boxName == 'tlevents':
-        eventsButton = 'buttonselected'
+#    elif boxName == 'tlevents':
+#        eventsButton = 'buttonselected'
 
     # get the full domain, including any port number
     fullDomain = getFullDomain(domain, port)
@@ -254,11 +254,11 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
             bookmarksButton + '"><span>' + translate['Bookmarks'] + \
             '</span></button></a>'
-
-        eventsButtonStr = \
-            '<a href="' + usersPath + '/tlevents"><button class="' + \
-            eventsButton + '"><span>' + translate['Events'] + \
-            '</span></button></a>'
+#
+#        eventsButtonStr = \
+#            '<a href="' + usersPath + '/tlevents"><button class="' + \
+#            eventsButton + '"><span>' + translate['Events'] + \
+#            '</span></button></a>'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -400,8 +400,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Bookmarks']
     menuShares = \
         htmlHideFromScreenReader('🤝') + ' ' + sharesStr
-    menuEvents = \
-        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
+#    menuEvents = \
+#        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
     menuBlogs = \
         htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
     menuNewswire = \
@@ -426,7 +426,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuBookmarks: usersPath + '/tlbookmarks#timeline',
         menuShares: usersPath + '/tlshares#timeline',
         menuBlogs: usersPath + '/tlblogs#timeline',
-        menuEvents: usersPath + '/tlevents#timeline',
+        # menuEvents: usersPath + '/tlevents#timeline',
         menuNewswire: '#newswire',
         menuLinks: '#links'
     }

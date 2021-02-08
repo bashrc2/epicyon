@@ -136,12 +136,12 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
-    dropDownContent += \
-        '<li><a href="' + pathBase + dropdownEventSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
-        'icons/scope_event.png"/><b>' + \
-        translate['Event'] + '</b><br>' + \
-        translate['Create an event'] + '</a></li>\n'
+    # dropDownContent += \
+    #    '<li><a href="' + pathBase + dropdownEventSuffix + \
+    #    '"><img loading="lazy" alt="" title="" src="/' + \
+    #    'icons/scope_event.png"/><b>' + \
+    #    translate['Event'] + '</b><br>' + \
+    #    translate['Create an event'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
