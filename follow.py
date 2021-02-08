@@ -598,7 +598,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
-        return False
+        if not messageJson['type'].startswith('Join'):
+            return False
     print('Receiving follow request')
     if not messageJson.get('actor'):
         if debug:
@@ -1162,7 +1163,8 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
     if not messageJson['object'].get('type'):
         return
     if not messageJson['object']['type'] == 'Follow':
-        return
+        if not messageJson['object']['type'] == 'Join':
+            return
     if not messageJson['object'].get('object'):
         return
     if not messageJson['object'].get('actor'):

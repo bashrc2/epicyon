@@ -77,7 +77,8 @@ def _acceptFollow(baseDir: str, domain: str, messageJson: {},
     if not messageJson['object'].get('type'):
         return
     if not messageJson['object']['type'] == 'Follow':
-        return
+        if not messageJson['object']['type'] == 'Join':
+            return
     if debug:
         print('DEBUG: receiving Follow activity')
     if not messageJson['object'].get('actor'):

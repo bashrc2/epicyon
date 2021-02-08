@@ -275,7 +275,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             #       param + ' ' + str(messageJson))
             return False
     if not messageJson.get('to'):
-        allowedWithoutToParam = ['Like', 'Follow', 'Request',
+        allowedWithoutToParam = ['Like', 'Follow', 'Join', 'Request',
                                  'Accept', 'Capability', 'Undo']
         if messageJson['type'] not in allowedWithoutToParam:
             return False
@@ -297,7 +297,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     if not urlPermitted(actor, federationList):
         return False
 
-    alwaysAllowedTypes = ('Follow', 'Like', 'Delete', 'Announce')
+    alwaysAllowedTypes = ('Follow', 'Join', 'Like', 'Delete', 'Announce')
     if messageJson['type'] not in alwaysAllowedTypes:
         if not messageJson.get('object'):
             return True
@@ -693,7 +693,8 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
             print('DEBUG: ' + messageJson['type'] +
                   ' object within object is not a string')
         return False
-    if messageJson['object']['type'] == 'Follow':
+    if messageJson['object']['type'] == 'Follow' or \
+       messageJson['object']['type'] == 'Join':
         return _receiveUndoFollow(session, baseDir, httpPrefix,
                                   port, messageJson,
                                   federationList, debug)
