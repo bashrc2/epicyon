@@ -878,3 +878,35 @@ def getAvatarImageUrl(session,
         avatarUrl = postActor + '/avatar.png'
 
     return avatarUrl
+
+
+def htmlHideFromScreenReader(htmlStr: str) -> str:
+    """Returns html which is hidden from screen readers
+    """
+    return '<span aria-hidden="true">' + htmlStr + '</span>'
+
+
+def htmlKeyboardNavigation(banner: str, links: {},
+                           usersPath=None, translate=None,
+                           followApprovals=False) -> str:
+    """Given a set of links return the html for keyboard navigation
+    """
+    htmlStr = '<div class="transparent"><ul>'
+
+    if banner:
+        htmlStr += '<pre aria-label="">' + banner + '<br><br></pre>'
+
+    # show new follower approvals
+    if usersPath and translate and followApprovals:
+        htmlStr += '<strong><label class="transparent">' + \
+            '<a href="' + usersPath + '/followers#timeline">' + \
+            translate['Approve follow requests'] + '</a>' + \
+            '</label></strong><br><br>'
+
+    # show the list of links
+    for title, url in links.items():
+        htmlStr += '<li><label class="transparent">' + \
+            '<a href="' + str(url) + '">' + \
+            str(title) + '</a></label></li>'
+    htmlStr += '</ul></div>'
+    return htmlStr

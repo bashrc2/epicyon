@@ -15,6 +15,8 @@ from content import dangerousCSS
 
 
 def _getThemeFiles() -> []:
+    """Gets the list of theme style sheets
+    """
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
             'options.css', 'search.css', 'links.css')
@@ -39,6 +41,8 @@ def getThemesList(baseDir: str) -> []:
 
 
 def _setThemeInConfig(baseDir: str, name: str) -> bool:
+    """Sets the theme with the given name within config.json
+    """
     configFilename = baseDir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
@@ -118,6 +122,8 @@ def _setFullWidthTimelineButtonHeader(baseDir: str, fullWidth: bool) -> bool:
 
 
 def getTheme(baseDir: str) -> str:
+    """Gets the current theme name from config.json
+    """
     configFilename = baseDir + '/config.json'
     if os.path.isfile(configFilename):
         configJson = loadJson(configFilename, 0)
@@ -128,6 +134,8 @@ def getTheme(baseDir: str) -> str:
 
 
 def _removeTheme(baseDir: str):
+    """Removes the current theme style sheets
+    """
     themeFiles = _getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
@@ -422,6 +430,63 @@ def _setThemeFonts(baseDir: str, themeName: str) -> None:
         break
 
 
+def getTextModeBanner(baseDir: str) -> str:
+    """Returns the banner used for shell browsers, like Lynx
+    """
+    textModeBannerFilename = baseDir + '/accounts/banner.txt'
+    if os.path.isfile(textModeBannerFilename):
+        with open(textModeBannerFilename, 'r') as fp:
+            bannerStr = fp.read()
+            if bannerStr:
+                return bannerStr.replace('\n', '<br>')
+    return None
+
+
+def getTextModeLogo(baseDir: str) -> str:
+    """Returns the login screen logo used for shell browsers, like Lynx
+    """
+    textModeLogoFilename = baseDir + '/accounts/logo.txt'
+    if not os.path.isfile(textModeLogoFilename):
+        textModeLogoFilename = baseDir + '/img/logo.txt'
+
+    with open(textModeLogoFilename, 'r') as fp:
+        logoStr = fp.read()
+        if logoStr:
+            return logoStr.replace('\n', '<br>')
+    return None
+
+
+def _setTextModeTheme(baseDir: str, name: str) -> None:
+    # set the text mode logo which appears on the login screen
+    # in browsers such as Lynx
+    textModeLogoFilename = \
+        baseDir + '/theme/' + name + '/logo.txt'
+    if os.path.isfile(textModeLogoFilename):
+        try:
+            copyfile(textModeLogoFilename,
+                     baseDir + '/accounts/logo.txt')
+        except BaseException:
+            pass
+    else:
+        try:
+            copyfile(baseDir + '/img/logo.txt',
+                     baseDir + '/accounts/logo.txt')
+        except BaseException:
+            pass
+
+    # set the text mode banner which appears in browsers such as Lynx
+    textModeBannerFilename = \
+        baseDir + '/theme/' + name + '/banner.txt'
+    if os.path.isfile(baseDir + '/accounts/banner.txt'):
+        os.remove(baseDir + '/accounts/banner.txt')
+    if os.path.isfile(textModeBannerFilename):
+        try:
+            copyfile(textModeBannerFilename,
+                     baseDir + '/accounts/banner.txt')
+        except BaseException:
+            pass
+
+
 def _setThemeImages(baseDir: str, name: str) -> None:
     """Changes the profile background image
     and banner to the defaults
@@ -438,6 +503,8 @@ def _setThemeImages(baseDir: str, name: str) -> None:
         baseDir + '/theme/' + themeNameLower + '/left_col_image.png'
     rightColImageFilename = \
         baseDir + '/theme/' + themeNameLower + '/right_col_image.png'
+
+    _setTextModeTheme(baseDir, themeNameLower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
@@ -554,6 +621,8 @@ def setNewsAvatar(baseDir: str, name: str,
 
 def setTheme(baseDir: str, name: str, domain: str,
              allowLocalNetworkAccess: bool) -> bool:
+    """Sets the theme with the given name as the current theme
+    """
     result = False
 
     prevThemeName = getTheme(baseDir)

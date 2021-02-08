@@ -40,6 +40,8 @@ from jami import getJamiAddress
 from filters import isFiltered
 from follow import isFollowerOfPerson
 from webapp_frontscreen import htmlFrontScreen
+from webapp_utils import htmlKeyboardNavigation
+from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import scheduledPostsExist
 from webapp_utils import getPersonAvatarUrl
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -472,6 +474,7 @@ def htmlProfile(rssIconAtTop: bool,
                 newswire: {}, theme: str, dormantMonths: int,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
+                textModeBanner: str,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -707,16 +710,37 @@ def htmlProfile(rssIconAtTop: bool,
                           movedTo, alsoKnownAs,
                           pinnedContent)
 
-    # Links for keyboard navigation
-    profileStr = \
-        '<div class="transparent">' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '">' + \
-        translate['Switch to timeline view'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-main" href="#buttonheader">' + \
-        translate['Skip to timeline'] + '</a></label>' + \
-        '</div>\n'
+    # keyboard navigation
+    userPathStr = '/users/' + nickname
+    deft = defaultTimeline
+    menuTimeline = \
+        htmlHideFromScreenReader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    menuEdit = \
+        htmlHideFromScreenReader('✍') + ' ' + translate['Edit']
+    menuFollowing = \
+        htmlHideFromScreenReader('👥') + ' ' + translate['Following']
+    menuFollowers = \
+        htmlHideFromScreenReader('👪') + ' ' + translate['Followers']
+    menuRoles = \
+        htmlHideFromScreenReader('🤚') + ' ' + translate['Roles']
+    menuSkills = \
+        htmlHideFromScreenReader('🛠') + ' ' + translate['Skills']
+    menuShares = \
+        htmlHideFromScreenReader('🤝') + ' ' + translate['Shares']
+    menuLogout = \
+        htmlHideFromScreenReader('❎') + ' ' + translate['Logout']
+    navLinks = {
+        menuTimeline: userPathStr + '/' + deft,
+        menuEdit: userPathStr + '/editprofile',
+        menuFollowing: userPathStr + '/following#timeline',
+        menuFollowers: userPathStr + '/followers#timeline',
+        menuRoles: userPathStr + '/roles#timeline',
+        menuSkills: userPathStr + '/skills#timeline',
+        menuShares: userPathStr + '/shares#timeline',
+        menuLogout: '/logout'
+    }
+    profileStr = htmlKeyboardNavigation(textModeBanner, navLinks)
 
     profileStr += profileHeaderStr + donateSection
     profileStr += '<div class="container" id="buttonheader">\n'
@@ -749,6 +773,9 @@ def htmlProfile(rssIconAtTop: bool,
     profileStr += logoutStr + editProfileStr
     profileStr += '  </center>'
     profileStr += '</div>'
+
+    # start of #timeline
+    profileStr += '<div id="timeline">\n'
 
     profileStr += followApprovalsSection
 
@@ -804,6 +831,8 @@ def htmlProfile(rssIconAtTop: bool,
             _htmlProfileShares(actor, translate,
                                nickname, domainFull,
                                extraJson) + licenseStr
+    # end of #timeline
+    profileStr += '</div>'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -985,7 +1014,8 @@ def _htmlProfileShares(actor: str, translate: {},
 def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     domain: str, port: int, httpPrefix: str,
                     defaultTimeline: str, theme: str,
-                    peertubeInstances: []) -> str:
+                    peertubeInstances: [],
+                    textModeBanner: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats = getImageFormats()
@@ -1332,13 +1362,26 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         getConfigParam(baseDir, 'instanceTitle')
     editProfileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
+    # keyboard navigation
+    userPathStr = '/users/' + nickname
+    userTimalineStr = '/users/' + nickname + '/' + defaultTimeline
+    menuTimeline = \
+        htmlHideFromScreenReader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    menuProfile = \
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
+    navLinks = {
+        menuProfile: userPathStr,
+        menuTimeline: userTimalineStr
+    }
+    editProfileForm += htmlKeyboardNavigation(textModeBanner, navLinks)
+
     # top banner
     editProfileForm += \
-        '<a href="/users/' + nickname + '/' + defaultTimeline + '" title="' + \
-        translate['Switch to timeline view'] + '" alt="' + \
-        translate['Switch to timeline view'] + '">\n'
+        '<a href="/users/' + nickname + '/' + defaultTimeline + '">'
     editProfileForm += '<img loading="lazy" class="timeline-banner" src="' + \
-        '/users/' + nickname + '/' + bannerFile + '" /></a>\n'
+        '/users/' + nickname + '/' + bannerFile + '" alt="" /></a>\n'
 
     editProfileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

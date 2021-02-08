@@ -230,6 +230,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import getTextModeBanner
 from theme import setNewsAvatar
 from theme import setTheme
 from theme import getTheme
@@ -2078,7 +2079,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName).encode('utf-8')
+                              self.server.themeName,
+                              True).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -2176,7 +2178,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName).encode('utf-8')
+                              self.server.themeName,
+                              True).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -4169,6 +4172,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.themeName = fields['themeDropdown']
                         setTheme(baseDir, self.server.themeName, domain,
                                  allowLocalNetworkAccess)
+                        self.server.textModeBanner = \
+                            getTextModeBanner(self.server.baseDir)
                         self.server.iconsCache = {}
                         self.server.fontsCache = {}
                         self.server.showPublishAsIcon = \
@@ -4618,6 +4623,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
                                          self.server.allowLocalNetworkAccess)
+                                self.server.textModeBanner = \
+                                    getTextModeBanner(self.server.baseDir)
                                 self.server.iconsCache = {}
                                 self.server.fontsCache = {}
                                 self.server.showPublishAsIcon = \
@@ -7023,6 +7030,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
+                                    self.server.textModeBanner,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -7110,6 +7118,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.dormantMonths,
                                                 self.server.peertubeInstances,
                                                 allowLocalNetworkAccess,
+                                                self.server.textModeBanner,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -7501,7 +7510,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         authorized,
                                         self.server.themeName,
                                         self.server.peertubeInstances,
-                                        self.server.allowLocalNetworkAccess)
+                                        self.server.allowLocalNetworkAccess,
+                                        self.server.textModeBanner)
                         if GETstartTime:
                             self._benchmarkGETtimings(GETstartTime, GETtimings,
                                                       'show status done',
@@ -7629,7 +7639,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.publishButtonAtTop,
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
-                                         self.server.allowLocalNetworkAccess)
+                                         self.server.allowLocalNetworkAccess,
+                                         self.server.textModeBanner)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -7750,7 +7761,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.publishButtonAtTop,
                                          authorized, self.server.themeName,
                                          self.server.peertubeInstances,
-                                         self.server.allowLocalNetworkAccess)
+                                         self.server.allowLocalNetworkAccess,
+                                         self.server.textModeBanner)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7872,7 +7884,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess)
+                                       self.server.allowLocalNetworkAccess,
+                                       self.server.textModeBanner)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -7994,7 +8007,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess)
+                                       self.server.allowLocalNetworkAccess,
+                                       self.server.textModeBanner)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8125,7 +8139,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized,
                                       self.server.themeName,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess)
+                                      self.server.allowLocalNetworkAccess,
+                                      self.server.textModeBanner)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8252,7 +8267,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           authorized,
                                           self.server.themeName,
                                           self.server.peertubeInstances,
-                                          self.server.allowLocalNetworkAccess)
+                                          self.server.allowLocalNetworkAccess,
+                                          self.server.textModeBanner)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8340,7 +8356,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.publishButtonAtTop,
                                    authorized, self.server.themeName,
                                    self.server.peertubeInstances,
-                                   self.server.allowLocalNetworkAccess)
+                                   self.server.allowLocalNetworkAccess,
+                                   self.server.textModeBanner)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -8445,7 +8462,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           authorized,
                                           self.server.themeName,
                                           self.server.peertubeInstances,
-                                          self.server.allowLocalNetworkAccess)
+                                          self.server.allowLocalNetworkAccess,
+                                          self.server.textModeBanner)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8570,7 +8588,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        authorized,
                                        self.server.themeName,
                                        self.server.peertubeInstances,
-                                       self.server.allowLocalNetworkAccess)
+                                       self.server.allowLocalNetworkAccess,
+                                       self.server.textModeBanner)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8687,7 +8706,8 @@ class PubServer(BaseHTTPRequestHandler):
                                authorized,
                                self.server.themeName,
                                self.server.peertubeInstances,
-                               self.server.allowLocalNetworkAccess)
+                               self.server.allowLocalNetworkAccess,
+                               self.server.textModeBanner)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -8794,7 +8814,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            authorized, moderationActionStr,
                                            self.server.themeName,
                                            self.server.peertubeInstances,
-                                           self.server.allowLocalNetworkAccess)
+                                           self.server.allowLocalNetworkAccess,
+                                           self.server.textModeBanner)
                         msg = msg.encode('utf-8')
                         msglen = len(msg)
                         self._set_headers('text/html', msglen,
@@ -8895,6 +8916,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
+                                    self.server.textModeBanner,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -8992,6 +9014,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
+                                    self.server.textModeBanner,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9089,6 +9112,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
+                                    self.server.textModeBanner,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9209,6 +9233,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.dormantMonths,
                             self.server.peertubeInstances,
                             self.server.allowLocalNetworkAccess,
+                            self.server.textModeBanner,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -9711,7 +9736,8 @@ class PubServer(BaseHTTPRequestHandler):
                      inReplyToUrl: str, replyToList: [],
                      shareDescription: str, replyPageNumber: int,
                      domain: str, domainFull: str,
-                     GETstartTime, GETtimings: {}, cookie) -> bool:
+                     GETstartTime, GETtimings: {}, cookie,
+                     noDropDown: bool) -> bool:
         """Shows the new post screen
         """
         isNewPostEndpoint = False
@@ -9740,7 +9766,8 @@ class PubServer(BaseHTTPRequestHandler):
                               domainFull,
                               self.server.defaultTimeline,
                               self.server.newswire,
-                              self.server.themeName).encode('utf-8')
+                              self.server.themeName,
+                              noDropDown).encode('utf-8')
             if not msg:
                 print('Error replying to ' + inReplyToUrl)
                 self._404()
@@ -9773,7 +9800,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   httpPrefix,
                                   self.server.defaultTimeline,
                                   self.server.themeName,
-                                  peertubeInstances).encode('utf-8')
+                                  peertubeInstances,
+                                  self.server.textModeBanner).encode('utf-8')
             if msg:
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -9982,6 +10010,12 @@ class PubServer(BaseHTTPRequestHandler):
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
+
+        # turn off dropdowns on new post screen
+        noDropDown = False
+        if self.path.endswith('?nodropdown'):
+            noDropDown = True
+            self.path = self.path.replace('?nodropdown', '')
 
         # redirect music to #nowplaying list
         if self.path == '/music' or self.path == '/nowplaying':
@@ -11009,7 +11043,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir, self.path,
                                  self.server.domain,
                                  self.server.defaultTimeline,
-                                 self.server.themeName).encode('utf-8')
+                                 self.server.themeName,
+                                 self.server.textModeBanner).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
@@ -11556,7 +11591,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,
                                  self.server.domainFull,
                                  GETstartTime, GETtimings,
-                                 cookie):
+                                 cookie, noDropDown):
                 return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
@@ -13849,6 +13884,9 @@ def runDaemon(verifyAllSignatures: bool,
 
         print('ERROR: HTTP server failed to start. ' + str(e))
         return False
+
+    # ASCII/ANSI text banner used in shell browsers, such as Lynx
+    httpd.textModeBanner = getTextModeBanner(baseDir)
 
     httpd.unitTest = unitTest
     httpd.allowLocalNetworkAccess = allowLocalNetworkAccess

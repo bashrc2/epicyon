@@ -13,6 +13,8 @@ from utils import getConfigParam
 from utils import noOfAccounts
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import htmlKeyboardNavigation
+from theme import getTextModeLogo
 
 
 def htmlGetLoginCredentials(loginParams: str,
@@ -74,6 +76,9 @@ def htmlLogin(cssCache: {}, translate: {},
     if not loginImageFilename:
         loginImageFilename = baseDir + '/accounts/' + loginImage
         copyfile(baseDir + '/img/login.png', loginImageFilename)
+
+    textModeLogo = getTextModeLogo(baseDir)
+    textModeLogoHtml = htmlKeyboardNavigation(textModeLogo, {})
 
     if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
@@ -139,8 +144,7 @@ def htmlLogin(cssCache: {}, translate: {},
     loginForm += '<form method="POST" action="/login">\n'
     loginForm += '  <div class="imgcontainer">\n'
     instanceTitle = getConfigParam(baseDir, 'instanceTitle')
-    if not instanceTitle:
-        instanceTitle = "Epicyon"
+    loginForm += textModeLogoHtml + '\n'
     loginForm += \
         '    <img loading="lazy" src="' + loginImage + \
         '" alt="' + instanceTitle + '" class="loginimage">\n'

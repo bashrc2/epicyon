@@ -14,6 +14,8 @@ from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
+from webapp_utils import htmlKeyboardNavigation
+from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlPostSeparator
 from webapp_utils import getBannerFile
 from webapp_utils import htmlHeaderWithExternalStyle
@@ -64,7 +66,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                  moderationActionStr: str,
                  theme: str,
                  peertubeInstances: [],
-                 allowLocalNetworkAccess: bool) -> str:
+                 allowLocalNetworkAccess: bool,
+                 textModeBanner: str) -> str:
     """Show the timeline as html
     """
     enableTimingLog = False
@@ -279,14 +282,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
-                '/newdm"><img loading="lazy" src="/' + \
+                '/newdm?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new DM'] + \
                 '" alt="| ' + translate['Create a new DM'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr += \
-                '<a href="' + usersPath + '/newdm">' + \
+                '<a href="' + usersPath + '/newdm?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + ' </span></button></a>'
     elif (boxName == 'tlblogs' or
@@ -309,28 +312,28 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
-                '/newevent"><img loading="lazy" src="/' + \
+                '/newevent?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new event'] + '" alt="| ' + \
                 translate['Create a new event'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr += \
-                '<a href="' + usersPath + '/newevent">' + \
+                '<a href="' + usersPath + '/newevent?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     elif boxName == 'tlshares':
         if not iconsAsButtons:
             newPostButtonStr += \
                 '<a class="imageAnchor" href="' + usersPath + \
-                '/newshare"><img loading="lazy" src="/' + \
+                '/newshare?nodropdown"><img loading="lazy" src="/' + \
                 'icons/newpost.png" title="' + \
                 translate['Create a new shared item'] + '" alt="| ' + \
                 translate['Create a new shared item'] + \
                 '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr += \
-                '<a href="' + usersPath + '/newshare">' + \
+                '<a href="' + usersPath + '/newshare?nodropdown">' + \
                 '<button class="button"><span>' + \
                 translate['Post'] + '</span></button></a>'
     else:
@@ -363,25 +366,74 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     '<button class="button"><span>' + \
                     translate['Post'] + '</span></button></a>'
 
-    # This creates a link to skip to the timeline and change to
-    # profile view when accessed within lynx, but should be
-    # invisible in a graphical web browser
-    tlStr += \
-        '<div class="transparent">' + \
-        '<label class="transparent">' + \
-        '<a href="/users/' + nickname + '">' + \
-        translate['Switch to profile view'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-main" href="' + usersPath + '/' + boxName + \
-        '#timeline">' + \
-        translate['Skip to timeline'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-newswire" href="#newswire">' + \
-        translate['Skip to Newswire'] + '</a></label> | ' + \
-        '<label class="transparent">' + \
-        '<a class="skip-links" href="#links">' + \
-        translate['Skip to Links'] + '</a></label>' + \
-        '</div>\n'
+    # keyboard navigation
+    calendarStr = translate['Calendar']
+    if newCalendarEvent:
+        calendarStr = '<strong>' + calendarStr + '</strong>'
+    dmStr = translate['DM']
+    if newDM:
+        dmStr = '<strong>' + dmStr + '</strong>'
+    repliesStr = translate['Replies']
+    if newReply:
+        repliesStr = '<strong>' + repliesStr + '</strong>'
+    sharesStr = translate['Shares']
+    if newShare:
+        sharesStr = '<strong>' + sharesStr + '</strong>'
+    menuProfile = \
+        htmlHideFromScreenReader('👤') + ' ' + \
+        translate['Switch to profile view']
+    menuInbox = \
+        htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
+    menuOutbox = \
+        htmlHideFromScreenReader('📤') + ' ' + translate['Outbox']
+    menuSearch = \
+        htmlHideFromScreenReader('🔍') + ' ' + \
+        translate['Search and follow']
+    menuCalendar = \
+        htmlHideFromScreenReader('📅') + ' ' + calendarStr
+    menuDM = \
+        htmlHideFromScreenReader('📩') + ' ' + dmStr
+    menuReplies = \
+        htmlHideFromScreenReader('📨') + ' ' + repliesStr
+    menuBookmarks = \
+        htmlHideFromScreenReader('🔖') + ' ' + \
+        translate['Bookmarks']
+    menuShares = \
+        htmlHideFromScreenReader('🤝') + ' ' + sharesStr
+    menuEvents = \
+        htmlHideFromScreenReader('🎫') + ' ' + translate['Events']
+    menuBlogs = \
+        htmlHideFromScreenReader('📝') + ' ' + translate['Blogs']
+    menuNewswire = \
+        htmlHideFromScreenReader('📰') + ' ' + translate['Newswire']
+    menuLinks = \
+        htmlHideFromScreenReader('🔗') + ' ' + translate['Links']
+    menuNewPost = \
+        htmlHideFromScreenReader('➕') + ' ' + \
+        translate['Create a new post']
+    menuModeration = \
+        htmlHideFromScreenReader('⚡️') + ' ' + \
+        translate['Mod']
+    navLinks = {
+        menuProfile: '/users/' + nickname,
+        menuInbox: usersPath + '/inbox#timeline',
+        menuSearch: usersPath + '/search',
+        menuNewPost: usersPath + '/newpost',
+        menuCalendar: usersPath + '/calendar',
+        menuDM: usersPath + '/dm#timeline',
+        menuReplies: usersPath + '/tlreplies#timeline',
+        menuOutbox: usersPath + '/inbox#timeline',
+        menuBookmarks: usersPath + '/tlbookmarks#timeline',
+        menuShares: usersPath + '/tlshares#timeline',
+        menuBlogs: usersPath + '/tlblogs#timeline',
+        menuEvents: usersPath + '/tlevents#timeline',
+        menuNewswire: '#newswire',
+        menuLinks: '#links'
+    }
+    if moderator:
+        navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
+    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks,
+                                    usersPath, translate, followApprovals)
 
     # banner and row of buttons
     tlStr += \
@@ -433,7 +485,6 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         leftColumnStr + '  </td>\n'
     # center column containing posts
     tlStr += '  <td valign="top" class="col-center">\n'
-    tlStr += '    <main id="timeline" tabindex="-1">\n'
 
     if not fullWidthTimelineButtonHeader:
         tlStr += \
@@ -451,12 +502,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
 
-    tlStr += '  <div class="timeline-posts">\n'
+    tlStr += '  <div id="timeline" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
         tlStr += \
-            '<form method="POST" action="/users/' + \
+            '<form id="modtimeline" method="POST" action="/users/' + \
             nickname + '/moderationaction">'
         tlStr += '<div class="container">\n'
         idx = 'Nickname or URL. Block using *@domain or nickname@domain'
@@ -473,40 +524,57 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         tlStr += \
             '    <input type="submit" title="' + \
             translate['Information about current blocks/suspensions'] + \
-            '" name="submitInfo" value="' + translate['Info'] + '">\n'
+            '" alt="' + \
+            translate['Information about current blocks/suspensions'] + \
+            ' | " ' + \
+            'name="submitInfo" value="' + translate['Info'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Remove the above item'] + \
-            '" name="submitRemove" value="' + \
+            translate['Remove the above item'] + '" ' + \
+            'alt="' + translate['Remove the above item'] + ' | " ' + \
+            'name="submitRemove" value="' + \
             translate['Remove'] + '">\n'
 
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Suspend the above account nickname'] + \
-            '" name="submitSuspend" value="' + translate['Suspend'] + '">\n'
+            translate['Suspend the above account nickname'] + '" ' + \
+            'alt="' + \
+            translate['Suspend the above account nickname'] + ' | " ' + \
+            'name="submitSuspend" value="' + translate['Suspend'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
+            translate['Remove a suspension for an account nickname'] + '" ' + \
+            'alt="' + \
             translate['Remove a suspension for an account nickname'] + \
-            '" name="submitUnsuspend" value="' + \
+            ' | " ' + \
+            'name="submitUnsuspend" value="' + \
             translate['Unsuspend'] + '">\n'
 
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Block an account on another instance'] + \
-            '" name="submitBlock" value="' + translate['Block'] + '">\n'
+            translate['Block an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Block an account on another instance'] + ' | " ' + \
+            'name="submitBlock" value="' + translate['Block'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Unblock an account on another instance'] + \
-            '" name="submitUnblock" value="' + translate['Unblock'] + '">\n'
+            translate['Unblock an account on another instance'] + '" ' + \
+            'alt="' + \
+            translate['Unblock an account on another instance'] + ' | " ' + \
+            'name="submitUnblock" value="' + translate['Unblock'] + '">\n'
 
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Filter out words'] + \
-            '" name="submitFilter" value="' + translate['Filter'] + '">\n'
+            translate['Filter out words'] + '" ' + \
+            'alt="' + \
+            translate['Filter out words'] + ' | " ' + \
+            'name="submitFilter" value="' + translate['Filter'] + '">\n'
         tlStr += \
             '    <input type="submit" title="' + \
-            translate['Unfilter words'] + \
-            '" name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
+            translate['Unfilter words'] + '" ' + \
+            'alt="' + \
+            translate['Unfilter words'] + ' | " ' + \
+            'name="submitUnfilter" value="' + translate['Unfilter'] + '">\n'
 
         tlStr += '</div>\n</form>\n'
 
@@ -522,8 +590,14 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     _logTimelineTiming(enableTimingLog, timelineStartTime, boxName, '7')
 
+    # separator between posts which only appears in shell browsers
+    # such as Lynx and is not read by screen readers
+    textModeSeparator = \
+        '<div class="transparent"><hr></div>'
+
     # page up arrow
     if pageNumber > 1:
+        tlStr += textModeSeparator
         tlStr += \
             '  <center>\n' + \
             '    <a href="' + usersPath + '/' + boxName + \
@@ -602,7 +676,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
                 if currTlStr:
                     itemCtr += 1
-                    tlStr += currTlStr
+                    tlStr += textModeSeparator + currTlStr
                     if separatorStr:
                         tlStr += separatorStr
         if boxName == 'tlmedia':
@@ -610,6 +684,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # page down arrow
     if itemCtr > 2:
+        tlStr += textModeSeparator
         tlStr += \
             '      <center>\n' + \
             '        <a href="' + usersPath + '/' + boxName + '?page=' + \
@@ -619,6 +694,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '" alt="' + \
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
+        tlStr += textModeSeparator
 
     # end of timeline-posts
     tlStr += '  </div>\n'
@@ -634,8 +710,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                            False, None, True,
                                            showPublishAsIcon,
                                            rssIconAtTop, publishButtonAtTop,
-                                           authorized, True, theme)
-    tlStr += '    </main>\n'
+                                           authorized, True, theme,
+                                           defaultTimeline)
     tlStr += '  <td valign="top" class="col-right" ' + \
         'id="newswire" tabindex="-1">' + \
         rightColumnStr + '  </td>\n'
@@ -752,7 +828,8 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                publishButtonAtTop: bool,
                authorized: bool, theme: str,
                peertubeInstances: [],
-               allowLocalNetworkAccess: bool) -> str:
+               allowLocalNetworkAccess: bool,
+               textModeBanner: str) -> str:
     """Show the shares timeline as html
     """
     manuallyApproveFollowers = \
@@ -773,7 +850,7 @@ def htmlShares(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInbox(cssCache: {}, defaultTimeline: str,
@@ -794,7 +871,8 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
               publishButtonAtTop: bool,
               authorized: bool, theme: str,
               peertubeInstances: [],
-              allowLocalNetworkAccess: bool) -> str:
+              allowLocalNetworkAccess: bool,
+              textModeBanner: str) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -815,7 +893,7 @@ def htmlInbox(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlBookmarks(cssCache: {}, defaultTimeline: str,
@@ -836,7 +914,8 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                   publishButtonAtTop: bool,
                   authorized: bool, theme: str,
                   peertubeInstances: [],
-                  allowLocalNetworkAccess: bool) -> str:
+                  allowLocalNetworkAccess: bool,
+                  textModeBanner: str) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -857,7 +936,7 @@ def htmlBookmarks(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlEvents(cssCache: {}, defaultTimeline: str,
@@ -878,7 +957,8 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                publishButtonAtTop: bool,
                authorized: bool, theme: str,
                peertubeInstances: [],
-               allowLocalNetworkAccess: bool) -> str:
+               allowLocalNetworkAccess: bool,
+               textModeBanner: str) -> str:
     """Show the events as html
     """
     manuallyApproveFollowers = \
@@ -899,7 +979,7 @@ def htmlEvents(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
@@ -920,7 +1000,8 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                  publishButtonAtTop: bool,
                  authorized: bool, theme: str,
                  peertubeInstances: [],
-                 allowLocalNetworkAccess: bool) -> str:
+                 allowLocalNetworkAccess: bool,
+                 textModeBanner: str) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -936,7 +1017,7 @@ def htmlInboxDMs(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
@@ -957,7 +1038,8 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                      publishButtonAtTop: bool,
                      authorized: bool, theme: str,
                      peertubeInstances: [],
-                     allowLocalNetworkAccess: bool) -> str:
+                     allowLocalNetworkAccess: bool,
+                     textModeBanner: str) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -974,7 +1056,7 @@ def htmlInboxReplies(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
@@ -995,7 +1077,8 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                    publishButtonAtTop: bool,
                    authorized: bool, theme: str,
                    peertubeInstances: [],
-                   allowLocalNetworkAccess: bool) -> str:
+                   allowLocalNetworkAccess: bool,
+                   textModeBanner: str) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1012,7 +1095,7 @@ def htmlInboxMedia(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
@@ -1033,7 +1116,8 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                    publishButtonAtTop: bool,
                    authorized: bool, theme: str,
                    peertubeInstances: [],
-                   allowLocalNetworkAccess: bool) -> str:
+                   allowLocalNetworkAccess: bool,
+                   textModeBanner: str) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1050,7 +1134,7 @@ def htmlInboxBlogs(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
@@ -1072,7 +1156,8 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                       authorized: bool,
                       theme: str,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      textModeBanner: str) -> str:
     """Show the features timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1089,7 +1174,7 @@ def htmlInboxFeatures(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlInboxNews(cssCache: {}, defaultTimeline: str,
@@ -1110,7 +1195,8 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                   publishButtonAtTop: bool,
                   authorized: bool, theme: str,
                   peertubeInstances: [],
-                  allowLocalNetworkAccess: bool) -> str:
+                  allowLocalNetworkAccess: bool,
+                  textModeBanner: str) -> str:
     """Show the news timeline as html
     """
     return htmlTimeline(cssCache, defaultTimeline,
@@ -1127,7 +1213,7 @@ def htmlInboxNews(cssCache: {}, defaultTimeline: str,
                         fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)
 
 
 def htmlOutbox(cssCache: {}, defaultTimeline: str,
@@ -1148,7 +1234,8 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                publishButtonAtTop: bool,
                authorized: bool, theme: str,
                peertubeInstances: [],
-               allowLocalNetworkAccess: bool) -> str:
+               allowLocalNetworkAccess: bool,
+               textModeBanner: str) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -1166,4 +1253,4 @@ def htmlOutbox(cssCache: {}, defaultTimeline: str,
                         showPublishAsIcon, fullWidthTimelineButtonHeader,
                         iconsAsButtons, rssIconAtTop, publishButtonAtTop,
                         authorized, None, theme, peertubeInstances,
-                        allowLocalNetworkAccess)
+                        allowLocalNetworkAccess, textModeBanner)

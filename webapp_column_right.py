@@ -50,7 +50,8 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
                           publishButtonAtTop: bool,
                           authorized: bool,
                           showHeaderImage: bool,
-                          theme: str) -> str:
+                          theme: str,
+                          defaultTimeline: str) -> str:
     """Returns html content for the right column
     """
     htmlStr = ''
@@ -62,10 +63,13 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     if authorized:
         # only show the publish button if logged in, otherwise replace it with
         # a login button
+        titleStr = translate['Publish a blog article']
+        if defaultTimeline == 'tlfeatures':
+            titleStr = translate['Publish a news article']
         publishButtonStr = \
             '        <a href="' + \
-            '/users/' + nickname + '/newblog" ' + \
-            'title="' + translate['Publish a news article'] + '">' + \
+            '/users/' + nickname + '/newblog?nodropdown" ' + \
+            'title="' + titleStr + '">' + \
             '<button class="publishbtn">' + \
             translate['Publish'] + '</button></a>\n'
     else:
@@ -158,13 +162,16 @@ def getRightColumnContent(baseDir: str, nickname: str, domainFull: str,
     # show publish icon at top
     if showPublishButton:
         if showPublishAsIcon:
+            titleStr = translate['Publish a blog article']
+            if defaultTimeline == 'tlfeatures':
+                titleStr = translate['Publish a news article']
             htmlStr += \
                 '        <a href="' + \
-                '/users/' + nickname + '/newblog">' + \
+                '/users/' + nickname + '/newblog?nodropdown">' + \
                 '<img class="' + editImageClass + \
                 '" loading="lazy" alt="' + \
-                translate['Publish a news article'] + '" title="' + \
-                translate['Publish a news article'] + '" src="/' + \
+                titleStr + '" title="' + \
+                titleStr + '" src="/' + \
                 'icons/publish.png" /></a>\n'
 
     if editImageClass == 'rightColEdit':
@@ -485,7 +492,8 @@ def htmlNewswireMobile(cssCache: {}, baseDir: str, nickname: str,
                                   newswire, positiveVoting,
                                   False, timelinePath, showPublishButton,
                                   showPublishAsIcon, rssIconAtTop, False,
-                                  authorized, False, theme)
+                                  authorized, False, theme,
+                                  defaultTimeline)
     else:
         if editor:
             htmlStr += '<br><br><br>\n'

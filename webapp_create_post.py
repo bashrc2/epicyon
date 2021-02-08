@@ -71,19 +71,25 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
                          dropdownDMSuffix: str,
                          dropdownReminderSuffix: str,
                          dropdownEventSuffix: str,
-                         dropdownReportSuffix: str) -> str:
+                         dropdownReportSuffix: str,
+                         noDropDown: bool) -> str:
     """Returns the html for a drop down list of new post types
     """
     dropDownContent = '<nav><div class="newPostDropdown">\n'
-    dropDownContent += '  <input type="checkbox" ' + \
-        'id="my-newPostDropdown" value="" name="my-checkbox">\n'
+    if not noDropDown:
+        dropDownContent += '  <input type="checkbox" ' + \
+            'id="my-newPostDropdown" value="" name="my-checkbox">\n'
     dropDownContent += '  <label for="my-newPostDropdown"\n'
     dropDownContent += '     data-toggle="newPostDropdown">\n'
     dropDownContent += '  <img loading="lazy" alt="" title="" src="/' + \
         'icons/' + scopeIcon + '"/><b>' + \
         scopeDescription + '</b></label>\n'
-    dropDownContent += '  <ul>\n'
 
+    if noDropDown:
+        dropDownContent += '</div></nav>\n'
+        return dropDownContent
+
+    dropDownContent += '  <ul>\n'
     if showPublicOnDropdown:
         dropDownContent += \
             '<li><a href="' + pathBase + dropdownNewPostSuffix + \
@@ -156,8 +162,8 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
             'icons/scope_question.png"/><b>' + \
             translate['Question'] + '</b><br>' + \
             translate['Ask a question'] + '</a></li>\n'
-
     dropDownContent += '  </ul>\n'
+
     dropDownContent += '</div></nav>\n'
     return dropDownContent
 
@@ -171,7 +177,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 nickname: str, domain: str,
                 domainFull: str,
                 defaultTimeline: str, newswire: {},
-                theme: str) -> str:
+                theme: str, noDropDown: bool) -> str:
     """New post screen
     """
     replyStr = ''
@@ -641,7 +647,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                                  dropdownDMSuffix,
                                  dropdownReminderSuffix,
                                  dropdownEventSuffix,
-                                 dropdownReportSuffix)
+                                 dropdownReportSuffix,
+                                 noDropDown)
     else:
         if not shareDescription:
             # reporting a post to moderator

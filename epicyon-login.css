@@ -94,6 +94,14 @@ form {
     border-radius: var(--form-border-radius);
 }
 
+.transparent {
+    color: transparent;
+    background: transparent;
+    font-size: 0px;
+    line-height: 0px;
+    height: 0px;
+}
+
 input[type=text], input[type=password] {
     width: 100%;
     padding: 12px 20px;

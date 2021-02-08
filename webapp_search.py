@@ -23,6 +23,7 @@ from utils import searchBoxPosts
 from categories import getHashtagCategory
 from feeds import rss2TagHeader
 from feeds import rss2TagFooter
+from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import getAltPath
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -317,7 +318,8 @@ def htmlSearchEmojiTextEntry(cssCache: {}, translate: {},
 
 def htmlSearch(cssCache: {}, translate: {},
                baseDir: str, path: str, domain: str,
-               defaultTimeline: str, theme: str) -> str:
+               defaultTimeline: str, theme: str,
+               textModeBanner: str) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
@@ -340,10 +342,14 @@ def htmlSearch(cssCache: {}, translate: {},
     searchBannerFile, searchBannerFilename = \
         getSearchBannerFile(baseDir, searchNickname, domain, theme)
 
+    textModeBannerStr = htmlKeyboardNavigation(textModeBanner, {})
+    if textModeBannerStr is None:
+        textModeBannerStr = ''
+
     if os.path.isfile(searchBannerFilename):
         usersPath = '/users/' + searchNickname
         followStr += \
-            '<header>\n' + \
+            '<header>\n' + textModeBannerStr + \
             '<a href="' + usersPath + '/' + defaultTimeline + '" title="' + \
             translate['Switch to timeline view'] + '" alt="' + \
             translate['Switch to timeline view'] + '">\n'
