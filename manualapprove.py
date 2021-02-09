@@ -120,6 +120,9 @@ def manualApproveFollowRequest(session, baseDir: str,
         elif reqPrefix + '/accounts/' + reqNick in approveFollowsStr:
             exists = True
             approveHandleFull = reqPrefix + '/accounts/' + reqNick
+        elif reqPrefix + '/u/' + reqNick in approveFollowsStr:
+            exists = True
+            approveHandleFull = reqPrefix + '/u/' + reqNick
     if not exists:
         print('Manual follow accept: ' + approveHandleFull +
               ' not in requests file "' +

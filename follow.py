@@ -204,6 +204,9 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     elif '://' + followerDomain + \
          '/accounts/' + followerNickname in followersStr:
         alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/u/' + followerNickname in followersStr:
+        alreadyFollowing = True
 
     return alreadyFollowing
 
@@ -541,6 +544,8 @@ def _storeFollowRequest(baseDir: str,
         elif '://' + domainFull + '/channel/' + nickname in followersStr:
             alreadyFollowing = True
         elif '://' + domainFull + '/accounts/' + nickname in followersStr:
+            alreadyFollowing = True
+        elif '://' + domainFull + '/u/' + nickname in followersStr:
             alreadyFollowing = True
 
         if alreadyFollowing:

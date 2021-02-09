@@ -656,6 +656,12 @@ def getNicknameFromActor(actor: str) -> str:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
+        elif '/u/' in actor:
+            nickStr = actor.split('/u/')[1].replace('@', '')
+            if '/' not in nickStr:
+                return nickStr
+            else:
+                return nickStr.split('/')[0]
         elif '/@' in actor:
             # https://domain/@nick
             nickStr = actor.split('/@')[1]
@@ -694,6 +700,10 @@ def getDomainFromActor(actor: str) -> (str, int):
             domain = domain.replace(prefix, '')
     elif '/users/' in actor:
         domain = actor.split('/users/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/u/' in actor:
+        domain = actor.split('/u/')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
     elif '/@' in actor:
