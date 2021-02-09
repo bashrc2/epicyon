@@ -756,7 +756,7 @@ def _personReceiveUpdate(baseDir: str,
           ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
-    usersPaths = ('users', 'profile', 'channel', 'accounts')
+    usersPaths = ('users', 'profile', 'channel', 'accounts', 'u')
     usersStrFound = False
     for usersStr in usersPaths:
         actor = updateDomainFull + '/' + usersStr + '/' + updateNickname

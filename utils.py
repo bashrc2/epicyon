@@ -67,7 +67,7 @@ def getLockedAccount(actorJson: {}) -> bool:
 def hasUsersPath(pathStr: str) -> bool:
     """Whether there is a /users/ path (or equivalent) in the given string
     """
-    usersList = ('users', 'accounts', 'channel', 'profile')
+    usersList = ('users', 'accounts', 'channel', 'profile', 'u')
     for usersStr in usersList:
         if '/' + usersStr + '/' in pathStr:
             return True
@@ -1224,7 +1224,7 @@ def _isReservedName(nickname: str) -> bool:
                      'activity', 'undo', 'pinned',
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses', 'tags',
-                     'accounts', 'channels', 'profile',
+                     'accounts', 'channels', 'profile', 'u',
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars')
     if nickname in reservedNames:
