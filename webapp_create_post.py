@@ -198,7 +198,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 newPostText = \
                     '<p class="new-post-text">' + \
                     translate['Write your reply to'] + \
-                    ' <a href="' + inReplyTo + '">' + \
+                    ' <a href="' + inReplyTo + \
+                    '" rel="nofollow noopener noreferrer" ' + \
+                    'target="_blank">' + \
                     translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'
