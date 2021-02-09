@@ -1163,14 +1163,58 @@ def deletePost(baseDir: str, httpPrefix: str,
     os.remove(postFilename)
 
 
-def validNickname(domain: str, nickname: str) -> bool:
-    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#')
-    for c in forbiddenChars:
-        if c in nickname:
-            return False
-    # this should only apply for the shared inbox
-    if nickname == domain:
-        return False
+def isValidLanguage(text: str) -> bool:
+    """Returns true if the given text contains a valid
+    natural language string
+    """
+    naturalLanguages = {
+        "Latin": [65, 866],
+        "Cyrillic": [1024, 1274],
+        "Greek": [880, 1280],
+        "isArmenian": [1328, 1424],
+        "isHebrew": [1424, 1536],
+        "Arabic": [1536, 1792],
+        "Syriac": [1792, 1872],
+        "Thaan": [1920, 1984],
+        "Devanagari": [2304, 2432],
+        "Bengali": [2432, 2560],
+        "Gurmukhi": [2560, 2688],
+        "Gujarati": [2688, 2816],
+        "Oriya": [2816, 2944],
+        "Tamil": [2944, 3072],
+        "Telugu": [3072, 3200],
+        "Kannada": [3200, 3328],
+        "Malayalam": [3328, 3456],
+        "Sinhala": [3456, 3584],
+        "Thai": [3584, 3712],
+        "Lao": [3712, 3840],
+        "Tibetan": [3840, 4096],
+        "Myanmar": [4096, 4256],
+        "Georgian": [4256, 4352],
+        "HangulJamo": [4352, 4608],
+        "Cherokee": [5024, 5120],
+        "UCAS": [5120, 5760],
+        "Ogham": [5760, 5792],
+        "Runic": [5792, 5888],
+        "Khmer": [6016, 6144],
+        "Mongolian": [6144, 6320]
+    }
+    for langName, langRange in naturalLanguages.items():
+        okLang = True
+        for ch in text:
+            if ch.isdigit():
+                continue
+            if ord(ch) not in range(langRange[0], langRange[1]):
+                okLang = False
+                break
+        if okLang:
+            return True
+    return False
+
+
+def _isReservedName(nickname: str) -> bool:
+    """Is the given nickname reserved for some special function?
+    """
     reservedNames = ('inbox', 'dm', 'outbox', 'following',
                      'public', 'followers', 'category',
                      'channel', 'calendar',
@@ -1184,6 +1228,23 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons', 'avatars')
     if nickname in reservedNames:
+        return True
+    return False
+
+
+def validNickname(domain: str, nickname: str) -> bool:
+    """Is the given nickname valid?
+    """
+    if not isValidLanguage(nickname):
+        return False
+    forbiddenChars = ('.', ' ', '/', '?', ':', ';', '@', '#')
+    for c in forbiddenChars:
+        if c in nickname:
+            return False
+    # this should only apply for the shared inbox
+    if nickname == domain:
+        return False
+    if _isReservedName(nickname):
         return False
     return True
 

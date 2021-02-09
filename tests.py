@@ -3094,10 +3094,13 @@ def testValidHashTag():
     assert validHashTag('ThisIsValid')
     assert validHashTag('ThisIsValid12345')
     assert validHashTag('ThisIsVälid')
+    assert validHashTag('यहमान्यहै')
     assert not validHashTag('ThisIsNotValid!')
     assert not validHashTag('#ThisIsAlsoNotValid')
+    assert not validHashTag('#यहमान्यहै')
     assert not validHashTag('ThisIsAlso&NotValid')
     assert not validHashTag('ThisIsAlsoNotValid"')
+    assert not validHashTag('This Is Also Not Valid"')
     assert not validHashTag('This=IsAlsoNotValid"')
 
 
