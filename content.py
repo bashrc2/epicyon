@@ -389,6 +389,8 @@ def validHashTag(hashtag: str) -> bool:
                      'ŴŵÝýŸÿŶŷŹźŽžŻż')
     if set(hashtag).issubset(validChars):
         return True
+    if '#' in hashtag or '"' in hashtag or '&' in hashtag:
+        return False
     if isValidLanguage(hashtag):
         return True
     return False
