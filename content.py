@@ -10,6 +10,7 @@ import os
 import email.parser
 import urllib.parse
 from shutil import copyfile
+from utils import isValidLanguage
 from utils import getImageExtensions
 from utils import loadJson
 from utils import fileLastModified
@@ -377,11 +378,18 @@ def validHashTag(hashtag: str) -> bool:
     # long hashtags are not valid
     if len(hashtag) >= 32:
         return False
-    # TODO: this may need to be an international character set
     validChars = set('0123456789' +
                      'abcdefghijklmnopqrstuvwxyz' +
-                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+                     '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
+                     'ÇçĆćĈĉČčĎđĐďðÈèÉéÊêËëĚěĘęĖėĒē' +
+                     'ĜĝĢģĞğĤĥÌìÍíÎîÏïıĪīĮįĴĵĶķ' +
+                     'ĹĺĻļŁłĽľĿŀÑñŃńŇňŅņÖöÒòÓóÔôÕõŐőØøŒœ' +
+                     'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
+                     'ŴŵÝýŸÿŶŷŹźŽžŻż')
     if set(hashtag).issubset(validChars):
+        return True
+    if isValidLanguage(hashtag):
         return True
     return False
 

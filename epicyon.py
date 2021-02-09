@@ -1379,6 +1379,10 @@ if args.actor:
             nickname = args.actor.split('/accounts/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.actor.split('/accounts/')[0]
+        elif '/u/' in args.actor:
+            nickname = args.actor.split('/u/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.actor.split('/u/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.actor:
@@ -1445,6 +1449,7 @@ if args.actor:
         personUrl = personUrl.replace('/accounts/', '/actor/')
         personUrl = personUrl.replace('/channel/', '/actor/')
         personUrl = personUrl.replace('/profile/', '/actor/')
+        personUrl = personUrl.replace('/u/', '/actor/')
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain
@@ -1508,6 +1513,10 @@ if args.followers:
             nickname = args.followers.split('/accounts/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.followers.split('/accounts/')[0]
+        elif '/u/' in args.followers:
+            nickname = args.followers.split('/u/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.followers.split('/u/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.followers:
@@ -1572,6 +1581,7 @@ if args.followers:
         personUrl = personUrl.replace('/accounts/', '/actor/')
         personUrl = personUrl.replace('/channel/', '/actor/')
         personUrl = personUrl.replace('/profile/', '/actor/')
+        personUrl = personUrl.replace('/u/', '/actor/')
     if not personUrl:
         # try single user instance
         personUrl = httpPrefix + '://' + domain

@@ -204,6 +204,9 @@ def isFollowerOfPerson(baseDir: str, nickname: str, domain: str,
     elif '://' + followerDomain + \
          '/accounts/' + followerNickname in followersStr:
         alreadyFollowing = True
+    elif '://' + followerDomain + \
+         '/u/' + followerNickname in followersStr:
+        alreadyFollowing = True
 
     return alreadyFollowing
 
@@ -542,6 +545,8 @@ def _storeFollowRequest(baseDir: str,
             alreadyFollowing = True
         elif '://' + domainFull + '/accounts/' + nickname in followersStr:
             alreadyFollowing = True
+        elif '://' + domainFull + '/u/' + nickname in followersStr:
+            alreadyFollowing = True
 
         if alreadyFollowing:
             if debug:
@@ -598,7 +603,8 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
-        return False
+        if not messageJson['type'].startswith('Join'):
+            return False
     print('Receiving follow request')
     if not messageJson.get('actor'):
         if debug:
@@ -866,6 +872,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
 def sendFollowRequest(session, baseDir: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       followNickname: str, followDomain: str,
+                      followedActor: str,
                       followPort: int, followHttpPrefix: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
@@ -874,6 +881,7 @@ def sendFollowRequest(session, baseDir: str,
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain, federationList):
+        print('You are not permitted to follow the domain ' + followDomain)
         return None
 
     fullDomain = getFullDomain(domain, port)
@@ -884,8 +892,7 @@ def sendFollowRequest(session, baseDir: str,
     statusNumber, published = getStatusNumber()
 
     if followNickname:
-        followedId = followHttpPrefix + '://' + \
-            requestDomain + '/users/' + followNickname
+        followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
     else:
         if debug:
@@ -1162,7 +1169,8 @@ def outboxUndoFollow(baseDir: str, messageJson: {}, debug: bool) -> None:
     if not messageJson['object'].get('type'):
         return
     if not messageJson['object']['type'] == 'Follow':
-        return
+        if not messageJson['object']['type'] == 'Join':
+            return
     if not messageJson['object'].get('object'):
         return
     if not messageJson['object'].get('actor'):

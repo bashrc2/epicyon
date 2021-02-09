@@ -105,6 +105,8 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
             continue
+        if not isinstance(tag['type'], str):
+            continue
         if tag['type'] != 'Hashtag':
             continue
         if not tag.get('name'):
@@ -274,8 +276,30 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             # print('inboxMessageHasParams: ' +
             #       param + ' ' + str(messageJson))
             return False
+
+    # actor should be a string
+    if not isinstance(messageJson['actor'], str):
+        print('WARN: actor should be a string, but is actually: ' +
+              str(messageJson['actor']))
+        return False
+
+    # type should be a string
+    if not isinstance(messageJson['type'], str):
+        print('WARN: type from ' + str(messageJson['actor']) +
+              ' should be a string, but is actually: ' +
+              str(messageJson['type']))
+        return False
+
+    # object should be a dict or a string
+    if not isinstance(messageJson['object'], dict):
+        if not isinstance(messageJson['object'], str):
+            print('WARN: object from ' + str(messageJson['actor']) +
+                  ' should be a dict or string, but is actually: ' +
+                  str(messageJson['object']))
+            return False
+
     if not messageJson.get('to'):
-        allowedWithoutToParam = ['Like', 'Follow', 'Request',
+        allowedWithoutToParam = ['Like', 'Follow', 'Join', 'Request',
                                  'Accept', 'Capability', 'Undo']
         if messageJson['type'] not in allowedWithoutToParam:
             return False
@@ -297,7 +321,7 @@ def inboxPermittedMessage(domain: str, messageJson: {},
     if not urlPermitted(actor, federationList):
         return False
 
-    alwaysAllowedTypes = ('Follow', 'Like', 'Delete', 'Announce')
+    alwaysAllowedTypes = ('Follow', 'Join', 'Like', 'Delete', 'Announce')
     if messageJson['type'] not in alwaysAllowedTypes:
         if not messageJson.get('object'):
             return True
@@ -693,7 +717,8 @@ def _receiveUndo(session, baseDir: str, httpPrefix: str,
             print('DEBUG: ' + messageJson['type'] +
                   ' object within object is not a string')
         return False
-    if messageJson['object']['type'] == 'Follow':
+    if messageJson['object']['type'] == 'Follow' or \
+       messageJson['object']['type'] == 'Join':
         return _receiveUndoFollow(session, baseDir, httpPrefix,
                                   port, messageJson,
                                   federationList, debug)
@@ -731,7 +756,7 @@ def _personReceiveUpdate(baseDir: str,
           ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
-    usersPaths = ('users', 'profile', 'channel', 'accounts')
+    usersPaths = ('users', 'profile', 'channel', 'accounts', 'u')
     usersStrFound = False
     for usersStr in usersPaths:
         actor = updateDomainFull + '/' + usersStr + '/' + updateNickname

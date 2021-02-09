@@ -154,6 +154,11 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
             if len(hashTagName) > maxTagLength:
                 # NoIncrediblyLongAndBoringHashtagsShownHere
                 continue
+            if '#' in hashTagName or \
+               '&' in hashTagName or \
+               '"' in hashTagName or \
+               "'" in hashTagName:
+                continue
             if '#' + hashTagName + '\n' in blockedStr:
                 continue
             with open(tagsFilename, 'r') as fp:

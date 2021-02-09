@@ -114,7 +114,7 @@ def _validHashtagCategory(category: str) -> bool:
     if not category:
         return False
 
-    invalidChars = (',', ' ', '<', ';', '\\')
+    invalidChars = (',', ' ', '<', ';', '\\', '"', '&', '#')
     for ch in invalidChars:
         if ch in category:
             return False

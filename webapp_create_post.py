@@ -136,12 +136,12 @@ def _htmlNewPostDropDown(scopeIcon: str, scopeDescription: str,
         'icons/scope_reminder.png"/><b>' + \
         translate['Reminder'] + '</b><br>' + \
         translate['Scheduled note to yourself'] + '</a></li>\n'
-    dropDownContent += \
-        '<li><a href="' + pathBase + dropdownEventSuffix + \
-        '"><img loading="lazy" alt="" title="" src="/' + \
-        'icons/scope_event.png"/><b>' + \
-        translate['Event'] + '</b><br>' + \
-        translate['Create an event'] + '</a></li>\n'
+    # dropDownContent += \
+    #    '<li><a href="' + pathBase + dropdownEventSuffix + \
+    #    '"><img loading="lazy" alt="" title="" src="/' + \
+    #    'icons/scope_event.png"/><b>' + \
+    #    translate['Event'] + '</b><br>' + \
+    #    translate['Create an event'] + '</a></li>\n'
     dropDownContent += \
         '<li><a href="' + pathBase + dropdownReportSuffix + \
         '"><img loading="lazy" alt="" title="" src="/' + \
@@ -198,7 +198,9 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
                 newPostText = \
                     '<p class="new-post-text">' + \
                     translate['Write your reply to'] + \
-                    ' <a href="' + inReplyTo + '">' + \
+                    ' <a href="' + inReplyTo + \
+                    '" rel="nofollow noopener noreferrer" ' + \
+                    'target="_blank">' + \
                     translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">\n'

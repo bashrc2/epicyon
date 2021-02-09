@@ -2344,15 +2344,15 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     print('You cannot follow the news actor')
             else:
-                if debug:
-                    print('Sending follow request from ' +
-                          followerNickname + ' to ' + followingActor)
+                print('Sending follow request from ' +
+                      followerNickname + ' to ' + followingActor)
                 sendFollowRequest(self.server.session,
                                   baseDir, followerNickname,
                                   domain, port,
                                   httpPrefix,
                                   followingNickname,
                                   followingDomain,
+                                  followingActor,
                                   followingPort, httpPrefix,
                                   False, self.server.federationList,
                                   self.server.sendThreads,
@@ -13537,8 +13537,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # refuse to receive non-json content
-        if self.headers['Content-type'] != 'application/json' and \
-           self.headers['Content-type'] != 'application/activity+json':
+        contentTypeStr = self.headers['Content-type']
+        if not contentTypeStr.startswith('application/json') and \
+           not contentTypeStr.startswith('application/activity+json') and \
+           not contentTypeStr.startswith('application/ld+json'):
             print("POST is not json: " + self.headers['Content-type'])
             if self.server.debug:
                 print(str(self.headers))

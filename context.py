@@ -13,7 +13,8 @@ validContexts = (
     "https://w3id.org/security/v1",
     "*/apschema/v1.9",
     "*/apschema/v1.21",
-    "*/litepub-0.1.jsonld"
+    "*/litepub-0.1.jsonld",
+    "https://litepub.social/litepub/context.jsonld"
 )
 
 
@@ -126,6 +127,33 @@ def getApschemaV1_21() -> {}:
             "value": "schema:value",
             "discoverable": "toot:discoverable"
         }
+    }
+
+
+def getLitepubSocial() -> {}:
+    # https://litepub.social/litepub/context.jsonld
+    return {
+        '@context': [
+            'https://www.w3.org/ns/activitystreams',
+            'https://w3id.org/security/v1',
+            {
+                'Emoji': 'toot:Emoji',
+                'Hashtag': 'as:Hashtag',
+                'PropertyValue': 'schema:PropertyValue',
+                'atomUri': 'ostatus:atomUri',
+                'conversation': {
+                    '@id': 'ostatus:conversation',
+                    '@type': '@id'
+                },
+                'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+                'ostatus': 'http://ostatus.org#',
+                'schema': 'http://schema.org',
+                'sensitive': 'as:sensitive',
+                'toot': 'http://joinmastodon.org/ns#',
+                'totalItems': 'as:totalItems',
+                'value': 'schema:value'
+            }
+        ]
     }
 
 

@@ -40,6 +40,7 @@ from numbers import Integral, Real
 from context import getApschemaV1_9
 from context import getApschemaV1_21
 from context import getLitepubV0_1
+from context import getLitepubSocial
 from context import getV1Schema
 from context import getV1SecuritySchema
 from context import getActivitystreamsSchema
@@ -418,6 +419,13 @@ def load_document(url):
                 'contextUrl': None,
                 'documentUrl': url,
                 'document': getLitepubV0_1()
+            }
+            return doc
+        elif url == 'https://litepub.social/litepub/context.jsonld':
+            doc = {
+                'contextUrl': None,
+                'documentUrl': url,
+                'document': getLitepubSocial()
             }
             return doc
         return None

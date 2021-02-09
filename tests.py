@@ -76,6 +76,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import validHashTag
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousCSS
@@ -848,10 +849,12 @@ def testFollowBetweenServers():
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
+    bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
                           'alice', aliceDomain, alicePort, httpPrefix,
-                          'bob', bobDomain, bobPort, httpPrefix,
+                          'bob', bobDomain, bobActor,
+                          bobPort, httpPrefix,
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,
@@ -3088,9 +3091,25 @@ def testPrepareHtmlPostNickname():
     assert result == expectedHtml
 
 
+def testValidHashTag():
+    print('testValidHashTag')
+    assert validHashTag('ThisIsValid')
+    assert validHashTag('ThisIsValid12345')
+    assert validHashTag('ThisIsVälid')
+    assert validHashTag('यहमान्यहै')
+    assert not validHashTag('ThisIsNotValid!')
+    assert not validHashTag('#ThisIsAlsoNotValid')
+    assert not validHashTag('#यहमान्यहै')
+    assert not validHashTag('ThisIsAlso&NotValid')
+    assert not validHashTag('ThisIsAlsoNotValid"')
+    assert not validHashTag('This Is Also Not Valid"')
+    assert not validHashTag('This=IsAlsoNotValid"')
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testValidHashTag()
     testPrepareHtmlPostNickname()
     testDomainHandling()
     testMastoApi()

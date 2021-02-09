@@ -2414,7 +2414,8 @@ def sendToNamedAddresses(session, baseDir: str,
                     print('DEBUG: ' +
                           'no "to" field when sending to named addresses')
                 if postJsonObject['object'].get('type'):
-                    if postJsonObject['object']['type'] == 'Follow':
+                    if postJsonObject['object']['type'] == 'Follow' or \
+                       postJsonObject['object']['type'] == 'Join':
                         if isinstance(postJsonObject['object']['object'], str):
                             if debug:
                                 print('DEBUG: "to" field assigned to Follow')
