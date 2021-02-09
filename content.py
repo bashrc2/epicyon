@@ -382,7 +382,7 @@ def validHashTag(hashtag: str) -> bool:
                      'abcdefghijklmnopqrstuvwxyz' +
                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
     if set(hashtag).issubset(validChars):
-        if '&' not in hashtag:
+        if '&' not in hashtag and '#' not in hashtag:
             return True
     return False
 
