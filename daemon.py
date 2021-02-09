@@ -2344,15 +2344,15 @@ class PubServer(BaseHTTPRequestHandler):
                 if debug:
                     print('You cannot follow the news actor')
             else:
-                if debug:
-                    print('Sending follow request from ' +
-                          followerNickname + ' to ' + followingActor)
+                print('Sending follow request from ' +
+                      followerNickname + ' to ' + followingActor)
                 sendFollowRequest(self.server.session,
                                   baseDir, followerNickname,
                                   domain, port,
                                   httpPrefix,
                                   followingNickname,
                                   followingDomain,
+                                  followingActor,
                                   followingPort, httpPrefix,
                                   False, self.server.federationList,
                                   self.server.sendThreads,

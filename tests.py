@@ -849,10 +849,12 @@ def testFollowBetweenServers():
     alicePersonCache = {}
     aliceCachedWebfingers = {}
     alicePostLog = []
+    bobActor = httpPrefix + '://' + bobAddress + '/users/bob'
     sendResult = \
         sendFollowRequest(sessionAlice, aliceDir,
                           'alice', aliceDomain, alicePort, httpPrefix,
-                          'bob', bobDomain, bobPort, httpPrefix,
+                          'bob', bobDomain, bobActor,
+                          bobPort, httpPrefix,
                           clientToServer, federationList,
                           aliceSendThreads, alicePostLog,
                           aliceCachedWebfingers, alicePersonCache,

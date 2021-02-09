@@ -872,6 +872,7 @@ def followedAccountRejects(session, baseDir: str, httpPrefix: str,
 def sendFollowRequest(session, baseDir: str,
                       nickname: str, domain: str, port: int, httpPrefix: str,
                       followNickname: str, followDomain: str,
+                      followedActor: str,
                       followPort: int, followHttpPrefix: str,
                       clientToServer: bool, federationList: [],
                       sendThreads: [], postLog: [], cachedWebfingers: {},
@@ -880,6 +881,7 @@ def sendFollowRequest(session, baseDir: str,
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain, federationList):
+        print('You are not permitted to follow the domain ' + followDomain)
         return None
 
     fullDomain = getFullDomain(domain, port)
@@ -890,8 +892,7 @@ def sendFollowRequest(session, baseDir: str,
     statusNumber, published = getStatusNumber()
 
     if followNickname:
-        followedId = followHttpPrefix + '://' + \
-            requestDomain + '/users/' + followNickname
+        followedId = followedActor
         followHandle = followNickname + '@' + requestDomain
     else:
         if debug:
