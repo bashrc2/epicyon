@@ -76,6 +76,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import validHashTag
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
 from content import dangerousCSS
@@ -3088,9 +3089,22 @@ def testPrepareHtmlPostNickname():
     assert result == expectedHtml
 
 
+def testValidHashTag():
+    print('testValidHashTag')
+    assert validHashTag('ThisIsValid')
+    assert validHashTag('ThisIsValid12345')
+    assert validHashTag('ThisIsVälid')
+    assert not validHashTag('ThisIsNotValid!')
+    assert not validHashTag('#ThisIsAlsoNotValid')
+    assert not validHashTag('ThisIsAlso&NotValid')
+    assert not validHashTag('ThisIsAlsoNotValid"')
+    assert not validHashTag('This=IsAlsoNotValid"')
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testValidHashTag()
     testPrepareHtmlPostNickname()
     testDomainHandling()
     testMastoApi()

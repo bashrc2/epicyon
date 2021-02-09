@@ -380,10 +380,15 @@ def validHashTag(hashtag: str) -> bool:
     # TODO: this may need to be an international character set
     validChars = set('0123456789' +
                      'abcdefghijklmnopqrstuvwxyz' +
-                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+                     'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +
+                     '¡¿ÄäÀàÁáÂâÃãÅåǍǎĄąĂăÆæĀā' +
+                     'ÇçĆćĈĉČčĎđĐďðÈèÉéÊêËëĚěĘęĖėĒē' +
+                     'ĜĝĢģĞğĤĥÌìÍíÎîÏïıĪīĮįĴĵĶķ' +
+                     'ĹĺĻļŁłĽľĿŀÑñŃńŇňŅņÖöÒòÓóÔôÕõŐőØøŒœ' +
+                     'ŔŕŘřẞßŚśŜŝŞşŠšȘșŤťŢţÞþȚțÜüÙùÚúÛûŰűŨũŲųŮůŪū' +
+                     'ŴŵÝýŸÿŶŷŹźŽžŻż')
     if set(hashtag).issubset(validChars):
-        if '&' not in hashtag and '#' not in hashtag:
-            return True
+        return True
     return False
 
 
