@@ -203,8 +203,12 @@ def htmlHashTagSwarm(baseDir: str, actor: str, translate: {}) -> str:
                             categoryStr = \
                                 getHashtagCategory(baseDir, hashTagName)
                             if len(categoryStr) < maxTagLength:
-                                if categoryStr not in categorySwarm:
-                                    categorySwarm.append(categoryStr)
+                                if '#' not in categoryStr and \
+                                   '&' not in categoryStr and \
+                                   '"' not in categoryStr and \
+                                   "'" not in categoryStr:
+                                    if categoryStr not in categorySwarm:
+                                        categorySwarm.append(categoryStr)
                         break
         break
 
