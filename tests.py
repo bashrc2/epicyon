@@ -38,7 +38,7 @@ from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
-from utils import siteIsActive
+from siteactive import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
@@ -2067,6 +2067,7 @@ def testJsonld():
 
 def testSiteIsActive():
     print('testSiteIsActive')
+    assert(siteIsActive('https://archive.org'))
     assert(siteIsActive('https://mastodon.social'))
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
@@ -2818,7 +2819,8 @@ def testFunctions():
         'createServerBob',
         'createServerEve',
         'E2EEremoveDevice',
-        'setOrganizationScheme'
+        'setOrganizationScheme',
+        'fill_headers'
     ]
     excludeImports = [
         'link',

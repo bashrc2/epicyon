@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from siteactive import siteIsActive
 from utils import fileLastModified
 from utils import isPublicPost
 from utils import hasUsersPath
@@ -38,7 +39,6 @@ from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
 from utils import removeIdEnding
-from utils import siteIsActive
 from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
