@@ -255,6 +255,7 @@ from newswire import rss2Footer
 from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
+from newsdaemon import refreshNewswire
 from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
@@ -12444,6 +12445,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
+                        refreshNewswire(self.server.baseDir)
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domainFull,
