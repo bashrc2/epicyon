@@ -12396,6 +12396,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields['subject']:
                     print('WARN: blog posts must have a title')
                     return -1
+                if not fields['message']:
+                    print('WARN: blog posts must have content')
+                    return -1
                 # citations button on newblog screen
                 if citationsButtonPress:
                     messageJson = \
