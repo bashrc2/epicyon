@@ -393,7 +393,7 @@ class PubServer(BaseHTTPRequestHandler):
                              schedulePost,
                              eventDate,
                              eventTime,
-                             location)
+                             location, False)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -12374,7 +12374,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
-                                     fields['location'])
+                                     fields['location'], False)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1

@@ -1389,10 +1389,22 @@ def createPublicPost(baseDir: str,
                      imageDescription: str,
                      inReplyTo=None, inReplyToAtomUri=None, subject=None,
                      schedulePost=False,
-                     eventDate=None, eventTime=None, location=None) -> {}:
+                     eventDate=None, eventTime=None, location=None,
+                     isArticle=False) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)
+    isModerationReport = False
+    eventUUID = None
+    category = None
+    joinMode = None
+    endDate = None
+    endTime = None
+    maximumAttendeeCapacity = None
+    repliesModerationOption = None
+    anonymousParticipationEnabled = None
+    eventStatus = None
+    ticketUrl = None
     return _createPostBase(baseDir, nickname, domain, port,
                            'https://www.w3.org/ns/activitystreams#Public',
                            httpPrefix + '://' + domainFull + '/users/' +
@@ -1401,10 +1413,14 @@ def createPublicPost(baseDir: str,
                            clientToServer, commentsEnabled,
                            attachImageFilename, mediaType,
                            imageDescription,
-                           False, False, inReplyTo, inReplyToAtomUri, subject,
+                           isModerationReport, isArticle,
+                           inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
-                           None, None, None, None, None,
-                           None, None, None, None, None)
+                           eventUUID, category, joinMode, endDate, endTime,
+                           maximumAttendeeCapacity,
+                           repliesModerationOption,
+                           anonymousParticipationEnabled,
+                           eventStatus, ticketUrl)
 
 
 def createBlogPost(baseDir: str,
@@ -1425,7 +1441,7 @@ def createBlogPost(baseDir: str,
                          imageDescription,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
-                         eventDate, eventTime, location)
+                         eventDate, eventTime, location, True)
     blog['object']['type'] = 'Article'
 
     # append citations tags, stored in a file
@@ -1477,7 +1493,7 @@ def createNewsPost(baseDir: str,
                          imageDescription,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
-                         eventDate, eventTime, location)
+                         eventDate, eventTime, location, True)
     blog['object']['type'] = 'Article'
     return blog
 
