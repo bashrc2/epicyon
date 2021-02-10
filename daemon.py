@@ -12394,12 +12394,6 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newblog':
-                if not fields['subject']:
-                    print('WARN: blog posts must have a title')
-                    return -1
-                if not fields['message']:
-                    print('WARN: blog posts must have content')
-                    return -1
                 # citations button on newblog screen
                 if citationsButtonPress:
                     messageJson = \
@@ -12426,6 +12420,12 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
+                if not fields['subject']:
+                    print('WARN: blog posts must have a title')
+                    return -1
+                if not fields['message']:
+                    print('WARN: blog posts must have content')
+                    return -1
                 # submit button on newblog screen
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
