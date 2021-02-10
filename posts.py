@@ -1047,6 +1047,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     postObjectType = 'Note'
     if eventUUID:
         postObjectType = 'Event'
+    if isArticle:
+        postObjectType = 'Article'
 
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
@@ -1442,7 +1444,6 @@ def createBlogPost(baseDir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location, True)
-    blog['object']['type'] = 'Article'
 
     # append citations tags, stored in a file
     citationsFilename = \
