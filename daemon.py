@@ -12393,6 +12393,9 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
             elif postType == 'newblog':
+                if not fields['subject']:
+                    print('WARN: blog posts must have a title')
+                    return -1
                 # citations button on newblog screen
                 if citationsButtonPress:
                     messageJson = \
