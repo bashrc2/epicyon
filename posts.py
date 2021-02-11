@@ -927,7 +927,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     sensitive = False
     summary = None
     if subject:
-        summary = validContentWarning(subject)
+        summary = removeInvalidCharacters(validContentWarning(subject))
         sensitive = True
 
     toRecipients = []
