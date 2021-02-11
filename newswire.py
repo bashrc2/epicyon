@@ -794,7 +794,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
                 if not fullPostFilename:
-                    print('Unable to locate post ' + postUrl)
+                    print('Unable to locate post for newswire ' + postUrl)
                     ctr += 1
                     if ctr >= maxBlogsPerAccount:
                         break
@@ -840,7 +840,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
         for handle in dirs:
             if '@' not in handle:
                 continue
-            if 'inbox@' in handle:
+            if 'inbox@' in handle or 'news@' in handle:
                 continue
 
             nickname = handle.split('@')[0]
