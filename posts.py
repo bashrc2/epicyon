@@ -1425,6 +1425,37 @@ def createPublicPost(baseDir: str,
                            eventStatus, ticketUrl)
 
 
+def _appendCitationsToBlogPost(baseDir: str,
+                               nickname: str, domain: str,
+                               blogJson: {}) -> None:
+    """Appends any citations to a new blog post
+    """
+    # append citations tags, stored in a file
+    citationsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.citations.txt'
+    if not os.path.isfile(citationsFilename):
+        return
+    citationsSeparator = '#####'
+    with open(citationsFilename, "r") as f:
+        citations = f.readlines()
+        for line in citations:
+            if citationsSeparator not in line:
+                continue
+            sections = line.strip().split(citationsSeparator)
+            if len(sections) != 3:
+                continue
+            # dateStr = sections[0]
+            title = sections[1]
+            link = sections[2]
+            tagJson = {
+                "type": "Article",
+                "name": title,
+                "url": link
+            }
+            blogJson['object']['tag'].append(tagJson)
+
+
 def createBlogPost(baseDir: str,
                    nickname: str, domain: str, port: int, httpPrefix: str,
                    content: str, followersOnly: bool, saveToFile: bool,
@@ -1434,7 +1465,7 @@ def createBlogPost(baseDir: str,
                    inReplyTo=None, inReplyToAtomUri=None, subject=None,
                    schedulePost=False,
                    eventDate=None, eventTime=None, location=None) -> {}:
-    blog = \
+    blogJson = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
@@ -1445,31 +1476,9 @@ def createBlogPost(baseDir: str,
                          schedulePost,
                          eventDate, eventTime, location, True)
 
-    # append citations tags, stored in a file
-    citationsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.citations.txt'
-    if os.path.isfile(citationsFilename):
-        citationsSeparator = '#####'
-        with open(citationsFilename, "r") as f:
-            citations = f.readlines()
-            for line in citations:
-                if citationsSeparator not in line:
-                    continue
-                sections = line.strip().split(citationsSeparator)
-                if len(sections) != 3:
-                    continue
-                # dateStr = sections[0]
-                title = sections[1]
-                link = sections[2]
-                tagJson = {
-                    "type": "Article",
-                    "name": title,
-                    "url": link
-                }
-                blog['object']['tag'].append(tagJson)
+    _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
 
-    return blog
+    return blogJson
 
 
 def createNewsPost(baseDir: str,
