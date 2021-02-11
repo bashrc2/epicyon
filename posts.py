@@ -31,6 +31,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from utils import removeInvalidCharacters
 from utils import fileLastModified
 from utils import isPublicPost
 from utils import hasUsersPath
@@ -823,7 +824,7 @@ def validContentWarning(cw: str) -> str:
     # so remove them
     if '#' in cw:
         cw = cw.replace('#', '').replace('  ', ' ')
-    return cw
+    return removeInvalidCharacters(cw)
 
 
 def _loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
@@ -880,6 +881,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     eventStatus=None, ticketUrl=None) -> {}:
     """Creates a message
     """
+    content = removeInvalidCharacters(content)
+
     subject = _addAutoCW(baseDir, nickname, domain, subject, content)
 
     if nickname != 'news':

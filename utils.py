@@ -18,6 +18,13 @@ from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 
+# posts containing these strings will always get screened out,
+# both incoming and outgoing.
+# Could include dubious clacks or admin dogwhistles
+invalidCharacters = (
+    '卐', '卍', '࿕', '࿖', '࿗', '࿘'
+)
+
 
 def getSHA256(msg: str):
     """Returns a SHA256 hash of the given string
@@ -514,15 +521,21 @@ def isEvil(domain: str) -> bool:
 
 def containsInvalidChars(jsonStr: str) -> bool:
     """Does the given json string contain invalid characters?
-    e.g. dubious clacks/admin dogwhistles
     """
-    invalidStrings = {
-        '卐', '卍', '࿕', '࿖', '࿗', '࿘'
-    }
-    for isInvalid in invalidStrings:
+    for isInvalid in invalidCharacters:
         if isInvalid in jsonStr:
             return True
     return False
+
+
+def removeInvalidCharacters(text: str) -> str:
+    """Removes any invalid characters from a string
+    """
+    for isInvalid in invalidCharacters:
+        if isInvalid not in text:
+            continue
+        text = text.replace(isInvalid, '')
+    return text
 
 
 def createPersonDir(nickname: str, domain: str, baseDir: str,
