@@ -327,9 +327,9 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     """
     editStr = ''
     actor = postJsonObject['actor']
-    if (actor.endswith(domainFull + '/users/' + nickname) or
+    if (actor.endswith('/' + domainFull + '/users/' + nickname) or
         (isEditor(baseDir, nickname) and
-         actor.endswith(domainFull + '/users/news'))):
+         actor.endswith('/' + domainFull + '/users/news'))):
 
         postId = postJsonObject['object']['id']
 

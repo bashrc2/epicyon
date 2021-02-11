@@ -660,6 +660,7 @@ def runNewswireDaemon(baseDir: str, httpd,
     """Periodically updates RSS feeds
     """
     newswireStateFilename = baseDir + '/accounts/.newswirestate.json'
+    refreshFilename = baseDir + '/accounts/.refresh_newswire'
 
     # initial sleep to allow the system to start up
     time.sleep(50)
@@ -722,7 +723,16 @@ def runNewswireDaemon(baseDir: str, httpd,
                                   httpd.maxNewsPosts)
 
         # wait a while before the next feeds update
-        time.sleep(1200)
+        for tick in range(120):
+            time.sleep(10)
+            # if a new blog post has been created then stop
+            # waiting and recalculate the newswire
+            if os.path.isfile(refreshFilename):
+                try:
+                    os.remove(refreshFilename)
+                except BaseException:
+                    pass
+                break
 
 
 def runNewswireWatchdog(projectVersion: str, httpd) -> None:
@@ -740,3 +750,15 @@ def runNewswireWatchdog(projectVersion: str, httpd) -> None:
                 newswireOriginal.clone(runNewswireDaemon)
             httpd.thrNewswireDaemon.start()
             print('Restarting newswire daemon...')
+
+
+def refreshNewswire(baseDir: str) -> None:
+    """Causes the newswire to be updated.
+    This creates a file which is then detected by the daemon
+    """
+    refreshFilename = baseDir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refreshFilename):
+        return
+    refreshFile = open(refreshFilename, 'w+')
+    refreshFile.write('\n')
+    refreshFile.close()

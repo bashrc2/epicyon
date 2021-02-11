@@ -255,6 +255,7 @@ from newswire import rss2Footer
 from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
+from newsdaemon import refreshNewswire
 from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
@@ -392,7 +393,7 @@ class PubServer(BaseHTTPRequestHandler):
                              schedulePost,
                              eventDate,
                              eventTime,
-                             location)
+                             location, False)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -12373,7 +12374,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
-                                     fields['location'])
+                                     fields['location'], False)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -12419,6 +12420,12 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
+                if not fields['subject']:
+                    print('WARN: blog posts must have a title')
+                    return -1
+                if not fields['message']:
+                    print('WARN: blog posts must have content')
+                    return -1
                 # submit button on newblog screen
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
@@ -12438,6 +12445,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
+                        refreshNewswire(self.server.baseDir)
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domainFull,
