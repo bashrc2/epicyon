@@ -528,7 +528,7 @@ def containsInvalidChars(jsonStr: str) -> bool:
     return False
 
 
-def removeInvalidCharacters(text: str) -> str:
+def removeInvalidChars(text: str) -> str:
     """Removes any invalid characters from a string
     """
     for isInvalid in invalidCharacters:
