@@ -358,7 +358,9 @@ def htmlCalendar(cssCache: {}, translate: {},
                     url = calActor + '/calendar?year=' + \
                         str(year) + '?month=' + \
                         str(monthNumber) + '?day=' + str(dayOfMonth)
-                    dayLink = '<a href="' + url + '">' + \
+                    dayDescription = monthName + ' ' + str(dayOfMonth)
+                    dayLink = '<a href="' + url + '" ' + \
+                        'title="' + dayDescription + '">' + \
                         str(dayOfMonth) + '</a>'
                     # there are events for this day
                     if not isToday:
