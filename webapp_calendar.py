@@ -21,6 +21,8 @@ from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getAltPath
+from webapp_utils import htmlHideFromScreenReader
+from webapp_utils import htmlKeyboardNavigation
 
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
@@ -200,7 +202,8 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
 
 def htmlCalendar(cssCache: {}, translate: {},
                  baseDir: str, path: str,
-                 httpPrefix: str, domainFull: str) -> str:
+                 httpPrefix: str, domainFull: str,
+                 textModeBanner: str) -> str:
     """Show the calendar for a person
     """
     domain = domainFull
@@ -297,8 +300,10 @@ def htmlCalendar(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    calendarStr += '<main><table class="calendar">\n'
+    headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+
+    # the main graphical calendar as a table
+    calendarStr = '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
@@ -338,6 +343,12 @@ def htmlCalendar(cssCache: {}, translate: {},
     calendarStr += '</thead>\n'
     calendarStr += '<tbody>\n'
 
+    # beginning of the links used for accessibility
+    navLinks = {}
+    timelineLinkStr = htmlHideFromScreenReader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    navLinks[timelineLinkStr] = calActor + '/inbox'
+
     dayOfMonth = 0
     dow = weekDayOfMonthStart(monthNumber, year)
     for weekOfMonth in range(1, 7):
@@ -362,6 +373,11 @@ def htmlCalendar(cssCache: {}, translate: {},
                     dayLink = '<a href="' + url + '" ' + \
                         'title="' + dayDescription + '">' + \
                         str(dayOfMonth) + '</a>'
+                    # accessibility menu links
+                    menuOptionStr = \
+                        htmlHideFromScreenReader('📅') + ' ' + \
+                        dayDescription
+                    navLinks[menuOptionStr] = url
                     # there are events for this day
                     if not isToday:
                         calendarStr += \
@@ -389,5 +405,16 @@ def htmlCalendar(cssCache: {}, translate: {},
 
     calendarStr += '</tbody>\n'
     calendarStr += '</table></main>\n'
-    calendarStr += htmlFooter()
-    return calendarStr
+
+    # end of the links used for accessibility
+    nextMonthStr = \
+        htmlHideFromScreenReader('→') + ' ' + translate['Next month']
+    navLinks[nextMonthStr] = calActor + '/calendar?year=' + str(nextYear) + \
+        '?month=' + str(nextMonthNumber)
+    prevMonthStr = \
+        htmlHideFromScreenReader('←') + ' ' + translate['Previous month']
+    navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
+        '?month=' + str(prevMonthNumber)
+    screenReaderCal = htmlKeyboardNavigation(textModeBanner, navLinks)
+
+    return headerStr + screenReaderCal + calendarStr + htmlFooter()

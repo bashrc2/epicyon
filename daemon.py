@@ -11085,7 +11085,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
-                                   self.server.domainFull).encode('utf-8')
+                                   self.server.domainFull,
+                                   self.server.textModeBanner).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
