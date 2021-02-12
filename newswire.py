@@ -563,7 +563,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
                 print('WARN: json feed description is too long')
                 continue
             if jsonFeedItem.get('tags'):
-                if not isinstance(jsonFeedItem['tags'], list):
+                if isinstance(jsonFeedItem['tags'], list):
                     for tagName in jsonFeedItem['tags']:
                         if not isinstance(tagName, str):
                             continue
