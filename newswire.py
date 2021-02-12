@@ -504,10 +504,10 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
     return result
 
 
-def _jsonFeedToDict(baseDir: str, domain: str, xmlStr: str,
-                    moderated: bool, mirrored: bool,
-                    maxPostsPerSource: int,
-                    maxFeedItemSizeKb: int) -> {}:
+def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
+                      moderated: bool, mirrored: bool,
+                      maxPostsPerSource: int,
+                      maxFeedItemSizeKb: int) -> {}:
     """Converts a json feed string to a dictionary
     See https://jsonfeed.org/version/1
     """
@@ -699,9 +699,9 @@ def _xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
                                xmlStr, moderated, mirrored,
                                maxPostsPerSource, maxFeedItemSizeKb)
     elif 'https://jsonfeed.org/version/1' in xmlStr:
-        return _jsonFeedToDict(baseDir, domain,
-                               xmlStr, moderated, mirrored,
-                               maxPostsPerSource, maxFeedItemSizeKb)
+        return _jsonFeedV1ToDict(baseDir, domain,
+                                 xmlStr, moderated, mirrored,
+                                 maxPostsPerSource, maxFeedItemSizeKb)
     return {}
 
 
