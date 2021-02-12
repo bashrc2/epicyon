@@ -320,19 +320,19 @@ def htmlCalendar(cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<thead>\n'
     calendarStr += '<tr>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Sun'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Mon'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Tue'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Wed'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Thu'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Fri'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Sat'] + '</th>\n'
     calendarStr += '</tr>\n'
     calendarStr += '</thead>\n'
