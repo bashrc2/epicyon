@@ -898,8 +898,8 @@ def htmlKeyboardNavigation(banner: str, links: {},
         htmlStr += '<pre aria-label="">' + banner + '<br><br></pre>'
 
     if subHeading:
-        htmlStr += '<label class="transparent">' + \
-            subHeading + '</label><br>'
+        htmlStr += '<strong><label class="transparent">' + \
+            subHeading + '</label></strong><br>'
 
     # show new follower approvals
     if usersPath and translate and followApprovals:
