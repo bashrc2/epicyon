@@ -562,6 +562,18 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
             if len(description) > maxBytes:
                 print('WARN: json feed description is too long')
                 continue
+            if jsonFeedItem.get('tags'):
+                if not isinstance(jsonFeedItem['tags'], list):
+                    for tagName in jsonFeedItem['tags']:
+                        if not isinstance(tagName, str):
+                            continue
+                        if ' ' in tagName:
+                            continue
+                        if not tagName.startswith('#'):
+                            tagName = '#' + tagName
+                        if tagName not in description:
+                            description += ' ' + tagName
+
         link = jsonFeedItem['url']
         if '://' not in link:
             continue
