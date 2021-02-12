@@ -517,7 +517,6 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
         feedJson = json.loads(xmlStr)
     except BaseException:
         return {}
-    postCtr = 0
     maxBytes = maxFeedItemSizeKb * 1024
     if not feedJson.get('version'):
         return {}
@@ -527,6 +526,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
         return {}
     if not isinstance(feedJson['items'], list):
         return {}
+    postCtr = 0
     result = {}
     for jsonFeedItem in feedJson['items']:
         if not jsonFeedItem:
