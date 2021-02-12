@@ -110,7 +110,7 @@ def htmlPersonOptions(defaultTimeline: str,
     if donateUrl:
         donateStr = \
             '    <a href="' + donateUrl + \
-            '"><button class="button" name="submitDonate">' + \
+            ' tabindex="-1""><button class="button" name="submitDonate">' + \
             translate['Donate'] + '</button></a>\n'
 
     instanceTitle = \
