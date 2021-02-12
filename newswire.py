@@ -513,7 +513,6 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
     """
     if '"items"' not in xmlStr:
         return {}
-    result = {}
     try:
         feedJson = json.loads(xmlStr)
     except BaseException:
@@ -528,6 +527,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
         return {}
     if not isinstance(feedJson['items'], list):
         return {}
+    result = {}
     for jsonFeedItem in feedJson['items']:
         if not jsonFeedItem:
             continue
