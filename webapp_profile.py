@@ -1745,6 +1745,10 @@ def _individualFollowAsHtml(translate: {},
     if avatarUrl2:
         avatarUrl = avatarUrl2
     if displayName:
+        displayName = \
+            addEmojiToDisplayName(baseDir, httpPrefix,
+                                  actorNickname, domain,
+                                  displayName, False)
         titleStr = displayName
 
     if dormant:
