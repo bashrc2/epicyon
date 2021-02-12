@@ -509,9 +509,9 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
                       maxPostsPerSource: int,
                       maxFeedItemSizeKb: int) -> {}:
     """Converts a json feed string to a dictionary
-    See https://jsonfeed.org/version/1
+    See https://jsonfeed.org/version/1.1
     """
-    if '<entry>' not in xmlStr:
+    if '"items"' not in xmlStr:
         return {}
     result = {}
     try:
@@ -522,7 +522,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
     maxBytes = maxFeedItemSizeKb * 1024
     if not feedJson.get('version'):
         return {}
-    if feedJson['version'] != 'https://jsonfeed.org/version/1':
+    if not feedJson['version'].startswith('https://jsonfeed.org/version/1'):
         return {}
     if not feedJson.get('items'):
         return {}
