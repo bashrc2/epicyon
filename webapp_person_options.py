@@ -24,6 +24,7 @@ from followingCalendar import receivingCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBrokenLinkSubstitute
+from webapp_utils import htmlKeyboardNavigation
 
 
 def htmlPersonOptions(defaultTimeline: str,
@@ -49,7 +50,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       backToPath: str,
                       lockedAccount: bool,
                       movedTo: str,
-                      alsoKnownAs: []) -> str:
+                      alsoKnownAs: [],
+                      textModeBanner: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -114,6 +116,7 @@ def htmlPersonOptions(defaultTimeline: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     optionsStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    optionsStr += htmlKeyboardNavigation(textModeBanner, {})
     optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'

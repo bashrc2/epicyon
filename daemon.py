@@ -5469,7 +5469,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     backToPath,
                                     lockedAccount,
-                                    movedTo, alsoKnownAs).encode('utf-8')
+                                    movedTo, alsoKnownAs,
+                                    self.server.textModeBanner).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
