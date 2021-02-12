@@ -550,7 +550,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
         else:
             if not isinstance(jsonFeedItem['content_text'], str):
                 continue
-            title = jsonFeedItem['content_text']
+            title = removeHtml(jsonFeedItem['content_text'])
         if len(title) > maxBytes:
             print('WARN: json feed title is too long')
             continue
@@ -558,7 +558,7 @@ def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
         if jsonFeedItem.get('description'):
             if not isinstance(jsonFeedItem['description'], str):
                 continue
-            description = jsonFeedItem['description']
+            description = removeHtml(jsonFeedItem['description'])
             if len(description) > maxBytes:
                 print('WARN: json feed description is too long')
                 continue
