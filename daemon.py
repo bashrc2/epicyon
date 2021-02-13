@@ -1948,12 +1948,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
                         os.remove(newswireBlockedFilename)
+                        refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
                         noNewswireFile = open(newswireBlockedFilename, "w+")
                         if noNewswireFile:
                             noNewswireFile.write('\n')
                             noNewswireFile.close()
+                            refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
