@@ -26,6 +26,16 @@ invalidCharacters = (
 )
 
 
+def isFeaturedWriter(baseDir: str, nickname: str, domain: str) -> bool:
+    """Is the given account a featured writer, appearing in the features
+    timeline on news instances?
+    """
+    featuresBlockedFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.nofeatures'
+    return not os.path.isfile(featuresBlockedFilename)
+
+
 def refreshNewswire(baseDir: str):
     """Causes the newswire to be updates after a change to user accounts
     """

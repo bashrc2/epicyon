@@ -1964,6 +1964,42 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy = False
             return
 
+        # person options screen, permission to post to featured articles
+        # See htmlPersonOptions
+        if '&submitPostToFeatures=' in optionsConfirmParams:
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
+                postsToFeatures = None
+                if 'postsToFeatures=' in optionsConfirmParams:
+                    postsToFeatures = \
+                        optionsConfirmParams.split('postsToFeatures=')[1]
+                    if '&' in postsToFeatures:
+                        postsToFeatures = postsToFeatures.split('&')[0]
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                featuresBlockedFilename = accountDir + '/.nofeatures'
+                if postsToFeatures == 'on':
+                    if os.path.isfile(featuresBlockedFilename):
+                        os.remove(featuresBlockedFilename)
+                        refreshNewswire(self.server.baseDir)
+                else:
+                    if os.path.isdir(accountDir):
+                        noFeaturesFile = open(featuresBlockedFilename, "w+")
+                        if noFeaturesFile:
+                            noFeaturesFile.write('\n')
+                            noFeaturesFile.close()
+                            refreshNewswire(self.server.baseDir)
+            usersPathStr = \
+                usersPath + '/' + self.server.defaultTimeline + \
+                '?page=' + str(pageNumber)
+            self._redirect_headers(usersPathStr, cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
         # person options screen, permission to post to newswire
         # See htmlPersonOptions
         if '&submitModNewsPosts=' in optionsConfirmParams:
@@ -5472,7 +5508,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     backToPath,
                                     lockedAccount,
                                     movedTo, alsoKnownAs,
-                                    self.server.textModeBanner).encode('utf-8')
+                                    self.server.textModeBanner,
+                                    self.server.newsInstance).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)

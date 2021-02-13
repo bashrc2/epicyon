@@ -17,6 +17,7 @@ from utils import isDormant
 from utils import removeHtml
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
+from utils import isFeaturedWriter
 from blocking import isBlocked
 from follow import isFollowerOfPerson
 from follow import isFollowingActor
@@ -51,7 +52,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       lockedAccount: bool,
                       movedTo: str,
                       alsoKnownAs: [],
-                      textModeBanner: str) -> str:
+                      textModeBanner: str,
+                      newsInstance: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -286,6 +288,24 @@ def htmlPersonOptions(defaultTimeline: str,
         if not os.path.isfile(moderatedFilename):
             checkboxStr = checkboxStr.replace(' checked>', '>')
         optionsStr += checkboxStr
+
+    # checkbox for permission to post to featured articles
+    if newsInstance and optionsDomainFull == domainFull:
+        adminNickname = getConfigParam(baseDir, 'admin')
+        if (nickname == adminNickname or
+            (isModerator(baseDir, nickname) and
+             not isModerator(baseDir, optionsNickname))):
+            checkboxStr = \
+                '    <input type="checkbox" ' + \
+                'class="profilecheckbox" name="postsToFeatures" checked> ' + \
+                translate['Featured writer'] + \
+                '\n    <button type="submit" class="buttonsmall" ' + \
+                'name="submitPostToFeatures">' + \
+                translate['Submit'] + '</button><br>\n'
+            if not isFeaturedWriter(baseDir, optionsNickname,
+                                    optionsDomain):
+                checkboxStr = checkboxStr.replace(' checked>', '>')
+            optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
     backPath = '/'
