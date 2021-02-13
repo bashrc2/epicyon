@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import json
 import requests
 from socket import error as SocketError
 import errno
@@ -332,12 +333,14 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
-                                      description, moderated, mirrored)
+                                      description, moderated,
+                                      mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
     if postCtr > 0:
-        print('Added ' + str(postCtr) + ' rss 2.0 feed items to newswire')
+        print('Added ' + str(postCtr) +
+              ' rss 2.0 feed items to newswire')
     return result
 
 
@@ -416,12 +419,14 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
-                                      description, moderated, mirrored)
+                                      description, moderated,
+                                      mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
     if postCtr > 0:
-        print('Added ' + str(postCtr) + ' rss 1.0 feed items to newswire')
+        print('Added ' + str(postCtr) +
+              ' rss 1.0 feed items to newswire')
     return result
 
 
@@ -488,12 +493,124 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
                                       result, pubDateStr,
                                       title, link,
                                       votesStatus, postFilename,
-                                      description, moderated, mirrored)
+                                      description, moderated,
+                                      mirrored)
                 postCtr += 1
                 if postCtr >= maxPostsPerSource:
                     break
     if postCtr > 0:
-        print('Added ' + str(postCtr) + ' atom feed items to newswire')
+        print('Added ' + str(postCtr) +
+              ' atom feed items to newswire')
+    return result
+
+
+def _jsonFeedV1ToDict(baseDir: str, domain: str, xmlStr: str,
+                      moderated: bool, mirrored: bool,
+                      maxPostsPerSource: int,
+                      maxFeedItemSizeKb: int) -> {}:
+    """Converts a json feed string to a dictionary
+    See https://jsonfeed.org/version/1.1
+    """
+    if '"items"' not in xmlStr:
+        return {}
+    try:
+        feedJson = json.loads(xmlStr)
+    except BaseException:
+        return {}
+    maxBytes = maxFeedItemSizeKb * 1024
+    if not feedJson.get('version'):
+        return {}
+    if not feedJson['version'].startswith('https://jsonfeed.org/version/1'):
+        return {}
+    if not feedJson.get('items'):
+        return {}
+    if not isinstance(feedJson['items'], list):
+        return {}
+    postCtr = 0
+    result = {}
+    for jsonFeedItem in feedJson['items']:
+        if not jsonFeedItem:
+            continue
+        if not isinstance(jsonFeedItem, dict):
+            continue
+        if not jsonFeedItem.get('url'):
+            continue
+        if not isinstance(jsonFeedItem['url'], str):
+            continue
+        if not jsonFeedItem.get('date_published'):
+            if not jsonFeedItem.get('date_modified'):
+                continue
+        if not jsonFeedItem.get('content_text'):
+            if not jsonFeedItem.get('content_html'):
+                continue
+        if jsonFeedItem.get('content_html'):
+            if not isinstance(jsonFeedItem['content_html'], str):
+                continue
+            title = removeHtml(jsonFeedItem['content_html'])
+        else:
+            if not isinstance(jsonFeedItem['content_text'], str):
+                continue
+            title = removeHtml(jsonFeedItem['content_text'])
+        if len(title) > maxBytes:
+            print('WARN: json feed title is too long')
+            continue
+        description = ''
+        if jsonFeedItem.get('description'):
+            if not isinstance(jsonFeedItem['description'], str):
+                continue
+            description = removeHtml(jsonFeedItem['description'])
+            if len(description) > maxBytes:
+                print('WARN: json feed description is too long')
+                continue
+            if jsonFeedItem.get('tags'):
+                if isinstance(jsonFeedItem['tags'], list):
+                    for tagName in jsonFeedItem['tags']:
+                        if not isinstance(tagName, str):
+                            continue
+                        if ' ' in tagName:
+                            continue
+                        if not tagName.startswith('#'):
+                            tagName = '#' + tagName
+                        if tagName not in description:
+                            description += ' ' + tagName
+
+        link = jsonFeedItem['url']
+        if '://' not in link:
+            continue
+        if len(link) > maxBytes:
+            print('WARN: json feed link is too long')
+            continue
+        itemDomain = link.split('://')[1]
+        if '/' in itemDomain:
+            itemDomain = itemDomain.split('/')[0]
+        if isBlockedDomain(baseDir, itemDomain):
+            continue
+        if jsonFeedItem.get('date_published'):
+            if not isinstance(jsonFeedItem['date_published'], str):
+                continue
+            pubDate = jsonFeedItem['date_published']
+        else:
+            if not isinstance(jsonFeedItem['date_modified'], str):
+                continue
+            pubDate = jsonFeedItem['date_modified']
+
+        pubDateStr = parseFeedDate(pubDate)
+        if pubDateStr:
+            if _validFeedDate(pubDateStr):
+                postFilename = ''
+                votesStatus = []
+                _addNewswireDictEntry(baseDir, domain,
+                                      result, pubDateStr,
+                                      title, link,
+                                      votesStatus, postFilename,
+                                      description, moderated,
+                                      mirrored)
+                postCtr += 1
+                if postCtr >= maxPostsPerSource:
+                    break
+    if postCtr > 0:
+        print('Added ' + str(postCtr) +
+              ' json feed items to newswire')
     return result
 
 
@@ -593,6 +710,10 @@ def _xmlStrToDict(baseDir: str, domain: str, xmlStr: str,
         return _atomFeedToDict(baseDir, domain,
                                xmlStr, moderated, mirrored,
                                maxPostsPerSource, maxFeedItemSizeKb)
+    elif 'https://jsonfeed.org/version/1' in xmlStr:
+        return _jsonFeedV1ToDict(baseDir, domain,
+                                 xmlStr, moderated, mirrored,
+                                 maxPostsPerSource, maxFeedItemSizeKb)
     return {}
 
 
@@ -794,7 +915,7 @@ def _addAccountBlogsToNewswire(baseDir: str, nickname: str, domain: str,
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
                 if not fullPostFilename:
-                    print('Unable to locate post ' + postUrl)
+                    print('Unable to locate post for newswire ' + postUrl)
                     ctr += 1
                     if ctr >= maxBlogsPerAccount:
                         break
@@ -840,7 +961,7 @@ def _addBlogsToNewswire(baseDir: str, domain: str, newswire: {},
         for handle in dirs:
             if '@' not in handle:
                 continue
-            if 'inbox@' in handle:
+            if 'inbox@' in handle or 'news@' in handle:
                 continue
 
             nickname = handle.split('@')[0]

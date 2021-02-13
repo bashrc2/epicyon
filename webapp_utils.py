@@ -887,6 +887,7 @@ def htmlHideFromScreenReader(htmlStr: str) -> str:
 
 
 def htmlKeyboardNavigation(banner: str, links: {},
+                           subHeading=None,
                            usersPath=None, translate=None,
                            followApprovals=False) -> str:
     """Given a set of links return the html for keyboard navigation
@@ -895,6 +896,10 @@ def htmlKeyboardNavigation(banner: str, links: {},
 
     if banner:
         htmlStr += '<pre aria-label="">' + banner + '<br><br></pre>'
+
+    if subHeading:
+        htmlStr += '<strong><label class="transparent">' + \
+            subHeading + '</label></strong><br>'
 
     # show new follower approvals
     if usersPath and translate and followApprovals:

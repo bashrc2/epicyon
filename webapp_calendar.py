@@ -21,6 +21,8 @@ from happening import getCalendarEvents
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getAltPath
+from webapp_utils import htmlHideFromScreenReader
+from webapp_utils import htmlKeyboardNavigation
 
 
 def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
@@ -200,7 +202,8 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
 
 def htmlCalendar(cssCache: {}, translate: {},
                  baseDir: str, path: str,
-                 httpPrefix: str, domainFull: str) -> str:
+                 httpPrefix: str, domainFull: str,
+                 textModeBanner: str) -> str:
     """Show the calendar for a person
     """
     domain = domainFull
@@ -297,8 +300,10 @@ def htmlCalendar(cssCache: {}, translate: {},
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
-    calendarStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
-    calendarStr += '<main><table class="calendar">\n'
+    headerStr = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+
+    # the main graphical calendar as a table
+    calendarStr = '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
         '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
@@ -320,23 +325,29 @@ def htmlCalendar(cssCache: {}, translate: {},
     calendarStr += '</caption>\n'
     calendarStr += '<thead>\n'
     calendarStr += '<tr>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Sun'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Mon'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Tue'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Wed'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Thu'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Fri'] + '</th>\n'
-    calendarStr += '  <th class="calendar__day__header">' + \
+    calendarStr += '  <th scope="col" class="calendar__day__header">' + \
         translate['Sat'] + '</th>\n'
     calendarStr += '</tr>\n'
     calendarStr += '</thead>\n'
     calendarStr += '<tbody>\n'
+
+    # beginning of the links used for accessibility
+    navLinks = {}
+    timelineLinkStr = htmlHideFromScreenReader('🏠') + ' ' + \
+        translate['Switch to timeline view']
+    navLinks[timelineLinkStr] = calActor + '/inbox'
 
     dayOfMonth = 0
     dow = weekDayOfMonthStart(monthNumber, year)
@@ -358,8 +369,15 @@ def htmlCalendar(cssCache: {}, translate: {},
                     url = calActor + '/calendar?year=' + \
                         str(year) + '?month=' + \
                         str(monthNumber) + '?day=' + str(dayOfMonth)
-                    dayLink = '<a href="' + url + '">' + \
+                    dayDescription = monthName + ' ' + str(dayOfMonth)
+                    dayLink = '<a href="' + url + '" ' + \
+                        'title="' + dayDescription + '">' + \
                         str(dayOfMonth) + '</a>'
+                    # accessibility menu links
+                    menuOptionStr = \
+                        htmlHideFromScreenReader('📅') + ' ' + \
+                        dayDescription
+                    navLinks[menuOptionStr] = url
                     # there are events for this day
                     if not isToday:
                         calendarStr += \
@@ -387,5 +405,17 @@ def htmlCalendar(cssCache: {}, translate: {},
 
     calendarStr += '</tbody>\n'
     calendarStr += '</table></main>\n'
-    calendarStr += htmlFooter()
-    return calendarStr
+
+    # end of the links used for accessibility
+    nextMonthStr = \
+        htmlHideFromScreenReader('→') + ' ' + translate['Next month']
+    navLinks[nextMonthStr] = calActor + '/calendar?year=' + str(nextYear) + \
+        '?month=' + str(nextMonthNumber)
+    prevMonthStr = \
+        htmlHideFromScreenReader('←') + ' ' + translate['Previous month']
+    navLinks[prevMonthStr] = calActor + '/calendar?year=' + str(prevYear) + \
+        '?month=' + str(prevMonthNumber)
+    screenReaderCal = \
+        htmlKeyboardNavigation(textModeBanner, navLinks, monthName)
+
+    return headerStr + screenReaderCal + calendarStr + htmlFooter()

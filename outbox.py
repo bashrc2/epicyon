@@ -18,6 +18,7 @@ from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getDomainFromActor
 from utils import dangerousMarkup
+from utils import isFeaturedWriter
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -211,14 +212,16 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
         # save all instance blogs to the news actor
         if postToNickname != 'news' and outboxName == 'tlblogs':
             if '/' in savedFilename:
-                savedPostId = savedFilename.split('/')[-1]
-                blogsDir = baseDir + '/accounts/news@' + domain + '/tlblogs'
-                if not os.path.isdir(blogsDir):
-                    os.mkdir(blogsDir)
-                copyfile(savedFilename, blogsDir + '/' + savedPostId)
-                inboxUpdateIndex('tlblogs', baseDir,
-                                 'news@' + domain,
-                                 savedFilename, debug)
+                if isFeaturedWriter(baseDir, postToNickname, domain):
+                    savedPostId = savedFilename.split('/')[-1]
+                    blogsDir = \
+                        baseDir + '/accounts/news@' + domain + '/tlblogs'
+                    if not os.path.isdir(blogsDir):
+                        os.mkdir(blogsDir)
+                    copyfile(savedFilename, blogsDir + '/' + savedPostId)
+                    inboxUpdateIndex('tlblogs', baseDir,
+                                     'news@' + domain,
+                                     savedFilename, debug)
 
                 # clear the citations file if it exists
                 citationsFilename = \

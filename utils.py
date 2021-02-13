@@ -26,6 +26,27 @@ invalidCharacters = (
 )
 
 
+def isFeaturedWriter(baseDir: str, nickname: str, domain: str) -> bool:
+    """Is the given account a featured writer, appearing in the features
+    timeline on news instances?
+    """
+    featuresBlockedFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.nofeatures'
+    return not os.path.isfile(featuresBlockedFilename)
+
+
+def refreshNewswire(baseDir: str):
+    """Causes the newswire to be updates after a change to user accounts
+    """
+    refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refreshNewswireFilename):
+        return
+    refreshFile = open(refreshNewswireFilename, 'w+')
+    refreshFile.write('\n')
+    refreshFile.close()
+
+
 def getSHA256(msg: str):
     """Returns a SHA256 hash of the given string
     """

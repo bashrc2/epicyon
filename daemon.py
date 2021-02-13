@@ -218,6 +218,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
 from utils import dangerousMarkup
+from utils import refreshNewswire
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -255,7 +256,6 @@ from newswire import rss2Footer
 from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
-from newsdaemon import refreshNewswire
 from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
@@ -1948,12 +1948,50 @@ class PubServer(BaseHTTPRequestHandler):
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
                         os.remove(newswireBlockedFilename)
+                        refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
                         noNewswireFile = open(newswireBlockedFilename, "w+")
                         if noNewswireFile:
                             noNewswireFile.write('\n')
                             noNewswireFile.close()
+                            refreshNewswire(self.server.baseDir)
+            usersPathStr = \
+                usersPath + '/' + self.server.defaultTimeline + \
+                '?page=' + str(pageNumber)
+            self._redirect_headers(usersPathStr, cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, permission to post to featured articles
+        # See htmlPersonOptions
+        if '&submitPostToFeatures=' in optionsConfirmParams:
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
+                postsToFeatures = None
+                if 'postsToFeatures=' in optionsConfirmParams:
+                    postsToFeatures = \
+                        optionsConfirmParams.split('postsToFeatures=')[1]
+                    if '&' in postsToFeatures:
+                        postsToFeatures = postsToFeatures.split('&')[0]
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                featuresBlockedFilename = accountDir + '/.nofeatures'
+                if postsToFeatures == 'on':
+                    if os.path.isfile(featuresBlockedFilename):
+                        os.remove(featuresBlockedFilename)
+                        refreshNewswire(self.server.baseDir)
+                else:
+                    if os.path.isdir(accountDir):
+                        noFeaturesFile = open(featuresBlockedFilename, "w+")
+                        if noFeaturesFile:
+                            noFeaturesFile.write('\n')
+                            noFeaturesFile.close()
+                            refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -5469,7 +5507,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     backToPath,
                                     lockedAccount,
-                                    movedTo, alsoKnownAs).encode('utf-8')
+                                    movedTo, alsoKnownAs,
+                                    self.server.textModeBanner,
+                                    self.server.newsInstance).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -11085,7 +11125,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
-                                   self.server.domainFull).encode('utf-8')
+                                   self.server.domainFull,
+                                   self.server.textModeBanner).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
