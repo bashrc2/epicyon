@@ -40,6 +40,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import setConfigParam
 from utils import getConfigParam
+from utils import refreshNewswire
 
 
 def generateRSAKey() -> (str, str):
@@ -915,6 +916,9 @@ def removeAccount(baseDir: str, nickname: str,
         os.remove(baseDir + '/wfdeactivated/' + handle + '.json')
     if os.path.isdir(baseDir + '/sharefilesdeactivated/' + nickname):
         shutil.rmtree(baseDir + '/sharefilesdeactivated/' + nickname)
+
+    refreshNewswire(baseDir)
+
     return True
 
 
@@ -944,6 +948,9 @@ def deactivateAccount(baseDir: str, nickname: str, domain: str) -> bool:
             os.mkdir(deactivatedSharefilesDir)
         shutil.move(baseDir + '/sharefiles/' + nickname,
                     deactivatedSharefilesDir + '/' + nickname)
+
+    refreshNewswire(baseDir)
+
     return os.path.isdir(deactivatedDir + '/' + nickname + '@' + domain)
 
 
@@ -969,6 +976,8 @@ def activateAccount(baseDir: str, nickname: str, domain: str) -> None:
         if not os.path.isdir(baseDir + '/sharefiles/' + nickname):
             shutil.move(deactivatedSharefilesDir + '/' + nickname,
                         baseDir + '/sharefiles/' + nickname)
+
+    refreshNewswire(baseDir)
 
 
 def isPersonSnoozed(baseDir: str, nickname: str, domain: str,

@@ -218,6 +218,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
 from utils import dangerousMarkup
+from utils import refreshNewswire
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -255,7 +256,6 @@ from newswire import rss2Footer
 from newswire import loadHashtagCategories
 from newsdaemon import runNewswireWatchdog
 from newsdaemon import runNewswireDaemon
-from newsdaemon import refreshNewswire
 from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter

@@ -750,15 +750,3 @@ def runNewswireWatchdog(projectVersion: str, httpd) -> None:
                 newswireOriginal.clone(runNewswireDaemon)
             httpd.thrNewswireDaemon.start()
             print('Restarting newswire daemon...')
-
-
-def refreshNewswire(baseDir: str) -> None:
-    """Causes the newswire to be updated.
-    This creates a file which is then detected by the daemon
-    """
-    refreshFilename = baseDir + '/accounts/.refresh_newswire'
-    if os.path.isfile(refreshFilename):
-        return
-    refreshFile = open(refreshFilename, 'w+')
-    refreshFile.write('\n')
-    refreshFile.close()

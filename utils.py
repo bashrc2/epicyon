@@ -26,6 +26,17 @@ invalidCharacters = (
 )
 
 
+def refreshNewswire(baseDir: str):
+    """Causes the newswire to be updates after a change to user accounts
+    """
+    refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refreshNewswireFilename):
+        return
+    refreshFile = open(refreshNewswireFilename, 'w+')
+    refreshFile.write('\n')
+    refreshFile.close()
+
+
 def getSHA256(msg: str):
     """Returns a SHA256 hash of the given string
     """
