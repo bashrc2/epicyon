@@ -302,6 +302,7 @@ def _xml2StrToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         title = rssItem.split('<title>')[1]
         title = _removeCDATA(title.split('</title>')[0])
+        title = removeHtml(title)
         description = ''
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
@@ -388,6 +389,7 @@ def _xml1StrToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         title = rssItem.split('<title>')[1]
         title = _removeCDATA(title.split('</title>')[0])
+        title = removeHtml(title)
         description = ''
         if '<description>' in rssItem and '</description>' in rssItem:
             description = rssItem.split('<description>')[1]
@@ -462,6 +464,7 @@ def _atomFeedToDict(baseDir: str, domain: str, xmlStr: str,
             continue
         title = atomItem.split('<title>')[1]
         title = _removeCDATA(title.split('</title>')[0])
+        title = removeHtml(title)
         description = ''
         if '<summary>' in atomItem and '</summary>' in atomItem:
             description = atomItem.split('<summary>')[1]
