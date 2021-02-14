@@ -2736,7 +2736,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  debug):
             httpSignatureFailed = True
             print('Queue: Header signature check failed')
-            pprint(queueJson['httpHeaders'])
+            if debug:
+                pprint(queueJson['httpHeaders'])
         else:
             if debug:
                 print('DEBUG: http header signature check success')
@@ -2770,6 +2771,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 else:
                     print('Queue: Header signature check failed and ' +
                           'does not have jsonld signature')
+                if debug:
+                    pprint(queueJson['httpHeaders'])
 
             if verifyAllSignatures:
                 print('Queue: inbox post does not have a jsonld signature ' +
