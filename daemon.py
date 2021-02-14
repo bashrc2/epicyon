@@ -5490,11 +5490,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if actorJson.get('alsoKnownAs'):
                     alsoKnownAs = actorJson['alsoKnownAs']
 
-            checkForChangedActor(self.server.session,
-                                 self.server.baseDir, self.server.httpPrefix,
-                                 self.server.domainFull,
-                                 optionsActor, optionsProfileUrl,
-                                 self.server.personCache, 3)
+            if self.server.session:
+                checkForChangedActor(self.server.session,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domainFull,
+                                     optionsActor, optionsProfileUrl,
+                                     self.server.personCache, 3)
 
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
