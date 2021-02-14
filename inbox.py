@@ -2743,6 +2743,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
         # check if a json signature exists on this post
         hasJsonSignature = False
+        jwebsigType = None
         originalJson = queueJson['original']
         if originalJson.get('@context') and \
            originalJson.get('signature'):
@@ -2751,7 +2752,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 jwebsig = originalJson['signature']
                 # signature exists and is of the expected type
                 if jwebsig.get('type') and jwebsig.get('signatureValue'):
-                    if jwebsig['type'] == 'RsaSignature2017':
+                    jwebsigType = jwebsig['type']
+                    if jwebsigType == 'RsaSignature2017':
                         if hasValidContext(originalJson):
                             hasJsonSignature = True
                         else:
@@ -2761,8 +2763,13 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # strict enforcement of json signatures
         if not hasJsonSignature:
             if httpSignatureFailed:
-                print('Queue: Header signature check failed and ' +
-                      'unable to check json signature')
+                if jwebsigType:
+                    print('Queue: Header signature check failed and does ' +
+                          'not have a recognised jsonld signature type ' +
+                          jwebsigType)
+                else:
+                    print('Queue: Header signature check failed and ' +
+                          'does not have jsonld signature')
 
             if verifyAllSignatures:
                 print('Queue: inbox post does not have a jsonld signature ' +
