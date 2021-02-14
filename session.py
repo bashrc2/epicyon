@@ -72,10 +72,13 @@ def urlExists(session, url: str, timeoutSec=3,
         result = session.get(url, headers=sessionHeaders,
                              params=sessionParams,
                              timeout=timeoutSec)
-        if result:
+        if result:            
             if result.status_code == 200 or \
                result.status_code == 304:
                 return True
+            else:
+                print('urlExists for ' + url + ' returned ' +
+                      str(result.status_code))
     except BaseException:
         pass
     return False
