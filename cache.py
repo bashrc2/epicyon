@@ -13,6 +13,21 @@ from utils import saveJson
 from utils import getFileCaseInsensitive
 
 
+def removePersonFromCache(baseDir: str, personUrl: str,
+                          personCache: {}) -> bool:
+    """Removes an actor from the cache
+    """
+    cacheFilename = baseDir + '/cache/actors/' + \
+        personUrl.replace('/', '#')+'.json'
+    if os.path.isfile(cacheFilename):
+        try:
+            os.remove(cacheFilename)
+        except BaseException:
+            pass
+    if personCache.get(personUrl):
+        del personCache[personUrl]
+
+
 def storePersonInCache(baseDir: str, personUrl: str,
                        personJson: {}, personCache: {},
                        allowWriteToFile: bool) -> None:
