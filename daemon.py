@@ -5496,7 +5496,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix,
                                      self.server.domainFull,
                                      optionsActor, optionsProfileUrl,
-                                     self.server.personCache, 3)
+                                     self.server.personCache, 5)
 
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
