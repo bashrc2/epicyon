@@ -20,7 +20,6 @@ import pyqrcode
 # for saving images
 from hashlib import sha256
 from hashlib import sha1
-from siteactive import siteIsActive
 from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
@@ -229,7 +228,7 @@ from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
 from content import extractTextFieldsInPOST
 from media import removeMetaData
-from cache import removePersonFromCache
+from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
@@ -5491,14 +5490,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if actorJson.get('alsoKnownAs'):
                     alsoKnownAs = actorJson['alsoKnownAs']
 
-            # check if the avatar image exists and if not then update
-            # the actor cache
-            if optionsProfileUrl:
-                if self.server.domainFull not in optionsProfileUrl:
-                    if not siteIsActive(optionsProfileUrl, 3):
-                        removePersonFromCache(self.server.baseDir,
-                                              optionsActor,
-                                              self.server.personCache)
+            checkForChangedActor(self.server.session,
+                                 self.server.baseDir, self.server.httpPrefix,
+                                 self.server.domainFull,
+                                 optionsActor, optionsProfileUrl,
+                                 self.server.personCache, 3)
 
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
