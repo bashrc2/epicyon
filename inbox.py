@@ -2769,7 +2769,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                           jwebsigType)
                 else:
                     print('Queue: Header signature check failed and ' +
-                          'does not have jsonld signature')
+                          'does not have jsonld signature ' +
+                          str(queueJson['post']))
 
             if verifyAllSignatures:
                 print('Queue: inbox post does not have a jsonld signature ' +
