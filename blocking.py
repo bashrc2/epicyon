@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import setConfigParam
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -356,3 +357,53 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
                 nicknameBlocked, domainBlockedFull)
     if debug:
         print('DEBUG: post undo blocked via c2s - ' + postFilename)
+
+
+def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
+    """Broch mode can be used to lock down the instance during
+    a period of time when it is temporarily under attack.
+    For example, where an adversary is constantly spinning up new
+    instances.
+    It surveys the following lists of all accounts and uses that
+    to construct an instance level allow list. Anything arriving
+    which is then not from one of the allowed domains will be dropped
+    """
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+
+    if not enabled:
+        # remove instance allow list
+        if os.path.isfile(allowFilename):
+            os.remove(allowFilename)
+    else:
+        # generate instance allow list
+        allowedDomains = [domainFull]
+        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+            for acct in dirs:
+                if '@' not in acct:
+                    continue
+                if 'inbox@' in acct or 'news@' in acct:
+                    continue
+                accountDir = os.path.join(baseDir + '/accounts', acct)
+                followingFilename = accountDir + '/following.txt'
+                if not os.path.isfile(followingFilename):
+                    continue
+                with open(followingFilename, "r") as f:
+                    followList = f.readlines()
+                    for handle in followList:
+                        if '@' not in handle:
+                            continue
+                        handle = handle.replace('\n', '')
+                        handleDomain = handle.split('@')[1]
+                        if handleDomain not in allowedDomains:
+                            allowedDomains.append(handleDomain)
+            break
+
+        # write the allow file
+        allowFile = open(allowFilename, "w+")
+        if allowFile:
+            allowFile.write(domainFull + '\n')
+            for d in allowedDomains:
+                allowFile.write(d + '\n')
+            allowFile.close()
+
+    setConfigParam(baseDir, "brochMode", enabled)

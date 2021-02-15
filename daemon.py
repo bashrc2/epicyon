@@ -109,6 +109,7 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from blocking import setBrochMode
 from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
@@ -4542,6 +4543,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 verifyAllSignatures
                             setConfigParam(baseDir, "verifyAllSignatures",
                                            verifyAllSignatures)
+
+                            brochMode = False
+                            if fields.get('brochMode'):
+                                if fields['brochMode'] == 'on':
+                                    brochMode = True
+                            if brochMode != self.server.brochMode:
+                                setBrochMode(self.server.baseDir,
+                                             self.server.domainFull,
+                                             brochMode)
+                                self.server.brochMode = brochMode
+                                setConfigParam(baseDir, "brochMode", brochMode)
 
                         # change moderators list
                         if fields.get('moderators'):
@@ -13924,7 +13936,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(verifyAllSignatures: bool,
+def runDaemon(brochMode: bool,
+              verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
               maxNewswirePosts: int,
@@ -14006,6 +14019,9 @@ def runDaemon(verifyAllSignatures: bool,
 
     # maximum number of posts to appear in the newswire on the right column
     httpd.maxNewswirePosts = maxNewswirePosts
+
+    # whether to enable broch mode, which locks down the instance
+    httpd.brochMode = brochMode
 
     # whether to require that all incoming posts have valid jsonld signatures
     httpd.verifyAllSignatures = verifyAllSignatures
