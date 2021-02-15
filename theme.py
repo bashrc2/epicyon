@@ -438,7 +438,7 @@ def getTextModeBanner(baseDir: str) -> str:
         with open(textModeBannerFilename, 'r') as fp:
             bannerStr = fp.read()
             if bannerStr:
-                return bannerStr.replace('\n', '<br>')
+                return bannerStr.replace('\n', '<br>\n')
     return None
 
 
