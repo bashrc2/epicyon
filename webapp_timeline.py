@@ -427,8 +427,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         menuShares: usersPath + '/tlshares#timeline',
         menuBlogs: usersPath + '/tlblogs#timeline',
         # menuEvents: usersPath + '/tlevents#timeline',
-        menuNewswire: '#newswire',
-        menuLinks: '#links'
+        menuNewswire: usersPath + '/newswiremobile',
+        menuLinks: usersPath + '/linksmobile'
     }
     if moderator:
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
