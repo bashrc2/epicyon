@@ -380,6 +380,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     else:
         # generate instance allow list
         allowedDomains = [domainFull]
+        followFiles = ('following.txt', 'followers.txt')
         for subdir, dirs, files in os.walk(baseDir + '/accounts'):
             for acct in dirs:
                 if '@' not in acct:
@@ -387,18 +388,19 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
                 if 'inbox@' in acct or 'news@' in acct:
                     continue
                 accountDir = os.path.join(baseDir + '/accounts', acct)
-                followingFilename = accountDir + '/following.txt'
-                if not os.path.isfile(followingFilename):
-                    continue
-                with open(followingFilename, "r") as f:
-                    followList = f.readlines()
-                    for handle in followList:
-                        if '@' not in handle:
-                            continue
-                        handle = handle.replace('\n', '')
-                        handleDomain = handle.split('@')[1]
-                        if handleDomain not in allowedDomains:
-                            allowedDomains.append(handleDomain)
+                for followFileType in followFiles:
+                    followingFilename = accountDir + '/' + followFileType
+                    if not os.path.isfile(followingFilename):
+                        continue
+                    with open(followingFilename, "r") as f:
+                        followList = f.readlines()
+                        for handle in followList:
+                            if '@' not in handle:
+                                continue
+                            handle = handle.replace('\n', '')
+                            handleDomain = handle.split('@')[1]
+                            if handleDomain not in allowedDomains:
+                                allowedDomains.append(handleDomain)
             break
 
         # write the allow file
