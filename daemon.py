@@ -185,6 +185,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
 from utils import getLockedAccount
@@ -1154,6 +1155,32 @@ class PubServer(BaseHTTPRequestHandler):
         # check for blocked domains so that they can be rejected early
         messageDomain = None
         if messageJson.get('actor'):
+            # actor should be a string
+            if not isinstance(messageJson['actor'], str):
+                self._400()
+                self.server.POSTbusy = False
+                return 3
+
+            # actor should look like a url
+            if '://' not in messageJson['actor'] or \
+               '.' not in messageJson['actor']:
+                print('POST actor does not look like a url ' +
+                      messageJson['actor'])
+                self._400()
+                self.server.POSTbusy = False
+                return 3
+
+            # sent by an actor on a local network address?
+            if not self.server.allowLocalNetworkAccess:
+                localNetworkPatternList = getLocalNetworkAddresses()
+                for localNetworkPattern in localNetworkPatternList:
+                    if localNetworkPattern in messageJson['actor']:
+                        print('POST actor contains local network address ' +
+                              messageJson['actor'])
+                        self._400()
+                        self.server.POSTbusy = False
+                        return 3
+
             messageDomain, messagePort = \
                 getDomainFromActor(messageJson['actor'])
             if isBlockedDomain(self.server.baseDir, messageDomain):
