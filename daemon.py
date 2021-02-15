@@ -10130,9 +10130,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
-            self._progressiveWebAppManifest(callingDomain,
-                                            GETstartTime, GETtimings)
-            return
+            if self._hasAccept(callingDomain):
+                if not self._requestHTTP():
+                    self._progressiveWebAppManifest(callingDomain,
+                                                    GETstartTime, GETtimings)
+                    return
 
         # default newswire favicon, for links to sites which
         # have no favicon
