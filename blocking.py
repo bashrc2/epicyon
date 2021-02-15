@@ -175,15 +175,27 @@ def isBlockedDomain(baseDir: str, domain: str) -> bool:
     if noOfSections > 2:
         shortDomain = domain[noOfSections-2] + '.' + domain[noOfSections-1]
 
-    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-    if os.path.isfile(globalBlockingFilename):
-        with open(globalBlockingFilename, 'r') as fpBlocked:
-            blockedStr = fpBlocked.read()
-            if '*@' + domain in blockedStr:
-                return True
-            if shortDomain:
-                if '*@' + shortDomain in blockedStr:
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+    if not os.path.isfile(allowFilename):
+        # instance block list
+        globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+        if os.path.isfile(globalBlockingFilename):
+            with open(globalBlockingFilename, 'r') as fpBlocked:
+                blockedStr = fpBlocked.read()
+                if '*@' + domain in blockedStr:
                     return True
+                if shortDomain:
+                    if '*@' + shortDomain in blockedStr:
+                        return True
+    else:
+        # instance allow list
+        if not shortDomain:
+            if domain not in open(allowFilename).read():
+                return True
+        else:
+            if shortDomain not in open(allowFilename).read():
+                return True
+
     return False
 
 
