@@ -479,6 +479,10 @@ class PubServer(BaseHTTPRequestHandler):
             if 'text/html' not in self.headers['Accept']:
                 return False
         if self.headers['Accept'].startswith('*'):
+            if self.headers.get('User-Agent'):
+                if 'Elinks' in self.headers['User-Agent'] or \
+                   'Lynx' in self.headers['User-Agent']:
+                    return True
             return False
         if 'json' in self.headers['Accept']:
             return False
