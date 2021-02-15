@@ -895,7 +895,7 @@ def htmlKeyboardNavigation(banner: str, links: {},
     htmlStr = '<div class="transparent"><ul>\n'
 
     if banner:
-        htmlStr += '<pre aria-label="">' + banner + '\n<br><br></pre>\n'
+        htmlStr += '<pre aria-label="">\n' + banner + '\n<br><br></pre>\n'
 
     if subHeading:
         htmlStr += '<strong><label class="transparent">' + \
