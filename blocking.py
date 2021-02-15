@@ -436,6 +436,7 @@ def brochModeLapses(baseDir: str, lapseDays=7) -> None:
     if daysSinceBroch >= lapseDays:
         try:
             os.remove(allowFilename)
+            setConfigParam(baseDir, "brochMode", False)
             print('Broch mode has elapsed')
         except BaseException:
             pass
