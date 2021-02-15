@@ -484,7 +484,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         'id="links" tabindex="-1">' + \
         leftColumnStr + '  </td>\n'
     # center column containing posts
-    tlStr += '  <td valign="top" class="col-center">\n'
+    tlStr += '  <td id="timelineposts" valign="top" class="col-center">\n'
 
     if not fullWidthTimelineButtonHeader:
         tlStr += \
@@ -502,7 +502,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
 
-    tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
+    tlStr += '  <div class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':
