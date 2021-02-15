@@ -4548,7 +4548,9 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields.get('brochMode'):
                                 if fields['brochMode'] == 'on':
                                     brochMode = True
-                            if brochMode != self.server.brochMode:
+                            currBrochMode = \
+                                getConfigParam(baseDir, "brochMode")
+                            if brochMode != currBrochMode:
                                 setBrochMode(self.server.baseDir,
                                              self.server.domainFull,
                                              brochMode)

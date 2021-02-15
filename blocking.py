@@ -415,28 +415,31 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
     setConfigParam(baseDir, "brochMode", enabled)
 
 
-def brochModeLapses(baseDir: str, lapseDays=7) -> None:
+def brochModeLapses(baseDir: str, lapseDays=7) -> bool:
     """After broch mode is enabled it automatically
     elapses after a period of time
     """
     allowFilename = baseDir + '/accounts/allowedinstances.txt'
     if not os.path.isfile(allowFilename):
-        return
+        return False
     lastModified = fileLastModified(allowFilename)
     modifiedDate = None
+    brochMode = True
     try:
         modifiedDate = \
             datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
     except BaseException:
-        return
+        return brochMode
     if not modifiedDate:
-        return
+        return brochMode
     currTime = datetime.datetime.utcnow()
     daysSinceBroch = (currTime - modifiedDate).days
     if daysSinceBroch >= lapseDays:
         try:
             os.remove(allowFilename)
-            setConfigParam(baseDir, "brochMode", False)
+            brochMode = False
+            setConfigParam(baseDir, "brochMode", brochMode)
             print('Broch mode has elapsed')
         except BaseException:
             pass
+    return brochMode
