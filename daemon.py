@@ -10135,6 +10135,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._progressiveWebAppManifest(callingDomain,
                                                     GETstartTime, GETtimings)
                     return
+                else:
+                    self.path = '/'
 
         # default newswire favicon, for links to sites which
         # have no favicon
