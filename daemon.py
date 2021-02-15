@@ -480,7 +480,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
         if self.headers['Accept'].startswith('*'):
             if self.headers.get('User-Agent'):
-                if 'Elinks' in self.headers['User-Agent'] or \
+                if 'ELinks' in self.headers['User-Agent'] or \
                    'Lynx' in self.headers['User-Agent']:
                     return True
             return False
