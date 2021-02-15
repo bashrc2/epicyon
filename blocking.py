@@ -7,6 +7,8 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from datetime import datetime
+from utils import fileLastModified
 from utils import setConfigParam
 from utils import hasUsersPath
 from utils import getFullDomain
@@ -374,6 +376,7 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
         # remove instance allow list
         if os.path.isfile(allowFilename):
             os.remove(allowFilename)
+            print('Broch mode turned off')
     else:
         # generate instance allow list
         allowedDomains = [domainFull]
@@ -405,5 +408,32 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
             for d in allowedDomains:
                 allowFile.write(d + '\n')
             allowFile.close()
+            print('Broch mode enabled')
 
     setConfigParam(baseDir, "brochMode", enabled)
+
+
+def brochModeLapses(baseDir: str, lapseDays=7) -> None:
+    """After broch mode is enabled it automatically
+    elapses after a period of time
+    """
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+    if not os.path.isfile(allowFilename):
+        return
+    lastModified = fileLastModified(allowFilename)
+    modifiedDate = None
+    try:
+        modifiedDate = \
+            datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
+    except BaseException:
+        return
+    if not modifiedDate:
+        return
+    currTime = datetime.datetime.utcnow()
+    daysSinceBroch = (currTime - modifiedDate).days
+    if daysSinceBroch >= lapseDays:
+        try:
+            os.remove(allowFilename)
+            print('Broch mode has elapsed')
+        except BaseException:
+            pass

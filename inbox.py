@@ -51,6 +51,7 @@ from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
 from blocking import isBlockedDomain
+from blocking import brochModeLapses
 from filters import isFiltered
 from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
@@ -2518,6 +2519,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # heartbeat to monitor whether the inbox queue is running
         heartBeatCtr += 5
         if heartBeatCtr >= 10:
+            # turn off broch mode after it has timed out
+            brochModeLapses(baseDir)
             print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
             heartBeatCtr = 0
