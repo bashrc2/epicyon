@@ -30,6 +30,8 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from siteactive import siteIsActive
+from utils import removeInvalidChars
 from utils import fileLastModified
 from utils import isPublicPost
 from utils import hasUsersPath
@@ -38,7 +40,6 @@ from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
 from utils import removeIdEnding
-from utils import siteIsActive
 from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
@@ -823,7 +824,7 @@ def validContentWarning(cw: str) -> str:
     # so remove them
     if '#' in cw:
         cw = cw.replace('#', '').replace('  ', ' ')
-    return cw
+    return removeInvalidChars(cw)
 
 
 def _loadAutoCW(baseDir: str, nickname: str, domain: str) -> []:
@@ -880,6 +881,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                     eventStatus=None, ticketUrl=None) -> {}:
     """Creates a message
     """
+    content = removeInvalidChars(content)
+
     subject = _addAutoCW(baseDir, nickname, domain, subject, content)
 
     if nickname != 'news':
@@ -924,7 +927,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     sensitive = False
     summary = None
     if subject:
-        summary = validContentWarning(subject)
+        summary = removeInvalidChars(validContentWarning(subject))
         sensitive = True
 
     toRecipients = []
@@ -1047,6 +1050,8 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     postObjectType = 'Note'
     if eventUUID:
         postObjectType = 'Event'
+    if isArticle:
+        postObjectType = 'Article'
 
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
@@ -1389,10 +1394,22 @@ def createPublicPost(baseDir: str,
                      imageDescription: str,
                      inReplyTo=None, inReplyToAtomUri=None, subject=None,
                      schedulePost=False,
-                     eventDate=None, eventTime=None, location=None) -> {}:
+                     eventDate=None, eventTime=None, location=None,
+                     isArticle=False) -> {}:
     """Public post
     """
     domainFull = getFullDomain(domain, port)
+    isModerationReport = False
+    eventUUID = None
+    category = None
+    joinMode = None
+    endDate = None
+    endTime = None
+    maximumAttendeeCapacity = None
+    repliesModerationOption = None
+    anonymousParticipationEnabled = None
+    eventStatus = None
+    ticketUrl = None
     return _createPostBase(baseDir, nickname, domain, port,
                            'https://www.w3.org/ns/activitystreams#Public',
                            httpPrefix + '://' + domainFull + '/users/' +
@@ -1401,10 +1418,45 @@ def createPublicPost(baseDir: str,
                            clientToServer, commentsEnabled,
                            attachImageFilename, mediaType,
                            imageDescription,
-                           False, False, inReplyTo, inReplyToAtomUri, subject,
+                           isModerationReport, isArticle,
+                           inReplyTo, inReplyToAtomUri, subject,
                            schedulePost, eventDate, eventTime, location,
-                           None, None, None, None, None,
-                           None, None, None, None, None)
+                           eventUUID, category, joinMode, endDate, endTime,
+                           maximumAttendeeCapacity,
+                           repliesModerationOption,
+                           anonymousParticipationEnabled,
+                           eventStatus, ticketUrl)
+
+
+def _appendCitationsToBlogPost(baseDir: str,
+                               nickname: str, domain: str,
+                               blogJson: {}) -> None:
+    """Appends any citations to a new blog post
+    """
+    # append citations tags, stored in a file
+    citationsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.citations.txt'
+    if not os.path.isfile(citationsFilename):
+        return
+    citationsSeparator = '#####'
+    with open(citationsFilename, "r") as f:
+        citations = f.readlines()
+        for line in citations:
+            if citationsSeparator not in line:
+                continue
+            sections = line.strip().split(citationsSeparator)
+            if len(sections) != 3:
+                continue
+            # dateStr = sections[0]
+            title = sections[1]
+            link = sections[2]
+            tagJson = {
+                "type": "Article",
+                "name": title,
+                "url": link
+            }
+            blogJson['object']['tag'].append(tagJson)
 
 
 def createBlogPost(baseDir: str,
@@ -1416,7 +1468,7 @@ def createBlogPost(baseDir: str,
                    inReplyTo=None, inReplyToAtomUri=None, subject=None,
                    schedulePost=False,
                    eventDate=None, eventTime=None, location=None) -> {}:
-    blog = \
+    blogJson = \
         createPublicPost(baseDir,
                          nickname, domain, port, httpPrefix,
                          content, followersOnly, saveToFile,
@@ -1425,34 +1477,11 @@ def createBlogPost(baseDir: str,
                          imageDescription,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
-                         eventDate, eventTime, location)
-    blog['object']['type'] = 'Article'
+                         eventDate, eventTime, location, True)
 
-    # append citations tags, stored in a file
-    citationsFilename = \
-        baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/.citations.txt'
-    if os.path.isfile(citationsFilename):
-        citationsSeparator = '#####'
-        with open(citationsFilename, "r") as f:
-            citations = f.readlines()
-            for line in citations:
-                if citationsSeparator not in line:
-                    continue
-                sections = line.strip().split(citationsSeparator)
-                if len(sections) != 3:
-                    continue
-                # dateStr = sections[0]
-                title = sections[1]
-                link = sections[2]
-                tagJson = {
-                    "type": "Article",
-                    "name": title,
-                    "url": link
-                }
-                blog['object']['tag'].append(tagJson)
+    _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
 
-    return blog
+    return blogJson
 
 
 def createNewsPost(baseDir: str,
@@ -1477,7 +1506,7 @@ def createNewsPost(baseDir: str,
                          imageDescription,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
-                         eventDate, eventTime, location)
+                         eventDate, eventTime, location, True)
     blog['object']['type'] = 'Article'
     return blog
 

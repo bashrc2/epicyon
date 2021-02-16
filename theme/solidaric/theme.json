@@ -80,7 +80,7 @@
     "title-background": "#ccc",
     "gallery-text-color": "#2d2c37",
     "quote-right-margin": "0",
-    "line-spacing": "150%",
+    "line-spacing": "180%",
     "header-font": "'solidaric'",
     "*font-family": "'solidaric'",
     "*src": "url('./fonts/solidaric.woff2') format('woff2')",

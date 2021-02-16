@@ -109,6 +109,7 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from blocking import setBrochMode
 from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
@@ -185,6 +186,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
 from utils import getLockedAccount
@@ -218,6 +220,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import isSuspended
 from utils import dangerousMarkup
+from utils import refreshNewswire
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -227,6 +230,7 @@ from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
 from content import extractTextFieldsInPOST
 from media import removeMetaData
+from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
@@ -392,7 +396,7 @@ class PubServer(BaseHTTPRequestHandler):
                              schedulePost,
                              eventDate,
                              eventTime,
-                             location)
+                             location, False)
         if messageJson:
             # name field contains the answer
             messageJson['object']['name'] = answer
@@ -476,6 +480,10 @@ class PubServer(BaseHTTPRequestHandler):
             if 'text/html' not in self.headers['Accept']:
                 return False
         if self.headers['Accept'].startswith('*'):
+            if self.headers.get('User-Agent'):
+                if 'ELinks' in self.headers['User-Agent'] or \
+                   'Lynx' in self.headers['User-Agent']:
+                    return True
             return False
         if 'json' in self.headers['Accept']:
             return False
@@ -1151,16 +1159,42 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check for blocked domains so that they can be rejected early
         messageDomain = None
-        if messageJson.get('actor'):
-            messageDomain, messagePort = \
-                getDomainFromActor(messageJson['actor'])
-            if isBlockedDomain(self.server.baseDir, messageDomain):
-                print('POST from blocked domain ' + messageDomain)
-                self._400()
-                self.server.POSTbusy = False
-                return 3
-        else:
+        if not messageJson.get('actor'):
             print('Message arriving at inbox queue has no actor')
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
+        # actor should be a string
+        if not isinstance(messageJson['actor'], str):
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
+        # actor should look like a url
+        if '://' not in messageJson['actor'] or \
+           '.' not in messageJson['actor']:
+            print('POST actor does not look like a url ' +
+                  messageJson['actor'])
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
+        # sent by an actor on a local network address?
+        if not self.server.allowLocalNetworkAccess:
+            localNetworkPatternList = getLocalNetworkAddresses()
+            for localNetworkPattern in localNetworkPatternList:
+                if localNetworkPattern in messageJson['actor']:
+                    print('POST actor contains local network address ' +
+                          messageJson['actor'])
+                    self._400()
+                    self.server.POSTbusy = False
+                    return 3
+
+        messageDomain, messagePort = \
+            getDomainFromActor(messageJson['actor'])
+        if isBlockedDomain(self.server.baseDir, messageDomain):
+            print('POST from blocked domain ' + messageDomain)
             self._400()
             self.server.POSTbusy = False
             return 3
@@ -1947,12 +1981,50 @@ class PubServer(BaseHTTPRequestHandler):
                 if postsToNews == 'on':
                     if os.path.isfile(newswireBlockedFilename):
                         os.remove(newswireBlockedFilename)
+                        refreshNewswire(self.server.baseDir)
                 else:
                     if os.path.isdir(accountDir):
                         noNewswireFile = open(newswireBlockedFilename, "w+")
                         if noNewswireFile:
                             noNewswireFile.write('\n')
                             noNewswireFile.close()
+                            refreshNewswire(self.server.baseDir)
+            usersPathStr = \
+                usersPath + '/' + self.server.defaultTimeline + \
+                '?page=' + str(pageNumber)
+            self._redirect_headers(usersPathStr, cookie,
+                                   callingDomain)
+            self.server.POSTbusy = False
+            return
+
+        # person options screen, permission to post to featured articles
+        # See htmlPersonOptions
+        if '&submitPostToFeatures=' in optionsConfirmParams:
+            adminNickname = getConfigParam(self.server.baseDir, 'admin')
+            if (chooserNickname != optionsNickname and
+                (chooserNickname == adminNickname or
+                 (isModerator(self.server.baseDir, chooserNickname) and
+                  not isModerator(self.server.baseDir, optionsNickname)))):
+                postsToFeatures = None
+                if 'postsToFeatures=' in optionsConfirmParams:
+                    postsToFeatures = \
+                        optionsConfirmParams.split('postsToFeatures=')[1]
+                    if '&' in postsToFeatures:
+                        postsToFeatures = postsToFeatures.split('&')[0]
+                accountDir = self.server.baseDir + '/accounts/' + \
+                    optionsNickname + '@' + optionsDomain
+                featuresBlockedFilename = accountDir + '/.nofeatures'
+                if postsToFeatures == 'on':
+                    if os.path.isfile(featuresBlockedFilename):
+                        os.remove(featuresBlockedFilename)
+                        refreshNewswire(self.server.baseDir)
+                else:
+                    if os.path.isdir(accountDir):
+                        noFeaturesFile = open(featuresBlockedFilename, "w+")
+                        if noFeaturesFile:
+                            noFeaturesFile.write('\n')
+                            noFeaturesFile.close()
+                            refreshNewswire(self.server.baseDir)
             usersPathStr = \
                 usersPath + '/' + self.server.defaultTimeline + \
                 '?page=' + str(pageNumber)
@@ -4472,6 +4544,18 @@ class PubServer(BaseHTTPRequestHandler):
                             setConfigParam(baseDir, "verifyAllSignatures",
                                            verifyAllSignatures)
 
+                            brochMode = False
+                            if fields.get('brochMode'):
+                                if fields['brochMode'] == 'on':
+                                    brochMode = True
+                            currBrochMode = \
+                                getConfigParam(baseDir, "brochMode")
+                            if brochMode != currBrochMode:
+                                setBrochMode(self.server.baseDir,
+                                             self.server.domainFull,
+                                             brochMode)
+                                setConfigParam(baseDir, "brochMode", brochMode)
+
                         # change moderators list
                         if fields.get('moderators'):
                             if path.startswith('/users/' +
@@ -5449,6 +5533,15 @@ class PubServer(BaseHTTPRequestHandler):
                 PGPfingerprint = getPGPfingerprint(actorJson)
                 if actorJson.get('alsoKnownAs'):
                     alsoKnownAs = actorJson['alsoKnownAs']
+
+            if self.server.session:
+                checkForChangedActor(self.server.session,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domainFull,
+                                     optionsActor, optionsProfileUrl,
+                                     self.server.personCache, 5)
+
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
                                     self.server.translate,
@@ -5468,7 +5561,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.dormantMonths,
                                     backToPath,
                                     lockedAccount,
-                                    movedTo, alsoKnownAs).encode('utf-8')
+                                    movedTo, alsoKnownAs,
+                                    self.server.textModeBanner,
+                                    self.server.newsInstance).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -10010,6 +10105,16 @@ class PubServer(BaseHTTPRequestHandler):
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
+            # replace https://domain/@nick/statusnumber
+            # with https://domain/users/nick/statuses/statusnumber
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                statusNumberStr = nickname.split('/')[1]
+                if statusNumberStr.isdigit():
+                    nickname = nickname.split('/')[0]
+                    self.path = \
+                        self.path.replace('/users/' + nickname + '/',
+                                          '/users/' + nickname + '/statuses/')
 
         # turn off dropdowns on new post screen
         noDropDown = False
@@ -10038,9 +10143,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
-            self._progressiveWebAppManifest(callingDomain,
-                                            GETstartTime, GETtimings)
-            return
+            if self._hasAccept(callingDomain):
+                if not self._requestHTTP():
+                    self._progressiveWebAppManifest(callingDomain,
+                                                    GETstartTime, GETtimings)
+                    return
+                else:
+                    self.path = '/'
 
         # default newswire favicon, for links to sites which
         # have no favicon
@@ -11084,7 +11193,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.translate,
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
-                                   self.server.domainFull).encode('utf-8')
+                                   self.server.domainFull,
+                                   self.server.textModeBanner).encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen, cookie, callingDomain)
                 self._write(msg)
@@ -12373,7 +12483,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['replyTo'], fields['replyTo'],
                                      fields['subject'], fields['schedulePost'],
                                      fields['eventDate'], fields['eventTime'],
-                                     fields['location'])
+                                     fields['location'], False)
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -12419,6 +12529,12 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
+                if not fields['subject']:
+                    print('WARN: blog posts must have a title')
+                    return -1
+                if not fields['message']:
+                    print('WARN: blog posts must have content')
+                    return -1
                 # submit button on newblog screen
                 messageJson = \
                     createBlogPost(self.server.baseDir, nickname,
@@ -12438,6 +12554,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields['schedulePost']:
                         return 1
                     if self._postToOutbox(messageJson, __version__, nickname):
+                        refreshNewswire(self.server.baseDir)
                         populateReplies(self.server.baseDir,
                                         self.server.httpPrefix,
                                         self.server.domainFull,
@@ -13820,7 +13937,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(verifyAllSignatures: bool,
+def runDaemon(brochMode: bool,
+              verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
               maxNewswirePosts: int,
@@ -14072,6 +14190,9 @@ def runDaemon(verifyAllSignatures: bool,
 
     # cache to store css files
     httpd.cssCache = {}
+
+    # whether to enable broch mode, which locks down the instance
+    setBrochMode(baseDir, httpd.domainFull, brochMode)
 
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)

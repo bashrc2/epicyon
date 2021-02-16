@@ -11,15 +11,40 @@ import time
 import shutil
 import datetime
 import json
-from socket import error as SocketError
-import errno
-import urllib.request
 import idna
 from pprint import pprint
 from calendar import monthrange
 from followingCalendar import addPersonToCalendar
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
+
+# posts containing these strings will always get screened out,
+# both incoming and outgoing.
+# Could include dubious clacks or admin dogwhistles
+invalidCharacters = (
+    '卐', '卍', '࿕', '࿖', '࿗', '࿘'
+)
+
+
+def isFeaturedWriter(baseDir: str, nickname: str, domain: str) -> bool:
+    """Is the given account a featured writer, appearing in the features
+    timeline on news instances?
+    """
+    featuresBlockedFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/.nofeatures'
+    return not os.path.isfile(featuresBlockedFilename)
+
+
+def refreshNewswire(baseDir: str):
+    """Causes the newswire to be updates after a change to user accounts
+    """
+    refreshNewswireFilename = baseDir + '/accounts/.refresh_newswire'
+    if os.path.isfile(refreshNewswireFilename):
+        return
+    refreshFile = open(refreshNewswireFilename, 'w+')
+    refreshFile.write('\n')
+    refreshFile.close()
 
 
 def getSHA256(msg: str):
@@ -517,15 +542,21 @@ def isEvil(domain: str) -> bool:
 
 def containsInvalidChars(jsonStr: str) -> bool:
     """Does the given json string contain invalid characters?
-    e.g. dubious clacks/admin dogwhistles
     """
-    invalidStrings = {
-        '卐', '卍', '࿕', '࿖', '࿗', '࿘'
-    }
-    for isInvalid in invalidStrings:
+    for isInvalid in invalidCharacters:
         if isInvalid in jsonStr:
             return True
     return False
+
+
+def removeInvalidChars(text: str) -> str:
+    """Removes any invalid characters from a string
+    """
+    for isInvalid in invalidCharacters:
+        if isInvalid not in text:
+            continue
+        text = text.replace(isInvalid, '')
+    return text
 
 
 def createPersonDir(nickname: str, domain: str, baseDir: str,
@@ -574,6 +605,12 @@ def urlPermitted(url: str, federationList: []):
     return False
 
 
+def getLocalNetworkAddresses() -> []:
+    """Returns patterns for local network address detection
+    """
+    return ('localhost', '127.0.', '192.168', '10.0.')
+
+
 def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
@@ -584,7 +621,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     contentSections = content.split('<')
     invalidPartials = ()
     if not allowLocalNetworkAccess:
-        invalidPartials = ('localhost', '127.0.', '192.168', '10.0.')
+        invalidPartials = getLocalNetworkAddresses()
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
                       'hr', 'allow-popups', 'allow-scripts')
@@ -1839,28 +1876,6 @@ def updateAnnounceCollection(recentPostsCache: {},
             print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
         saveJson(postJsonObject, postFilename)
-
-
-def siteIsActive(url: str) -> bool:
-    """Returns true if the current url is resolvable.
-    This can be used to check that an instance is online before
-    trying to send posts to it.
-    """
-    if not url.startswith('http'):
-        return False
-    if '.onion/' in url or '.i2p/' in url or \
-       url.endswith('.onion') or \
-       url.endswith('.i2p'):
-        # skip this check for onion and i2p
-        return True
-    try:
-        req = urllib.request.Request(url)
-        urllib.request.urlopen(req, timeout=10)  # nosec
-        return True
-    except SocketError as e:
-        if e.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during siteIsActive')
-    return False
 
 
 def weekDayOfMonthStart(monthNumber: int, year: int) -> int:

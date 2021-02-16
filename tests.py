@@ -38,7 +38,7 @@ from utils import getFullDomain
 from utils import validNickname
 from utils import firstParagraphFromString
 from utils import removeIdEnding
-from utils import siteIsActive
+from siteactive import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
@@ -325,8 +325,10 @@ def createServerAlice(path: str, domain: str, port: int,
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
+    brochMode = False
     print('Server running: Alice')
-    runDaemon(verifyAllSignatures,
+    runDaemon(brochMode,
+              verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
@@ -420,8 +422,10 @@ def createServerBob(path: str, domain: str, port: int,
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
+    brochMode = False
     print('Server running: Bob')
-    runDaemon(verifyAllSignatures,
+    runDaemon(brochMode,
+              verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
@@ -469,8 +473,10 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     sendThreadsTimeoutMins = 30
     maxFollowers = 10
     verifyAllSignatures = True
+    brochMode = False
     print('Server running: Eve')
-    runDaemon(verifyAllSignatures,
+    runDaemon(brochMode,
+              verifyAllSignatures,
               sendThreadsTimeoutMins,
               dormantMonths, maxNewswirePosts,
               allowLocalNetworkAccess,
@@ -2067,6 +2073,7 @@ def testJsonld():
 
 def testSiteIsActive():
     print('testSiteIsActive')
+    assert(siteIsActive('https://archive.org'))
     assert(siteIsActive('https://mastodon.social'))
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
@@ -2818,7 +2825,8 @@ def testFunctions():
         'createServerBob',
         'createServerEve',
         'E2EEremoveDevice',
-        'setOrganizationScheme'
+        'setOrganizationScheme',
+        'fill_headers'
     ]
     excludeImports = [
         'link',

@@ -7,6 +7,9 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from datetime import datetime
+from utils import fileLastModified
+from utils import setConfigParam
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -175,15 +178,27 @@ def isBlockedDomain(baseDir: str, domain: str) -> bool:
     if noOfSections > 2:
         shortDomain = domain[noOfSections-2] + '.' + domain[noOfSections-1]
 
-    globalBlockingFilename = baseDir + '/accounts/blocking.txt'
-    if os.path.isfile(globalBlockingFilename):
-        with open(globalBlockingFilename, 'r') as fpBlocked:
-            blockedStr = fpBlocked.read()
-            if '*@' + domain in blockedStr:
-                return True
-            if shortDomain:
-                if '*@' + shortDomain in blockedStr:
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+    if not os.path.isfile(allowFilename):
+        # instance block list
+        globalBlockingFilename = baseDir + '/accounts/blocking.txt'
+        if os.path.isfile(globalBlockingFilename):
+            with open(globalBlockingFilename, 'r') as fpBlocked:
+                blockedStr = fpBlocked.read()
+                if '*@' + domain in blockedStr:
                     return True
+                if shortDomain:
+                    if '*@' + shortDomain in blockedStr:
+                        return True
+    else:
+        # instance allow list
+        if not shortDomain:
+            if domain not in open(allowFilename).read():
+                return True
+        else:
+            if shortDomain not in open(allowFilename).read():
+                return True
+
     return False
 
 
@@ -344,3 +359,91 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
                 nicknameBlocked, domainBlockedFull)
     if debug:
         print('DEBUG: post undo blocked via c2s - ' + postFilename)
+
+
+def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
+    """Broch mode can be used to lock down the instance during
+    a period of time when it is temporarily under attack.
+    For example, where an adversary is constantly spinning up new
+    instances.
+    It surveys the following lists of all accounts and uses that
+    to construct an instance level allow list. Anything arriving
+    which is then not from one of the allowed domains will be dropped
+    """
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+
+    if not enabled:
+        # remove instance allow list
+        if os.path.isfile(allowFilename):
+            os.remove(allowFilename)
+            print('Broch mode turned off')
+    else:
+        if os.path.isfile(allowFilename):
+            lastModified = fileLastModified(allowFilename)
+            print('Broch mode already activated ' + lastModified)
+            return
+        # generate instance allow list
+        allowedDomains = [domainFull]
+        followFiles = ('following.txt', 'followers.txt')
+        for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+            for acct in dirs:
+                if '@' not in acct:
+                    continue
+                if 'inbox@' in acct or 'news@' in acct:
+                    continue
+                accountDir = os.path.join(baseDir + '/accounts', acct)
+                for followFileType in followFiles:
+                    followingFilename = accountDir + '/' + followFileType
+                    if not os.path.isfile(followingFilename):
+                        continue
+                    with open(followingFilename, "r") as f:
+                        followList = f.readlines()
+                        for handle in followList:
+                            if '@' not in handle:
+                                continue
+                            handle = handle.replace('\n', '')
+                            handleDomain = handle.split('@')[1]
+                            if handleDomain not in allowedDomains:
+                                allowedDomains.append(handleDomain)
+            break
+
+        # write the allow file
+        allowFile = open(allowFilename, "w+")
+        if allowFile:
+            allowFile.write(domainFull + '\n')
+            for d in allowedDomains:
+                allowFile.write(d + '\n')
+            allowFile.close()
+            print('Broch mode enabled')
+
+    setConfigParam(baseDir, "brochMode", enabled)
+
+
+def brochModeLapses(baseDir: str, lapseDays=7) -> bool:
+    """After broch mode is enabled it automatically
+    elapses after a period of time
+    """
+    allowFilename = baseDir + '/accounts/allowedinstances.txt'
+    if not os.path.isfile(allowFilename):
+        return False
+    lastModified = fileLastModified(allowFilename)
+    modifiedDate = None
+    brochMode = True
+    try:
+        modifiedDate = \
+            datetime.strptime(lastModified, "%Y-%m-%dT%H:%M:%SZ")
+    except BaseException:
+        return brochMode
+    if not modifiedDate:
+        return brochMode
+    currTime = datetime.datetime.utcnow()
+    daysSinceBroch = (currTime - modifiedDate).days
+    if daysSinceBroch >= lapseDays:
+        try:
+            os.remove(allowFilename)
+            brochMode = False
+            setConfigParam(baseDir, "brochMode", brochMode)
+            print('Broch mode has elapsed')
+        except BaseException:
+            pass
+    return brochMode

@@ -788,6 +788,13 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
                     prevWordStr = ''
                     continue
             elif firstChar == '#':
+                # remove any endings from the hashtag
+                hashTagEndings = ('.', ':', ';', '-', '\n')
+                for ending in hashTagEndings:
+                    if wordStr.endswith(ending):
+                        wordStr = wordStr[:len(wordStr) - 1]
+                        break
+
                 if _addHashTags(wordStr, httpPrefix, originalDomain,
                                 replaceHashTags, hashtags):
                     prevWordStr = ''

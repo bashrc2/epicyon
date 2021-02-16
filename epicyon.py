@@ -279,6 +279,11 @@ parser.add_argument("--verifyAllSignatures",
                     const=True, default=False,
                     help="Whether to require that all incoming " +
                     "posts have valid jsonld signatures")
+parser.add_argument("--brochMode",
+                    dest='brochMode',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Enable broch mode")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -2292,6 +2297,11 @@ verifyAllSignatures = \
 if verifyAllSignatures is not None:
     args.verifyAllSignatures = bool(verifyAllSignatures)
 
+brochMode = \
+    getConfigParam(baseDir, 'brochMode')
+if brochMode is not None:
+    args.brochMode = bool(brochMode)
+
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
     if '://' in YTDomain:
@@ -2305,7 +2315,8 @@ if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
-    runDaemon(args.verifyAllSignatures,
+    runDaemon(args.brochMode,
+              args.verifyAllSignatures,
               args.sendThreadsTimeoutMins,
               args.dormantMonths,
               args.maxNewswirePosts,

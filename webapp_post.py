@@ -327,9 +327,13 @@ def _getEditIconHtml(baseDir: str, nickname: str, domainFull: str,
     """
     editStr = ''
     actor = postJsonObject['actor']
-    if (actor.endswith(domainFull + '/users/' + nickname) or
+    # This should either be a post which you created,
+    # or it could be generated from the newswire (see
+    # _addBlogsToNewswire) in which case anyone with
+    # editor status should be able to alter it
+    if (actor.endswith('/' + domainFull + '/users/' + nickname) or
         (isEditor(baseDir, nickname) and
-         actor.endswith(domainFull + '/users/news'))):
+         actor.endswith('/' + domainFull + '/users/news'))):
 
         postId = postJsonObject['object']['id']
 

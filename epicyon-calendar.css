@@ -84,6 +84,14 @@ a:focus {
     border: 2px solid var(--focus-color);
 }
 
+.transparent {
+    color: transparent;
+    background: transparent;
+    font-size: 0px;
+    line-height: 0px;
+    height: 0px;
+}
+
 .calendar__day__header,
 .calendar__day__cell {
     border: 2px solid var(--lines-color);

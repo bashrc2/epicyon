@@ -416,23 +416,23 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         translate['Mod']
     navLinks = {
         menuProfile: '/users/' + nickname,
-        menuInbox: usersPath + '/inbox#timeline',
+        menuInbox: usersPath + '/inbox#timelineposts',
         menuSearch: usersPath + '/search',
         menuNewPost: usersPath + '/newpost',
         menuCalendar: usersPath + '/calendar',
-        menuDM: usersPath + '/dm#timeline',
-        menuReplies: usersPath + '/tlreplies#timeline',
-        menuOutbox: usersPath + '/inbox#timeline',
-        menuBookmarks: usersPath + '/tlbookmarks#timeline',
-        menuShares: usersPath + '/tlshares#timeline',
-        menuBlogs: usersPath + '/tlblogs#timeline',
-        # menuEvents: usersPath + '/tlevents#timeline',
-        menuNewswire: '#newswire',
-        menuLinks: '#links'
+        menuDM: usersPath + '/dm#timelineposts',
+        menuReplies: usersPath + '/tlreplies#timelineposts',
+        menuOutbox: usersPath + '/inbox#timelineposts',
+        menuBookmarks: usersPath + '/tlbookmarks#timelineposts',
+        menuShares: usersPath + '/tlshares#timelineposts',
+        menuBlogs: usersPath + '/tlblogs#timelineposts',
+        # menuEvents: usersPath + '/tlevents#timelineposts',
+        menuNewswire: usersPath + '/newswiremobile',
+        menuLinks: usersPath + '/linksmobile'
     }
     if moderator:
         navLinks[menuModeration] = usersPath + '/moderation#modtimeline'
-    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks,
+    tlStr += htmlKeyboardNavigation(textModeBanner, navLinks, None,
                                     usersPath, translate, followApprovals)
 
     # banner and row of buttons
@@ -502,7 +502,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                   calendarImage, followApprovals,
                                   iconsAsButtons)
 
-    tlStr += '  <div id="timeline" class="timeline-posts">\n'
+    tlStr += '  <div id="timelineposts" class="timeline-posts">\n'
 
     # second row of buttons for moderator actions
     if moderator and boxName == 'moderation':

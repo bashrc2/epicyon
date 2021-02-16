@@ -8,9 +8,43 @@ __status__ = "Production"
 
 import os
 import datetime
+from session import urlExists
 from utils import loadJson
 from utils import saveJson
 from utils import getFileCaseInsensitive
+
+
+def _removePersonFromCache(baseDir: str, personUrl: str,
+                           personCache: {}) -> bool:
+    """Removes an actor from the cache
+    """
+    cacheFilename = baseDir + '/cache/actors/' + \
+        personUrl.replace('/', '#')+'.json'
+    if os.path.isfile(cacheFilename):
+        try:
+            os.remove(cacheFilename)
+        except BaseException:
+            pass
+    if personCache.get(personUrl):
+        del personCache[personUrl]
+
+
+def checkForChangedActor(session, baseDir: str,
+                         httpPrefix: str, domainFull: str,
+                         personUrl: str, avatarUrl: str, personCache: {},
+                         timeoutSec: int):
+    """Checks if the avatar url exists and if not then
+    the actor has probably changed without receiving an actor/Person Update.
+    So clear the actor from the cache and it will be refreshed when the next
+    post from them is sent
+    """
+    if not session or not avatarUrl:
+        return
+    if domainFull in avatarUrl:
+        return
+    if urlExists(session, avatarUrl, timeoutSec, httpPrefix, domainFull):
+        return
+    _removePersonFromCache(baseDir, personUrl, personCache)
 
 
 def storePersonInCache(baseDir: str, personUrl: str,

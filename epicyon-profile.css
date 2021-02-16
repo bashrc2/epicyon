@@ -87,7 +87,7 @@
     --quote-right-margin: 0.1em;
     --quote-font-weight: normal;
     --quote-font-size: 120%;
-    --line-spacing: 130%;
+    --line-spacing: 180%;
     --line-spacing-newswire: 120%;
     --newswire-item-moderated-color: white;
     --newswire-date-moderated-color: white;
@@ -106,11 +106,11 @@
     --column-left-icons-margin: 0;
     --column-right-border-width: 0;
     --column-left-border-color: black;
-    --column-left-icon-size: 20%;
+    --column-left-icon-size: 2.1vw;
     --column-left-icon-size-mobile: 10%;
     --column-left-image-width-mobile: 40vw;
     --column-right-image-width-mobile: 100vw;
-    --column-right-icon-size: 20%;
+    --column-right-icon-size: 2.1vw;
     --column-right-icon-size-mobile: 10%;
     --newswire-date-color: white;
     --newswire-voted-background-color: black;
