@@ -605,6 +605,12 @@ def urlPermitted(url: str, federationList: []):
     return False
 
 
+def getLocalNetworkAddresses() -> []:
+    """Returns patterns for local network address detection
+    """
+    return ('localhost', '127.0.', '192.168', '10.0.')
+
+
 def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
@@ -615,7 +621,7 @@ def dangerousMarkup(content: str, allowLocalNetworkAccess: bool) -> bool:
     contentSections = content.split('<')
     invalidPartials = ()
     if not allowLocalNetworkAccess:
-        invalidPartials = ('localhost', '127.0.', '192.168', '10.0.')
+        invalidPartials = getLocalNetworkAddresses()
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
                       'hr', 'allow-popups', 'allow-scripts')

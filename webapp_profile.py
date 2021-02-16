@@ -1278,6 +1278,16 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     '      <input type="checkbox" class="profilecheckbox" ' + \
                     'name="verifyallsignatures"> ' + \
                     translate['Verify all signatures'] + '<br>\n'
+            if getConfigParam(baseDir, "brochMode"):
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="brochMode" checked> ' + \
+                    translate['Broch mode'] + '<br>\n'
+            else:
+                instanceStr += \
+                    '      <input type="checkbox" class="profilecheckbox" ' + \
+                    'name="brochMode"> ' + \
+                    translate['Broch mode'] + '<br>\n'
             instanceStr += '</div>'
 
             moderators = ''

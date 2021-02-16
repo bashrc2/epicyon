@@ -14,6 +14,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import getLocalNetworkAddresses
 from utils import getFullDomain
 from utils import removeIdEnding
 from utils import getDomainFromActor
@@ -114,6 +115,23 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                           'Create does not have the "to" parameter ' +
                           str(messageJson))
             return False
+
+        # actor should be a string
+        if not isinstance(messageJson['actor'], str):
+            return False
+
+        # actor should look like a url
+        if '://' not in messageJson['actor'] or \
+           '.' not in messageJson['actor']:
+            return False
+
+        # sent by an actor on a local network address?
+        if not allowLocalNetworkAccess:
+            localNetworkPatternList = getLocalNetworkAddresses()
+            for localNetworkPattern in localNetworkPatternList:
+                if localNetworkPattern in messageJson['actor']:
+                    return False
+
         testDomain, testPort = getDomainFromActor(messageJson['actor'])
         testDomain = getFullDomain(testDomain, testPort)
         if isBlockedDomain(baseDir, testDomain):

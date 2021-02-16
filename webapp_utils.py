@@ -892,26 +892,26 @@ def htmlKeyboardNavigation(banner: str, links: {},
                            followApprovals=False) -> str:
     """Given a set of links return the html for keyboard navigation
     """
-    htmlStr = '<div class="transparent"><ul>'
+    htmlStr = '<div class="transparent"><ul>\n'
 
     if banner:
-        htmlStr += '<pre aria-label="">' + banner + '<br><br></pre>'
+        htmlStr += '<pre aria-label="">\n' + banner + '\n<br><br></pre>\n'
 
     if subHeading:
         htmlStr += '<strong><label class="transparent">' + \
-            subHeading + '</label></strong><br>'
+            subHeading + '</label></strong><br>\n'
 
     # show new follower approvals
     if usersPath and translate and followApprovals:
         htmlStr += '<strong><label class="transparent">' + \
             '<a href="' + usersPath + '/followers#timeline">' + \
             translate['Approve follow requests'] + '</a>' + \
-            '</label></strong><br><br>'
+            '</label></strong><br><br>\n'
 
     # show the list of links
     for title, url in links.items():
         htmlStr += '<li><label class="transparent">' + \
             '<a href="' + str(url) + '">' + \
-            str(title) + '</a></label></li>'
-    htmlStr += '</ul></div>'
+            str(title) + '</a></label></li>\n'
+    htmlStr += '</ul></div>\n'
     return htmlStr

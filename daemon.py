@@ -109,6 +109,7 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from blocking import setBrochMode
 from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
@@ -185,6 +186,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
 from utils import getLockedAccount
@@ -478,6 +480,10 @@ class PubServer(BaseHTTPRequestHandler):
             if 'text/html' not in self.headers['Accept']:
                 return False
         if self.headers['Accept'].startswith('*'):
+            if self.headers.get('User-Agent'):
+                if 'ELinks' in self.headers['User-Agent'] or \
+                   'Lynx' in self.headers['User-Agent']:
+                    return True
             return False
         if 'json' in self.headers['Accept']:
             return False
@@ -1153,16 +1159,42 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check for blocked domains so that they can be rejected early
         messageDomain = None
-        if messageJson.get('actor'):
-            messageDomain, messagePort = \
-                getDomainFromActor(messageJson['actor'])
-            if isBlockedDomain(self.server.baseDir, messageDomain):
-                print('POST from blocked domain ' + messageDomain)
-                self._400()
-                self.server.POSTbusy = False
-                return 3
-        else:
+        if not messageJson.get('actor'):
             print('Message arriving at inbox queue has no actor')
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
+        # actor should be a string
+        if not isinstance(messageJson['actor'], str):
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
+        # actor should look like a url
+        if '://' not in messageJson['actor'] or \
+           '.' not in messageJson['actor']:
+            print('POST actor does not look like a url ' +
+                  messageJson['actor'])
+            self._400()
+            self.server.POSTbusy = False
+            return 3
+
+        # sent by an actor on a local network address?
+        if not self.server.allowLocalNetworkAccess:
+            localNetworkPatternList = getLocalNetworkAddresses()
+            for localNetworkPattern in localNetworkPatternList:
+                if localNetworkPattern in messageJson['actor']:
+                    print('POST actor contains local network address ' +
+                          messageJson['actor'])
+                    self._400()
+                    self.server.POSTbusy = False
+                    return 3
+
+        messageDomain, messagePort = \
+            getDomainFromActor(messageJson['actor'])
+        if isBlockedDomain(self.server.baseDir, messageDomain):
+            print('POST from blocked domain ' + messageDomain)
             self._400()
             self.server.POSTbusy = False
             return 3
@@ -4511,6 +4543,18 @@ class PubServer(BaseHTTPRequestHandler):
                                 verifyAllSignatures
                             setConfigParam(baseDir, "verifyAllSignatures",
                                            verifyAllSignatures)
+
+                            brochMode = False
+                            if fields.get('brochMode'):
+                                if fields['brochMode'] == 'on':
+                                    brochMode = True
+                            currBrochMode = \
+                                getConfigParam(baseDir, "brochMode")
+                            if brochMode != currBrochMode:
+                                setBrochMode(self.server.baseDir,
+                                             self.server.domainFull,
+                                             brochMode)
+                                setConfigParam(baseDir, "brochMode", brochMode)
 
                         # change moderators list
                         if fields.get('moderators'):
@@ -10099,9 +10143,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
-            self._progressiveWebAppManifest(callingDomain,
-                                            GETstartTime, GETtimings)
-            return
+            if self._hasAccept(callingDomain):
+                if not self._requestHTTP():
+                    self._progressiveWebAppManifest(callingDomain,
+                                                    GETstartTime, GETtimings)
+                    return
+                else:
+                    self.path = '/'
 
         # default newswire favicon, for links to sites which
         # have no favicon
@@ -13889,7 +13937,8 @@ def loadTokens(baseDir: str, tokensDict: {}, tokensLookup: {}) -> None:
         break
 
 
-def runDaemon(verifyAllSignatures: bool,
+def runDaemon(brochMode: bool,
+              verifyAllSignatures: bool,
               sendThreadsTimeoutMins: int,
               dormantMonths: int,
               maxNewswirePosts: int,
@@ -14141,6 +14190,9 @@ def runDaemon(verifyAllSignatures: bool,
 
     # cache to store css files
     httpd.cssCache = {}
+
+    # whether to enable broch mode, which locks down the instance
+    setBrochMode(baseDir, httpd.domainFull, brochMode)
 
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)
