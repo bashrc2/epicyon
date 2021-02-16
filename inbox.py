@@ -2726,6 +2726,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             print('DEBUG: checking http header signature')
             pprint(queueJson['httpHeaders'])
         postStr = json.dumps(queueJson['post'])
+        httpSignatureFailed = False
         if not verifyPostHeaders(httpPrefix,
                                  pubKey,
                                  queueJson['httpHeaders'],
@@ -2733,19 +2734,17 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  queueJson['digest'],
                                  postStr,
                                  debug):
+            httpSignatureFailed = True
             print('Queue: Header signature check failed')
-            pprint(queueJson['httpHeaders'])
-            if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
-            if len(queue) > 0:
-                queue.pop(0)
-            continue
-
-        if debug:
-            print('DEBUG: http header signature check success')
+            if debug:
+                pprint(queueJson['httpHeaders'])
+        else:
+            if debug:
+                print('DEBUG: http header signature check success')
 
         # check if a json signature exists on this post
-        checkJsonSignature = False
+        hasJsonSignature = False
+        jwebsigType = None
         originalJson = queueJson['original']
         if originalJson.get('@context') and \
            originalJson.get('signature'):
@@ -2754,41 +2753,59 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 jwebsig = originalJson['signature']
                 # signature exists and is of the expected type
                 if jwebsig.get('type') and jwebsig.get('signatureValue'):
-                    if jwebsig['type'] == 'RsaSignature2017':
+                    jwebsigType = jwebsig['type']
+                    if jwebsigType == 'RsaSignature2017':
                         if hasValidContext(originalJson):
-                            checkJsonSignature = True
+                            hasJsonSignature = True
                         else:
                             print('unrecognised @context: ' +
                                   str(originalJson['@context']))
 
         # strict enforcement of json signatures
-        if verifyAllSignatures and \
-           not checkJsonSignature:
-            print('inbox post does not have a jsonld signature ' +
-                  keyId + ' ' + str(originalJson))
-            if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
-            if len(queue) > 0:
-                queue.pop(0)
-            continue
-
-        if checkJsonSignature and verifyAllSignatures:
-            # use the original json message received, not one which may have
-            # been modified along the way
-            if not verifyJsonSignature(originalJson, pubKey):
-                if debug:
-                    print('WARN: jsonld inbox signature check failed ' +
-                          keyId + ' ' + pubKey + ' ' + str(originalJson))
+        if not hasJsonSignature:
+            if httpSignatureFailed:
+                if jwebsigType:
+                    print('Queue: Header signature check failed and does ' +
+                          'not have a recognised jsonld signature type ' +
+                          jwebsigType)
                 else:
-                    print('WARN: jsonld inbox signature check failed ' +
-                          keyId)
+                    print('Queue: Header signature check failed and ' +
+                          'does not have jsonld signature')
+                if debug:
+                    pprint(queueJson['httpHeaders'])
+
+            if verifyAllSignatures:
+                print('Queue: inbox post does not have a jsonld signature ' +
+                      keyId + ' ' + str(originalJson))
+
+            if httpSignatureFailed or verifyAllSignatures:
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue) > 0:
                     queue.pop(0)
                 continue
-            else:
-                print('jsonld inbox signature check success ' + keyId)
+        else:
+            if httpSignatureFailed or verifyAllSignatures:
+                # use the original json message received, not one which
+                # may have been modified along the way
+                if not verifyJsonSignature(originalJson, pubKey):
+                    if debug:
+                        print('WARN: jsonld inbox signature check failed ' +
+                              keyId + ' ' + pubKey + ' ' + str(originalJson))
+                    else:
+                        print('WARN: jsonld inbox signature check failed ' +
+                              keyId)
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
+                    if len(queue) > 0:
+                        queue.pop(0)
+                    continue
+                else:
+                    if httpSignatureFailed:
+                        print('jsonld inbox signature check success ' +
+                              'via relay ' + keyId)
+                    else:
+                        print('jsonld inbox signature check success ' + keyId)
 
         # set the id to the same as the post filename
         # This makes the filename and the id consistent

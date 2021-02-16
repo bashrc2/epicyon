@@ -53,6 +53,37 @@ def createSession(proxyType: str):
     return session
 
 
+def urlExists(session, url: str, timeoutSec=3,
+              httpPrefix='https', domain='testdomain') -> bool:
+    if not isinstance(url, str):
+        print('url: ' + str(url))
+        print('ERROR: urlExists failed, url should be a string')
+        return False
+    sessionParams = {}
+    sessionHeaders = {}
+    sessionHeaders['User-Agent'] = 'Epicyon/' + __version__
+    if domain:
+        sessionHeaders['User-Agent'] += \
+            '; +' + httpPrefix + '://' + domain + '/'
+    if not session:
+        print('WARN: urlExists failed, no session specified')
+        return True
+    try:
+        result = session.get(url, headers=sessionHeaders,
+                             params=sessionParams,
+                             timeout=timeoutSec)
+        if result:
+            if result.status_code == 200 or \
+               result.status_code == 304:
+                return True
+            else:
+                print('urlExists for ' + url + ' returned ' +
+                      str(result.status_code))
+    except BaseException:
+        pass
+    return False
+
+
 def getJson(session, url: str, headers: {}, params: {},
             version='1.2.0', httpPrefix='https',
             domain='testdomain') -> {}:
@@ -72,6 +103,7 @@ def getJson(session, url: str, headers: {}, params: {},
             '; +' + httpPrefix + '://' + domain + '/'
     if not session:
         print('WARN: getJson failed, no session specified for getJson')
+        return None
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()

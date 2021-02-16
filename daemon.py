@@ -228,6 +228,7 @@ from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
 from content import extractTextFieldsInPOST
 from media import removeMetaData
+from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
@@ -5488,6 +5489,15 @@ class PubServer(BaseHTTPRequestHandler):
                 PGPfingerprint = getPGPfingerprint(actorJson)
                 if actorJson.get('alsoKnownAs'):
                     alsoKnownAs = actorJson['alsoKnownAs']
+
+            if self.server.session:
+                checkForChangedActor(self.server.session,
+                                     self.server.baseDir,
+                                     self.server.httpPrefix,
+                                     self.server.domainFull,
+                                     optionsActor, optionsProfileUrl,
+                                     self.server.personCache, 5)
+
             msg = htmlPersonOptions(self.server.defaultTimeline,
                                     self.server.cssCache,
                                     self.server.translate,
@@ -10051,6 +10061,16 @@ class PubServer(BaseHTTPRequestHandler):
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path = self.path.replace('/@', '/users/')
+            # replace https://domain/@nick/statusnumber
+            # with https://domain/users/nick/statuses/statusnumber
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                statusNumberStr = nickname.split('/')[1]
+                if statusNumberStr.isdigit():
+                    nickname = nickname.split('/')[0]
+                    self.path = \
+                        self.path.replace('/users/' + nickname + '/',
+                                          '/users/' + nickname + '/statuses/')
 
         # turn off dropdowns on new post screen
         noDropDown = False
