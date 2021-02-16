@@ -4554,7 +4554,6 @@ class PubServer(BaseHTTPRequestHandler):
                                 setBrochMode(self.server.baseDir,
                                              self.server.domainFull,
                                              brochMode)
-                                self.server.brochMode = brochMode
                                 setConfigParam(baseDir, "brochMode", brochMode)
 
                         # change moderators list
@@ -14022,9 +14021,6 @@ def runDaemon(brochMode: bool,
     # maximum number of posts to appear in the newswire on the right column
     httpd.maxNewswirePosts = maxNewswirePosts
 
-    # whether to enable broch mode, which locks down the instance
-    httpd.brochMode = brochMode
-
     # whether to require that all incoming posts have valid jsonld signatures
     httpd.verifyAllSignatures = verifyAllSignatures
 
@@ -14194,6 +14190,9 @@ def runDaemon(brochMode: bool,
 
     # cache to store css files
     httpd.cssCache = {}
+
+    # whether to enable broch mode, which locks down the instance
+    setBrochMode(baseDir, httpd.domainFull, brochMode)
 
     if not os.path.isdir(baseDir + '/accounts/inbox@' + domain):
         print('Creating shared inbox: inbox@' + domain)

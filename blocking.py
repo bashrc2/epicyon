@@ -378,6 +378,10 @@ def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:
             os.remove(allowFilename)
             print('Broch mode turned off')
     else:
+        if os.path.isfile(allowFilename):
+            lastModified = fileLastModified(allowFilename)
+            print('Broch mode already activated ' + lastModified)
+            return
         # generate instance allow list
         allowedDomains = [domainFull]
         followFiles = ('following.txt', 'followers.txt')
