@@ -12406,12 +12406,15 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('message') and \
                    not fields.get('imageDescription') and \
                    not fields.get('pinToProfile'):
+                    print('WARN: no message, image description or pin')
                     return -1
                 if fields.get('submitPost'):
                     if fields['submitPost'] != \
                        self.server.translate['Submit']:
+                        print('WARN: no submit field ' + fields['submitPost'])
                         return -1
                 else:
+                    print('WARN: no submitPost')
                     return 2
 
             if not fields.get('imageDescription'):
