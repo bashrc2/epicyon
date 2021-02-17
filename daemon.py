@@ -11602,7 +11602,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # Edit a blog post
             if authorized and \
-               '/tlblogs' in self.path and \
+               '/users/' in self.path and \
                '?editblogpost=' in self.path and \
                '?actor=' in self.path:
                 messageId = self.path.split('?editblogpost=')[1]
@@ -11611,7 +11611,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = self.path.split('?actor=')[1]
                 if '?' in actor:
                     actor = actor.split('?')[0]
-                nickname = getNicknameFromActor(self.path)
+                nickname = getNicknameFromActor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \
                         self.server.httpPrefix + '://' + \
@@ -12316,12 +12316,21 @@ class PubServer(BaseHTTPRequestHandler):
         if ' boundary=' in headers['Content-Type']:
             if self.server.debug:
                 print('DEBUG: receiving POST headers ' +
-                      headers['Content-Type'])
+                      headers['Content-Type'] +
+                      ' path ' + path)
             nickname = None
             nicknameStr = path.split('/users/')[1]
+            if '?' in nicknameStr:
+                nicknameStr = nicknameStr.split('?')[0]
             if '/' in nicknameStr:
                 nickname = nicknameStr.split('/')[0]
             else:
+                nickname = nicknameStr
+            if self.server.debug:
+                print('DEBUG: POST nickname ' + str(nickname))
+            if not nickname:
+                print('WARN: no nickname found when receiving ' + postType +
+                      ' path ' + path)
                 return -1
             length = int(headers['Content-Length'])
             if length > self.server.maxPostLength:
@@ -12402,12 +12411,15 @@ class PubServer(BaseHTTPRequestHandler):
                 if not fields.get('message') and \
                    not fields.get('imageDescription') and \
                    not fields.get('pinToProfile'):
+                    print('WARN: no message, image description or pin')
                     return -1
                 if fields.get('submitPost'):
                     if fields['submitPost'] != \
                        self.server.translate['Submit']:
+                        print('WARN: no submit field ' + fields['submitPost'])
                         return -1
                 else:
+                    print('WARN: no submitPost')
                     return 2
 
             if not fields.get('imageDescription'):
@@ -13562,6 +13574,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      authorized)
             if pageNumber:
                 nickname = self.path.split('/users/')[1]
+                if '?' in nickname:
+                    nickname = nickname.split('?')[0]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
