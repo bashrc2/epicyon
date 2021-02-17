@@ -12316,7 +12316,8 @@ class PubServer(BaseHTTPRequestHandler):
         if ' boundary=' in headers['Content-Type']:
             if self.server.debug:
                 print('DEBUG: receiving POST headers ' +
-                      headers['Content-Type'])
+                      headers['Content-Type'] +
+                      ' path ' + path)
             nickname = None
             nicknameStr = path.split('/users/')[1]
             if '?' in nicknameStr:
@@ -12325,12 +12326,12 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nicknameStr.split('/')[0]
             else:
                 nickname = nicknameStr
+            if self.server.debug:
+                print('DEBUG: POST nickname ' + str(nickname))
             if not nickname:
                 print('WARN: no nickname found when receiving ' + postType +
                       ' path ' + path)
                 return -1
-            if self.server.debug:
-                print('DEBUG: POST nickname ' + nickname)
             length = int(headers['Content-Length'])
             if length > self.server.maxPostLength:
                 print('POST size too large')
