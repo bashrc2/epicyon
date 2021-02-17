@@ -13574,6 +13574,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      authorized)
             if pageNumber:
                 nickname = self.path.split('/users/')[1]
+                if '?' in nickname:
+                    nickname = nickname.split('?')[0]
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
