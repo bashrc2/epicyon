@@ -12320,11 +12320,13 @@ class PubServer(BaseHTTPRequestHandler):
             nickname = None
             nicknameStr = path.split('/users/')[1]
             if '?' in nicknameStr:
-                nickname = nicknameStr.split('?')[0]
-            elif '/' in nicknameStr:
+                nicknameStr = nicknameStr.split('?')[0]
+            if '/' in nicknameStr:
                 nickname = nicknameStr.split('/')[0]
             else:
                 return -1
+            if self.server.debug:
+                print('DEBUG: POST nickname ' + nickname)
             length = int(headers['Content-Length'])
             if length > self.server.maxPostLength:
                 print('POST size too large')
