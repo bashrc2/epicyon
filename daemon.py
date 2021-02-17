@@ -11601,7 +11601,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: replydm path ' + self.path)
 
             # Edit a blog post
-            if '/tlblogs' in self.path and \
+            if authorized and \
+               '/users/' in self.path and \
                '?editblogpost=' in self.path and \
                '?actor=' in self.path:
                 messageId = self.path.split('?editblogpost=')[1]
