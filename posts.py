@@ -1478,7 +1478,8 @@ def createBlogPost(baseDir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location, True)
-    blogJson['object']['url'] = blogJson['object']['url'].replace('/@', '/users/')
+    blogJson['object']['url'] = \
+        blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
 
     return blogJson
