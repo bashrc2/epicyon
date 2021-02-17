@@ -12319,10 +12319,10 @@ class PubServer(BaseHTTPRequestHandler):
                       headers['Content-Type'])
             nickname = None
             nicknameStr = path.split('/users/')[1]
-            if '/' in nicknameStr:
-                nickname = nicknameStr.split('/')[0]
-            elif '?' in nicknameStr:
+            if '?' in nicknameStr:
                 nickname = nicknameStr.split('?')[0]
+            elif '/' in nicknameStr:
+                nickname = nicknameStr.split('/')[0]
             else:
                 return -1
             length = int(headers['Content-Length'])
