@@ -11611,7 +11611,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = self.path.split('?actor=')[1]
                 if '?' in actor:
                     actor = actor.split('?')[0]
-                nickname = getNicknameFromActor(self.path)
+                nickname = getNicknameFromActor(self.path.split('?')[0])
                 if nickname == actor:
                     postUrl = \
                         self.server.httpPrefix + '://' + \
