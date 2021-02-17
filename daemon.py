@@ -12323,6 +12323,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nicknameStr = nicknameStr.split('?')[0]
             if '/' in nicknameStr:
                 nickname = nicknameStr.split('/')[0]
+            else:
+                nickname = nicknameStr
             if not nickname:
                 print('WARN: no nickname found when receiving ' + postType +
                       ' path ' + path)
