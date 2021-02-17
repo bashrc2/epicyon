@@ -285,7 +285,7 @@ def htmlProfileAfterSearch(cssCache: {},
             continue
         if not item.get('type'):
             continue
-        if item['type'] != 'Create' and item['type'] != 'Announce':
+        if item['type'] != 'Create':
             continue
         if not item.get('object'):
             continue
