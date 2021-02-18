@@ -2,6 +2,7 @@
     "timeline-border-radius": "0",
     "button-corner-radius": "0",
     "rendering": "crisp-edges",
+    "dropdown-bg-color": "#7152a3",
     "button-background": "#5152a3",
     "button-background-hover": "#7152a3",
     "button-small-background": "darkblue",
@@ -17,6 +18,7 @@
     "main-visited-color": "#333",
     "main-link-color-hover": "purple",
     "main-bg-color": "#9ba0d4",
+    "timeline-posts-background-color": "#9ba0d4",
     "header-bg-color": "#9ba0d4",
     "link-bg-color": "#9ba0d4",
     "calendar-bg-color": "#9ba0d4",
@@ -40,7 +42,7 @@
     "banner-height": "20vh",
     "banner-height-mobile": "10vh",
     "search-banner-height-mobile": "15vh",
-    "header-font": "'ElectrumADFExp-Regular'",
-    "*font-family": "'ElectrumADFExp-Regular'",
-    "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
-}
+    "header-font": "'rainyhearts'",
+    "*font-family": "'rainyhearts'",
+    "*src": "url('./fonts/rainyhearts.ttf') format('truetype')"
+}}
