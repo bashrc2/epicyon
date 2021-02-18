@@ -1,4 +1,5 @@
 {
+    "rendering": "crisp-edges",
     "button-background": "#69282c",
     "button-small-background": "darkblue",
     "button-selected": "#a34046",
