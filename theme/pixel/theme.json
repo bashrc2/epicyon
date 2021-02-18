@@ -56,7 +56,7 @@
     "column-left-color": "#9ba0d4",
     "column-left-header-background": "#5152a3",
     "column-left-header-color": "white",
-    "column-left-fg-color": "#9ba0d4",
+    "column-left-fg-color": "black",
     "main-fg-color": "black",
     "text-entry-foreground": "black",
     "options-fg-color": "black",
