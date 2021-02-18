@@ -592,8 +592,9 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
 
     # separator between posts which only appears in shell browsers
     # such as Lynx and is not read by screen readers
-    textModeSeparator = \
-        '<div class="transparent"><hr></div>'
+    if boxName != 'tlmedia':
+        textModeSeparator = \
+            '<div class="transparent"><hr></div>'
 
     # page up arrow
     if pageNumber > 1:
