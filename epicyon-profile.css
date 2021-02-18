@@ -154,6 +154,7 @@
     --italic-font-style: italic;
     --header-font: 'Arial, Helvetica, sans-serif';
     --button-bottom-margin: 10px;
+    --rendering: normal;
 }
 
 @font-face {
@@ -180,6 +181,7 @@ body, html {
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
+    image-rendering: var(--rendering);
 }
 
 .cw {

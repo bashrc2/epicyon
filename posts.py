@@ -3101,12 +3101,10 @@ def _createBoxIndexed(recentPostsCache: {},
     # but have their own separate index
     indexBoxName = boxname
     timelineNickname = nickname
-    tlFeatures = False
     if boxname == "tlbookmarks":
         boxname = "bookmarks"
         indexBoxName = boxname
     elif boxname == "tlfeatures":
-        tlFeatures = True
         boxname = "tlblogs"
         indexBoxName = boxname
         timelineNickname = 'news'

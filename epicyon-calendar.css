@@ -24,6 +24,7 @@
     --calendar-header-font: 'Montserrat';
     --calendar-header-font-style: italic;
     --main-link-color-hover: #bbb;
+    --rendering: normal;
 }
 
 @font-face {
@@ -46,6 +47,7 @@ body {
     color: var(--day-number2);
     font-family: 'Montserrat';
     font-weight: 700;
+    image-rendering: var(--rendering);
 }
 
 main {

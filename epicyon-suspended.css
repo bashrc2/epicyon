@@ -21,6 +21,7 @@
     --button-selected: #666;
     --focus-color: white;
     --main-link-color-hover: #bbb;
+    --rendering: normal;
 }
 
 @font-face {
@@ -48,6 +49,7 @@ body, html {
     min-width: 600px;
     margin: 0 auto;
     font-size: var(--font-size);
+    image-rendering: var(--rendering);
 }
 
 a, u {
