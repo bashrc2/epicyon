@@ -595,6 +595,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     if boxName != 'tlmedia':
         textModeSeparator = \
             '<div class="transparent"><hr></div>'
+    else:
+        textModeSeparator = ''
 
     # page up arrow
     if pageNumber > 1:
