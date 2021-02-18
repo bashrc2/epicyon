@@ -42,6 +42,7 @@
     "main-link-color-hover": "purple",
     "options-main-link-color-hover": "purple",
     "main-bg-color": "#9ba0d4",
+    "login-bg-color": "#9ba0d4",
     "text-entry-background": "#8ba0d4",
     "timeline-posts-background-color": "#9ba0d4",
     "header-bg-color": "#9ba0d4",
