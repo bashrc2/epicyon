@@ -8,6 +8,9 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 # see https://tools.ietf.org/html/draft-cavage-http-signatures-06
+#
+# This might change in future
+# see https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures-01
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
