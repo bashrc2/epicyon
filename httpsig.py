@@ -163,7 +163,8 @@ def _verifyRecentSignature(signedDateStr: str) -> bool:
 def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                       path: str, GETmethod: bool,
                       messageBodyDigest: str,
-                      messageBodyJsonStr: str, debug: bool) -> bool:
+                      messageBodyJsonStr: str, debug: bool,
+                      noRecencyCheck=False) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
     publicKeyPem - the public key from an rsa key pair
@@ -186,23 +187,36 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     # Build a dictionary of the signature values
     if headers.get('Signature-Input'):
         signatureHeader = headers['Signature-Input']
-        fieldSep1 = ';'
         fieldSep2 = ','
+        # split the signature input into separate fields
+        signatureDict = {
+            k.strip(): v.strip()
+            for k, v in [i.split('=', 1) for i in signatureHeader.split(';')]
+        }
+        requestTargetKey = None
+        requestTargetStr = None
+        for k, v in signatureDict.items():
+            if v.startswith('('):
+                requestTargetKey = k
+                requestTargetStr = v[1:-1]
+                break
+        if not requestTargetKey:
+            return False
+        signatureDict[requestTargetKey] = requestTargetStr
     else:
+        requestTargetKey = 'headers'
         signatureHeader = headers['signature']
-        fieldSep1 = ','
         fieldSep2 = ' '
-
-    # split the signature input into separate fields
-    signatureDict = {
-        k: v[1:-1]
-        for k, v in [i.split('=', 1) for i in signatureHeader.split(fieldSep1)]
-    }
+        # split the signature input into separate fields
+        signatureDict = {
+            k: v[1:-1]
+            for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
+        }
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
-    for signedHeader in signatureDict['headers'].split(fieldSep2):
+    for signedHeader in signatureDict[requestTargetKey].split(fieldSep2):
         signedHeader = signedHeader.strip()
         if debug:
             print('DEBUG: verifyPostHeaders signedHeader=' + signedHeader)
@@ -214,11 +228,11 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
             # https://tools.ietf.org/html/
             # draft-ietf-httpbis-message-signatures-01
             appendStr = f'*request-target: {method.lower()} {path}'
-            # remove sig1=(
-            if '=(' in appendStr:
-                appendStr = appendStr.split('=(')[1]
-                if ')' in appendStr:
-                    appendStr = appendStr.split(')')[0]
+            # remove ()
+            # if appendStr.startswith('('):
+            #     appendStr = appendStr.split('(')[1]
+            #     if ')' in appendStr:
+            #         appendStr = appendStr.split(')')[0]
             signedHeaderList.append(appendStr)
         elif signedHeader == 'digest':
             if messageBodyDigest:
@@ -245,7 +259,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                                   ' not found in ' + str(headers))
         else:
             if headers.get(signedHeader):
-                if signedHeader == 'date':
+                if signedHeader == 'date' and not noRecencyCheck:
                     if not _verifyRecentSignature(headers[signedHeader]):
                         if debug:
                             print('DEBUG: ' +
@@ -280,8 +294,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         # draft-ietf-httpbis-message-signatures-01
         headersSig = headers['Signature']
         # remove sig1=:
-        if '=:' in headersSig:
-            headersSig = headersSig.split('=:')[1]
+        if requestTargetKey + '=:' in headersSig:
+            headersSig = headersSig.split(requestTargetKey + '=:')[1]
             headersSig = headersSig[:len(headersSig)-1]
         signature = base64.b64decode(headersSig)
     else:
