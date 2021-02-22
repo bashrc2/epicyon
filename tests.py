@@ -217,10 +217,11 @@ def testHttpSigNew():
     #     "Signature": sig
     # }
     dateStr = "Tue, 07 Jun 2014 20:51:35 GMT"
+    secondsSinceEpoch = 1402170695
     domain = "example.com"
     port = 443
     headers = {
-        "*created": "1402170695",
+        "*created": str(secondsSinceEpoch),
         "*request-target": "post /foo?param=value&pet=dog",
         "host": domain,
         "date": dateStr,
@@ -260,7 +261,7 @@ def testHttpSigNew():
                            'rsa-sha256')
     assert signatureIndexHeader == \
         'keyId="https://example.com/users/foo#main-key"; ' + \
-        'alg=hs2019; created=1402170695; ' + \
+        'alg=hs2019; created=' + str(secondsSinceEpoch) + '; ' + \
         'sig1=(*request-target, *created, host, date, ' + \
         'digest, content-type, content-length)'
     assert signatureHeader == \
