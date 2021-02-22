@@ -279,9 +279,13 @@ def htmlProfileAfterSearch(cssCache: {},
     i = 0
     for item in parseUserFeed(session, outboxUrl, asHeader,
                               projectVersion, httpPrefix, domain):
+        if not item.get('actor'):
+            continue
+        if item['actor'] != personUrl:
+            continue
         if not item.get('type'):
             continue
-        if item['type'] != 'Create' and item['type'] != 'Announce':
+        if item['type'] != 'Create':
             continue
         if not item.get('object'):
             continue

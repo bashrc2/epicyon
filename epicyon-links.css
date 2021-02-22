@@ -67,6 +67,7 @@
     --banner-height: 15vh;
     --banner-height-mobile: 10vh;
     --header-font: 'Arial, Helvetica, sans-serif';
+    --rendering: normal;
 }
 
 @font-face {
@@ -93,6 +94,7 @@ body, html {
     min-width: 950px;
     font-size: var(--font-size);
     line-height: var(--line-spacing);
+    image-rendering: var(--rendering);
 }
 
 blockquote {

@@ -1478,7 +1478,8 @@ def createBlogPost(baseDir: str,
                          inReplyTo, inReplyToAtomUri, subject,
                          schedulePost,
                          eventDate, eventTime, location, True)
-
+    blogJson['object']['url'] = \
+        blogJson['object']['url'].replace('/@', '/users/')
     _appendCitationsToBlogPost(baseDir, nickname, domain, blogJson)
 
     return blogJson
@@ -3226,8 +3227,8 @@ def _createBoxIndexed(recentPostsCache: {},
                     _addPostToTimeline(fullPostFilename, boxname,
                                        postsInBox, boxActor)
                 else:
-                    # if this is the features timeline
                     if timelineNickname != nickname:
+                        # if this is the features timeline
                         fullPostFilename = \
                             locatePost(baseDir, timelineNickname,
                                        domain, postUrl, False)
@@ -3235,9 +3236,11 @@ def _createBoxIndexed(recentPostsCache: {},
                             _addPostToTimeline(fullPostFilename, boxname,
                                                postsInBox, boxActor)
                         else:
-                            print('WARN: unable to locate post ' + postUrl)
+                            print('WARN: features timeline. ' +
+                                  'Unable to locate post ' + postUrl)
                     else:
-                        print('WARN: unable to locate post ' + postUrl)
+                        print('WARN: Unable to locate post ' + postUrl +
+                              ' nickname ' + nickname)
 
                 postsCtr += 1
 

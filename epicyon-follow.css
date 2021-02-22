@@ -32,6 +32,7 @@
     --follow-text-entry-width: 90%;
     --focus-color: white;
     --main-link-color-hover: #bbb;
+    --rendering: normal;
 }
 
 @font-face {
@@ -58,6 +59,7 @@ body, html {
     max-width: 100%;
     min-width: 600px;
     margin: 5% auto;
+    image-rendering: var(--rendering);
 }
 
 a, u {
