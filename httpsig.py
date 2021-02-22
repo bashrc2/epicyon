@@ -18,6 +18,7 @@ from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import utils as hazutils
+import calendar
 import base64
 from time import gmtime, strftime
 import datetime
@@ -97,6 +98,89 @@ def signPostHeaders(dateStr: str, privateKeyPem: str,
     signatureHeader = ','.join(
         [f'{k}="{v}"' for k, v in signatureDict.items()])
     return signatureHeader
+
+
+def signPostHeadersNew(dateStr: str, privateKeyPem: str,
+                       nickname: str,
+                       domain: str, port: int,
+                       toDomain: str, toPort: int,
+                       path: str,
+                       httpPrefix: str,
+                       messageBodyJsonStr: str,
+                       algorithm: str) -> (str, str):
+    """Returns a raw signature strings that can be plugged into a header
+    as "Signature-Input" and "Signature"
+    used to verify the authenticity of an HTTP transmission.
+    See https://tools.ietf.org/html/draft-ietf-httpbis-message-signatures-01
+    """
+    domain = getFullDomain(domain, port)
+
+    toDomain = getFullDomain(toDomain, toPort)
+
+    timeFormat = "%a, %d %b %Y %H:%M:%S %Z"
+    if not dateStr:
+        currTime = gmtime()
+        secondsSinceEpoch = int(calendar.timegm(currTime))
+        dateStr = strftime(timeFormat, currTime)
+    else:
+        currTime = datetime.datetime.strptime(dateStr, timeFormat)
+        secondsSinceEpoch = int(currTime.timestamp())
+    keyID = httpPrefix + '://' + domain + '/users/' + nickname + '#main-key'
+    if not messageBodyJsonStr:
+        headers = {
+            '*request-target': f'post {path}',
+            '*created': str(secondsSinceEpoch),
+            'host': toDomain,
+            'date': dateStr,
+            'content-type': 'application/json'
+        }
+    else:
+        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        contentLength = len(messageBodyJsonStr)
+        headers = {
+            '*request-target': f'post {path}',
+            '*created': str(secondsSinceEpoch),
+            'host': toDomain,
+            'date': dateStr,
+            'digest': f'SHA-256={bodyDigest}',
+            'content-type': 'application/activity+json',
+            'content-length': str(contentLength)
+        }
+    key = load_pem_private_key(privateKeyPem.encode('utf-8'),
+                               None, backend=default_backend())
+    # build a digest for signing
+    signedHeaderKeys = headers.keys()
+    signedHeaderText = ''
+    for headerKey in signedHeaderKeys:
+        signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
+    signedHeaderText = signedHeaderText.strip()
+    headerDigest = getSHA256(signedHeaderText.encode('ascii'))
+
+    # Sign the digest. Potentially other signing algorithms can be added here.
+    signature = ''
+    if algorithm == 'rsa-sha256':
+        rawSignature = key.sign(headerDigest,
+                                padding.PKCS1v15(),
+                                hazutils.Prehashed(hashes.SHA256()))
+        signature = base64.b64encode(rawSignature).decode('ascii')
+
+    sigKey = 'sig1'
+    # Put it into a valid HTTP signature format
+    signatureInputDict = {
+        'keyId': keyID,
+    }
+    signatureIndexHeader = '; '.join(
+        [f'{k}="{v}"' for k, v in signatureInputDict.items()])
+    signatureIndexHeader += '; alg=hs2019'
+    signatureIndexHeader += '; created=' + str(secondsSinceEpoch)
+    signatureIndexHeader += \
+        '; ' + sigKey + '=(' + ', '.join(signedHeaderKeys) + ')'
+    signatureDict = {
+        sigKey: signature
+    }
+    signatureHeader = '; '.join(
+        [f'{k}=:{v}:' for k, v in signatureDict.items()])
+    return signatureIndexHeader, signatureHeader
 
 
 def createSignedHeader(privateKeyPem: str, nickname: str,
