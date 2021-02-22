@@ -300,6 +300,19 @@ def saveDomainQrcode(baseDir: str, httpPrefix: str,
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _getheaderSignatureInput(self):
+        """There are different versions of http signatures with
+        different header styles
+        """
+        if self.headers.get('Signature-Input'):
+            # https://tools.ietf.org/html/
+            # draft-ietf-httpbis-message-signatures-01
+            return self.headers['Signature-Input']
+        elif self.headers.get('signature'):
+            # Ye olde Masto http sig
+            return self.headers['signature']
+        return None
+
     def _pathIsImage(self, path: str) -> bool:
         if path.endswith('.png') or \
            path.endswith('.jpg') or \
@@ -13805,8 +13818,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 21)
 
-        if self.headers.get('signature'):
-            if 'keyId=' not in self.headers['signature']:
+        headerSignature = self._getheaderSignatureInput()
+
+        if headerSignature:
+            if 'keyId=' not in headerSignature:
                 if self.server.debug:
                     print('DEBUG: POST to inbox has no keyId in ' +
                           'header signature parameter')

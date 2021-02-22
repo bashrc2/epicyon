@@ -184,20 +184,41 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
                                  backend=default_backend())
     # Build a dictionary of the signature values
-    signatureHeader = headers['signature']
+    if headers.get('Signature-Input'):
+        signatureHeader = headers['Signature-Input']
+        fieldSep1 = ';'
+        fieldSep2 = ','
+    else:
+        signatureHeader = headers['signature']
+        fieldSep1 = ','
+        fieldSep2 = ' '
+
+    # split the signature input into separate fields
     signatureDict = {
         k: v[1:-1]
-        for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
+        for k, v in [i.split('=', 1) for i in signatureHeader.split(fieldSep1)]
     }
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
-    for signedHeader in signatureDict['headers'].split(' '):
+    for signedHeader in signatureDict['headers'].split(fieldSep2):
+        signedHeader = signedHeader.strip()
         if debug:
             print('DEBUG: verifyPostHeaders signedHeader=' + signedHeader)
         if signedHeader == '(request-target)':
+            # original Mastodon http signature
             appendStr = f'(request-target): {method.lower()} {path}'
+            signedHeaderList.append(appendStr)
+        elif '*request-target' in signedHeader:
+            # https://tools.ietf.org/html/
+            # draft-ietf-httpbis-message-signatures-01
+            appendStr = f'*request-target: {method.lower()} {path}'
+            # remove sig1=(
+            if '=(' in appendStr:
+                appendStr = appendStr.split('=(')[1]
+                if ')' in appendStr:
+                    appendStr = appendStr.split(')')[0]
             signedHeaderList.append(appendStr)
         elif signedHeader == 'digest':
             if messageBodyDigest:
@@ -253,7 +274,19 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
     headerDigest = getSHA256(signedHeaderText.encode('ascii'))
 
     # Get the signature, verify with public key, return result
-    signature = base64.b64decode(signatureDict['signature'])
+    signature = None
+    if headers.get('Signature-Input') and headers.get('Signature'):
+        # https://tools.ietf.org/html/
+        # draft-ietf-httpbis-message-signatures-01
+        headersSig = headers['Signature']
+        # remove sig1=:
+        if '=:' in headersSig:
+            headersSig = headersSig.split('=:')[1]
+            headersSig = headersSig[:len(headersSig)-1]
+        signature = base64.b64decode(headersSig)
+    else:
+        # Original Mastodon signature
+        signature = base64.b64decode(signatureDict['signature'])
 
     try:
         pubkey.verify(
