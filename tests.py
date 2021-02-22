@@ -3116,6 +3116,9 @@ def testValidHashTag():
 
 def runAllTests():
     print('Running tests...')
+    testHttpsig()
+    return
+
     testFunctions()
     testValidHashTag()
     testPrepareHtmlPostNickname()

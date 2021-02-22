@@ -13805,7 +13805,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 21)
 
-        if not self.headers.get('signature'):
+        if self.headers.get('signature'):
             if 'keyId=' not in self.headers['signature']:
                 if self.server.debug:
                     print('DEBUG: POST to inbox has no keyId in ' +
