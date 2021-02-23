@@ -351,7 +351,7 @@ def htmlPersonOptions(defaultTimeline: str,
                 translate['Info'] + '</button>\n'
 
         personNotes = ''
-        if originPathStr.startswith('/' + nickname + '/'):
+        if originPathStr.startswith('/users/' + nickname + '/'):
             personNotesFilename = \
                 baseDir + '/accounts/' + nickname + '@' + domain + \
                 '/notes/' + handle + '.txt'
