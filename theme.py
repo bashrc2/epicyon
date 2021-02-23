@@ -619,6 +619,15 @@ def setNewsAvatar(baseDir: str, name: str,
              nickname + '@' + domain + '/avatar.png')
 
 
+def _setClearCacheFlag(baseDir: str) -> None:
+    """Sets a flag which can be used by an external system
+    (eg. a script in a cron job) to clear the browser cache
+    """
+    flagFilename = baseDir + '/accounts/.clear_cache'
+    with open(flagFilename, 'w+') as flagFile:
+        flagFile.write('\n')
+
+
 def setTheme(baseDir: str, name: str, domain: str,
              allowLocalNetworkAccess: bool) -> bool:
     """Sets the theme with the given name as the current theme
@@ -674,4 +683,5 @@ def setTheme(baseDir: str, name: str, domain: str,
         disableGrayscale(baseDir)
 
     _setThemeInConfig(baseDir, name)
+    _setClearCacheFlag(baseDir)
     return result
