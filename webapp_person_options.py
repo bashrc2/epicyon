@@ -53,7 +53,8 @@ def htmlPersonOptions(defaultTimeline: str,
                       movedTo: str,
                       alsoKnownAs: [],
                       textModeBanner: str,
-                      newsInstance: bool) -> str:
+                      newsInstance: bool,
+                      authorized: bool) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
@@ -225,87 +226,94 @@ def htmlPersonOptions(defaultTimeline: str,
         optionsActor + '">\n'
     optionsStr += '    <input type="hidden" name="avatarUrl" value="' + \
         optionsProfileUrl + '">\n'
-    if optionsNickname:
-        handle = optionsNickname + '@' + optionsDomainFull
-        petname = getPetName(baseDir, nickname, domain, handle)
-        optionsStr += \
-            '    ' + translate['Petname'] + ': \n' + \
-            '    <input type="text" name="optionpetname" value="' + \
-            petname + '">\n' \
-            '    <button type="submit" class="buttonsmall" ' + \
-            'name="submitPetname">' + \
-            translate['Submit'] + '</button><br>\n'
+    if authorized:
+        if originPathStr == '/users/' + nickname:
+            if optionsNickname:
+                handle = optionsNickname + '@' + optionsDomainFull
+                petname = getPetName(baseDir, nickname, domain, handle)
+                optionsStr += \
+                    '    ' + translate['Petname'] + ': \n' + \
+                    '    <input type="text" name="optionpetname" value="' + \
+                    petname + '">\n' \
+                    '    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitPetname">' + \
+                    translate['Submit'] + '</button><br>\n'
 
-    # checkbox for receiving calendar events
-    if isFollowingActor(baseDir, nickname, domain, optionsActor):
-        checkboxStr = \
-            '    <input type="checkbox" ' + \
-            'class="profilecheckbox" name="onCalendar" checked> ' + \
-            translate['Receive calendar events from this account'] + \
-            '\n    <button type="submit" class="buttonsmall" ' + \
-            'name="submitOnCalendar">' + \
-            translate['Submit'] + '</button><br>\n'
-        if not receivingCalendarEvents(baseDir, nickname, domain,
-                                       optionsNickname, optionsDomainFull):
-            checkboxStr = checkboxStr.replace(' checked>', '>')
-        optionsStr += checkboxStr
+            # checkbox for receiving calendar events
+            if isFollowingActor(baseDir, nickname, domain, optionsActor):
+                checkboxStr = \
+                    '    <input type="checkbox" ' + \
+                    'class="profilecheckbox" name="onCalendar" checked> ' + \
+                    translate['Receive calendar events from this account'] + \
+                    '\n    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitOnCalendar">' + \
+                    translate['Submit'] + '</button><br>\n'
+                if not receivingCalendarEvents(baseDir, nickname, domain,
+                                               optionsNickname,
+                                               optionsDomainFull):
+                    checkboxStr = checkboxStr.replace(' checked>', '>')
+                optionsStr += checkboxStr
 
-    # checkbox for permission to post to newswire
-    newswirePostsPermitted = False
-    if optionsDomainFull == domainFull:
-        adminNickname = getConfigParam(baseDir, 'admin')
-        if (nickname == adminNickname or
-            (isModerator(baseDir, nickname) and
-             not isModerator(baseDir, optionsNickname))):
-            newswireBlockedFilename = \
-                baseDir + '/accounts/' + \
-                optionsNickname + '@' + optionsDomain + '/.nonewswire'
-            checkboxStr = \
-                '    <input type="checkbox" ' + \
-                'class="profilecheckbox" name="postsToNews" checked> ' + \
-                translate['Allow news posts'] + \
-                '\n    <button type="submit" class="buttonsmall" ' + \
-                'name="submitPostToNews">' + \
-                translate['Submit'] + '</button><br>\n'
-            if os.path.isfile(newswireBlockedFilename):
-                checkboxStr = checkboxStr.replace(' checked>', '>')
-            else:
-                newswirePostsPermitted = True
-            optionsStr += checkboxStr
+            # checkbox for permission to post to newswire
+            newswirePostsPermitted = False
+            if optionsDomainFull == domainFull:
+                adminNickname = getConfigParam(baseDir, 'admin')
+                if (nickname == adminNickname or
+                    (isModerator(baseDir, nickname) and
+                     not isModerator(baseDir, optionsNickname))):
+                    newswireBlockedFilename = \
+                        baseDir + '/accounts/' + \
+                        optionsNickname + '@' + optionsDomain + '/.nonewswire'
+                    checkboxStr = \
+                        '    <input type="checkbox" ' + \
+                        'class="profilecheckbox" ' + \
+                        'name="postsToNews" checked> ' + \
+                        translate['Allow news posts'] + \
+                        '\n    <button type="submit" class="buttonsmall" ' + \
+                        'name="submitPostToNews">' + \
+                        translate['Submit'] + '</button><br>\n'
+                    if os.path.isfile(newswireBlockedFilename):
+                        checkboxStr = checkboxStr.replace(' checked>', '>')
+                    else:
+                        newswirePostsPermitted = True
+                    optionsStr += checkboxStr
 
-    # whether blogs created by this account are moderated on the newswire
-    if newswirePostsPermitted:
-        moderatedFilename = \
-            baseDir + '/accounts/' + \
-            optionsNickname + '@' + optionsDomain + '/.newswiremoderated'
-        checkboxStr = \
-            '    <input type="checkbox" ' + \
-            'class="profilecheckbox" name="modNewsPosts" checked> ' + \
-            translate['News posts are moderated'] + \
-            '\n    <button type="submit" class="buttonsmall" ' + \
-            'name="submitModNewsPosts">' + \
-            translate['Submit'] + '</button><br>\n'
-        if not os.path.isfile(moderatedFilename):
-            checkboxStr = checkboxStr.replace(' checked>', '>')
-        optionsStr += checkboxStr
+            # whether blogs created by this account are moderated on
+            # the newswire
+            if newswirePostsPermitted:
+                moderatedFilename = \
+                    baseDir + '/accounts/' + \
+                    optionsNickname + '@' + \
+                    optionsDomain + '/.newswiremoderated'
+                checkboxStr = \
+                    '    <input type="checkbox" ' + \
+                    'class="profilecheckbox" name="modNewsPosts" checked> ' + \
+                    translate['News posts are moderated'] + \
+                    '\n    <button type="submit" class="buttonsmall" ' + \
+                    'name="submitModNewsPosts">' + \
+                    translate['Submit'] + '</button><br>\n'
+                if not os.path.isfile(moderatedFilename):
+                    checkboxStr = checkboxStr.replace(' checked>', '>')
+                optionsStr += checkboxStr
 
-    # checkbox for permission to post to featured articles
-    if newsInstance and optionsDomainFull == domainFull:
-        adminNickname = getConfigParam(baseDir, 'admin')
-        if (nickname == adminNickname or
-            (isModerator(baseDir, nickname) and
-             not isModerator(baseDir, optionsNickname))):
-            checkboxStr = \
-                '    <input type="checkbox" ' + \
-                'class="profilecheckbox" name="postsToFeatures" checked> ' + \
-                translate['Featured writer'] + \
-                '\n    <button type="submit" class="buttonsmall" ' + \
-                'name="submitPostToFeatures">' + \
-                translate['Submit'] + '</button><br>\n'
-            if not isFeaturedWriter(baseDir, optionsNickname,
-                                    optionsDomain):
-                checkboxStr = checkboxStr.replace(' checked>', '>')
-            optionsStr += checkboxStr
+            # checkbox for permission to post to featured articles
+            if newsInstance and optionsDomainFull == domainFull:
+                adminNickname = getConfigParam(baseDir, 'admin')
+                if (nickname == adminNickname or
+                    (isModerator(baseDir, nickname) and
+                     not isModerator(baseDir, optionsNickname))):
+                    checkboxStr = \
+                        '    <input type="checkbox" ' + \
+                        'class="profilecheckbox" ' + \
+                        'name="postsToFeatures" checked> ' + \
+                        translate['Featured writer'] + \
+                        '\n    <button type="submit" class="buttonsmall" ' + \
+                        'name="submitPostToFeatures">' + \
+                        translate['Submit'] + '</button><br>\n'
+                    if not isFeaturedWriter(baseDir, optionsNickname,
+                                            optionsDomain):
+                        checkboxStr = checkboxStr.replace(' checked>', '>')
+                    optionsStr += checkboxStr
 
     optionsStr += optionsLinkStr
     backPath = '/'
@@ -313,53 +321,63 @@ def htmlPersonOptions(defaultTimeline: str,
         backPath = '/users/' + nickname + '/' + defaultTimeline
         if 'moderation' in backToPath:
             backPath = '/users/' + nickname + '/moderation'
-    optionsStr += \
-        '    <a href="' + backPath + '"><button type="button" ' + \
-        'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
-        '</button></a>\n'
-    optionsStr += \
-        '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>\n'
+    if authorized and originPathStr == '/users/' + nickname:
+        optionsStr += \
+            '    <a href="' + backPath + '"><button type="button" ' + \
+            'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
+            '</button></a>\n'
+    else:
+        optionsStr += \
+            '    <a href="' + originPathStr + '"><button type="button" ' + \
+            'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
+            '</button></a>\n'
+    if authorized:
+        optionsStr += \
+            '    <button type="submit" class="button" name="submitView">' + \
+            translate['View'] + '</button>\n'
     optionsStr += donateStr
-    optionsStr += \
-        '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>\n'
-    optionsStr += \
-        '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>\n'
-    optionsStr += \
-        '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>\n'
-    optionsStr += \
-        '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
-    optionsStr += \
-        '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>\n'
-
-    if isModerator(baseDir, nickname):
+    if authorized:
+        optionsStr += \
+            '    <button type="submit" class="button" name="submit' + \
+            followStr + '">' + translate[followStr] + '</button>\n'
+        optionsStr += \
+            '    <button type="submit" class="button" name="submit' + \
+            blockStr + '">' + translate[blockStr] + '</button>\n'
+        optionsStr += \
+            '    <button type="submit" class="button" name="submitDM">' + \
+            translate['DM'] + '</button>\n'
+        optionsStr += \
+            '    <button type="submit" class="button" name="submit' + \
+            snoozeButtonStr + '">' + translate[snoozeButtonStr] + \
+            '</button>\n'
         optionsStr += \
             '    <button type="submit" class="button" ' + \
-            'name="submitPersonInfo">' + \
-            translate['Info'] + '</button>\n'
+            'name="submitReport">' + translate['Report'] + '</button>\n'
 
-    personNotes = ''
-    personNotesFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/notes/' + handle + '.txt'
-    if os.path.isfile(personNotesFilename):
-        with open(personNotesFilename, 'r') as fp:
-            personNotes = fp.read()
+        if isModerator(baseDir, nickname):
+            optionsStr += \
+                '    <button type="submit" class="button" ' + \
+                'name="submitPersonInfo">' + \
+                translate['Info'] + '</button>\n'
 
-    optionsStr += \
-        '    <br><br>' + translate['Notes'] + ': \n'
-    optionsStr += '    <button type="submit" class="buttonsmall" ' + \
-        'name="submitPersonNotes">' + \
-        translate['Submit'] + '</button><br>\n'
-    optionsStr += \
-        '    <textarea id="message" ' + \
-        'name="optionnotes" style="height:400px">' + \
-        personNotes + '</textarea>\n'
+        personNotes = ''
+        if originPathStr == '/users/' + nickname:
+            personNotesFilename = \
+                baseDir + '/accounts/' + nickname + '@' + domain + \
+                '/notes/' + handle + '.txt'
+            if os.path.isfile(personNotesFilename):
+                with open(personNotesFilename, 'r') as fp:
+                    personNotes = fp.read()
+
+        optionsStr += \
+            '    <br><br>' + translate['Notes'] + ': \n'
+        optionsStr += '    <button type="submit" class="buttonsmall" ' + \
+            'name="submitPersonNotes">' + \
+            translate['Submit'] + '</button><br>\n'
+        optionsStr += \
+            '    <textarea id="message" ' + \
+            'name="optionnotes" style="height:400px">' + \
+            personNotes + '</textarea>\n'
 
     optionsStr += '  </form>\n'
     optionsStr += '</center>\n'
