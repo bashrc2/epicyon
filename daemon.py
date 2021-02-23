@@ -2819,7 +2819,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             domain, domainFull,
                                             GETstartTime, GETtimings,
                                             onionDomain, i2pDomain,
-                                            cookie, debug)
+                                            cookie, debug, authorized)
                     return
                 else:
                     showPublishedDateOnly = self.server.showPublishedDateOnly
@@ -5486,7 +5486,8 @@ class PubServer(BaseHTTPRequestHandler):
                            domain: str, domainFull: str,
                            GETstartTime, GETtimings: {},
                            onionDomain: str, i2pDomain: str,
-                           cookie: str, debug: bool) -> None:
+                           cookie: str, debug: bool,
+                           authorized: bool) -> None:
         """Show person options screen
         """
         backToPath = ''
@@ -5576,7 +5577,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     lockedAccount,
                                     movedTo, alsoKnownAs,
                                     self.server.textModeBanner,
-                                    self.server.newsInstance).encode('utf-8')
+                                    self.server.newsInstance,
+                                    authorized).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
                               cookie, callingDomain)
@@ -10495,7 +10497,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         GETstartTime, GETtimings,
                                         self.server.onionDomain,
                                         self.server.i2pDomain,
-                                        cookie, self.server.debug)
+                                        cookie, self.server.debug,
+                                        authorized)
                 return
 
             self._benchmarkGETtimings(GETstartTime, GETtimings,
