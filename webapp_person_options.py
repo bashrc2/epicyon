@@ -321,10 +321,16 @@ def htmlPersonOptions(defaultTimeline: str,
         backPath = '/users/' + nickname + '/' + defaultTimeline
         if 'moderation' in backToPath:
             backPath = '/users/' + nickname + '/moderation'
-    optionsStr += \
-        '    <a href="' + backPath + '"><button type="button" ' + \
-        'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
-        '</button></a>\n'
+    if authorized:
+        optionsStr += \
+            '    <a href="' + backPath + '"><button type="button" ' + \
+            'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
+            '</button></a>\n'
+    else:
+        optionsStr += \
+            '    <a href="' + originPathStr + '"><button type="button" ' + \
+            'class="buttonIcon" name="submitBack">' + translate['Go Back'] + \
+            '</button></a>\n'
     if authorized:
         optionsStr += \
             '    <button type="submit" class="button" name="submitView">' + \
