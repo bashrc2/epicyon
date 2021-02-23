@@ -65,7 +65,7 @@
     "Create a new DM": "Neue Direktnachricht",
     "Switch to profile view": "Zur Profilansicht wechseln",
     "Inbox": "Eingang",
-    "Outbox": "Geschickt",
+    "Sent": "Geschickt",
     "Search and follow": "Suchen und folgen",
     "Refresh": "Aktualisieren",
     "Nickname or URL. Block using *@domain or nickname@domain": "Benutzername oder URL. *@Domäne oder Benutzer@Domäne sperren",

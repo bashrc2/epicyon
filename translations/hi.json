@@ -65,7 +65,7 @@
     "Create a new DM": "नया डीएम बनाएं",
     "Switch to profile view": "प्रोफ़ाइल दृश्य पर स्विच करें",
     "Inbox": "इनबॉक्स",
-    "Outbox": "भेज दिया",
+    "Sent": "भेज दिया",
     "Search and follow": "खोज और अनुसरण करें",
     "Refresh": "ताज़ा करना",
     "Nickname or URL. Block using *@domain or nickname@domain": "उपनाम या URL। *@डोमेन या उपनाम@डोमेन का उपयोग करके ब्लॉक करें",

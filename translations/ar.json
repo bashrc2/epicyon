@@ -65,7 +65,7 @@
     "Create a new DM": "إنشاء DM جديد",
     "Switch to profile view": "التبديل إلى عرض الملف الشخصي",
     "Inbox": "صندوق الوارد",
-    "Outbox": "أرسلت",
+    "Sent": "أرسلت",
     "Search and follow": "بحث ومتابعة",
     "Refresh": "تحديث",
     "Nickname or URL. Block using *@domain or nickname@domain": "الاسم المستعار أو عنوان URL. حظر استخدام *@domain أو اسم النطاق@domain",

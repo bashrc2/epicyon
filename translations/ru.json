@@ -65,7 +65,7 @@
     "Create a new DM": "Создать новое прямое сообщение",
     "Switch to profile view": "Переключиться на вид профиля",
     "Inbox": "входящие",
-    "Outbox": "Отправлено",
+    "Sent": "Отправлено",
     "Search and follow": "Искать и следовать",
     "Refresh": "обновление",
     "Nickname or URL. Block using *@domain or nickname@domain": "Псевдоним или URL. Блокировка с использованием *@domain или псевдоним@domain",

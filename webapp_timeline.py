@@ -385,7 +385,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     menuInbox = \
         htmlHideFromScreenReader('📥') + ' ' + translate['Inbox']
     menuOutbox = \
-        htmlHideFromScreenReader('📤') + ' ' + translate['Outbox']
+        htmlHideFromScreenReader('📤') + ' ' + translate['Sent']
     menuSearch = \
         htmlHideFromScreenReader('🔍') + ' ' + \
         translate['Search and follow']
