@@ -351,12 +351,13 @@ def htmlPersonOptions(defaultTimeline: str,
                 translate['Info'] + '</button>\n'
 
         personNotes = ''
-        personNotesFilename = \
-            baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/notes/' + handle + '.txt'
-        if os.path.isfile(personNotesFilename):
-            with open(personNotesFilename, 'r') as fp:
-                personNotes = fp.read()
+        if originPathStr.startswith('/' + nickname + '/'):
+            personNotesFilename = \
+                baseDir + '/accounts/' + nickname + '@' + domain + \
+                '/notes/' + handle + '.txt'
+            if os.path.isfile(personNotesFilename):
+                with open(personNotesFilename, 'r') as fp:
+                    personNotes = fp.read()
 
         optionsStr += \
             '    <br><br>' + translate['Notes'] + ': \n'
