@@ -58,6 +58,7 @@ from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
 from httpsig import messageContentDigest
+from posts import createDirectMessagePost
 from posts import validContentWarning
 from posts import downloadAnnounce
 from posts import isDM
@@ -2056,6 +2057,67 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
         lastSeenFile.write(str(daysSinceEpoch))
 
 
+def _bounceDM(senderPostId: str, session, httpPrefix: str,
+              baseDir: str, nickname: str, domain: str, port: int,
+              sendingHandle: str, federationList: [],
+              sendThreads: [], postLog: [],
+              cachedWebfingers: {}, personCache: {},
+              translate: {}, debug: bool) -> None:
+    """Sends a bounce message back to the sending handle
+    if a DM has been rejected
+    """
+    print(nickname + '@' + domain +
+          ' cannot receive DM from ' + sendingHandle +
+          ' because they do not follow them')
+    senderNickname = sendingHandle.split('@')[0]
+    senderDomain = sendingHandle.split('@')[1]
+    senderPort = port
+    if ':' in senderDomain:
+        senderPortStr = senderDomain.split(':')[1]
+        if senderPortStr.isdigit():
+            senderPort = int(senderPortStr)
+            senderDomain = senderDomain.split(':')[0]
+    cc = []
+
+    # create the bounce DM
+    subject = None
+    content = translate['DM bounce']
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = False
+    attachImageFilename = None
+    mediaType = None
+    imageDescription = ''
+    inReplyTo = removeIdEnding(senderPostId)
+    inReplyToAtomUri = None
+    schedulePost = False
+    eventDate = None
+    eventTime = None
+    location = None
+    postJsonObject = \
+        createDirectMessagePost(baseDir, nickname, domain, port,
+                                httpPrefix, content, followersOnly,
+                                saveToFile, clientToServer,
+                                commentsEnabled,
+                                attachImageFilename, mediaType,
+                                imageDescription,
+                                inReplyTo, inReplyToAtomUri,
+                                subject, debug, schedulePost,
+                                eventDate, eventTime, location)
+    if not postJsonObject:
+        print('WARN: unable to create bounce message to ' + sendingHandle)
+        return
+    # bounce DM goes back to the sender
+    print('Sending bounce DM to ' + sendingHandle)
+    sendSignedJson(postJsonObject, session, baseDir,
+                   nickname, domain, port,
+                   senderNickname, senderDomain, senderPort, cc,
+                   httpPrefix, False, False, federationList,
+                   sendThreads, postLog, cachedWebfingers,
+                   personCache, debug, __version__)
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2302,11 +2364,17 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             if not isFollowingActor(baseDir,
                                                     nickname, domain,
                                                     sendH):
-                                print(nickname + '@' + domain +
-                                      ' cannot receive DM from ' +
-                                      sendH +
-                                      ' because they do not ' +
-                                      'follow them')
+                                # send back a bounce DM
+                                if postJsonObject.get('id'):
+                                    senderPostId = \
+                                        postJsonObject['id']
+                                    _bounceDM(senderPostId,
+                                              session, httpPrefix,
+                                              baseDir, nickname, domain, port,
+                                              sendH, federationList,
+                                              sendThreads, postLog,
+                                              cachedWebfingers, personCache,
+                                              translate, debug)
                                 return False
 
                     # dm index will be updated
