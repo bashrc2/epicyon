@@ -2263,42 +2263,52 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             postIsDM = isDM(postJsonObject)
             if postIsDM:
                 if nickname != 'inbox':
+                    # check for the flag file which indicates to
+                    # only receive DMs from people you are following
                     followDMsFilename = \
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + '/.followDMs'
                     if os.path.isfile(followDMsFilename):
+                        # get the file containing following handles
                         followingFilename = \
                             baseDir + '/accounts/' + \
                             nickname + '@' + domain + '/following.txt'
+                        # who is sending a DM?
                         if not postJsonObject.get('actor'):
                             return False
                         sendingActor = postJsonObject['actor']
                         sendingActorNickname = \
                             getNicknameFromActor(sendingActor)
+                        if not sendingActorNickname:
+                            return False
                         sendingActorDomain, sendingActorPort = \
                             getDomainFromActor(sendingActor)
-                        if sendingActorNickname and sendingActorDomain:
-                            if not os.path.isfile(followingFilename):
-                                print('No following.txt file exists for ' +
-                                      nickname + '@' + domain +
-                                      ' so not accepting DM from ' +
-                                      sendingActorNickname + '@' +
-                                      sendingActorDomain)
-                                return False
-                            sendH = \
-                                sendingActorNickname + '@' + sendingActorDomain
-                            if sendH != nickname + '@' + domain:
-                                if not isFollowingActor(baseDir,
-                                                        nickname, domain,
-                                                        sendH):
-                                    print(nickname + '@' + domain +
-                                          ' cannot receive DM from ' +
-                                          sendH +
-                                          ' because they do not ' +
-                                          'follow them')
-                                    return False
-                        else:
+                        if not sendingActorDomain:
                             return False
+                        # check that the following file exists
+                        if not os.path.isfile(followingFilename):
+                            print('No following.txt file exists for ' +
+                                  nickname + '@' + domain +
+                                  ' so not accepting DM from ' +
+                                  sendingActorNickname + '@' +
+                                  sendingActorDomain)
+                            return False
+                        # get the handle of the DM sender
+                        sendH = \
+                            sendingActorNickname + '@' + sendingActorDomain
+                        # Not sending to yourself
+                        if sendH != nickname + '@' + domain:
+                            # check the follow
+                            if not isFollowingActor(baseDir,
+                                                    nickname, domain,
+                                                    sendH):
+                                print(nickname + '@' + domain +
+                                      ' cannot receive DM from ' +
+                                      sendH +
+                                      ' because they do not ' +
+                                      'follow them')
+                                return False
+
                     # dm index will be updated
                     updateIndexList.append('dm')
                     _dmNotify(baseDir, handle,
