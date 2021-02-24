@@ -1269,11 +1269,9 @@ def individualPostAsHtml(allowDownloads: bool,
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon = showRepeats
     isPublicRepeat = False
-    showDMicon = False
     postIsDM = isDM(postJsonObject)
     if showRepeats:
         if postIsDM:
-            showDMicon = True
             showRepeatIcon = False
         else:
             if not isPublicPost(postJsonObject):

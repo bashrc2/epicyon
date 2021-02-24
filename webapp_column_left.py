@@ -176,7 +176,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             if ' ' not in lineStr:
                 if '#' not in lineStr:
                     if '*' not in lineStr:
-                        continue
+                        if not lineStr.startswith('=> '):
+                            continue
             lineStr = lineStr.strip()
             words = lineStr.split(' ')
             # get the link
@@ -185,6 +186,8 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                 if word == '#':
                     continue
                 if word == '*':
+                    continue
+                if word == '=>':
                     continue
                 if '://' in word:
                     linkStr = word
@@ -202,6 +205,17 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
                         '" target="_blank" ' + \
                         'rel="nofollow noopener noreferrer">' + \
                         lineStr + '</a></p>\n'
+                    linksFileContainsEntries = True
+                elif lineStr.startswith('=> '):
+                    # gemini style link
+                    lineStr = lineStr.replace('=> ', '')
+                    lineStr = lineStr.replace(linkStr, '')
+                    # add link to the returned html
+                    htmlStr += \
+                        '      <p><a href="' + linkStr + \
+                        '" target="_blank" ' + \
+                        'rel="nofollow noopener noreferrer">' + \
+                        lineStr.strip() + '</a></p>\n'
                     linksFileContainsEntries = True
             else:
                 if lineStr.startswith('#') or lineStr.startswith('*'):
