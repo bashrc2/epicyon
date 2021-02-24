@@ -599,15 +599,15 @@ a:focus {
     vertical-align: middle;
 }
 
-.darker {
+.container.darker {
     background-color: var(--main-bg-color-reply);
 }
 
-.dm {
+.container.dm {
     background-color: var(--main-bg-color-dm);
 }
 
-.report {
+.container.report {
     border-color: #255;
     background-color: var(--main-bg-color-report);
 }
