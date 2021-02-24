@@ -126,6 +126,7 @@ def _removeFromFollowRejects(baseDir: str,
 def isFollowingActor(baseDir: str,
                      nickname: str, domain: str, actor: str) -> bool:
     """Is the given nickname following the given actor?
+    The actor can also be a handle: nickname@domain
     """
     if ':' in domain:
         domain = domain.split(':')[0]
@@ -137,6 +138,12 @@ def isFollowingActor(baseDir: str,
         return False
     if actor.lower() in open(followingFile).read().lower():
         return True
+    if '@' in actor and '://' not in actor:
+        # the actor is a handle: nickname@domain
+        followingHandle = actor.lower()
+        if followingHandle in open(followingFile).read().lower():
+            return True
+        return False
     followingNickname = getNicknameFromActor(actor)
     if not followingNickname:
         print('WARN: unable to find nickname in ' + actor)

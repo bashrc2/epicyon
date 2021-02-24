@@ -40,6 +40,7 @@ from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
+from follow import isFollowingActor
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
 from follow import unfollowerOfAccount
@@ -73,7 +74,6 @@ from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from happening import saveEventPost
 from delete import removeOldHashtags
-from follow import isFollowingActor
 from categories import guessHashtagCategory
 from context import hasValidContext
 
@@ -2288,8 +2288,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             sendH = \
                                 sendingActorNickname + '@' + sendingActorDomain
                             if sendH != nickname + '@' + domain:
-                                if sendH not in \
-                                   open(followingFilename).read():
+                                if not isFollowingActor(baseDir,
+                                                        nickname, domain,
+                                                        sendH):
                                     print(nickname + '@' + domain +
                                           ' cannot receive DM from ' +
                                           sendH +
