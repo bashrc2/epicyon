@@ -42,6 +42,7 @@ def htmlWelcomeScreen(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(welcomeFilename):
         with open(baseDir + '/accounts/welcome.txt', 'r') as welcomeFile:
             welcomeText = welcomeFile.read()
+            welcomeText = welcomeText.replace('\n', '<br>')
 
     welcomeForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'
