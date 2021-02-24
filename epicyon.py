@@ -1617,6 +1617,13 @@ if args.addaccount:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+
+    configuredDomain = getConfigParam(baseDir, 'domain')
+    if configuredDomain:
+        if domain != configuredDomain:
+            print('The account domain is expected to be ' + configuredDomain)
+            sys.exit()
+
     if not validNickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
@@ -1688,6 +1695,13 @@ if args.rmaccount:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+
+    configuredDomain = getConfigParam(baseDir, 'domain')
+    if configuredDomain:
+        if domain != configuredDomain:
+            print('The account domain is expected to be ' + configuredDomain)
+            sys.exit()
+
     if args.deactivate:
         if deactivateAccount(baseDir, nickname, domain):
             print('Account for ' + nickname + '@' + domain +
