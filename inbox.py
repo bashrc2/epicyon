@@ -2062,13 +2062,25 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
               sendingHandle: str, federationList: [],
               sendThreads: [], postLog: [],
               cachedWebfingers: {}, personCache: {},
-              translate: {}, debug: bool) -> None:
+              translate: {}, debug: bool,
+              lastBounceMessage: []) -> bool:
     """Sends a bounce message back to the sending handle
     if a DM has been rejected
     """
     print(nickname + '@' + domain +
           ' cannot receive DM from ' + sendingHandle +
           ' because they do not follow them')
+
+    # Don't send out bounce messages too frequently.
+    # Otherwise an adversary could try to DoS your instance
+    # by continuously sending DMs to you
+    currTime = int(time.time())
+    if currTime - lastBounceMessage[0] < 60:
+        return False
+
+    # record the last time that a bounce was generated
+    lastBounceMessage[0] = currTime
+
     senderNickname = sendingHandle.split('@')[0]
     senderDomain = sendingHandle.split('@')[1]
     senderPort = port
@@ -2107,7 +2119,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                                 eventDate, eventTime, location)
     if not postJsonObject:
         print('WARN: unable to create bounce message to ' + sendingHandle)
-        return
+        return False
     # bounce DM goes back to the sender
     print('Sending bounce DM to ' + sendingHandle)
     sendSignedJson(postJsonObject, session, baseDir,
@@ -2116,6 +2128,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
                    httpPrefix, False, False, federationList,
                    sendThreads, postLog, cachedWebfingers,
                    personCache, debug, __version__)
+    return True
 
 
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
@@ -2132,7 +2145,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        unitTest: bool, YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
                        allowLocalNetworkAccess: bool,
-                       peertubeInstances: []) -> bool:
+                       peertubeInstances: [],
+                       lastBounceMessage: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2377,12 +2391,14 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                             _bounceDM(senderPostId,
                                                       session, httpPrefix,
                                                       baseDir,
-                                                      nickname, domain, port,
-                                                      sendH, federationList,
+                                                      nickname, domain,
+                                                      port, sendH,
+                                                      federationList,
                                                       sendThreads, postLog,
                                                       cachedWebfingers,
                                                       personCache,
-                                                      translate, debug)
+                                                      translate, debug,
+                                                      lastBounceMessage)
                                 return False
 
                     # dm index will be updated
@@ -2599,6 +2615,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
     heartBeatCtr = 0
     queueRestoreCtr = 0
+
+    # time when the last DM bounce message was sent
+    # This is in a list so that it can be changed by reference
+    # within _bounceDM
+    lastBounceMessage = [int(time.time())]
 
     while True:
         time.sleep(1)
@@ -3056,7 +3077,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                YTReplacementDomain,
                                showPublishedDateOnly,
                                allowLocalNetworkAccess,
-                               peertubeInstances)
+                               peertubeInstances,
+                               lastBounceMessage)
             if debug:
                 pprint(queueJson['post'])
 
