@@ -98,6 +98,7 @@ from newswire import parseFeedDate
 from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
+from webapp_utils import markdownToHtml
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3282,9 +3283,31 @@ def testValidHashTag():
     assert not validHashTag('This=IsAlsoNotValid"')
 
 
+def testMarkdownToHtml():
+    print('testMarkdownToHtml')
+    markdown = 'This is just plain text'
+    assert markdownToHtml(markdown) == markdown
+
+    markdown = '# Title1\n### Title3\n## Title2\n'
+    assert markdownToHtml(markdown) == \
+        '<h1>Title1</h1><br><h3>Title3</h3><br><h2>Title2</h2><br>'
+
+    markdown = \
+        'This is [a link](https://something.somewhere) to something\n' + \
+        'And [something else](https://cat.pic).'
+    assert markdownToHtml(markdown) == \
+        'This is <a href="https://something.somewhere" ' + \
+        'target="_blank" rel="nofollow noopener noreferrer">' + \
+        'a link</a> to something<br>' + \
+        'And <a href="https://cat.pic" ' + \
+        'target="_blank" rel="nofollow noopener noreferrer">' + \
+        'something else</a>.'
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testMarkdownToHtml()
     testValidHashTag()
     testPrepareHtmlPostNickname()
     testDomainHandling()

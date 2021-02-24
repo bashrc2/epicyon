@@ -35,13 +35,13 @@ def htmlWelcomeScreen(baseDir: str, nickname: str, domain: str,
                      baseDir + '/accounts/welcome-background.jpg')
 
     welcomeText = 'Welcome to Epicyon'
-    welcomeFilename = baseDir + '/accounts/welcome.txt'
+    welcomeFilename = baseDir + '/accounts/welcome.md'
     if not os.path.isfile(welcomeFilename):
-        defaultFilename = baseDir + '/defaultwelcome/' + language + '.txt'
+        defaultFilename = baseDir + '/defaultwelcome/' + language + '.md'
         if os.path.isfile(defaultFilename):
             copyfile(defaultFilename, welcomeFilename)
     if os.path.isfile(welcomeFilename):
-        with open(baseDir + '/accounts/welcome.txt', 'r') as welcomeFile:
+        with open(baseDir + '/accounts/welcome.md', 'r') as welcomeFile:
             welcomeText = markdownToHtml(welcomeFile.read())
 
     welcomeForm = ''
