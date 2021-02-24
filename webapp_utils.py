@@ -21,6 +21,26 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 
 
+def markdownToHtml(markdown: str) -> str:
+    """Converts markdown formatted text to html
+    """
+    linesList = markdown.split('\n')
+    htmlStr = ''
+    for line in linesList:
+        if line.startswith('#####'):
+            line = line.replace('#####', '<h5>').strip() + '</h5>'
+        elif line.startswith('####'):
+            line = line.replace('####', '<h4>').strip() + '</h4>'
+        elif line.startswith('###'):
+            line = line.replace('###', '<h3>').strip() + '</h3>'
+        elif line.startswith('##'):
+            line = line.replace('##', '<h2>').strip() + '</h2>'
+        elif line.startswith('#'):
+            line = line.replace('#', '<h1>').strip() + '</h1>'
+        htmlStr += line
+    return htmlStr
+
+
 def getBrokenLinkSubstitute() -> str:
     """Returns html used to show a default image if the link to
     an image is broken

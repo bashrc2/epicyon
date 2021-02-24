@@ -11,6 +11,7 @@ from shutil import copyfile
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import markdownToHtml
 
 
 def welcomeScreenShown(baseDir: str, nickname: str, domain: str):
@@ -41,8 +42,7 @@ def htmlWelcomeScreen(baseDir: str, nickname: str, domain: str,
             copyfile(defaultFilename, welcomeFilename)
     if os.path.isfile(welcomeFilename):
         with open(baseDir + '/accounts/welcome.txt', 'r') as welcomeFile:
-            welcomeText = welcomeFile.read()
-            welcomeText = welcomeText.replace('\n', '<br>')
+            welcomeText = markdownToHtml(welcomeFile.read())
 
     welcomeForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'
