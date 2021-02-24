@@ -68,7 +68,7 @@ def htmlWelcomeScreen(baseDir: str,
     welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     welcomeForm += '<div class="container">' + welcomeText + '</div>\n'
     welcomeForm += '  <div class="container next">\n'
-    welcomeForm += '    <a href="/welcome_profile">'
+    welcomeForm += '    <a href="/welcome_avatar">\n'
     welcomeForm += '      <button>' + translate['Next'] + '</button></a>\n'
     welcomeForm += '  </div>\n'
     welcomeForm += '</div>\n'
