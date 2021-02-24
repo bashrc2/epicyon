@@ -176,22 +176,42 @@ def getLeftColumnContent(baseDir: str, nickname: str, domainFull: str,
             if ' ' not in lineStr:
                 if '#' not in lineStr:
                     if '*' not in lineStr:
-                        if not lineStr.startswith('=> '):
-                            continue
+                        if not lineStr.startswith('['):
+                            if not lineStr.startswith('=> '):
+                                continue
             lineStr = lineStr.strip()
-            words = lineStr.split(' ')
-            # get the link
             linkStr = None
-            for word in words:
-                if word == '#':
+            if not lineStr.startswith('['):
+                words = lineStr.split(' ')
+                # get the link
+                for word in words:
+                    if word == '#':
+                        continue
+                    if word == '*':
+                        continue
+                    if word == '=>':
+                        continue
+                    if '://' in word:
+                        linkStr = word
+                        break
+            else:
+                # markdown link
+                if ']' not in lineStr:
                     continue
-                if word == '*':
+                if '(' not in lineStr:
                     continue
-                if word == '=>':
+                if ')' not in lineStr:
                     continue
-                if '://' in word:
-                    linkStr = word
-                    break
+                linkStr = lineStr.split('(')[1]
+                if ')' not in linkStr:
+                    continue
+                linkStr = linkStr.split(')')[0]
+                if '://' not in linkStr:
+                    continue
+                lineStr = lineStr.split('[')[1]
+                if ']' not in lineStr:
+                    continue
+                lineStr = lineStr.split(']')[0]
             if linkStr:
                 lineStr = lineStr.replace(linkStr, '').strip()
                 # avoid any dubious scripts being added
