@@ -181,6 +181,8 @@ from webapp_search import htmlSearchEmojiTextEntry
 from webapp_search import htmlSearch
 from webapp_hashtagswarm import getHashtagCategoriesFeed
 from webapp_hashtagswarm import htmlSearchHashtagCategory
+from webapp_welcome import htmlWelcomeScreen
+from webapp_welcome import isWelcomeScreenComplete
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -10669,6 +10671,29 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show about screen done',
                                   'robots txt')
+
+        if htmlGET and authorized and \
+           '/users/' in self.path and self.path.endswith('/welcome'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                msg = \
+                    htmlWelcomeScreen(self.server.baseDir,
+                                      self.server.systemLanguage,
+                                      self.server.translate)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'following accounts done',
+                                          'show welcome screen')
+                return
+            else:
+                self.path = self.path.replace('/welcome', '')
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \

@@ -14,17 +14,30 @@ from webapp_utils import htmlFooter
 from webapp_utils import markdownToHtml
 
 
-def welcomeScreenShown(baseDir: str, nickname: str, domain: str):
+def isWelcomeScreenComplete(baseDir: str, nickname: str, domain: str) -> bool:
+    """Returns true if the welcome screen is complete for the given account
+    """
+    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(accountPath):
+        return
+    completeFilename = accountPath + '/.welcome_complete'
+    return os.path.isfile(completeFilename)
+
+
+def welcomeScreenIsComplete(baseDir: str, nickname: str, domain: str) -> None:
     """Indicates that the welcome screen has been shown for a given account
     """
-    shownFilename = baseDir + '/accounts/.welcome_shown'
-    shownFile = open(shownFilename, 'w+')
-    if shownFile:
-        shownFile.write('\n')
-        shownFile.close()
+    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(accountPath):
+        return
+    completeFilename = accountPath + '/.welcome_complete'
+    completeFile = open(completeFilename, 'w+')
+    if completeFile:
+        completeFile.write('\n')
+        completeFile.close()
 
 
-def htmlWelcomeScreen(baseDir: str, nickname: str, domain: str,
+def htmlWelcomeScreen(baseDir: str,
                       language: str, translate: {}) -> str:
     """Returns the welcome screen
     """

@@ -56,18 +56,23 @@ def markdownToHtml(markdown: str) -> str:
         if line.startswith('#####'):
             line = line.replace('#####', '').strip()
             line = '<h5>' + line + '</h5>'
+            ctr = -1
         elif line.startswith('####'):
             line = line.replace('####', '').strip()
             line = '<h4>' + line + '</h4>'
+            ctr = -1
         elif line.startswith('###'):
             line = line.replace('###', '').strip()
             line = '<h3>' + line + '</h3>'
+            ctr = -1
         elif line.startswith('##'):
             line = line.replace('##', '').strip()
             line = '<h2>' + line + '</h2>'
+            ctr = -1
         elif line.startswith('#'):
             line = line.replace('#', '').strip()
             line = '<h1>' + line + '</h1>'
+            ctr = -1
         htmlStr += line
         ctr += 1
     return htmlStr

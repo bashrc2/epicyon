@@ -3290,7 +3290,7 @@ def testMarkdownToHtml():
 
     markdown = '# Title1\n### Title3\n## Title2\n'
     assert markdownToHtml(markdown) == \
-        '<h1>Title1</h1><br><h3>Title3</h3><br><h2>Title2</h2><br>'
+        '<h1>Title1</h1><h3>Title3</h3><h2>Title2</h2>'
 
     markdown = \
         'This is [a link](https://something.somewhere) to something\n' + \
