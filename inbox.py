@@ -2365,16 +2365,24 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                     nickname, domain,
                                                     sendH):
                                 # send back a bounce DM
-                                if postJsonObject.get('id'):
-                                    senderPostId = \
-                                        postJsonObject['id']
-                                    _bounceDM(senderPostId,
-                                              session, httpPrefix,
-                                              baseDir, nickname, domain, port,
-                                              sendH, federationList,
-                                              sendThreads, postLog,
-                                              cachedWebfingers, personCache,
-                                              translate, debug)
+                                if postJsonObject.get('id') and \
+                                   postJsonObject.get('object'):
+                                    # don't send bounces back to
+                                    # replies to bounce messages
+                                    obj = postJsonObject['object']
+                                    if isinstance(obj, dict):
+                                        if not obj.get('inReplyTo'):
+                                            senderPostId = \
+                                                postJsonObject['id']
+                                            _bounceDM(senderPostId,
+                                                      session, httpPrefix,
+                                                      baseDir,
+                                                      nickname, domain, port,
+                                                      sendH, federationList,
+                                                      sendThreads, postLog,
+                                                      cachedWebfingers,
+                                                      personCache,
+                                                      translate, debug)
                                 return False
 
                     # dm index will be updated
