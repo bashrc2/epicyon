@@ -10373,6 +10373,18 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in self.path:
             usersInPath = True
 
+        # redirect to the welcome screen
+        if htmlGET and authorized and usersInPath:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if '?' in nickname:
+                nickname = nickname.split('?')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                self.path = '/users/' + nickname + '/welcome'
+
         if not htmlGET and \
            usersInPath and self.path.endswith('/pinned'):
             nickname = self.path.split('/users/')[1]
