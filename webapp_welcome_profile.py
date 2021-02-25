@@ -60,11 +60,11 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         '/users/' + nickname + '/avatar.' + ext
 
     imageFormats = getImageFormats()
-    profileForm += '<div class="container">' + profileText + '</div>\n'    
+    profileForm += '<div class="container">' + profileText + '</div>\n'
     profileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
-        'action="/users/' + nickname + '/welcomeprofile">\n'    
+        'action="/users/' + nickname + '/welcomeprofile">\n'
     profileForm += '<div class="container">\n'
     profileForm += '  <center>\n'
     profileForm += '    <img class="welcomeavatar" src="'
@@ -73,6 +73,12 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileForm += 'accept="' + imageFormats + '">\n'
     profileForm += '  </center>\n'
     profileForm += '</div>\n'
+
+    profileForm += '<center>\n'
+    profileForm += \
+        '  <button type="submit" class="button" ' + \
+        'name="previewAvatar">' + translate['Preview'] + '</button> '
+    profileForm += '</center>\n'
 
     actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
     actorJson = loadJson(actorFilename)
