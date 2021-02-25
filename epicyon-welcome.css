@@ -15,6 +15,7 @@
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
+    --welcome-button-width: 10ch;
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
@@ -112,7 +113,7 @@ button {
     margin: 8px 0;
     border: none;
     cursor: pointer;
-    width: 100%;
+    width: var(--welcome-button-width);
     font-size: var(--welcome-font-size);
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -191,7 +192,7 @@ span.psw {
         margin: 8px 0;
         border: none;
         cursor: pointer;
-        width: 100%;
+	width: var(--welcome-button-width);
         font-size: var(--welcome-font-size);
         font-family: Arial, Helvetica, sans-serif;
     }
@@ -231,7 +232,7 @@ span.psw {
         margin: 8px 0;
         border: none;
         cursor: pointer;
-        width: 100%;
+	width: var(--welcome-button-width);
         font-size: var(--welcome-font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
     }
