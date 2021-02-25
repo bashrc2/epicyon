@@ -10375,7 +10375,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # redirect to the welcome screen
         if htmlGET and authorized and usersInPath and \
-           not self.path.endswith('/welcome'):
+           '/welcome' not in self.path:
             nickname = self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname = nickname.split('/')[0]
