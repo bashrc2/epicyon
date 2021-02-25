@@ -28,6 +28,7 @@
     "font-size5": "22px",
     "main-bg-color": "black",
     "login-bg-color": "black",
+    "welcome-bg-color": "black",
     "options-bg-color": "black",
     "post-bg-color": "black",
     "timeline-posts-background-color": "black",
@@ -47,6 +48,7 @@
     "cw-color": "white",
     "main-fg-color": "white",
     "login-fg-color": "white",
+    "welcome-fg-color": "white",
     "options-fg-color": "white",
     "column-left-fg-color": "white",
     "main-bg-color-dm": "#0b0a0a",
@@ -80,5 +82,7 @@
     "column-right-width": "20vw",
     "column-right-icon-size": "11%",
     "login-button-color": "red",
-    "login-button-fg-color": "white"
+    "welcome-button-color": "red",
+    "login-button-fg-color": "white",
+    "welcome-button-fg-color": "white"
 }
