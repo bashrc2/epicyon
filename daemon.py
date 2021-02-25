@@ -4045,11 +4045,12 @@ class PubServer(BaseHTTPRequestHandler):
                           ' image or font could not be saved to ' +
                           postImageFilename)
 
-            if '&previewAvatar=' in postBytes:
+            postBytesStr = postBytes.decode('utf-8')
+            if '&previewAvatar=' in postBytesStr:
                 print('previewAvatar in postBytes')
-            if '&prevWelcomeScreen=' in postBytes:
+            if '&prevWelcomeScreen=' in postBytesStr:
                 print('prevWelcomeScreen in postBytes')
-            if '&nextWelcomeScreen=' in postBytes:
+            if '&nextWelcomeScreen=' in postBytesStr:
                 print('nextWelcomeScreen in postBytes')
 
             # extract all of the text fields into a dict
