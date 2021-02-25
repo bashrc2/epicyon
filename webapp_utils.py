@@ -21,9 +21,34 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 
 
+def _markdownEmphasisHtml(markdown: str) -> str:
+    """Add italics and bold html markup to the given markdown
+    """
+    punctuation = ('.', ';', ':')
+    noPunctuation = markdown
+    for ch in punctuation:
+        noPunctuation = noPunctuation.replace(ch, ' ')
+    wordList = noPunctuation.split(' ')
+    replacements = {}
+    for word in wordList:
+        if word.startswith('**') and word.endswith('**'):
+            replacements[word] = \
+                '<b>' + word.replace('*', '') + '</b>'
+        elif word.startswith('*') and word.endswith('*'):
+            replacements[word] = \
+                '<i>' + word.replace('*', '') + '</i>'
+        elif word.startswith('_') and word.endswith('_'):
+            replacements[word] = \
+                '<ul>' + word.replace('_', '') + '</ul>'
+    for md, html in replacements.items():
+        markdown = markdown.replace(md, html)
+    return markdown
+
+
 def markdownToHtml(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
+    markdown = _markdownEmphasisHtml(markdown)
     # replace markdown style links with html links
     replaceLinks = {}
     text = markdown

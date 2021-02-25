@@ -3288,17 +3288,29 @@ def testMarkdownToHtml():
     markdown = 'This is just plain text'
     assert markdownToHtml(markdown) == markdown
 
+    markdown = 'This is **bold**'
+    assert markdownToHtml(markdown) == 'This is <b>bold</b>'
+
+    markdown = 'This is *italic*'
+    assert markdownToHtml(markdown) == 'This is <i>italic</i>'
+
+    markdown = 'This is _underlined_'
+    assert markdownToHtml(markdown) == 'This is <ul>underlined</ul>'
+
+    markdown = 'This is **just** plain text'
+    assert markdownToHtml(markdown) == 'This is <b>just</b> plain text'
+
     markdown = '# Title1\n### Title3\n## Title2\n'
     assert markdownToHtml(markdown) == \
         '<h1>Title1</h1><h3>Title3</h3><h2>Title2</h2>'
 
     markdown = \
-        'This is [a link](https://something.somewhere) to something\n' + \
+        'This is [a link](https://something.somewhere) to something.\n' + \
         'And [something else](https://cat.pic).'
     assert markdownToHtml(markdown) == \
         'This is <a href="https://something.somewhere" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
-        'a link</a> to something<br>' + \
+        'a link</a> to something.<br>' + \
         'And <a href="https://cat.pic" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
         'something else</a>.'
