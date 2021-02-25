@@ -24,20 +24,20 @@ def isWelcomeScreenComplete(baseDir: str, nickname: str, domain: str) -> bool:
     return os.path.isfile(completeFilename)
 
 
-# def welcomeScreenIsComplete(baseDir: str,
-#                             nickname: str, domain: str) -> None:
-#     """Indicates that the welcome screen has been shown for a given account
-#     """
-#     accountPath = baseDir + '/accounts/' + nickname + '@' + domain
-#     if not os.path.isdir(accountPath):
-#         return
-#     completeFilename = accountPath + '/.welcome_complete'
-#     completeFile = open(completeFilename, 'w+')
-#     if completeFile:
-#         completeFile.write('\n')
-#         completeFile.close()
-#
-#
+def welcomeScreenIsComplete(baseDir: str,
+                            nickname: str, domain: str) -> None:
+    """Indicates that the welcome screen has been shown for a given account
+    """
+    accountPath = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(accountPath):
+        return
+    completeFilename = accountPath + '/.welcome_complete'
+    completeFile = open(completeFilename, 'w+')
+    if completeFile:
+        completeFile.write('\n')
+        completeFile.close()
+
+
 def htmlWelcomeScreen(baseDir: str,
                       language: str, translate: {},
                       currScreen='welcome',

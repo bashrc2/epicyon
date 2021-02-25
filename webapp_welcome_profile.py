@@ -100,10 +100,10 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileForm += '<div class="container next">\n'
     profileForm += \
         '    <button type="submit" class="button" ' + \
-        'name="prevWelcomeScreen">' + translate['Go Back'] + '</button> '
+        'name="initialWelcomeScreen">' + translate['Go Back'] + '</button> '
     profileForm += \
         '    <button type="submit" class="button" ' + \
-        'name="nextWelcomeScreen">' + translate['Next'] + '</button>\n'
+        'name="finalWelcomeScreen">' + translate['Next'] + '</button>\n'
     profileForm += '</div>\n'
 
     profileForm += '</form>\n'

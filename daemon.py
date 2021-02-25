@@ -181,9 +181,11 @@ from webapp_search import htmlSearchEmojiTextEntry
 from webapp_search import htmlSearch
 from webapp_hashtagswarm import getHashtagCategoriesFeed
 from webapp_hashtagswarm import htmlSearchHashtagCategory
+from webapp_welcome import welcomeScreenIsComplete
 from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
 from webapp_welcome_profile import htmlWelcomeProfile
+from webapp_welcome_final import htmlWelcomeFinal
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -4046,13 +4048,19 @@ class PubServer(BaseHTTPRequestHandler):
                           postImageFilename)
 
             postBytesStr = postBytes.decode('utf-8')
-            print('postBytesStr: ' + postBytesStr)
-            if '&previewAvatar=' in postBytesStr:
-                print('previewAvatar in postBytes')
-            if '&prevWelcomeScreen=' in postBytesStr:
-                print('prevWelcomeScreen in postBytes')
-            if '&nextWelcomeScreen=' in postBytesStr:
-                print('nextWelcomeScreen in postBytes')
+            redirectPath = ''
+            checkNameAndBio = False
+            if 'name="previewAvatar"' in postBytesStr:
+                redirectPath = '/welcome_profile'
+            elif 'name="initialWelcomeScreen"' in postBytesStr:
+                redirectPath = '/welcome'
+            elif 'name="finalWelcomeScreen"' in postBytesStr:
+                checkNameAndBio = True
+                redirectPath = '/welcome_final'
+            elif 'name="welcomeCompleteButton"' in postBytesStr:
+                redirectPath = '/' + self.server.defaultTimeline
+                welcomeScreenIsComplete(self.server.baseDir, nickname,
+                                        self.server.domain)
 
             # extract all of the text fields into a dict
             fields = \
@@ -4184,7 +4192,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorJson['name'] = displayName
                             else:
                                 actorJson['name'] = nickname
+                                if checkNameAndBio:
+                                    redirectPath = 'previewAvatar'
                             actorChanged = True
+                    else:
+                        if checkNameAndBio:
+                            redirectPath = 'previewAvatar'
 
                     # change media instance status
                     if fields.get('mediaInstance'):
@@ -4547,7 +4560,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     for tagName, tag in actorTags.items():
                                         actorJson['tag'].append(tag)
                                 actorChanged = True
+                            else:
+                                if checkNameAndBio:
+                                    redirectPath = 'previewAvatar'
                     else:
+                        if checkNameAndBio:
+                            redirectPath = 'previewAvatar'
                         if actorJson['summary']:
                             actorJson['summary'] = ''
                             actorChanged = True
@@ -5034,7 +5052,8 @@ class PubServer(BaseHTTPRequestHandler):
               i2pDomain):
             actorStr = \
                 'http://' + i2pDomain + usersPath
-        self._redirect_headers(actorStr, cookie, callingDomain)
+        self._redirect_headers(actorStr + redirectPath,
+                               cookie, callingDomain)
         self.server.POSTbusy = False
 
     def _progressiveWebAppManifest(self, callingDomain: str,
@@ -10682,6 +10701,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   'show about screen done',
                                   'robots txt')
 
+        # the initial welcome screen after first logging in
         if htmlGET and authorized and \
            '/users/' in self.path and self.path.endswith('/welcome'):
             nickname = self.path.split('/users/')[1]
@@ -10705,6 +10725,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.path = self.path.replace('/welcome', '')
 
+        # the welcome screen which allows you to set an avatar image
         if htmlGET and authorized and \
            '/users/' in self.path and self.path.endswith('/welcome_profile'):
             nickname = self.path.split('/users/')[1]
@@ -10730,6 +10751,33 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             else:
                 self.path = self.path.replace('/welcome_profile', '')
+
+        # the final welcome screen
+        if htmlGET and authorized and \
+           '/users/' in self.path and self.path.endswith('/welcome_final'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                msg = \
+                    htmlWelcomeFinal(self.server.baseDir, nickname,
+                                     self.server.domain,
+                                     self.server.httpPrefix,
+                                     self.server.domainFull,
+                                     self.server.systemLanguage,
+                                     self.server.translate)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show welcome profile screen',
+                                          'show welcome final screen')
+                return
+            else:
+                self.path = self.path.replace('/welcome_final', '')
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
