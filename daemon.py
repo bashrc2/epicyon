@@ -4566,9 +4566,10 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         if checkNameAndBio:
                             redirectPath = 'previewAvatar'
-                        if actorJson['summary']:
-                            actorJson['summary'] = ''
-                            actorChanged = True
+                        else:
+                            if actorJson['summary']:
+                                actorJson['summary'] = ''
+                                actorChanged = True
 
                     adminNickname = \
                         getConfigParam(baseDir, 'admin')
