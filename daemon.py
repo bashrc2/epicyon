@@ -10381,12 +10381,14 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = nickname.split('/')[0]
             if '?' in nickname:
                 nickname = nickname.split('?')[0]
-            if not isWelcomeScreenComplete(self.server.baseDir,
-                                           nickname,
-                                           self.server.domain):
-                self._redirect_headers('/users/' + nickname + '/welcome',
-                                       cookie, callingDomain)
-                return
+            if nickname == self.authorizedNickname and \
+               self.path != '/users/' + nickname:
+               if not isWelcomeScreenComplete(self.server.baseDir,
+                                              nickname,
+                                              self.server.domain):
+                   self._redirect_headers('/users/' + nickname + '/welcome',
+                                          cookie, callingDomain)
+                   return
 
         if not htmlGET and \
            usersInPath and self.path.endswith('/pinned'):
