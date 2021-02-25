@@ -80,15 +80,12 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileForm += '  <input type="text" name="displayNickname" value="' + \
         displayNickname + '"><br>\n'
 
-    profileForm += '<center>\n'
     bioStr = \
         actorJson['summary'].replace('<p>', '').replace('</p>', '')
     profileForm += '  <label class="labels">' + \
         translate['Your bio'] + '</label><br>\n'
     profileForm += '  <textarea id="message" name="bio" ' + \
         'style="height:200px">' + bioStr + '</textarea>\n'
-
-    profileForm += '</center>\n'
 
     profileForm += '<div class="container">' + profileText + '</div>\n'
     profileForm += '  <div class="container next">\n'
