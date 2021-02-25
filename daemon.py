@@ -4046,6 +4046,7 @@ class PubServer(BaseHTTPRequestHandler):
                           postImageFilename)
 
             postBytesStr = postBytes.decode('utf-8')
+            print('postBytesStr: ' + postBytesStr)
             if '&previewAvatar=' in postBytesStr:
                 print('previewAvatar in postBytes')
             if '&prevWelcomeScreen=' in postBytesStr:
