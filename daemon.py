@@ -4046,7 +4046,11 @@ class PubServer(BaseHTTPRequestHandler):
                           postImageFilename)
 
             if '&previewAvatar=' in postBytes:
-                print('previewAvatar in postBytes: ' + str(postBytes))
+                print('previewAvatar in postBytes')
+            if '&prevWelcomeScreen=' in postBytes:
+                print('prevWelcomeScreen in postBytes')
+            if '&nextWelcomeScreen=' in postBytes:
+                print('nextWelcomeScreen in postBytes')
 
             # extract all of the text fields into a dict
             fields = \
