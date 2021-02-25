@@ -1,7 +1,7 @@
-# Comhghairdeas!
+### Comhghairdeas!
 Tá tú réidh anois chun Epicyon a úsáid. Is spás sóisialta measartha é seo, mar sin déan cinnte cloí lenár [dtéarmaí seirbhíse](/terms), agus spraoi a bheith agat.
 
-### Leideanna
+#### Leideanna
 Úsáid an deilbhín **formhéadaitheoir** chun cuardach a dhéanamh ar láimhseálacha beathaithe agus lean daoine.
 
 Ag roghnú an bhratach **ag barr** na lasca scáileáin idir amharc amlíne agus do phróifíl.
