@@ -22,6 +22,7 @@
     --focus-color: white;
     --line-spacing: 130%;
     --welcome-logo-width: 20%;
+    --welcome-avatar-width: 40%;
     --main-link-color-hover: #bbb;
     --rendering: normal;
 }
@@ -141,6 +142,10 @@ img.avatar {
 
 .container {
     padding: 16px;
+}
+
+.container img.welcomeavatar {
+    width: var(--welcome-avatar-width);
 }
 
 .container.next {
