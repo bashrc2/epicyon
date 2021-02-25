@@ -24,24 +24,45 @@ from content import replaceEmojiFromTags
 def _markdownEmphasisHtml(markdown: str) -> str:
     """Add italics and bold html markup to the given markdown
     """
-    punctuation = ('.', ';', ':')
-    noPunctuation = markdown
-    for ch in punctuation:
-        noPunctuation = noPunctuation.replace(ch, ' ')
-    wordList = noPunctuation.split(' ')
-    replacements = {}
-    for word in wordList:
-        if word.startswith('**') and word.endswith('**'):
-            replacements[word] = \
-                '<b>' + word.replace('*', '') + '</b>'
-        elif word.startswith('*') and word.endswith('*'):
-            replacements[word] = \
-                '<i>' + word.replace('*', '') + '</i>'
-        elif word.startswith('_') and word.endswith('_'):
-            replacements[word] = \
-                '<ul>' + word.replace('_', '') + '</ul>'
+    replacements = {
+        ' **': ' <b>',
+        '** ': '</b> ',
+        '**.': '</b>.',
+        '**:': '</b>:',
+        '**;': '</b>;',
+        '**,': '</b>,',
+        '**\n': '</b>\n',
+        ' *': ' <i>',
+        '* ': '</i> ',
+        '*.': '</i>.',
+        '*:': '</i>:',
+        '*;': '</i>;',
+        '*,': '</i>,',
+        '*\n': '</i>\n',
+        ' _': ' <ul>',
+        '_ ': '</ul> ',
+        '_.': '</ul>.',
+        '_:': '</ul>:',
+        '_;': '</ul>;',
+        '_,': '</ul>,',
+        '_\n': '</ul>\n'
+    }
     for md, html in replacements.items():
         markdown = markdown.replace(md, html)
+
+    if markdown.startswith('**'):
+        markdown = markdown[2:] + '<b>'
+    elif markdown.startswith('*'):
+        markdown = markdown[1:] + '<i>'
+    elif markdown.startswith('_'):
+        markdown = markdown[1:] + '<ul>'
+
+    if markdown.endswith('**'):
+        markdown = markdown[:len(markdown) - 2] + '</b>'
+    elif markdown.endswith('*'):
+        markdown = markdown[:len(markdown) - 1] + '</i>'
+    elif markdown.endswith('_'):
+        markdown = markdown[:len(markdown) - 1] + '</ul>'
     return markdown
 
 
