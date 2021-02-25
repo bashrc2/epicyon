@@ -4045,6 +4045,9 @@ class PubServer(BaseHTTPRequestHandler):
                           ' image or font could not be saved to ' +
                           postImageFilename)
 
+            if '&previewAvatar=' in postBytes:
+                print('previewAvatar in postBytes: ' + str(postBytes))
+
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
@@ -5005,20 +5008,6 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Sending actor update: ' + str(updateActorJson))
                         self._postToOutbox(updateActorJson,
                                            __version__, nickname)
-
-                    # preview avatar button on welcome profile screen
-                    if fields.get('previewAvatar'):
-                        print('previewAvatar: ' + str(fields['previewAvatar']))
-
-                    # prev button on welcome profile screen
-                    if fields.get('prevWelcomeScreen'):
-                        print('prevWelcomeScreen: ' +
-                              str(fields['prevWelcomeScreen']))
-
-                    # next button on welcome profile screen
-                    if fields.get('nextWelcomeScreen'):
-                        print('nextWelcomeScreen: ' +
-                              str(fields['nextWelcomeScreen']))
 
                     # deactivate the account
                     if fields.get('deactivateThisAccount'):
