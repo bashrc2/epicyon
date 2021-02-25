@@ -60,10 +60,11 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         '/users/' + nickname + '/avatar.' + ext
 
     imageFormats = getImageFormats()
+    profileForm += '<div class="container">' + profileText + '</div>\n'    
     profileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
-        'action="/users/' + nickname + '/welcomeprofile">\n'
+        'action="/users/' + nickname + '/welcomeprofile">\n'    
     profileForm += '<center>\n'
     profileForm += '  <img class="welcomeavatar" src="'
     profileForm += avatarUrl + '"><br>\n'
@@ -87,7 +88,6 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileForm += '  <textarea id="message" name="bio" ' + \
         'style="height:200px">' + bioStr + '</textarea>\n'
 
-    profileForm += '<div class="container">' + profileText + '</div>\n'
     profileForm += '  <div class="container next">\n'
     profileForm += \
         '    <button type="submit" class="button" ' + \
@@ -96,7 +96,6 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         '    <button type="submit" class="button" ' + \
         'name="nextWelcomeScreen">' + translate['Next'] + '</button>\n'
     profileForm += '  </div>\n'
-    profileForm += '</div>\n'
 
     profileForm += '</form>\n'
     profileForm += htmlFooter()
