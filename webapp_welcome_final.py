@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from shutil import copyfile
+from utils import removeHtml
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
@@ -35,7 +36,7 @@ def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
         copyfile(defaultFilename, finalFilename)
     if os.path.isfile(finalFilename):
         with open(finalFilename, 'r') as finalFile:
-            finalText = markdownToHtml(finalFile.read())
+            finalText = markdownToHtml(removeHtml(finalFile.read()))
 
     finalForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'

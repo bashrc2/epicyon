@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 from shutil import copyfile
+from utils import removeHtml
 from utils import loadJson
 from utils import getConfigParam
 from utils import getImageExtensions
@@ -38,7 +39,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         copyfile(defaultFilename, profileFilename)
     if os.path.isfile(profileFilename):
         with open(profileFilename, 'r') as profileFile:
-            profileText = markdownToHtml(profileFile.read())
+            profileText = markdownToHtml(removeHtml(profileFile.read()))
 
     profileForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'
