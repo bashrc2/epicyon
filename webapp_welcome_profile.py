@@ -65,17 +65,19 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
         'action="/users/' + nickname + '/welcomeprofile">\n'    
-    profileForm += '<center>\n'
-    profileForm += '  <img class="welcomeavatar" src="'
+    profileForm += '<div class="container">\n'
+    profileForm += '  <center>\n'
+    profileForm += '    <img class="welcomeavatar" src="'
     profileForm += avatarUrl + '"><br>\n'
-    profileForm += '  <input type="file" id="avatar" name="avatar" '
+    profileForm += '    <input type="file" id="avatar" name="avatar" '
     profileForm += 'accept="' + imageFormats + '">\n'
-
-    profileForm += '</center>\n'
+    profileForm += '  </center>\n'
+    profileForm += '</div>\n'
 
     actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
     actorJson = loadJson(actorFilename)
     displayNickname = actorJson['name']
+    profileForm += '<div class="container">\n'
     profileForm += '  <label class="labels">' + \
         translate['Nickname'] + '</label><br>\n'
     profileForm += '  <input type="text" name="displayNickname" value="' + \
@@ -87,15 +89,16 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         translate['Your bio'] + '</label><br>\n'
     profileForm += '  <textarea id="message" name="bio" ' + \
         'style="height:200px">' + bioStr + '</textarea>\n'
+    profileForm += '</div>\n'
 
-    profileForm += '  <div class="container next">\n'
+    profileForm += '<div class="container next">\n'
     profileForm += \
         '    <button type="submit" class="button" ' + \
-        'name="prevWelcomeScreen">' + translate['Go Back'] + '</button>\n'
+        'name="prevWelcomeScreen">' + translate['Go Back'] + '</button> '
     profileForm += \
         '    <button type="submit" class="button" ' + \
         'name="nextWelcomeScreen">' + translate['Next'] + '</button>\n'
-    profileForm += '  </div>\n'
+    profileForm += '</div>\n'
 
     profileForm += '</form>\n'
     profileForm += htmlFooter()
