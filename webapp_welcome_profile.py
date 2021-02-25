@@ -8,8 +8,10 @@ __status__ = "Production"
 
 import os
 from shutil import copyfile
+from utils import loadJson
 from utils import getConfigParam
 from utils import getImageExtensions
+from utils import getImageFormats
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import markdownToHtml
@@ -17,8 +19,7 @@ from webapp_utils import markdownToHtml
 
 def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
                        httpPrefix: str, domainFull: str,
-                       language: str, translate: {},
-                       prevScreen='welcome') -> str:
+                       language: str, translate: {}) -> str:
     """Returns the welcome profile screen to set avatar and bio
     """
     # set a custom background for the welcome screen
@@ -58,16 +59,46 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         httpPrefix + '://' + domainFull + \
         '/users/' + nickname + '/avatar.' + ext
 
+    imageFormats = getImageFormats()
+    profileForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" ' + \
+        'action="/users/' + nickname + '/welcomeprofile">\n'
     profileForm += '<center>\n'
-    profileForm += '<img class="welcomeavatar" src="' + avatarUrl + '">\n'
+    profileForm += '  <img class="welcomeavatar" src="'
+    profileForm += avatarUrl + '"><br>\n'
+    profileForm += '  <input type="file" id="avatar" name="avatar" '
+    profileForm += 'accept="' + imageFormats + '">\n'
+
     profileForm += '</center>\n'
     profileForm += '<div class="container">' + profileText + '</div>\n'
     profileForm += '  <div class="container next">\n'
-    profileForm += '    <a href="/' + prevScreen + '">\n'
-    profileForm += '      <button>' + translate['Go Back'] + '</button></a>\n'
-    profileForm += '    <a href="/welcome_complete">\n'
-    profileForm += '      <button>' + translate['Next'] + '</button></a>\n'
+    profileForm += \
+        '    <button type="submit" class="button" ' + \
+        'name="prevWelcomeScreen">' + translate['Go Back'] + '</button>\n'
+    profileForm += \
+        '    <button type="submit" class="button" ' + \
+        'name="nextWelcomeScreen">' + translate['Next'] + '</button>\n'
     profileForm += '  </div>\n'
     profileForm += '</div>\n'
+
+    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    actorJson = loadJson(actorFilename)
+    displayNickname = actorJson['name']
+    profileForm += '  <label class="labels">' + \
+        translate['Nickname'] + '</label>\n'
+    profileForm += '  <input type="text" name="displayNickname" value="' + \
+        displayNickname + '"><br>\n'
+
+    profileForm += '<center>\n'
+    bioStr = \
+        actorJson['summary'].replace('<p>', '').replace('</p>', '')
+    profileForm += '  <label class="labels">' + \
+        translate['Your bio'] + '</label>\n'
+    profileForm += '  <textarea id="message" name="bio" ' + \
+        'style="height:200px">' + bioStr + '</textarea>\n'
+
+    profileForm += '</center>\n'
+    profileForm += '</form>\n'
     profileForm += htmlFooter()
     return profileForm

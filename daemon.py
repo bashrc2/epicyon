@@ -183,6 +183,7 @@ from webapp_hashtagswarm import getHashtagCategoriesFeed
 from webapp_hashtagswarm import htmlSearchHashtagCategory
 from webapp_welcome import htmlWelcomeScreen
 from webapp_welcome import isWelcomeScreenComplete
+from webapp_welcome_profile import htmlWelcomeProfile
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -10694,6 +10695,32 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             else:
                 self.path = self.path.replace('/welcome', '')
+
+        if htmlGET and authorized and \
+           '/users/' in self.path and self.path.endswith('/welcome_profile'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                msg = \
+                    htmlWelcomeProfile(self.server.baseDir, nickname,
+                                       self.server.domain,
+                                       self.server.httpPrefix,
+                                       self.server.domainFull,
+                                       self.server.systemLanguage,
+                                       self.server.translate)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show welcome screen',
+                                          'show welcome profile screen')
+                return
+            else:
+                self.path = self.path.replace('/welcome_profile', '')
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
