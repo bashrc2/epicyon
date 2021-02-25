@@ -38,7 +38,9 @@ def welcomeScreenIsComplete(baseDir: str, nickname: str, domain: str) -> None:
 
 
 def htmlWelcomeScreen(baseDir: str,
-                      language: str, translate: {}) -> str:
+                      language: str, translate: {},
+                      currScreen='welcome',
+                      nextScreen=None, prevScreen=None) -> str:
     """Returns the welcome screen
     """
     # set a custom background for the welcome screen
@@ -47,15 +49,20 @@ def htmlWelcomeScreen(baseDir: str,
             copyfile(baseDir + '/accounts/welcome-background-custom.jpg',
                      baseDir + '/accounts/welcome-background.jpg')
 
+    if not nextScreen:
+        nextScreen = 'welcome_profile'
+
     welcomeText = 'Welcome to Epicyon'
-    welcomeFilename = baseDir + '/accounts/welcome.md'
+    welcomeFilename = baseDir + '/accounts/' + currScreen + '.md'
     if not os.path.isfile(welcomeFilename):
-        defaultFilename = baseDir + '/defaultwelcome/' + language + '.md'
+        defaultFilename = \
+            baseDir + '/defaultwelcome/' + currScreen + '_' + language + '.md'
         if not os.path.isfile(defaultFilename):
-            defaultFilename = baseDir + '/defaultwelcome/en.md'
+            defaultFilename = \
+                baseDir + '/defaultwelcome/' + currScreen + '_en.md'
         copyfile(defaultFilename, welcomeFilename)
     if os.path.isfile(welcomeFilename):
-        with open(baseDir + '/accounts/welcome.md', 'r') as welcomeFile:
+        with open(welcomeFilename, 'r') as welcomeFile:
             welcomeText = markdownToHtml(welcomeFile.read())
 
     welcomeForm = ''
@@ -68,7 +75,11 @@ def htmlWelcomeScreen(baseDir: str,
     welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     welcomeForm += '<div class="container">' + welcomeText + '</div>\n'
     welcomeForm += '  <div class="container next">\n'
-    welcomeForm += '    <a href="/welcome_avatar">\n'
+    if prevScreen:
+        welcomeForm += '    <a href="/' + prevScreen + '">\n'
+        welcomeForm += \
+            '      <button>' + translate['Go Back'] + '</button></a>\n'
+    welcomeForm += '    <a href="/' + nextScreen + '">\n'
     welcomeForm += '      <button>' + translate['Next'] + '</button></a>\n'
     welcomeForm += '  </div>\n'
     welcomeForm += '</div>\n'
