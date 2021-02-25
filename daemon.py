@@ -10711,7 +10711,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            nickname,
                                            self.server.domain):
                 msg = \
-                    htmlWelcomeScreen(self.server.baseDir,
+                    htmlWelcomeScreen(self.server.baseDir, nickname,
                                       self.server.systemLanguage,
                                       self.server.translate)
                 msg = msg.encode('utf-8')

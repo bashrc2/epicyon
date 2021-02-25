@@ -38,10 +38,9 @@ def welcomeScreenIsComplete(baseDir: str,
         completeFile.close()
 
 
-def htmlWelcomeScreen(baseDir: str,
+def htmlWelcomeScreen(baseDir: str, nickname: str,
                       language: str, translate: {},
-                      currScreen='welcome',
-                      nextScreen=None, prevScreen=None) -> str:
+                      currScreen='welcome') -> str:
     """Returns the welcome screen
     """
     # set a custom background for the welcome screen
@@ -49,9 +48,6 @@ def htmlWelcomeScreen(baseDir: str,
         if not os.path.isfile(baseDir + '/accounts/welcome-background.jpg'):
             copyfile(baseDir + '/accounts/welcome-background-custom.jpg',
                      baseDir + '/accounts/welcome-background.jpg')
-
-    if not nextScreen:
-        nextScreen = 'welcome_profile'
 
     welcomeText = 'Welcome to Epicyon'
     welcomeFilename = baseDir + '/accounts/' + currScreen + '.md'
@@ -74,15 +70,17 @@ def htmlWelcomeScreen(baseDir: str,
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
     welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
+    welcomeForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" ' + \
+        'action="/users/' + nickname + '/profiledata">\n'
     welcomeForm += '<div class="container">' + welcomeText + '</div>\n'
     welcomeForm += '  <div class="container next">\n'
-    if prevScreen:
-        welcomeForm += '    <a href="/' + prevScreen + '">\n'
-        welcomeForm += \
-            '      <button>' + translate['Go Back'] + '</button></a>\n'
-    welcomeForm += '    <a href="/' + nextScreen + '">\n'
-    welcomeForm += '      <button>' + translate['Next'] + '</button></a>\n'
+    welcomeForm += \
+        '    <button type="submit" class="button" ' + \
+        'name="previewAvatar">' + translate['Next'] + '</button>\n'
     welcomeForm += '  </div>\n'
     welcomeForm += '</div>\n'
+    welcomeForm += '</form>\n'
     welcomeForm += htmlFooter()
     return welcomeForm
