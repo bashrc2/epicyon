@@ -10383,7 +10383,9 @@ class PubServer(BaseHTTPRequestHandler):
             if not isWelcomeScreenComplete(self.server.baseDir,
                                            nickname,
                                            self.server.domain):
-                self.path = '/users/' + nickname + '/welcome'
+                self._redirect_headers('/users/' + nickname + '/welcome',
+                                       cookie, callingDomain)
+                return
 
         if not htmlGET and \
            usersInPath and self.path.endswith('/pinned'):
