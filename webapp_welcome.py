@@ -59,17 +59,23 @@ def htmlWelcomeScreen(baseDir: str, nickname: str,
             defaultFilename = \
                 baseDir + '/defaultwelcome/' + currScreen + '_en.md'
         copyfile(defaultFilename, welcomeFilename)
+
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    if not instanceTitle:
+        instanceTitle = 'Epicyon'
+
     if os.path.isfile(welcomeFilename):
         with open(welcomeFilename, 'r') as welcomeFile:
-            welcomeText = markdownToHtml(removeHtml(welcomeFile.read()))
+            welcomeText = welcomeFile.read()
+            welcomeText = welcomeText.replace('INSTANCE', instanceTitle)
+            welcomeText = markdownToHtml(removeHtml(welcomeText))
 
     welcomeForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'
     if os.path.isfile(baseDir + '/welcome.css'):
         cssFilename = baseDir + '/welcome.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
     welcomeForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
     welcomeForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \

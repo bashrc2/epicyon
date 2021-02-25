@@ -34,17 +34,23 @@ def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
         if not os.path.isfile(defaultFilename):
             defaultFilename = baseDir + '/defaultwelcome/final_en.md'
         copyfile(defaultFilename, finalFilename)
+
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    if not instanceTitle:
+        instanceTitle = 'Epicyon'
+
     if os.path.isfile(finalFilename):
         with open(finalFilename, 'r') as finalFile:
-            finalText = markdownToHtml(removeHtml(finalFile.read()))
+            finalText = finalFile.read()
+            finalText = finalText.replace('INSTANCE', instanceTitle)
+            finalText = markdownToHtml(removeHtml(finalText))
 
     finalForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'
     if os.path.isfile(baseDir + '/welcome.css'):
         cssFilename = baseDir + '/welcome.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
     finalForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     finalForm += '<div class="container">' + finalText + '</div>\n'

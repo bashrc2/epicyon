@@ -37,17 +37,23 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
         if not os.path.isfile(defaultFilename):
             defaultFilename = baseDir + '/defaultwelcome/profile_en.md'
         copyfile(defaultFilename, profileFilename)
+
+    instanceTitle = \
+        getConfigParam(baseDir, 'instanceTitle')
+    if not instanceTitle:
+        instanceTitle = 'Epicyon'
+
     if os.path.isfile(profileFilename):
         with open(profileFilename, 'r') as profileFile:
-            profileText = markdownToHtml(removeHtml(profileFile.read()))
+            profileText = profileFile.read()
+            profileText = profileText.replace('INSTANCE', instanceTitle)
+            profileText = markdownToHtml(removeHtml(profileText))
 
     profileForm = ''
     cssFilename = baseDir + '/epicyon-welcome.css'
     if os.path.isfile(baseDir + '/welcome.css'):
         cssFilename = baseDir + '/welcome.css'
 
-    instanceTitle = \
-        getConfigParam(baseDir, 'instanceTitle')
     profileForm = htmlHeaderWithExternalStyle(cssFilename, instanceTitle)
 
     # get the url of the avatar
