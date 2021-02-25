@@ -64,7 +64,7 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" ' + \
-        'action="/users/' + nickname + '/welcomeprofile">\n'
+        'action="/users/' + nickname + '/profiledata">\n'
     profileForm += '<div class="container">\n'
     profileForm += '  <center>\n'
     profileForm += '    <img class="welcomeavatar" src="'

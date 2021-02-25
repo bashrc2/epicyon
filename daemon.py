@@ -5006,6 +5006,20 @@ class PubServer(BaseHTTPRequestHandler):
                         self._postToOutbox(updateActorJson,
                                            __version__, nickname)
 
+                    # preview avatar button on welcome profile screen
+                    if fields.get('previewAvatar'):
+                        print('previewAvatar: ' + str(fields['previewAvatar']))
+
+                    # prev button on welcome profile screen
+                    if fields.get('prevWelcomeScreen'):
+                        print('prevWelcomeScreen: ' +
+                              str(fields['prevWelcomeScreen']))
+
+                    # next button on welcome profile screen
+                    if fields.get('nextWelcomeScreen'):
+                        print('nextWelcomeScreen: ' +
+                              str(fields['nextWelcomeScreen']))
+
                     # deactivate the account
                     if fields.get('deactivateThisAccount'):
                         if fields['deactivateThisAccount'] == 'on':
