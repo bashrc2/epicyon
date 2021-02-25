@@ -19,7 +19,8 @@ def _getThemeFiles() -> []:
     """
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
-            'options.css', 'search.css', 'links.css')
+            'options.css', 'search.css', 'links.css',
+            'welcome.css')
 
 
 def getThemesList(baseDir: str) -> []:
