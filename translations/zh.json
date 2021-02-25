@@ -65,7 +65,7 @@
     "Create a new DM": "建立新的直接讯息",
     "Switch to profile view": "切换到个人资料视图",
     "Inbox": "收件箱",
-    "Outbox": "发件箱",
+    "Sent": "发送",
     "Search and follow": "搜索并关注",
     "Refresh": "刷新",
     "Nickname or URL. Block using *@domain or nickname@domain": "昵称或网址。 使用*@domain或昵称@domain阻止",
@@ -370,5 +370,8 @@
     "Publish a blog article": "发布博客文章",
     "Featured writer": "特色作家",
     "Broch mode": "断点模式",
-    "Pixel": "像素点"
+    "Pixel": "像素点",
+    "DM bounce": "仅接受来自后续帐户的邮件",
+    "Next": "下一个",
+    "Preview": "预览"
 }

@@ -202,7 +202,7 @@ def headerButtonsTimeline(defaultTimeline: str,
             '<a href="' + usersPath + \
             '/outbox"><button class="' + \
             sentButton + '" tabindex="-1">' + \
-            '<span>' + translate['Outbox'] + \
+            '<span>' + translate['Sent'] + \
             '</span></button></a>'
 
         # add other buttons

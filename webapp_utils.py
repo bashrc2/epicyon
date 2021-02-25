@@ -21,6 +21,109 @@ from content import addHtmlTags
 from content import replaceEmojiFromTags
 
 
+def _markdownEmphasisHtml(markdown: str) -> str:
+    """Add italics and bold html markup to the given markdown
+    """
+    replacements = {
+        ' **': ' <b>',
+        '** ': '</b> ',
+        '**.': '</b>.',
+        '**:': '</b>:',
+        '**;': '</b>;',
+        '**,': '</b>,',
+        '**\n': '</b>\n',
+        ' *': ' <i>',
+        '* ': '</i> ',
+        '*.': '</i>.',
+        '*:': '</i>:',
+        '*;': '</i>;',
+        '*,': '</i>,',
+        '*\n': '</i>\n',
+        ' _': ' <ul>',
+        '_ ': '</ul> ',
+        '_.': '</ul>.',
+        '_:': '</ul>:',
+        '_;': '</ul>;',
+        '_,': '</ul>,',
+        '_\n': '</ul>\n'
+    }
+    for md, html in replacements.items():
+        markdown = markdown.replace(md, html)
+
+    if markdown.startswith('**'):
+        markdown = markdown[2:] + '<b>'
+    elif markdown.startswith('*'):
+        markdown = markdown[1:] + '<i>'
+    elif markdown.startswith('_'):
+        markdown = markdown[1:] + '<ul>'
+
+    if markdown.endswith('**'):
+        markdown = markdown[:len(markdown) - 2] + '</b>'
+    elif markdown.endswith('*'):
+        markdown = markdown[:len(markdown) - 1] + '</i>'
+    elif markdown.endswith('_'):
+        markdown = markdown[:len(markdown) - 1] + '</ul>'
+    return markdown
+
+
+def markdownToHtml(markdown: str) -> str:
+    """Converts markdown formatted text to html
+    """
+    markdown = _markdownEmphasisHtml(markdown)
+    # replace markdown style links with html links
+    replaceLinks = {}
+    text = markdown
+    while '[' in text:
+        if ')' not in text:
+            break
+        text = text.split('[', 1)[1]
+        markdownLink = '[' + text.split(')')[0] + ')'
+        if ']' not in markdownLink or \
+           '(' not in markdownLink:
+            text = text.split(')', 1)[1]
+            continue
+        replaceLinks[markdownLink] = \
+            '<a href="' + \
+            markdownLink.split('(')[1].split(')')[0] + \
+            '" target="_blank" rel="nofollow noopener noreferrer">' + \
+            markdownLink.split('[')[1].split(']')[0] + \
+            '</a>'
+        text = text.split(')', 1)[1]
+    for mdLink, htmlLink in replaceLinks.items():
+        markdown = markdown.replace(mdLink, htmlLink)
+
+    # replace headers
+    linesList = markdown.split('\n')
+    htmlStr = ''
+    ctr = 0
+    for line in linesList:
+        if ctr > 0:
+            htmlStr += '<br>'
+        if line.startswith('#####'):
+            line = line.replace('#####', '').strip()
+            line = '<h5>' + line + '</h5>'
+            ctr = -1
+        elif line.startswith('####'):
+            line = line.replace('####', '').strip()
+            line = '<h4>' + line + '</h4>'
+            ctr = -1
+        elif line.startswith('###'):
+            line = line.replace('###', '').strip()
+            line = '<h3>' + line + '</h3>'
+            ctr = -1
+        elif line.startswith('##'):
+            line = line.replace('##', '').strip()
+            line = '<h2>' + line + '</h2>'
+            ctr = -1
+        elif line.startswith('#'):
+            line = line.replace('#', '').strip()
+            line = '<h1>' + line + '</h1>'
+            ctr = -1
+        htmlStr += line
+        ctr += 1
+    return htmlStr
+
+
 def getBrokenLinkSubstitute() -> str:
     """Returns html used to show a default image if the link to
     an image is broken

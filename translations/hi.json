@@ -65,7 +65,7 @@
     "Create a new DM": "नया डीएम बनाएं",
     "Switch to profile view": "प्रोफ़ाइल दृश्य पर स्विच करें",
     "Inbox": "इनबॉक्स",
-    "Outbox": "आउटबॉक्स",
+    "Sent": "भेज दिया",
     "Search and follow": "खोज और अनुसरण करें",
     "Refresh": "ताज़ा करना",
     "Nickname or URL. Block using *@domain or nickname@domain": "उपनाम या URL। *@डोमेन या उपनाम@डोमेन का उपयोग करके ब्लॉक करें",
@@ -370,5 +370,8 @@
     "Publish a blog article": "एक ब्लॉग लेख प्रकाशित करें",
     "Featured writer": "फीचर्ड लेखक",
     "Broch mode": "ब्रोच मोड",
-    "Pixel": "पिक्सेल"
+    "Pixel": "पिक्सेल",
+    "DM bounce": "संदेश केवल अनुसरण किए गए खातों से स्वीकार किए जाते हैं",
+    "Next": "अगला",
+    "Preview": "पूर्वावलोकन"
 }

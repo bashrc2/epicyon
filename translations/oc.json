@@ -116,7 +116,7 @@
     "Remove": "Suprimir",
     "Refresh": "Actualizar",
     "Search and follow": "Cercar e seguir",
-    "Outbox": "Enviats",
+    "Sent": "Enviats",
     "Inbox": "Recepcion",
     "Switch to profile view": "Passar a la vista perfil",
     "Create a new DM": "Crear un messatge dirèct nòu",
@@ -366,5 +366,8 @@
     "Publish a blog article": "Publish a blog article",
     "Featured writer": "Featured writer",
     "Broch mode": "Broch mode",
-    "Pixel": "Pixel"
+    "Pixel": "Pixel",
+    "DM bounce": "Messages are only accepted from followed accounts",
+    "Next": "Next",
+    "Preview": "Preview"
 }

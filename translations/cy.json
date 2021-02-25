@@ -65,7 +65,7 @@
     "Create a new DM": "Creu Neges Uniongyrchol newydd",
     "Switch to profile view": "Newid i olwg proffil",
     "Inbox": "Mewnflwch",
-    "Outbox": "Allan",
+    "Sent": "Anfonwyd",
     "Search and follow": "Chwilio a dilyn",
     "Refresh": "Adnewyddu",
     "Nickname or URL. Block using *@domain or nickname@domain": "Llysenw neu URL. Blociwch gan ddefnyddio *@domain neu lysenw@domain",
@@ -370,5 +370,8 @@
     "Publish a blog article": "Cyhoeddi erthygl blog",
     "Featured writer": "Awdur dan sylw",
     "Broch mode": "Modd Broch",
-    "Pixel": "Pixel"
+    "Pixel": "Pixel",
+    "DM bounce": "Dim ond o gyfrifon a ddilynir y derbynnir negeseuon",
+    "Next": "Nesaf",
+    "Preview": "Rhagolwg"
 }

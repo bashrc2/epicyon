@@ -65,7 +65,7 @@
     "Create a new DM": "Create a new DM",
     "Switch to profile view": "Profile view",
     "Inbox": "Inbox",
-    "Outbox": "Outbox",
+    "Sent": "Sent",
     "Search and follow": "Search/follow",
     "Refresh": "Refresh",
     "Nickname or URL. Block using *@domain or nickname@domain": "Nickname or URL. Block using *@domain or nickname@domain",
@@ -370,5 +370,8 @@
     "Publish a blog article": "Publish a blog article",
     "Featured writer": "Featured writer",
     "Broch mode": "Broch mode",
-    "Pixel": "Pixel"
+    "Pixel": "Pixel",
+    "DM bounce": "Messages are only accepted from followed accounts",
+    "Next": "Next",
+    "Preview": "Preview"
 }

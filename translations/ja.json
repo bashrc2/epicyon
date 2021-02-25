@@ -65,7 +65,7 @@
     "Create a new DM": "新しいDMを作成する",
     "Switch to profile view": "縦断ビューに切り替え",
     "Inbox": "受信トレイ",
-    "Outbox": "送信トレイ",
+    "Sent": "送信済み",
     "Search and follow": "検索してフォローする",
     "Refresh": "リフレッシュ",
     "Nickname or URL. Block using *@domain or nickname@domain": "ニックネームまたはURL。 * @ domainまたはnickname @ domainを使用してブロックする",
@@ -370,5 +370,8 @@
     "Publish a blog article": "ブログ記事を公開する",
     "Featured writer": "注目の作家",
     "Broch mode": "ブロッホモード",
-    "Pixel": "ピクセル"
+    "Pixel": "ピクセル",
+    "DM bounce": "メッセージはフォローされているアカウントからのみ受け付けられます",
+    "Next": "次",
+    "Preview": "プレビュー"
 }

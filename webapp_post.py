@@ -1269,10 +1269,9 @@ def individualPostAsHtml(allowDownloads: bool,
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon = showRepeats
     isPublicRepeat = False
-    showDMicon = False
+    postIsDM = isDM(postJsonObject)
     if showRepeats:
-        if isDM(postJsonObject):
-            showDMicon = True
+        if postIsDM:
             showRepeatIcon = False
         else:
             if not isPublicPost(postJsonObject):
@@ -1347,7 +1346,7 @@ def individualPostAsHtml(allowDownloads: bool,
     _logPostTiming(enableTimingLog, postStartTime, '9')
 
     # Show a DM icon for DMs in the inbox timeline
-    if showDMicon:
+    if postIsDM:
         titleStr = \
             titleStr + ' <img loading="lazy" src="/' + \
             'icons/dm.png" class="DMicon"/>\n'
@@ -1501,7 +1500,7 @@ def individualPostAsHtml(allowDownloads: bool,
             '" class="' + timeClass + '">' + publishedStr + '</a>\n'
 
     # change the background color for DMs in inbox timeline
-    if showDMicon:
+    if postIsDM:
         containerClassIcons = 'containericons dm'
         containerClass = 'container dm'
 

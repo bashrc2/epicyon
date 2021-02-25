@@ -65,7 +65,7 @@
     "Create a new DM": "Neue Direktnachricht",
     "Switch to profile view": "Zur Profilansicht wechseln",
     "Inbox": "Eingang",
-    "Outbox": "Ausgang",
+    "Sent": "Geschickt",
     "Search and follow": "Suchen und folgen",
     "Refresh": "Aktualisieren",
     "Nickname or URL. Block using *@domain or nickname@domain": "Benutzername oder URL. *@Domäne oder Benutzer@Domäne sperren",
@@ -370,5 +370,8 @@
     "Publish a blog article": "Veröffentlichen Sie einen Blog-Artikel",
     "Featured writer": "Ausgewählter Schriftsteller",
     "Broch mode": "Broch-Modus",
-    "Pixel": "Pixel"
+    "Pixel": "Pixel",
+    "DM bounce": "Nachrichten werden nur von folgenden Konten akzeptiert",
+    "Next": "Nächster",
+    "Preview": "Vorschau"
 }

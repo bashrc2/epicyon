@@ -181,6 +181,11 @@ from webapp_search import htmlSearchEmojiTextEntry
 from webapp_search import htmlSearch
 from webapp_hashtagswarm import getHashtagCategoriesFeed
 from webapp_hashtagswarm import htmlSearchHashtagCategory
+from webapp_welcome import welcomeScreenIsComplete
+from webapp_welcome import htmlWelcomeScreen
+from webapp_welcome import isWelcomeScreenComplete
+from webapp_welcome_profile import htmlWelcomeProfile
+from webapp_welcome_final import htmlWelcomeFinal
 from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
@@ -4042,6 +4047,21 @@ class PubServer(BaseHTTPRequestHandler):
                           ' image or font could not be saved to ' +
                           postImageFilename)
 
+            postBytesStr = postBytes.decode('utf-8')
+            redirectPath = ''
+            checkNameAndBio = False
+            if 'name="previewAvatar"' in postBytesStr:
+                redirectPath = '/welcome_profile'
+            elif 'name="initialWelcomeScreen"' in postBytesStr:
+                redirectPath = '/welcome'
+            elif 'name="finalWelcomeScreen"' in postBytesStr:
+                checkNameAndBio = True
+                redirectPath = '/welcome_final'
+            elif 'name="welcomeCompleteButton"' in postBytesStr:
+                redirectPath = '/' + self.server.defaultTimeline
+                welcomeScreenIsComplete(self.server.baseDir, nickname,
+                                        self.server.domain)
+
             # extract all of the text fields into a dict
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary, debug)
@@ -4172,7 +4192,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorJson['name'] = displayName
                             else:
                                 actorJson['name'] = nickname
+                                if checkNameAndBio:
+                                    redirectPath = 'previewAvatar'
                             actorChanged = True
+                    else:
+                        if checkNameAndBio:
+                            redirectPath = 'previewAvatar'
 
                     # change media instance status
                     if fields.get('mediaInstance'):
@@ -4535,10 +4560,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     for tagName, tag in actorTags.items():
                                         actorJson['tag'].append(tag)
                                 actorChanged = True
+                            else:
+                                if checkNameAndBio:
+                                    redirectPath = 'previewAvatar'
                     else:
-                        if actorJson['summary']:
-                            actorJson['summary'] = ''
-                            actorChanged = True
+                        if checkNameAndBio:
+                            redirectPath = 'previewAvatar'
 
                     adminNickname = \
                         getConfigParam(baseDir, 'admin')
@@ -5022,7 +5049,8 @@ class PubServer(BaseHTTPRequestHandler):
               i2pDomain):
             actorStr = \
                 'http://' + i2pDomain + usersPath
-        self._redirect_headers(actorStr, cookie, callingDomain)
+        self._redirect_headers(actorStr + redirectPath,
+                               cookie, callingDomain)
         self.server.POSTbusy = False
 
     def _progressiveWebAppManifest(self, callingDomain: str,
@@ -10345,6 +10373,23 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in self.path:
             usersInPath = True
 
+        # redirect to the welcome screen
+        if htmlGET and authorized and usersInPath and \
+           '/welcome' not in self.path:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if '?' in nickname:
+                nickname = nickname.split('?')[0]
+            if nickname == self.authorizedNickname and \
+               self.path != '/users/' + nickname:
+                if not isWelcomeScreenComplete(self.server.baseDir,
+                                               nickname,
+                                               self.server.domain):
+                    self._redirect_headers('/users/' + nickname + '/welcome',
+                                           cookie, callingDomain)
+                    return
+
         if not htmlGET and \
            usersInPath and self.path.endswith('/pinned'):
             nickname = self.path.split('/users/')[1]
@@ -10669,6 +10714,84 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings,
                                   'show about screen done',
                                   'robots txt')
+
+        # the initial welcome screen after first logging in
+        if htmlGET and authorized and \
+           '/users/' in self.path and self.path.endswith('/welcome'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                msg = \
+                    htmlWelcomeScreen(self.server.baseDir, nickname,
+                                      self.server.systemLanguage,
+                                      self.server.translate)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'following accounts done',
+                                          'show welcome screen')
+                return
+            else:
+                self.path = self.path.replace('/welcome', '')
+
+        # the welcome screen which allows you to set an avatar image
+        if htmlGET and authorized and \
+           '/users/' in self.path and self.path.endswith('/welcome_profile'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                msg = \
+                    htmlWelcomeProfile(self.server.baseDir, nickname,
+                                       self.server.domain,
+                                       self.server.httpPrefix,
+                                       self.server.domainFull,
+                                       self.server.systemLanguage,
+                                       self.server.translate)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show welcome screen',
+                                          'show welcome profile screen')
+                return
+            else:
+                self.path = self.path.replace('/welcome_profile', '')
+
+        # the final welcome screen
+        if htmlGET and authorized and \
+           '/users/' in self.path and self.path.endswith('/welcome_final'):
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not isWelcomeScreenComplete(self.server.baseDir,
+                                           nickname,
+                                           self.server.domain):
+                msg = \
+                    htmlWelcomeFinal(self.server.baseDir, nickname,
+                                     self.server.domain,
+                                     self.server.httpPrefix,
+                                     self.server.domainFull,
+                                     self.server.systemLanguage,
+                                     self.server.translate)
+                msg = msg.encode('utf-8')
+                msglen = len(msg)
+                self._login_headers('text/html', msglen, callingDomain)
+                self._write(msg)
+                self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                          'show welcome profile screen',
+                                          'show welcome final screen')
+                return
+            else:
+                self.path = self.path.replace('/welcome_final', '')
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \

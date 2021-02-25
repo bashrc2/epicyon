@@ -126,6 +126,7 @@ def _removeFromFollowRejects(baseDir: str,
 def isFollowingActor(baseDir: str,
                      nickname: str, domain: str, actor: str) -> bool:
     """Is the given nickname following the given actor?
+    The actor can also be a handle: nickname@domain
     """
     if ':' in domain:
         domain = domain.split(':')[0]

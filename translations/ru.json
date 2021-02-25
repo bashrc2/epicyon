@@ -65,7 +65,7 @@
     "Create a new DM": "Создать новое прямое сообщение",
     "Switch to profile view": "Переключиться на вид профиля",
     "Inbox": "входящие",
-    "Outbox": "Исходящие",
+    "Sent": "Отправлено",
     "Search and follow": "Искать и следовать",
     "Refresh": "обновление",
     "Nickname or URL. Block using *@domain or nickname@domain": "Псевдоним или URL. Блокировка с использованием *@domain или псевдоним@domain",
@@ -370,5 +370,8 @@
     "Publish a blog article": "Опубликовать статью в блоге",
     "Featured writer": "Избранный писатель",
     "Broch mode": "Брош режим",
-    "Pixel": "Пиксель"
+    "Pixel": "Пиксель",
+    "DM bounce": "Сообщения принимаются только от следующих аккаунтов",
+    "Next": "Следующий",
+    "Preview": "Предварительный просмотр"
 }

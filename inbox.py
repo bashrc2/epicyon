@@ -40,6 +40,7 @@ from categories import setHashtagCategory
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
+from follow import isFollowingActor
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
 from follow import unfollowerOfAccount
@@ -57,6 +58,7 @@ from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
 from httpsig import messageContentDigest
+from posts import createDirectMessagePost
 from posts import validContentWarning
 from posts import downloadAnnounce
 from posts import isDM
@@ -73,7 +75,6 @@ from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from happening import saveEventPost
 from delete import removeOldHashtags
-from follow import isFollowingActor
 from categories import guessHashtagCategory
 from context import hasValidContext
 
@@ -2056,6 +2057,80 @@ def _updateLastSeen(baseDir: str, handle: str, actor: str) -> None:
         lastSeenFile.write(str(daysSinceEpoch))
 
 
+def _bounceDM(senderPostId: str, session, httpPrefix: str,
+              baseDir: str, nickname: str, domain: str, port: int,
+              sendingHandle: str, federationList: [],
+              sendThreads: [], postLog: [],
+              cachedWebfingers: {}, personCache: {},
+              translate: {}, debug: bool,
+              lastBounceMessage: []) -> bool:
+    """Sends a bounce message back to the sending handle
+    if a DM has been rejected
+    """
+    print(nickname + '@' + domain +
+          ' cannot receive DM from ' + sendingHandle +
+          ' because they do not follow them')
+
+    # Don't send out bounce messages too frequently.
+    # Otherwise an adversary could try to DoS your instance
+    # by continuously sending DMs to you
+    currTime = int(time.time())
+    if currTime - lastBounceMessage[0] < 60:
+        return False
+
+    # record the last time that a bounce was generated
+    lastBounceMessage[0] = currTime
+
+    senderNickname = sendingHandle.split('@')[0]
+    senderDomain = sendingHandle.split('@')[1]
+    senderPort = port
+    if ':' in senderDomain:
+        senderPortStr = senderDomain.split(':')[1]
+        if senderPortStr.isdigit():
+            senderPort = int(senderPortStr)
+            senderDomain = senderDomain.split(':')[0]
+    cc = []
+
+    # create the bounce DM
+    subject = None
+    content = translate['DM bounce']
+    followersOnly = False
+    saveToFile = False
+    clientToServer = False
+    commentsEnabled = False
+    attachImageFilename = None
+    mediaType = None
+    imageDescription = ''
+    inReplyTo = removeIdEnding(senderPostId)
+    inReplyToAtomUri = None
+    schedulePost = False
+    eventDate = None
+    eventTime = None
+    location = None
+    postJsonObject = \
+        createDirectMessagePost(baseDir, nickname, domain, port,
+                                httpPrefix, content, followersOnly,
+                                saveToFile, clientToServer,
+                                commentsEnabled,
+                                attachImageFilename, mediaType,
+                                imageDescription,
+                                inReplyTo, inReplyToAtomUri,
+                                subject, debug, schedulePost,
+                                eventDate, eventTime, location)
+    if not postJsonObject:
+        print('WARN: unable to create bounce message to ' + sendingHandle)
+        return False
+    # bounce DM goes back to the sender
+    print('Sending bounce DM to ' + sendingHandle)
+    sendSignedJson(postJsonObject, session, baseDir,
+                   nickname, domain, port,
+                   senderNickname, senderDomain, senderPort, cc,
+                   httpPrefix, False, False, federationList,
+                   sendThreads, postLog, cachedWebfingers,
+                   personCache, debug, __version__)
+    return True
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2070,7 +2145,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        unitTest: bool, YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
                        allowLocalNetworkAccess: bool,
-                       peertubeInstances: []) -> bool:
+                       peertubeInstances: [],
+                       lastBounceMessage: []) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2263,41 +2339,68 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             postIsDM = isDM(postJsonObject)
             if postIsDM:
                 if nickname != 'inbox':
+                    # check for the flag file which indicates to
+                    # only receive DMs from people you are following
                     followDMsFilename = \
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + '/.followDMs'
                     if os.path.isfile(followDMsFilename):
+                        # get the file containing following handles
                         followingFilename = \
                             baseDir + '/accounts/' + \
                             nickname + '@' + domain + '/following.txt'
+                        # who is sending a DM?
                         if not postJsonObject.get('actor'):
                             return False
                         sendingActor = postJsonObject['actor']
                         sendingActorNickname = \
                             getNicknameFromActor(sendingActor)
+                        if not sendingActorNickname:
+                            return False
                         sendingActorDomain, sendingActorPort = \
                             getDomainFromActor(sendingActor)
-                        if sendingActorNickname and sendingActorDomain:
-                            if not os.path.isfile(followingFilename):
-                                print('No following.txt file exists for ' +
-                                      nickname + '@' + domain +
-                                      ' so not accepting DM from ' +
-                                      sendingActorNickname + '@' +
-                                      sendingActorDomain)
-                                return False
-                            sendH = \
-                                sendingActorNickname + '@' + sendingActorDomain
-                            if sendH != nickname + '@' + domain:
-                                if sendH not in \
-                                   open(followingFilename).read():
-                                    print(nickname + '@' + domain +
-                                          ' cannot receive DM from ' +
-                                          sendH +
-                                          ' because they do not ' +
-                                          'follow them')
-                                    return False
-                        else:
+                        if not sendingActorDomain:
                             return False
+                        # check that the following file exists
+                        if not os.path.isfile(followingFilename):
+                            print('No following.txt file exists for ' +
+                                  nickname + '@' + domain +
+                                  ' so not accepting DM from ' +
+                                  sendingActorNickname + '@' +
+                                  sendingActorDomain)
+                            return False
+                        # get the handle of the DM sender
+                        sendH = \
+                            sendingActorNickname + '@' + sendingActorDomain
+                        # Not sending to yourself
+                        if sendH != nickname + '@' + domain:
+                            # check the follow
+                            if not isFollowingActor(baseDir,
+                                                    nickname, domain,
+                                                    sendH):
+                                # send back a bounce DM
+                                if postJsonObject.get('id') and \
+                                   postJsonObject.get('object'):
+                                    # don't send bounces back to
+                                    # replies to bounce messages
+                                    obj = postJsonObject['object']
+                                    if isinstance(obj, dict):
+                                        if not obj.get('inReplyTo'):
+                                            senderPostId = \
+                                                postJsonObject['id']
+                                            _bounceDM(senderPostId,
+                                                      session, httpPrefix,
+                                                      baseDir,
+                                                      nickname, domain,
+                                                      port, sendH,
+                                                      federationList,
+                                                      sendThreads, postLog,
+                                                      cachedWebfingers,
+                                                      personCache,
+                                                      translate, debug,
+                                                      lastBounceMessage)
+                                return False
+
                     # dm index will be updated
                     updateIndexList.append('dm')
                     _dmNotify(baseDir, handle,
@@ -2512,6 +2615,11 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
     heartBeatCtr = 0
     queueRestoreCtr = 0
+
+    # time when the last DM bounce message was sent
+    # This is in a list so that it can be changed by reference
+    # within _bounceDM
+    lastBounceMessage = [int(time.time())]
 
     while True:
         time.sleep(1)
@@ -2969,7 +3077,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                YTReplacementDomain,
                                showPublishedDateOnly,
                                allowLocalNetworkAccess,
-                               peertubeInstances)
+                               peertubeInstances,
+                               lastBounceMessage)
             if debug:
                 pprint(queueJson['post'])
 

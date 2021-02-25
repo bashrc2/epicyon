@@ -65,7 +65,7 @@
     "Create a new DM": "Crea un nou missatge directe",
     "Switch to profile view": "Canvia a la vista del perfil",
     "Inbox": "entrada",
-    "Outbox": "sortida",
+    "Sent": "Enviat",
     "Search and follow": "Cerca i segueix",
     "Refresh": "Actualització",
     "Nickname or URL. Block using *@domain or nickname@domain": "Nickname o URL. Bloquegeu amb el domini *@ o el sobrenom@",
@@ -370,5 +370,8 @@
     "Publish a blog article": "Publicar un article del bloc",
     "Featured writer": "Escriptor destacat",
     "Broch mode": "Mode Broch",
-    "Pixel": "Pixel"
+    "Pixel": "Pixel",
+    "DM bounce": "Els missatges només s’accepten des dels comptes seguits",
+    "Next": "Pròxim",
+    "Preview": "Vista prèvia"
 }

@@ -65,7 +65,7 @@
     "Create a new DM": "إنشاء DM جديد",
     "Switch to profile view": "التبديل إلى عرض الملف الشخصي",
     "Inbox": "صندوق الوارد",
-    "Outbox": "صندوق الحفظ",
+    "Sent": "أرسلت",
     "Search and follow": "بحث ومتابعة",
     "Refresh": "تحديث",
     "Nickname or URL. Block using *@domain or nickname@domain": "الاسم المستعار أو عنوان URL. حظر استخدام *@domain أو اسم النطاق@domain",
@@ -370,5 +370,8 @@
     "Publish a blog article": "نشر مقال بلوق",
     "Featured writer": "كاتب متميز",
     "Broch mode": "وضع الكتيب",
-    "Pixel": "بكسل"
+    "Pixel": "بكسل",
+    "DM bounce": "يتم قبول الرسائل فقط من الحسابات المتبعة",
+    "Next": "التالي",
+    "Preview": "معاينة"
 }

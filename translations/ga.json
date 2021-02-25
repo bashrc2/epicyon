@@ -65,7 +65,7 @@
     "Create a new DM": "Cruthaigh Teachtaireacht Dhíreach nua",
     "Switch to profile view": "Athraigh an amharcphróifíl",
     "Inbox": "Isteach",
-    "Outbox": "Outbox",
+    "Sent": "Seolta",
     "Search and follow": "Cuardaigh agus leanúint",
     "Refresh": "Athnuachan",
     "Nickname or URL. Block using *@domain or nickname@domain": "Leasainm nó URL. Bloc ag baint úsáide as *@fearainn nó leasainm@fearainn",
@@ -370,5 +370,8 @@
     "Publish a blog article": "Foilsigh alt blagála",
     "Featured writer": "Scríbhneoir mór le rá",
     "Broch mode": "Modh broch",
-    "Pixel": "Pixel"
+    "Pixel": "Pixel",
+    "DM bounce": "Ní ghlactar le teachtaireachtaí ach ó chuntais a leanann",
+    "Next": "Ar Aghaidh",
+    "Preview": "Réamhamharc"
 }

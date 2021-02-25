@@ -19,7 +19,8 @@ def _getThemeFiles() -> []:
     """
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
-            'options.css', 'search.css', 'links.css')
+            'options.css', 'search.css', 'links.css',
+            'welcome.css')
 
 
 def getThemesList(baseDir: str) -> []:
@@ -264,6 +265,8 @@ def _setThemeFromDict(baseDir: str, name: str,
         _setBackgroundFormat(baseDir, name, 'options', bgParams['options'])
     if bgParams.get('search'):
         _setBackgroundFormat(baseDir, name, 'search', bgParams['search'])
+    if bgParams.get('welcome'):
+        _setBackgroundFormat(baseDir, name, 'welcome', bgParams['welcome'])
 
 
 def _setBackgroundFormat(baseDir: str, name: str,
@@ -507,7 +510,8 @@ def _setThemeImages(baseDir: str, name: str) -> None:
     _setTextModeTheme(baseDir, themeNameLower)
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
-                       'options', 'block', 'search', 'calendar')
+                       'options', 'block', 'search', 'calendar',
+                       'welcome')
     extensions = getImageExtensions()
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
