@@ -74,7 +74,7 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
             helpText = helpFile.read()
             helpText = helpText.replace('INSTANCE', instanceTitle)
             return '<div class="container">\n' + \
-                markdownToHtml(removeHtml(helpText)) + \
+                markdownToHtml(removeHtml(helpText)) + '\n' + \
                 '<\div>\n'
     return ''
 
@@ -741,9 +741,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     # end of timeline-posts
     tlStr += '  </div>\n'
 
-    if itemCtr > 0:
-        # end of column-center
-        tlStr += '  </td>\n'
+    # end of column-center
+    tlStr += '  </td>\n'
 
     # right column
     rightColumnStr = getRightColumnContent(baseDir, nickname, domainFull,
