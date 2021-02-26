@@ -1,3 +1,4 @@
+![Delwedd groeso](/helpimages/welcome.jpg)
 ### Croeso i INSTANCE
 Gweinydd ActivityPub yw hwn sydd wedi'i gynllunio ar gyfer hunan-letya ychydig o bobl ar systemau pŵer isel yn hawdd, fel cyfrifiaduron bwrdd sengl neu hen gliniaduron.
 
