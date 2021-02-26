@@ -149,6 +149,10 @@ img.avatar {
     width: var(--welcome-avatar-width);
 }
 
+.container img.markdownImage {
+    width: 100%;
+}
+
 .container.next {
     float: right;
 }
@@ -192,7 +196,7 @@ span.psw {
         margin: 8px 0;
         border: none;
         cursor: pointer;
-	width: var(--welcome-button-width);
+        width: var(--welcome-button-width);
         font-size: var(--welcome-font-size);
         font-family: Arial, Helvetica, sans-serif;
     }
@@ -232,7 +236,7 @@ span.psw {
         margin: 8px 0;
         border: none;
         cursor: pointer;
-	width: var(--welcome-button-width);
+        width: var(--welcome-button-width);
         font-size: var(--welcome-font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
     }

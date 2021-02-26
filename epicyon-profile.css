@@ -190,10 +190,6 @@ body, html {
     color: var(--cw-color);
 }
 
-.markdownImage {
-    width: 100%;
-}
-
 .leftColIcons {
     width: 100%;
     background-color: var(--column-left-color);
