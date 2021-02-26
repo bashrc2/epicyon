@@ -4050,6 +4050,7 @@ class PubServer(BaseHTTPRequestHandler):
             postBytesStr = postBytes.decode('utf-8')
             redirectPath = ''
             checkNameAndBio = False
+            onFinalWelcomeScreen = False
             if 'name="previewAvatar"' in postBytesStr:
                 redirectPath = '/welcome_profile'
             elif 'name="initialWelcomeScreen"' in postBytesStr:
@@ -4061,6 +4062,7 @@ class PubServer(BaseHTTPRequestHandler):
                 redirectPath = '/' + self.server.defaultTimeline
                 welcomeScreenIsComplete(self.server.baseDir, nickname,
                                         self.server.domain)
+                onFinalWelcomeScreen = True
 
             # extract all of the text fields into a dict
             fields = \
@@ -4717,15 +4719,20 @@ class PubServer(BaseHTTPRequestHandler):
                                                  nickname, domain)
 
                     # approve followers
-                    approveFollowers = False
-                    if fields.get('approveFollowers'):
-                        if fields['approveFollowers'] == 'on':
-                            approveFollowers = True
-                    if approveFollowers != \
-                       actorJson['manuallyApprovesFollowers']:
-                        actorJson['manuallyApprovesFollowers'] = \
-                            approveFollowers
+                    if onFinalWelcomeScreen:
+                        # Default setting created via the welcome screen
+                        actorJson['manuallyApprovesFollowers'] = True
                         actorChanged = True
+                    else:
+                        approveFollowers = False
+                        if fields.get('approveFollowers'):
+                            if fields['approveFollowers'] == 'on':
+                                approveFollowers = True
+                        if approveFollowers != \
+                           actorJson['manuallyApprovesFollowers']:
+                            actorJson['manuallyApprovesFollowers'] = \
+                                approveFollowers
+                            actorChanged = True
 
                     # remove a custom font
                     if fields.get('removeCustomFont'):
@@ -4773,15 +4780,22 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + \
                         '/.followDMs'
-                    followDMsActive = False
-                    if fields.get('followDMs'):
-                        if fields['followDMs'] == 'on':
-                            followDMsActive = True
-                            with open(followDMsFilename, 'w+') as fFile:
-                                fFile.write('\n')
-                    if not followDMsActive:
-                        if os.path.isfile(followDMsFilename):
-                            os.remove(followDMsFilename)
+                    if onFinalWelcomeScreen:
+                        # initial default setting created via
+                        # the welcome screen
+                        with open(followDMsFilename, 'w+') as fFile:
+                            fFile.write('\n')
+                        actorChanged = True
+                    else:
+                        followDMsActive = False
+                        if fields.get('followDMs'):
+                            if fields['followDMs'] == 'on':
+                                followDMsActive = True
+                                with open(followDMsFilename, 'w+') as fFile:
+                                    fFile.write('\n')
+                        if not followDMsActive:
+                            if os.path.isfile(followDMsFilename):
+                                os.remove(followDMsFilename)
 
                     # remove Twitter retweets
                     removeTwitterFilename = \
@@ -4822,16 +4836,22 @@ class PubServer(BaseHTTPRequestHandler):
                             os.remove(hideLikeButtonFile)
 
                     # notify about new Likes
-                    notifyLikesActive = False
-                    if fields.get('notifyLikes'):
-                        if fields['notifyLikes'] == 'on' and \
-                           not hideLikeButtonActive:
-                            notifyLikesActive = True
-                            with open(notifyLikesFilename, 'w+') as rFile:
-                                rFile.write('\n')
-                    if not notifyLikesActive:
-                        if os.path.isfile(notifyLikesFilename):
-                            os.remove(notifyLikesFilename)
+                    if onFinalWelcomeScreen:
+                        # default setting from welcome screen
+                        with open(notifyLikesFilename, 'w+') as rFile:
+                            rFile.write('\n')
+                        actorChanged = True
+                    else:
+                        notifyLikesActive = False
+                        if fields.get('notifyLikes'):
+                            if fields['notifyLikes'] == 'on' and \
+                               not hideLikeButtonActive:
+                                notifyLikesActive = True
+                                with open(notifyLikesFilename, 'w+') as rFile:
+                                    rFile.write('\n')
+                        if not notifyLikesActive:
+                            if os.path.isfile(notifyLikesFilename):
+                                os.remove(notifyLikesFilename)
 
                     # this account is a bot
                     if fields.get('isBot'):
@@ -5749,6 +5769,52 @@ class PubServer(BaseHTTPRequestHandler):
                                               'show files done',
                                               'icon shown')
                     return
+        self._404()
+
+    def _showHelpScreenImage(self, callingDomain: str, path: str,
+                             baseDir: str,
+                             GETstartTime, GETtimings: {}) -> None:
+        """Shows a help screen image
+        """
+        if not path.endswith('.jpg') and \
+           not path.endswith('.png') and \
+           not path.endswith('.webp') and \
+           not path.endswith('.avif') and \
+           not path.endswith('.gif'):
+            return
+        mediaStr = path.split('/helpimages/')[1]
+        if '/' not in mediaStr:
+            if not self.server.themeName:
+                theme = 'default'
+            else:
+                theme = self.server.themeName
+            iconFilename = mediaStr
+        else:
+            theme = mediaStr.split('/')[0]
+            iconFilename = mediaStr.split('/')[1]
+        mediaFilename = \
+            baseDir + '/theme/' + theme + '/helpimages/' + iconFilename
+        # if there is no theme-specific help image then use the default one
+        if not os.path.isfile(mediaFilename):
+            mediaFilename = \
+                baseDir + '/theme/default/helpimages/' + iconFilename
+        if self._etag_exists(mediaFilename):
+            # The file has not changed
+            self._304()
+            return
+        if os.path.isfile(mediaFilename):
+            with open(mediaFilename, 'rb') as avFile:
+                mediaBinary = avFile.read()
+                mimeType = mediaFileMimeType(mediaFilename)
+                self._set_headers_etag(mediaFilename,
+                                       mimeType,
+                                       mediaBinary, None,
+                                       self.server.domainFull)
+                self._write(mediaBinary)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show files done',
+                                      'help image shown')
+            return
         self._404()
 
     def _showCachedAvatar(self, callingDomain: str, path: str,
@@ -9669,7 +9735,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         imageExtensions = getImageExtensions()
         for ext in imageExtensions:
-            for bg in ('follow', 'options', 'login'):
+            for bg in ('follow', 'options', 'login', 'welcome'):
                 # follow screen background image
                 if path.endswith('/' + bg + '-background.' + ext):
                     bgFilename = \
@@ -9714,41 +9780,45 @@ class PubServer(BaseHTTPRequestHandler):
                         GETstartTime, GETtimings: {}) -> bool:
         """Show a shared item image
         """
-        if self._pathIsImage(path):
-            mediaStr = path.split('/sharefiles/')[1]
-            mediaFilename = \
-                baseDir + '/sharefiles/' + mediaStr
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return True
+        if not self._pathIsImage(path):
+            self._404()
+            return True
 
-                mediaFileType = 'png'
-                if mediaFilename.endswith('.png'):
-                    mediaFileType = 'png'
-                elif mediaFilename.endswith('.jpg'):
-                    mediaFileType = 'jpeg'
-                elif mediaFilename.endswith('.webp'):
-                    mediaFileType = 'webp'
-                elif mediaFilename.endswith('.avif'):
-                    mediaFileType = 'avif'
-                elif mediaFilename.endswith('.svg'):
-                    mediaFileType = 'svg+xml'
-                else:
-                    mediaFileType = 'gif'
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
-                    self._set_headers_etag(mediaFilename,
-                                           'image/' + mediaFileType,
-                                           mediaBinary, None,
-                                           self.server.domainFull)
-                    self._write(mediaBinary)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show media done',
-                                          'share files shown')
-                return True
-        self._404()
+        mediaStr = path.split('/sharefiles/')[1]
+        mediaFilename = \
+            baseDir + '/sharefiles/' + mediaStr
+        if not os.path.isfile(mediaFilename):
+            self._404()
+            return True
+
+        if self._etag_exists(mediaFilename):
+            # The file has not changed
+            self._304()
+            return True
+
+        mediaFileType = 'png'
+        if mediaFilename.endswith('.png'):
+            mediaFileType = 'png'
+        elif mediaFilename.endswith('.jpg'):
+            mediaFileType = 'jpeg'
+        elif mediaFilename.endswith('.webp'):
+            mediaFileType = 'webp'
+        elif mediaFilename.endswith('.avif'):
+            mediaFileType = 'avif'
+        elif mediaFilename.endswith('.svg'):
+            mediaFileType = 'svg+xml'
+        else:
+            mediaFileType = 'gif'
+        with open(mediaFilename, 'rb') as avFile:
+            mediaBinary = avFile.read()
+            self._set_headers_etag(mediaFilename,
+                                   'image/' + mediaFileType,
+                                   mediaBinary, None,
+                                   self.server.domainFull)
+            self._write(mediaBinary)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show media done',
+                                  'share files shown')
         return True
 
     def _showAvatarOrBanner(self, callingDomain: str, path: str,
@@ -9756,59 +9826,62 @@ class PubServer(BaseHTTPRequestHandler):
                             GETstartTime, GETtimings: {}) -> bool:
         """Shows an avatar or banner or profile background image
         """
-        if '/users/' in path:
-            if self._pathIsImage(path):
-                avatarStr = path.split('/users/')[1]
-                if '/' in avatarStr and '.temp.' not in path:
-                    avatarNickname = avatarStr.split('/')[0]
-                    avatarFile = avatarStr.split('/')[1]
-                    avatarFileExt = avatarFile.split('.')[-1]
-                    # remove any numbers, eg. avatar123.png becomes avatar.png
-                    if avatarFile.startswith('avatar'):
-                        avatarFile = 'avatar.' + avatarFileExt
-                    elif avatarFile.startswith('banner'):
-                        avatarFile = 'banner.' + avatarFileExt
-                    elif avatarFile.startswith('search_banner'):
-                        avatarFile = 'search_banner.' + avatarFileExt
-                    elif avatarFile.startswith('image'):
-                        avatarFile = 'image.' + avatarFileExt
-                    elif avatarFile.startswith('left_col_image'):
-                        avatarFile = 'left_col_image.' + avatarFileExt
-                    elif avatarFile.startswith('right_col_image'):
-                        avatarFile = 'right_col_image.' + avatarFileExt
-                    avatarFilename = \
-                        baseDir + '/accounts/' + \
-                        avatarNickname + '@' + domain + '/' + avatarFile
-                    if os.path.isfile(avatarFilename):
-                        if self._etag_exists(avatarFilename):
-                            # The file has not changed
-                            self._304()
-                            return True
-                        mediaImageType = 'png'
-                        if avatarFile.endswith('.png'):
-                            mediaImageType = 'png'
-                        elif avatarFile.endswith('.jpg'):
-                            mediaImageType = 'jpeg'
-                        elif avatarFile.endswith('.gif'):
-                            mediaImageType = 'gif'
-                        elif avatarFile.endswith('.avif'):
-                            mediaImageType = 'avif'
-                        elif avatarFile.endswith('.svg'):
-                            mediaImageType = 'svg+xml'
-                        else:
-                            mediaImageType = 'webp'
-                        with open(avatarFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers_etag(avatarFilename,
-                                                   'image/' + mediaImageType,
-                                                   mediaBinary, None,
-                                                   self.server.domainFull)
-                            self._write(mediaBinary)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'icon shown done',
-                                                  'avatar background shown')
-                        return True
-        return False
+        if '/users/' not in path:
+            return False
+        if not self._pathIsImage(path):
+            return False
+        avatarStr = path.split('/users/')[1]
+        if not ('/' in avatarStr and '.temp.' not in path):
+            return False
+        avatarNickname = avatarStr.split('/')[0]
+        avatarFile = avatarStr.split('/')[1]
+        avatarFileExt = avatarFile.split('.')[-1]
+        # remove any numbers, eg. avatar123.png becomes avatar.png
+        if avatarFile.startswith('avatar'):
+            avatarFile = 'avatar.' + avatarFileExt
+        elif avatarFile.startswith('banner'):
+            avatarFile = 'banner.' + avatarFileExt
+        elif avatarFile.startswith('search_banner'):
+            avatarFile = 'search_banner.' + avatarFileExt
+        elif avatarFile.startswith('image'):
+            avatarFile = 'image.' + avatarFileExt
+        elif avatarFile.startswith('left_col_image'):
+            avatarFile = 'left_col_image.' + avatarFileExt
+        elif avatarFile.startswith('right_col_image'):
+            avatarFile = 'right_col_image.' + avatarFileExt
+        avatarFilename = \
+            baseDir + '/accounts/' + \
+            avatarNickname + '@' + domain + '/' + avatarFile
+        if not os.path.isfile(avatarFilename):
+            return False
+        if self._etag_exists(avatarFilename):
+            # The file has not changed
+            self._304()
+            return True
+        mediaImageType = 'png'
+        if avatarFile.endswith('.png'):
+            mediaImageType = 'png'
+        elif avatarFile.endswith('.jpg'):
+            mediaImageType = 'jpeg'
+        elif avatarFile.endswith('.gif'):
+            mediaImageType = 'gif'
+        elif avatarFile.endswith('.avif'):
+            mediaImageType = 'avif'
+        elif avatarFile.endswith('.svg'):
+            mediaImageType = 'svg+xml'
+        else:
+            mediaImageType = 'webp'
+        with open(avatarFilename, 'rb') as avFile:
+            mediaBinary = avFile.read()
+            self._set_headers_etag(avatarFilename,
+                                   'image/' + mediaImageType,
+                                   mediaBinary, None,
+                                   self.server.domainFull)
+            self._write(mediaBinary)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'icon shown done',
+                                  'avatar background shown')
+        return True
 
     def _confirmDeleteEvent(self, callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str, cookie: str,
@@ -11040,6 +11113,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._showIcon(callingDomain, self.path,
                            self.server.baseDir,
                            GETstartTime, GETtimings)
+            return
+
+        # help screen images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/helpimages/'):
+            self._showHelpScreenImage(callingDomain, self.path,
+                                      self.server.baseDir,
+                                      GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,

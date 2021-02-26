@@ -3288,6 +3288,18 @@ def testMarkdownToHtml():
     markdown = 'This is just plain text'
     assert markdownToHtml(markdown) == markdown
 
+    markdown = 'This is a quotation:\n' + \
+        '> Some quote or other'
+    assert markdownToHtml(markdown) == 'This is a quotation:<br>' + \
+        '<blockquote><i>Some quote or other</i></blockquote>'
+
+    markdown = 'This is a multi-line quotation:\n' + \
+        '> The first line\n' + \
+        '> The second line'
+    assert markdownToHtml(markdown) == \
+        'This is a multi-line quotation:<br>' + \
+        '<blockquote><i>The first line The second line</i></blockquote>'
+
     markdown = 'This is **bold**'
     assert markdownToHtml(markdown) == 'This is <b>bold</b>'
 
@@ -3306,14 +3318,16 @@ def testMarkdownToHtml():
 
     markdown = \
         'This is [a link](https://something.somewhere) to something.\n' + \
-        'And [something else](https://cat.pic).'
+        'And [something else](https://cat.pic).\n' + \
+        'Or ![pounce](/cat.jpg).'
     assert markdownToHtml(markdown) == \
         'This is <a href="https://something.somewhere" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
         'a link</a> to something.<br>' + \
         'And <a href="https://cat.pic" ' + \
         'target="_blank" rel="nofollow noopener noreferrer">' + \
-        'something else</a>.'
+        'something else</a>.<br>' + \
+        'Or <img class="markdownImage" src="/cat.jpg" alt="pounce" />.'
 
 
 def runAllTests():

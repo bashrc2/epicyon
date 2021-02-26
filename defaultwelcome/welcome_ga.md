@@ -1,3 +1,4 @@
+![Íomhá fáilte](/helpimages/welcome.jpg)
 ### Fáilte go INSTANCE
 Is freastalaí ActivityPub é seo atá deartha chun féin-óstáil éasca a dhéanamh ar chúpla duine ar chórais ísealchumhachta, mar ríomhairí boird aonair nó sean ríomhairí glúine.
 

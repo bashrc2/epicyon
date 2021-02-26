@@ -426,6 +426,10 @@ a:focus {
     background-color: var(--timeline-posts-background-color);
 }
 
+.container img.markdownImage {
+    width: 100%;
+}
+
 .container img.timelineicon:hover {
     filter: brightness(var(--icon-brightness-change));
 }

@@ -66,31 +66,88 @@ def _markdownEmphasisHtml(markdown: str) -> str:
     return markdown
 
 
-def markdownToHtml(markdown: str) -> str:
-    """Converts markdown formatted text to html
+def _markdownReplaceQuotes(markdown: str) -> str:
+    """Replaces > quotes with html blockquote
     """
-    markdown = _markdownEmphasisHtml(markdown)
-    # replace markdown style links with html links
+    if '> ' not in markdown:
+        return markdown
+    lines = markdown.split('\n')
+    result = ''
+    prevQuoteLine = None
+    for line in lines:
+        if '> ' not in line:
+            result += line + '\n'
+            prevQuoteLine = None
+            continue
+        lineStr = line.strip()
+        if not lineStr.startswith('> '):
+            result += line + '\n'
+            prevQuoteLine = None
+            continue
+        lineStr = lineStr.replace('> ', '', 1).strip()
+        if prevQuoteLine:
+            newPrevLine = prevQuoteLine.replace('</i></blockquote>\n', '')
+            result = result.replace(prevQuoteLine, newPrevLine) + ' '
+            lineStr += '</i></blockquote>\n'
+        else:
+            lineStr = '<blockquote><i>' + lineStr + '</i></blockquote>\n'
+        result += lineStr
+        prevQuoteLine = lineStr
+
+    if '</blockquote>\n' in result:
+        result = result.replace('</blockquote>\n', '</blockquote>')
+
+    if result.endswith('\n') and \
+       not markdown.endswith('\n'):
+        result = result[:len(result) - 1]
+    return result
+
+
+def _markdownReplaceLinks(markdown: str, images=False) -> str:
+    """Replaces markdown links with html
+    Optionally replace image links
+    """
     replaceLinks = {}
     text = markdown
-    while '[' in text:
+    startChars = '['
+    if images:
+        startChars = '!['
+    while startChars in text:
         if ')' not in text:
             break
-        text = text.split('[', 1)[1]
-        markdownLink = '[' + text.split(')')[0] + ')'
+        text = text.split(startChars, 1)[1]
+        markdownLink = startChars + text.split(')')[0] + ')'
         if ']' not in markdownLink or \
            '(' not in markdownLink:
             text = text.split(')', 1)[1]
             continue
-        replaceLinks[markdownLink] = \
-            '<a href="' + \
-            markdownLink.split('(')[1].split(')')[0] + \
-            '" target="_blank" rel="nofollow noopener noreferrer">' + \
-            markdownLink.split('[')[1].split(']')[0] + \
-            '</a>'
+        if not images:
+            replaceLinks[markdownLink] = \
+                '<a href="' + \
+                markdownLink.split('(')[1].split(')')[0] + \
+                '" target="_blank" rel="nofollow noopener noreferrer">' + \
+                markdownLink.split(startChars)[1].split(']')[0] + \
+                '</a>'
+        else:
+            replaceLinks[markdownLink] = \
+                '<img class="markdownImage" src="' + \
+                markdownLink.split('(')[1].split(')')[0] + \
+                '" alt="' + \
+                markdownLink.split(startChars)[1].split(']')[0] + \
+                '" />'
         text = text.split(')', 1)[1]
     for mdLink, htmlLink in replaceLinks.items():
         markdown = markdown.replace(mdLink, htmlLink)
+    return markdown
+
+
+def markdownToHtml(markdown: str) -> str:
+    """Converts markdown formatted text to html
+    """
+    markdown = _markdownReplaceQuotes(markdown)
+    markdown = _markdownEmphasisHtml(markdown)
+    markdown = _markdownReplaceLinks(markdown, True)
+    markdown = _markdownReplaceLinks(markdown)
 
     # replace headers
     linesList = markdown.split('\n')

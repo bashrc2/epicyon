@@ -8,12 +8,15 @@ __status__ = "Production"
 
 import os
 import time
+from shutil import copyfile
+from utils import dangerousMarkup
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
 from utils import removeIdEnding
 from follow import followerApprovalActive
 from person import isPersonSnoozed
+from webapp_utils import markdownToHtml
 from webapp_utils import htmlKeyboardNavigation
 from webapp_utils import htmlHideFromScreenReader
 from webapp_utils import htmlPostSeparator
@@ -40,6 +43,42 @@ def _logTimelineTiming(enableTimingLog: bool, timelineStartTime,
     if timeDiff > 100:
         print('TIMELINE TIMING ' +
               boxName + ' ' + debugId + ' = ' + str(timeDiff))
+
+
+def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
+    """Shows help text for the given timeline
+    """
+    # get the filename for help for this timeline
+    helpFilename = baseDir + '/accounts/help_' + boxName + '.md'
+    if not os.path.isfile(helpFilename):
+        language = \
+            getConfigParam(baseDir, 'language')
+        if not language:
+            language = 'en'
+        defaultFilename = \
+            baseDir + '/defaultwelcome/' + \
+            'help_' + boxName + '_' + language + '.md'
+        if not os.path.isfile(defaultFilename):
+            defaultFilename = \
+                baseDir + '/defaultwelcome/help_' + boxName + '_en.md'
+        if os.path.isfile(defaultFilename):
+            copyfile(defaultFilename, helpFilename)
+
+    # show help text
+    if os.path.isfile(helpFilename):
+        instanceTitle = \
+            getConfigParam(baseDir, 'instanceTitle')
+        if not instanceTitle:
+            instanceTitle = 'Epicyon'
+        with open(helpFilename, 'r') as helpFile:
+            helpText = helpFile.read()
+            if dangerousMarkup(helpText, False):
+                return ''
+            helpText = helpText.replace('INSTANCE', instanceTitle)
+            return '<div class="container">\n' + \
+                markdownToHtml(helpText) + '\n' + \
+                '</div>\n'
+    return ''
 
 
 def htmlTimeline(cssCache: {}, defaultTimeline: str,
@@ -698,6 +737,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
             translate['Page down'] + '"></a>\n' + \
             '      </center>\n'
         tlStr += textModeSeparator
+    elif itemCtr == 0:
+        tlStr += _getHelpForTimeline(baseDir, boxName)
 
     # end of timeline-posts
     tlStr += '  </div>\n'
@@ -788,6 +829,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '  </center>\n'
 
     separatorStr = htmlPostSeparator(baseDir, None)
+    ctr = 0
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
@@ -799,6 +841,10 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             htmlIndividualShare(actor, item, translate,
                                 showContactButton, showRemoveButton)
         timelineStr += separatorStr
+        ctr += 1
+
+    if ctr == 0:
+        timelineStr += _getHelpForTimeline(baseDir, 'tlshares')
 
     if not lastPage:
         timelineStr += \

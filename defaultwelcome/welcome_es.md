@@ -1,3 +1,4 @@
+![Imagen de bienvenida](/helpimages/welcome.jpg)
 ### Bienvenido a INSTANCE
 Este es un servidor ActivityPub diseñado para el autohospedaje sencillo de algunas personas en sistemas de bajo consumo de energía, como computadoras de placa única o laptops antiguas.
 
