@@ -66,31 +66,49 @@ def _markdownEmphasisHtml(markdown: str) -> str:
     return markdown
 
 
-def markdownToHtml(markdown: str) -> str:
-    """Converts markdown formatted text to html
+def _markdownReplaceLinks(markdown: str, images=False) -> str:
+    """Replaces markdown links with html
     """
-    markdown = _markdownEmphasisHtml(markdown)
-    # replace markdown style links with html links
     replaceLinks = {}
     text = markdown
-    while '[' in text:
+    startChars = '['
+    if images:
+        startChars = '!['
+    while startChars in text:
         if ')' not in text:
             break
-        text = text.split('[', 1)[1]
-        markdownLink = '[' + text.split(')')[0] + ')'
+        text = text.split(startChars, 1)[1]
+        markdownLink = startChars + text.split(')')[0] + ')'
         if ']' not in markdownLink or \
            '(' not in markdownLink:
             text = text.split(')', 1)[1]
             continue
-        replaceLinks[markdownLink] = \
-            '<a href="' + \
-            markdownLink.split('(')[1].split(')')[0] + \
-            '" target="_blank" rel="nofollow noopener noreferrer">' + \
-            markdownLink.split('[')[1].split(']')[0] + \
-            '</a>'
+        if not images:
+            replaceLinks[markdownLink] = \
+                '<a href="' + \
+                markdownLink.split('(')[1].split(')')[0] + \
+                '" target="_blank" rel="nofollow noopener noreferrer">' + \
+                markdownLink.split(startChars)[1].split(']')[0] + \
+                '</a>'
+        else:
+            replaceLinks[markdownLink] = \
+                '<img class="markdownImage" src="' + \
+                markdownLink.split('(')[1].split(')')[0] + \
+                '" alt="' + \
+                markdownLink.split(startChars)[1].split(']')[0] + \
+                '" />'
         text = text.split(')', 1)[1]
     for mdLink, htmlLink in replaceLinks.items():
         markdown = markdown.replace(mdLink, htmlLink)
+    return markdown
+
+
+def markdownToHtml(markdown: str) -> str:
+    """Converts markdown formatted text to html
+    """
+    markdown = _markdownEmphasisHtml(markdown)
+    markdown = _markdownReplaceLinks(markdown, True)
+    markdown = _markdownReplaceLinks(markdown)
 
     # replace headers
     linesList = markdown.split('\n')
