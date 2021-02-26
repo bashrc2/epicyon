@@ -53,6 +53,8 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
     if not os.path.isfile(helpFilename):
         language = \
             getConfigParam(baseDir, 'language')
+        if not language:
+            language = 'en'
         defaultFilename = \
             baseDir + '/defaultwelcome/' + \
             'help_' + boxName + '_' + language + '.md'
