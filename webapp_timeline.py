@@ -9,7 +9,7 @@ __status__ = "Production"
 import os
 import time
 from shutil import copyfile
-from utils import removeHtml
+from utils import dangerousMarkup
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
@@ -72,9 +72,11 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
             instanceTitle = 'Epicyon'
         with open(helpFilename, 'r') as helpFile:
             helpText = helpFile.read()
+            if dangerousMarkup(helpText, False):
+                return ''
             helpText = helpText.replace('INSTANCE', instanceTitle)
             return '<div class="container">\n' + \
-                markdownToHtml(removeHtml(helpText)) + '\n' + \
+                markdownToHtml(helpText) + '\n' + \
                 '</div>\n'
     return ''
 
