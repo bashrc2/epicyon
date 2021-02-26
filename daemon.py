@@ -5794,6 +5794,10 @@ class PubServer(BaseHTTPRequestHandler):
             iconFilename = mediaStr.split('/')[1]
         mediaFilename = \
             baseDir + '/theme/' + theme + '/helpimages/' + iconFilename
+        # if there is no theme-specific help image then use the default one
+        if not os.path.isfile(mediaFilename):
+            mediaFilename = \
+                baseDir + '/theme/default/helpimages/' + iconFilename        
         if self._etag_exists(mediaFilename):
             # The file has not changed
             self._304()
