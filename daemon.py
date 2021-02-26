@@ -9689,7 +9689,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         imageExtensions = getImageExtensions()
         for ext in imageExtensions:
-            for bg in ('follow', 'options', 'login'):
+            for bg in ('follow', 'options', 'login', 'welcome'):
                 # follow screen background image
                 if path.endswith('/' + bg + '-background.' + ext):
                     bgFilename = \
