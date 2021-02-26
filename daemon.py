@@ -9734,41 +9734,45 @@ class PubServer(BaseHTTPRequestHandler):
                         GETstartTime, GETtimings: {}) -> bool:
         """Show a shared item image
         """
-        if self._pathIsImage(path):
-            mediaStr = path.split('/sharefiles/')[1]
-            mediaFilename = \
-                baseDir + '/sharefiles/' + mediaStr
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return True
+        if not self._pathIsImage(path):
+            self._404()
+            return True
 
-                mediaFileType = 'png'
-                if mediaFilename.endswith('.png'):
-                    mediaFileType = 'png'
-                elif mediaFilename.endswith('.jpg'):
-                    mediaFileType = 'jpeg'
-                elif mediaFilename.endswith('.webp'):
-                    mediaFileType = 'webp'
-                elif mediaFilename.endswith('.avif'):
-                    mediaFileType = 'avif'
-                elif mediaFilename.endswith('.svg'):
-                    mediaFileType = 'svg+xml'
-                else:
-                    mediaFileType = 'gif'
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
-                    self._set_headers_etag(mediaFilename,
-                                           'image/' + mediaFileType,
-                                           mediaBinary, None,
-                                           self.server.domainFull)
-                    self._write(mediaBinary)
-                self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                          'show media done',
-                                          'share files shown')
-                return True
-        self._404()
+        mediaStr = path.split('/sharefiles/')[1]
+        mediaFilename = \
+            baseDir + '/sharefiles/' + mediaStr
+        if not os.path.isfile(mediaFilename):
+            self._404()
+            return True
+
+        if self._etag_exists(mediaFilename):
+            # The file has not changed
+            self._304()
+            return True
+
+        mediaFileType = 'png'
+        if mediaFilename.endswith('.png'):
+            mediaFileType = 'png'
+        elif mediaFilename.endswith('.jpg'):
+            mediaFileType = 'jpeg'
+        elif mediaFilename.endswith('.webp'):
+            mediaFileType = 'webp'
+        elif mediaFilename.endswith('.avif'):
+            mediaFileType = 'avif'
+        elif mediaFilename.endswith('.svg'):
+            mediaFileType = 'svg+xml'
+        else:
+            mediaFileType = 'gif'
+        with open(mediaFilename, 'rb') as avFile:
+            mediaBinary = avFile.read()
+            self._set_headers_etag(mediaFilename,
+                                   'image/' + mediaFileType,
+                                   mediaBinary, None,
+                                   self.server.domainFull)
+            self._write(mediaBinary)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'show media done',
+                                  'share files shown')
         return True
 
     def _showAvatarOrBanner(self, callingDomain: str, path: str,
