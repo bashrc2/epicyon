@@ -5771,6 +5771,48 @@ class PubServer(BaseHTTPRequestHandler):
                     return
         self._404()
 
+    def _showHelpScreenImage(self, callingDomain: str, path: str,
+                             baseDir: str,
+                             GETstartTime, GETtimings: {}) -> None:
+        """Shows a help screen image
+        """
+        if not path.endswith('.jpg') and \
+           not path.endswith('.png') and \
+           not path.endswith('.webp') and \
+           not path.endswith('.avif') and \
+           not path.endswith('.gif'):
+            return
+        mediaStr = path.split('/helpimages/')[1]
+        if '/' not in mediaStr:
+            if not self.server.themeName:
+                theme = 'default'
+            else:
+                theme = self.server.themeName
+            iconFilename = mediaStr
+        else:
+            theme = mediaStr.split('/')[0]
+            iconFilename = mediaStr.split('/')[1]
+        mediaFilename = \
+            baseDir + '/theme/' + theme + '/helpimages/' + iconFilename
+        if self._etag_exists(mediaFilename):
+            # The file has not changed
+            self._304()
+            return
+        if os.path.isfile(mediaFilename):
+            with open(mediaFilename, 'rb') as avFile:
+                mediaBinary = avFile.read()
+                mimeType = mediaFileMimeType(mediaFilename)
+                self._set_headers_etag(mediaFilename,
+                                       mimeType,
+                                       mediaBinary, None,
+                                       self.server.domainFull)
+                self._write(mediaBinary)
+            self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                      'show files done',
+                                      'help image shown')
+            return
+        self._404()
+
     def _showCachedAvatar(self, callingDomain: str, path: str,
                           baseDir: str,
                           GETstartTime, GETtimings: {}) -> None:
@@ -11067,6 +11109,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._showIcon(callingDomain, self.path,
                            self.server.baseDir,
                            GETstartTime, GETtimings)
+            return
+
+        # help screen images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/helpimages/'):
+            self._showHelpScreenImage(callingDomain, self.path,
+                                      self.server.baseDir,
+                                      GETstartTime, GETtimings)
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings,
