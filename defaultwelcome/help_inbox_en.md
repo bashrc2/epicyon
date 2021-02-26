@@ -1,4 +1,3 @@
-### Middle column
 Incoming posts will appear here, as a chronological timeline. If you send any posts they will also appear here.
 
 ### The top banner
