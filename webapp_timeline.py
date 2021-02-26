@@ -829,6 +829,7 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             '  </center>\n'
 
     separatorStr = htmlPostSeparator(baseDir, None)
+    ctr = 0
     for published, item in sharesJson.items():
         showContactButton = False
         if item['actor'] != actor:
@@ -840,6 +841,10 @@ def _htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
             htmlIndividualShare(actor, item, translate,
                                 showContactButton, showRemoveButton)
         timelineStr += separatorStr
+        ctr += 1
+
+    if ctr == 0:
+        timelineStr += _getHelpForTimeline(baseDir, 'tlshares')
 
     if not lastPage:
         timelineStr += \
