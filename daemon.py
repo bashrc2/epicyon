@@ -4717,15 +4717,20 @@ class PubServer(BaseHTTPRequestHandler):
                                                  nickname, domain)
 
                     # approve followers
-                    approveFollowers = False
-                    if fields.get('approveFollowers'):
-                        if fields['approveFollowers'] == 'on':
-                            approveFollowers = True
-                    if approveFollowers != \
-                       actorJson['manuallyApprovesFollowers']:
-                        actorJson['manuallyApprovesFollowers'] = \
-                            approveFollowers
+                    if checkNameAndBio:
+                        # Default setting created via the welcome screen
+                        actorJson['manuallyApprovesFollowers'] = True
                         actorChanged = True
+                    else:
+                        approveFollowers = False
+                        if fields.get('approveFollowers'):
+                            if fields['approveFollowers'] == 'on':
+                                approveFollowers = True
+                        if approveFollowers != \
+                           actorJson['manuallyApprovesFollowers']:
+                            actorJson['manuallyApprovesFollowers'] = \
+                                approveFollowers
+                            actorChanged = True
 
                     # remove a custom font
                     if fields.get('removeCustomFont'):
@@ -4773,15 +4778,21 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + \
                         '/.followDMs'
-                    followDMsActive = False
-                    if fields.get('followDMs'):
-                        if fields['followDMs'] == 'on':
-                            followDMsActive = True
-                            with open(followDMsFilename, 'w+') as fFile:
-                                fFile.write('\n')
-                    if not followDMsActive:
-                        if os.path.isfile(followDMsFilename):
-                            os.remove(followDMsFilename)
+                    if checkNameAndBio:
+                        # initial default setting created via
+                        # the welcome screen
+                        with open(followDMsFilename, 'w+') as fFile:
+                            fFile.write('\n')
+                    else:
+                        followDMsActive = False
+                        if fields.get('followDMs'):
+                            if fields['followDMs'] == 'on':
+                                followDMsActive = True
+                                with open(followDMsFilename, 'w+') as fFile:
+                                    fFile.write('\n')
+                        if not followDMsActive:
+                            if os.path.isfile(followDMsFilename):
+                                os.remove(followDMsFilename)
 
                     # remove Twitter retweets
                     removeTwitterFilename = \
@@ -4822,16 +4833,21 @@ class PubServer(BaseHTTPRequestHandler):
                             os.remove(hideLikeButtonFile)
 
                     # notify about new Likes
-                    notifyLikesActive = False
-                    if fields.get('notifyLikes'):
-                        if fields['notifyLikes'] == 'on' and \
-                           not hideLikeButtonActive:
-                            notifyLikesActive = True
-                            with open(notifyLikesFilename, 'w+') as rFile:
-                                rFile.write('\n')
-                    if not notifyLikesActive:
-                        if os.path.isfile(notifyLikesFilename):
-                            os.remove(notifyLikesFilename)
+                    if checkNameAndBio:
+                        # default setting from welcome screen
+                        with open(notifyLikesFilename, 'w+') as rFile:
+                            rFile.write('\n')
+                    else:
+                        notifyLikesActive = False
+                        if fields.get('notifyLikes'):
+                            if fields['notifyLikes'] == 'on' and \
+                               not hideLikeButtonActive:
+                                notifyLikesActive = True
+                                with open(notifyLikesFilename, 'w+') as rFile:
+                                    rFile.write('\n')
+                        if not notifyLikesActive:
+                            if os.path.isfile(notifyLikesFilename):
+                                os.remove(notifyLikesFilename)
 
                     # this account is a bot
                     if fields.get('isBot'):
