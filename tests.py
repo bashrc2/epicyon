@@ -3288,6 +3288,11 @@ def testMarkdownToHtml():
     markdown = 'This is just plain text'
     assert markdownToHtml(markdown) == markdown
 
+    markdown = 'This is a quotation:\n' + \
+        '> Some quote or other'
+    assert markdownToHtml(markdown) == 'This is a quotation:<br>' + \
+        '<blockquote><i>Some quote or other</i></blockquote>'
+
     markdown = 'This is **bold**'
     assert markdownToHtml(markdown) == 'This is <b>bold</b>'
 

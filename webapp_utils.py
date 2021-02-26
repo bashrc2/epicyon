@@ -66,8 +66,33 @@ def _markdownEmphasisHtml(markdown: str) -> str:
     return markdown
 
 
+def _markdownReplaceQuotes(markdown: str) -> str:
+    """Replaces > quotes with html blockquote
+    """
+    if '> ' not in markdown:
+        return markdown
+    lines = markdown.split('\n')
+    result = ''
+    for line in lines:
+        if '> ' not in line:
+            result += line + '\n'
+            continue
+        lineStr = line.strip()
+        if not lineStr.startswith('> '):
+            result += line + '\n'
+            continue
+        lineStr = lineStr.replace('> ', '', 1).strip()
+        result += '<blockquote><i>' + lineStr + '</i></blockquote>\n'
+
+    if result.endswith('\n') and \
+       not markdown.endswith('\n'):
+        result = result[:len(result) -1]
+    return result
+
+
 def _markdownReplaceLinks(markdown: str, images=False) -> str:
     """Replaces markdown links with html
+    Optionally replace image links
     """
     replaceLinks = {}
     text = markdown
@@ -106,6 +131,7 @@ def _markdownReplaceLinks(markdown: str, images=False) -> str:
 def markdownToHtml(markdown: str) -> str:
     """Converts markdown formatted text to html
     """
+    markdown = _markdownReplaceQuotes(markdown)
     markdown = _markdownEmphasisHtml(markdown)
     markdown = _markdownReplaceLinks(markdown, True)
     markdown = _markdownReplaceLinks(markdown)

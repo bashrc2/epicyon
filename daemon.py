@@ -5797,7 +5797,7 @@ class PubServer(BaseHTTPRequestHandler):
         # if there is no theme-specific help image then use the default one
         if not os.path.isfile(mediaFilename):
             mediaFilename = \
-                baseDir + '/theme/default/helpimages/' + iconFilename        
+                baseDir + '/theme/default/helpimages/' + iconFilename
         if self._etag_exists(mediaFilename):
             # The file has not changed
             self._304()
