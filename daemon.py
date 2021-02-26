@@ -9776,59 +9776,62 @@ class PubServer(BaseHTTPRequestHandler):
                             GETstartTime, GETtimings: {}) -> bool:
         """Shows an avatar or banner or profile background image
         """
-        if '/users/' in path:
-            if self._pathIsImage(path):
-                avatarStr = path.split('/users/')[1]
-                if '/' in avatarStr and '.temp.' not in path:
-                    avatarNickname = avatarStr.split('/')[0]
-                    avatarFile = avatarStr.split('/')[1]
-                    avatarFileExt = avatarFile.split('.')[-1]
-                    # remove any numbers, eg. avatar123.png becomes avatar.png
-                    if avatarFile.startswith('avatar'):
-                        avatarFile = 'avatar.' + avatarFileExt
-                    elif avatarFile.startswith('banner'):
-                        avatarFile = 'banner.' + avatarFileExt
-                    elif avatarFile.startswith('search_banner'):
-                        avatarFile = 'search_banner.' + avatarFileExt
-                    elif avatarFile.startswith('image'):
-                        avatarFile = 'image.' + avatarFileExt
-                    elif avatarFile.startswith('left_col_image'):
-                        avatarFile = 'left_col_image.' + avatarFileExt
-                    elif avatarFile.startswith('right_col_image'):
-                        avatarFile = 'right_col_image.' + avatarFileExt
-                    avatarFilename = \
-                        baseDir + '/accounts/' + \
-                        avatarNickname + '@' + domain + '/' + avatarFile
-                    if os.path.isfile(avatarFilename):
-                        if self._etag_exists(avatarFilename):
-                            # The file has not changed
-                            self._304()
-                            return True
-                        mediaImageType = 'png'
-                        if avatarFile.endswith('.png'):
-                            mediaImageType = 'png'
-                        elif avatarFile.endswith('.jpg'):
-                            mediaImageType = 'jpeg'
-                        elif avatarFile.endswith('.gif'):
-                            mediaImageType = 'gif'
-                        elif avatarFile.endswith('.avif'):
-                            mediaImageType = 'avif'
-                        elif avatarFile.endswith('.svg'):
-                            mediaImageType = 'svg+xml'
-                        else:
-                            mediaImageType = 'webp'
-                        with open(avatarFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers_etag(avatarFilename,
-                                                   'image/' + mediaImageType,
-                                                   mediaBinary, None,
-                                                   self.server.domainFull)
-                            self._write(mediaBinary)
-                        self._benchmarkGETtimings(GETstartTime, GETtimings,
-                                                  'icon shown done',
-                                                  'avatar background shown')
-                        return True
-        return False
+        if '/users/' not in path:
+            return False
+        if not self._pathIsImage(path):
+            return False
+        avatarStr = path.split('/users/')[1]
+        if not ('/' in avatarStr and '.temp.' not in path):
+            return False
+        avatarNickname = avatarStr.split('/')[0]
+        avatarFile = avatarStr.split('/')[1]
+        avatarFileExt = avatarFile.split('.')[-1]
+        # remove any numbers, eg. avatar123.png becomes avatar.png
+        if avatarFile.startswith('avatar'):
+            avatarFile = 'avatar.' + avatarFileExt
+        elif avatarFile.startswith('banner'):
+            avatarFile = 'banner.' + avatarFileExt
+        elif avatarFile.startswith('search_banner'):
+            avatarFile = 'search_banner.' + avatarFileExt
+        elif avatarFile.startswith('image'):
+            avatarFile = 'image.' + avatarFileExt
+        elif avatarFile.startswith('left_col_image'):
+            avatarFile = 'left_col_image.' + avatarFileExt
+        elif avatarFile.startswith('right_col_image'):
+            avatarFile = 'right_col_image.' + avatarFileExt
+        avatarFilename = \
+            baseDir + '/accounts/' + \
+            avatarNickname + '@' + domain + '/' + avatarFile
+        if not os.path.isfile(avatarFilename):
+            return False
+        if self._etag_exists(avatarFilename):
+            # The file has not changed
+            self._304()
+            return True
+        mediaImageType = 'png'
+        if avatarFile.endswith('.png'):
+            mediaImageType = 'png'
+        elif avatarFile.endswith('.jpg'):
+            mediaImageType = 'jpeg'
+        elif avatarFile.endswith('.gif'):
+            mediaImageType = 'gif'
+        elif avatarFile.endswith('.avif'):
+            mediaImageType = 'avif'
+        elif avatarFile.endswith('.svg'):
+            mediaImageType = 'svg+xml'
+        else:
+            mediaImageType = 'webp'
+        with open(avatarFilename, 'rb') as avFile:
+            mediaBinary = avFile.read()
+            self._set_headers_etag(avatarFilename,
+                                   'image/' + mediaImageType,
+                                   mediaBinary, None,
+                                   self.server.domainFull)
+            self._write(mediaBinary)
+        self._benchmarkGETtimings(GETstartTime, GETtimings,
+                                  'icon shown done',
+                                  'avatar background shown')
+        return True
 
     def _confirmDeleteEvent(self, callingDomain: str, path: str,
                             baseDir: str, httpPrefix: str, cookie: str,
