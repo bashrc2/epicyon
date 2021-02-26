@@ -73,7 +73,9 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
         with open(helpFilename, 'r') as helpFile:
             helpText = helpFile.read()
             helpText = helpText.replace('INSTANCE', instanceTitle)
-            return markdownToHtml(removeHtml(helpText))
+            return '<div class="container">\n' + \
+                markdownToHtml(removeHtml(helpText)) + \
+                '<\div>\n'
     return ''
 
 

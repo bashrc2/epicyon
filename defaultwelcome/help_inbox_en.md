@@ -15,6 +15,6 @@ Here you can add **useful links**. This only appears on desktop displays or devi
 If you are on mobile then user the **links icon** at the top to read news.
 
 ### 🡲 Right column 🡲
-**RSS feeds** can be added in the right column, known as the *newswire*. This only appears on desktop displays or devices with larger screens. You can only add or edit feeds if you have an **administrator** or **editor** role, and incoming feed items can also be moderated.
+RSS feeds can be added in the right column, known as the *newswire*. This only appears on desktop displays or devices with larger screens. You can only add or edit feeds if you have an **administrator** or **editor** role, and incoming feed items can also be moderated.
 
 If you are on mobile then user the **newswire icon** at the top to read news.
