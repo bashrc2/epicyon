@@ -4050,6 +4050,7 @@ class PubServer(BaseHTTPRequestHandler):
             postBytesStr = postBytes.decode('utf-8')
             redirectPath = ''
             checkNameAndBio = False
+            onFinalWelcomeScreen = False
             if 'name="previewAvatar"' in postBytesStr:
                 redirectPath = '/welcome_profile'
             elif 'name="initialWelcomeScreen"' in postBytesStr:
@@ -4061,6 +4062,7 @@ class PubServer(BaseHTTPRequestHandler):
                 redirectPath = '/' + self.server.defaultTimeline
                 welcomeScreenIsComplete(self.server.baseDir, nickname,
                                         self.server.domain)
+                onFinalWelcomeScreen = True
 
             # extract all of the text fields into a dict
             fields = \
@@ -4717,7 +4719,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  nickname, domain)
 
                     # approve followers
-                    if checkNameAndBio:
+                    if onFinalWelcomeScreen:
                         # Default setting created via the welcome screen
                         actorJson['manuallyApprovesFollowers'] = True
                         actorChanged = True
@@ -4778,11 +4780,12 @@ class PubServer(BaseHTTPRequestHandler):
                         baseDir + '/accounts/' + \
                         nickname + '@' + domain + \
                         '/.followDMs'
-                    if checkNameAndBio:
+                    if onFinalWelcomeScreen:
                         # initial default setting created via
                         # the welcome screen
                         with open(followDMsFilename, 'w+') as fFile:
                             fFile.write('\n')
+                        actorChanged = True
                     else:
                         followDMsActive = False
                         if fields.get('followDMs'):
@@ -4833,10 +4836,11 @@ class PubServer(BaseHTTPRequestHandler):
                             os.remove(hideLikeButtonFile)
 
                     # notify about new Likes
-                    if checkNameAndBio:
+                    if onFinalWelcomeScreen:
                         # default setting from welcome screen
                         with open(notifyLikesFilename, 'w+') as rFile:
                             rFile.write('\n')
+                        actorChanged = True
                     else:
                         notifyLikesActive = False
                         if fields.get('notifyLikes'):
