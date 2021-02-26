@@ -94,9 +94,12 @@ def _markdownReplaceQuotes(markdown: str) -> str:
         result += lineStr
         prevQuoteLine = lineStr
 
+    if '</blockquote>\n' in result:
+        result = result.replace('</blockquote>\n', '</blockquote>')
+
     if result.endswith('\n') and \
        not markdown.endswith('\n'):
-        result = result[:len(result) -1]
+        result = result[:len(result) - 1]
     return result
 
 
