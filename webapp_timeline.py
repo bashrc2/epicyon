@@ -738,10 +738,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
     elif itemCtr == 0:
         tlStr += _getHelpForTimeline(baseDir, boxName)
 
-    if itemCtr > 0:
-        # end of timeline-posts
-        tlStr += '  </div>\n'
+    # end of timeline-posts
+    tlStr += '  </div>\n'
 
+    if itemCtr > 0:
         # end of column-center
         tlStr += '  </td>\n'
 
