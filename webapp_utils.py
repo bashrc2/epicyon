@@ -73,16 +73,26 @@ def _markdownReplaceQuotes(markdown: str) -> str:
         return markdown
     lines = markdown.split('\n')
     result = ''
+    prevQuoteLine = None
     for line in lines:
         if '> ' not in line:
             result += line + '\n'
+            prevQuoteLine = None
             continue
         lineStr = line.strip()
         if not lineStr.startswith('> '):
             result += line + '\n'
+            prevQuoteLine = None
             continue
         lineStr = lineStr.replace('> ', '', 1).strip()
-        result += '<blockquote><i>' + lineStr + '</i></blockquote>\n'
+        if prevQuoteLine:
+            newPrevLine = prevQuoteLine.replace('</i></blockquote>\n', '')
+            result = result.replace(prevQuoteLine, newPrevLine) + ' '
+            lineStr += '</i></blockquote>\n'
+        else:
+            lineStr = '<blockquote><i>' + lineStr + '</i></blockquote>\n'
+        result += lineStr
+        prevQuoteLine = lineStr
 
     if result.endswith('\n') and \
        not markdown.endswith('\n'):

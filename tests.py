@@ -3293,6 +3293,13 @@ def testMarkdownToHtml():
     assert markdownToHtml(markdown) == 'This is a quotation:<br>' + \
         '<blockquote><i>Some quote or other</i></blockquote>'
 
+    markdown = 'This is a multi-line quotation:\n' + \
+        '> The first line\n' + \
+        '> The second line'
+    assert markdownToHtml(markdown) == \
+        'This is a multi-line quotation:<br>' + \
+        '<blockquote><i>The first line The second line</i></blockquote>'
+
     markdown = 'This is **bold**'
     assert markdownToHtml(markdown) == 'This is <b>bold</b>'
 
