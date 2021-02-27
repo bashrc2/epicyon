@@ -65,9 +65,9 @@ def _copyThemeHelpFiles(baseDir: str, themeName: str,
                 continue
             destHelpMarkdownFile = \
                 helpMarkdownFile.replace('_' + systemLanguage + '.md', '.md')
-            print('Copying theme help: ' + \
-                  themeDir + '/' + helpMarkdownFile + ' -> ' + \
-                  baseDir + '/accounts/' + destHelpMarkdownFile)
+            if destHelpMarkdownFile == 'profile.md' or \
+               destHelpMarkdownFile == 'final.md':
+                destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
             copyfile(themeDir + '/' + helpMarkdownFile,
                      baseDir + '/accounts/' + destHelpMarkdownFile)
         break
