@@ -3899,7 +3899,8 @@ class PubServer(BaseHTTPRequestHandler):
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
-                       debug: bool, allowLocalNetworkAccess: bool) -> None:
+                       debug: bool, allowLocalNetworkAccess: bool,
+                       systemLanguage: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -4289,7 +4290,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('themeDropdown'):
                         self.server.themeName = fields['themeDropdown']
                         setTheme(baseDir, self.server.themeName, domain,
-                                 allowLocalNetworkAccess)
+                                 allowLocalNetworkAccess, systemLanguage)
                         self.server.textModeBanner = \
                             getTextModeBanner(self.server.baseDir)
                         self.server.iconsCache = {}
@@ -4759,7 +4760,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if currTheme:
                                 self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
-                                         self.server.allowLocalNetworkAccess)
+                                         self.server.allowLocalNetworkAccess,
+                                         systemLanguage)
                                 self.server.textModeBanner = \
                                     getTextModeBanner(self.server.baseDir)
                                 self.server.iconsCache = {}
@@ -13543,7 +13545,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.onionDomain,
                                 self.server.i2pDomain, self.server.debug,
-                                self.server.allowLocalNetworkAccess)
+                                self.server.allowLocalNetworkAccess,
+                                self.server.systemLanguage)
             return
 
         if authorized and self.path.endswith('/linksdata'):

@@ -50,6 +50,24 @@ def getThemesList(baseDir: str) -> []:
     return themes
 
 
+def _copyThemeHelpFiles(baseDir: str, themeName: str,
+                        systemLanguage: str) -> None:
+    """Copies any theme specific help files from the welcome subdirectory
+    """
+    themeDir = baseDir + '/theme/' + themeName + '/welcome'
+    if not os.path.isdir(themeDir):
+        themeDir = baseDir + '/defaultwelcome'
+    for subdir, dirs, files in os.walk(themeDir):
+        for helpMarkdownFile in files:
+            if helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
+                destHelpMarkdownFile = \
+                    helpMarkdownFile.replace('_' + systemLanguage + '.md',
+                                             '.md')
+                copyfile(themeDir + '/' + helpMarkdownFile,
+                         baseDir + '/accounts/' + destHelpMarkdownFile)
+        break
+
+
 def _setThemeInConfig(baseDir: str, name: str) -> bool:
     """Sets the theme with the given name within config.json
     """
@@ -642,7 +660,7 @@ def _setClearCacheFlag(baseDir: str) -> None:
 
 
 def setTheme(baseDir: str, name: str, domain: str,
-             allowLocalNetworkAccess: bool) -> bool:
+             allowLocalNetworkAccess: bool, systemLanguage: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -695,6 +713,7 @@ def setTheme(baseDir: str, name: str, domain: str,
     else:
         disableGrayscale(baseDir)
 
+    _copyThemeHelpFiles(baseDir, name, systemLanguage)
     _setThemeInConfig(baseDir, name)
     _setClearCacheFlag(baseDir)
     return result

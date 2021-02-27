@@ -2325,7 +2325,8 @@ if YTDomain:
     if '.' in YTDomain:
         args.YTReplacementDomain = YTDomain
 
-if setTheme(baseDir, themeName, domain, args.allowLocalNetworkAccess):
+if setTheme(baseDir, themeName, domain,
+            args.allowLocalNetworkAccess, args.language):
     print('Theme set to ' + themeName)
 
 if __name__ == "__main__":
