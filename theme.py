@@ -61,12 +61,15 @@ def _copyThemeHelpFiles(baseDir: str, themeName: str,
         themeDir = baseDir + '/defaultwelcome'
     for subdir, dirs, files in os.walk(themeDir):
         for helpMarkdownFile in files:
-            if helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
-                destHelpMarkdownFile = \
-                    helpMarkdownFile.replace('_' + systemLanguage + '.md',
-                                             '.md')
-                copyfile(themeDir + '/' + helpMarkdownFile,
-                         baseDir + '/accounts/' + destHelpMarkdownFile)
+            if not helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
+                continue
+            destHelpMarkdownFile = \
+                helpMarkdownFile.replace('_' + systemLanguage + '.md', '.md')
+            print('Copying theme help: ' + \
+                  themeDir + '/' + helpMarkdownFile + ' -> ' + \
+                  baseDir + '/accounts/' + destHelpMarkdownFile)
+            copyfile(themeDir + '/' + helpMarkdownFile,
+                     baseDir + '/accounts/' + destHelpMarkdownFile)
         break
 
 
