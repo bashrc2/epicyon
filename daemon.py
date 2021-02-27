@@ -10800,7 +10800,8 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlWelcomeScreen(self.server.baseDir, nickname,
                                       self.server.systemLanguage,
-                                      self.server.translate)
+                                      self.server.translate,
+                                      self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -10827,7 +10828,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix,
                                        self.server.domainFull,
                                        self.server.systemLanguage,
-                                       self.server.translate)
+                                       self.server.translate,
+                                       self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -10854,7 +10856,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix,
                                      self.server.domainFull,
                                      self.server.systemLanguage,
-                                     self.server.translate)
+                                     self.server.translate,
+                                     self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
