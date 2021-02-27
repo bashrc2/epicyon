@@ -54,6 +54,8 @@ def _copyThemeHelpFiles(baseDir: str, themeName: str,
                         systemLanguage: str) -> None:
     """Copies any theme specific help files from the welcome subdirectory
     """
+    if not systemLanguage:
+        systemLanguage = 'en'
     themeDir = baseDir + '/theme/' + themeName + '/welcome'
     if not os.path.isdir(themeDir):
         themeDir = baseDir + '/defaultwelcome'
