@@ -55,9 +55,19 @@ def _getHelpForTimeline(baseDir: str, boxName: str) -> str:
             getConfigParam(baseDir, 'language')
         if not language:
             language = 'en'
-        defaultFilename = \
-            baseDir + '/defaultwelcome/' + \
-            'help_' + boxName + '_' + language + '.md'
+        themeName = \
+            getConfigParam(baseDir, 'theme')
+        defaultFilename = None
+        if themeName:
+            defaultFilename = \
+                baseDir + '/theme/' + themeName + '/welcome/' + \
+                'help_' + boxName + '_' + language + '.md'
+            if not os.path.isfile(defaultFilename):
+                defaultFilename = None
+        if not defaultFilename:
+            defaultFilename = \
+                baseDir + '/defaultwelcome/' + \
+                'help_' + boxName + '_' + language + '.md'
         if not os.path.isfile(defaultFilename):
             defaultFilename = \
                 baseDir + '/defaultwelcome/help_' + boxName + '_en.md'
