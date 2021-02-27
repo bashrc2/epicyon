@@ -18,6 +18,8 @@ clean:
 	rm -f *.*~ *~ *.dot
 	rm -f orgs/*~
 	rm -f defaultwelcome/*~
+	rm -f theme/indymediaclassic/welcome/*~
+	rm -f theme/indymediamodern/welcome/*~
 	rm -f website/EN/*~
 	rm -f gemini/EN/*~
 	rm -f scripts/*~
