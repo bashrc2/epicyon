@@ -1,3 +1,4 @@
+![Journalist image](/helpimages/journalist.jpg)
 ### You are now a journalist!
 Welcome onboard the team. This is a moderated news instance, so please ensure that anything you write is in accordance with our [editorial policy](/terms).
 
