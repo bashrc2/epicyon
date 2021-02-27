@@ -23,6 +23,15 @@ def _getThemeFiles() -> []:
             'welcome.css')
 
 
+def isNewsThemeName(baseDir: str, themeName: str) -> bool:
+    """Returns true if the given theme is a news instance
+    """
+    themeDir = baseDir + '/theme/' + themeName
+    if os.path.isfile(themeDir + '/is_news_instance'):
+        return True
+    return False
+
+
 def getThemesList(baseDir: str) -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
@@ -39,6 +48,29 @@ def getThemesList(baseDir: str) -> []:
     themes.sort()
     print('Themes available: ' + str(themes))
     return themes
+
+
+def _copyThemeHelpFiles(baseDir: str, themeName: str,
+                        systemLanguage: str) -> None:
+    """Copies any theme specific help files from the welcome subdirectory
+    """
+    if not systemLanguage:
+        systemLanguage = 'en'
+    themeDir = baseDir + '/theme/' + themeName + '/welcome'
+    if not os.path.isdir(themeDir):
+        themeDir = baseDir + '/defaultwelcome'
+    for subdir, dirs, files in os.walk(themeDir):
+        for helpMarkdownFile in files:
+            if not helpMarkdownFile.endswith('_' + systemLanguage + '.md'):
+                continue
+            destHelpMarkdownFile = \
+                helpMarkdownFile.replace('_' + systemLanguage + '.md', '.md')
+            if destHelpMarkdownFile == 'profile.md' or \
+               destHelpMarkdownFile == 'final.md':
+                destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
+            copyfile(themeDir + '/' + helpMarkdownFile,
+                     baseDir + '/accounts/' + destHelpMarkdownFile)
+        break
 
 
 def _setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -633,7 +665,7 @@ def _setClearCacheFlag(baseDir: str) -> None:
 
 
 def setTheme(baseDir: str, name: str, domain: str,
-             allowLocalNetworkAccess: bool) -> bool:
+             allowLocalNetworkAccess: bool, systemLanguage: str) -> bool:
     """Sets the theme with the given name as the current theme
     """
     result = False
@@ -686,6 +718,7 @@ def setTheme(baseDir: str, name: str, domain: str,
     else:
         disableGrayscale(baseDir)
 
+    _copyThemeHelpFiles(baseDir, name, systemLanguage)
     _setThemeInConfig(baseDir, name)
     _setClearCacheFlag(baseDir)
     return result

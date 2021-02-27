@@ -41,6 +41,7 @@ def welcomeScreenIsComplete(baseDir: str,
 
 def htmlWelcomeScreen(baseDir: str, nickname: str,
                       language: str, translate: {},
+                      themeName: str,
                       currScreen='welcome') -> str:
     """Returns the welcome screen
     """
@@ -53,8 +54,17 @@ def htmlWelcomeScreen(baseDir: str, nickname: str,
     welcomeText = 'Welcome to Epicyon'
     welcomeFilename = baseDir + '/accounts/' + currScreen + '.md'
     if not os.path.isfile(welcomeFilename):
-        defaultFilename = \
-            baseDir + '/defaultwelcome/' + currScreen + '_' + language + '.md'
+        defaultFilename = None
+        if themeName:
+            defaultFilename = \
+                baseDir + '/theme/' + themeName + '/welcome/' + \
+                'welcome_' + language + '.md'
+            if not os.path.isfile(defaultFilename):
+                defaultFilename = None
+        if not defaultFilename:
+            defaultFilename = \
+                baseDir + '/defaultwelcome/' + \
+                currScreen + '_' + language + '.md'
         if not os.path.isfile(defaultFilename):
             defaultFilename = \
                 baseDir + '/defaultwelcome/' + currScreen + '_en.md'

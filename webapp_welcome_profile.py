@@ -20,7 +20,8 @@ from webapp_utils import markdownToHtml
 
 def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
                        httpPrefix: str, domainFull: str,
-                       language: str, translate: {}) -> str:
+                       language: str, translate: {},
+                       themeName: str) -> str:
     """Returns the welcome profile screen to set avatar and bio
     """
     # set a custom background for the welcome screen
@@ -32,8 +33,16 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileText = 'Welcome to Epicyon'
     profileFilename = baseDir + '/accounts/welcome_profile.md'
     if not os.path.isfile(profileFilename):
-        defaultFilename = \
-            baseDir + '/defaultwelcome/profile_' + language + '.md'
+        defaultFilename = None
+        if themeName:
+            defaultFilename = \
+                baseDir + '/theme/' + themeName + '/welcome/' + \
+                'profile_' + language + '.md'
+            if not os.path.isfile(defaultFilename):
+                defaultFilename = None
+        if not defaultFilename:
+            defaultFilename = \
+                baseDir + '/defaultwelcome/profile_' + language + '.md'
         if not os.path.isfile(defaultFilename):
             defaultFilename = baseDir + '/defaultwelcome/profile_en.md'
         copyfile(defaultFilename, profileFilename)

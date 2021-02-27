@@ -239,6 +239,7 @@ from cache import checkForChangedActor
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import isNewsThemeName
 from theme import getTextModeBanner
 from theme import setNewsAvatar
 from theme import setTheme
@@ -3898,7 +3899,8 @@ class PubServer(BaseHTTPRequestHandler):
                        baseDir: str, httpPrefix: str,
                        domain: str, domainFull: str,
                        onionDomain: str, i2pDomain: str,
-                       debug: bool, allowLocalNetworkAccess: bool) -> None:
+                       debug: bool, allowLocalNetworkAccess: bool,
+                       systemLanguage: str) -> None:
         """Updates your user profile after editing via the Edit button
         on the profile screen
         """
@@ -4227,6 +4229,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            "mediaInstance",
                                            self.server.mediaInstance)
 
+                    # is this a news theme?
+                    if isNewsThemeName(self.server.baseDir,
+                                       self.server.themeName):
+                        fields['newsInstance'] = 'on'
+
                     # change news instance status
                     if fields.get('newsInstance'):
                         self.server.newsInstance = False
@@ -4283,7 +4290,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if fields.get('themeDropdown'):
                         self.server.themeName = fields['themeDropdown']
                         setTheme(baseDir, self.server.themeName, domain,
-                                 allowLocalNetworkAccess)
+                                 allowLocalNetworkAccess, systemLanguage)
                         self.server.textModeBanner = \
                             getTextModeBanner(self.server.baseDir)
                         self.server.iconsCache = {}
@@ -4753,7 +4760,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if currTheme:
                                 self.server.themeName = currTheme
                                 setTheme(baseDir, currTheme, domain,
-                                         self.server.allowLocalNetworkAccess)
+                                         self.server.allowLocalNetworkAccess,
+                                         systemLanguage)
                                 self.server.textModeBanner = \
                                     getTextModeBanner(self.server.baseDir)
                                 self.server.iconsCache = {}
@@ -10800,7 +10808,8 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlWelcomeScreen(self.server.baseDir, nickname,
                                       self.server.systemLanguage,
-                                      self.server.translate)
+                                      self.server.translate,
+                                      self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -10827,7 +10836,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix,
                                        self.server.domainFull,
                                        self.server.systemLanguage,
-                                       self.server.translate)
+                                       self.server.translate,
+                                       self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -10854,7 +10864,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix,
                                      self.server.domainFull,
                                      self.server.systemLanguage,
-                                     self.server.translate)
+                                     self.server.translate,
+                                     self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._login_headers('text/html', msglen, callingDomain)
@@ -13534,7 +13545,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.domainFull,
                                 self.server.onionDomain,
                                 self.server.i2pDomain, self.server.debug,
-                                self.server.allowLocalNetworkAccess)
+                                self.server.allowLocalNetworkAccess,
+                                self.server.systemLanguage)
             return
 
         if authorized and self.path.endswith('/linksdata'):
@@ -14271,14 +14283,6 @@ def runDaemon(brochMode: bool,
     httpd.i2pDomain = i2pDomain
     httpd.mediaInstance = mediaInstance
     httpd.blogsInstance = blogsInstance
-    httpd.newsInstance = newsInstance
-    httpd.defaultTimeline = 'inbox'
-    if mediaInstance:
-        httpd.defaultTimeline = 'tlmedia'
-    if blogsInstance:
-        httpd.defaultTimeline = 'tlblogs'
-    if newsInstance:
-        httpd.defaultTimeline = 'tlfeatures'
 
     # load translations dictionary
     httpd.translate = {}
@@ -14442,6 +14446,18 @@ def runDaemon(brochMode: bool,
     httpd.themeName = getConfigParam(baseDir, 'theme')
     if not httpd.themeName:
         httpd.themeName = 'default'
+    if isNewsThemeName(baseDir, httpd.themeName):
+        newsInstance = True
+
+    httpd.newsInstance = newsInstance
+    httpd.defaultTimeline = 'inbox'
+    if mediaInstance:
+        httpd.defaultTimeline = 'tlmedia'
+    if blogsInstance:
+        httpd.defaultTimeline = 'tlblogs'
+    if newsInstance:
+        httpd.defaultTimeline = 'tlfeatures'
+
     setNewsAvatar(baseDir,
                   httpd.themeName,
                   httpPrefix,

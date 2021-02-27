@@ -17,7 +17,8 @@ from webapp_utils import markdownToHtml
 
 def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
                      httpPrefix: str, domainFull: str,
-                     language: str, translate: {}) -> str:
+                     language: str, translate: {},
+                     themeName: str) -> str:
     """Returns the final welcome screen after first login
     """
     # set a custom background for the welcome screen
@@ -29,8 +30,16 @@ def htmlWelcomeFinal(baseDir: str, nickname: str, domain: str,
     finalText = 'Welcome to Epicyon'
     finalFilename = baseDir + '/accounts/welcome_final.md'
     if not os.path.isfile(finalFilename):
-        defaultFilename = \
-            baseDir + '/defaultwelcome/final_' + language + '.md'
+        defaultFilename = None
+        if themeName:
+            defaultFilename = \
+                baseDir + '/theme/' + themeName + '/welcome/' + \
+                'final_' + language + '.md'
+            if not os.path.isfile(defaultFilename):
+                defaultFilename = None
+        if not defaultFilename:
+            defaultFilename = \
+                baseDir + '/defaultwelcome/final_' + language + '.md'
         if not os.path.isfile(defaultFilename):
             defaultFilename = baseDir + '/defaultwelcome/final_en.md'
         copyfile(defaultFilename, finalFilename)
