@@ -17,6 +17,7 @@ source:
 clean:
 	rm -f *.*~ *~ *.dot
 	rm -f orgs/*~
+	rm -f defaultwelcome/*~
 	rm -f website/EN/*~
 	rm -f gemini/EN/*~
 	rm -f scripts/*~
