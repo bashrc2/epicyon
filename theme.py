@@ -23,6 +23,15 @@ def _getThemeFiles() -> []:
             'welcome.css')
 
 
+def isNewsThemeName(baseDir: str, themeName: str) -> bool:
+    """Returns true if the given theme is a news instance
+    """
+    themeDir = baseDir + '/theme/' + themeName
+    if os.path.isfile(themeDir + '/is_news_instance'):
+        return True
+    return False
+
+
 def getThemesList(baseDir: str) -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
