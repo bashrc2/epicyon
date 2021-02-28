@@ -1260,12 +1260,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             if instanceDescription:
                 instanceStr += \
                     '  <textarea id="message" name="instanceDescription" ' + \
-                    'style="height:200px">' + \
+                    'style="height:200px" spellcheck="true">' + \
                     instanceDescription + '</textarea>'
             else:
                 instanceStr += \
                     '  <textarea id="message" name="instanceDescription" ' + \
-                    'style="height:200px"></textarea>'
+                    'style="height:200px" spellcheck="true"></textarea>'
             instanceStr += \
                 '  <label class="labels">' + \
                 translate['Instance Logo'] + '</label>'
@@ -1306,7 +1306,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             moderatorsStr += \
                 '  <textarea id="message" name="moderators" placeholder="' + \
                 translate['List of moderator nicknames'] + \
-                '..." style="height:200px">' + moderators + '</textarea>'
+                '..." style="height:200px" spellcheck="false">' + \
+                moderators + '</textarea>'
             moderatorsStr += '</div>'
 
             editors = ''
@@ -1320,7 +1321,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 translate['A list of editor nicknames. One per line.']
             editorsStr += \
                 '  <textarea id="message" name="editors" placeholder="" ' + \
-                'style="height:200px">' + editors + '</textarea>'
+                'style="height:200px" spellcheck="false">' + \
+                editors + '</textarea>'
             editorsStr += '</div>'
 
             themes = getThemesList(baseDir)
@@ -1369,8 +1371,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 peertubeInstancesStr += url + '\n'
             peertubeStr += \
                 '      <textarea id="message" name="ptInstances" ' + \
-                'style="height:200px">' + peertubeInstancesStr + \
-                '</textarea>\n'
+                'style="height:200px" spellcheck="false">' + \
+                peertubeInstancesStr + '</textarea>\n'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -1429,8 +1431,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <label class="labels">' + translate['Your bio'] + '</label>\n'
     editProfileForm += \
-        '      <textarea id="message" name="bio" style="height:200px">' + \
-        bioStr + '</textarea>\n'
+        '      <textarea id="message" name="bio" style="height:200px" ' + \
+        'spellcheck="true">' + bioStr + '</textarea>\n'
 
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):
@@ -1509,7 +1511,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" placeholder=' + \
         '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:100px">' + PGPpubKey + '</textarea>\n'
+        'style="height:100px" spellcheck="false">' + \
+        PGPpubKey + '</textarea>\n'
     editProfileForm += '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a><br>\n'
@@ -1622,7 +1625,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>\n'
     editProfileForm += '      <textarea id="message" ' + \
-        'name="filteredWords" style="height:200px">' + \
+        'name="filteredWords" style="height:200px" spellcheck="false">' + \
         filterStr + '</textarea>\n'
 
     editProfileForm += \
@@ -1631,7 +1634,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <br><label class="labels">A -> B</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="switchWords" ' + \
-        'style="height:200px">' + switchStr + '</textarea>\n'
+        'style="height:200px" spellcheck="false">' + \
+        switchStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1639,7 +1643,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <br><label class="labels">A -> #B</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="autoTags" ' + \
-        'style="height:200px">' + autoTags + '</textarea>\n'
+        'style="height:200px" spellcheck="false">' + \
+        autoTags + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1647,7 +1652,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <br><label class="labels">A -> B</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="autoCW" ' + \
-        'style="height:200px">' + autoCW + '</textarea>\n'
+        'style="height:200px" spellcheck="true">' + autoCW + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1657,8 +1662,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <br><label class="labels">' + translate[idx] + '</label>\n'
     editProfileForm += \
-        '      <textarea id="message" name="blocked" style="height:200px">' + \
-        blockedStr + '</textarea>\n'
+        '      <textarea id="message" name="blocked" style="height:200px" ' + \
+        'spellcheck="false">' + blockedStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1670,7 +1675,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="allowedInstances" ' + \
-        'style="height:200px">' + allowedInstancesStr + '</textarea>\n'
+        'style="height:200px" spellcheck="false">' + \
+        allowedInstancesStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
@@ -1681,7 +1687,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="gitProjects" ' + \
-        'style="height:100px">' + gitProjectsStr + '</textarea>\n'
+        'style="height:100px" spellcheck="false">' + \
+        gitProjectsStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
