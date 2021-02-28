@@ -13792,6 +13792,7 @@ class PubServer(BaseHTTPRequestHandler):
                      "editblogpost", "newreminder", "newevent")
         for currPostType in postTypes:
             if not authorized:
+                print('POST was not authorized')
                 break
 
             postRedirect = self.server.defaultTimeline
