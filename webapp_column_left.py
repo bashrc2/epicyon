@@ -401,7 +401,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate['One link per line. Description followed by the link.'] + \
         '<br>'
     editLinksForm += \
-        '  <textarea id="message" name="editedLinks" style="height:80vh">' + \
+        '  <textarea id="message" name="editedLinks" ' + \
+        'style="height:80vh" spellcheck="false">' + \
         linksStr + '</textarea>'
     editLinksForm += \
         '</div>'
@@ -424,7 +425,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '<br>'
             editLinksForm += \
                 '  <textarea id="message" name="editedAbout" ' + \
-                'style="height:100vh">' + aboutStr + '</textarea>'
+                'style="height:100vh" spellcheck="true">' + \
+                aboutStr + '</textarea>'
             editLinksForm += \
                 '</div>'
 
@@ -442,7 +444,8 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '<br>'
             editLinksForm += \
                 '  <textarea id="message" name="editedTOS" ' + \
-                'style="height:100vh">' + TOSStr + '</textarea>'
+                'style="height:100vh" spellcheck="true">' + \
+                TOSStr + '</textarea>'
             editLinksForm += \
                 '</div>'
 

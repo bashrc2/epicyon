@@ -577,7 +577,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<br>'
     editNewswireForm += \
         '  <textarea id="message" name="editedNewswire" ' + \
-        'style="height:80vh">' + newswireStr + '</textarea>'
+        'style="height:80vh" spellcheck="false">' + \
+        newswireStr + '</textarea>'
 
     filterStr = ''
     filterFilename = \
@@ -592,8 +593,8 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
     editNewswireForm += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="filteredWordsNewswire" style="height:50vh">' + \
-        filterStr + '</textarea>\n'
+        'name="filteredWordsNewswire" style="height:50vh" ' + \
+        'spellcheck="true">' + filterStr + '</textarea>\n'
 
     hashtagRulesStr = ''
     hashtagRulesFilename = \
@@ -612,7 +613,7 @@ def htmlEditNewswire(cssCache: {}, translate: {}, baseDir: str, path: str,
         'https://gitlab.com/bashrc2/epicyon/-/raw/main/hashtagrules.txt' + \
         '">' + translate['See instructions'] + '</a>\n'
     editNewswireForm += '      <textarea id="message" ' + \
-        'name="hashtagRulesList" style="height:80vh">' + \
+        'name="hashtagRulesList" style="height:80vh" spellcheck="false">' + \
         hashtagRulesStr + '</textarea>\n'
 
     editNewswireForm += \
@@ -687,7 +688,8 @@ def htmlEditNewsPost(cssCache: {}, translate: {}, baseDir: str, path: str,
     newsPostContent = postJsonObject['object']['content']
     editNewsPostForm += \
         '  <textarea id="message" name="editedNewsPost" ' + \
-        'style="height:600px">' + newsPostContent + '</textarea>'
+        'style="height:600px" spellcheck="true">' + \
+        newsPostContent + '</textarea>'
 
     editNewsPostForm += \
         '</div>'

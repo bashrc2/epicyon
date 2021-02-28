@@ -555,7 +555,7 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '    <textarea id="message" ' + \
                 'name="repliesModerationOption" style="height:' + \
-                str(messageBoxHeight) + 'px"></textarea>\n'
+                str(messageBoxHeight) + 'px" spellcheck="true"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<label class="labels">' + \

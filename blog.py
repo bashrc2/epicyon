@@ -819,7 +819,8 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
 
     editBlogForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px">' + contentStr + '</textarea>'
+        str(messageBoxHeight) + 'px" spellcheck="true">' + \
+        contentStr + '</textarea>'
     editBlogForm += dateAndLocation
     if not mediaInstance:
         editBlogForm += editBlogImageSection
