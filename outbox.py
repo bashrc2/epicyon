@@ -77,12 +77,10 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     if messageJson.get('object'):
         if isinstance(messageJson['object'], dict):
             if messageJson['object'].get('content'):
-                # replace all semicolons, because for mysterious
-                # reasons this appears to create a problem for
-                # webservers receiving the POST
+                # semicolons are disliked, so escape them
                 if ';' in messageJson['object']['content']:
                     messageJson['object']['content'] = \
-                        messageJson['object']['content'].replace(';', ',')
+                        messageJson['object']['content'].replace(';', '%3B')
 
                 if dangerousMarkup(messageJson['object']['content'],
                                    allowLocalNetworkAccess):
