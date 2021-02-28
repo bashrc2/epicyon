@@ -753,7 +753,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px"' + selectedStr + '></textarea>\n'
+        str(messageBoxHeight) + 'px"' + selectedStr + ' spellcheck="true">' + \
+        '</textarea>\n'
     newPostForm += extraFields + citationsStr + dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
