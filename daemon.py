@@ -13806,6 +13806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      callingDomain, cookie,
                                      authorized)
             if pageNumber:
+                print(currPostType + ' post received')
                 nickname = self.path.split('/users/')[1]
                 if '?' in nickname:
                     nickname = nickname.split('?')[0]
