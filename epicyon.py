@@ -866,7 +866,6 @@ configi2pDomain = getConfigParam(baseDir, 'i2pDomain')
 if configi2pDomain:
     i2pDomain = configi2pDomain
 else:
-    # Note: this should not be None
     i2pDomain = None
 
 # get port number from configuration
