@@ -555,7 +555,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '    <textarea id="message" ' + \
                 'name="repliesModerationOption" style="height:' + \
-                str(messageBoxHeight) + 'px" spellcheck="true"></textarea>\n'
+                str(messageBoxHeight) + 'px" spellcheck="true" ' + \
+                'autocomplete="on"></textarea>\n'
         dateAndLocation += '</div>\n'
         dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<label class="labels">' + \
@@ -753,7 +754,8 @@ def htmlNewPost(cssCache: {}, mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px"' + selectedStr + ' spellcheck="true">' + \
+        str(messageBoxHeight) + 'px"' + selectedStr + \
+        ' spellcheck="true" autocomplete="on">' + \
         '</textarea>\n'
     newPostForm += extraFields + citationsStr + dateAndLocation
     if not mediaInstance or replyStr:
