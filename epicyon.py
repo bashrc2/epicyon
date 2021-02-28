@@ -859,8 +859,7 @@ configOnionDomain = getConfigParam(baseDir, 'onion')
 if configOnionDomain:
     onionDomain = configOnionDomain
 else:
-    # Note: this should not be None
-    onionDomain = ''
+    onionDomain = None
 
 # get i2p domain name from configuration
 configi2pDomain = getConfigParam(baseDir, 'i2pDomain')
@@ -869,7 +868,6 @@ if configi2pDomain:
 else:
     # Note: this should not be None
     i2pDomain = None
-    onionDomain = ''
 
 # get port number from configuration
 configPort = getConfigParam(baseDir, 'port')

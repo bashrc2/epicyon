@@ -1370,8 +1370,11 @@ def _receiveAnnounce(recentPostsCache: {},
                                       YTReplacementDomain,
                                       allowLocalNetworkAccess)
     if not postJsonObject:
-        if domain not in messageJson['object'] and \
-           onionDomain not in messageJson['object']:
+        notInOnion = True
+        if onionDomain:
+            if onionDomain in messageJson['object']:
+                notInOnion = False
+        if domain not in messageJson['object'] and notInOnion:
             if os.path.isfile(postFilename):
                 # if the announce can't be downloaded then remove it
                 os.remove(postFilename)
