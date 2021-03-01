@@ -2187,6 +2187,8 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
 
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
+    if not speakerName:
+        return
     speakerJson = {
         "name": speakerName,
         "summary": summary,
