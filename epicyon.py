@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import html
 from person import createPerson
 from person import createGroup
 from person import setProfileImage
@@ -1940,16 +1941,17 @@ if args.speaker:
                                  True, __version__)
         if speakerJson:
             if speakerJson['say'] != prevSay:
-                print(speakerJson['name'] + ': ' + speakerJson['say'] + '\n')
+                print(html.unescape(speakerJson['name']) + ': ' +
+                      html.unescape(speakerJson['say']) + '\n')
                 pitch = getSpeakerPitch(speakerJson['name'])
                 espeak.set_parameter(espeak.Parameter.Pitch, pitch)
                 rate = getSpeakerRate(speakerJson['name'])
                 espeak.set_parameter(espeak.Parameter.Rate, 110)
                 srange = getSpeakerRange(speakerJson['name'])
                 espeak.set_parameter(espeak.Parameter.Range, srange)
-                espeak.synth(speakerJson['name'])
+                espeak.synth(html.unescape(speakerJson['name']))
                 time.sleep(3)
-                espeak.synth(speakerJson['say'])
+                espeak.synth(html.unescape(speakerJson['say']))
                 prevSay = speakerJson['say']
         time.sleep(20)
     sys.exit()
