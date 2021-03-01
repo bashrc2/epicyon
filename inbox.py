@@ -1412,7 +1412,7 @@ def _receiveAnnounce(recentPostsCache: {},
                 if not alreadyExists:
                     _updateSpeaker(baseDir, nickname, domain,
                                    postJsonObject, personCache,
-                                   translate)
+                                   translate, lookupActor)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -2149,7 +2149,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
 
 def _updateSpeaker(baseDir: str, nickname: str, domain: str,
                    postJsonObject: {}, personCache: {},
-                   translate: {}) -> None:
+                   translate: {}, announcingActor: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
@@ -2192,6 +2192,12 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
     if not speakerName:
         return
+    if announcingActor:
+        announcedNickname = getNicknameFromActor(announcingActor)
+        announcedDomain = getDomainFromActor(announcingActor)
+        announcedHandle = announcedNickname + '@' + announcedDomain
+        content = \
+            translate['announces'] + ' ' + announcedHandle + '. ' + content
     speakerJson = {
         "name": speakerName,
         "summary": summary,
@@ -2539,7 +2545,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     if boxname == 'inbox':
                         _updateSpeaker(baseDir, nickname, domain,
                                        postJsonObject, personCache,
-                                       translate)
+                                       translate, None)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')
