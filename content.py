@@ -995,6 +995,12 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool,
 
     messageFields = messageFields.split(boundary)
     fields = {}
+    fieldsWithSemicolonAllowed = (
+        'message', 'bio', 'autoCW',
+        'password', 'passwordconfirm',
+        'instanceDescription',
+        'instanceDescriptionShort'
+    )
     # examine each section of the POST, separated by the boundary
     for f in messageFields:
         if f == '--':
@@ -1007,7 +1013,8 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool,
         postKey = postStr.split('"', 1)[0]
         postValueStr = postStr.split('"', 1)[1]
         if ';' in postValueStr:
-            if postKey != 'message':
+            if postKey not in fieldsWithSemicolonAllowed and \
+               not postKey.startswith('edited'):
                 continue
         if '\r\n' not in postValueStr:
             continue
