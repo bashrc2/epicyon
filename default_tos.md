@@ -24,23 +24,19 @@ Moderators rely upon your reports. Don't assume that something of concern has al
 Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.
 
 ### Federation Policy
-
 In a proactive effort to avoid the classic fate of *"embrace, extend, extinguish"* this system will block any instance launched, acquired or funded by Alphabet, Facebook, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
 
 This system will not federate with instances whose moderation policy is incompatible with the content policy described above. If an instance lacks a moderation policy, or refuses to enforce one, it will be assumed to be incompatible.
 
 ### Use of User Generated Content for Research
-
 Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts from any researcher publishing data obtained from this instance without consent.
 
 ### Commercial Use
-
 Commercial use of original content on this instance is strictly forbidden without the prior written permission of individual account holders. The instance administrator does not hold copyright on any original content posted by account holders. Publication or federation of content does not imply permission for commercial use.
 
 Commercial use includes the harvesting of data to create products which are then sold, such as statistics, business reports or machine learning models.
 
 ### Copyrights
-
 Epicyon is licensed under [GNU AGPL version 3](https://www.gnu.org/licenses/agpl-3.0-standalone.html)
 
 Emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
