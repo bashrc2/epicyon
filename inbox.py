@@ -1407,6 +1407,10 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
+                _updateSpeaker(baseDir, nickname, domain,
+                               postJsonObject, personCache,
+                               translate)
+
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
                           lookupActor)
