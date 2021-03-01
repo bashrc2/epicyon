@@ -1940,7 +1940,7 @@ if args.speaker:
                                  httpPrefix,
                                  True, __version__)
         if speakerJson:
-            if speakerJson['say'] != prevSay:
+            if speakerJson['say'] != prevSay and speakerJson.get('name'):
                 print(html.unescape(speakerJson['name']) + ': ' +
                       html.unescape(speakerJson['say']) + '\n')
                 pitch = getSpeakerPitch(speakerJson['name'])
