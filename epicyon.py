@@ -1951,7 +1951,13 @@ if args.speaker:
                 espeak.set_parameter(espeak.Parameter.Range, srange)
                 espeak.synth(html.unescape(speakerJson['name']))
                 time.sleep(3)
-                espeak.synth(html.unescape(speakerJson['say']))
+                if not speakerJson['imageDescription']:
+                    sayStr = speakerJson['say']
+                else:
+                    sayStr = speakerJson['say'] + '. ' + \
+                        speakerJson['imageDescription']
+                espeak.synth(html.unescape(sayStr))
+
                 prevSay = speakerJson['say']
         time.sleep(20)
     sys.exit()
