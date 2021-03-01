@@ -2157,18 +2157,33 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = removeHtml(htmlReplaceQuoteMarks(content))
+
+    imageDescription = ''
+    if postJsonObject['object'].get('attachment'):
+        attachList = postJsonObject['object']['attachment']
+        if isinstance(attachList, list):
+            for img in attachList:
+                if not isinstance(img, dict):
+                    continue
+                if img.get('name'):
+                    if isinstance(img['name'], str):
+                        imageDescription += \
+                            img['name'] + '. '
+
     summary = ''
     if postJsonObject['object'].get('summary'):
         if isinstance(postJsonObject['object']['summary'], str):
             summary = \
                 urllib.parse.unquote_plus(postJsonObject['object']['summary'])
             summary = html.unescape(summary)
+
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
     speakerJson = {
         "name": speakerName,
         "summary": summary,
-        "say": content
+        "say": content,
+        "imageDescription": imageDescription
     }
     saveJson(speakerJson, speakerFilename)
 
