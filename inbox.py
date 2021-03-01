@@ -2157,7 +2157,6 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = removeHtml(htmlReplaceQuoteMarks(content))
-    content = content.replace('&quot;', '"').replace('&apos;', "'")
     summary = ''
     if postJsonObject['object'].get('summary'):
         if isinstance(postJsonObject['object']['summary'], str):
