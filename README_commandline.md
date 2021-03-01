@@ -390,3 +390,15 @@ To remove a shared item:
 ``` bash
 python3 epicyon.py --undoItemName "spanner" --nickname [yournick] --domain [yourdomain] --password [c2s password]
 ```
+
+## Speaking your inbox
+
+It is possible to use text-to-speech to read your inbox as posts arrive. This can be useful if you are not looking at a screen but want to stay ambiently informed of what's happening.
+
+On Debian based systems you will need to have the **python3-espeak** package installed.
+
+``` bash
+python3 epicyon.py --speaker yournickname@yourdomain --password [yourpassword]
+```
+
+This will then stay running and incoming posts will be announced as they arrive.

@@ -75,6 +75,10 @@ from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
+from speaker import getSpeakerFromServer
+from speaker import getSpeakerPitch
+from speaker import getSpeakerRate
+from speaker import getSpeakerRange
 import argparse
 
 
@@ -429,6 +433,10 @@ parser.add_argument('--level', dest='skillLevelPercent', type=int,
 parser.add_argument('--status', '--availability', dest='availability',
                     type=str, default=None,
                     help='Set an availability status')
+parser.add_argument('--speaker', '--tts', dest='speaker',
+                    type=str, default=None,
+                    help='Announce posts as they arrive at your ' +
+                    'inbox using TTS. --speaker [handle]')
 parser.add_argument('--block', dest='block', type=str, default=None,
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str, default=None,
@@ -1885,6 +1893,65 @@ if args.availability:
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
+    sys.exit()
+
+if args.speaker:
+    # Announce posts as they arrive in your inbox using text-to-speech
+    if args.speaker.startswith('@'):
+        args.speaker = args.speaker[1:]
+    if '@' not in args.speaker:
+        print('Specify the handle of the speaker nickname@domain')
+        sys.exit()
+    nickname = args.speaker.split('@')[0]
+    domain = args.speaker.split('@')[1]
+
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+
+    print('Setting up espeak')
+    from espeak import espeak
+
+    session = createSession(proxyType)
+    print('Running speaker for ' + nickname + '@' + domain)
+
+    prevSay = ''
+    while (1):
+        speakerJson = \
+            getSpeakerFromServer(baseDir, session, nickname, args.password,
+                                 domain, port,
+                                 httpPrefix,
+                                 True, __version__)
+        if speakerJson:
+            if speakerJson['say'] != prevSay:
+                print(speakerJson['name'] + ': ' + speakerJson['say'] + '\n')
+                pitch = getSpeakerPitch(speakerJson['name'])
+                espeak.set_parameter(espeak.Parameter.Pitch, pitch)
+                rate = getSpeakerRate(speakerJson['name'])
+                espeak.set_parameter(espeak.Parameter.Rate, 110)
+                srange = getSpeakerRange(speakerJson['name'])
+                espeak.set_parameter(espeak.Parameter.Range, srange)
+                espeak.synth(speakerJson['name'])
+                time.sleep(3)
+                espeak.synth(speakerJson['say'])
+                prevSay = speakerJson['say']
+        time.sleep(20)
     sys.exit()
 
 if federationList:

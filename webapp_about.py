@@ -11,6 +11,7 @@ from shutil import copyfile
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import markdownToHtml
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
@@ -18,9 +19,9 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
     """Show the about screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
-    if not os.path.isfile(baseDir + '/accounts/about.txt'):
-        copyfile(baseDir + '/default_about.txt',
-                 baseDir + '/accounts/about.txt')
+    if not os.path.isfile(baseDir + '/accounts/about.md'):
+        copyfile(baseDir + '/default_about.md',
+                 baseDir + '/accounts/about.md')
 
     if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
         if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
@@ -28,9 +29,9 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
                      baseDir + '/accounts/login-background.jpg')
 
     aboutText = 'Information about this instance goes here.'
-    if os.path.isfile(baseDir + '/accounts/about.txt'):
-        with open(baseDir + '/accounts/about.txt', 'r') as aboutFile:
-            aboutText = aboutFile.read()
+    if os.path.isfile(baseDir + '/accounts/about.md'):
+        with open(baseDir + '/accounts/about.md', 'r') as aboutFile:
+            aboutText = markdownToHtml(aboutFile.read())
 
     aboutForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'

@@ -411,7 +411,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
         if nickname == adminNickname:
-            aboutFilename = baseDir + '/accounts/about.txt'
+            aboutFilename = baseDir + '/accounts/about.md'
             aboutStr = ''
             if os.path.isfile(aboutFilename):
                 with open(aboutFilename, 'r') as fp:
@@ -430,7 +430,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             editLinksForm += \
                 '</div>'
 
-            TOSFilename = baseDir + '/accounts/tos.txt'
+            TOSFilename = baseDir + '/accounts/tos.md'
             TOSStr = ''
             if os.path.isfile(TOSFilename):
                 with open(TOSFilename, 'r') as fp:

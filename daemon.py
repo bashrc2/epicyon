@@ -3315,8 +3315,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
             linksFilename = baseDir + '/accounts/links.txt'
-            aboutFilename = baseDir + '/accounts/about.txt'
-            TOSFilename = baseDir + '/accounts/tos.txt'
+            aboutFilename = baseDir + '/accounts/about.md'
+            TOSFilename = baseDir + '/accounts/tos.md'
 
             # extract all of the text fields into a dict
             fields = \
@@ -5241,6 +5241,28 @@ class PubServer(BaseHTTPRequestHandler):
         if debug:
             print('favicon not sent: ' + callingDomain)
         self._404()
+
+    def _getSpeaker(self, callingDomain: str, path: str,
+                    baseDir: str, domain: str, debug: bool) -> None:
+        """Returns the speaker file used for TTS and
+        accessed via c2s
+        """
+        nickname = path.split('/users/')[1]
+        if '/' in nickname:
+            nickname = nickname.split('/')[0]
+        speakerFilename = \
+            baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
+        if not os.path.isfile(speakerFilename):
+            self._404()
+            return
+
+        speakerJson = loadJson(speakerFilename)
+        msg = json.dumps(speakerJson,
+                         ensure_ascii=False).encode('utf-8')
+        msglen = len(msg)
+        self._set_headers('application/json', msglen,
+                          None, callingDomain)
+        self._write(msg)
 
     def _getFonts(self, callingDomain: str, path: str,
                   baseDir: str, debug: bool,
@@ -10453,6 +10475,16 @@ class PubServer(BaseHTTPRequestHandler):
         usersInPath = False
         if '/users/' in self.path:
             usersInPath = True
+
+        # authorized endpoint used for TTS of posts
+        # arriving in your inbox
+        if authorized and usersInPath and \
+           self.path.endswith('/speaker'):
+            self._getSpeaker(callingDomain, self.path,
+                             self.server.baseDir,
+                             self.server.domain,
+                             self.server.debug)
+            return
 
         # redirect to the welcome screen
         if htmlGET and authorized and usersInPath and \
