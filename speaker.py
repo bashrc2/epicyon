@@ -38,7 +38,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
     """
-    removeChars = ('.', ',', ';', ':', '?', '!')
+    removeChars = ('.\n', '. ', ',', ';', '?', '!')
     text = sayText
     for ch in removeChars:
         text = text.replace(ch, ' ')
@@ -58,11 +58,13 @@ def speakerReplaceLinks(sayText: str, translate: {},
             continue
         if '/' in domain:
             domain = domain.split('/')[0]
+        if domain.startswith('www.'):
+            domain = domain.replace('www.', '')
         replacements[domainFull] = '. ' + linkedStr + ' ' + domain + '.'
         detectedLinks.append(domainFull)
     for replaceStr, newStr in replacements.items():
         sayText = sayText.replace(replaceStr, newStr)
-    return sayText
+    return sayText.replace('..', '.')
 
 
 def getSpeakerFromServer(baseDir: str, session,
