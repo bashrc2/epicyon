@@ -1929,11 +1929,11 @@ if args.speaker:
     print('Setting up espeak')
     from espeak import espeak
 
-    session = createSession(proxyType)
     print('Running speaker for ' + nickname + '@' + domain)
 
     prevSay = ''
     while (1):
+        session = createSession(proxyType)
         speakerJson = \
             getSpeakerFromServer(baseDir, session, nickname, args.password,
                                  domain, port,
@@ -1946,7 +1946,7 @@ if args.speaker:
                 pitch = getSpeakerPitch(speakerJson['name'])
                 espeak.set_parameter(espeak.Parameter.Pitch, pitch)
                 rate = getSpeakerRate(speakerJson['name'])
-                espeak.set_parameter(espeak.Parameter.Rate, 110)
+                espeak.set_parameter(espeak.Parameter.Rate, rate)
                 srange = getSpeakerRange(speakerJson['name'])
                 espeak.set_parameter(espeak.Parameter.Range, srange)
                 espeak.synth(html.unescape(speakerJson['name']))
@@ -1959,7 +1959,7 @@ if args.speaker:
                 espeak.synth(html.unescape(sayStr))
 
                 prevSay = speakerJson['say']
-        time.sleep(20)
+        time.sleep(30)
     sys.exit()
 
 if federationList:
