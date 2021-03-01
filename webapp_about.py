@@ -11,6 +11,7 @@ from shutil import copyfile
 from utils import getConfigParam
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
+from webapp_utils import markdownToHtml
 
 
 def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
@@ -30,7 +31,7 @@ def htmlAbout(cssCache: {}, baseDir: str, httpPrefix: str,
     aboutText = 'Information about this instance goes here.'
     if os.path.isfile(baseDir + '/accounts/about.md'):
         with open(baseDir + '/accounts/about.md', 'r') as aboutFile:
-            aboutText = aboutFile.read()
+            aboutText = markdownToHtml(aboutFile.read())
 
     aboutForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'

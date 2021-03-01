@@ -17,7 +17,6 @@ from webapp_utils import headerButtonsFrontScreen
 from webapp_utils import htmlHeaderWithExternalStyle
 from webapp_utils import htmlFooter
 from webapp_utils import getBannerFile
-from webapp_utils import markdownToHtml
 
 
 def _linksExist(baseDir: str) -> bool:
@@ -416,7 +415,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             aboutStr = ''
             if os.path.isfile(aboutFilename):
                 with open(aboutFilename, 'r') as fp:
-                    aboutStr = markdownToHtml(fp.read())
+                    aboutStr = fp.read()
 
             editLinksForm += \
                 '<div class="container">'
