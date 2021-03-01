@@ -2157,12 +2157,13 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = removeHtml(htmlReplaceQuoteMarks(content))
-    content = content.replace('&quot;', '"')
+    content = content.replace('&quot;', '"').replace('&apos;', "'")
     summary = ''
     if postJsonObject['object'].get('summary'):
         if isinstance(postJsonObject['object']['summary'], str):
             summary = \
                 urllib.parse.unquote_plus(postJsonObject['object']['summary'])
+            summary = html.unescape(summary)
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
     speakerJson = {
