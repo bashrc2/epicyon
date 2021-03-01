@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+import html
 import urllib.parse
 from linked_data_sig import verifyJsonSignature
 from utils import getDisplayName
@@ -2154,7 +2155,9 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     speakerFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
+    content = html.unescape(content)
     content = removeHtml(htmlReplaceQuoteMarks(content))
+    content = content.replace('&quot;', '"')
     summary = ''
     if postJsonObject['object'].get('summary'):
         if isinstance(postJsonObject['object']['summary'], str):
