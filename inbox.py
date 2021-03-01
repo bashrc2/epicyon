@@ -11,6 +11,8 @@ import os
 import datetime
 import time
 from linked_data_sig import verifyJsonSignature
+from utils import getDisplayName
+from utils import removeHtml
 from utils import getConfigParam
 from utils import hasUsersPath
 from utils import validPostDate
@@ -2134,6 +2136,36 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     return True
 
 
+def _updateSpeaker(baseDir: str, nickname: str, domain: str,
+                   postJsonObject: {}, personCache: {}) -> None:
+    """ Generates a json file which can be used for TTS announcement
+    of incoming inbox posts
+    """
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('content'):
+        return
+    if not isinstance(postJsonObject['object']['content'], str):
+        return
+    speakerFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
+    content = removeHtml(postJsonObject['object']['content'])
+    summary = ''
+    if postJsonObject['object'].get('summary'):
+        if isinstance(postJsonObject['object']['summary'], str):
+            summary = postJsonObject['object']['summary']
+    speakerName = \
+        getDisplayName(baseDir, postJsonObject['actor'], personCache)
+    speakerJson = {
+        "name": speakerName,
+        "summary": summary,
+        "say": content
+    }
+    saveJson(speakerJson, speakerFilename)
+
+
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2468,6 +2500,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                         destinationFilename, debug):
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
+                    if boxname == 'inbox':
+                        _updateSpeaker(baseDir, nickname, domain,
+                                       postJsonObject, personCache)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')
