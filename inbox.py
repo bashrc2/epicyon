@@ -82,6 +82,7 @@ from delete import removeOldHashtags
 from categories import guessHashtagCategory
 from context import hasValidContext
 from content import htmlReplaceQuoteMarks
+from speaker import speakerReplaceLinks
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2140,7 +2141,8 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
 
 
 def _updateSpeaker(baseDir: str, nickname: str, domain: str,
-                   postJsonObject: {}, personCache: {}) -> None:
+                   postJsonObject: {}, personCache: {},
+                   translate: {}) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
@@ -2154,9 +2156,11 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
         return
     speakerFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
+    detectedLinks = []
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = removeHtml(htmlReplaceQuoteMarks(content))
+    content = speakerReplaceLinks(content, translate, detectedLinks)
 
     imageDescription = ''
     if postJsonObject['object'].get('attachment'):
@@ -2183,7 +2187,8 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
         "name": speakerName,
         "summary": summary,
         "say": content,
-        "imageDescription": imageDescription
+        "imageDescription": imageDescription,
+        "detectedLinks": detectedLinks
     }
     saveJson(speakerJson, speakerFilename)
 
@@ -2524,7 +2529,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 else:
                     if boxname == 'inbox':
                         _updateSpeaker(baseDir, nickname, domain,
-                                       postJsonObject, personCache)
+                                       postJsonObject, personCache,
+                                       translate)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')
