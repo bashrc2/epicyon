@@ -33,6 +33,36 @@ def getSpeakerRange(displayName: str) -> int:
     return random.randint(300, 800)
 
 
+def speakerReplaceLinks(sayText: str, translate: {}) -> str:
+    """Replaces any links in the given text with "link to [domain]".
+    Instead of reading out potentially very long and meaningless links
+    """
+    removeChars = ('.', ',', ';', ':')
+    text = sayText
+    for ch in removeChars:
+        text = text.replace(ch, ' ')
+    replacements = {}
+    wordsList = text.split(' ')
+    linkedStr = translate['Linked']
+    for word in wordsList:
+        domain = None
+        domainFull = None
+        if 'https://' in word:
+            domain = word.split('https://')[1]
+            domainFull = 'https://' + domain
+        elif 'http://' in word:
+            domain = word.split('http://')[1]
+            domainFull = 'http://' + domain
+        if not domain:
+            continue
+        if '/' in domain:
+            domain = domain.split('/')[0]
+        replacements[domainFull] = '. ' + linkedStr + ' ' + domain + '.'
+    for replaceStr, newStr in replacements.items():
+        sayText = sayText.replace(replaceStr, newStr)
+    return sayText
+
+
 def getSpeakerFromServer(baseDir: str, session,
                          nickname: str, password: str,
                          domain: str, port: int,
