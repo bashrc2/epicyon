@@ -1370,11 +1370,13 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
-    postJsonObject = downloadAnnounce(session, baseDir, httpPrefix,
-                                      nickname, domain, messageJson,
-                                      __version__, translate,
-                                      YTReplacementDomain,
-                                      allowLocalNetworkAccess)
+    postJsonObject, alreadyExists = downloadAnnounce(session, baseDir,
+                                                     httpPrefix,
+                                                     nickname, domain,
+                                                     messageJson,
+                                                     __version__, translate,
+                                                     YTReplacementDomain,
+                                                     allowLocalNetworkAccess)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1407,9 +1409,10 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                _updateSpeaker(baseDir, nickname, domain,
-                               postJsonObject, personCache,
-                               translate)
+                if not alreadyExists:
+                    _updateSpeaker(baseDir, nickname, domain,
+                                   postJsonObject, personCache,
+                                   translate, lookupActor)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -2146,7 +2149,7 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
 
 def _updateSpeaker(baseDir: str, nickname: str, domain: str,
                    postJsonObject: {}, personCache: {},
-                   translate: {}) -> None:
+                   translate: {}, announcingActor: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
@@ -2187,6 +2190,14 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
 
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
+    if not speakerName:
+        return
+    if announcingActor:
+        announcedNickname = getNicknameFromActor(announcingActor)
+        announcedDomain = getDomainFromActor(announcingActor)
+        announcedHandle = announcedNickname + '@' + announcedDomain
+        content = \
+            translate['announces'] + ' ' + announcedHandle + '. ' + content
     speakerJson = {
         "name": speakerName,
         "summary": summary,
@@ -2534,7 +2545,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     if boxname == 'inbox':
                         _updateSpeaker(baseDir, nickname, domain,
                                        postJsonObject, personCache,
-                                       translate)
+                                       translate, None)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')
