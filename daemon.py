@@ -13792,6 +13792,7 @@ class PubServer(BaseHTTPRequestHandler):
                      "editblogpost", "newreminder", "newevent")
         for currPostType in postTypes:
             if not authorized:
+                print('POST was not authorized')
                 break
 
             postRedirect = self.server.defaultTimeline
@@ -13805,6 +13806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      callingDomain, cookie,
                                      authorized)
             if pageNumber:
+                print(currPostType + ' post received')
                 nickname = self.path.split('/users/')[1]
                 if '?' in nickname:
                     nickname = nickname.split('?')[0]

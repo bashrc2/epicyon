@@ -337,7 +337,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 translate['These are currently suspended']
             infoForm += \
                 '  <textarea id="message" ' + \
-                'name="suspended" style="height:200px">' + \
+                'name="suspended" style="height:200px" spellcheck="false">' + \
                 suspendedStr + '</textarea>\n'
             infoForm += '</div>\n'
             infoShown = True
@@ -355,7 +355,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 translate[msgStr1]
             infoForm += \
                 '  <textarea id="message" ' + \
-                'name="blocked" style="height:700px">' + \
+                'name="blocked" style="height:700px" spellcheck="false">' + \
                 blockedStr + '</textarea>\n'
             infoForm += '</div>\n'
             infoShown = True
@@ -370,7 +370,7 @@ def htmlModerationInfo(cssCache: {}, translate: {},
                 translate['Filtered words'] + '</b>'
             infoForm += \
                 '  <textarea id="message" ' + \
-                'name="filtered" style="height:700px">' + \
+                'name="filtered" style="height:700px" spellcheck="true">' + \
                 filteredStr + '</textarea>\n'
             infoForm += '</div>\n'
             infoShown = True

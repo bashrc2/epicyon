@@ -110,7 +110,8 @@ def htmlWelcomeProfile(baseDir: str, nickname: str, domain: str,
     profileForm += '  <label class="labels">' + \
         translate['Your bio'] + '</label><br>\n'
     profileForm += '  <textarea id="message" name="bio" ' + \
-        'style="height:130px">' + bioStr + '</textarea>\n'
+        'style="height:130px" spellcheck="true">' + \
+        bioStr + '</textarea>\n'
     profileForm += '</div>\n'
 
     profileForm += '<div class="container next">\n'

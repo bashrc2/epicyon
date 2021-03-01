@@ -14,9 +14,15 @@
 
 <p>This instance will not host content containing sexism, racism, casteism, homophobia, transphobia, misogyny, antisemitism or other forms of bigotry or discrimination on the basis of nationality or immigration status. Claims that transgressions of this type were intended to be "ironic" will be treated as a terms of service violation.</p>
 
+<p>Even if not conspicuously discriminatory, expressions of support for organizations with discrminatory agendas are not permitted on this instance. These include, but are not limited to, racial supremacist groups, the redpill/incel movement and anti-LGBT or anti-immigrant campaigns.</p>
+
+<p>Depictions of injury, death or medical procedures are not permitted.</p>
+
 <p>Violent or abusive content will be subject to moderation and is likely to be removed.</p>
 
 <p>Content of a sexual nature may be published providing that only consenting adults (aged 18 or over) are depicted and an appropriate content warning message is added. Posting sexual content without a content warning is a terms of service violation. Sexual content is defined both as photographs of real people and also artistic or fictional depictions, edited/generated photos or narratives.</p>
+
+<p>Moderators rely upon your reports. Don't assume that something of concern has already been reported. It's better for there to be duplicate reports than for something potentially damaging to go unreported.</p>
 
 <p>Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.</p>
 

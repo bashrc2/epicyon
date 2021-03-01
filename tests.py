@@ -77,6 +77,7 @@ from inbox import jsonPostAllowsComments
 from inbox import validInbox
 from inbox import validInboxFilenames
 from categories import guessHashtagCategory
+from content import extractTextFieldsInPOST
 from content import validHashTag
 from content import htmlReplaceEmailQuote
 from content import htmlReplaceQuoteMarks
@@ -3330,9 +3331,47 @@ def testMarkdownToHtml():
         'Or <img class="markdownImage" src="/cat.jpg" alt="pounce" />.'
 
 
+def testExtractTextFieldsInPOST():
+    print('testExtractTextFieldsInPOST')
+    boundary = '-----------------------------116202748023898664511855843036'
+    formData = '-----------------------------116202748023898664511855' + \
+        '843036\r\nContent-Disposition: form-data; name="submitPost"' + \
+        '\r\n\r\nSubmit\r\n-----------------------------116202748023' + \
+        '898664511855843036\r\nContent-Disposition: form-data; name=' + \
+        '"subject"\r\n\r\n\r\n-----------------------------116202748' + \
+        '023898664511855843036\r\nContent-Disposition: form-data; na' + \
+        'me="message"\r\n\r\nThis is a ; test\r\n-------------------' + \
+        '----------116202748023898664511855843036\r\nContent-Disposi' + \
+        'tion: form-data; name="commentsEnabled"\r\n\r\non\r\n------' + \
+        '-----------------------116202748023898664511855843036\r\nCo' + \
+        'ntent-Disposition: form-data; name="eventDate"\r\n\r\n\r\n' + \
+        '-----------------------------116202748023898664511855843036' + \
+        '\r\nContent-Disposition: form-data; name="eventTime"\r\n\r' + \
+        '\n\r\n-----------------------------116202748023898664511855' + \
+        '843036\r\nContent-Disposition: form-data; name="location"' + \
+        '\r\n\r\n\r\n-----------------------------116202748023898664' + \
+        '511855843036\r\nContent-Disposition: form-data; name=' + \
+        '"imageDescription"\r\n\r\n\r\n-----------------------------' + \
+        '116202748023898664511855843036\r\nContent-Disposition: ' + \
+        'form-data; name="attachpic"; filename=""\r\nContent-Type: ' + \
+        'application/octet-stream\r\n\r\n\r\n----------------------' + \
+        '-------116202748023898664511855843036--\r\n'
+    debug = False
+    fields = extractTextFieldsInPOST(None, boundary, debug, formData)
+    assert fields['submitPost'] == 'Submit'
+    assert fields['subject'] == ''
+    assert fields['commentsEnabled'] == 'on'
+    assert fields['eventDate'] == ''
+    assert fields['eventTime'] == ''
+    assert fields['location'] == ''
+    assert fields['imageDescription'] == ''
+    assert fields['message'] == 'This is a ; test'
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testExtractTextFieldsInPOST()
     testMarkdownToHtml()
     testValidHashTag()
     testPrepareHtmlPostNickname()
