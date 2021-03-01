@@ -430,7 +430,7 @@ def htmlEditLinks(cssCache: {}, translate: {}, baseDir: str, path: str,
             editLinksForm += \
                 '</div>'
 
-            TOSFilename = baseDir + '/accounts/tos.txt'
+            TOSFilename = baseDir + '/accounts/tos.md'
             TOSStr = ''
             if os.path.isfile(TOSFilename):
                 with open(TOSFilename, 'r') as fp:

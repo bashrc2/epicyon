@@ -3316,7 +3316,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             linksFilename = baseDir + '/accounts/links.txt'
             aboutFilename = baseDir + '/accounts/about.txt'
-            TOSFilename = baseDir + '/accounts/tos.txt'
+            TOSFilename = baseDir + '/accounts/tos.md'
 
             # extract all of the text fields into a dict
             fields = \
