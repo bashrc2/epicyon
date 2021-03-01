@@ -100,6 +100,7 @@ from mastoapiv1 import getMastoApiV1IdFromNickname
 from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
 from webapp_utils import markdownToHtml
+from speaker import speakerReplaceLinks
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3368,9 +3369,30 @@ def testExtractTextFieldsInPOST():
     assert fields['message'] == 'This is a ; test'
 
 
+def testSpeakerReplaceLinks():
+    print('testSpeakerReplaceLinks')
+    text = 'The Tor Project: For Snowflake volunteers: If you use ' + \
+        'Firefox, Brave, or Chrome, our Snowflake extension turns ' + \
+        'your browser into a proxy that connects Tor users in ' + \
+        'censored regions to the Tor network. Note: you should ' + \
+        'not run more than one snowflake in the same ' + \
+        'network.https://support.torproject.org/censorship/' + \
+        'how-to-help-running-snowflake/'
+    detectedLinks = []
+    result = speakerReplaceLinks(text, {'Linked': 'Web link'}, detectedLinks)
+    print(result)
+    print(str(detectedLinks))
+    assert len(detectedLinks) == 1
+    assert detectedLinks[0] == \
+        'https://support.torproject.org/censorship/' + \
+        'how-to-help-running-snowflake/'
+    assert 'Web link support.torproject.org' in result
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testSpeakerReplaceLinks()
     testExtractTextFieldsInPOST()
     testMarkdownToHtml()
     testValidHashTag()
