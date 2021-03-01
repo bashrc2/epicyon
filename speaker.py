@@ -33,7 +33,8 @@ def getSpeakerRange(displayName: str) -> int:
     return random.randint(300, 800)
 
 
-def speakerReplaceLinks(sayText: str, translate: {}) -> str:
+def speakerReplaceLinks(sayText: str, translate: {},
+                        detectedLinks: []) -> str:
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
     """
@@ -58,6 +59,7 @@ def speakerReplaceLinks(sayText: str, translate: {}) -> str:
         if '/' in domain:
             domain = domain.split('/')[0]
         replacements[domainFull] = '. ' + linkedStr + ' ' + domain + '.'
+        detectedLinks.append(domainFull)
     for replaceStr, newStr in replacements.items():
         sayText = sayText.replace(replaceStr, newStr)
     return sayText
