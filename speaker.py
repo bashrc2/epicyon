@@ -37,7 +37,7 @@ def speakerReplaceLinks(sayText: str, translate: {}) -> str:
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
     """
-    removeChars = ('.', ',', ';', ':')
+    removeChars = ('.', ',', ';', ':', '?', '!')
     text = sayText
     for ch in removeChars:
         text = text.replace(ch, ' ')
