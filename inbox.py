@@ -80,6 +80,7 @@ from happening import saveEventPost
 from delete import removeOldHashtags
 from categories import guessHashtagCategory
 from context import hasValidContext
+from content import htmlReplaceQuoteMarks
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2153,7 +2154,7 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     speakerFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
-    content = removeHtml(content)
+    content = removeHtml(htmlReplaceQuoteMarks(content))
     summary = ''
     if postJsonObject['object'].get('summary'):
         if isinstance(postJsonObject['object']['summary'], str):
