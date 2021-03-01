@@ -1370,11 +1370,13 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
-    postJsonObject = downloadAnnounce(session, baseDir, httpPrefix,
-                                      nickname, domain, messageJson,
-                                      __version__, translate,
-                                      YTReplacementDomain,
-                                      allowLocalNetworkAccess)
+    postJsonObject, alreadyExists = downloadAnnounce(session, baseDir,
+                                                     httpPrefix,
+                                                     nickname, domain,
+                                                     messageJson,
+                                                     __version__, translate,
+                                                     YTReplacementDomain,
+                                                     allowLocalNetworkAccess)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1407,9 +1409,10 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                _updateSpeaker(baseDir, nickname, domain,
-                               postJsonObject, personCache,
-                               translate)
+                if not alreadyExists:
+                    _updateSpeaker(baseDir, nickname, domain,
+                                   postJsonObject, personCache,
+                                   translate)
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
