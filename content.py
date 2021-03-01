@@ -979,16 +979,21 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     return filename, attachmentMediaType
 
 
-def extractTextFieldsInPOST(postBytes, boundary, debug: bool) -> {}:
+def extractTextFieldsInPOST(postBytes, boundary, debug: bool,
+                            unitTestData=None) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """
-    msg = email.parser.BytesParser().parsebytes(postBytes)
+    if not unitTestData:
+        msgBytes = email.parser.BytesParser().parsebytes(postBytes)
+        messageFields = msgBytes.decode('utf-8')
+    else:
+        messageFields = unitTestData
+
     if debug:
-        print('DEBUG: POST arriving ' +
-              msg.get_payload(decode=True).decode('utf-8'))
-    messageFields = msg.get_payload(decode=True)
-    messageFields = messageFields.decode('utf-8').split(boundary)
+        print('DEBUG: POST arriving ' + messageFields)
+
+    messageFields = messageFields.split(boundary)
     fields = {}
     # examine each section of the POST, separated by the boundary
     for f in messageFields:
@@ -1002,7 +1007,8 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool) -> {}:
         postKey = postStr.split('"', 1)[0]
         postValueStr = postStr.split('"', 1)[1]
         if ';' in postValueStr:
-            continue
+            if postKey != 'message':
+                continue
         if '\r\n' not in postValueStr:
             continue
         postLines = postValueStr.split('\r\n')
