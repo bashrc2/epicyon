@@ -986,7 +986,7 @@ def extractTextFieldsInPOST(postBytes, boundary, debug: bool,
     """
     if not unitTestData:
         msgBytes = email.parser.BytesParser().parsebytes(postBytes)
-        messageFields = msgBytes.decode('utf-8')
+        messageFields = msgBytes.get_payload(decode=True).decode('utf-8')
     else:
         messageFields = unitTestData
 
