@@ -83,6 +83,7 @@ from categories import guessHashtagCategory
 from context import hasValidContext
 from content import htmlReplaceQuoteMarks
 from speaker import speakerReplaceLinks
+from speaker import speakerPronounce
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2168,6 +2169,7 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     content = html.unescape(content)
     content = removeHtml(htmlReplaceQuoteMarks(content))
     content = speakerReplaceLinks(content, translate, detectedLinks)
+    content = speakerPronounce(baseDir, content, translate)
 
     imageDescription = ''
     if postJsonObject['object'].get('attachment'):
