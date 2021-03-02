@@ -2167,6 +2167,7 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
     detectedLinks = []
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
+    content = content.replace('<p>', '').replace('</p>', ' ')
     content = removeHtml(htmlReplaceQuoteMarks(content))
     content = speakerReplaceLinks(content, translate, detectedLinks)
     content = speakerPronounce(baseDir, content, translate)
