@@ -1959,14 +1959,15 @@ if args.speaker:
                         espeak.synth(html.unescape(nameStr))
                     elif args.screenreader == 'picospeaker':
                         speakerLang = 'en-GB'
-                        if args.language.startswith('fr'):
-                            speakerLang = 'fr-FR'
-                        elif args.language.startswith('es'):
-                            speakerLang = 'es-ES'
-                        elif args.language.startswith('de'):
-                            speakerLang = 'de-DE'
-                        elif args.language.startswith('it'):
-                            speakerLang = 'it-IT'
+                        if args.language:
+                            if args.language.startswith('fr'):
+                                speakerLang = 'fr-FR'
+                            elif args.language.startswith('es'):
+                                speakerLang = 'es-ES'
+                            elif args.language.startswith('de'):
+                                speakerLang = 'de-DE'
+                            elif args.language.startswith('it'):
+                                speakerLang = 'it-IT'
                         speakerCmd = 'picospeaker ' + \
                             '-l ' + speakerLang + \
                             ' -r ' + str(rate) + \
