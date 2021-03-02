@@ -1958,8 +1958,18 @@ if args.speaker:
                         espeak.set_parameter(espeak.Parameter.Range, srange)
                         espeak.synth(html.unescape(nameStr))
                     elif args.screenreader == 'picospeaker':
+                        speakerLang = 'en-GB'
+                        if args.language == 'fr':
+                            speakerLang = 'fr-FR'
+                        elif args.language == 'es':
+                            speakerLang = 'es-ES'
+                        elif args.language == 'de':
+                            speakerLang = 'de-DE'
+                        elif args.language == 'it':
+                            speakerLang = 'it-IT'
                         speakerCmd = 'picospeaker ' + \
-                            '-r ' + str(rate) + \
+                            '-l ' + speakerLang + \
+                            ' -r ' + str(rate) + \
                             ' -p ' + str(pitch) + ' "' + \
                             html.unescape(nameStr) + '"'
                         if args.debug:
@@ -1986,7 +1996,8 @@ if args.speaker:
                         espeak.synth(html.unescape(sayStr))
                     elif args.screenreader == 'picospeaker':
                         speakerCmd = 'picospeaker ' + \
-                            '-r ' + str(rate) + \
+                            '-l ' + speakerLang + \
+                            ' -r ' + str(rate) + \
                             ' -p ' + str(pitch) + ' "' + \
                             html.unescape(sayStr) + '"'
                         if args.debug:
