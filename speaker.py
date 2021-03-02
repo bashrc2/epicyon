@@ -96,6 +96,10 @@ def speakerReplaceLinks(sayText: str, translate: {},
     linkedStr = translate['Linked']
     prevWord = ''
     for word in wordsList:
+        if word.startswith(':'):
+            if word.endswith(':'):
+                replacements[word] = ', emoji ' + word.replace(':', '') + ','
+                continue
         # replace mentions, but not re-tweets
         if word.startswith('@') and not prevWord.endswith('RT'):
             replacements[word] = \
