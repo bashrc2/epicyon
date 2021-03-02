@@ -44,6 +44,7 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
     convertDict = {
         "Epicyon": "Epi-cyon",
         "espeak": "e-speak",
+        "clearnet": "clear-net",
         "#": translate["hashtag"],
         ":)": translate["smile"],
         ";)": translate["wink"],
