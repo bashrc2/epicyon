@@ -93,7 +93,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
         # replace mentions
         if word.startswith('@'):
             replacements[word] = \
-                translate['mentioning'] + ' ' + word[1:] + ', '
+                translate['mentioning'] + ' ' + word[1:] + ','
 
         domain = None
         domainFull = None
