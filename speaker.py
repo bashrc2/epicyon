@@ -93,7 +93,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
     prevWord = ''
     for word in wordsList:
         # replace mentions, but not re-tweets
-        if word.startswith('@') and prevWord != 'RT':
+        if word.startswith('@') and not prevWord.endswith('RT'):
             replacements[word] = \
                 translate['mentioning'] + ' ' + word[1:] + ','
         prevWord = word
