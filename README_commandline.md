@@ -401,4 +401,10 @@ On Debian based systems you will need to have the **python3-espeak** package ins
 python3 epicyon.py --speaker yournickname@yourdomain --password [yourpassword]
 ```
 
+Or if you have [picospeaker](https://gitlab.com/ky1e/picospeaker) installed:
+
+``` bash
+python3 epicyon.py --screenreader picospeaker --speaker yournickname@yourdomain --password [yourpassword]
+```
+
 This will then stay running and incoming posts will be announced as they arrive.
