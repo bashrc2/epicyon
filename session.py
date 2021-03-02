@@ -86,7 +86,7 @@ def urlExists(session, url: str, timeoutSec=3,
 
 def getJson(session, url: str, headers: {}, params: {},
             version='1.2.0', httpPrefix='https',
-            domain='testdomain') -> {}:
+            domain='testdomain', timeoutSec=20) -> {}:
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: getJson failed, url should be a string')
@@ -105,7 +105,8 @@ def getJson(session, url: str, headers: {}, params: {},
         print('WARN: getJson failed, no session specified for getJson')
         return None
     try:
-        result = session.get(url, headers=sessionHeaders, params=sessionParams)
+        result = session.get(url, headers=sessionHeaders,
+                             params=sessionParams, timeout=timeoutSec)
         return result.json()
     except requests.exceptions.RequestException as e:
         print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
