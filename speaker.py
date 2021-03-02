@@ -45,6 +45,7 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
         "Epicyon": "Epi-cyon",
         "espeak": "e-speak",
         "clearnet": "clear-net",
+        "RT @": "Re-Tweet ",
         "#": translate["hashtag"],
         ":)": translate["smile"],
         ";)": translate["wink"],
@@ -89,11 +90,13 @@ def speakerReplaceLinks(sayText: str, translate: {},
     replacements = {}
     wordsList = text.split(' ')
     linkedStr = translate['Linked']
+    prevWord = ''
     for word in wordsList:
-        # replace mentions
-        if word.startswith('@'):
+        # replace mentions, but not re-tweets
+        if word.startswith('@') and prevWord != 'RT':
             replacements[word] = \
                 translate['mentioning'] + ' ' + word[1:] + ','
+        prevWord = word
 
         domain = None
         domainFull = None
