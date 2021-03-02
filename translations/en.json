@@ -374,5 +374,8 @@
     "DM bounce": "Messages are only accepted from followed accounts",
     "Next": "Next",
     "Preview": "Preview",
-    "Linked": "Web linked"
+    "Linked": "Web linked",
+    "hashtag": "hash-tag",
+    "smile": "smile",
+    "wink": "wink"
 }

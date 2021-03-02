@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import random
 from auth import createBasicAuthHeader
 from session import getJson
@@ -31,6 +32,49 @@ def getSpeakerRange(displayName: str) -> int:
     """
     random.seed(displayName)
     return random.randint(300, 800)
+
+
+def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
+    """Screen readers may not always pronounce correctly, so you
+    can have a file which specifies conversions. File should contain
+    line items such as:
+    Epicyon -> Epi-cyon
+    """
+    pronounceFilename = baseDir + '/accounts/speaker_pronounce.txt'
+    convertDict = {
+        "Epicyon": "Epi-cyon",
+        "espeak": "e-speak",
+        "clearnet": "clear-net",
+        "#": translate["hashtag"],
+        ":)": translate["smile"],
+        ";)": translate["wink"],
+        ":-)": translate["smile"],
+        ";-)": translate["wink"],
+        "*": ""
+    }
+    if os.path.isfile(pronounceFilename):
+        with open(pronounceFilename, 'r') as fp:
+            pronounceList = fp.readlines()
+            for conversion in pronounceList:
+                separator = None
+                if '->' in conversion:
+                    separator = '->'
+                elif ';' in conversion:
+                    separator = ';'
+                elif ':' in conversion:
+                    separator = ':'
+                elif ',' in conversion:
+                    separator = ','
+                if not separator:
+                    continue
+
+                text = conversion.split(separator)[0].strip()
+                converted = conversion.split(separator)[1].strip()
+                convertDict[text] = converted
+    for text, converted in convertDict.items():
+        if text in sayText:
+            sayText = sayText.replace(text, converted)
+    return sayText
 
 
 def speakerReplaceLinks(sayText: str, translate: {},
