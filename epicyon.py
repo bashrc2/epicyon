@@ -1970,7 +1970,7 @@ if args.speaker:
                         if args.debug:
                             print(speakerCmd)
                         os.system(speakerCmd)
-                    time.sleep(3)
+                    time.sleep(2)
 
                     # append image description if needed
                     if not speakerJson.get('imageDescription'):
