@@ -1946,10 +1946,7 @@ if args.speaker:
         if speakerJson:
             if speakerJson['say'] != prevSay:
                 if speakerJson.get('name'):
-                    # echo spoken text to the screen
                     nameStr = speakerJson['name']
-                    print(html.unescape(nameStr) + ': ' +
-                          html.unescape(speakerJson['say']) + '\n')
 
                     # get the speech parameters
                     pitch = getSpeakerPitch(nameStr, args.screenreader)
@@ -1975,9 +1972,16 @@ if args.speaker:
                     # append image description if needed
                     if not speakerJson.get('imageDescription'):
                         sayStr = speakerJson['say']
+                        # echo spoken text to the screen
+                        print(html.unescape(nameStr) + ': ' +
+                              html.unescape(speakerJson['say']) + '\n')
                     else:
                         sayStr = speakerJson['say'] + '. ' + \
                             speakerJson['imageDescription']
+                        # echo spoken text to the screen
+                        print(html.unescape(nameStr) + ': ' +
+                              html.unescape(speakerJson['say']) + '\n' +
+                              html.unescape(speakerJson['imageDescription']))
 
                     # speak the post content
                     if args.screenreader == 'espeak':
