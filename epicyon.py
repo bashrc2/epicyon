@@ -6,7 +6,12 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import html
+import shutil
+import sys
+import time
+import argparse
 from person import createPerson
 from person import createGroup
 from person import setProfileImage
@@ -33,10 +38,6 @@ from session import getJson
 from newswire import getRSS
 from filters import addFilter
 from filters import removeFilter
-import os
-import shutil
-import sys
-import time
 from pprint import pprint
 from daemon import runDaemon
 from follow import clearFollows
@@ -80,7 +81,6 @@ from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
 from speaker import getSpeakerRate
 from speaker import getSpeakerRange
-import argparse
 
 
 def str2bool(v) -> bool:
@@ -100,6 +100,9 @@ parser = argparse.ArgumentParser(description='ActivityPub Server')
 parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
                     help='Nickname of the account to use')
+parser.add_argument('--screenreader', dest='screenreader', type=str,
+                    default='espeak',
+                    help='Name of the screen reader')
 parser.add_argument('--fol', '--follow', dest='follow', type=str,
                     default=None,
                     help='Handle of account to follow. eg. nickname@domain')
@@ -1926,8 +1929,9 @@ if args.speaker:
     elif args.gnunet:
         proxyType = 'gnunet'
 
-    print('Setting up espeak')
-    from espeak import espeak
+    if args.screenreader == 'espeak':
+        print('Setting up espeak')
+        from espeak import espeak
 
     print('Running speaker for ' + nickname + '@' + domain)
 
@@ -1942,22 +1946,33 @@ if args.speaker:
         if speakerJson:
             if speakerJson['say'] != prevSay:
                 if speakerJson.get('name'):
+                    # say the speaker's name
                     print(html.unescape(speakerJson['name']) + ': ' +
                           html.unescape(speakerJson['say']) + '\n')
                     pitch = getSpeakerPitch(speakerJson['name'])
-                    espeak.set_parameter(espeak.Parameter.Pitch, pitch)
+                    if args.screenreader == 'espeak':
+                        espeak.set_parameter(espeak.Parameter.Pitch, pitch)
                     rate = getSpeakerRate(speakerJson['name'])
-                    espeak.set_parameter(espeak.Parameter.Rate, rate)
+                    if args.screenreader == 'espeak':
+                        espeak.set_parameter(espeak.Parameter.Rate, rate)
                     srange = getSpeakerRange(speakerJson['name'])
-                    espeak.set_parameter(espeak.Parameter.Range, srange)
-                    espeak.synth(html.unescape(speakerJson['name']))
+                    if args.screenreader == 'espeak':
+                        espeak.set_parameter(espeak.Parameter.Range, srange)
+                        espeak.synth(html.unescape(speakerJson['name']))
                     time.sleep(3)
+
+                    # append image description if needed
                     if not speakerJson.get('imageDescription'):
                         sayStr = speakerJson['say']
                     else:
                         sayStr = speakerJson['say'] + '. ' + \
                             speakerJson['imageDescription']
-                    espeak.synth(html.unescape(sayStr))
+
+                    # speak the post content
+                    if args.screenreader == 'espeak':
+                        espeak.synth(html.unescape(sayStr))
+                    elif args.screenreader == 'picospeaker':
+                        os.system('picospeaker ' + html.unescape(sayStr))
 
                 prevSay = speakerJson['say']
         time.sleep(30)
