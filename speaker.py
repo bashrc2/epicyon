@@ -48,6 +48,7 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
     convertDict = {
         "Epicyon": "Epi-cyon",
         "espeak": "e-speak",
+        "emoji": "emowji",
         "clearnet": "clear-net",
         "RT @": "Re-Tweet ",
         "#": translate["hashtag"],
@@ -100,7 +101,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
     for word in wordsList:
         if word.startswith(':'):
             if word.endswith(':'):
-                replacements[word] = ', emoji ' + word.replace(':', '') + ','
+                replacements[word] = ', emowji ' + word.replace(':', '') + ','
                 continue
         # replace mentions, but not re-tweets
         if word.startswith('@') and not prevWord.endswith('RT'):
