@@ -50,6 +50,8 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
         "espeak": "e-speak",
         "emoji": "emowji",
         "clearnet": "clear-net",
+        "https": "H-T-T-P-S",
+        "HTTPS": "H-T-T-P-S",
         "RT @": "Re-Tweet ",
         "#": translate["hashtag"],
         ":)": translate["smile"],
