@@ -13,17 +13,21 @@ from session import getJson
 from utils import getFullDomain
 
 
-def getSpeakerPitch(displayName: str) -> int:
+def getSpeakerPitch(displayName: str, screenreader: str) -> int:
     """Returns the speech synthesis pitch for the given name
     """
     random.seed(displayName)
+    if screenreader == 'picospeaker':
+        return random.randint(-79, 39)
     return random.randint(1, 100)
 
 
-def getSpeakerRate(displayName: str) -> int:
+def getSpeakerRate(displayName: str, screenreader: str) -> int:
     """Returns the speech synthesis rate for the given name
     """
     random.seed(displayName)
+    if screenreader == 'picospeaker':
+        return random.randint(-90, 9900)
     return random.randint(50, 120)
 
 
