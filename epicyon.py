@@ -1946,24 +1946,26 @@ if args.speaker:
         if speakerJson:
             if speakerJson['say'] != prevSay:
                 if speakerJson.get('name'):
-                    # Get the speech parameters, based upon the speaker's name
+                    # echo spoken text to the screen
                     nameStr = speakerJson['name']
                     print(html.unescape(nameStr) + ': ' +
                           html.unescape(speakerJson['say']) + '\n')
-                    pitch = getSpeakerPitch(nameStr)
-                    if args.screenreader == 'espeak':
-                        espeak.set_parameter(espeak.Parameter.Pitch, pitch)
-                    rate = getSpeakerRate(nameStr)
-                    if args.screenreader == 'espeak':
-                        espeak.set_parameter(espeak.Parameter.Rate, rate)
+
+                    # get the speech parameters
+                    pitch = getSpeakerPitch(nameStr, args.screenreader)
+                    rate = getSpeakerRate(nameStr, args.screenreader)
                     srange = getSpeakerRange(nameStr)
 
                     # say the speaker's name
                     if args.screenreader == 'espeak':
+                        espeak.set_parameter(espeak.Parameter.Pitch, pitch)
+                        espeak.set_parameter(espeak.Parameter.Rate, rate)
                         espeak.set_parameter(espeak.Parameter.Range, srange)
                         espeak.synth(html.unescape(nameStr))
                     elif args.screenreader == 'picospeaker':
-                        os.system('picospeaker "' +
+                        os.system('picospeaker ' +
+                                  '-r ' + str(rate) +
+                                  ' -p ' + str(pitch) + ' "' +
                                   html.unescape(nameStr) + '"')
                     time.sleep(3)
 
@@ -1978,7 +1980,9 @@ if args.speaker:
                     if args.screenreader == 'espeak':
                         espeak.synth(html.unescape(sayStr))
                     elif args.screenreader == 'picospeaker':
-                        os.system('picospeaker "' +
+                        os.system('picospeaker ' +
+                                  '-r ' + str(rate) +
+                                  ' -p ' + str(pitch) + ' "' +
                                   html.unescape(sayStr) + '"')
 
                 prevSay = speakerJson['say']
