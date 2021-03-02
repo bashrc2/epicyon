@@ -52,6 +52,7 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
         "clearnet": "clear-net",
         "https": "H-T-T-P-S",
         "HTTPS": "H-T-T-P-S",
+        "Tor": "Toor",
         "RT @": "Re-Tweet ",
         "#": translate["hashtag"],
         ":)": translate["smile"],
