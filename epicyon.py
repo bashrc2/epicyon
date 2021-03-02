@@ -1946,19 +1946,25 @@ if args.speaker:
         if speakerJson:
             if speakerJson['say'] != prevSay:
                 if speakerJson.get('name'):
-                    # say the speaker's name
-                    print(html.unescape(speakerJson['name']) + ': ' +
+                    # Get the speech parameters, based upon the speaker's name
+                    nameStr = speakerJson['name']
+                    print(html.unescape(nameStr) + ': ' +
                           html.unescape(speakerJson['say']) + '\n')
-                    pitch = getSpeakerPitch(speakerJson['name'])
+                    pitch = getSpeakerPitch(nameStr)
                     if args.screenreader == 'espeak':
                         espeak.set_parameter(espeak.Parameter.Pitch, pitch)
-                    rate = getSpeakerRate(speakerJson['name'])
+                    rate = getSpeakerRate(nameStr)
                     if args.screenreader == 'espeak':
                         espeak.set_parameter(espeak.Parameter.Rate, rate)
-                    srange = getSpeakerRange(speakerJson['name'])
+                    srange = getSpeakerRange(nameStr)
+
+                    # say the speaker's name
                     if args.screenreader == 'espeak':
                         espeak.set_parameter(espeak.Parameter.Range, srange)
-                        espeak.synth(html.unescape(speakerJson['name']))
+                        espeak.synth(html.unescape(nameStr))
+                    elif args.screenreader == 'picospeaker':
+                        os.system('picospeaker "' +
+                                  html.unescape(nameStr) + '"')
                     time.sleep(3)
 
                     # append image description if needed
