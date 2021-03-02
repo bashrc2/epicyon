@@ -53,7 +53,9 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
         "#": translate["hashtag"],
         ":)": translate["smile"],
         ";)": translate["wink"],
+        ":(": translate["sad face"],
         ":-)": translate["smile"],
+        ":-(": translate["sad face"],
         ";-)": translate["wink"],
         "*": ""
     }
