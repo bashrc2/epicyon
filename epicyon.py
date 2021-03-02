@@ -1940,23 +1940,24 @@ if args.speaker:
                                  httpPrefix,
                                  True, __version__)
         if speakerJson:
-            if speakerJson['say'] != prevSay and speakerJson.get('name'):
-                print(html.unescape(speakerJson['name']) + ': ' +
-                      html.unescape(speakerJson['say']) + '\n')
-                pitch = getSpeakerPitch(speakerJson['name'])
-                espeak.set_parameter(espeak.Parameter.Pitch, pitch)
-                rate = getSpeakerRate(speakerJson['name'])
-                espeak.set_parameter(espeak.Parameter.Rate, rate)
-                srange = getSpeakerRange(speakerJson['name'])
-                espeak.set_parameter(espeak.Parameter.Range, srange)
-                espeak.synth(html.unescape(speakerJson['name']))
-                time.sleep(3)
-                if not speakerJson.get('imageDescription'):
-                    sayStr = speakerJson['say']
-                else:
-                    sayStr = speakerJson['say'] + '. ' + \
-                        speakerJson['imageDescription']
-                espeak.synth(html.unescape(sayStr))
+            if speakerJson['say'] != prevSay:
+                if speakerJson.get('name'):
+                    print(html.unescape(speakerJson['name']) + ': ' +
+                          html.unescape(speakerJson['say']) + '\n')
+                    pitch = getSpeakerPitch(speakerJson['name'])
+                    espeak.set_parameter(espeak.Parameter.Pitch, pitch)
+                    rate = getSpeakerRate(speakerJson['name'])
+                    espeak.set_parameter(espeak.Parameter.Rate, rate)
+                    srange = getSpeakerRange(speakerJson['name'])
+                    espeak.set_parameter(espeak.Parameter.Range, srange)
+                    espeak.synth(html.unescape(speakerJson['name']))
+                    time.sleep(3)
+                    if not speakerJson.get('imageDescription'):
+                        sayStr = speakerJson['say']
+                    else:
+                        sayStr = speakerJson['say'] + '. ' + \
+                            speakerJson['imageDescription']
+                    espeak.synth(html.unescape(sayStr))
 
                 prevSay = speakerJson['say']
         time.sleep(30)
