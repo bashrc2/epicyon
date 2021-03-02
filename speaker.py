@@ -90,6 +90,11 @@ def speakerReplaceLinks(sayText: str, translate: {},
     wordsList = text.split(' ')
     linkedStr = translate['Linked']
     for word in wordsList:
+        # replace mentions
+        if word.startswith('@'):
+            replacements[word] = \
+                translate['mentioning'] + ' ' + word[1:] + ', '
+
         domain = None
         domainFull = None
         if 'https://' in word:
