@@ -1972,7 +1972,8 @@ if args.speaker:
                     if args.screenreader == 'espeak':
                         espeak.synth(html.unescape(sayStr))
                     elif args.screenreader == 'picospeaker':
-                        os.system('picospeaker ' + html.unescape(sayStr))
+                        os.system('picospeaker "' +
+                                  html.unescape(sayStr) + '"')
 
                 prevSay = speakerJson['say']
         time.sleep(30)
