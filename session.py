@@ -109,13 +109,19 @@ def getJson(session, url: str, headers: {}, params: {},
                              params=sessionParams, timeout=timeoutSec)
         return result.json()
     except requests.exceptions.RequestException as e:
+        sessionHeaders2 = sessionHeaders.copy()
+        if sessionHeaders2.get('Authorization'):
+            del sessionHeaders2['Authorization']
         print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-              'headers: ' + str(sessionHeaders) + ' ' +
+              'headers: ' + str(sessionHeaders2) + ' ' +
               'params: ' + str(sessionParams))
         print(e)
     except ValueError as e:
+        sessionHeaders2 = sessionHeaders.copy()
+        if sessionHeaders2.get('Authorization'):
+            del sessionHeaders2['Authorization']
         print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-              'headers: ' + str(sessionHeaders) + ' ' +
+              'headers: ' + str(sessionHeaders2) + ' ' +
               'params: ' + str(sessionParams) + ' ')
         print(e)
     except SocketError as e:
