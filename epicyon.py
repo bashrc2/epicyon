@@ -1963,10 +1963,12 @@ if args.speaker:
                         espeak.set_parameter(espeak.Parameter.Range, srange)
                         espeak.synth(html.unescape(nameStr))
                     elif args.screenreader == 'picospeaker':
-                        os.system('picospeaker ' +
-                                  '-r ' + str(rate) +
-                                  ' -p ' + str(pitch) + ' "' +
-                                  html.unescape(nameStr) + '"')
+                        speakerCmd = 'picospeaker ' + \
+                            '-r ' + str(rate) + \
+                            ' -p ' + str(pitch) + ' "' + \
+                            html.unescape(nameStr) + '"'
+                        print(speakerCmd)
+                        os.system(speakerCmd)
                     time.sleep(3)
 
                     # append image description if needed
@@ -1980,10 +1982,12 @@ if args.speaker:
                     if args.screenreader == 'espeak':
                         espeak.synth(html.unescape(sayStr))
                     elif args.screenreader == 'picospeaker':
-                        os.system('picospeaker ' +
-                                  '-r ' + str(rate) +
-                                  ' -p ' + str(pitch) + ' "' +
-                                  html.unescape(sayStr) + '"')
+                        speakerCmd = 'picospeaker ' + \
+                            '-r ' + str(rate) + \
+                            ' -p ' + str(pitch) + ' "' + \
+                            html.unescape(sayStr) + '"'
+                        print(speakerCmd)
+                        os.system(speakerCmd)
 
                 prevSay = speakerJson['say']
         time.sleep(30)
