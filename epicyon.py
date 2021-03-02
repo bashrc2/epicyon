@@ -1967,7 +1967,8 @@ if args.speaker:
                             '-r ' + str(rate) + \
                             ' -p ' + str(pitch) + ' "' + \
                             html.unescape(nameStr) + '"'
-                        print(speakerCmd)
+                        if args.debug:
+                            print(speakerCmd)
                         os.system(speakerCmd)
                     time.sleep(3)
 
@@ -1986,7 +1987,8 @@ if args.speaker:
                             '-r ' + str(rate) + \
                             ' -p ' + str(pitch) + ' "' + \
                             html.unescape(sayStr) + '"'
-                        print(speakerCmd)
+                        if args.debug:
+                            print(speakerCmd)
                         os.system(speakerCmd)
 
                 prevSay = speakerJson['say']

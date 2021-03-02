@@ -18,7 +18,7 @@ def getSpeakerPitch(displayName: str, screenreader: str) -> int:
     """
     random.seed(displayName)
     if screenreader == 'picospeaker':
-        return random.randint(-9, 3)
+        return random.randint(-8, 3)
     return random.randint(1, 100)
 
 
