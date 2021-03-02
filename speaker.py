@@ -53,14 +53,17 @@ def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
         "https": "H-T-T-P-S",
         "HTTPS": "H-T-T-P-S",
         "Tor": "Toor",
+        "🤔": ". " + translate["thinking emoji"],
         "RT @": "Re-Tweet ",
         "#": translate["hashtag"],
-        ":)": translate["smile"],
-        ";)": translate["wink"],
-        ":(": translate["sad face"],
-        ":-)": translate["smile"],
-        ":-(": translate["sad face"],
-        ";-)": translate["wink"],
+        ":D": '. ' + translate["laughing"],
+        ":-D": '. ' + translate["laughing"],
+        ":)": '. ' + translate["smile"],
+        ";)": '. ' + translate["wink"],
+        ":(": '. ' + translate["sad face"],
+        ":-)": '. ' + translate["smile"],
+        ":-(": '. ' + translate["sad face"],
+        ";-)": '. ' + translate["wink"],
         "*": ""
     }
     if os.path.isfile(pronounceFilename):
