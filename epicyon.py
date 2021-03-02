@@ -1940,9 +1940,7 @@ if args.speaker:
         session = createSession(proxyType)
         speakerJson = \
             getSpeakerFromServer(baseDir, session, nickname, args.password,
-                                 domain, port,
-                                 httpPrefix,
-                                 True, __version__)
+                                 domain, port, httpPrefix, True, __version__)
         if speakerJson:
             if speakerJson['say'] != prevSay:
                 if speakerJson.get('name'):
