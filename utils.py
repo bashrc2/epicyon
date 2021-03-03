@@ -723,9 +723,11 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
     gender = 'They/Them'
     bioFoundOrig = bioFound
     bioFound = bioFound.lower()
-    if translate['He/Him'] in bioFound:
+    if translate['He/Him'] in bioFound or \
+       translate['boy'] in bioFound:
         gender = 'He/Him'
-    elif translate['She/Her'] in bioFound:
+    elif (translate['She/Her'] in bioFound or
+          translate['girl'] in bioFound):
         gender = 'She/Her'
     elif 'him' in bioFound or 'male' in bioFound:
         gender = 'He/Him'
