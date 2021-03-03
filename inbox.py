@@ -84,6 +84,7 @@ from context import hasValidContext
 from content import htmlReplaceQuoteMarks
 from speaker import speakerReplaceLinks
 from speaker import speakerPronounce
+from speaker import speakerEndpointJson
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2201,13 +2202,9 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
         announcedHandle = announcedNickname + '@' + announcedDomain
         content = \
             translate['announces'] + ' ' + announcedHandle + '. ' + content
-    speakerJson = {
-        "name": speakerName,
-        "summary": summary,
-        "say": content,
-        "imageDescription": imageDescription,
-        "detectedLinks": detectedLinks
-    }
+    speakerJson = speakerEndpointJson(speakerName, summary,
+                                      content, imageDescription,
+                                      detectedLinks)
     saveJson(speakerJson, speakerFilename)
 
 
