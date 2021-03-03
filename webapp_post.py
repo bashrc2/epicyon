@@ -63,6 +63,7 @@ from webapp_media import addEmbeddedElements
 from webapp_question import insertQuestion
 from devices import E2EEdecryptMessageFromDevice
 from webfinger import webfingerHandle
+from speaker import updateSpeaker
 
 
 def _logPostTiming(enableTimingLog: bool, postStartTime, debugId: str) -> None:
@@ -1290,6 +1291,19 @@ def individualPostAsHtml(allowDownloads: bool,
         if not postJsonAnnounce:
             return ''
         postJsonObject = postJsonAnnounce
+
+        announceFilename = \
+            locatePost(baseDir, nickname, domain, postJsonObject['id'])
+        if announceFilename and postJsonObject.get('actor'):
+            if not os.path.isfile(announceFilename + '.tts'):
+                updateSpeaker(baseDir, nickname, domain,
+                              postJsonObject, personCache,
+                              translate, postJsonObject['actor'])
+                ttsFile = open(announceFilename + '.tts', "w+")
+                if ttsFile:
+                    ttsFile.write('\n')
+                    ttsFile.close()
+
         isAnnounced = True
 
     _logPostTiming(enableTimingLog, postStartTime, '8')

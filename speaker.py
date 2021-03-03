@@ -7,11 +7,20 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import html
 import random
+import urllib.parse
 from auth import createBasicAuthHeader
 from session import getJson
+from utils import getDomainFromActor
+from utils import getNicknameFromActor
+from utils import getGenderFromBio
+from utils import getDisplayName
+from utils import removeHtml
 from utils import loadJson
+from utils import saveJson
 from utils import getFullDomain
+from content import htmlReplaceQuoteMarks
 
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
 
@@ -52,34 +61,36 @@ def getSpeakerRange(displayName: str) -> int:
     return random.randint(300, 800)
 
 
-def speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
+def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
     """Screen readers may not always pronounce correctly, so you
     can have a file which specifies conversions. File should contain
     line items such as:
     Epicyon -> Epi-cyon
     """
     pronounceFilename = baseDir + '/accounts/speaker_pronounce.txt'
-    convertDict = {
-        "Epicyon": "Epi-cyon",
-        "espeak": "e-speak",
-        "emoji": "emowji",
-        "clearnet": "clear-net",
-        "https": "H-T-T-P-S",
-        "HTTPS": "H-T-T-P-S",
-        "Tor": "Toor",
-        "🤔": ". " + translate["thinking emoji"],
-        "RT @": "Re-Tweet ",
-        "#": translate["hashtag"],
-        ":D": '. ' + translate["laughing"],
-        ":-D": '. ' + translate["laughing"],
-        ":)": '. ' + translate["smile"],
-        ";)": '. ' + translate["wink"],
-        ":(": '. ' + translate["sad face"],
-        ":-)": '. ' + translate["smile"],
-        ":-(": '. ' + translate["sad face"],
-        ";-)": '. ' + translate["wink"],
-        "*": ""
-    }
+    convertDict = {}
+    if translate:
+        convertDict = {
+            "Epicyon": "Epi-cyon",
+            "espeak": "e-speak",
+            "emoji": "emowji",
+            "clearnet": "clear-net",
+            "https": "H-T-T-P-S",
+            "HTTPS": "H-T-T-P-S",
+            "Tor": "Toor",
+            "🤔": ". " + translate["thinking emoji"],
+            "RT @": "Re-Tweet ",
+            "#": translate["hashtag"],
+            ":D": '. ' + translate["laughing"],
+            ":-D": '. ' + translate["laughing"],
+            ":)": '. ' + translate["smile"],
+            ";)": '. ' + translate["wink"],
+            ":(": '. ' + translate["sad face"],
+            ":-)": '. ' + translate["smile"],
+            ":-(": '. ' + translate["sad face"],
+            ";-)": '. ' + translate["wink"],
+            "*": ""
+        }
     if os.path.isfile(pronounceFilename):
         with open(pronounceFilename, 'r') as fp:
             pronounceList = fp.readlines()
@@ -115,7 +126,10 @@ def speakerReplaceLinks(sayText: str, translate: {},
         text = text.replace(ch, ' ')
     replacements = {}
     wordsList = text.split(' ')
-    linkedStr = translate['Linked']
+    if translate.get('Linked'):
+        linkedStr = translate['Linked']
+    else:
+        linkedStr = 'Linked'
     prevWord = ''
     for word in wordsList:
         if word.startswith(':'):
@@ -124,8 +138,9 @@ def speakerReplaceLinks(sayText: str, translate: {},
                 continue
         # replace mentions, but not re-tweets
         if word.startswith('@') and not prevWord.endswith('RT'):
-            replacements[word] = \
-                translate['mentioning'] + ' ' + word[1:] + ','
+            if translate.get('mentioning'):
+                replacements[word] = \
+                    translate['mentioning'] + ' ' + word[1:] + ','
         prevWord = word
 
         domain = None
@@ -171,7 +186,7 @@ def _addSSMLemphasis(sayText: str) -> str:
     return sayText
 
 
-def removeEmojiFromText(sayText: str) -> str:
+def _removeEmojiFromText(sayText: str) -> str:
     """Removes :emoji: from the given text
     """
     if '*' not in sayText:
@@ -222,9 +237,9 @@ def getSpeakerFromServer(baseDir: str, session,
     return speakerJson
 
 
-def speakerEndpointJson(displayName: str, summary: str,
-                        content: str, imageDescription: str,
-                        links: [], gender: str) -> {}:
+def _speakerEndpointJson(displayName: str, summary: str,
+                         content: str, imageDescription: str,
+                         links: [], gender: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -312,3 +327,66 @@ def getSSMLbox(baseDir: str, path: str,
                                 speakerJson['detectedLinks'],
                                 systemLanguage,
                                 instanceTitle, gender)
+
+
+def updateSpeaker(baseDir: str, nickname: str, domain: str,
+                  postJsonObject: {}, personCache: {},
+                  translate: {}, announcingActor: str) -> None:
+    """ Generates a json file which can be used for TTS announcement
+    of incoming inbox posts
+    """
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('content'):
+        return
+    if not isinstance(postJsonObject['object']['content'], str):
+        return
+    speakerFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
+    detectedLinks = []
+    content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
+    content = html.unescape(content)
+    content = content.replace('<p>', '').replace('</p>', ' ')
+    content = removeHtml(htmlReplaceQuoteMarks(content))
+    content = speakerReplaceLinks(content, translate, detectedLinks)
+    content = _speakerPronounce(baseDir, content, translate)
+
+    imageDescription = ''
+    if postJsonObject['object'].get('attachment'):
+        attachList = postJsonObject['object']['attachment']
+        if isinstance(attachList, list):
+            for img in attachList:
+                if not isinstance(img, dict):
+                    continue
+                if img.get('name'):
+                    if isinstance(img['name'], str):
+                        imageDescription += \
+                            img['name'] + '. '
+
+    summary = ''
+    if postJsonObject['object'].get('summary'):
+        if isinstance(postJsonObject['object']['summary'], str):
+            summary = \
+                urllib.parse.unquote_plus(postJsonObject['object']['summary'])
+            summary = html.unescape(summary)
+
+    speakerName = \
+        getDisplayName(baseDir, postJsonObject['actor'], personCache)
+    if not speakerName:
+        return
+    speakerName = _removeEmojiFromText(speakerName)
+    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
+                              personCache, translate)
+    if announcingActor:
+        announcedNickname = getNicknameFromActor(announcingActor)
+        announcedDomain, announcedport = getDomainFromActor(announcingActor)
+        if announcedNickname and announcedDomain:
+            announcedHandle = announcedNickname + '@' + announcedDomain
+            content = \
+                translate['announces'] + ' ' + announcedHandle + '. ' + content
+    speakerJson = _speakerEndpointJson(speakerName, summary,
+                                       content, imageDescription,
+                                       detectedLinks, gender)
+    saveJson(speakerJson, speakerFilename)

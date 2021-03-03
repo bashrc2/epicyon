@@ -10,12 +10,7 @@ import json
 import os
 import datetime
 import time
-import html
-import urllib.parse
 from linked_data_sig import verifyJsonSignature
-from utils import getDisplayName
-from utils import getGenderFromBio
-from utils import removeHtml
 from utils import getConfigParam
 from utils import hasUsersPath
 from utils import validPostDate
@@ -82,11 +77,7 @@ from happening import saveEventPost
 from delete import removeOldHashtags
 from categories import guessHashtagCategory
 from context import hasValidContext
-from content import htmlReplaceQuoteMarks
-from speaker import speakerReplaceLinks
-from speaker import speakerPronounce
-from speaker import speakerEndpointJson
-from speaker import removeEmojiFromText
+from speaker import updateSpeaker
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1414,9 +1405,9 @@ def _receiveAnnounce(recentPostsCache: {},
                     lookupActor = lookupActor.split('/statuses/')[0]
 
                 if not os.path.isfile(postFilename + '.tts'):
-                    _updateSpeaker(baseDir, nickname, domain,
-                                   postJsonObject, personCache,
-                                   translate, lookupActor)
+                    updateSpeaker(baseDir, nickname, domain,
+                                  postJsonObject, personCache,
+                                  translate, lookupActor)
                     ttsFile = open(postFilename + '.tts', "w+")
                     if ttsFile:
                         ttsFile.write('\n')
@@ -2155,68 +2146,6 @@ def _bounceDM(senderPostId: str, session, httpPrefix: str,
     return True
 
 
-def _updateSpeaker(baseDir: str, nickname: str, domain: str,
-                   postJsonObject: {}, personCache: {},
-                   translate: {}, announcingActor: str) -> None:
-    """ Generates a json file which can be used for TTS announcement
-    of incoming inbox posts
-    """
-    if not postJsonObject.get('object'):
-        return
-    if not isinstance(postJsonObject['object'], dict):
-        return
-    if not postJsonObject['object'].get('content'):
-        return
-    if not isinstance(postJsonObject['object']['content'], str):
-        return
-    speakerFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
-    detectedLinks = []
-    content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
-    content = html.unescape(content)
-    content = content.replace('<p>', '').replace('</p>', ' ')
-    content = removeHtml(htmlReplaceQuoteMarks(content))
-    content = speakerReplaceLinks(content, translate, detectedLinks)
-    content = speakerPronounce(baseDir, content, translate)
-
-    imageDescription = ''
-    if postJsonObject['object'].get('attachment'):
-        attachList = postJsonObject['object']['attachment']
-        if isinstance(attachList, list):
-            for img in attachList:
-                if not isinstance(img, dict):
-                    continue
-                if img.get('name'):
-                    if isinstance(img['name'], str):
-                        imageDescription += \
-                            img['name'] + '. '
-
-    summary = ''
-    if postJsonObject['object'].get('summary'):
-        if isinstance(postJsonObject['object']['summary'], str):
-            summary = \
-                urllib.parse.unquote_plus(postJsonObject['object']['summary'])
-            summary = html.unescape(summary)
-
-    speakerName = \
-        getDisplayName(baseDir, postJsonObject['actor'], personCache)
-    if not speakerName:
-        return
-    speakerName = removeEmojiFromText(speakerName)
-    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
-                              personCache, translate)
-    if announcingActor:
-        announcedNickname = getNicknameFromActor(announcingActor)
-        announcedDomain = getDomainFromActor(announcingActor)
-        announcedHandle = announcedNickname + '@' + announcedDomain
-        content = \
-            translate['announces'] + ' ' + announcedHandle + '. ' + content
-    speakerJson = speakerEndpointJson(speakerName, summary,
-                                      content, imageDescription,
-                                      detectedLinks, gender)
-    saveJson(speakerJson, speakerFilename)
-
-
 def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        session, keyId: str, handle: str, messageJson: {},
                        baseDir: str, httpPrefix: str, sendThreads: [],
@@ -2552,9 +2481,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
-                        _updateSpeaker(baseDir, nickname, domain,
-                                       postJsonObject, personCache,
-                                       translate, None)
+                        updateSpeaker(baseDir, nickname, domain,
+                                      postJsonObject, personCache,
+                                      translate, None)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')
