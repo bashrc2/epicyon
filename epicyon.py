@@ -1945,9 +1945,12 @@ if args.speaker:
             if speakerJson['say'] != prevSay:
                 if speakerJson.get('name'):
                     nameStr = speakerJson['name']
+                    gender = 'They/Them'
+                    if speakerJson.get('gender'):
+                        gender = speakerJson['gender']
 
                     # get the speech parameters
-                    pitch = getSpeakerPitch(nameStr, args.screenreader)
+                    pitch = getSpeakerPitch(nameStr, args.screenreader, gender)
                     rate = getSpeakerRate(nameStr, args.screenreader)
                     srange = getSpeakerRange(nameStr)
 
