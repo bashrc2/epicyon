@@ -94,7 +94,9 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             ":-)": '. ' + translate["smile"],
             ":-(": '. ' + translate["sad face"],
             ";-)": '. ' + translate["wink"],
-            "*": ""
+            "*": "",
+            "(": ",",
+            ")": ","
         }
     if os.path.isfile(pronounceFilename):
         with open(pronounceFilename, 'r') as fp:
