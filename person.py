@@ -276,12 +276,13 @@ def _createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         'devices': personId + '/collections/devices',
         'endpoints': {
             'id': personId + '/endpoints',
-            'sharedInbox': httpPrefix+'://' + domain + '/inbox',
+            'sharedInbox': httpPrefix + '://' + domain + '/inbox',
         },
         'featured': personId + '/collections/featured',
         'featuredTags': personId + '/collections/tags',
         'followers': personId + '/followers',
         'following': personId + '/following',
+        'tts': personId + '/speaker',
         'shares': personId + '/shares',
         'orgSchema': None,
         'skills': {},
@@ -556,6 +557,10 @@ def personUpgradeActor(baseDir: str, personJson: {},
         personJson = loadJson(filename)
 
     if updateActor:
+        # add a speaker endpoint
+        if not personJson.get('tts'):
+            personJson['tts'] = personJson['id'] + '/speaker'
+
         saveJson(personJson, filename)
 
         # also update the actor within the cache

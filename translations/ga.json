@@ -381,5 +381,8 @@
     "mentioning": "ag lua",
     "sad face": "aghaidh brónach",
     "thinking emoji": "ag smaoineamh emowji",
-    "laughing": "ag gáire"
+    "laughing": "ag gáire",
+    "gender": "inscne",
+    "He/Him": "Sé/Eisean",
+    "She/Her": "Sí"
 }

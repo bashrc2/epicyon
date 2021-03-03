@@ -269,6 +269,7 @@ from filters import isFiltered
 from filters import addGlobalFilter
 from filters import removeGlobalFilter
 from context import hasValidContext
+from speaker import getSSMLbox
 import os
 
 
@@ -487,24 +488,28 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not self.headers.get('Accept'):
             return False
+        acceptStr = self.headers['Accept']
         if self.server.debug:
-            print('ACCEPT: ' + self.headers['Accept'])
-        if 'image/' in self.headers['Accept']:
-            if 'text/html' not in self.headers['Accept']:
+            print('ACCEPT: ' + acceptStr)
+        if 'application/ssml' in acceptStr:
+            if 'text/html' not in acceptStr:
                 return False
-        if 'video/' in self.headers['Accept']:
-            if 'text/html' not in self.headers['Accept']:
+        if 'image/' in acceptStr:
+            if 'text/html' not in acceptStr:
                 return False
-        if 'audio/' in self.headers['Accept']:
-            if 'text/html' not in self.headers['Accept']:
+        if 'video/' in acceptStr:
+            if 'text/html' not in acceptStr:
                 return False
-        if self.headers['Accept'].startswith('*'):
+        if 'audio/' in acceptStr:
+            if 'text/html' not in acceptStr:
+                return False
+        if acceptStr.startswith('*'):
             if self.headers.get('User-Agent'):
                 if 'ELinks' in self.headers['User-Agent'] or \
                    'Lynx' in self.headers['User-Agent']:
                     return True
             return False
-        if 'json' in self.headers['Accept']:
+        if 'json' in acceptStr:
             return False
         return True
 
@@ -10480,10 +10485,25 @@ class PubServer(BaseHTTPRequestHandler):
         # arriving in your inbox
         if authorized and usersInPath and \
            self.path.endswith('/speaker'):
-            self._getSpeaker(callingDomain, self.path,
-                             self.server.baseDir,
-                             self.server.domain,
-                             self.server.debug)
+            if 'application/ssml' not in self.headers['Accept']:
+                # json endpoint
+                self._getSpeaker(callingDomain, self.path,
+                                 self.server.baseDir,
+                                 self.server.domain,
+                                 self.server.debug)
+            else:
+                xmlStr = \
+                    getSSMLbox(self.server.baseDir,
+                               self.path, self.server.domain,
+                               self.server.systemLanguage,
+                               self.server.instanceTitle,
+                               'inbox')
+                if xmlStr:
+                    msg = xmlStr.encode('utf-8')
+                    msglen = len(msg)
+                    self._set_headers('application/xrd+xml', msglen,
+                                      None, callingDomain)
+                    self._write(msg)
             return
 
         # redirect to the welcome screen

@@ -14,6 +14,7 @@ import html
 import urllib.parse
 from linked_data_sig import verifyJsonSignature
 from utils import getDisplayName
+from utils import getGenderFromBio
 from utils import removeHtml
 from utils import getConfigParam
 from utils import hasUsersPath
@@ -84,6 +85,7 @@ from context import hasValidContext
 from content import htmlReplaceQuoteMarks
 from speaker import speakerReplaceLinks
 from speaker import speakerPronounce
+from speaker import speakerEndpointJson
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2193,6 +2195,8 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
 
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
+    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
+                              personCache, translate)
     if not speakerName:
         return
     if announcingActor:
@@ -2201,13 +2205,9 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
         announcedHandle = announcedNickname + '@' + announcedDomain
         content = \
             translate['announces'] + ' ' + announcedHandle + '. ' + content
-    speakerJson = {
-        "name": speakerName,
-        "summary": summary,
-        "say": content,
-        "imageDescription": imageDescription,
-        "detectedLinks": detectedLinks
-    }
+    speakerJson = speakerEndpointJson(speakerName, summary,
+                                      content, imageDescription,
+                                      detectedLinks, gender)
     saveJson(speakerJson, speakerFilename)
 
 

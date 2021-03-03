@@ -68,8 +68,9 @@ def _copyThemeHelpFiles(baseDir: str, themeName: str,
             if destHelpMarkdownFile == 'profile.md' or \
                destHelpMarkdownFile == 'final.md':
                 destHelpMarkdownFile = 'welcome_' + destHelpMarkdownFile
-            copyfile(themeDir + '/' + helpMarkdownFile,
-                     baseDir + '/accounts/' + destHelpMarkdownFile)
+            if os.path.isdir(baseDir + '/accounts'):
+                copyfile(themeDir + '/' + helpMarkdownFile,
+                         baseDir + '/accounts/' + destHelpMarkdownFile)
         break
 
 
@@ -659,6 +660,8 @@ def _setClearCacheFlag(baseDir: str) -> None:
     """Sets a flag which can be used by an external system
     (eg. a script in a cron job) to clear the browser cache
     """
+    if not os.path.isdir(baseDir + '/accounts'):
+        return
     flagFilename = baseDir + '/accounts/.clear_cache'
     with open(flagFilename, 'w+') as flagFile:
         flagFile.write('\n')

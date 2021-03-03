@@ -10,7 +10,10 @@ import os
 import random
 from auth import createBasicAuthHeader
 from session import getJson
+from utils import loadJson
 from utils import getFullDomain
+
+speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
 
 
 def getSpeakerPitch(displayName: str, screenreader: str) -> int:
@@ -96,9 +99,8 @@ def speakerReplaceLinks(sayText: str, translate: {},
     """Replaces any links in the given text with "link to [domain]".
     Instead of reading out potentially very long and meaningless links
     """
-    removeChars = ('.\n', '. ', ',', ';', '?', '!')
     text = sayText
-    for ch in removeChars:
+    for ch in speakerRemoveChars:
         text = text.replace(ch, ' ')
     replacements = {}
     wordsList = text.split(' ')
@@ -136,6 +138,28 @@ def speakerReplaceLinks(sayText: str, translate: {},
     return sayText.replace('..', '.')
 
 
+def _addSSMLemphasis(sayText: str) -> str:
+    """Adds emphasis to *emphasised* text
+    """
+    if '*' not in sayText:
+        return sayText
+    text = sayText
+    for ch in speakerRemoveChars:
+        text = text.replace(ch, ' ')
+    wordsList = text.split(' ')
+    replacements = {}
+    for word in wordsList:
+        if word.startswith('*'):
+            if word.endswith('*'):
+                replacements[word] = \
+                    '<emphasis level="strong">' + \
+                    word.replace('*', '') + \
+                    '</emphasis>'
+    for replaceStr, newStr in replacements.items():
+        sayText = sayText.replace(replaceStr, newStr)
+    return sayText
+
+
 def getSpeakerFromServer(baseDir: str, session,
                          nickname: str, password: str,
                          domain: str, port: int,
@@ -166,3 +190,95 @@ def getSpeakerFromServer(baseDir: str, session,
         getJson(session, url, headers, None,
                 __version__, httpPrefix, domain)
     return speakerJson
+
+
+def speakerEndpointJson(displayName: str, summary: str,
+                        content: str, imageDescription: str,
+                        links: [], gender: str) -> {}:
+    """Returns a json endpoint for the TTS speaker
+    """
+    speakerJson = {
+        "name": displayName,
+        "summary": summary,
+        "say": content,
+        "imageDescription": imageDescription,
+        "detectedLinks": links
+    }
+    if gender:
+        speakerJson['gender'] = gender
+    return speakerJson
+
+
+def _speakerEndpointSSML(displayName: str, summary: str,
+                         content: str, imageDescription: str,
+                         links: [], language: str,
+                         instanceTitle: str,
+                         gender: str) -> str:
+    """Returns an SSML endpoint for the TTS speaker
+    https://en.wikipedia.org/wiki/Speech_Synthesis_Markup_Language
+    https://www.w3.org/TR/speech-synthesis/
+    """
+    langShort = 'en'
+    if language:
+        langShort = language[:2]
+    if not gender:
+        gender = 'neutral'
+    else:
+        if langShort == 'en':
+            gender = gender.lower()
+            if 'he/him' in gender:
+                gender = 'male'
+            elif 'she/her' in gender:
+                gender = 'female'
+            else:
+                gender = 'neutral'
+
+    content = _addSSMLemphasis(content)
+    voiceParams = 'name="' + displayName + '" gender="' + gender + '"'
+    return '<?xml version="1.0"?>\n' + \
+        '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
+        '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
+        '       xsi:schemaLocation="http://www.w3.org/2001/10/synthesis\n' + \
+        '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
+        '       version="1.1">\n' + \
+        '  <metadata>\n' + \
+        '    <dc:title xml:lang="' + langShort + '">' + \
+        instanceTitle + ' inbox</dc:title>\n' + \
+        '  </metadata>\n' + \
+        '  <p>\n' + \
+        '    <s xml:lang="' + language + '">\n' + \
+        '      <voice ' + voiceParams + '>\n' + \
+        '        ' + content + '\n' + \
+        '      </voice>\n' + \
+        '    </s>\n' + \
+        '  </p>\n' + \
+        '</speak>\n'
+
+
+def getSSMLbox(baseDir: str, path: str,
+               domain: str,
+               systemLanguage: str,
+               instanceTitle: str,
+               boxName: str) -> str:
+    """Returns SSML for the given timeline
+    """
+    nickname = path.split('/users/')[1]
+    if '/' in nickname:
+        nickname = nickname.split('/')[0]
+    speakerFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
+    if not os.path.isfile(speakerFilename):
+        return None
+    speakerJson = loadJson(speakerFilename)
+    if not speakerJson:
+        return None
+    gender = None
+    if speakerJson.get('gender'):
+        gender = speakerJson['gender']
+    return _speakerEndpointSSML(speakerJson['name'],
+                                speakerJson['summary'],
+                                speakerJson['say'],
+                                speakerJson['imageDescription'],
+                                speakerJson['detectedLinks'],
+                                systemLanguage,
+                                instanceTitle, gender)
