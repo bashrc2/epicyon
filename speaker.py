@@ -80,6 +80,8 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "HTTPS": "H-T-T-P-S",
             "XMPP": "X-M-P-P",
             "xmpp": "X-M-P-P",
+            "sql": "S-Q-L",
+            "SQL": "S-Q-L",
             "Tor": "Toor",
             "🤔": ". " + translate["thinking emoji"],
             "RT @": "Re-Tweet ",
