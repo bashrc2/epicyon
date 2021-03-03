@@ -380,5 +380,8 @@
     "laughing": "laughing",
     "gender": "gender",
     "He/Him": "He/Him",
-    "She/Her": "She/Her"
+    "She/Her": "She/Her",
+    "girl": "girl",
+    "boy": "boy",
+    "pronoun": "pronoun"
 }
