@@ -377,6 +377,7 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
     if not speakerName:
         return
     speakerName = _removeEmojiFromText(speakerName)
+    speakerName = speakerName.replace('_', ' ')
     gender = getGenderFromBio(baseDir, postJsonObject['actor'],
                               personCache, translate)
     if announcingActor:
