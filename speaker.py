@@ -51,7 +51,7 @@ def getSpeakerRate(displayName: str, screenreader: str) -> int:
     """
     random.seed(displayName)
     if screenreader == 'picospeaker':
-        return random.randint(-50, -40)
+        return random.randint(-40, -20)
     return random.randint(50, 120)
 
 
