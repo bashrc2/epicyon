@@ -1990,3 +1990,33 @@ def mediaFileMimeType(filename: str) -> str:
     if not extensions.get(fileExt):
         return 'image/png'
     return extensions[fileExt]
+
+
+def isRecentPost(postJsonObject: {}, maxDays=3) -> bool:
+    """ Is the given post recent?
+    """
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('published'):
+        return False
+    if not isinstance(postJsonObject['object']['published'], str):
+        return False
+    currTime = datetime.datetime.utcnow()
+    daysSinceEpoch = (currTime - datetime.datetime(1970, 1, 1)).days
+    recently = daysSinceEpoch - maxDays
+
+    publishedDateStr = postJsonObject['object']['published']
+    try:
+        publishedDate = \
+            datetime.datetime.strptime(publishedDateStr,
+                                       "%Y-%m-%dT%H:%M:%SZ")
+    except BaseException:
+        return False
+
+    publishedDaysSinceEpoch = \
+        (publishedDate - datetime.datetime(1970, 1, 1)).days
+    if publishedDaysSinceEpoch < recently:
+        return False
+    return True
