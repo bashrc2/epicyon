@@ -68,27 +68,29 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
     Epicyon -> Epi-cyon
     """
     pronounceFilename = baseDir + '/accounts/speaker_pronounce.txt'
-    convertDict = {
-        "Epicyon": "Epi-cyon",
-        "espeak": "e-speak",
-        "emoji": "emowji",
-        "clearnet": "clear-net",
-        "https": "H-T-T-P-S",
-        "HTTPS": "H-T-T-P-S",
-        "Tor": "Toor",
-        "🤔": ". " + translate["thinking emoji"],
-        "RT @": "Re-Tweet ",
-        "#": translate["hashtag"],
-        ":D": '. ' + translate["laughing"],
-        ":-D": '. ' + translate["laughing"],
-        ":)": '. ' + translate["smile"],
-        ";)": '. ' + translate["wink"],
-        ":(": '. ' + translate["sad face"],
-        ":-)": '. ' + translate["smile"],
-        ":-(": '. ' + translate["sad face"],
-        ";-)": '. ' + translate["wink"],
-        "*": ""
-    }
+    convertDict = {}
+    if translate:
+        convertDict = {
+            "Epicyon": "Epi-cyon",
+            "espeak": "e-speak",
+            "emoji": "emowji",
+            "clearnet": "clear-net",
+            "https": "H-T-T-P-S",
+            "HTTPS": "H-T-T-P-S",
+            "Tor": "Toor",
+            "🤔": ". " + translate["thinking emoji"],
+            "RT @": "Re-Tweet ",
+            "#": translate["hashtag"],
+            ":D": '. ' + translate["laughing"],
+            ":-D": '. ' + translate["laughing"],
+            ":)": '. ' + translate["smile"],
+            ";)": '. ' + translate["wink"],
+            ":(": '. ' + translate["sad face"],
+            ":-)": '. ' + translate["smile"],
+            ":-(": '. ' + translate["sad face"],
+            ";-)": '. ' + translate["wink"],
+            "*": ""
+        }
     if os.path.isfile(pronounceFilename):
         with open(pronounceFilename, 'r') as fp:
             pronounceList = fp.readlines()
@@ -124,7 +126,10 @@ def speakerReplaceLinks(sayText: str, translate: {},
         text = text.replace(ch, ' ')
     replacements = {}
     wordsList = text.split(' ')
-    linkedStr = translate['Linked']
+    if translate.get('Linked'):
+        linkedStr = translate['Linked']
+    else:
+        linkedStr = 'Linked'
     prevWord = ''
     for word in wordsList:
         if word.startswith(':'):
@@ -133,8 +138,9 @@ def speakerReplaceLinks(sayText: str, translate: {},
                 continue
         # replace mentions, but not re-tweets
         if word.startswith('@') and not prevWord.endswith('RT'):
-            replacements[word] = \
-                translate['mentioning'] + ' ' + word[1:] + ','
+            if translate.get('mentioning'):
+                replacements[word] = \
+                    translate['mentioning'] + ' ' + word[1:] + ','
         prevWord = word
 
         domain = None

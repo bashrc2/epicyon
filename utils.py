@@ -678,7 +678,10 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
     if not personCache.get(actor):
         return None
     bioFound = None
-    pronounStr = translate['pronoun'].lower()
+    if translate:
+        pronounStr = translate['pronoun'].lower()
+    else:
+        pronounStr = 'pronoun'
     if personCache[actor].get('actor'):
         # is gender defined as a profile tag?
         if personCache[actor]['actor'].get('attachment'):
