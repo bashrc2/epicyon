@@ -2956,7 +2956,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
-        postJsonAnnounce, alreadyExists = \
+        postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              __version__, translate,
@@ -3879,13 +3879,13 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {}, YTReplacementDomain: str,
-                     allowLocalNetworkAccess: bool) -> ({}, bool):
+                     allowLocalNetworkAccess: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
-        return None, False
+        return None
     if not isinstance(postJsonObject['object'], str):
-        return None, False
+        return None
 
     # get the announced post
     announceCacheDir = baseDir + '/cache/announce/' + nickname
@@ -3896,14 +3896,14 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         postJsonObject['object'].replace('/', '#') + '.json'
 
     if os.path.isfile(announceFilename + '.reject'):
-        return None, False
+        return None
 
     if os.path.isfile(announceFilename):
         print('Reading cached Announce content for ' +
               postJsonObject['object'])
         postJsonObject = loadJson(announceFilename)
         if postJsonObject:
-            return postJsonObject, True
+            return postJsonObject
     else:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
@@ -3920,18 +3920,18 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             print('Announce actor does not contain a ' +
                   'valid domain or port number: ' +
                   str(postJsonObject['actor']))
-            return None, False
+            return None
         if isBlocked(baseDir, nickname, domain, actorNickname, actorDomain):
             print('Announce download blocked actor: ' +
                   actorNickname + '@' + actorDomain)
-            return None, False
+            return None
         objectNickname = getNicknameFromActor(postJsonObject['object'])
         objectDomain, objectPort = getDomainFromActor(postJsonObject['object'])
         if not objectDomain:
             print('Announce object does not contain a ' +
                   'valid domain or port number: ' +
                   str(postJsonObject['object']))
-            return None, False
+            return None
         if isBlocked(baseDir, nickname, domain, objectNickname, objectDomain):
             if objectNickname and objectDomain:
                 print('Announce download blocked object: ' +
@@ -3939,56 +3939,56 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             else:
                 print('Announce download blocked object: ' +
                       str(postJsonObject['object']))
-            return None, False
+            return None
         print('Downloading Announce content for ' + postJsonObject['object'])
         announcedJson = \
             getJson(session, postJsonObject['object'], asHeader,
                     None, projectVersion, httpPrefix, domain)
 
         if not announcedJson:
-            return None, False
+            return None
 
         if not isinstance(announcedJson, dict):
             print('WARN: announce json is not a dict - ' +
                   postJsonObject['object'])
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if not announcedJson.get('id'):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if not hasUsersPath(announcedJson['id']):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if not announcedJson.get('type'):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if not announcedJson.get('content'):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if not announcedJson.get('published'):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
         if not validPostDate(announcedJson['published']):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
 
         # Check the content of the announce
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
 
         if isFiltered(baseDir, nickname, domain, contentStr):
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
 
         # remove any long words
         contentStr = removeLongWords(contentStr, 40, [])
@@ -4007,7 +4007,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if announcedJson['type'] != 'Create':
             # Create wrap failed
             _rejectAnnounce(announceFilename)
-            return None, False
+            return None
 
         # labelAccusatoryPost(postJsonObject, translate)
         # set the id to the original status
@@ -4023,12 +4023,12 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             if isBlocked(baseDir, nickname, domain,
                          attributedNickname, attributedDomain):
                 _rejectAnnounce(announceFilename)
-                return None, False
+                return None
         postJsonObject = announcedJson
         replaceYouTube(postJsonObject, YTReplacementDomain)
         if saveJson(postJsonObject, announceFilename):
-            return postJsonObject, False
-    return None, False
+            return postJsonObject
+    return None
 
 
 def isMuted(baseDir: str, nickname: str, domain: str, postId: str) -> bool:

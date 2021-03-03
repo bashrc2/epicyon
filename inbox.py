@@ -1373,13 +1373,13 @@ def _receiveAnnounce(recentPostsCache: {},
     if debug:
         print('DEBUG: Downloading announce post ' + messageJson['actor'] +
               ' -> ' + messageJson['object'])
-    postJsonObject, alreadyExists = downloadAnnounce(session, baseDir,
-                                                     httpPrefix,
-                                                     nickname, domain,
-                                                     messageJson,
-                                                     __version__, translate,
-                                                     YTReplacementDomain,
-                                                     allowLocalNetworkAccess)
+    postJsonObject = downloadAnnounce(session, baseDir,
+                                      httpPrefix,
+                                      nickname, domain,
+                                      messageJson,
+                                      __version__, translate,
+                                      YTReplacementDomain,
+                                      allowLocalNetworkAccess)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1412,10 +1412,14 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                if not alreadyExists:
+                if not os.path.isfile(postFilename + '.tts'):
                     _updateSpeaker(baseDir, nickname, domain,
                                    postJsonObject, personCache,
                                    translate, lookupActor)
+                    ttsFile = open(postFilename + '.tts', "w+")
+                    if ttsFile:
+                        ttsFile.write('\n')
+                        ttsFile.close()
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
