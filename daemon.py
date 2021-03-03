@@ -14305,6 +14305,7 @@ def runDaemon(brochMode: bool,
             return False
 
         print('ERROR: HTTP server failed to start. ' + str(e))
+        print('serverAddress: ' + str(serverAddress))
         return False
 
     # ASCII/ANSI text banner used in shell browsers, such as Lynx

@@ -16,13 +16,24 @@ from utils import getFullDomain
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
 
 
-def getSpeakerPitch(displayName: str, screenreader: str) -> int:
+def getSpeakerPitch(displayName: str, screenreader: str, gender) -> int:
     """Returns the speech synthesis pitch for the given name
     """
     random.seed(displayName)
+    rangeMin = 1
+    rangeMax = 100
+    if 'She' in gender:
+        rangeMin = 50
+    elif 'Him' in gender:
+        rangeMax = 50
     if screenreader == 'picospeaker':
-        return random.randint(-8, 3)
-    return random.randint(1, 100)
+        rangeMin = -8
+        rangeMax = 3
+        if 'She' in gender:
+            rangeMin = -1
+        elif 'Him' in gender:
+            rangeMax = -1
+    return random.randint(rangeMin, rangeMax)
 
 
 def getSpeakerRate(displayName: str, screenreader: str) -> int:
