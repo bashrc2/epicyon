@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import re
 import time
 import shutil
 import datetime
@@ -2020,3 +2021,16 @@ def isRecentPost(postJsonObject: {}, maxDays=3) -> bool:
     if publishedDaysSinceEpoch < recently:
         return False
     return True
+
+
+def camelCaseSplit(text: str) -> str:
+    """ Splits CamelCase into "Camel Case"
+    """
+    matches = re.finditer('.+?(?:(?<=[a-z])(?=[A-Z])|' +
+                          '(?<=[A-Z])(?=[A-Z][a-z])|$)', text)
+    if not matches:
+        return text
+    resultStr = ''
+    for word in matches:
+        resultStr += word.group(0) + ' '
+    return resultStr.strip()

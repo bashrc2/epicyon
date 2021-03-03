@@ -34,6 +34,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import camelCaseSplit
 from utils import decodedHost
 from utils import getFullDomain
 from utils import validNickname
@@ -3389,9 +3390,19 @@ def testSpeakerReplaceLinks():
     assert 'Web link support.torproject.org' in result
 
 
+def testCamelCaseSplit():
+    print('testCamelCaseSplit')
+    testStr = 'ThisIsCamelCase'
+    assert camelCaseSplit(testStr) == 'This Is Camel Case'
+
+    testStr = 'Notcamelcase test'
+    assert camelCaseSplit(testStr) == 'Notcamelcase test'
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testCamelCaseSplit()
     testSpeakerReplaceLinks()
     testExtractTextFieldsInPOST()
     testMarkdownToHtml()
