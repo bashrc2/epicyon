@@ -1281,7 +1281,7 @@ def individualPostAsHtml(allowDownloads: bool,
     galleryStr = ''
     isAnnounced = False
     if postJsonObject['type'] == 'Announce':
-        postJsonAnnounce, alreadyExists = \
+        postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
