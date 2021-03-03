@@ -36,7 +36,7 @@ def getSpeakerPitch(displayName: str, screenreader: str, gender) -> int:
     elif 'Him' in gender:
         rangeMax = 50
     if screenreader == 'picospeaker':
-        rangeMin = -8
+        rangeMin = -6
         rangeMax = 3
         if 'She' in gender:
             rangeMin = -1
