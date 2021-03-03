@@ -669,7 +669,8 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
     return nameFound
 
 
-def getGenderFromBio(baseDir: str, actor: str, personCache: {}) -> str:
+def getGenderFromBio(baseDir: str, actor: str, personCache: {},
+                     translate: {}) -> str:
     """Tries to ascertain gender from bio description
     """
     if '/statuses/' in actor:
@@ -678,7 +679,21 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {}) -> str:
         return None
     bioFound = None
     if personCache[actor].get('actor'):
-        if personCache[actor]['actor'].get('summary'):
+        # is gender defined as a profile tag?
+        if personCache[actor]['actor'].get('attachment'):
+            tagsList = personCache[actor]['actor']['attachment']
+            if isinstance(tagsList, list):
+                for tag in tagsList:
+                    if not isinstance(tag, dict):
+                        continue
+                    if not tag.get('name') or not tag.get('value'):
+                        continue
+                    if tag['name'].lower() == \
+                       translate['gender'].lower():
+                        bioFound = tag['value']
+                        break
+        # if not then use the bio
+        if not bioFound and personCache[actor]['actor'].get('summary'):
             bioFound = personCache[actor]['actor']['summary']
     else:
         # Try to obtain from the cached actors
@@ -687,14 +702,32 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {}) -> str:
         if os.path.isfile(cachedActorFilename):
             actorJson = loadJson(cachedActorFilename, 1)
             if actorJson:
-                if actorJson.get('summary'):
+                # is gender defined as a profile tag?
+                if actorJson.get('attachment'):
+                    tagsList = actorJson['attachment']
+                    if isinstance(tagsList, list):
+                        for tag in tagsList:
+                            if not isinstance(tag, dict):
+                                continue
+                            if not tag.get('name') or not tag.get('value'):
+                                continue
+                            if tag['name'].lower() == \
+                               translate['gender'].lower():
+                                bioFound = tag['value']
+                                break
+                # if not then use the bio
+                if not bioFound and actorJson.get('summary'):
                     bioFound = actorJson['summary']
     if not bioFound:
         return None
     gender = 'They/Them'
     bioFoundOrig = bioFound
     bioFound = bioFound.lower()
-    if 'him' in bioFound or 'male' in bioFound:
+    if translate['He/Him'] in bioFound:
+        gender = 'He/Him'
+    elif translate['She/Her'] in bioFound:
+        gender = 'She/Her'
+    elif 'him' in bioFound or 'male' in bioFound:
         gender = 'He/Him'
     elif 'her' in bioFound or 'she' in bioFound or \
          'fem' in bioFound or 'woman' in bioFound:

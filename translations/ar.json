@@ -381,5 +381,8 @@
     "mentioning": "ذكر",
     "sad face": "وجه حزين",
     "thinking emoji": "التفكير الرموز التعبيرية",
-    "laughing": "يضحك"
+    "laughing": "يضحك",
+    "gender": "جنس تذكير أو تأنيث",
+    "He/Him": "هو",
+    "She/Her": "هي"
 }
