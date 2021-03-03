@@ -171,6 +171,25 @@ def _addSSMLemphasis(sayText: str) -> str:
     return sayText
 
 
+def removeEmojiFromText(sayText: str) -> str:
+    """Removes :emoji: from the given text
+    """
+    if '*' not in sayText:
+        return sayText
+    text = sayText
+    for ch in speakerRemoveChars:
+        text = text.replace(ch, ' ')
+    wordsList = text.split(' ')
+    replacements = {}
+    for word in wordsList:
+        if word.startswith(':'):
+            if word.endswith(':'):
+                replacements[word] = word.replace('*', '')
+    for replaceStr, newStr in replacements.items():
+        sayText = sayText.replace(replaceStr, newStr)
+    return sayText.replace('  ', ' ').strip()
+
+
 def getSpeakerFromServer(baseDir: str, session,
                          nickname: str, password: str,
                          domain: str, port: int,
