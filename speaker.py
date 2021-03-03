@@ -81,7 +81,7 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "Tor": "Toor",
             "🤔": ". " + translate["thinking emoji"],
             "RT @": "Re-Tweet ",
-            "#": translate["hashtag"],
+            "#": translate["hashtag"] + ' ',
             ":D": '. ' + translate["laughing"],
             ":-D": '. ' + translate["laughing"],
             ":)": '. ' + translate["smile"],
