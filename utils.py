@@ -678,6 +678,7 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
     if not personCache.get(actor):
         return None
     bioFound = None
+    pronounStr = translate['pronoun'].lower()
     if personCache[actor].get('actor'):
         # is gender defined as a profile tag?
         if personCache[actor]['actor'].get('attachment'):
@@ -690,6 +691,9 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
                         continue
                     if tag['name'].lower() == \
                        translate['gender'].lower():
+                        bioFound = tag['value']
+                        break
+                    elif tag['name'].lower().startswith(pronounStr):
                         bioFound = tag['value']
                         break
         # if not then use the bio
@@ -715,6 +719,9 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
                                translate['gender'].lower():
                                 bioFound = tag['value']
                                 break
+                            elif tag['name'].lower().startswith(pronounStr):
+                                bioFound = tag['value']
+                                break
                 # if not then use the bio
                 if not bioFound and actorJson.get('summary'):
                     bioFound = actorJson['summary']
@@ -723,11 +730,11 @@ def getGenderFromBio(baseDir: str, actor: str, personCache: {},
     gender = 'They/Them'
     bioFoundOrig = bioFound
     bioFound = bioFound.lower()
-    if translate['He/Him'] in bioFound or \
-       translate['boy'] in bioFound:
+    if translate['He/Him'].lower() in bioFound or \
+       translate['boy'].lower() in bioFound:
         gender = 'He/Him'
-    elif (translate['She/Her'] in bioFound or
-          translate['girl'] in bioFound):
+    elif (translate['She/Her'].lower() in bioFound or
+          translate['girl'].lower() in bioFound):
         gender = 'She/Her'
     elif 'him' in bioFound or 'male' in bioFound:
         gender = 'He/Him'
