@@ -14,6 +14,7 @@ import html
 import urllib.parse
 from linked_data_sig import verifyJsonSignature
 from utils import getDisplayName
+from utils import getGenderFromBio
 from utils import removeHtml
 from utils import getConfigParam
 from utils import hasUsersPath
@@ -2194,6 +2195,7 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
 
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
+    gender = getGenderFromBio(baseDir, postJsonObject['actor'], personCache)
     if not speakerName:
         return
     if announcingActor:
@@ -2204,7 +2206,7 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
             translate['announces'] + ' ' + announcedHandle + '. ' + content
     speakerJson = speakerEndpointJson(speakerName, summary,
                                       content, imageDescription,
-                                      detectedLinks)
+                                      detectedLinks, gender)
     saveJson(speakerJson, speakerFilename)
 
 

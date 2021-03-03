@@ -194,16 +194,19 @@ def getSpeakerFromServer(baseDir: str, session,
 
 def speakerEndpointJson(displayName: str, summary: str,
                         content: str, imageDescription: str,
-                        links: []) -> {}:
+                        links: [], gender: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
-    return {
+    speakerJson = {
         "name": displayName,
         "summary": summary,
         "say": content,
         "imageDescription": imageDescription,
         "detectedLinks": links
     }
+    if gender:
+        speakerJson['gender'] = gender
+    return speakerJson
 
 
 def _speakerEndpointSSML(displayName: str, summary: str,
@@ -223,13 +226,10 @@ def _speakerEndpointSSML(displayName: str, summary: str,
     else:
         if langShort == 'en':
             gender = gender.lower()
-            if 'him' in gender or 'male' in gender:
+            if 'he/him' in gender:
                 gender = 'male'
-            elif 'her' in gender or 'she' in gender or \
-                 'fem' in gender or 'woman' in gender:
+            elif 'she/her' in gender:
                 gender = 'female'
-            elif 'man' in gender:
-                gender = 'male'
             else:
                 gender = 'neutral'
 
