@@ -12,6 +12,7 @@ import random
 import urllib.parse
 from auth import createBasicAuthHeader
 from session import getJson
+from utils import camelCaseSplit
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import getGenderFromBio
@@ -377,6 +378,8 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
     if not speakerName:
         return
     speakerName = _removeEmojiFromText(speakerName)
+    speakerName = speakerName.replace('_', ' ')
+    speakerName = camelCaseSplit(speakerName)
     gender = getGenderFromBio(baseDir, postJsonObject['actor'],
                               personCache, translate)
     if announcingActor:
