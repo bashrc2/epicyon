@@ -381,15 +381,11 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
                               personCache, translate)
     if announcingActor:
         announcedNickname = getNicknameFromActor(announcingActor)
-        announcedDomain = getDomainFromActor(announcingActor)
+        announcedDomain, announcedport = getDomainFromActor(announcingActor)
         if announcedNickname and announcedDomain:
-            print('WARN: announcingActor ' + str(announcingActor) + ' ' +
-                  str(announcedNickname) + ' ' + str(announcedDomain))
             announcedHandle = announcedNickname + '@' + announcedDomain
             content = \
                 translate['announces'] + ' ' + announcedHandle + '. ' + content
-        else:
-            print('WARN: announcingActor2 ' + str(announcingActor))
     speakerJson = _speakerEndpointJson(speakerName, summary,
                                        content, imageDescription,
                                        detectedLinks, gender)
