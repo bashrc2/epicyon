@@ -383,7 +383,8 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
         announcedNickname = getNicknameFromActor(announcingActor)
         announcedDomain = getDomainFromActor(announcingActor)
         if announcedNickname and announcedDomain:
-            print('WARN: announcingActor ' + str(announcingActor))
+            print('WARN: announcingActor ' + str(announcingActor) + ' ' +
+                  str(announcedNickname) + ' ' + str(announcedDomain))
             announcedHandle = announcedNickname + '@' + announcedDomain
             content = \
                 translate['announces'] + ' ' + announcedHandle + '. ' + content
