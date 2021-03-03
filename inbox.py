@@ -2199,10 +2199,10 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
 
     speakerName = \
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
-    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
-                              personCache, translate)
     if not speakerName:
         return
+    gender = getGenderFromBio(baseDir, postJsonObject['actor'],
+                              personCache, translate)
     if announcingActor:
         announcedNickname = getNicknameFromActor(announcingActor)
         announcedDomain = getDomainFromActor(announcingActor)
