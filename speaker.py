@@ -206,7 +206,7 @@ def _removeEmojiFromText(sayText: str) -> str:
     for word in wordsList:
         if word.startswith(':'):
             if word.endswith(':'):
-                replacements[word] = word.replace('*', '')
+                replacements[word] = ''
     for replaceStr, newStr in replacements.items():
         sayText = sayText.replace(replaceStr, newStr)
     return sayText.replace('  ', ' ').strip()
