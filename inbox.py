@@ -11,6 +11,7 @@ import os
 import datetime
 import time
 from linked_data_sig import verifyJsonSignature
+from utils import isRecentPost
 from utils import getConfigParam
 from utils import hasUsersPath
 from utils import validPostDate
@@ -1404,14 +1405,15 @@ def _receiveAnnounce(recentPostsCache: {},
                 if '/statuses/' in lookupActor:
                     lookupActor = lookupActor.split('/statuses/')[0]
 
-                if not os.path.isfile(postFilename + '.tts'):
-                    updateSpeaker(baseDir, nickname, domain,
-                                  postJsonObject, personCache,
-                                  translate, lookupActor)
-                    ttsFile = open(postFilename + '.tts', "w+")
-                    if ttsFile:
-                        ttsFile.write('\n')
-                        ttsFile.close()
+                if isRecentPost(postJsonObject):
+                    if not os.path.isfile(postFilename + '.tts'):
+                        updateSpeaker(baseDir, nickname, domain,
+                                      postJsonObject, personCache,
+                                      translate, lookupActor)
+                        ttsFile = open(postFilename + '.tts', "w+")
+                        if ttsFile:
+                            ttsFile.write('\n')
+                            ttsFile.close()
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post ' +
@@ -2481,9 +2483,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                     print('ERROR: unable to update ' + boxname + ' index')
                 else:
                     if boxname == 'inbox':
-                        updateSpeaker(baseDir, nickname, domain,
-                                      postJsonObject, personCache,
-                                      translate, None)
+                        if isRecentPost(postJsonObject):
+                            updateSpeaker(baseDir, nickname, domain,
+                                          postJsonObject, personCache,
+                                          translate, None)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')

@@ -22,6 +22,7 @@ from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import isRecentPost
 from utils import getConfigParam
 from utils import getFullDomain
 from utils import isEditor
@@ -1292,17 +1293,19 @@ def individualPostAsHtml(allowDownloads: bool,
             return ''
         postJsonObject = postJsonAnnounce
 
-        announceFilename = \
-            locatePost(baseDir, nickname, domain, postJsonObject['id'])
-        if announceFilename and postJsonObject.get('actor'):
-            if not os.path.isfile(announceFilename + '.tts'):
-                updateSpeaker(baseDir, nickname, domain,
-                              postJsonObject, personCache,
-                              translate, postJsonObject['actor'])
-                ttsFile = open(announceFilename + '.tts', "w+")
-                if ttsFile:
-                    ttsFile.write('\n')
-                    ttsFile.close()
+        if isRecentPost(postJsonObject):
+            announceFilename = \
+                locatePost(baseDir, nickname, domain,
+                           postJsonObject['id'])
+            if announceFilename and postJsonObject.get('actor'):
+                if not os.path.isfile(announceFilename + '.tts'):
+                    updateSpeaker(baseDir, nickname, domain,
+                                  postJsonObject, personCache,
+                                  translate, postJsonObject['actor'])
+                    ttsFile = open(announceFilename + '.tts', "w+")
+                    if ttsFile:
+                        ttsFile.write('\n')
+                        ttsFile.close()
 
         isAnnounced = True
 
