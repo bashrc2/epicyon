@@ -86,6 +86,7 @@ from content import htmlReplaceQuoteMarks
 from speaker import speakerReplaceLinks
 from speaker import speakerPronounce
 from speaker import speakerEndpointJson
+from speaker import removeEmojiFromText
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -2201,6 +2202,7 @@ def _updateSpeaker(baseDir: str, nickname: str, domain: str,
         getDisplayName(baseDir, postJsonObject['actor'], personCache)
     if not speakerName:
         return
+    speakerName = removeEmojiFromText(speakerName)
     gender = getGenderFromBio(baseDir, postJsonObject['actor'],
                               personCache, translate)
     if announcingActor:
