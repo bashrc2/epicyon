@@ -189,7 +189,7 @@ def _addSSMLemphasis(sayText: str) -> str:
 def _removeEmojiFromText(sayText: str) -> str:
     """Removes :emoji: from the given text
     """
-    if '*' not in sayText:
+    if ':' not in sayText:
         return sayText
     text = sayText
     for ch in speakerRemoveChars:
