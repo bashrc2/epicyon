@@ -248,7 +248,7 @@ def getSpeakerFromServer(baseDir: str, session,
 
 def _speakerEndpointJson(displayName: str, summary: str,
                          content: str, imageDescription: str,
-                         links: [], gender: str) -> {}:
+                         links: [], gender: str, postId: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -256,11 +256,27 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "summary": summary,
         "say": content,
         "imageDescription": imageDescription,
-        "detectedLinks": links
+        "detectedLinks": links,
+        "id": postId
     }
     if gender:
         speakerJson['gender'] = gender
     return speakerJson
+
+
+def _SSMLheader(systemLanguage: str, instanceTitle: str) -> str:
+    """Returns a header for an SSML document
+    """
+    return '<?xml version="1.0"?>\n' + \
+        '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
+        '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
+        '       xsi:schemaLocation="http://www.w3.org/2001/10/synthesis\n' + \
+        '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
+        '       version="1.1">\n' + \
+        '  <metadata>\n' + \
+        '    <dc:title xml:lang="' + systemLanguage + '">' + \
+        instanceTitle + ' inbox</dc:title>\n' + \
+        '  </metadata>\n'
 
 
 def _speakerEndpointSSML(displayName: str, summary: str,
@@ -289,16 +305,7 @@ def _speakerEndpointSSML(displayName: str, summary: str,
 
     content = _addSSMLemphasis(content)
     voiceParams = 'name="' + displayName + '" gender="' + gender + '"'
-    return '<?xml version="1.0"?>\n' + \
-        '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
-        '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
-        '       xsi:schemaLocation="http://www.w3.org/2001/10/synthesis\n' + \
-        '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
-        '       version="1.1">\n' + \
-        '  <metadata>\n' + \
-        '    <dc:title xml:lang="' + langShort + '">' + \
-        instanceTitle + ' inbox</dc:title>\n' + \
-        '  </metadata>\n' + \
+    return _SSMLheader(langShort, instanceTitle) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
         '      <voice ' + voiceParams + '>\n' + \
@@ -338,11 +345,13 @@ def getSSMLbox(baseDir: str, path: str,
                                 instanceTitle, gender)
 
 
-def updateSpeaker(baseDir: str, nickname: str, domain: str,
-                  postJsonObject: {}, personCache: {},
-                  translate: {}, announcingActor: str) -> None:
-    """ Generates a json file which can be used for TTS announcement
-    of incoming inbox posts
+def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: {}, personCache: {},
+                       translate: {}, announcingActor: str) -> {}:
+    """Converts an ActivityPub post into some Json containing
+    speech synthesis parameters.
+    NOTE: There currently appears to be no standardized json
+    format for speech synthesis
     """
     if not postJsonObject.get('object'):
         return
@@ -352,8 +361,6 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
         return
     if not isinstance(postJsonObject['object']['content'], str):
         return
-    speakerFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     detectedLinks = []
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
@@ -397,7 +404,24 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
             announcedHandle = announcedNickname + '@' + announcedDomain
             content = \
                 translate['announces'] + ' ' + announcedHandle + '. ' + content
-    speakerJson = _speakerEndpointJson(speakerName, summary,
-                                       content, imageDescription,
-                                       detectedLinks, gender)
+    postId = None
+    if postJsonObject['object'].get('id'):
+        postId = postJsonObject['object']['id']
+    return _speakerEndpointJson(speakerName, summary,
+                                content, imageDescription,
+                                detectedLinks, gender, postId)
+
+
+def updateSpeaker(baseDir: str, nickname: str, domain: str,
+                  postJsonObject: {}, personCache: {},
+                  translate: {}, announcingActor: str) -> None:
+    """ Generates a json file which can be used for TTS announcement
+    of incoming inbox posts
+    """
+    speakerJson = \
+        _postToSpeakerJson(baseDir, nickname, domain,
+                           postJsonObject, personCache,
+                           translate, announcingActor)
+    speakerFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     saveJson(speakerJson, speakerFilename)

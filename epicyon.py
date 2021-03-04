@@ -10,6 +10,7 @@ import os
 import html
 import shutil
 import sys
+from select import select
 import time
 import argparse
 from person import createPerson
@@ -2009,7 +2010,11 @@ if args.speaker:
                         os.system(speakerCmd)
 
                 prevSay = speakerJson['say']
-        time.sleep(30)
+
+        # wait for a while, or until a key is pressed
+        rlist, wlist, xlist = select([sys.stdin], [], [], 30)
+        if rlist:
+            print("Key pressed..." + str(rlist))
     sys.exit()
 
 if federationList:
