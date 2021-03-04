@@ -338,11 +338,13 @@ def getSSMLbox(baseDir: str, path: str,
                                 instanceTitle, gender)
 
 
-def updateSpeaker(baseDir: str, nickname: str, domain: str,
-                  postJsonObject: {}, personCache: {},
-                  translate: {}, announcingActor: str) -> None:
-    """ Generates a json file which can be used for TTS announcement
-    of incoming inbox posts
+def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: {}, personCache: {},
+                       translate: {}, announcingActor: str) -> {}:
+    """Converts an ActivityPub post into some Json containing
+    speech synthesis parameters.
+    NOTE: There currently appears to be no standardized json
+    format for speech synthesis
     """
     if not postJsonObject.get('object'):
         return
@@ -352,8 +354,6 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
         return
     if not isinstance(postJsonObject['object']['content'], str):
         return
-    speakerFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     detectedLinks = []
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
@@ -397,7 +397,21 @@ def updateSpeaker(baseDir: str, nickname: str, domain: str,
             announcedHandle = announcedNickname + '@' + announcedDomain
             content = \
                 translate['announces'] + ' ' + announcedHandle + '. ' + content
-    speakerJson = _speakerEndpointJson(speakerName, summary,
-                                       content, imageDescription,
-                                       detectedLinks, gender)
+    return _speakerEndpointJson(speakerName, summary,
+                                content, imageDescription,
+                                detectedLinks, gender)
+
+
+def updateSpeaker(baseDir: str, nickname: str, domain: str,
+                  postJsonObject: {}, personCache: {},
+                  translate: {}, announcingActor: str) -> None:
+    """ Generates a json file which can be used for TTS announcement
+    of incoming inbox posts
+    """
+    speakerJson = \
+        _postToSpeakerJson(baseDir, nickname, domain,
+                           postJsonObject, personCache,
+                           translate, announcingActor)
+    speakerFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     saveJson(speakerJson, speakerFilename)
