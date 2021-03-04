@@ -7,10 +7,8 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-import html
 import shutil
 import sys
-from select import select
 import time
 import argparse
 from person import createPerson
@@ -78,10 +76,7 @@ from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
-from speaker import getSpeakerFromServer
-from speaker import getSpeakerPitch
-from speaker import getSpeakerRate
-from speaker import getSpeakerRange
+from speaker_client import runSpeakerClient
 
 
 def str2bool(v) -> bool:
@@ -1930,91 +1925,10 @@ if args.speaker:
     elif args.gnunet:
         proxyType = 'gnunet'
 
-    if args.screenreader == 'espeak':
-        print('Setting up espeak')
-        from espeak import espeak
-
-    print('Running speaker for ' + nickname + '@' + domain)
-
-    prevSay = ''
-    while (1):
-        session = createSession(proxyType)
-        speakerJson = \
-            getSpeakerFromServer(baseDir, session, nickname, args.password,
-                                 domain, port, httpPrefix, True, __version__)
-        if speakerJson:
-            if speakerJson['say'] != prevSay:
-                if speakerJson.get('name'):
-                    nameStr = speakerJson['name']
-                    gender = 'They/Them'
-                    if speakerJson.get('gender'):
-                        gender = speakerJson['gender']
-
-                    # get the speech parameters
-                    pitch = getSpeakerPitch(nameStr, args.screenreader, gender)
-                    rate = getSpeakerRate(nameStr, args.screenreader)
-                    srange = getSpeakerRange(nameStr)
-
-                    # say the speaker's name
-                    if args.screenreader == 'espeak':
-                        espeak.set_parameter(espeak.Parameter.Pitch, pitch)
-                        espeak.set_parameter(espeak.Parameter.Rate, rate)
-                        espeak.set_parameter(espeak.Parameter.Range, srange)
-                        espeak.synth(html.unescape(nameStr))
-                    elif args.screenreader == 'picospeaker':
-                        speakerLang = 'en-GB'
-                        if args.language:
-                            if args.language.startswith('fr'):
-                                speakerLang = 'fr-FR'
-                            elif args.language.startswith('es'):
-                                speakerLang = 'es-ES'
-                            elif args.language.startswith('de'):
-                                speakerLang = 'de-DE'
-                            elif args.language.startswith('it'):
-                                speakerLang = 'it-IT'
-                        speakerCmd = 'picospeaker ' + \
-                            '-l ' + speakerLang + \
-                            ' -r ' + str(rate) + \
-                            ' -p ' + str(pitch) + ' "' + \
-                            html.unescape(nameStr) + '"'
-                        if args.debug:
-                            print(speakerCmd)
-                        os.system(speakerCmd)
-                    time.sleep(2)
-
-                    # append image description if needed
-                    if not speakerJson.get('imageDescription'):
-                        sayStr = speakerJson['say']
-                        # echo spoken text to the screen
-                        print(html.unescape(nameStr) + ': ' +
-                              html.unescape(speakerJson['say']) + '\n')
-                    else:
-                        sayStr = speakerJson['say'] + '. ' + \
-                            speakerJson['imageDescription']
-                        # echo spoken text to the screen
-                        print(html.unescape(nameStr) + ': ' +
-                              html.unescape(speakerJson['say']) + '\n' +
-                              html.unescape(speakerJson['imageDescription']))
-
-                    # speak the post content
-                    if args.screenreader == 'espeak':
-                        espeak.synth(html.unescape(sayStr))
-                    elif args.screenreader == 'picospeaker':
-                        speakerCmd = 'picospeaker ' + \
-                            '-l ' + speakerLang + \
-                            ' -r ' + str(rate) + \
-                            ' -p ' + str(pitch) + ' "' + \
-                            html.unescape(sayStr) + '"'
-                        if args.debug:
-                            print(speakerCmd)
-                        os.system(speakerCmd)
-
-                prevSay = speakerJson['say']
-
-        # wait for a while, or until a key is pressed
-        rlist, wlist, xlist = select([sys.stdin], [], [], 30)
-        if rlist:
-            break
+    runSpeakerClient(baseDir, session, proxyType, httpPrefix,
+                     nickname, domain, port, args.password,
+                     args.screenreader, args.language,
+                     args.debug)
     sys.exit()
 
 if federationList:
