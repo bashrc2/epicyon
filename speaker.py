@@ -109,6 +109,7 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             ":-(": '. ' + translate["sad face"],
             ";-)": '. ' + translate["wink"],
             "?": "? ",
+            '"': "'",
             "*": "",
             "(": ",",
             ")": ","
