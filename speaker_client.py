@@ -32,7 +32,7 @@ def _waitForKeypress(timeout: int, debug: bool) -> str:
         if debug:
             print('Keypress Timeout')
         return None
-    print('You typed ' + keyPress)
+    return keyPress
 
 
 def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
