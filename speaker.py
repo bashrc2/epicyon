@@ -248,7 +248,7 @@ def getSpeakerFromServer(baseDir: str, session,
 
 def _speakerEndpointJson(displayName: str, summary: str,
                          content: str, imageDescription: str,
-                         links: [], gender: str) -> {}:
+                         links: [], gender: str, postId: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -256,7 +256,8 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "summary": summary,
         "say": content,
         "imageDescription": imageDescription,
-        "detectedLinks": links
+        "detectedLinks": links,
+        "id": postId
     }
     if gender:
         speakerJson['gender'] = gender
@@ -403,9 +404,12 @@ def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
             announcedHandle = announcedNickname + '@' + announcedDomain
             content = \
                 translate['announces'] + ' ' + announcedHandle + '. ' + content
+    postId = None
+    if postJsonObject['object'].get('id'):
+        postId = postJsonObject['object']['id']
     return _speakerEndpointJson(speakerName, summary,
                                 content, imageDescription,
-                                detectedLinks, gender)
+                                detectedLinks, gender, postId)
 
 
 def updateSpeaker(baseDir: str, nickname: str, domain: str,
