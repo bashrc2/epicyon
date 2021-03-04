@@ -375,7 +375,10 @@ def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
     content = removeHtml(htmlReplaceQuoteMarks(content))
     content = speakerReplaceLinks(content, translate, detectedLinks)
     content = _speakerPronounce(baseDir, content, translate)
-    content = content.replace('  ', ' ').replace(' . ', '. ')
+    # replace all double spaces
+    while '  ' in content:
+        content = content.replace('  ', ' ')
+    content = content.replace(' . ', '. ')
 
     imageDescription = ''
     if postJsonObject['object'].get('attachment'):
