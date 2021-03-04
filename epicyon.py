@@ -1925,7 +1925,7 @@ if args.speaker:
     elif args.gnunet:
         proxyType = 'gnunet'
 
-    runSpeakerClient(baseDir, session, proxyType, httpPrefix,
+    runSpeakerClient(baseDir, proxyType, httpPrefix,
                      nickname, domain, port, args.password,
                      args.screenreader, args.language,
                      args.debug)
