@@ -132,5 +132,9 @@ def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
                 prevSay = speakerJson['say']
 
         # wait for a while, or until a key is pressed
-        if _waitForKeypress(30, debug):
-            break
+        keyPress = _waitForKeypress(30, debug)
+        if keyPress:
+            if keyPress.startswith('/'):
+                keyPress = keyPress[1:]
+            if keyPress == 'q' or keyPress == 'quit' or keyPress == 'exit':
+                break
