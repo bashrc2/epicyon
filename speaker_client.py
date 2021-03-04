@@ -31,6 +31,7 @@ def _waitForKeypress(timeout: int, debug: bool) -> str:
     except (IOError, EOFError):
         if debug:
             print('Keypress Timeout')
+        print('Timeout')
         return None
     return keyPress
 
@@ -132,5 +133,5 @@ def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
                 prevSay = speakerJson['say']
 
         # wait for a while, or until a key is pressed
-        if _waitForKeypress(30, debug):
+        if _waitForKeypress(10, debug):
             break
