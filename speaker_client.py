@@ -111,4 +111,6 @@ def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
         # wait for a while, or until a key is pressed
         rlist, wlist, xlist = select([sys.stdin], [], [], 30)
         if rlist:
+            print('wlist: ' + str(wlist))
+            print('xlist: ' + str(xlist))
             break
