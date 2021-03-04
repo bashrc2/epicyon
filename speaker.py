@@ -263,6 +263,21 @@ def _speakerEndpointJson(displayName: str, summary: str,
     return speakerJson
 
 
+def _SSMLheader(systemLanguage: str, instanceTitle: str) -> str:
+    """Returns a header for an SSML document
+    """
+    return '<?xml version="1.0"?>\n' + \
+        '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
+        '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
+        '       xsi:schemaLocation="http://www.w3.org/2001/10/synthesis\n' + \
+        '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
+        '       version="1.1">\n' + \
+        '  <metadata>\n' + \
+        '    <dc:title xml:lang="' + systemLanguage + '">' + \
+        instanceTitle + ' inbox</dc:title>\n' + \
+        '  </metadata>\n'
+
+
 def _speakerEndpointSSML(displayName: str, summary: str,
                          content: str, imageDescription: str,
                          links: [], language: str,
@@ -289,16 +304,7 @@ def _speakerEndpointSSML(displayName: str, summary: str,
 
     content = _addSSMLemphasis(content)
     voiceParams = 'name="' + displayName + '" gender="' + gender + '"'
-    return '<?xml version="1.0"?>\n' + \
-        '<speak xmlns="http://www.w3.org/2001/10/synthesis"\n' + \
-        '       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n' + \
-        '       xsi:schemaLocation="http://www.w3.org/2001/10/synthesis\n' + \
-        '         http://www.w3.org/TR/speech-synthesis11/synthesis.xsd"\n' + \
-        '       version="1.1">\n' + \
-        '  <metadata>\n' + \
-        '    <dc:title xml:lang="' + langShort + '">' + \
-        instanceTitle + ' inbox</dc:title>\n' + \
-        '  </metadata>\n' + \
+    return _SSMLheader(langShort, instanceTitle) + \
         '  <p>\n' + \
         '    <s xml:lang="' + language + '">\n' + \
         '      <voice ' + voiceParams + '>\n' + \
