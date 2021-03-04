@@ -8,14 +8,31 @@ __status__ = "Production"
 
 import os
 import html
-import sys
 import time
-from select import select
 from session import createSession
 from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
 from speaker import getSpeakerRate
 from speaker import getSpeakerRange
+import signal
+
+
+def _waitForKeypress(timeout: int, debug: bool) -> str:
+    """Waits for a keypress with a timeout
+    Returns the key pressed, or None on timeout
+    """
+    def _nothing(sig, frame): pass
+    signal.signal(signal.SIGALRM, _nothing)
+    signal.alarm(timeout)
+    keyPress = None
+    try:
+        keyPress = input()
+        signal.alarm(0)
+    except (IOError, EOFError):
+        if debug:
+            print('Keypress Timeout')
+        return None
+    print('You typed ' + keyPress)
 
 
 def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
@@ -109,8 +126,5 @@ def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
                 prevSay = speakerJson['say']
 
         # wait for a while, or until a key is pressed
-        rlist, wlist, xlist = select([sys.stdin], [], [], 30)
-        if rlist:
-            print('wlist: ' + str(wlist))
-            print('xlist: ' + str(xlist))
+        if _waitForKeypress(30, debug):
             break
