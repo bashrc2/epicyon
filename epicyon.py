@@ -2014,7 +2014,7 @@ if args.speaker:
         # wait for a while, or until a key is pressed
         rlist, wlist, xlist = select([sys.stdin], [], [], 30)
         if rlist:
-            print("Key pressed..." + str(rlist))
+            break
     sys.exit()
 
 if federationList:
