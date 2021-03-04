@@ -35,6 +35,37 @@ def _waitForKeypress(timeout: int, debug: bool) -> str:
     return keyPress
 
 
+def _speakerEspeak(espeak, pitch: int, rate: int, srange: int,
+                   sayText: str) -> None:
+    """Speaks the given text with espeak
+    """
+    espeak.set_parameter(espeak.Parameter.Pitch, pitch)
+    espeak.set_parameter(espeak.Parameter.Rate, rate)
+    espeak.set_parameter(espeak.Parameter.Range, srange)
+    espeak.synth(html.unescape(sayText))
+
+
+def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
+                        sayText: str) -> None:
+    speakerLang = 'en-GB'
+    if systemLanguage:
+        if systemLanguage.startswith('fr'):
+            speakerLang = 'fr-FR'
+        elif systemLanguage.startswith('es'):
+            speakerLang = 'es-ES'
+        elif systemLanguage.startswith('de'):
+            speakerLang = 'de-DE'
+        elif systemLanguage.startswith('it'):
+            speakerLang = 'it-IT'
+    speakerCmd = 'picospeaker ' + \
+        '-l ' + speakerLang + \
+        ' -r ' + str(rate) + \
+        ' -p ' + str(pitch) + ' "' + \
+        html.unescape(sayText) + '"'
+    # print(speakerCmd)
+    os.system(speakerCmd)
+
+
 def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
                      nickname: str, domain: str, port: int, password: str,
                      screenreader: str, systemLanguage: str,
@@ -71,29 +102,10 @@ def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
 
                     # say the speaker's name
                     if screenreader == 'espeak':
-                        espeak.set_parameter(espeak.Parameter.Pitch, pitch)
-                        espeak.set_parameter(espeak.Parameter.Rate, rate)
-                        espeak.set_parameter(espeak.Parameter.Range, srange)
-                        espeak.synth(html.unescape(nameStr))
+                        _speakerEspeak(espeak, pitch, rate, srange, nameStr)
                     elif screenreader == 'picospeaker':
-                        speakerLang = 'en-GB'
-                        if systemLanguage:
-                            if systemLanguage.startswith('fr'):
-                                speakerLang = 'fr-FR'
-                            elif systemLanguage.startswith('es'):
-                                speakerLang = 'es-ES'
-                            elif systemLanguage.startswith('de'):
-                                speakerLang = 'de-DE'
-                            elif systemLanguage.startswith('it'):
-                                speakerLang = 'it-IT'
-                        speakerCmd = 'picospeaker ' + \
-                            '-l ' + speakerLang + \
-                            ' -r ' + str(rate) + \
-                            ' -p ' + str(pitch) + ' "' + \
-                            html.unescape(nameStr) + '"'
-                        if debug:
-                            print(speakerCmd)
-                        os.system(speakerCmd)
+                        _speakerPicospeaker(pitch, rate,
+                                            systemLanguage, nameStr)
                     time.sleep(2)
 
                     # append image description if needed
@@ -112,16 +124,10 @@ def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
 
                     # speak the post content
                     if screenreader == 'espeak':
-                        espeak.synth(html.unescape(sayStr))
+                        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
                     elif screenreader == 'picospeaker':
-                        speakerCmd = 'picospeaker ' + \
-                            '-l ' + speakerLang + \
-                            ' -r ' + str(rate) + \
-                            ' -p ' + str(pitch) + ' "' + \
-                            html.unescape(sayStr) + '"'
-                        if debug:
-                            print(speakerCmd)
-                        os.system(speakerCmd)
+                        _speakerPicospeaker(pitch, rate,
+                                            systemLanguage, sayStr)
 
                 prevSay = speakerJson['say']
 
