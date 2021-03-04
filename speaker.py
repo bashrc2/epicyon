@@ -154,7 +154,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
         if word.startswith('@') and not prevWord.endswith('RT'):
             if translate.get('mentioning'):
                 replacements[word] = \
-                    translate['mentioning'] + ' ' + word[1:] + ','
+                    translate['mentioning'] + ' ' + word[1:] + ', '
         prevWord = word
 
         domain = None
