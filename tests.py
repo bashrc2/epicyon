@@ -2998,7 +2998,8 @@ def testFunctions():
         'createServerEve',
         'E2EEremoveDevice',
         'setOrganizationScheme',
-        'fill_headers'
+        'fill_headers',
+        '_nothing'
     ]
     excludeImports = [
         'link',
