@@ -18,7 +18,7 @@ from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 
 
-def runSpeakerClient(baseDir: str, session, proxyType: str, httpPrefix: str,
+def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
                      nickname: str, domain: str, port: int, password: str,
                      screenreader: str, systemLanguage: str,
                      debug: bool) -> None:
