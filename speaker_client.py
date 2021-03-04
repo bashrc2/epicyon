@@ -25,9 +25,10 @@ def _waitForKeypress(timeout: int, debug: bool) -> str:
     i, o, e = select.select([sys.stdin], [], [], timeout)
 
     if (i):
+        text = sys.stdin.readline().strip()
         if debug:
-            print("Text entered: " + sys.stdin.readline().strip())
-        return sys.stdin.readline().strip()
+            print("Text entered: " + text)
+        return text
     else:
         if debug:
             print("Timeout")
