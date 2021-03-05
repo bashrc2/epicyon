@@ -1372,7 +1372,8 @@ def _receiveAnnounce(recentPostsCache: {},
                                       messageJson,
                                       __version__, translate,
                                       YTReplacementDomain,
-                                      allowLocalNetworkAccess)
+                                      allowLocalNetworkAccess,
+                                      recentPostsCache)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -2450,7 +2451,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
                             translate, YTReplacementDomain,
-                            allowLocalNetworkAccess):
+                            allowLocalNetworkAccess,
+                            recentPostsCache):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):

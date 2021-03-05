@@ -1289,10 +1289,12 @@ def individualPostAsHtml(allowDownloads: bool,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
                              YTReplacementDomain,
-                             allowLocalNetworkAccess)
+                             allowLocalNetworkAccess,
+                             recentPostsCache)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
-            rejectPostId(baseDir, nickname, domain, postJsonObject['id'])
+            rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
+                         recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce
 

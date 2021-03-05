@@ -2037,12 +2037,33 @@ def camelCaseSplit(text: str) -> str:
 
 
 def rejectPostId(baseDir: str, nickname: str, domain: str,
-                 postId: str) -> None:
-    """ Marks the given post as rejected
+                 postId: str, recentPostsCache: {}) -> None:
+    """ Marks the given post as rejected,
+    for example an announce which is too old
     """
     postFilename = locatePost(baseDir, nickname, domain, postId)
     if not postFilename:
         return
+
+    if recentPostsCache.get('index'):
+        # if this is a full path then remove the directories
+        indexFilename = postFilename
+        if '/' in postFilename:
+            indexFilename = postFilename.split('/')[-1]
+
+        # filename of the post without any extension or path
+        # This should also correspond to any index entry in
+        # the posts cache
+        postUrl = \
+            indexFilename.replace('\n', '').replace('\r', '')
+        postUrl = postUrl.replace('.json', '').strip()
+
+        if postUrl in recentPostsCache['index']:
+            if recentPostsCache['json'].get(postUrl):
+                del recentPostsCache['json'][postUrl]
+            if recentPostsCache['html'].get(postUrl):
+                del recentPostsCache['html'][postUrl]
+
     rejectFile = open(postFilename + '.reject', "w+")
     if rejectFile:
         rejectFile.write('\n')
