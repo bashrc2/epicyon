@@ -672,8 +672,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         # show each post in the timeline
         for item in timelineJson['orderedItems']:
             if item['type'] == 'Create' or \
-               item['type'] == 'Announce' or \
-               item['type'] == 'Update':
+               item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
                 if isPersonSnoozed(baseDir, nickname, domain, item['actor']):
                     continue
