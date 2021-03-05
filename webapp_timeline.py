@@ -695,6 +695,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                 _logTimelineTiming(enableTimingLog,
                                                    timelineStartTime,
                                                    boxName, '10')
+                        else:
+                            print('Muted post in timeline ' + boxName)
 
                 if not currTlStr:
                     _logTimelineTiming(enableTimingLog,
