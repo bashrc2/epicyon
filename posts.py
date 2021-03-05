@@ -3146,7 +3146,6 @@ def _createBoxIndexed(recentPostsCache: {},
         '/' + indexBoxName + '.index'
     postsCtr = 0
     if os.path.isfile(indexFilename):
-        maxPostCtr = itemsPerPage * pageNumber
         with open(indexFilename, 'r') as indexFile:
             postsAddedToTimeline = 0
             while postsAddedToTimeline < itemsPerPage:
@@ -3214,21 +3213,22 @@ def _createBoxIndexed(recentPostsCache: {},
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             url = recentPostsCache['json'][postUrl]
-                            _addPostStringToTimeline(url,
-                                                     boxname, postsInBox,
-                                                     boxActor)
-                            postsCtr += 1
-                            postsAddedToTimeline +=1
-                            continue
+                            if _addPostStringToTimeline(url,
+                                                        boxname, postsInBox,
+                                                        boxActor):
+                                postsCtr += 1
+                                postsAddedToTimeline += 1
+                                continue
 
                 # read the post from file
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
                 if fullPostFilename:
-                    _addPostToTimeline(fullPostFilename, boxname,
-                                       postsInBox, boxActor)
-                    postsAddedToTimeline +=1
+                    if _addPostToTimeline(fullPostFilename, boxname,
+                                          postsInBox, boxActor):
+                        postsAddedToTimeline += 1
+                        postsCtr += 1
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3236,17 +3236,16 @@ def _createBoxIndexed(recentPostsCache: {},
                             locatePost(baseDir, timelineNickname,
                                        domain, postUrl, False)
                         if fullPostFilename:
-                            _addPostToTimeline(fullPostFilename, boxname,
-                                               postsInBox, boxActor)
-                            postsAddedToTimeline +=1
+                            if _addPostToTimeline(fullPostFilename, boxname,
+                                                  postsInBox, boxActor):
+                                postsAddedToTimeline += 1
+                                postsCtr += 1
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)
                     else:
                         print('WARN: Unable to locate post ' + postUrl +
                               ' nickname ' + nickname)
-
-                postsCtr += 1
 
     # Generate first and last entries within header
     if postsCtr > 0:
