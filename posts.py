@@ -3234,7 +3234,7 @@ def _createBoxIndexed(recentPostsCache: {},
                     # has the post been rejected?
                     if os.path.isfile(fullPostFilename + '.reject'):
                         continue
-                    
+
                     if _addPostToTimeline(fullPostFilename, boxname,
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
@@ -3989,7 +3989,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             return None
         if '/statuses/' not in announcedJson['id']:
             _rejectAnnounce(announceFilename,
-                            baseDir, nickname, domain, postId)
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not hasUsersPath(announcedJson['id']):
             _rejectAnnounce(announceFilename,
