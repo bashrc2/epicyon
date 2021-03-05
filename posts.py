@@ -3148,7 +3148,8 @@ def _createBoxIndexed(recentPostsCache: {},
     if os.path.isfile(indexFilename):
         maxPostCtr = itemsPerPage * pageNumber
         with open(indexFilename, 'r') as indexFile:
-            while postsCtr < maxPostCtr:
+            postsAddedToTimeline = 0
+            while postsAddedToTimeline < itemsPerPage:
                 postFilename = indexFile.readline()
 
                 if not postFilename:
@@ -3217,6 +3218,7 @@ def _createBoxIndexed(recentPostsCache: {},
                                                      boxname, postsInBox,
                                                      boxActor)
                             postsCtr += 1
+                            postsAddedToTimeline +=1
                             continue
 
                 # read the post from file
@@ -3226,6 +3228,7 @@ def _createBoxIndexed(recentPostsCache: {},
                 if fullPostFilename:
                     _addPostToTimeline(fullPostFilename, boxname,
                                        postsInBox, boxActor)
+                    postsAddedToTimeline +=1
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3235,6 +3238,7 @@ def _createBoxIndexed(recentPostsCache: {},
                         if fullPostFilename:
                             _addPostToTimeline(fullPostFilename, boxname,
                                                postsInBox, boxActor)
+                            postsAddedToTimeline +=1
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)
