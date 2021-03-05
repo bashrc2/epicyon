@@ -1290,6 +1290,15 @@ def individualPostAsHtml(allowDownloads: bool,
                              YTReplacementDomain,
                              allowLocalNetworkAccess)
         if not postJsonAnnounce:
+            # if the announce could not be downloaded then mark it as rejected
+            announceFilename = \
+                locatePost(baseDir, nickname, domain,
+                           postJsonObject['id'])
+            if announceFilename:
+                rejectFile = open(announceFilename + '.reject', "w+")
+                if rejectFile:
+                    rejectFile.write('\n')
+                    rejectFile.close()
             return ''
         postJsonObject = postJsonAnnounce
 
