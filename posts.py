@@ -3160,10 +3160,6 @@ def _createBoxIndexed(recentPostsCache: {},
                 if not postFilename:
                     break
 
-                # has the post been rejected?
-                if os.path.isfile(postFilename + '.reject'):
-                    continue
-
                 # apply votes within this timeline
                 if newswireVotesThreshold > 0:
                     # note that the presence of an arrival file also indicates
@@ -3235,6 +3231,10 @@ def _createBoxIndexed(recentPostsCache: {},
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
                 if fullPostFilename:
+                    # has the post been rejected?
+                    if os.path.isfile(fullPostFilename + '.reject'):
+                        continue
+                    
                     if _addPostToTimeline(fullPostFilename, boxname,
                                           postsInBox, boxActor):
                         postsAddedToTimeline += 1
