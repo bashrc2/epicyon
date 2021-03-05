@@ -1206,7 +1206,7 @@ def deletePost(baseDir: str, httpPrefix: str,
         # remove any attachment
         _removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
-        extensions = ('votes', 'arrived', 'muted', '.tts')
+        extensions = ('votes', 'arrived', 'muted', 'tts', 'reject')
         for ext in extensions:
             extFilename = postFilename + '.' + ext
             if os.path.isfile(extFilename):

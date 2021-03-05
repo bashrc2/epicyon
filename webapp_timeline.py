@@ -731,7 +731,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     itemCtr += 1
                     tlStr += textModeSeparator + currTlStr
                     if separatorStr:
-                        tlStr += separatorStr                    
+                        tlStr += separatorStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 

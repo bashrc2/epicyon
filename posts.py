@@ -3157,6 +3157,10 @@ def _createBoxIndexed(recentPostsCache: {},
                 if not postFilename:
                     break
 
+                # has the post been rejected?
+                if os.path.isfile(postFilename + '.reject'):
+                    continue
+
                 # apply votes within this timeline
                 if newswireVotesThreshold > 0:
                     # note that the presence of an arrival file also indicates
@@ -3875,9 +3879,21 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
                                     repliesJson['orderedItems'].append(pjo)
 
 
-def _rejectAnnounce(announceFilename: str):
+def _rejectAnnounce(announceFilename: str,
+                    baseDir: str, nickname: str, domain: str,
+                    announcePostId: str):
     """Marks an announce as rejected
     """
+    # reject the announce activity
+    announcePostFilename = \
+        locatePost(baseDir, nickname, domain, announcePostId)
+    if announcePostFilename:
+        rejectAnnounceFile = open(announcePostFilename + '.reject', "w+")
+        if rejectAnnounceFile:
+            rejectAnnounceFile.write('\n')
+            rejectAnnounceFile.close()
+
+    # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
         rejectAnnounceFile = open(announceFilename + '.reject', "w+")
         if rejectAnnounceFile:
@@ -3901,6 +3917,10 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
     announceCacheDir = baseDir + '/cache/announce/' + nickname
     if not os.path.isdir(announceCacheDir):
         os.mkdir(announceCacheDir)
+
+    postId = None
+    if postJsonObject.get('id'):
+        postId = postJsonObject['id']
     announceFilename = \
         announceCacheDir + '/' + \
         postJsonObject['object'].replace('/', '#') + '.json'
@@ -3961,43 +3981,54 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if not isinstance(announcedJson, dict):
             print('WARN: announce json is not a dict - ' +
                   postJsonObject['object'])
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if not announcedJson.get('id'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if '/statuses/' not in announcedJson['id']:
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if not hasUsersPath(announcedJson['id']):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if not announcedJson.get('type'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if not announcedJson.get('content'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if not announcedJson.get('published'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
         if not validPostDate(announcedJson['published']):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
 
         # Check the content of the announce
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
 
         if isFiltered(baseDir, nickname, domain, contentStr):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
 
         # remove any long words
@@ -4016,7 +4047,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                                     announcedJson)
         if announcedJson['type'] != 'Create':
             # Create wrap failed
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId)
             return None
 
         # labelAccusatoryPost(postJsonObject, translate)
@@ -4032,7 +4064,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             attributedDomain = getFullDomain(attributedDomain, attributedPort)
             if isBlocked(baseDir, nickname, domain,
                          attributedNickname, attributedDomain):
-                _rejectAnnounce(announceFilename)
+                _rejectAnnounce(announceFilename,
+                                baseDir, nickname, domain, postId)
                 return None
         postJsonObject = announcedJson
         replaceYouTube(postJsonObject, YTReplacementDomain)
