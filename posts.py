@@ -31,6 +31,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from utils import rejectPostId
 from utils import removeInvalidChars
 from utils import fileLastModified
 from utils import isPublicPost
@@ -3884,14 +3885,7 @@ def _rejectAnnounce(announceFilename: str,
                     announcePostId: str):
     """Marks an announce as rejected
     """
-    # reject the announce activity
-    announcePostFilename = \
-        locatePost(baseDir, nickname, domain, announcePostId)
-    if announcePostFilename:
-        rejectAnnounceFile = open(announcePostFilename + '.reject', "w+")
-        if rejectAnnounceFile:
-            rejectAnnounceFile.write('\n')
-            rejectAnnounceFile.close()
+    rejectPostId(baseDir, nickname, domain, announcePostId)
 
     # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):

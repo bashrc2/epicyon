@@ -22,6 +22,7 @@ from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import rejectPostId
 from utils import isRecentPost
 from utils import getConfigParam
 from utils import getFullDomain
@@ -1291,14 +1292,7 @@ def individualPostAsHtml(allowDownloads: bool,
                              allowLocalNetworkAccess)
         if not postJsonAnnounce:
             # if the announce could not be downloaded then mark it as rejected
-            announceFilename = \
-                locatePost(baseDir, nickname, domain,
-                           postJsonObject['id'])
-            if announceFilename:
-                rejectFile = open(announceFilename + '.reject', "w+")
-                if rejectFile:
-                    rejectFile.write('\n')
-                    rejectFile.close()
+            rejectPostId(baseDir, nickname, domain, postJsonObject['id'])
             return ''
         postJsonObject = postJsonAnnounce
 

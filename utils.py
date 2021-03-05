@@ -2034,3 +2034,16 @@ def camelCaseSplit(text: str) -> str:
     for word in matches:
         resultStr += word.group(0) + ' '
     return resultStr.strip()
+
+
+def rejectPostId(baseDir: str, nickname: str, domain: str,
+                 postId: str) -> None:
+    """ Marks the given post as rejected
+    """
+    postFilename = locatePost(baseDir, nickname, domain, postId)
+    if not postFilename:
+        return
+    rejectFile = open(postFilename + '.reject', "w+")
+    if rejectFile:
+        rejectFile.write('\n')
+        rejectFile.close()
