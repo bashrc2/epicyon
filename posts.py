@@ -3250,6 +3250,9 @@ def _createBoxIndexed(recentPostsCache: {},
                         print('WARN: Unable to locate post ' + postUrl +
                               ' nickname ' + nickname)
 
+    print('Posts added to timeline ' + boxname + ': ' +
+          str(postsAddedToTimeline))
+
     # Generate first and last entries within header
     if postsCtr > 0:
         lastPage = int(postsCtr / itemsPerPage)

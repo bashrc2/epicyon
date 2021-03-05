@@ -731,10 +731,12 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                     itemCtr += 1
                     tlStr += textModeSeparator + currTlStr
                     if separatorStr:
-                        tlStr += separatorStr
+                        tlStr += separatorStr                    
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
+    print('Items in timeline ' + boxName + ': ' + str(itemCtr))
+            
     # page down arrow
     if itemCtr > 2:
         tlStr += textModeSeparator
