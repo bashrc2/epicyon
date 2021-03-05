@@ -735,7 +735,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
 
-    print('Items in timeline ' + boxName + ': ' + str(itemCtr))
+    print('Items in timeline ' + boxName + ': ' +
+          str(itemCtr) + ' ' + str(timelineJson['orderedItems']))
             
     # page down arrow
     if itemCtr > 2:
