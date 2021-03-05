@@ -3030,9 +3030,6 @@ def _addPostStringToTimeline(postStr: str, boxname: str,
                              postsInBox: [], boxActor: str) -> bool:
     """ is this a valid timeline post?
     """
-    if '"Update"' in postStr or '"Like"' in postStr:
-        return False
-
     # must be a recognized ActivityPub type
     if ('"Note"' in postStr or
         '"EncryptedMessage"' in postStr or
