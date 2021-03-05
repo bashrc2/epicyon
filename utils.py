@@ -100,7 +100,7 @@ def hasUsersPath(pathStr: str) -> bool:
     return False
 
 
-def validPostDate(published: str, maxAgeDays=7) -> bool:
+def validPostDate(published: str, maxAgeDays=90) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
     baselineTime = datetime.datetime(1970, 1, 1)
