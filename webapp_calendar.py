@@ -135,6 +135,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
             eventDescription = None
             eventPlace = None
             postId = None
+            senderName = ''
             # get the time place and description
             for ev in eventPost:
                 if ev['type'] == 'Event':
@@ -145,21 +146,22 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                             datetime.strptime(ev['startTime'],
                                               "%Y-%m-%dT%H:%M:%S%z")
                         eventTime = eventDate.strftime("%H:%M").strip()
-                    if ev.get('name'):
+                    if ev.get('sender'):
                         # get display name from sending actor
-                        senderName = ''
-                        # if ev.get('actor'):
-                        #     actor = ev['actor']
-                        #     senderName = \
-                        #         '<a href="' + actor + '">' + \
-                        #         getDisplayName(baseDir, actor,
-                        #                        personCache) + \
-                        #         '</a>: '
+                        if ev.get('sender'):
+                            senderActor = ev['sender']
+                            senderName = \
+                                '<a href="' + actor + '">' + \
+                                getDisplayName(baseDir, senderActor,
+                                               personCache) + '</a>: '
+                    if ev.get('name'):
                         eventDescription = senderName + ev['name'].strip()
                 elif ev['type'] == 'Place':
                     if ev.get('name'):
                         eventPlace = ev['name']
 
+            if senderName and eventDescription:
+                eventDescription = senderName + eventDescription
             deleteButtonStr = ''
             if postId:
                 deleteButtonStr = \

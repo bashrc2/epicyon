@@ -233,6 +233,8 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
                             # link to the id so that the event can be
                             # easily deleted
                             tag['postId'] = postId.split('#statuses#')[1]
+                            tag['sender'] = postId.split('#statuses#')[0]
+                            tag['sender'] = tag['sender'].replace('#', '/')
                         postEvent.append(tag)
                 else:
                     # tag is a place
