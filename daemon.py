@@ -11472,7 +11472,8 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and usersInPath:
             if '/calendar' in self.path:
                 # show the calendar screen
-                msg = htmlCalendar(self.server.cssCache,
+                msg = htmlCalendar(self.server.personCache,
+                                   self.server.cssCache,
                                    self.server.translate,
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
