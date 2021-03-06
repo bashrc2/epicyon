@@ -12673,7 +12673,9 @@ class PubServer(BaseHTTPRequestHandler):
                               postImageFilename)
                 else:
                     if os.path.isfile(filename):
-                        os.rename(filename, filename.replace('.temp', ''))
+                        newFilename = filename.replace('.temp', '')
+                        os.rename(filename, newFilename)
+                        filename = newFilename
 
             fields = \
                 extractTextFieldsInPOST(postBytes, boundary,
