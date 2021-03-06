@@ -158,13 +158,15 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                                     '<a href="' + senderActor + '">' + \
                                     dispName + '</a>: '
                     if ev.get('name'):
-                        eventDescription = senderName + ev['name'].strip()
+                        eventDescription =  ev['name'].strip()
                 elif ev['type'] == 'Place':
                     if ev.get('name'):
                         eventPlace = ev['name']
 
+            # prepend a link to the sender of the calendar item
             if senderName and eventDescription:
                 eventDescription = senderName + eventDescription
+
             deleteButtonStr = ''
             if postId:
                 deleteButtonStr = \
