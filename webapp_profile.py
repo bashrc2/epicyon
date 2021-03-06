@@ -1296,6 +1296,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     translate['Broch mode'] + '<br>\n'
             # Instance type
             instanceStr += \
+                '  <label class="labels">' + \
+                translate['Type of instance'] + '</label><br>\n'
+            instanceStr += \
                 '      <input type="checkbox" class="profilecheckbox" ' + \
                 'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
                 translate['This is a media instance'] + '<br>\n'
