@@ -1217,10 +1217,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
 
-    moderatorsStr = ''
     themesDropdown = ''
     instanceStr = ''
-    editorsStr = ''
+    roleAssignStr = ''
     peertubeStr = ''
 
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -1352,40 +1351,39 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                        '<option value="' + themeName +
                                        '" selected>')
 
-            # moderators section
+            # Role assignments section
             moderators = ''
             moderatorsFile = baseDir + '/accounts/moderators.txt'
             if os.path.isfile(moderatorsFile):
                 with open(moderatorsFile, "r") as f:
                     moderators = f.read()
-            moderatorsStr = '<div class="container">'
-            moderatorsStr += '  <b><label class="labels">' + \
+            # site moderators
+            roleAssignStr = '<div class="container">'
+            roleAssignStr += '  <b><label class="labels">' + \
                 translate['Moderators'] + '</label></b><br>\n'
-            moderatorsStr += '  ' + \
+            roleAssignStr += '  ' + \
                 translate['A list of moderator nicknames. One per line.']
-            moderatorsStr += \
+            roleAssignStr += \
                 '  <textarea id="message" name="moderators" placeholder="' + \
                 translate['List of moderator nicknames'] + \
                 '..." style="height:200px" spellcheck="false">' + \
                 moderators + '</textarea>'
-            moderatorsStr += '    </div>\n'
 
-            # site editors section
+            # site editors
             editors = ''
             editorsFile = baseDir + '/accounts/editors.txt'
             if os.path.isfile(editorsFile):
                 with open(editorsFile, "r") as f:
                     editors = f.read()
-            editorsStr = '<div class="container">'
-            editorsStr += '  <b><label class="labels">' + \
+            roleAssignStr += '  <b><label class="labels">' + \
                 translate['Site Editors'] + '</label></b><br>\n'
-            editorsStr += '  ' + \
+            roleAssignStr += '  ' + \
                 translate['A list of editor nicknames. One per line.']
-            editorsStr += \
+            roleAssignStr += \
                 '  <textarea id="message" name="editors" placeholder="" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 editors + '</textarea>'
-            editorsStr += '    </div>\n'
+            roleAssignStr += '    </div>\n'
 
             # Video section
             peertubeStr = '    <div class="container">\n'
@@ -1737,8 +1735,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += skillsStr
-    editProfileForm += themesDropdown + moderatorsStr
-    editProfileForm += editorsStr + peertubeStr + instanceStr
+    editProfileForm += themesDropdown + roleAssignStr
+    editProfileForm += peertubeStr + instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
