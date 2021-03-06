@@ -1757,7 +1757,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     # danger zone section
     editProfileForm += '    <details><summary class="cw">' + \
-                translate['Danger Zone'] + '</summary>\n'    
+        translate['Danger Zone'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'

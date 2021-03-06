@@ -10,6 +10,7 @@ import os
 from datetime import datetime
 from datetime import date
 from shutil import copyfile
+from utils import getDisplayName
 from utils import getConfigParam
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -94,7 +95,7 @@ def htmlCalendarDeleteConfirm(cssCache: {}, translate: {}, baseDir: str,
     return deletePostStr
 
 
-def _htmlCalendarDay(cssCache: {}, translate: {},
+def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                      baseDir: str, path: str,
                      year: int, monthNumber: int, dayNumber: int,
                      nickname: str, domain: str, dayEvents: [],
@@ -134,6 +135,8 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
             eventDescription = None
             eventPlace = None
             postId = None
+            senderName = ''
+            senderActor = None
             # get the time place and description
             for ev in eventPost:
                 if ev['type'] == 'Event':
@@ -144,11 +147,34 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
                             datetime.strptime(ev['startTime'],
                                               "%Y-%m-%dT%H:%M:%S%z")
                         eventTime = eventDate.strftime("%H:%M").strip()
+                    if ev.get('sender'):
+                        # get display name from sending actor
+                        if ev.get('sender'):
+                            senderActor = ev['sender']
+                            dispName = \
+                                getDisplayName(baseDir, senderActor,
+                                               personCache)
+                            if dispName:
+                                senderName = \
+                                    '<a href="' + senderActor + '">' + \
+                                    dispName + '</a>: '
                     if ev.get('name'):
                         eventDescription = ev['name'].strip()
                 elif ev['type'] == 'Place':
                     if ev.get('name'):
                         eventPlace = ev['name']
+
+            # prepend a link to the sender of the calendar item
+            if senderName and eventDescription:
+                # if the sender is also mentioned within the event
+                # description then this is a reminder
+                senderActor2 = senderActor.replace('/users/', '/@')
+                if senderActor not in eventDescription and \
+                   senderActor2 not in eventDescription:
+                    eventDescription = senderName + eventDescription
+                else:
+                    eventDescription = \
+                        translate['Reminder'] + ': ' + eventDescription
 
             deleteButtonStr = ''
             if postId:
@@ -200,7 +226,7 @@ def _htmlCalendarDay(cssCache: {}, translate: {},
     return calendarStr
 
 
-def htmlCalendar(cssCache: {}, translate: {},
+def htmlCalendar(personCache: {}, cssCache: {}, translate: {},
                  baseDir: str, path: str,
                  httpPrefix: str, domainFull: str,
                  textModeBanner: str) -> str:
@@ -259,7 +285,8 @@ def htmlCalendar(cssCache: {}, translate: {},
         if events:
             if events.get(str(dayNumber)):
                 dayEvents = events[str(dayNumber)]
-        return _htmlCalendarDay(cssCache, translate, baseDir, path,
+        return _htmlCalendarDay(personCache, cssCache,
+                                translate, baseDir, path,
                                 year, monthNumber, dayNumber,
                                 nickname, domain, dayEvents,
                                 monthName, actor)
