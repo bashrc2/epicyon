@@ -973,8 +973,14 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
             os.remove(possibleOtherFormat)
 
     fd = open(filename, 'wb')
+    if not fd:
+        return None, None
     fd.write(mediaBytes[startPos:])
     fd.close()
+
+    if not os.path.isfile(filename):
+        print('WARN: Media file could not be written to file: ' + filename)
+        return None, None
 
     return filename, attachmentMediaType
 
