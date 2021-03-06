@@ -1468,7 +1468,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '</div>\n'
 
     # Contact information
-    editProfileForm = '<div class="container">'
+    editProfileForm += '<div class="container">'
     editProfileForm += '<label class="labels">' + \
         translate['Email'] + '</label><br>\n'
     editProfileForm += \
