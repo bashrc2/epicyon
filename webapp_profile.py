@@ -1211,6 +1211,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
         str(skillCtr) + '" value="50"></p>'
+    skillsStr += '</div>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -1460,6 +1461,18 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" placeholder="https://..." ' + \
         'name="donateUrl" value="' + donateUrl + '">\n'
+    editProfileForm += '<label class="labels">Blog</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="blogAddress" value="' + \
+        blogAddress + '">\n'
+    editProfileForm += '</div>\n'
+
+    # Contact information
+    editProfileForm = '<div class="container">'
+    editProfileForm += '<label class="labels">' + \
+        translate['Email'] + '</label><br>\n'
+    editProfileForm += \
+        '      <input type="text" name="email" value="' + emailAddress + '">\n'
     editProfileForm += \
         '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
     editProfileForm += \
@@ -1476,11 +1489,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="text" name="ssbAddress" value="' + \
         ssbAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Blog</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">\n'
-
     editProfileForm += '<label class="labels">Tox</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
@@ -1496,10 +1504,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="text" name="jamiAddress" value="' + \
         jamiAddress + '">\n'
 
-    editProfileForm += '<label class="labels">' + \
-        translate['Email'] + '</label><br>\n'
-    editProfileForm += \
-        '      <input type="text" name="email" value="' + emailAddress + '">\n'
     editProfileForm += \
         '<label class="labels">' + \
         translate['PGP Fingerprint'] + '</label><br>\n'
@@ -1618,7 +1622,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="hideLikeButton" ' + hideLikeButton + '> ' + \
         translate["Don't show the Like button"] + '<br>\n'
+    editProfileForm += '    </div>\n'
 
+    # Content controls
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <br><b><label class="labels">' + \
         translate['Filtered words'] + '</label></b>\n'
@@ -1711,9 +1718,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'teams with an appropriate combination of skills.'
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
-    editProfileForm += skillsStr + themesDropdown
-    editProfileForm += moderatorsStr + editorsStr + peertubeStr
-    editProfileForm += '    </div>\n' + instanceStr
+    editProfileForm += skillsStr
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += themesDropdown + moderatorsStr
+    editProfileForm += editorsStr + peertubeStr
+    editProfileForm += '    </div>\n'
+    editProfileForm += instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
