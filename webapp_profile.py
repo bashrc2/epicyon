@@ -1276,8 +1276,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
             # Themes section
             themes = getThemesList(baseDir)
-            themesDropdown += '  <br><b><label class="labels">' + \
-                translate['Theme'] + '</label></b><br>\n'
+            themesDropdown += '  <br><label class="labels">' + \
+                translate['Theme'] + '</label><br>\n'
             grayscaleFilename = \
                 baseDir + '/accounts/.grayscale'
             grayscale = ''
