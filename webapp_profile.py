@@ -1754,6 +1754,10 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         translate[idx] + '</label>\n'
     editProfileForm += skillsStr
     editProfileForm += roleAssignStr + peertubeStr + instanceStr
+
+    # danger zone section
+    editProfileForm += '    <details><summary class="cw">' + \
+                translate['Danger Zone'] + '</summary>\n'    
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
@@ -1761,7 +1765,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="checkbox" class=dangercheckbox" ' + \
         'name="deactivateThisAccount"> ' + \
         translate['Deactivate this account'] + '<br>\n'
-    editProfileForm += '    </div>\n'
+    editProfileForm += '    </div></details>\n'
     editProfileForm += '  </div>\n'
     editProfileForm += '</form>\n'
     editProfileForm += htmlFooter()
