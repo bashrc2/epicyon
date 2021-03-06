@@ -1643,7 +1643,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     # Content controls
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
-        '      <br><b><label class="labels">' + \
+        '      <b><label class="labels">' + \
         translate['Filtered words'] + '</label></b>\n'
     editProfileForm += '      <br><label class="labels">' + \
         translate['One per line'] + '</label>\n'
