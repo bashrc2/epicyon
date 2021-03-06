@@ -135,12 +135,6 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
             eventDescription = None
             eventPlace = None
             postId = None
-            # get display name from sending actor
-            senderName = ''
-            if eventPost.get('actor'):
-                actor = eventPost['actor']
-                senderName = '<a href="' + actor + '">' + \
-                    getDisplayName(baseDir, actor, personCache) + '</a>: '
             # get the time place and description
             for ev in eventPost:
                 if ev['type'] == 'Event':
@@ -152,6 +146,15 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                                               "%Y-%m-%dT%H:%M:%S%z")
                         eventTime = eventDate.strftime("%H:%M").strip()
                     if ev.get('name'):
+                        # get display name from sending actor
+                        senderName = ''
+                        # if ev.get('actor'):
+                        #     actor = ev['actor']
+                        #     senderName = \
+                        #         '<a href="' + actor + '">' + \
+                        #         getDisplayName(baseDir, actor,
+                        #                        personCache) + \
+                        #         '</a>: '
                         eventDescription = senderName + ev['name'].strip()
                 elif ev['type'] == 'Place':
                     if ev.get('name'):
