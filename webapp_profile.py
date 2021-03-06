@@ -1294,6 +1294,19 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     '      <input type="checkbox" class="profilecheckbox" ' + \
                     'name="brochMode"> ' + \
                     translate['Broch mode'] + '<br>\n'
+            # Instance type
+            instanceStr += \
+                '      <input type="checkbox" class="profilecheckbox" ' + \
+                'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
+                translate['This is a media instance'] + '<br>\n'
+            instanceStr += \
+                '      <input type="checkbox" class="profilecheckbox" ' + \
+                'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
+                translate['This is a blogging instance'] + '<br>\n'
+            instanceStr += \
+                '      <input type="checkbox" class="profilecheckbox" ' + \
+                'name="newsInstance" ' + newsInstanceStr + '> ' + \
+                translate['This is a news instance'] + '<br>\n'
             instanceStr += '    </div>\n'
 
             # Themes section
@@ -1622,23 +1635,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="passwordconfirm" value="">\n'
     editProfileForm += '    </div>\n'
-
-    if path.startswith('/users/' + adminNickname + '/'):
-        # Instance type
-        editProfileForm += '    <div class="container">\n'
-        editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-            translate['This is a media instance'] + '<br>\n'
-        editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="blogsInstance" ' + blogsInstanceStr + '> ' + \
-            translate['This is a blogging instance'] + '<br>\n'
-        editProfileForm += \
-            '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="newsInstance" ' + newsInstanceStr + '> ' + \
-            translate['This is a news instance'] + '<br>\n'
-        editProfileForm += '    </div>\n'
 
     # Content controls
     editProfileForm += '    <div class="container">\n'
