@@ -166,6 +166,8 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
 
             # prepend a link to the sender of the calendar item
             if senderName and eventDescription:
+                # if the sender is also mentioned within the event
+                # description then this is a reminder
                 senderActor2 = senderActor.replace('/users/', '/@')
                 if senderActor not in eventDescription and \
                    senderActor2 not in eventDescription:
