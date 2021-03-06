@@ -31,6 +31,7 @@ from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from siteactive import siteIsActive
+from utils import rejectPostId
 from utils import removeInvalidChars
 from utils import fileLastModified
 from utils import isPublicPost
@@ -2952,7 +2953,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
-                 allowLocalNetworkAccess: bool) -> bool:
+                 allowLocalNetworkAccess: bool,
+                 recentPostsCache: {}) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2961,7 +2963,8 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              nickname, domain, postJsonObject,
                              __version__, translate,
                              YTReplacementDomain,
-                             allowLocalNetworkAccess)
+                             allowLocalNetworkAccess,
+                             recentPostsCache)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3146,9 +3149,9 @@ def _createBoxIndexed(recentPostsCache: {},
         '/' + indexBoxName + '.index'
     postsCtr = 0
     if os.path.isfile(indexFilename):
-        maxPostCtr = itemsPerPage * pageNumber
         with open(indexFilename, 'r') as indexFile:
-            while postsCtr < maxPostCtr:
+            postsAddedToTimeline = 0
+            while postsAddedToTimeline < itemsPerPage:
                 postFilename = indexFile.readline()
 
                 if not postFilename:
@@ -3213,19 +3216,26 @@ def _createBoxIndexed(recentPostsCache: {},
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             url = recentPostsCache['json'][postUrl]
-                            _addPostStringToTimeline(url,
-                                                     boxname, postsInBox,
-                                                     boxActor)
-                            postsCtr += 1
-                            continue
+                            if _addPostStringToTimeline(url,
+                                                        boxname, postsInBox,
+                                                        boxActor):
+                                postsCtr += 1
+                                postsAddedToTimeline += 1
+                                continue
 
                 # read the post from file
                 fullPostFilename = \
                     locatePost(baseDir, nickname,
                                domain, postUrl, False)
                 if fullPostFilename:
-                    _addPostToTimeline(fullPostFilename, boxname,
-                                       postsInBox, boxActor)
+                    # has the post been rejected?
+                    if os.path.isfile(fullPostFilename + '.reject'):
+                        continue
+
+                    if _addPostToTimeline(fullPostFilename, boxname,
+                                          postsInBox, boxActor):
+                        postsAddedToTimeline += 1
+                        postsCtr += 1
                 else:
                     if timelineNickname != nickname:
                         # if this is the features timeline
@@ -3233,8 +3243,10 @@ def _createBoxIndexed(recentPostsCache: {},
                             locatePost(baseDir, timelineNickname,
                                        domain, postUrl, False)
                         if fullPostFilename:
-                            _addPostToTimeline(fullPostFilename, boxname,
-                                               postsInBox, boxActor)
+                            if _addPostToTimeline(fullPostFilename, boxname,
+                                                  postsInBox, boxActor):
+                                postsAddedToTimeline += 1
+                                postsCtr += 1
                         else:
                             print('WARN: features timeline. ' +
                                   'Unable to locate post ' + postUrl)
@@ -3242,7 +3254,9 @@ def _createBoxIndexed(recentPostsCache: {},
                         print('WARN: Unable to locate post ' + postUrl +
                               ' nickname ' + nickname)
 
-                postsCtr += 1
+    if postsCtr < 3:
+        print('Posts added to json timeline ' + boxname + ': ' +
+              str(postsAddedToTimeline))
 
     # Generate first and last entries within header
     if postsCtr > 0:
@@ -3865,9 +3879,14 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
                                     repliesJson['orderedItems'].append(pjo)
 
 
-def _rejectAnnounce(announceFilename: str):
+def _rejectAnnounce(announceFilename: str,
+                    baseDir: str, nickname: str, domain: str,
+                    announcePostId: str, recentPostsCache: {}):
     """Marks an announce as rejected
     """
+    rejectPostId(baseDir, nickname, domain, announcePostId, recentPostsCache)
+
+    # reject the post referenced by the announce activity object
     if not os.path.isfile(announceFilename + '.reject'):
         rejectAnnounceFile = open(announceFilename + '.reject', "w+")
         if rejectAnnounceFile:
@@ -3879,7 +3898,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      nickname: str, domain: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {}, YTReplacementDomain: str,
-                     allowLocalNetworkAccess: bool) -> {}:
+                     allowLocalNetworkAccess: bool,
+                     recentPostsCache: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -3891,6 +3911,10 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
     announceCacheDir = baseDir + '/cache/announce/' + nickname
     if not os.path.isdir(announceCacheDir):
         os.mkdir(announceCacheDir)
+
+    postId = None
+    if postJsonObject.get('id'):
+        postId = postJsonObject['id']
     announceFilename = \
         announceCacheDir + '/' + \
         postJsonObject['object'].replace('/', '#') + '.json'
@@ -3951,43 +3975,65 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if not isinstance(announcedJson, dict):
             print('WARN: announce json is not a dict - ' +
                   postJsonObject['object'])
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not announcedJson.get('id'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if '/statuses/' not in announcedJson['id']:
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not hasUsersPath(announcedJson['id']):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not announcedJson.get('type'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if announcedJson['type'] != 'Note' and \
            announcedJson['type'] != 'Article':
             # You can only announce Note or Article types
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not announcedJson.get('content'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not announcedJson.get('published'):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
         if not validPostDate(announcedJson['published']):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
 
         # Check the content of the announce
         contentStr = announcedJson['content']
         if dangerousMarkup(contentStr, allowLocalNetworkAccess):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
 
         if isFiltered(baseDir, nickname, domain, contentStr):
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
 
         # remove any long words
@@ -4006,7 +4052,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                                     announcedJson)
         if announcedJson['type'] != 'Create':
             # Create wrap failed
-            _rejectAnnounce(announceFilename)
+            _rejectAnnounce(announceFilename,
+                            baseDir, nickname, domain, postId,
+                            recentPostsCache)
             return None
 
         # labelAccusatoryPost(postJsonObject, translate)
@@ -4022,7 +4070,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             attributedDomain = getFullDomain(attributedDomain, attributedPort)
             if isBlocked(baseDir, nickname, domain,
                          attributedNickname, attributedDomain):
-                _rejectAnnounce(announceFilename)
+                _rejectAnnounce(announceFilename,
+                                baseDir, nickname, domain, postId,
+                                recentPostsCache)
                 return None
         postJsonObject = announcedJson
         replaceYouTube(postJsonObject, YTReplacementDomain)

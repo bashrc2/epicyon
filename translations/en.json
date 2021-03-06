@@ -111,7 +111,7 @@
     "Profile for": "Profile for",
     "The files attached below should be no larger than 10MB in total uploaded at once.": "The files attached below should be no larger than 10MB in total uploaded at once.",
     "Avatar image": "Avatar image",
-    "Background image": "Background image",
+    "Background image": "Background image, which appears behind your avatar",
     "Timeline banner image": "Timeline banner image",
     "Approve follower requests": "Approve follower requests",
     "This is a bot account": "This is a bot account",
@@ -360,7 +360,7 @@
     "New account": "New account",
     "Moved to new account address": "Moved to new account address",
     "Yet another Epicyon Instance": "Yet another Epicyon Instance",
-    "Other accounts": "Other accounts",
+    "Other accounts": "Other fediverse accounts",
     "Pin this post to your profile.": "Pin this post to your profile.",
     "Administered by": "Administered by",
     "Version": "Version",
@@ -387,5 +387,14 @@
     "She/Her": "She/Her",
     "girl": "girl",
     "boy": "boy",
-    "pronoun": "pronoun"
+    "pronoun": "pronoun",
+    "Type of instance": "Type of instance",
+    "Security": "Security",
+    "Enabling broch mode": "Enabling broch mode provides a temporary fortification against attack. Only posts by already known instances will be accepted. If not turned off, it elapses after a week.",
+    "Instance Settings": "Instance Settings",
+    "Video Settings": "Video Settings",
+    "Filtering and Blocking": "Filtering and Blocking",
+    "Role Assignment": "Role Assignment",
+    "Contact Details": "Contact Details",
+    "Background Images": "Background Images"
 }

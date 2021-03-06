@@ -148,7 +148,7 @@ def _validFeedDate(pubDate: str) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
     postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
-    return validPostDate(postDate, 30)
+    return validPostDate(postDate, 90)
 
 
 def parseFeedDate(pubDate: str) -> str:

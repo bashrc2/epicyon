@@ -387,5 +387,14 @@
     "She/Her": "Sí",
     "girl": "cailín",
     "boy": "buachaill",
-    "pronoun": "forainm"
+    "pronoun": "forainm",
+    "Type of instance": "Cineál mar shampla",
+    "Security": "Slándáil",
+    "Enabling broch mode": "Soláthraíonn modh bróiste cumasaithe daingniú sealadach ar ionsaí. Ní ghlacfar ach le poist de réir cásanna a bhfuil eolas orthu cheana. Maireann sé tar éis seachtaine.",
+    "Instance Settings": "Socruithe Institiúide",
+    "Video Settings": "Socruithe Físe",
+    "Filtering and Blocking": "Scagadh agus Blocáil",
+    "Role Assignment": "Sannadh Róil",
+    "Background Images": "Íomhánna Cúlra",
+    "Contact Details": "Sonraí Teagmhála"
 }

@@ -387,5 +387,14 @@
     "She/Her": "Lei",
     "girl": "ragazza",
     "boy": "ragazzo",
-    "pronoun": "pronome"
+    "pronoun": "pronome",
+    "Type of instance": "Tipo di istanza",
+    "Security": "Sicurezza",
+    "Enabling broch mode": "L'attivazione della modalità Broch fornisce una fortificazione temporanea contro gli attacchi. Verranno accettati solo i post di istanze già note. Scade dopo una settimana.",
+    "Instance Settings": "Impostazioni istanza",
+    "Video Settings": "Impostazioni video",
+    "Filtering and Blocking": "Filtraggio e blocco",
+    "Role Assignment": "Assegnazione del ruolo",
+    "Background Images": "Immagini di sfondo",
+    "Contact Details": "Dettagli del contatto"
 }

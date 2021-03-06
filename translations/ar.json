@@ -387,5 +387,14 @@
     "She/Her": "هي",
     "girl": "فتاة",
     "boy": "صبي",
-    "pronoun": "ضمير"
+    "pronoun": "ضمير",
+    "Type of instance": "نوع المثيل",
+    "Security": "حماية",
+    "Enabling broch mode": "يوفر تمكين وضع الكتيب تحصينًا مؤقتًا ضد الهجوم. لن يتم قبول سوى المشاركات من خلال المثيلات المعروفة بالفعل. تنقضي بعد أسبوع.",
+    "Instance Settings": "إعدادات المثيل",
+    "Video Settings": "اعدادات الفيديو",
+    "Filtering and Blocking": "التصفية والحظر",
+    "Role Assignment": "تعيين الدور",
+    "Contact Details": "بيانات المتصل",
+    "Background Images": "صور الخلفية"
 }

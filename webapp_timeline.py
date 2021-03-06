@@ -672,8 +672,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
         # show each post in the timeline
         for item in timelineJson['orderedItems']:
             if item['type'] == 'Create' or \
-               item['type'] == 'Announce' or \
-               item['type'] == 'Update':
+               item['type'] == 'Announce':
                 # is the actor who sent this post snoozed?
                 if isPersonSnoozed(baseDir, nickname, domain, item['actor']):
                     continue
@@ -696,6 +695,8 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                 _logTimelineTiming(enableTimingLog,
                                                    timelineStartTime,
                                                    boxName, '10')
+                        else:
+                            print('Muted post in timeline ' + boxName)
 
                 if not currTlStr:
                     _logTimelineTiming(enableTimingLog,
@@ -733,6 +734,10 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                         tlStr += separatorStr
         if boxName == 'tlmedia':
             tlStr += '</div>\n'
+
+    if itemCtr < 3:
+        print('Items added to html timeline ' + boxName + ': ' +
+              str(itemCtr) + ' ' + str(timelineJson['orderedItems']))
 
     # page down arrow
     if itemCtr > 2:

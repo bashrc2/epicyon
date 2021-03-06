@@ -22,6 +22,7 @@ from posts import getPersonBox
 from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import rejectPostId
 from utils import isRecentPost
 from utils import getConfigParam
 from utils import getFullDomain
@@ -1288,8 +1289,12 @@ def individualPostAsHtml(allowDownloads: bool,
                              nickname, domain, postJsonObject,
                              projectVersion, translate,
                              YTReplacementDomain,
-                             allowLocalNetworkAccess)
+                             allowLocalNetworkAccess,
+                             recentPostsCache)
         if not postJsonAnnounce:
+            # if the announce could not be downloaded then mark it as rejected
+            rejectPostId(baseDir, nickname, domain, postJsonObject['id'],
+                         recentPostsCache)
             return ''
         postJsonObject = postJsonAnnounce
 

@@ -387,5 +387,14 @@
     "She/Her": "Elle",
     "girl": "fille",
     "boy": "garçon",
-    "pronoun": "pronom"
+    "pronoun": "pronom",
+    "Type of instance": "Type d'instance",
+    "Security": "Sécurité",
+    "Enabling broch mode": "L'activation du mode broch fournit une fortification temporaire contre les attaques. Seuls les messages par des instances déjà connues seront acceptés. Il s'écoule après une semaine.",
+    "Instance Settings": "Paramètres d'instance",
+    "Video Settings": "Paramètres vidéo",
+    "Filtering and Blocking": "Filtrage et blocage",
+    "Role Assignment": "Attribution de rôle",
+    "Background Images": "Images d'arrière-plan",
+    "Contact Details": "Détails du contact"
 }
