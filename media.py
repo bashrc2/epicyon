@@ -57,6 +57,7 @@ def _isMedia(imageFilename: str) -> bool:
     """Is the given file a media file?
     """
     if not os.path.isfile(_isMedia):
+        print('Media file does not exist ' + imageFilename)
         return False
     permittedMedia = getMediaExtensions()
     for m in permittedMedia:
