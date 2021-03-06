@@ -1367,7 +1367,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             # peertube instances section
             peertubeStr = '    <div class="container">\n'
             peertubeStr += \
-                '      <br><b><label class="labels">' + \
+                '      <b><label class="labels">' + \
                 translate['Peertube Instances'] + '</label></b>\n'
             idx = 'Show video previews for the following Peertube sites.'
             peertubeStr += \
