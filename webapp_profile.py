@@ -1275,7 +1275,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '  <input type="file" id="instanceLogo" name="instanceLogo"'
             instanceStr += '      accept="' + imageFormats + '">'
             instanceStr += \
-                '  <label class="labels">' + \
+                '  <br><label class="labels">' + \
                 translate['Security'] + '</label><br>\n'
             if getConfigParam(baseDir, "verifyAllSignatures"):
                 instanceStr += \
@@ -1300,7 +1300,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     translate['Broch mode'] + '<br>\n'
             # Instance type
             instanceStr += \
-                '  <label class="labels">' + \
+                '  <br><label class="labels">' + \
                 translate['Type of instance'] + '</label><br>\n'
             instanceStr += \
                 '      <input type="checkbox" class="profilecheckbox" ' + \
