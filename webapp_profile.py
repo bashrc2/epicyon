@@ -1467,6 +1467,38 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         blogAddress + '">\n'
     editProfileForm += '    </div>\n'
 
+    # Option checkboxes
+    editProfileForm += '    <div class="container">\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="approveFollowers" ' + manuallyApprovesFollowers + \
+        '> ' + translate['Approve follower requests'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" ' + \
+        'class="profilecheckbox" name="isBot" ' + \
+        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" ' + \
+        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
+        translate['This is a group account'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="followDMs" ' + followDMs + '> ' + \
+        translate['Only people I follow can send me DMs'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="removeTwitter" ' + removeTwitter + '> ' + \
+        translate['Remove Twitter posts'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="notifyLikes" ' + notifyLikes + '> ' + \
+        translate['Notify when posts are liked'] + '<br>\n'
+    editProfileForm += \
+        '      <input type="checkbox" class="profilecheckbox" ' + \
+        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
+        translate["Don't show the Like button"] + '<br>\n'
+    editProfileForm += '    </div>\n'
+
     # Contact information
     editProfileForm += '<div class="container">'
     editProfileForm += '<label class="labels">' + \
@@ -1597,38 +1629,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             'name="newsInstance" ' + newsInstanceStr + '> ' + \
             translate['This is a news instance'] + '<br>\n'
         editProfileForm += '    </div>\n'
-
-    # Option checkboxes
-    editProfileForm += '    <div class="container">\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '> ' + translate['Approve follower requests'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isBot" ' + \
-        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
-        translate['This is a group account'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="followDMs" ' + followDMs + '> ' + \
-        translate['Only people I follow can send me DMs'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="removeTwitter" ' + removeTwitter + '> ' + \
-        translate['Remove Twitter posts'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="notifyLikes" ' + notifyLikes + '> ' + \
-        translate['Notify when posts are liked'] + '<br>\n'
-    editProfileForm += \
-        '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="hideLikeButton" ' + hideLikeButton + '> ' + \
-        translate["Don't show the Like button"] + '<br>\n'
-    editProfileForm += '    </div>\n'
 
     # Content controls
     editProfileForm += '    <div class="container">\n'
