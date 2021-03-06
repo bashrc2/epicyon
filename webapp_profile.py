@@ -1273,7 +1273,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 translate['Instance Logo'] + '</label>'
             instanceStr += \
                 '  <input type="file" id="instanceLogo" name="instanceLogo"'
-            instanceStr += '      accept="' + imageFormats + '">'
+            instanceStr += '      accept="' + imageFormats + '"><br>\n'
             instanceStr += \
                 '  <br><label class="labels">' + \
                 translate['Security'] + '</label><br>\n'
