@@ -10,6 +10,7 @@ import os
 from shutil import copyfile
 from session import createSession
 from auth import createPassword
+from posts import isImageMedia
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
@@ -41,7 +42,8 @@ from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
 
 
-def postMessageToOutbox(messageJson: {}, postToNickname: str,
+def postMessageToOutbox(session, translate: {},
+                        messageJson: {}, postToNickname: str,
                         server, baseDir: str, httpPrefix: str,
                         domain: str, domainFull: str,
                         onionDomain: str, i2pDomain: str, port: int,
@@ -262,6 +264,19 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
             for boxNameIndex in indexes:
                 if not boxNameIndex:
                     continue
+
+                # should this also go to the media timeline?
+                if boxNameIndex == 'inbox':
+                    if isImageMedia(session, baseDir, httpPrefix,
+                                    postToNickname, domain,
+                                    messageJson,
+                                    translate, YTReplacementDomain,
+                                    allowLocalNetworkAccess,
+                                    recentPostsCache):
+                        inboxUpdateIndex('tlmedia', baseDir,
+                                         postToNickname + '@' + domain,
+                                         savedFilename, debug)
+
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
                 # avoid duplicates of the message if already going
