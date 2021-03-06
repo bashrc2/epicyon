@@ -1226,6 +1226,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
+            # Instance details section            
             instanceDescription = \
                 getConfigParam(baseDir, 'instanceDescription')
             instanceDescriptionShort = \
@@ -1295,37 +1296,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     translate['Broch mode'] + '<br>\n'
             instanceStr += '    </div>\n'
 
-            moderators = ''
-            moderatorsFile = baseDir + '/accounts/moderators.txt'
-            if os.path.isfile(moderatorsFile):
-                with open(moderatorsFile, "r") as f:
-                    moderators = f.read()
-            moderatorsStr = '<div class="container">'
-            moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
-            moderatorsStr += '  ' + \
-                translate['A list of moderator nicknames. One per line.']
-            moderatorsStr += \
-                '  <textarea id="message" name="moderators" placeholder="' + \
-                translate['List of moderator nicknames'] + \
-                '..." style="height:200px" spellcheck="false">' + \
-                moderators + '</textarea>'
-            moderatorsStr += '    </div>\n'
-
-            editors = ''
-            editorsFile = baseDir + '/accounts/editors.txt'
-            if os.path.isfile(editorsFile):
-                with open(editorsFile, "r") as f:
-                    editors = f.read()
-            editorsStr = '<div class="container">'
-            editorsStr += '  <b>' + translate['Site Editors'] + '</b><br>'
-            editorsStr += '  ' + \
-                translate['A list of editor nicknames. One per line.']
-            editorsStr += \
-                '  <textarea id="message" name="editors" placeholder="" ' + \
-                'style="height:200px" spellcheck="false">' + \
-                editors + '</textarea>'
-            editorsStr += '    </div>\n'
-
+            # Themes section
             themes = getThemesList(baseDir)
             themesDropdown = '<div class="container">'
             themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
@@ -1360,7 +1331,42 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                                        '<option value="' + themeName +
                                        '" selected>')
 
-            peertubeStr = \
+            # moderators section
+            moderators = ''
+            moderatorsFile = baseDir + '/accounts/moderators.txt'
+            if os.path.isfile(moderatorsFile):
+                with open(moderatorsFile, "r") as f:
+                    moderators = f.read()
+            moderatorsStr = '<div class="container">'
+            moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
+            moderatorsStr += '  ' + \
+                translate['A list of moderator nicknames. One per line.']
+            moderatorsStr += \
+                '  <textarea id="message" name="moderators" placeholder="' + \
+                translate['List of moderator nicknames'] + \
+                '..." style="height:200px" spellcheck="false">' + \
+                moderators + '</textarea>'
+            moderatorsStr += '    </div>\n'
+
+            # site editors section
+            editors = ''
+            editorsFile = baseDir + '/accounts/editors.txt'
+            if os.path.isfile(editorsFile):
+                with open(editorsFile, "r") as f:
+                    editors = f.read()
+            editorsStr = '<div class="container">'
+            editorsStr += '  <b>' + translate['Site Editors'] + '</b><br>'
+            editorsStr += '  ' + \
+                translate['A list of editor nicknames. One per line.']
+            editorsStr += \
+                '  <textarea id="message" name="editors" placeholder="" ' + \
+                'style="height:200px" spellcheck="false">' + \
+                editors + '</textarea>'
+            editorsStr += '    </div>\n'
+
+            # peertube instances section
+            peertubeStr = '    <div class="container">\n'
+            peertubeStr += \
                 '      <br><b><label class="labels">' + \
                 translate['Peertube Instances'] + '</label></b>\n'
             idx = 'Show video previews for the following Peertube sites.'
@@ -1374,6 +1380,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '      <textarea id="message" name="ptInstances" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 peertubeInstancesStr + '</textarea>\n'
+            peertubeStr += '    </div>\n'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -1725,11 +1732,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '      <label class="labels">' + \
         translate[idx] + '</label>\n'
     editProfileForm += skillsStr
-    editProfileForm += '    <div class="container">\n'
     editProfileForm += themesDropdown + moderatorsStr
-    editProfileForm += editorsStr + peertubeStr
-    editProfileForm += '    </div>\n'
-    editProfileForm += instanceStr
+    editProfileForm += editorsStr + peertubeStr + instanceStr
     editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
         translate['Danger Zone'] + '</label></b><br>\n'
