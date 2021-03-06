@@ -388,5 +388,7 @@
     "girl": "cailín",
     "boy": "buachaill",
     "pronoun": "forainm",
-    "Type of instance": "Cineál mar shampla"
+    "Type of instance": "Cineál mar shampla",
+    "Security": "Slándáil",
+    "Enabling broch mode": "Soláthraíonn modh bróiste cumasaithe daingniú sealadach ar ionsaí. Ní ghlacfar ach le poist de réir cásanna a bhfuil eolas orthu cheana. Maireann sé tar éis seachtaine."
 }

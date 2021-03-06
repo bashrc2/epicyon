@@ -1274,6 +1274,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             instanceStr += \
                 '  <input type="file" id="instanceLogo" name="instanceLogo"'
             instanceStr += '      accept="' + imageFormats + '">'
+            instanceStr += \
+                '  <label class="labels">' + \
+                translate['Security'] + '</label><br>\n'
             if getConfigParam(baseDir, "verifyAllSignatures"):
                 instanceStr += \
                     '      <input type="checkbox" class="profilecheckbox" ' + \
@@ -1284,6 +1287,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     '      <input type="checkbox" class="profilecheckbox" ' + \
                     'name="verifyallsignatures"> ' + \
                     translate['Verify all signatures'] + '<br>\n'
+            instanceStr += translate['Enabling broch mode'] + '<br>\n'
             if getConfigParam(baseDir, "brochMode"):
                 instanceStr += \
                     '      <input type="checkbox" class="profilecheckbox" ' + \
@@ -1383,7 +1387,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 editors + '</textarea>'
             editorsStr += '    </div>\n'
 
-            # peertube instances section
+            # Video section
             peertubeStr = '    <div class="container">\n'
             peertubeStr += \
                 '      <b><label class="labels">' + \

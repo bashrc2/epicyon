@@ -388,5 +388,7 @@
     "girl": "noia",
     "boy": "noi",
     "pronoun": "pronom",
-    "Type of instance": "Tipus d’instància"
+    "Type of instance": "Tipus d’instància",
+    "Security": "Seguretat",
+    "Enabling broch mode": "L'activació del mode de fulletó proporciona una fortificació temporal contra l'atac. Només s’acceptaran publicacions d’instàncies ja conegudes. Transcorre al cap d’una setmana."
 }

@@ -388,5 +388,7 @@
     "girl": "ragazza",
     "boy": "ragazzo",
     "pronoun": "pronome",
-    "Type of instance": "Tipo di istanza"
+    "Type of instance": "Tipo di istanza",
+    "Security": "Sicurezza",
+    "Enabling broch mode": "L'attivazione della modalità Broch fornisce una fortificazione temporanea contro gli attacchi. Verranno accettati solo i post di istanze già note. Scade dopo una settimana."
 }

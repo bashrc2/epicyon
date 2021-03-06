@@ -388,5 +388,7 @@
     "girl": "女孩",
     "boy": "男生",
     "pronoun": "代词",
-    "Type of instance": "实例类型"
+    "Type of instance": "实例类型",
+    "Security": "安全",
+    "Enabling broch mode": "启用broch模式可提供针对攻击的临时防御。 仅接受已知实例的帖子。 一个星期后就过去了。"
 }

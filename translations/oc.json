@@ -384,5 +384,7 @@
     "girl": "girl",
     "boy": "boy",
     "pronoun": "pronoun",
-    "Type of instance": "Type of instance"
+    "Type of instance": "Type of instance",
+    "Security": "Security",
+    "Enabling broch mode": "Enabling broch mode provides a temporary fortification against attack. Only posts by already known instances will be accepted. If not turned off, it elapses after a week."
 }
