@@ -390,5 +390,11 @@
     "pronoun": "pronom",
     "Type of instance": "Tipus d’instància",
     "Security": "Seguretat",
-    "Enabling broch mode": "L'activació del mode de fulletó proporciona una fortificació temporal contra l'atac. Només s’acceptaran publicacions d’instàncies ja conegudes. Transcorre al cap d’una setmana."
+    "Enabling broch mode": "L'activació del mode de fulletó proporciona una fortificació temporal contra l'atac. Només s’acceptaran publicacions d’instàncies ja conegudes. Transcorre al cap d’una setmana.",
+    "Instance Settings": "Configuració de la instància",
+    "Video Settings": "Configuració del vídeo",
+    "Filtering and Blocking": "Filtratge i bloqueig",
+    "Role Assignment": "Assignació de funcions",
+    "Contact Details": "Detalls de contacte",
+    "Background Images": "Imatges de fons"
 }

@@ -390,5 +390,11 @@
     "pronoun": "pronome",
     "Type of instance": "Tipo de instância",
     "Security": "Segurança",
-    "Enabling broch mode": "Habilitar o modo broch fornece uma fortificação temporária contra ataques. Somente postagens de instâncias já conhecidas serão aceitas. Decorre depois de uma semana."
+    "Enabling broch mode": "Habilitar o modo broch fornece uma fortificação temporária contra ataques. Somente postagens de instâncias já conhecidas serão aceitas. Decorre depois de uma semana.",
+    "Instance Settings": "Configurações de instância",
+    "Video Settings": "Configurações de vídeo",
+    "Filtering and Blocking": "Filtragem e Bloqueio",
+    "Role Assignment": "Atribuição de Função",
+    "Background Images": "Imagens de fundo",
+    "Contact Details": "Detalhes do contato"
 }

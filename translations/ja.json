@@ -390,5 +390,11 @@
     "pronoun": "代名詞",
     "Type of instance": "インスタンスのタイプ",
     "Security": "セキュリティ",
-    "Enabling broch mode": "ブロッホモードを有効にすると、攻撃に対する一時的な要塞が提供されます。 既知のインスタンスによる投稿のみが受け入れられます。 一週間後に経過します。"
+    "Enabling broch mode": "ブロッホモードを有効にすると、攻撃に対する一時的な要塞が提供されます。 既知のインスタンスによる投稿のみが受け入れられます。 一週間後に経過します。",
+    "Instance Settings": "インスタンス設定",
+    "Video Settings": "ビデオ設定",
+    "Filtering and Blocking": "フィルタリングとブロッキング",
+    "Role Assignment": "役割の割り当て",
+    "Background Images": "背景画像",
+    "Contact Details": "連絡先の詳細"
 }

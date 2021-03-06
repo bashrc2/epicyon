@@ -1211,7 +1211,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
         str(skillCtr) + '" value="50"></p>'
-    skillsStr += '    </div>\n'
+    skillsStr += '    </div></details>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -1232,6 +1232,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 getConfigParam(baseDir, 'instanceDescriptionShort')
             instanceTitle = \
                 getConfigParam(baseDir, 'instanceTitle')
+
+            instanceStr = '<details><summary class="cw">' + \
+                translate['Instance Settings'] + '</summary>\n'
             instanceStr += '<div class="container">'
             instanceStr += \
                 '  <label class="labels">' + \
@@ -1348,7 +1351,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '      <input type="checkbox" class="profilecheckbox" ' + \
                 'name="newsInstance" ' + newsInstanceStr + '> ' + \
                 translate['This is a news instance'] + '<br>\n'
-            instanceStr += '    </div>\n'
+            instanceStr += '    </div></details>\n'
 
             # Role assignments section
             moderators = ''
@@ -1357,7 +1360,9 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 with open(moderatorsFile, "r") as f:
                     moderators = f.read()
             # site moderators
-            roleAssignStr = '<div class="container">'
+            roleAssignStr = '<details><summary class="cw">' + \
+                translate['Role Assignment'] + '</summary>\n'
+            roleAssignStr += '<div class="container">'
             roleAssignStr += '  <b><label class="labels">' + \
                 translate['Moderators'] + '</label></b><br>\n'
             roleAssignStr += '  ' + \
@@ -1382,10 +1387,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '  <textarea id="message" name="editors" placeholder="" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 editors + '</textarea>'
-            roleAssignStr += '    </div>\n'
+            roleAssignStr += '    </div></details>\n'
 
             # Video section
-            peertubeStr = '    <div class="container">\n'
+            peertubeStr = '    <details><summary class="cw">' + \
+                translate['Video Settings'] + '</summary>\n'
+            peertubeStr += '    <div class="container">\n'
             peertubeStr += \
                 '      <b><label class="labels">' + \
                 translate['Peertube Instances'] + '</label></b>\n'
@@ -1409,7 +1416,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             peertubeStr += \
                 '      <input type="text" name="ytdomain" value="' + \
                 YTReplacementDomain + '">\n'
-            peertubeStr += '    </div>\n'
+            peertubeStr += '    </div></details>\n'
 
     instanceTitle = \
         getConfigParam(baseDir, 'instanceTitle')
@@ -1470,6 +1477,12 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px" ' + \
         'spellcheck="true">' + bioStr + '</textarea>\n'
+    editProfileForm += \
+        '      <label class="labels">' + translate['Avatar image'] + \
+        '</label>\n'
+    editProfileForm += \
+        '      <input type="file" id="avatar" name="avatar"'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     alsoKnownAsStr = ''
     if actorJson.get('alsoKnownAs'):
@@ -1536,6 +1549,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div>\n'
 
     # Contact information
+    editProfileForm += '    <details><summary class="cw">' + \
+        translate['Contact Details'] + '</summary>\n'
     editProfileForm += '<div class="container">'
     editProfileForm += '<label class="labels">' + \
         translate['Email'] + '</label><br>\n'
@@ -1588,20 +1603,16 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a><br>\n'
-    editProfileForm += '    </div>\n'
+    editProfileForm += '    </div></details>\n'
 
     # Customize images and banners
+    editProfileForm += '    <details><summary class="cw">' + \
+        translate['Background Images'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm += \
         '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
-    editProfileForm += \
-        '      <label class="labels">' + translate['Avatar image'] + \
-        '</label>\n'
-    editProfileForm += \
-        '      <input type="file" id="avatar" name="avatar"'
-    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     if not newsInstance:
         editProfileForm += \
@@ -1633,9 +1644,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         editProfileForm += 'name="right_col_image"'
         editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '    </div>\n'
+    editProfileForm += '    </div></details>\n'
 
     # Change password
+    editProfileForm += '    <details><summary class="cw">' + \
+        translate['Change Password'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '<label class="labels">' + translate['Change Password'] + \
@@ -1647,9 +1660,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="passwordconfirm" value="">\n'
-    editProfileForm += '    </div>\n'
+    editProfileForm += '    </div></details>\n'
 
     # Filtering and blocking section
+    editProfileForm += '<details><summary class="cw">' + \
+        translate['Filtering and Blocking'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <b><label class="labels">' + \
@@ -1722,7 +1737,11 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         'style="height:100px" spellcheck="false">' + \
         gitProjectsStr + '</textarea>\n'
 
-    editProfileForm += '    </div>\n'
+    editProfileForm += '    </div></details>\n'
+
+    # Skills section
+    editProfileForm += '<details><summary class="cw">' + \
+        translate['Skills'] + '</summary>\n'
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <b><label class="labels">' + \

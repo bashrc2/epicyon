@@ -390,5 +390,11 @@
     "pronoun": "pronomen",
     "Type of instance": "Art der Instanz",
     "Security": "Sicherheit",
-    "Enabling broch mode": "Das Aktivieren des Broch-Modus bietet eine vorübergehende Verstärkung gegen Angriffe. Es werden nur Beiträge von bereits bekannten Instanzen akzeptiert. Es vergeht nach einer Woche."
+    "Enabling broch mode": "Das Aktivieren des Broch-Modus bietet eine vorübergehende Verstärkung gegen Angriffe. Es werden nur Beiträge von bereits bekannten Instanzen akzeptiert. Es vergeht nach einer Woche.",
+    "Instance Settings": "Instanzeinstellungen",
+    "Video Settings": "Video-Einstellungen",
+    "Filtering and Blocking": "Filtern und Blockieren",
+    "Role Assignment": "Rollenzuweisung",
+    "Background Images": "Hintergrundbilder",
+    "Contact Details": "Kontaktdetails"
 }

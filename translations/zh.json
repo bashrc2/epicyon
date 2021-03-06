@@ -390,5 +390,11 @@
     "pronoun": "代词",
     "Type of instance": "实例类型",
     "Security": "安全",
-    "Enabling broch mode": "启用broch模式可提供针对攻击的临时防御。 仅接受已知实例的帖子。 一个星期后就过去了。"
+    "Enabling broch mode": "启用broch模式可提供针对攻击的临时防御。 仅接受已知实例的帖子。 一个星期后就过去了。",
+    "Instance Settings": "实例设定",
+    "Video Settings": "影片设定",
+    "Filtering and Blocking": "过滤和阻止",
+    "Role Assignment": "角色分配",
+    "Background Images": "背景图片",
+    "Contact Details": "联系方式"
 }

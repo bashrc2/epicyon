@@ -390,5 +390,11 @@
     "pronoun": "pronombre",
     "Type of instance": "Tipo de instancia",
     "Security": "Seguridad",
-    "Enabling broch mode": "Habilitar el modo broche proporciona una fortificación temporal contra el ataque. Solo se aceptarán publicaciones de instancias ya conocidas. Transcurre después de una semana."
+    "Enabling broch mode": "Habilitar el modo broche proporciona una fortificación temporal contra el ataque. Solo se aceptarán publicaciones de instancias ya conocidas. Transcurre después de una semana.",
+    "Instance Settings": "Configuración de instancia",
+    "Video Settings": "Ajustes de video",
+    "Filtering and Blocking": "Filtrado y bloqueo",
+    "Role Assignment": "Asignación de roles",
+    "Background Images": "Imágenes de fondo",
+    "Contact Details": "Detalles de contacto"
 }
