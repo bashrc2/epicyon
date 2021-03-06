@@ -85,7 +85,9 @@ def _updatePostSchedule(baseDir: str, handle: str, httpd,
 
             if nickname:
                 httpd.postToNickname = nickname
-            if not postMessageToOutbox(postJsonObject, nickname,
+            if not postMessageToOutbox(httpd.session,
+                                       httpd.translate,
+                                       postJsonObject, nickname,
                                        httpd, baseDir,
                                        httpd.httpPrefix,
                                        httpd.domain,

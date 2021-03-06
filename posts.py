@@ -3148,6 +3148,7 @@ def _createBoxIndexed(recentPostsCache: {},
         baseDir + '/accounts/' + timelineNickname + '@' + domain + \
         '/' + indexBoxName + '.index'
     postsCtr = 0
+    postsAddedToTimeline = 0
     if os.path.isfile(indexFilename):
         with open(indexFilename, 'r') as indexFile:
             postsAddedToTimeline = 0

@@ -1115,7 +1115,9 @@ class PubServer(BaseHTTPRequestHandler):
             print('Posting to nickname ' + postToNickname)
             self.postToNickname = postToNickname
 
-        return postMessageToOutbox(messageJson, self.postToNickname,
+        return postMessageToOutbox(self.server.session,
+                                   self.server.translate,
+                                   messageJson, self.postToNickname,
                                    self.server, self.server.baseDir,
                                    self.server.httpPrefix,
                                    self.server.domain,
