@@ -54,6 +54,10 @@ def removeMetaData(imageFilename: str, outputFilename: str) -> None:
 
 
 def _isMedia(imageFilename: str) -> bool:
+    """Is the given file a media file?
+    """
+    if not os.path.isfile(_isMedia):
+        return False
     permittedMedia = getMediaExtensions()
     for m in permittedMedia:
         if imageFilename.endswith('.' + m):
