@@ -1616,7 +1616,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
 
     if not newsInstance:
         editProfileForm += \
-            '      <br><label class="labels">' + \
+            '      <label class="labels">' + \
             translate['Background image'] + '</label>\n'
         editProfileForm += '      <input type="file" id="image" name="image"'
         editProfileForm += '            accept="' + imageFormats + '">\n'
