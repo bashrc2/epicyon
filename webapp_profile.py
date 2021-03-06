@@ -1226,7 +1226,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     adminNickname = getConfigParam(baseDir, 'admin')
     if adminNickname:
         if path.startswith('/users/' + adminNickname + '/'):
-            # Instance details section            
+            # Instance details section
             instanceDescription = \
                 getConfigParam(baseDir, 'instanceDescription')
             instanceDescriptionShort = \
@@ -1299,7 +1299,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             # Themes section
             themes = getThemesList(baseDir)
             themesDropdown = '<div class="container">'
-            themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
+            themesDropdown += '  <b><label class="labels">' + \
+                translate['Theme'] + '</label></b><br>\n'
             grayscaleFilename = \
                 baseDir + '/accounts/.grayscale'
             grayscale = ''
@@ -1338,7 +1339,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 with open(moderatorsFile, "r") as f:
                     moderators = f.read()
             moderatorsStr = '<div class="container">'
-            moderatorsStr += '  <b>' + translate['Moderators'] + '</b><br>'
+            moderatorsStr += '  <b><label class="labels">' + \
+                translate['Moderators'] + '</label></b><br>\n'
             moderatorsStr += '  ' + \
                 translate['A list of moderator nicknames. One per line.']
             moderatorsStr += \
@@ -1355,7 +1357,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 with open(editorsFile, "r") as f:
                     editors = f.read()
             editorsStr = '<div class="container">'
-            editorsStr += '  <b>' + translate['Site Editors'] + '</b><br>'
+            editorsStr += '  <b><label class="labels">' + \
+                translate['Site Editors'] + '</label></b><br>\n'
             editorsStr += '  ' + \
                 translate['A list of editor nicknames. One per line.']
             editorsStr += \
