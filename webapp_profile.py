@@ -1399,6 +1399,15 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '      <textarea id="message" name="ptInstances" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 peertubeInstancesStr + '</textarea>\n'
+            peertubeStr += \
+                '      <br><b><label class="labels">' + \
+                translate['YouTube Replacement Domain'] + '</label></b>\n'
+            YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
+            if not YTReplacementDomain:
+                YTReplacementDomain = ''
+            peertubeStr += \
+                '      <input type="text" name="ytdomain" value="' + \
+                YTReplacementDomain + '">\n'
             peertubeStr += '    </div>\n'
 
     instanceTitle = \
@@ -1639,7 +1648,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <input type="text" name="passwordconfirm" value="">\n'
     editProfileForm += '    </div>\n'
 
-    # Content controls
+    # Filtering and blocking section
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <b><label class="labels">' + \
@@ -1711,16 +1720,6 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '      <textarea id="message" name="gitProjects" ' + \
         'style="height:100px" spellcheck="false">' + \
         gitProjectsStr + '</textarea>\n'
-
-    editProfileForm += \
-        '      <br><b><label class="labels">' + \
-        translate['YouTube Replacement Domain'] + '</label></b>\n'
-    YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
-    if not YTReplacementDomain:
-        YTReplacementDomain = ''
-    editProfileForm += \
-        '      <input type="text" name="ytdomain" value="' + \
-        YTReplacementDomain + '">\n'
 
     editProfileForm += '    </div>\n'
     editProfileForm += '    <div class="container">\n'
