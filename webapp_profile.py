@@ -1598,7 +1598,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" placeholder=' + \
         '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:100px" spellcheck="false">' + \
+        'style="height:600px" spellcheck="false">' + \
         PGPpubKey + '</textarea>\n'
     editProfileForm += '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
