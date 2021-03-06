@@ -1211,7 +1211,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '<input type="range" min="1" max="100" ' + \
         'class="slider" name="skillValue' + \
         str(skillCtr) + '" value="50"></p>'
-    skillsStr += '</div>\n'
+    skillsStr += '    </div>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -1293,7 +1293,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     '      <input type="checkbox" class="profilecheckbox" ' + \
                     'name="brochMode"> ' + \
                     translate['Broch mode'] + '<br>\n'
-            instanceStr += '</div>'
+            instanceStr += '    </div>\n'
 
             moderators = ''
             moderatorsFile = baseDir + '/accounts/moderators.txt'
@@ -1309,7 +1309,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 translate['List of moderator nicknames'] + \
                 '..." style="height:200px" spellcheck="false">' + \
                 moderators + '</textarea>'
-            moderatorsStr += '</div>'
+            moderatorsStr += '    </div>\n'
 
             editors = ''
             editorsFile = baseDir + '/accounts/editors.txt'
@@ -1324,7 +1324,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '  <textarea id="message" name="editors" placeholder="" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 editors + '</textarea>'
-            editorsStr += '</div>'
+            editorsStr += '    </div>\n'
 
             themes = getThemesList(baseDir)
             themesDropdown = '<div class="container">'
@@ -1353,7 +1353,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                     '      <input type="checkbox" class="profilecheckbox" ' + \
                     'name="removeCustomFont"> ' + \
                     translate['Remove the custom font'] + '<br>'
-            themesDropdown += '</div>'
+            themesDropdown += '    </div>\n'
             themeName = getConfigParam(baseDir, 'theme')
             themesDropdown = \
                 themesDropdown.replace('<option value="' + themeName + '">',
@@ -1465,7 +1465,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="blogAddress" value="' + \
         blogAddress + '">\n'
-    editProfileForm += '</div>\n'
+    editProfileForm += '    </div>\n'
 
     # Contact information
     editProfileForm += '<div class="container">'
@@ -1521,6 +1521,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         '/followingaccounts"><label class="labels">' + \
         translate['Following'] + '</label></a><br>\n'
     editProfileForm += '    </div>\n'
+
+    # Customize images and banners
     editProfileForm += '    <div class="container">\n'
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
@@ -1564,6 +1566,8 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
         editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '    </div>\n'
+
+    # Change password
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '<label class="labels">' + translate['Change Password'] + \
@@ -1578,6 +1582,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
     editProfileForm += '    </div>\n'
 
     if path.startswith('/users/' + adminNickname + '/'):
+        # Instance type
         editProfileForm += '    <div class="container">\n'
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
@@ -1593,6 +1598,7 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
             translate['This is a news instance'] + '<br>\n'
         editProfileForm += '    </div>\n'
 
+    # Option checkboxes
     editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
