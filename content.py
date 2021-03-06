@@ -981,6 +981,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
     if not os.path.isfile(filename):
         print('WARN: Media file could not be written to file: ' + filename)
         return None, None
+    print('Uploaded media file written: ' + filename)
 
     return filename, attachmentMediaType
 
