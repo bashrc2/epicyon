@@ -151,7 +151,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                         if ev.get('sender'):
                             senderActor = ev['sender']
                             senderName = \
-                                '<a href="' + actor + '">' + \
+                                '<a href="' + senderActor + '">' + \
                                 getDisplayName(baseDir, senderActor,
                                                personCache) + '</a>: '
                     if ev.get('name'):
