@@ -87,6 +87,7 @@
     "place-color": "#0481f5",
     "event-color": "#0481f5",
     "event-background": "#00014a",
+    "event-background-private": "darkpurple",
     "quote-right-margin": "0",    
     "line-spacing": "180%",
     "*font-family": "'Montserrat-Regular'",

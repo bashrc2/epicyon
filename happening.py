@@ -10,6 +10,7 @@ import os
 from uuid import UUID
 from datetime import datetime
 
+from utils import isPublicPost
 from utils import loadJson
 from utils import saveJson
 from utils import locatePost
@@ -212,6 +213,8 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
             if not _isHappeningPost(postJsonObject):
                 continue
 
+            publicEvent = isPublicPost(postJsonObject)
+
             postEvent = []
             dayOfMonth = None
             for tag in postJsonObject['object']['tag']:
@@ -235,6 +238,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
                             tag['postId'] = postId.split('#statuses#')[1]
                             tag['sender'] = postId.split('#statuses#')[0]
                             tag['sender'] = tag['sender'].replace('#', '/')
+                            tag['public'] = publicEvent
                         postEvent.append(tag)
                 else:
                     # tag is a place

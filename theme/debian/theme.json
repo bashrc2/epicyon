@@ -82,6 +82,7 @@
     "place-color": "black",
     "event-color": "#282c37",
     "today-foreground": "white",
+    "event-background-private": "grey",
     "event-background": "lightgrey",
     "event-foreground": "white",
     "title-text": "white",

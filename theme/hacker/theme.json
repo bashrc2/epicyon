@@ -59,6 +59,7 @@
     "today-foreground": "white",
     "today-circle": "red",
     "event-background": "lightgreen",
+    "event-background-private": "darkgreen",
     "event-foreground": "black",
     "title-text": "black",
     "title-background": "darkgreen",

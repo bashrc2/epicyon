@@ -65,6 +65,7 @@
     "day-number": "#ffc4bc",
     "day-number2": "#aaa",
     "event-background": "#12435f",
+    "event-background-private": "darkblue",
     "timeline-border-radius": "20px",
     "time-color": "#ffc4bc",
     "place-color": "#ffc4bc",

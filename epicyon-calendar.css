@@ -7,9 +7,11 @@
     --time-color: black;
     --place-color: black;
     --event-color: #282c37;
+    --event-public-color: #282c37;
     --today-foreground: white;
     --today-circle: red;
     --event-background: orange;
+    --event-background-private: #ddd;
     --event-foreground:white;
     --title-text: #282c37;
     --title-background: #ccc;
@@ -136,8 +138,24 @@ a:focus {
     font-size: 30px;
 }
 
+.calItem {
+    background-color: var(--event-background-private);
+}
+
+.calItemPublic {
+    background-color: var(--event-background);
+}
+
 .calendar__day__event {
     color: var(--event-color);
+    background-color: var(--event-background-private);
+    float: left;
+    font-size: 28px;
+    position: relative;
+    padding: 20px;
+}
+.calendar__day__event__public {
+    color: var(--event-public-color);
     float: left;
     font-size: 28px;
     position: relative;
