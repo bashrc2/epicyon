@@ -969,7 +969,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     galleryStr += '</div>\n'
 
                 attachmentStr += \
-                    '<center><video width="400" height="300" controls>'
+                    '<center><figure id="videoContainer" ' + \
+                    'data-fullscreen="false">\n' + \
+                    '    <video id="video" controls ' + \
+                    'preload="metadata">\n'
                 attachmentStr += \
                     '<source src="' + attach['url'] + '" alt="' + \
                     imageDescription + '" title="' + imageDescription + \
@@ -977,7 +980,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     extension + '">'
                 attachmentStr += \
                     translate['Your browser does not support the video tag.']
-                attachmentStr += '</video></center>'
+                attachmentStr += '</video></figure></center>'
                 attachmentCtr += 1
         elif _isAudioMimeType(mediaType):
             extension = '.mp3'
