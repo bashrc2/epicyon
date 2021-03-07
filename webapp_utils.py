@@ -870,7 +870,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         return attachmentStr, galleryStr
 
     attachmentCtr = 0
-    attachmentStr += '<div class="media">\n'
+    attachmentStr = ''
+    mediaStyleAdded = False
     for attach in postJsonObject['object']['attachment']:
         if not (attach.get('mediaType') and attach.get('url')):
             continue
@@ -881,6 +882,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
             imageDescription = attach['name'].replace('"', "'")
         if _isImageMimeType(mediaType):
             if _isAttachedImage(attach['url']):
+                if not attachmentStr:
+                    attachmentStr += '<div class="media">\n'
+                    mediaStyleAdded = True
+
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
@@ -1038,7 +1043,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     translate['Your browser does not support the audio tag.']
                 attachmentStr += '</audio>\n</center>\n'
                 attachmentCtr += 1
-    attachmentStr += '</div>'
+    if mediaStyleAdded:
+        attachmentStr += '</div>'
     return attachmentStr, galleryStr
 
 
