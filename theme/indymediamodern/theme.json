@@ -133,6 +133,7 @@
     "today-foreground": "white",
     "today-circle": "red",
     "event-background": "lightblue",
+    "event-background-private": "#ccc",
     "event-foreground": "white",
     "title-text": "#282c37",
     "title-background": "#ccc",

@@ -67,6 +67,7 @@
     "button-selected": "blue",
     "calendar-bg-color": "#0f0d10",
     "event-background": "#555",
+    "event-background-private": "#999",
     "border-color": "#003366",
     "lines-color": "#ff9900",
     "day-number": "lightblue",
