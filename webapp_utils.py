@@ -785,6 +785,61 @@ def addEmojiToDisplayName(baseDir: str, httpPrefix: str,
     return displayName
 
 
+def _isImageMimeType(mimeType: str) -> bool:
+    """Is the given mime type an image?
+    """
+    imageMimeTypes = (
+        'image/png',
+        'image/jpeg',
+        'image/webp',
+        'image/avif',
+        'image/svg+xml',
+        'image/gif'
+    )
+    if mimeType in imageMimeTypes:
+        return True
+    return False
+
+
+def _isVideoMimeType(mimeType: str) -> bool:
+    """Is the given mime type a video?
+    """
+    videoMimeTypes = (
+        'video/mp4',
+        'video/webm',
+        'video/ogv'
+    )
+    if mimeType in videoMimeTypes:
+        return True
+    return False
+
+
+def _isAudioMimeType(mimeType: str) -> bool:
+    """Is the given mime type an audio file?
+    """
+    audioMimeTypes = (
+        'audio/mpeg',
+        'audio/ogg'
+    )
+    if mimeType in audioMimeTypes:
+        return True
+    return False
+
+
+def _isAttachedImage(attachmentFilename: str) -> bool:
+    """Is the given attachment filename an image?
+    """
+    if '.' not in attachmentFilename:
+        return False
+    imageExt = (
+        'png', 'jpg', 'jpeg', 'webp', 'avif', 'svg', 'gif'
+    )
+    ext = attachmentFilename.split('.')[-1]
+    if ext in imageExt:
+        return True
+    return False
+
+
 def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                              isMuted: bool, avatarLink: str,
                              replyStr: str, announceStr: str, likeStr: str,
@@ -810,19 +865,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
         imageDescription = ''
         if attach.get('name'):
             imageDescription = attach['name'].replace('"', "'")
-        if mediaType == 'image/png' or \
-           mediaType == 'image/jpeg' or \
-           mediaType == 'image/webp' or \
-           mediaType == 'image/avif' or \
-           mediaType == 'image/svg+xml' or \
-           mediaType == 'image/gif':
-            if attach['url'].endswith('.png') or \
-               attach['url'].endswith('.jpg') or \
-               attach['url'].endswith('.jpeg') or \
-               attach['url'].endswith('.webp') or \
-               attach['url'].endswith('.avif') or \
-               attach['url'].endswith('.svg') or \
-               attach['url'].endswith('.gif'):
+        if _isImageMimeType(mediaType):
+            if _isAttachedImage(attach['url']):
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
@@ -862,9 +906,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     '" alt="' + imageDescription + '" title="' + \
                     imageDescription + '" class="attachment"></a>\n'
                 attachmentCtr += 1
-        elif (mediaType == 'video/mp4' or
-              mediaType == 'video/webm' or
-              mediaType == 'video/ogv'):
+        elif _isVideoMimeType(mediaType):
             extension = '.mp4'
             if attach['url'].endswith('.webm'):
                 extension = '.webm'
@@ -923,8 +965,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     translate['Your browser does not support the video tag.']
                 attachmentStr += '</video></center>'
                 attachmentCtr += 1
-        elif (mediaType == 'audio/mpeg' or
-              mediaType == 'audio/ogg'):
+        elif _isAudioMimeType(mediaType):
             extension = '.mp3'
             if attach['url'].endswith('.ogg'):
                 extension = '.ogg'
