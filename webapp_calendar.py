@@ -137,7 +137,7 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
             postId = None
             senderName = ''
             senderActor = None
-            eventIsPublic = True
+            eventIsPublic = False
             # get the time place and description
             for ev in eventPost:
                 if ev['type'] == 'Event':
