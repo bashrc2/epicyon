@@ -2379,19 +2379,21 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             getDomainFromActor(sendingActor)
                         if not sendingActorDomain:
                             return False
+                        sendingToSelf = False
+                        if sendingActorNickname == nickname and \
+                           sendingActorDomain == domain:
+                            sendingToSelf = True
                         # check that the following file exists
-                        if not os.path.isfile(followingFilename):
-                            print('No following.txt file exists for ' +
-                                  nickname + '@' + domain +
-                                  ' so not accepting DM from ' +
-                                  sendingActorNickname + '@' +
-                                  sendingActorDomain)
-                            return False
-                        # get the handle of the DM sender
-                        sendH = \
-                            sendingActorNickname + '@' + sendingActorDomain
+                        if not sendingToSelf:
+                            if not os.path.isfile(followingFilename):
+                                print('No following.txt file exists for ' +
+                                      nickname + '@' + domain +
+                                      ' so not accepting DM from ' +
+                                      sendingActorNickname + '@' +
+                                      sendingActorDomain)
+                                return False
                         # Not sending to yourself
-                        if sendH != nickname + '@' + domain:
+                        if not sendingToSelf:
                             # check the follow
                             if not isFollowingActor(baseDir,
                                                     nickname, domain,
@@ -2406,6 +2408,10 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                         if not obj.get('inReplyTo'):
                                             senderPostId = \
                                                 postJsonObject['id']
+                                            # get the handle of the DM sender
+                                            sendH = \
+                                                sendingActorNickname + \
+                                                '@' + sendingActorDomain
                                             _bounceDM(senderPostId,
                                                       session, httpPrefix,
                                                       baseDir,
