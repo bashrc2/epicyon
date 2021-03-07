@@ -840,6 +840,20 @@ def _isAttachedImage(attachmentFilename: str) -> bool:
     return False
 
 
+def _isAttachedVideo(attachmentFilename: str) -> bool:
+    """Is the given attachment filename a video?
+    """
+    if '.' not in attachmentFilename:
+        return False
+    videoExt = (
+        'mp4', 'webm', 'ogv'
+    )
+    ext = attachmentFilename.split('.')[-1]
+    if ext in videoExt:
+        return True
+    return False
+
+
 def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                              isMuted: bool, avatarLink: str,
                              replyStr: str, announceStr: str, likeStr: str,
@@ -907,12 +921,8 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     imageDescription + '" class="attachment"></a>\n'
                 attachmentCtr += 1
         elif _isVideoMimeType(mediaType):
-            extension = '.mp4'
-            if attach['url'].endswith('.webm'):
-                extension = '.webm'
-            elif attach['url'].endswith('.ogv'):
-                extension = '.ogv'
-            if attach['url'].endswith(extension):
+            if _isAttachedVideo(attach['url']):
+                extension = attach['url'].split('.')[-1]
                 if attachmentCtr > 0:
                     attachmentStr += '<br>'
                 if boxName == 'tlmedia':
@@ -926,7 +936,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                             '" alt="' + imageDescription + \
                             '" title="' + imageDescription + \
                             '" class="attachment" type="video/' + \
-                            extension.replace('.', '') + '">'
+                            extension + '">'
                         idx = 'Your browser does not support the video tag.'
                         galleryStr += translate[idx]
                         galleryStr += '    </video>\n'
@@ -960,7 +970,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     '<source src="' + attach['url'] + '" alt="' + \
                     imageDescription + '" title="' + imageDescription + \
                     '" class="attachment" type="video/' + \
-                    extension.replace('.', '') + '">'
+                    extension + '">'
                 attachmentStr += \
                     translate['Your browser does not support the video tag.']
                 attachmentStr += '</video></center>'
