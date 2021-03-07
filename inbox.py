@@ -2394,6 +2394,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                 return False
                         # Not sending to yourself
                         if not sendingToSelf:
+                            # get the handle of the DM sender
+                            sendH = \
+                                sendingActorNickname + '@' + sendingActorDomain
                             # check the follow
                             if not isFollowingActor(baseDir,
                                                     nickname, domain,
@@ -2408,10 +2411,6 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                         if not obj.get('inReplyTo'):
                                             senderPostId = \
                                                 postJsonObject['id']
-                                            # get the handle of the DM sender
-                                            sendH = \
-                                                sendingActorNickname + \
-                                                '@' + sendingActorDomain
                                             _bounceDM(senderPostId,
                                                       session, httpPrefix,
                                                       baseDir,
