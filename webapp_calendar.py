@@ -193,34 +193,41 @@ def _htmlCalendarDay(personCache: {}, cssCache: {}, translate: {},
                     'icons/delete.png" /></a></td>\n'
 
             eventClass = 'calendar__day__event'
+            calItemClass = 'calItem'
             if eventIsPublic:
                 eventClass = 'calendar__day__event__public'
+                calItemClass = 'calItemPublic'
             if eventTime and eventDescription and eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"><b>' + eventTime + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"><b>' + eventTime + \
                     '</b></td><td class="' + eventClass + '">' + \
                     '<span class="place">' + \
                     eventPlace + '</span><br>' + eventDescription + \
                     '</td>' + deleteButtonStr + '</tr>\n'
             elif eventTime and eventDescription and not eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"><b>' + eventTime + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"><b>' + eventTime + \
                     '</b></td><td class="' + eventClass + '">' + \
                     eventDescription + '</td>' + deleteButtonStr + '</tr>\n'
             elif not eventTime and eventDescription and not eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time">' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time">' + \
                     '</td><td class="' + eventClass + '">' + \
                     eventDescription + '</td>' + deleteButtonStr + '</tr>\n'
             elif not eventTime and eventDescription and eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"></td>' + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"></td>' + \
                     '<td class="' + eventClass + '"><span class="place">' + \
                     eventPlace + '</span><br>' + eventDescription + \
                     '</td>' + deleteButtonStr + '</tr>\n'
             elif eventTime and not eventDescription and eventPlace:
                 calendarStr += \
-                    '<tr><td class="calendar__day__time"><b>' + eventTime + \
+                    '<tr class="' + calItemClass + '">' + \
+                    '<td class="calendar__day__time"><b>' + eventTime + \
                     '</b></td><td class="' + eventClass + '">' + \
                     '<span class="place">' + \
                     eventPlace + '</span></td>' + \
