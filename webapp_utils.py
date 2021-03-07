@@ -930,7 +930,10 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                     if not isMuted:
                         galleryStr += '  <a href="' + attach['url'] + '">\n'
                         galleryStr += \
-                            '    <video width="600" height="400" controls>\n'
+                            '    <figure id="videoContainer" ' + \
+                            'data-fullscreen="false">\n' + \
+                            '    <video id="video" controls ' + \
+                            'preload="metadata">\n'
                         galleryStr += \
                             '      <source src="' + attach['url'] + \
                             '" alt="' + imageDescription + \
@@ -940,6 +943,7 @@ def getPostAttachmentsAsHtml(postJsonObject: {}, boxName: str, translate: {},
                         idx = 'Your browser does not support the video tag.'
                         galleryStr += translate[idx]
                         galleryStr += '    </video>\n'
+                        galleryStr += '    </figure>\n'
                         galleryStr += '  </a>\n'
                     if postJsonObject['object'].get('url'):
                         videoPostUrl = postJsonObject['object']['url']
