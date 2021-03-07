@@ -220,8 +220,7 @@ def _addEmbeddedAudio(translate: {}, content: str) -> str:
     return content
 
 
-def _addEmbeddedVideo(translate: {}, content: str,
-                      width=400, height=300) -> str:
+def _addEmbeddedVideo(translate: {}, content: str) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
@@ -258,14 +257,16 @@ def _addEmbeddedVideo(translate: {}, content: str,
             continue
         url = w
         content += \
-            '<center>\n<video width="' + str(width) + '" height="' + \
-            str(height) + '" controls>\n'
+            '<center><figure id="videoContainer" ' + \
+            'data-fullscreen="false">\n' + \
+            '    <video id="video" controls ' + \
+            'preload="metadata">\n'
         content += \
             '<source src="' + url + '" type="video/' + \
             extension.replace('.', '') + '">\n'
         content += \
             translate['Your browser does not support the video element.']
-        content += '</video>\n</center>\n'
+        content += '</video>\n</figure>\n</center>\n'
     return content
 
 
