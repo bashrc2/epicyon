@@ -184,6 +184,10 @@ body, html {
     image-rendering: var(--rendering);
 }
 
+video {
+    width: 100%;
+}
+
 figure {
     padding-left: 0;
     padding-right: 0;
@@ -1002,9 +1006,6 @@ div.container {
         font-size: var(--font-size);
         color: var(--title-color);
     }
-    video {
-        width: 125%;
-    }
     .accountsTable {
         width: 100%;
         border: 0;
@@ -1674,9 +1675,6 @@ div.container {
         font-family: var(--header-font);
         font-size: var(--font-size-mobile);
         color: var(--title-color);
-    }
-    video {
-        width: 100%;
     }
     .accountsTable {
         width: 100%;
