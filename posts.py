@@ -3055,7 +3055,7 @@ def _addPostStringToTimeline(postStr: str, boxname: str,
                 return False
         elif boxname == 'tlmedia':
             if '"Create"' in postStr:
-                if ('mediaType' not in postStr or \
+                if ('mediaType' not in postStr or
                     ('image/' not in postStr and
                      'video/' not in postStr and
                      'audio/' not in postStr)):
