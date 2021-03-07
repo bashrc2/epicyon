@@ -146,7 +146,7 @@ a:focus {
     position: relative;
     padding: 20px;
 }
-.calendar__day__event_public {
+.calendar__day__event__public {
     color: var(--event-public-color);
     float: left;
     font-size: 28px;
