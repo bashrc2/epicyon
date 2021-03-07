@@ -220,8 +220,7 @@ def _addEmbeddedAudio(translate: {}, content: str) -> str:
     return content
 
 
-def _addEmbeddedVideo(translate: {}, content: str,
-                      width=400, height=300) -> str:
+def _addEmbeddedVideo(translate: {}, content: str) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
