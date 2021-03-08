@@ -1463,7 +1463,9 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         loginNickname, loginPassword, register = \
-            htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
+            htmlGetLoginCredentials(loginParams,
+                                    self.server.lastLoginTime,
+                                    self.server.domain)
         if loginNickname:
             if isSystemAccount(loginNickname):
                 print('Invalid username login: ' + loginNickname +

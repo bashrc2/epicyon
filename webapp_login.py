@@ -18,7 +18,8 @@ from theme import getTextModeLogo
 
 
 def htmlGetLoginCredentials(loginParams: str,
-                            lastLoginTime: int) -> (str, str, bool):
+                            lastLoginTime: int,
+                            domain: str) -> (str, str, bool):
     """Receives login credentials via HTTPServer POST
     """
     if not loginParams.startswith('username='):
@@ -39,7 +40,9 @@ def htmlGetLoginCredentials(loginParams: str,
                 nickname = arg.split('=', 1)[1]
                 if '@' in nickname:
                     # the full nickname@domain has been entered
-                    nickname = nickname.split('@')[0]
+                    handleDomain = nickname.split('@')[1].strip()
+                    if handleDomain == domain:
+                        nickname = nickname.split('@')[0]
             elif arg.split('=', 1)[0] == 'password':
                 password = arg.split('=', 1)[1]
             elif arg.split('=', 1)[0] == 'register':
