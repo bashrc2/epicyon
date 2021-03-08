@@ -1703,6 +1703,10 @@ if args.rmaccount:
         if not args.domain or not getConfigParam(baseDir, 'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+        if args.domain:
+            domain = args.domain
+        else:
+            domain = getConfigParam(baseDir, 'domain')
 
     configuredDomain = getConfigParam(baseDir, 'domain')
     if configuredDomain:
