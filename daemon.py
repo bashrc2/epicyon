@@ -120,6 +120,7 @@ from blocking import getDomainBlocklist
 from roles import setRole
 from roles import clearModeratorStatus
 from roles import clearEditorStatus
+from roles import clearCounselorStatus
 from blog import htmlBlogPageRSS2
 from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
@@ -4727,6 +4728,63 @@ class PubServer(BaseHTTPRequestHandler):
                                                     edNick, domain,
                                                     'instance',
                                                     'editor')
+
+                        # change site counselors list
+                        if fields.get('counselors'):
+                            if path.startswith('/users/' +
+                                               adminNickname + '/'):
+                                counselorsFile = \
+                                    baseDir + \
+                                    '/accounts/counselors.txt'
+                                clearCounselorStatus(baseDir)
+                                if ',' in fields['counselors']:
+                                    # if the list was given as comma separated
+                                    edFile = open(counselorsFile, "w+")
+                                    eds = fields['counselors'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['counselors'].split(',')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'instance', 'counselor')
+                                else:
+                                    # nicknames on separate lines
+                                    edFile = open(counselorsFile, "w+")
+                                    eds = fields['counselors'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + edNick + \
+                                            '@' + domain
+                                        if os.path.isdir(edDir):
+                                            edFile.write(edNick + '\n')
+                                    edFile.close()
+                                    eds = fields['counselors'].split('\n')
+                                    for edNick in eds:
+                                        edNick = edNick.strip()
+                                        edDir = \
+                                            baseDir + \
+                                            '/accounts/' + \
+                                            edNick + '@' + \
+                                            domain
+                                        if os.path.isdir(edDir):
+                                            setRole(baseDir,
+                                                    edNick, domain,
+                                                    'instance',
+                                                    'counselor')
 
                     # remove scheduled posts
                     if fields.get('removeScheduledPosts'):

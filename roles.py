@@ -51,6 +51,14 @@ def clearEditorStatus(baseDir: str) -> None:
     _clearRoleStatus(baseDir, 'editor')
 
 
+def clearCounselorStatus(baseDir: str) -> None:
+    """Removes counselor status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when counselors are appointed or removed
+    """
+    _clearRoleStatus(baseDir, 'editor')
+
+
 def clearModeratorStatus(baseDir: str) -> None:
     """Removes moderator status from all accounts
     This could be slow if there are many users, but only happens
@@ -119,7 +127,8 @@ def setRole(baseDir: str, nickname: str, domain: str,
 
     roleFiles = {
         "moderator": "moderators.txt",
-        "editor": "editors.txt"
+        "editor": "editors.txt",
+        "counselor": "counselors.txt"
     }
 
     actorJson = loadJson(actorFilename)
