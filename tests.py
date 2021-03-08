@@ -3400,9 +3400,24 @@ def testCamelCaseSplit():
     assert camelCaseSplit(testStr) == 'Notcamelcase test'
 
 
+def testEmojiImages():
+    print('testEmojiImages')
+    emojiFilename = 'emoji/default_emoji.json'
+    assert os.path.isfile(emojiFilename)
+    emojiJson = loadJson(emojiFilename)
+    assert emojiJson
+    for emojiName, emojiImage in emojiJson.items():
+        emojiImageFilename = 'emoji/' + emojiImage + '.png'
+        if not os.path.isfile(emojiImageFilename):
+            print('Missing emoji image ' + emojiName + ' ' +
+                  emojiImage + '.png')
+        assert os.path.isfile(emojiImageFilename)
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testEmojiImages()
     testCamelCaseSplit()
     testSpeakerReplaceLinks()
     testExtractTextFieldsInPOST()
