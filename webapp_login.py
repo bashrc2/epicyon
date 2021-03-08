@@ -38,6 +38,8 @@ def htmlGetLoginCredentials(loginParams: str,
         if '=' in arg:
             if arg.split('=', 1)[0] == 'username':
                 nickname = arg.split('=', 1)[1]
+                if nickname.startswith('@'):
+                    nickname = nickname[1:]
                 if '@' in nickname:
                     # the full nickname@domain has been entered
                     handleDomain = nickname.split('@')[1].strip()
