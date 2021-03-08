@@ -81,6 +81,7 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "XMPP": "X-M-P-P",
             "xmpp": "X-M-P-P",
             "sql": "S-Q-L",
+            ".js": " dot J-S",
             "PSQL": "Postgres S-Q-L",
             "SQL": "S-Q-L",
             "coop": "co-op",
