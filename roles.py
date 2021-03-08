@@ -89,12 +89,6 @@ def _addRole(baseDir: str, nickname: str, domain: str,
                 f.write(nickname + '\n')
 
 
-def _addModerator(baseDir: str, nickname: str, domain: str) -> None:
-    """Adds a moderator nickname to the file
-    """
-    _addRole(baseDir, nickname, domain, 'moderators.txt')
-
-
 def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
     """Removes a role nickname from the file
     """
@@ -110,12 +104,6 @@ def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
                 f.write(roleNickname + '\n')
 
 
-def _removeModerator(baseDir: str, nickname: str) -> None:
-    """Adds a moderator nickname to the file
-    """
-    _removeRole(baseDir, nickname, 'moderators.txt')
-
-
 def setRole(baseDir: str, nickname: str, domain: str,
             project: str, role: str) -> bool:
     """Set a person's role within a project
@@ -129,12 +117,18 @@ def setRole(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(actorFilename):
         return False
 
+    roleFiles = {
+        "moderator": "moderators.txt",
+        "editor": "editors.txt"
+    }
+
     actorJson = loadJson(actorFilename)
     if actorJson:
         if role:
             # add the role
-            if project == 'instance' and 'role' == 'moderator':
-                _addModerator(baseDir, nickname, domain)
+            if project == 'instance':
+                if roleFiles.get(role):
+                    _addRole(baseDir, nickname, domain, roleFiles[role])
             if actorJson['roles'].get(project):
                 if role not in actorJson['roles'][project]:
                     actorJson['roles'][project].append(role)
@@ -143,7 +137,7 @@ def setRole(baseDir: str, nickname: str, domain: str,
         else:
             # remove the role
             if project == 'instance':
-                _removeModerator(baseDir, nickname)
+                _removeRole(baseDir, nickname, roleFiles[role])
             if actorJson['roles'].get(project):
                 actorJson['roles'][project].remove(role)
                 # if the project contains no roles then remove it
