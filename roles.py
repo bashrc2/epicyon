@@ -137,7 +137,8 @@ def setRole(baseDir: str, nickname: str, domain: str,
         else:
             # remove the role
             if project == 'instance':
-                _removeRole(baseDir, nickname, roleFiles[role])
+                if roleFiles.get(role):
+                    _removeRole(baseDir, nickname, roleFiles[role])
             if actorJson['roles'].get(project):
                 actorJson['roles'][project].remove(role)
                 # if the project contains no roles then remove it
