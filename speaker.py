@@ -380,6 +380,9 @@ def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
+    # replace some emoji before removing html
+    if ' <3' in content:
+        content = content.replace(' <3', ' ' + translate['heart'])
     content = removeHtml(htmlReplaceQuoteMarks(content))
     content = speakerReplaceLinks(content, translate, detectedLinks)
     content = _speakerPronounce(baseDir, content, translate)
