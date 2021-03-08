@@ -18,30 +18,10 @@ from utils import loadJson
 from utils import saveJson
 
 
-def clearModeratorStatus(baseDir: str) -> None:
-    """Removes moderator status from all accounts
+def _clearRoleStatus(baseDir: str, role: str) -> None:
+    """Removes role status from all accounts
     This could be slow if there are many users, but only happens
-    rarely when moderators are appointed or removed
-    """
-    directory = os.fsencode(baseDir + '/accounts/')
-    for f in os.scandir(directory):
-        f = f.name
-        filename = os.fsdecode(f)
-        if filename.endswith(".json") and '@' in filename:
-            filename = os.path.join(baseDir + '/accounts/', filename)
-            if '"moderator"' in open(filename).read():
-                actorJson = loadJson(filename)
-                if actorJson:
-                    if actorJson['roles'].get('instance'):
-                        if 'moderator' in actorJson['roles']['instance']:
-                            actorJson['roles']['instance'].remove('moderator')
-                            saveJson(actorJson, filename)
-
-
-def clearEditorStatus(baseDir: str) -> None:
-    """Removes editor status from all accounts
-    This could be slow if there are many users, but only happens
-    rarely when editors are appointed or removed
+    rarely when roles are appointed or removed
     """
     directory = os.fsencode(baseDir + '/accounts/')
     for f in os.scandir(directory):
@@ -52,59 +32,88 @@ def clearEditorStatus(baseDir: str) -> None:
         if not filename.endswith(".json"):
             continue
         filename = os.path.join(baseDir + '/accounts/', filename)
-        if '"editor"' not in open(filename).read():
+        if '"' + role + '"' not in open(filename).read():
             continue
         actorJson = loadJson(filename)
         if not actorJson:
             continue
         if actorJson['roles'].get('instance'):
-            if 'editor' in actorJson['roles']['instance']:
-                actorJson['roles']['instance'].remove('editor')
+            if role in actorJson['roles']['instance']:
+                actorJson['roles']['instance'].remove(role)
                 saveJson(actorJson, filename)
 
 
-def _addModerator(baseDir: str, nickname: str, domain: str) -> None:
-    """Adds a moderator nickname to the file
+def clearEditorStatus(baseDir: str) -> None:
+    """Removes editor status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when editors are appointed or removed
+    """
+    _clearRoleStatus(baseDir, 'editor')
+
+
+def clearModeratorStatus(baseDir: str) -> None:
+    """Removes moderator status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when moderators are appointed or removed
+    """
+    _clearRoleStatus(baseDir, 'moderator')
+
+
+def _addRole(baseDir: str, nickname: str, domain: str,
+             roleFilename: str) -> None:
+    """Adds a role nickname to the file
     """
     if ':' in domain:
         domain = domain.split(':')[0]
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
-    if os.path.isfile(moderatorsFile):
+    roleFile = baseDir + '/accounts/' + roleFilename
+    if os.path.isfile(roleFile):
         # is this nickname already in the file?
-        with open(moderatorsFile, "r") as f:
+        with open(roleFile, "r") as f:
             lines = f.readlines()
-        for moderator in lines:
-            moderator = moderator.strip('\n').strip('\r')
-            if moderator == nickname:
+        for roleNickname in lines:
+            roleNickname = roleNickname.strip('\n').strip('\r')
+            if roleNickname == nickname:
                 return
         lines.append(nickname)
-        with open(moderatorsFile, 'w+') as f:
-            for moderator in lines:
-                moderator = moderator.strip('\n').strip('\r')
-                if len(moderator) > 1:
+        with open(roleFile, 'w+') as f:
+            for roleNickname in lines:
+                roleNickname = roleNickname.strip('\n').strip('\r')
+                if len(roleNickname) > 1:
                     if os.path.isdir(baseDir + '/accounts/' +
-                                     moderator + '@' + domain):
-                        f.write(moderator + '\n')
+                                     roleNickname + '@' + domain):
+                        f.write(roleNickname + '\n')
     else:
-        with open(moderatorsFile, "w+") as f:
+        with open(roleFile, "w+") as f:
             if os.path.isdir(baseDir + '/accounts/' +
                              nickname + '@' + domain):
                 f.write(nickname + '\n')
 
 
-def _removeModerator(baseDir: str, nickname: str):
-    """Removes a moderator nickname from the file
+def _addModerator(baseDir: str, nickname: str, domain: str) -> None:
+    """Adds a moderator nickname to the file
     """
-    moderatorsFile = baseDir + '/accounts/moderators.txt'
-    if not os.path.isfile(moderatorsFile):
+    _addRole(baseDir, nickname, domain, 'moderators.txt')
+
+
+def _removeRole(baseDir: str, nickname: str, roleFilename: str) -> None:
+    """Removes a role nickname from the file
+    """
+    roleFile = baseDir + '/accounts/' + roleFilename
+    if not os.path.isfile(roleFile):
         return
-    with open(moderatorsFile, "r") as f:
+    with open(roleFile, "r") as f:
         lines = f.readlines()
-    with open(moderatorsFile, 'w+') as f:
-        for moderator in lines:
-            moderator = moderator.strip('\n').strip('\r')
-            if len(moderator) > 1 and moderator != nickname:
-                f.write(moderator + '\n')
+    with open(roleFile, 'w+') as f:
+        for roleNickname in lines:
+            roleNickname = roleNickname.strip('\n').strip('\r')
+            if len(roleNickname) > 1 and roleNickname != nickname:
+                f.write(roleNickname + '\n')
+
+
+def _removeModerator(baseDir: str, nickname: str) -> None:
+    """Adds a moderator nickname to the file
+    """
+    _removeRole(baseDir, nickname, 'moderators.txt')
 
 
 def setRole(baseDir: str, nickname: str, domain: str,
