@@ -115,6 +115,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
         print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
     else:
         print('Running desktop notifications for ' + nickname + '@' + domain)
+    print('/q or /quit to exit')
 
     prevSay = ''
     prevDM = False
