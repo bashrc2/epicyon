@@ -138,7 +138,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _playNotificationSound(soundsDir + '/' +
                                                followSoundFilename, player)
                 elif likeSoundFilename:
-                    if speakerJson['notify']['like'] != prevLike:
+                    if speakerJson['notify']['likedBy'] != prevLike:
                         _playNotificationSound(soundsDir + '/' +
                                                likeSoundFilename, player)
                 elif shareSoundFilename:
@@ -150,7 +150,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 prevReply = speakerJson['notify']['reply']
                 prevCalendar = speakerJson['notify']['calendar']
                 prevFollow = speakerJson['notify']['followRequests']
-                prevLike = speakerJson['notify']['like']
+                prevLike = speakerJson['notify']['likedBy']
                 prevShare = speakerJson['notify']['share']
 
             if speakerJson.get('say'):
