@@ -1387,6 +1387,20 @@ def htmlEditProfile(cssCache: {}, translate: {}, baseDir: str, path: str,
                 '  <textarea id="message" name="editors" placeholder="" ' + \
                 'style="height:200px" spellcheck="false">' + \
                 editors + '</textarea>'
+
+            # counselors
+            counselors = ''
+            counselorsFile = baseDir + '/accounts/counselors.txt'
+            if os.path.isfile(counselorsFile):
+                with open(counselorsFile, "r") as f:
+                    counselors = f.read()
+            roleAssignStr += '  <b><label class="labels">' + \
+                translate['Counselors'] + '</label></b><br>\n'
+            roleAssignStr += \
+                '  <textarea id="message" name="counselors" ' + \
+                'placeholder="" ' + \
+                'style="height:200px" spellcheck="false">' + \
+                counselors + '</textarea>'
             roleAssignStr += '    </div></details>\n'
 
             # Video section
