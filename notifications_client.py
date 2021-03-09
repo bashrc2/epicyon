@@ -151,65 +151,53 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         'theme/' + speakerJson['notify']['theme'] + '/sounds'
                     if not os.path.isdir(soundsDir):
                         soundsDir = 'theme/default/sounds'
-                if dmSoundFilename:
-                    if speakerJson['notify']['dm'] and \
-                       speakerJson['notify']['dm'] != prevDM:
+                if speakerJson['notify']['dm'] != prevDM:
+                    if speakerJson['notify']['dm'] is True:
                         _playNotificationSound(soundsDir + '/' +
                                                dmSoundFilename, player)
-                        _desktopNotification(notificationType,
-                                             title,
+                        _desktopNotification(notificationType, title,
                                              'New direct message ' +
                                              actor + '/dm')
-                        prevDM = speakerJson['notify']['dm']
-                elif replySoundFilename:
-                    if speakerJson['notify']['reply'] and \
-                       speakerJson['notify']['reply'] != prevReply:
+                    prevDM = speakerJson['notify']['dm']
+                elif speakerJson['notify']['reply'] != prevReply:
+                    if speakerJson['notify']['reply'] is True:
                         _playNotificationSound(soundsDir + '/' +
                                                replySoundFilename, player)
-                        _desktopNotification(notificationType,
-                                             title,
+                        _desktopNotification(notificationType, title,
                                              'New reply ' +
                                              actor + '/tlreplies')
                         prevReply = speakerJson['notify']['reply']
-                elif calendarSoundFilename:
-                    if speakerJson['notify']['calendar'] and \
-                       speakerJson['notify']['calendar'] != prevCalendar:
+                elif speakerJson['notify']['calendar'] != prevCalendar:
+                    if speakerJson['notify']['calendar'] is True:
                         _playNotificationSound(soundsDir + '/' +
                                                calendarSoundFilename, player)
-                        _desktopNotification(notificationType,
-                                             title,
+                        _desktopNotification(notificationType, title,
                                              'New calendar event ' +
                                              actor + '/calendar')
-                        prevCalendar = speakerJson['notify']['calendar']
-                elif followSoundFilename:
-                    if speakerJson['notify']['followRequests'] and \
-                       speakerJson['notify']['followRequests'] != prevFollow:
+                    prevCalendar = speakerJson['notify']['calendar']
+                elif speakerJson['notify']['followRequests'] != prevFollow:
+                    if speakerJson['notify']['followRequests'] is True:
                         _playNotificationSound(soundsDir + '/' +
                                                followSoundFilename, player)
-                        _desktopNotification(notificationType,
-                                             title,
+                        _desktopNotification(notificationType, title,
                                              'New follow request ' +
                                              actor + '/followers#buttonheader')
-                        prevFollow = speakerJson['notify']['followRequests']
-                elif likeSoundFilename:
-                    if speakerJson['notify']['likedBy'] != prevLike:
-                        _playNotificationSound(soundsDir + '/' +
-                                               likeSoundFilename, player)
-                        _desktopNotification(notificationType,
-                                             title,
-                                             'New like ' +
-                                             speakerJson['notify']['likedBy'])
-                        prevLike = speakerJson['notify']['likedBy']
-                elif shareSoundFilename:
-                    if speakerJson['notify']['share'] and \
-                       speakerJson['notify']['share'] != prevShare:
+                    prevFollow = speakerJson['notify']['followRequests']
+                elif speakerJson['notify']['likedBy'] != prevLike:
+                    _playNotificationSound(soundsDir + '/' +
+                                           likeSoundFilename, player)
+                    _desktopNotification(notificationType, title,
+                                         'New like ' +
+                                         speakerJson['notify']['likedBy'])
+                    prevLike = speakerJson['notify']['likedBy']
+                elif speakerJson['notify']['share'] != prevShare:
+                    if speakerJson['notify']['share'] is True:
                         _playNotificationSound(soundsDir + '/' +
                                                shareSoundFilename, player)
-                        _desktopNotification(notificationType,
-                                             title,
+                        _desktopNotification(notificationType, title,
                                              'New shared item ' +
                                              actor + '/shares')
-                        prevShare = speakerJson['notify']['share']
+                    prevShare = speakerJson['notify']['share']
 
             if speakerJson.get('say'):
                 if speakerJson['say'] != prevSay:
