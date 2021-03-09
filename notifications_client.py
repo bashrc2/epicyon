@@ -1,4 +1,4 @@
-__filename__ = "speaker_client.py"
+__filename__ = "notifications_client.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
@@ -66,11 +66,12 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
     os.system(speakerCmd)
 
 
-def runSpeakerClient(baseDir: str, proxyType: str, httpPrefix: str,
-                     nickname: str, domain: str, port: int, password: str,
-                     screenreader: str, systemLanguage: str,
-                     debug: bool) -> None:
-    """Runs the screen reader client, which announces new inbox items via TTS
+def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
+                           nickname: str, domain: str, port: int,
+                           password: str, screenreader: str,
+                           systemLanguage: str, debug: bool) -> None:
+    """Runs the notifications and screen reader client,
+    which announces new inbox items
     """
     if screenreader == 'espeak':
         print('Setting up espeak')

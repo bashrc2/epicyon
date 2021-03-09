@@ -76,7 +76,7 @@ from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
-from speaker_client import runSpeakerClient
+from notifications_client import runNotificationsClient
 
 
 def str2bool(v) -> bool:
@@ -433,10 +433,10 @@ parser.add_argument('--level', dest='skillLevelPercent', type=int,
 parser.add_argument('--status', '--availability', dest='availability',
                     type=str, default=None,
                     help='Set an availability status')
-parser.add_argument('--speaker', '--tts', dest='speaker',
+parser.add_argument('--notifications', '--notify', dest='notifications',
                     type=str, default=None,
-                    help='Announce posts as they arrive at your ' +
-                    'inbox using TTS. --speaker [handle]')
+                    help='Notify posts as they arrive at your ' +
+                    'inbox. --notifications [handle]')
 parser.add_argument('--block', dest='block', type=str, default=None,
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str, default=None,
@@ -1899,15 +1899,15 @@ if args.availability:
         time.sleep(1)
     sys.exit()
 
-if args.speaker:
+if args.notifications:
     # Announce posts as they arrive in your inbox using text-to-speech
-    if args.speaker.startswith('@'):
-        args.speaker = args.speaker[1:]
-    if '@' not in args.speaker:
-        print('Specify the handle of the speaker nickname@domain')
+    if args.notifications.startswith('@'):
+        args.notifications = args.notifications[1:]
+    if '@' not in args.notifications:
+        print('Specify the handle to notify: nickname@domain')
         sys.exit()
-    nickname = args.speaker.split('@')[0]
-    domain = args.speaker.split('@')[1]
+    nickname = args.notifications.split('@')[0]
+    domain = args.notifications.split('@')[1]
 
     if not nickname:
         print('Specify a nickname with the --nickname option')
@@ -1929,10 +1929,10 @@ if args.speaker:
     elif args.gnunet:
         proxyType = 'gnunet'
 
-    runSpeakerClient(baseDir, proxyType, httpPrefix,
-                     nickname, domain, port, args.password,
-                     args.screenreader, args.language,
-                     args.debug)
+    runNotificationsClient(baseDir, proxyType, httpPrefix,
+                           nickname, domain, port, args.password,
+                           args.screenreader, args.language,
+                           args.debug)
     sys.exit()
 
 if federationList:
