@@ -113,6 +113,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             return
 
         print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
+    else:
+        print('Running desktop notifications for ' + nickname + '@' + domain)
 
     prevSay = ''
     prevDM = False
@@ -218,18 +220,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         # append image description if needed
                         if not speakerJson.get('imageDescription'):
                             sayStr = speakerJson['say']
-                            # echo spoken text to the screen
-                            print(html.unescape(nameStr) + ': ' +
-                                  html.unescape(speakerJson['say']) + '\n')
+                            if screenreader:
+                                # echo spoken text to the screen
+                                print(html.unescape(nameStr) + ': ' +
+                                      html.unescape(speakerJson['say']) + '\n')
                         else:
                             sayStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
                             # echo spoken text to the screen
                             imageDescription = \
                                 html.unescape(speakerJson['imageDescription'])
-                            print(html.unescape(nameStr) + ': ' +
-                                  html.unescape(speakerJson['say']) + '\n' +
-                                  imageDescription)
+                            if screenreader:
+                                print(html.unescape(nameStr) + ': ' +
+                                      html.unescape(speakerJson['say']) +
+                                      '\n' + imageDescription)
 
                         # speak the post content
                         if screenreader == 'espeak':
