@@ -268,7 +268,8 @@ def _speakerEndpointJson(displayName: str, summary: str,
                          links: [], gender: str, postId: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
-                         likedBy: str) -> {}:
+                         likedBy: str, postCal: bool,
+                         postShare: bool) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -282,7 +283,9 @@ def _speakerEndpointJson(displayName: str, summary: str,
             "dm": postDM,
             "reply": postReply,
             "followRequests": followRequestsExist,
-            "likedBy": likedBy
+            "likedBy": likedBy,
+            "calendar": postCal,
+            "share": postShare
         }
     }
     if gender:
@@ -461,13 +464,19 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             likedBy = fp.read()
             if '##sent##' in likedBy:
                 likedBy = ''
+    calendarFilename = accountsDir + '/.newCalendar'
+    postCal = os.path.isfile(calendarFilename)
+    shareFilename = accountsDir + '/.newShare'
+    postShare = os.path.isfile(shareFilename)
 
     return _speakerEndpointJson(speakerName, summary,
                                 content, imageDescription,
                                 detectedLinks, gender, postId,
                                 postDM, postReply,
                                 followRequestsExist,
-                                likedBy)
+                                likedBy,
+                                postCal, postShare)
+
 
 def updateSpeaker(baseDir: str, httpPrefix: str,
                   nickname: str, domain: str, domainFull: str,
