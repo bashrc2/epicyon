@@ -2719,7 +2719,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.YTReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess)
+                                      self.server.allowLocalNetworkAccess,
+                                      self.server.themeName)
                 if hashtagStr:
                     msg = hashtagStr.encode('utf-8')
                     msglen = len(msg)
@@ -2772,7 +2773,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.YTReplacementDomain,
                                       self.server.showPublishedDateOnly,
                                       self.server.peertubeInstances,
-                                      self.server.allowLocalNetworkAccess)
+                                      self.server.allowLocalNetworkAccess,
+                                      self.server.themeName)
                 if historyStr:
                     msg = historyStr.encode('utf-8')
                     msglen = len(msg)
@@ -2862,7 +2864,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                showPublishedDateOnly,
                                                self.server.defaultTimeline,
                                                self.server.peertubeInstances,
-                                               allowLocalNetworkAccess)
+                                               allowLocalNetworkAccess,
+                                               self.server.themeName)
                 if profileStr:
                     msg = profileStr.encode('utf-8')
                     msglen = len(msg)
@@ -4853,8 +4856,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
                         baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
-                        '/.followDMs'
+                        nickname + '@' + domain + '/.followDMs'
                     if onFinalWelcomeScreen:
                         # initial default setting created via
                         # the welcome screen
@@ -5988,7 +5990,8 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.YTReplacementDomain,
                               self.server.showPublishedDateOnly,
                               self.server.peertubeInstances,
-                              self.server.allowLocalNetworkAccess)
+                              self.server.allowLocalNetworkAccess,
+                              self.server.themeName)
         if hashtagStr:
             msg = hashtagStr.encode('utf-8')
             msglen = len(msg)
@@ -6951,7 +6954,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.YTReplacementDomain,
                                   self.server.showPublishedDateOnly,
                                   self.server.peertubeInstances,
-                                  self.server.allowLocalNetworkAccess)
+                                  self.server.allowLocalNetworkAccess,
+                                  self.server.themeName)
             if deleteStr:
                 deleteStrLen = len(deleteStr)
                 self._set_headers('text/html', deleteStrLen,
@@ -7156,7 +7160,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     ytDomain,
                                     self.server.showPublishedDateOnly,
                                     peertubeInstances,
-                                    self.server.allowLocalNetworkAccess)
+                                    self.server.allowLocalNetworkAccess,
+                                    self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -7243,7 +7248,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     ytDomain,
                                     self.server.showPublishedDateOnly,
                                     peertubeInstances,
-                                    self.server.allowLocalNetworkAccess)
+                                    self.server.allowLocalNetworkAccess,
+                                    self.server.themeName)
                 msg = msg.encode('utf-8')
                 msglen = len(msg)
                 self._set_headers('text/html', msglen,
@@ -7533,6 +7539,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 cssCache = self.server.cssCache
                                 allowLocalNetworkAccess = \
                                     self.server.allowLocalNetworkAccess
+                                themeName = \
+                                    self.server.themeName
                                 msg = \
                                     htmlIndividualPost(cssCache,
                                                        recentPostsCache,
@@ -7553,7 +7561,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                        ytDomain,
                                                        showPublishedDateOnly,
                                                        peertubeInstances,
-                                                       allowLocalNetworkAccess)
+                                                       allowLocalNetworkAccess,
+                                                       themeName)
                                 msg = msg.encode('utf-8')
                                 msglen = len(msg)
                                 self._set_headers('text/html', msglen,
@@ -7657,6 +7666,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.peertubeInstances
                     allowLocalNetworkAccess = \
                         self.server.allowLocalNetworkAccess
+                    themeName = \
+                        self.server.themeName
                     msg = \
                         htmlIndividualPost(self.server.cssCache,
                                            recentPostsCache,
@@ -7677,7 +7688,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            ytDomain,
                                            showPublishedDateOnly,
                                            peertubeInstances,
-                                           allowLocalNetworkAccess)
+                                           allowLocalNetworkAccess,
+                                           themeName)
                     msg = msg.encode('utf-8')
                     msglen = len(msg)
                     self._set_headers('text/html', msglen,
@@ -14668,7 +14680,8 @@ def runDaemon(brochMode: bool,
                               httpd.maxFollowers,
                               httpd.allowLocalNetworkAccess,
                               httpd.peertubeInstances,
-                              verifyAllSignatures), daemon=True)
+                              verifyAllSignatures,
+                              httpd.themeName), daemon=True)
 
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \

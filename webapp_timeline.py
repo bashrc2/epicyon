@@ -723,6 +723,7 @@ def htmlTimeline(cssCache: {}, defaultTimeline: str,
                                              boxName != 'dm',
                                              showIndividualPostIcons,
                                              manuallyApproveFollowers,
+                                             theme,
                                              False, True)
                     _logTimelineTiming(enableTimingLog,
                                        timelineStartTime, boxName, '12')

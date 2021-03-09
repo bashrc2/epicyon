@@ -66,6 +66,17 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
     os.system(speakerCmd)
 
 
+def _playNotificationSound(soundFilename: str, player='ffplay') -> None:
+    """Plays a sound
+    """
+    if not os.path.isfile(soundFilename):
+        return
+
+    if player == 'ffplay':
+        os.system('ffplay ' + soundFilename +
+                  ' -autoexit -hide_banner -nodisp')
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
@@ -73,64 +84,121 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
-    if screenreader == 'espeak':
-        print('Setting up espeak')
-        from espeak import espeak
-    elif screenreader != 'picospeaker':
-        print(screenreader + ' is not a supported TTS system')
-        return
+    if screenreader:
+        if screenreader == 'espeak':
+            print('Setting up espeak')
+            from espeak import espeak
+        elif screenreader != 'picospeaker':
+            print(screenreader + ' is not a supported TTS system')
+            return
 
-    print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
+        print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
 
     prevSay = ''
+    prevDM = False
+    prevReply = False
+    prevCalendar = False
+    prevFollow = False
+    prevLike = ''
+    prevShare = False
+    dmSoundFilename = 'dm.ogg'
+    replySoundFilename = 'reply.ogg'
+    calendarSoundFilename = 'calendar.ogg'
+    followSoundFilename = 'follow.ogg'
+    likeSoundFilename = 'like.ogg'
+    shareSoundFilename = 'share.ogg'
+    player = 'ffplay'
     while (1):
         session = createSession(proxyType)
         speakerJson = \
             getSpeakerFromServer(baseDir, session, nickname, password,
                                  domain, port, httpPrefix, True, __version__)
         if speakerJson:
-            if speakerJson['say'] != prevSay:
-                if speakerJson.get('name'):
-                    nameStr = speakerJson['name']
-                    gender = 'They/Them'
-                    if speakerJson.get('gender'):
-                        gender = speakerJson['gender']
+            if speakerJson.get('notify'):
+                soundsDir = 'theme/default/sounds'
+                if speakerJson['notify'].get('theme'):
+                    soundsDir = \
+                        'theme/' + speakerJson['notify']['theme'] + '/sounds'
+                    if not os.path.isdir(soundsDir):
+                        soundsDir = 'theme/default/sounds'
+                if dmSoundFilename:
+                    if speakerJson['notify']['dm'] != prevDM:
+                        _playNotificationSound(soundsDir + '/' +
+                                               dmSoundFilename, player)
+                elif replySoundFilename:
+                    if speakerJson['notify']['reply'] != prevReply:
+                        _playNotificationSound(soundsDir + '/' +
+                                               replySoundFilename, player)
+                elif calendarSoundFilename:
+                    if speakerJson['notify']['calendar'] != prevCalendar:
+                        _playNotificationSound(soundsDir + '/' +
+                                               calendarSoundFilename, player)
+                elif followSoundFilename:
+                    if speakerJson['notify']['followRequests'] != prevFollow:
+                        _playNotificationSound(soundsDir + '/' +
+                                               followSoundFilename, player)
+                elif likeSoundFilename:
+                    if speakerJson['notify']['like'] != prevLike:
+                        _playNotificationSound(soundsDir + '/' +
+                                               likeSoundFilename, player)
+                elif shareSoundFilename:
+                    if speakerJson['notify']['share'] != prevShare:
+                        _playNotificationSound(soundsDir + '/' +
+                                               shareSoundFilename, player)
 
-                    # get the speech parameters
-                    pitch = getSpeakerPitch(nameStr, screenreader, gender)
-                    rate = getSpeakerRate(nameStr, screenreader)
-                    srange = getSpeakerRange(nameStr)
+                prevDM = speakerJson['notify']['dm']
+                prevReply = speakerJson['notify']['reply']
+                prevCalendar = speakerJson['notify']['calendar']
+                prevFollow = speakerJson['notify']['followRequests']
+                prevLike = speakerJson['notify']['like']
+                prevShare = speakerJson['notify']['share']
 
-                    # say the speaker's name
-                    if screenreader == 'espeak':
-                        _speakerEspeak(espeak, pitch, rate, srange, nameStr)
-                    elif screenreader == 'picospeaker':
-                        _speakerPicospeaker(pitch, rate,
-                                            systemLanguage, nameStr)
-                    time.sleep(2)
+            if speakerJson.get('say'):
+                if speakerJson['say'] != prevSay:
+                    if speakerJson.get('name'):
+                        nameStr = speakerJson['name']
+                        gender = 'They/Them'
+                        if speakerJson.get('gender'):
+                            gender = speakerJson['gender']
 
-                    # append image description if needed
-                    if not speakerJson.get('imageDescription'):
-                        sayStr = speakerJson['say']
-                        # echo spoken text to the screen
-                        print(html.unescape(nameStr) + ': ' +
-                              html.unescape(speakerJson['say']) + '\n')
-                    else:
-                        sayStr = speakerJson['say'] + '. ' + \
-                            speakerJson['imageDescription']
-                        # echo spoken text to the screen
-                        print(html.unescape(nameStr) + ': ' +
-                              html.unescape(speakerJson['say']) + '\n' +
-                              html.unescape(speakerJson['imageDescription']))
+                        # get the speech parameters
+                        pitch = getSpeakerPitch(nameStr, screenreader, gender)
+                        rate = getSpeakerRate(nameStr, screenreader)
+                        srange = getSpeakerRange(nameStr)
 
-                    # speak the post content
-                    if screenreader == 'espeak':
-                        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
-                    elif screenreader == 'picospeaker':
-                        _speakerPicospeaker(pitch, rate,
-                                            systemLanguage, sayStr)
+                        # say the speaker's name
+                        if screenreader == 'espeak':
+                            _speakerEspeak(espeak, pitch, rate, srange,
+                                           nameStr)
+                        elif screenreader == 'picospeaker':
+                            _speakerPicospeaker(pitch, rate,
+                                                systemLanguage, nameStr)
+                        time.sleep(2)
 
-                prevSay = speakerJson['say']
+                        # append image description if needed
+                        if not speakerJson.get('imageDescription'):
+                            sayStr = speakerJson['say']
+                            # echo spoken text to the screen
+                            print(html.unescape(nameStr) + ': ' +
+                                  html.unescape(speakerJson['say']) + '\n')
+                        else:
+                            sayStr = speakerJson['say'] + '. ' + \
+                                speakerJson['imageDescription']
+                            # echo spoken text to the screen
+                            imageDescription = \
+                                html.unescape(speakerJson['imageDescription'])
+                            print(html.unescape(nameStr) + ': ' +
+                                  html.unescape(speakerJson['say']) + '\n' +
+                                  imageDescription)
+
+                        # speak the post content
+                        if screenreader == 'espeak':
+                            _speakerEspeak(espeak, pitch, rate, srange, sayStr)
+                        elif screenreader == 'picospeaker':
+                            _speakerPicospeaker(pitch, rate,
+                                                systemLanguage, sayStr)
+
+                    prevSay = speakerJson['say']
 
         # wait for a while, or until a key is pressed
         keyPress = _waitForKeypress(30, debug)

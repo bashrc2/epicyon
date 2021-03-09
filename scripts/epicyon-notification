@@ -209,9 +209,9 @@ function notifications {
                 if [[ "$epicyonLikeFileContent" == *':'* ]]; then
                     epicyonLikeMessage="Epicyon: $epicyonLikeFileContent"
                 fi
-                "${PROJECT_NAME}-notification" -u "$USERNAME" -s "Epicyon" -m "$epicyonLikeMessage" --sensitive yes
+		sendNotification "$USERNAME" "Epicyon" "$epicyonLikeMessage"
                 echo "##sent##" > "$epicyonLikeFile"
-                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonLkeFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonLikeFile"
             fi
         fi
 

@@ -2068,3 +2068,65 @@ def rejectPostId(baseDir: str, nickname: str, domain: str,
     if rejectFile:
         rejectFile.write('\n')
         rejectFile.close()
+
+
+def isDM(postJsonObject: {}) -> bool:
+    """Returns true if the given post is a DM
+    """
+    if postJsonObject['type'] != 'Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'Patch' and \
+       postJsonObject['object']['type'] != 'EncryptedMessage' and \
+       postJsonObject['object']['type'] != 'Article':
+        return False
+    if postJsonObject['object'].get('moderationStatus'):
+        return False
+    fields = ('to', 'cc')
+    for f in fields:
+        if not postJsonObject['object'].get(f):
+            continue
+        for toAddress in postJsonObject['object'][f]:
+            if toAddress.endswith('#Public'):
+                return False
+            if toAddress.endswith('followers'):
+                return False
+    return True
+
+
+def isReply(postJsonObject: {}, actor: str) -> bool:
+    """Returns true if the given post is a reply to the given actor
+    """
+    if postJsonObject['type'] != 'Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object'].get('moderationStatus'):
+        return False
+    if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'EncryptedMessage' and \
+       postJsonObject['object']['type'] != 'Article':
+        return False
+    if postJsonObject['object'].get('inReplyTo'):
+        if isinstance(postJsonObject['object']['inReplyTo'], str):
+            if postJsonObject['object']['inReplyTo'].startswith(actor):
+                return True
+    if not postJsonObject['object'].get('tag'):
+        return False
+    if not isinstance(postJsonObject['object']['tag'], list):
+        return False
+    for tag in postJsonObject['object']['tag']:
+        if not tag.get('type'):
+            continue
+        if tag['type'] == 'Mention':
+            if not tag.get('href'):
+                continue
+            if actor in tag['href']:
+                return True
+    return False

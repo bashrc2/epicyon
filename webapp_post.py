@@ -19,9 +19,9 @@ from like import noOfLikes
 from follow import isFollowingActor
 from posts import postIsMuted
 from posts import getPersonBox
-from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import isDM
 from utils import rejectPostId
 from utils import isRecentPost
 from utils import getConfigParam
@@ -1139,6 +1139,7 @@ def individualPostAsHtml(allowDownloads: bool,
                          showPublishedDateOnly: bool,
                          peertubeInstances: [],
                          allowLocalNetworkAccess: bool,
+                         themeName: str,
                          showRepeats=True,
                          showIcons=False,
                          manuallyApprovesFollowers=False,
@@ -1304,9 +1305,11 @@ def individualPostAsHtml(allowDownloads: bool,
                            postJsonObject['id'])
             if announceFilename and postJsonObject.get('actor'):
                 if not os.path.isfile(announceFilename + '.tts'):
-                    updateSpeaker(baseDir, nickname, domain,
+                    updateSpeaker(baseDir, httpPrefix,
+                                  nickname, domain, domainFull,
                                   postJsonObject, personCache,
-                                  translate, postJsonObject['actor'])
+                                  translate, postJsonObject['actor'],
+                                  themeName)
                     ttsFile = open(announceFilename + '.tts', "w+")
                     if ttsFile:
                         ttsFile.write('\n')
@@ -1683,7 +1686,8 @@ def htmlIndividualPost(cssCache: {},
                        YTReplacementDomain: str,
                        showPublishedDateOnly: bool,
                        peertubeInstances: [],
-                       allowLocalNetworkAccess: bool) -> str:
+                       allowLocalNetworkAccess: bool,
+                       themeName: str) -> str:
     """Show an individual post as html
     """
     postStr = ''
@@ -1724,7 +1728,7 @@ def htmlIndividualPost(cssCache: {},
                              YTReplacementDomain,
                              showPublishedDateOnly,
                              peertubeInstances,
-                             allowLocalNetworkAccess,
+                             allowLocalNetworkAccess, themeName,
                              False, authorized, False, False, False)
     messageId = removeIdEnding(postJsonObject['id'])
 
@@ -1752,6 +1756,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, authorized,
                                          False, False, False) + postStr
 
@@ -1782,6 +1787,7 @@ def htmlIndividualPost(cssCache: {},
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, authorized,
                                          False, False, False)
     cssFilename = baseDir + '/epicyon-profile.css'
@@ -1803,7 +1809,8 @@ def htmlPostReplies(cssCache: {},
                     YTReplacementDomain: str,
                     showPublishedDateOnly: bool,
                     peertubeInstances: [],
-                    allowLocalNetworkAccess: bool) -> str:
+                    allowLocalNetworkAccess: bool,
+                    themeName: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr = ''
@@ -1822,6 +1829,7 @@ def htmlPostReplies(cssCache: {},
                                      showPublishedDateOnly,
                                      peertubeInstances,
                                      allowLocalNetworkAccess,
+                                     themeName,
                                      False, False, False, False, False)
 
     cssFilename = baseDir + '/epicyon-profile.css'

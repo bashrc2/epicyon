@@ -12,6 +12,8 @@ import random
 import urllib.parse
 from auth import createBasicAuthHeader
 from session import getJson
+from utils import isDM
+from utils import isReply
 from utils import camelCaseSplit
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -263,7 +265,11 @@ def getSpeakerFromServer(baseDir: str, session,
 
 def _speakerEndpointJson(displayName: str, summary: str,
                          content: str, imageDescription: str,
-                         links: [], gender: str, postId: str) -> {}:
+                         links: [], gender: str, postId: str,
+                         postDM: bool, postReply: bool,
+                         followRequestsExist: bool,
+                         likedBy: str, postCal: bool,
+                         postShare: bool, themeName: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -272,7 +278,16 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "say": content,
         "imageDescription": imageDescription,
         "detectedLinks": links,
-        "id": postId
+        "id": postId,
+        "notify": {
+            "theme": themeName,
+            "dm": postDM,
+            "reply": postReply,
+            "followRequests": followRequestsExist,
+            "likedBy": likedBy,
+            "calendar": postCal,
+            "share": postShare
+        }
     }
     if gender:
         speakerJson['gender'] = gender
@@ -360,9 +375,11 @@ def getSSMLbox(baseDir: str, path: str,
                                 instanceTitle, gender)
 
 
-def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
+def _postToSpeakerJson(baseDir: str, httpPrefix: str,
+                       nickname: str, domain: str, domainFull: str,
                        postJsonObject: {}, personCache: {},
-                       translate: {}, announcingActor: str) -> {}:
+                       translate: {}, announcingActor: str,
+                       themeName: str) -> {}:
     """Converts an ActivityPub post into some Json containing
     speech synthesis parameters.
     NOTE: There currently appears to be no standardized json
@@ -429,21 +446,54 @@ def _postToSpeakerJson(baseDir: str, nickname: str, domain: str,
     postId = None
     if postJsonObject['object'].get('id'):
         postId = postJsonObject['object']['id']
+
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    postDM = isDM(postJsonObject)
+    postReply = isReply(postJsonObject, actor)
+
+    followRequestsExist = False
+    accountsDir = baseDir + '/accounts/' + nickname + '@' + domainFull
+    approveFollowsFilename = accountsDir + '/followrequests.txt'
+    if os.path.isfile(approveFollowsFilename):
+        with open(approveFollowsFilename, 'r') as fp:
+            follows = fp.readlines()
+            if len(follows) > 0:
+                followRequestsExist = True
+    likedBy = ''
+    likeFilename = accountsDir + '/.newLike'
+    if os.path.isfile(likeFilename):
+        with open(likeFilename, 'r') as fp:
+            likedBy = fp.read()
+            if '##sent##' in likedBy:
+                likedBy = ''
+    calendarFilename = accountsDir + '/.newCalendar'
+    postCal = os.path.isfile(calendarFilename)
+    shareFilename = accountsDir + '/.newShare'
+    postShare = os.path.isfile(shareFilename)
+
     return _speakerEndpointJson(speakerName, summary,
                                 content, imageDescription,
-                                detectedLinks, gender, postId)
+                                detectedLinks, gender, postId,
+                                postDM, postReply,
+                                followRequestsExist,
+                                likedBy,
+                                postCal, postShare, themeName)
 
 
-def updateSpeaker(baseDir: str, nickname: str, domain: str,
+def updateSpeaker(baseDir: str, httpPrefix: str,
+                  nickname: str, domain: str, domainFull: str,
                   postJsonObject: {}, personCache: {},
-                  translate: {}, announcingActor: str) -> None:
+                  translate: {}, announcingActor: str,
+                  themeName: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
     speakerJson = \
-        _postToSpeakerJson(baseDir, nickname, domain,
+        _postToSpeakerJson(baseDir, httpPrefix,
+                           nickname, domain, domainFull,
                            postJsonObject, personCache,
-                           translate, announcingActor)
+                           translate, announcingActor,
+                           themeName)
     speakerFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     saveJson(speakerJson, speakerFilename)

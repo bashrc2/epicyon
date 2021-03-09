@@ -66,7 +66,8 @@ def htmlProfileAfterSearch(cssCache: {},
                            showPublishedDateOnly: bool,
                            defaultTimeline: str,
                            peertubeInstances: [],
-                           allowLocalNetworkAccess: bool) -> str:
+                           allowLocalNetworkAccess: bool,
+                           themeName: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if hasUsersPath(profileHandle) or '/@' in profileHandle:
@@ -300,6 +301,7 @@ def htmlProfileAfterSearch(cssCache: {},
                                  YTReplacementDomain,
                                  showPublishedDateOnly,
                                  peertubeInstances, allowLocalNetworkAccess,
+                                 themeName,
                                  False, False, False, False, False)
         i += 1
         if i >= 20:
@@ -804,7 +806,8 @@ def htmlProfile(rssIconAtTop: bool,
                               YTReplacementDomain,
                               showPublishedDateOnly,
                               peertubeInstances,
-                              allowLocalNetworkAccess) + licenseStr
+                              allowLocalNetworkAccess,
+                              theme) + licenseStr
     elif selected == 'following':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -856,7 +859,8 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      themeName: str) -> str:
     """Shows posts on the profile screen
     These should only be public posts
     """
@@ -896,6 +900,7 @@ def _htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr

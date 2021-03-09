@@ -58,12 +58,12 @@ from filters import isFiltered
 from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
+from utils import isDM
+from utils import isReply
 from httpsig import messageContentDigest
 from posts import createDirectMessagePost
 from posts import validContentWarning
 from posts import downloadAnnounce
-from posts import isDM
-from posts import isReply
 from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
@@ -158,7 +158,8 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                                allowDeletion: bool, boxname: str,
                                showPublishedDateOnly: bool,
                                peertubeInstances: [],
-                               allowLocalNetworkAccess: bool) -> None:
+                               allowLocalNetworkAccess: bool,
+                               themeName: str) -> None:
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
@@ -176,6 +177,7 @@ def _inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
                          httpPrefix, __version__, boxname, None,
                          showPublishedDateOnly,
                          peertubeInstances, allowLocalNetworkAccess,
+                         themeName,
                          not isDM(postJsonObject),
                          True, True, False, True)
 
@@ -1290,7 +1292,8 @@ def _receiveAnnounce(recentPostsCache: {},
                      personCache: {}, messageJson: {}, federationList: [],
                      debug: bool, translate: {},
                      YTReplacementDomain: str,
-                     allowLocalNetworkAccess: bool) -> bool:
+                     allowLocalNetworkAccess: bool,
+                     themeName: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1408,9 +1411,12 @@ def _receiveAnnounce(recentPostsCache: {},
 
                 if isRecentPost(postJsonObject):
                     if not os.path.isfile(postFilename + '.tts'):
-                        updateSpeaker(baseDir, nickname, domain,
+                        domainFull = getFullDomain(domain, port)
+                        updateSpeaker(baseDir, httpPrefix,
+                                      nickname, domain, domainFull,
                                       postJsonObject, personCache,
-                                      translate, lookupActor)
+                                      translate, lookupActor,
+                                      themeName)
                         ttsFile = open(postFilename + '.tts', "w+")
                         if ttsFile:
                             ttsFile.write('\n')
@@ -2164,7 +2170,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                        showPublishedDateOnly: bool,
                        allowLocalNetworkAccess: bool,
                        peertubeInstances: [],
-                       lastBounceMessage: []) -> bool:
+                       lastBounceMessage: [],
+                       themeName: str) -> bool:
     """ Anything which needs to be done after initial checks have passed
     """
     actor = keyId
@@ -2243,7 +2250,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                         federationList,
                         debug, translate,
                         YTReplacementDomain,
-                        allowLocalNetworkAccess):
+                        allowLocalNetworkAccess,
+                        themeName):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2491,9 +2499,11 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 else:
                     if boxname == 'inbox':
                         if isRecentPost(postJsonObject):
-                            updateSpeaker(baseDir, nickname, domain,
+                            domainFull = getFullDomain(domain, port)
+                            updateSpeaker(baseDir, httpPrefix,
+                                          nickname, domain, domainFull,
                                           postJsonObject, personCache,
-                                          translate, None)
+                                          translate, None, themeName)
                     if not unitTest:
                         if debug:
                             print('Saving inbox post as html to cache')
@@ -2513,7 +2523,8 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                                                    boxname,
                                                    showPublishedDateOnly,
                                                    peertubeInstances,
-                                                   allowLocalNetworkAccess)
+                                                   allowLocalNetworkAccess,
+                                                   themeName)
                         if debug:
                             timeDiff = \
                                 str(int((time.time() - htmlCacheStartTime) *
@@ -2614,7 +2625,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   showPublishedDateOnly: bool,
                   maxFollowers: int, allowLocalNetworkAccess: bool,
                   peertubeInstances: [],
-                  verifyAllSignatures: bool) -> None:
+                  verifyAllSignatures: bool,
+                  themeName: str) -> None:
     """Processes received items and moves them to the appropriate
     directories
     """
@@ -3107,7 +3119,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                showPublishedDateOnly,
                                allowLocalNetworkAccess,
                                peertubeInstances,
-                               lastBounceMessage)
+                               lastBounceMessage,
+                               themeName)
             if debug:
                 pprint(queueJson['post'])
 

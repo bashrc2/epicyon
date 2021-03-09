@@ -527,7 +527,8 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      themeName: str) -> str:
     """Show a page containing search results for your post history
     """
     if historysearch.startswith('!'):
@@ -604,6 +605,7 @@ def htmlHistorySearch(cssCache: {}, translate: {}, baseDir: str,
                                  showPublishedDateOnly,
                                  peertubeInstances,
                                  allowLocalNetworkAccess,
+                                 themeName,
                                  showIndividualPostIcons,
                                  showIndividualPostIcons,
                                  False, False, False)
@@ -626,7 +628,8 @@ def htmlHashtagSearch(cssCache: {},
                       YTReplacementDomain: str,
                       showPublishedDateOnly: bool,
                       peertubeInstances: [],
-                      allowLocalNetworkAccess: bool) -> str:
+                      allowLocalNetworkAccess: bool,
+                      themeName: str) -> str:
     """Show a page containing search results for a hashtag
     """
     if hashtag.startswith('#'):
@@ -778,6 +781,7 @@ def htmlHashtagSearch(cssCache: {},
                                  allowLocalNetworkAccess,
                                  showRepeats, showIcons,
                                  manuallyApprovesFollowers,
+                                 themeName,
                                  showPublicOnly,
                                  storeToCache)
         if postStr:

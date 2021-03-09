@@ -30,7 +30,8 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                           YTReplacementDomain: str,
                           showPublishedDateOnly: bool,
                           peertubeInstances: [],
-                          allowLocalNetworkAccess: bool) -> str:
+                          allowLocalNetworkAccess: bool,
+                          themeName: str) -> str:
     """Shows posts on the front screen of a news instance
     These should only be public blog posts from the features timeline
     which is the blog timeline of the news actor
@@ -71,6 +72,7 @@ def _htmlFrontScreenPosts(recentPostsCache: {}, maxRecentPosts: int,
                                          showPublishedDateOnly,
                                          peertubeInstances,
                                          allowLocalNetworkAccess,
+                                         themeName,
                                          False, False, False, True, False)
                 if postStr:
                     profileStr += postStr + separatorStr
@@ -159,7 +161,8 @@ def htmlFrontScreen(rssIconAtTop: bool,
                               YTReplacementDomain,
                               showPublishedDateOnly,
                               peertubeInstances,
-                              allowLocalNetworkAccess) + licenseStr
+                              allowLocalNetworkAccess,
+                              theme) + licenseStr
 
     # Footer which is only used for system accounts
     profileFooterStr = '      </td>\n'
