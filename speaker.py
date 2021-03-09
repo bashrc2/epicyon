@@ -459,6 +459,8 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     if os.path.isfile(likeFilename):
         with open(likeFilename, 'r') as fp:
             likedBy = fp.read()
+            if '##sent##' in likedBy:
+                likedBy = ''
 
     return _speakerEndpointJson(speakerName, summary,
                                 content, imageDescription,
