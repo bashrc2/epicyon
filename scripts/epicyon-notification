@@ -6,7 +6,7 @@
 #
 # Something like:
 #
-# */1 * * * * root /usr/local/bin/epicyon-notification --epicyon yes
+# */1 * * * * root /usr/local/bin/epicyon-notification
 #
 # License
 # =======
