@@ -77,6 +77,26 @@ def _playNotificationSound(soundFilename: str, player='ffplay') -> None:
                   ' -autoexit -hide_banner -nodisp')
 
 
+def _desktopNotification(notificationType: str,
+                         title: str, message: str)) -> None:
+    """Shows a desktop notification
+    """
+    if not notificationType:
+        return
+
+    if notificationType == 'notify-send':
+        # Ubuntu
+        os.system('notify-send "' + title + '" "' + message + '"')
+    elif notificationType == 'osascript':
+        # Mac
+        os.system("osascript -e 'display notification \"" +
+                  message + "\" with title \"" + title + "\"'")
+    elif notificationType == 'New-BurntToastNotification':
+        # Windows
+        os.system("New-BurntToastNotification -Text \"" +
+                  title + "\", '" + message + "'")
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
@@ -108,6 +128,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     likeSoundFilename = 'like.ogg'
     shareSoundFilename = 'share.ogg'
     player = 'ffplay'
+    notificationType = 'notify-send'
+    instanceTitle = 'Epicyon'
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -125,26 +147,44 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if speakerJson['notify']['dm'] != prevDM:
                         _playNotificationSound(soundsDir + '/' +
                                                dmSoundFilename, player)
+                        _desktopNotification(notificationType,
+                                             instanceTitle,
+                                             'New direct message')
                 elif replySoundFilename:
                     if speakerJson['notify']['reply'] != prevReply:
                         _playNotificationSound(soundsDir + '/' +
                                                replySoundFilename, player)
+                        _desktopNotification(notificationType,
+                                             instanceTitle,
+                                             'New reply')
                 elif calendarSoundFilename:
                     if speakerJson['notify']['calendar'] != prevCalendar:
                         _playNotificationSound(soundsDir + '/' +
                                                calendarSoundFilename, player)
+                        _desktopNotification(notificationType,
+                                             instanceTitle,
+                                             'New calendar event')
                 elif followSoundFilename:
                     if speakerJson['notify']['followRequests'] != prevFollow:
                         _playNotificationSound(soundsDir + '/' +
                                                followSoundFilename, player)
+                        _desktopNotification(notificationType,
+                                             instanceTitle,
+                                             'New follow request')
                 elif likeSoundFilename:
                     if speakerJson['notify']['likedBy'] != prevLike:
                         _playNotificationSound(soundsDir + '/' +
                                                likeSoundFilename, player)
+                        _desktopNotification(notificationType,
+                                             instanceTitle,
+                                             'New like')
                 elif shareSoundFilename:
                     if speakerJson['notify']['share'] != prevShare:
                         _playNotificationSound(soundsDir + '/' +
                                                shareSoundFilename, player)
+                        _desktopNotification(notificationType,
+                                             instanceTitle,
+                                             'New shared item')
 
                 prevDM = speakerJson['notify']['dm']
                 prevReply = speakerJson['notify']['reply']
