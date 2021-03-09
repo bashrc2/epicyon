@@ -160,6 +160,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              title,
                                              'New direct message ' +
                                              actor + '/dm')
+                        prevDM = speakerJson['notify']['dm']
                 elif replySoundFilename:
                     if speakerJson['notify']['reply'] and \
                        speakerJson['notify']['reply'] != prevReply:
@@ -169,6 +170,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              title,
                                              'New reply ' +
                                              actor + '/tlreplies')
+                        prevReply = speakerJson['notify']['reply']
                 elif calendarSoundFilename:
                     if speakerJson['notify']['calendar'] and \
                        speakerJson['notify']['calendar'] != prevCalendar:
@@ -178,6 +180,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              title,
                                              'New calendar event ' +
                                              actor + '/calendar')
+                        prevCalendar = speakerJson['notify']['calendar']
                 elif followSoundFilename:
                     if speakerJson['notify']['followRequests'] and \
                        speakerJson['notify']['followRequests'] != prevFollow:
@@ -187,6 +190,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              title,
                                              'New follow request ' +
                                              actor + '/followers#buttonheader')
+                        prevFollow = speakerJson['notify']['followRequests']
                 elif likeSoundFilename:
                     if speakerJson['notify']['likedBy'] != prevLike:
                         _playNotificationSound(soundsDir + '/' +
@@ -195,6 +199,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              title,
                                              'New like ' +
                                              speakerJson['notify']['likedBy'])
+                        prevLike = speakerJson['notify']['likedBy']
                 elif shareSoundFilename:
                     if speakerJson['notify']['share'] and \
                        speakerJson['notify']['share'] != prevShare:
@@ -204,13 +209,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              title,
                                              'New shared item ' +
                                              actor + '/shares')
-
-                prevDM = speakerJson['notify']['dm']
-                prevReply = speakerJson['notify']['reply']
-                prevCalendar = speakerJson['notify']['calendar']
-                prevFollow = speakerJson['notify']['followRequests']
-                prevLike = speakerJson['notify']['likedBy']
-                prevShare = speakerJson['notify']['share']
+                        prevShare = speakerJson['notify']['share']
 
             if speakerJson.get('say'):
                 if speakerJson['say'] != prevSay:
