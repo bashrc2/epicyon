@@ -97,8 +97,8 @@ parser.add_argument('-n', '--nickname', dest='nickname', type=str,
                     default=None,
                     help='Nickname of the account to use')
 parser.add_argument('--screenreader', dest='screenreader', type=str,
-                    default='espeak',
-                    help='Name of the screen reader')
+                    default=None,
+                    help='Name of the screen reader: espeak/picospeaker')
 parser.add_argument('--fol', '--follow', dest='follow', type=str,
                     default=None,
                     help='Handle of account to follow. eg. nickname@domain')
