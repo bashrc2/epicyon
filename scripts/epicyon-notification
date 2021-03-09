@@ -174,7 +174,7 @@ function notifications {
         epicyonCalendarfile="$epicyonDir/.newCalendar"
         if [ -f "$epicyonCalendarfile" ]; then
             if ! grep -q "##sent##" "$epicyonCalendarfile"; then
-                epicyonCalendarmessage=$(notification_translate_text 'New calendar event')
+                epicyonCalendarmessage=$(notification_translate_text 'Calendar')
                 epicyonCalendarfileContent=$(echo "$epicyonCalendarmessage")" "$(cat "$epicyonCalendarfile")
                 if [[ "$epicyonCalendarfileContent" == '/calendar'* ]]; then
                     epicyonCalendarmessage="Epicyon: ${EPICYON_DOMAIN_NAME}/users/${USERNAME}${epicyonCalendarfileContent}"
@@ -189,7 +189,7 @@ function notifications {
         epicyonDMfile="$epicyonDir/.newDM"
         if [ -f "$epicyonDMfile" ]; then
             if ! grep -q "##sent##" "$epicyonDMfile"; then
-                epicyonDMmessage=$(notification_translate_text 'New direct message')
+                epicyonDMmessage=$(notification_translate_text 'DM')
                 epicyonDMfileContent=$(echo "$epicyonDMmessage")" "$(cat "$epicyonDMfile")
                 if [[ "$epicyonDMfileContent" == *':'* ]]; then
                     epicyonDMmessage="Epicyon: $epicyonDMfileContent"
@@ -204,7 +204,7 @@ function notifications {
         epicyonLikeFile="$epicyonDir/.newLike"
         if [ -f "$epicyonLikeFile" ]; then
             if ! grep -q "##sent##" "$epicyonLikeFile"; then
-                epicyonLikeMessage=$(notification_translate_text 'liked your post')
+                epicyonLikeMessage=$(notification_translate_text 'Liked by')
                 epicyonLikeFileContent=$(cat "$epicyonLikeFile" | awk -F ' ' '{print $1}')" "$(echo "$epicyonLikeMessage")" "$(cat "$epicyonLikeFile" | awk -F ' ' '{print $2}')
                 if [[ "$epicyonLikeFileContent" == *':'* ]]; then
                     epicyonLikeMessage="Epicyon: $epicyonLikeFileContent"
@@ -219,7 +219,7 @@ function notifications {
         epicyonReplyFile="$epicyonDir/.newReply"
         if [ -f "$epicyonReplyFile" ]; then
             if ! grep -q "##sent##" "$epicyonReplyFile"; then
-                epicyonReplyMessage=$(notification_translate_text 'New reply')
+                epicyonReplyMessage=$(notification_translate_text 'Replies')
                 epicyonReplyFileContent=$(echo "$epicyonReplyMessage")" "$(cat "$epicyonReplyFile")
                 if [[ "$epicyonReplyFileContent" == *':'* ]]; then
                     epicyonReplyMessage="Epicyon: $epicyonReplyFileContent"
@@ -253,7 +253,7 @@ function notifications {
         epicyonShareFile="$epicyonDir/.newShare"
         if [ -f "$epicyonShareFile" ]; then
             if ! grep -q "##sent##" "$epicyonShareFile"; then
-                epicyonShareMessage=$(notification_translate_text 'New shared item')
+                epicyonShareMessage=$(notification_translate_text 'Shares')
                 epicyonShareFileContent=$(echo "$epicyonShareMessage")" "$(cat "$epicyonShareFile")
                 if [[ "$epicyonShareFileContent" == *':'* ]]; then
                     epicyonShareMessage="Epicyon: $epicyonShareFileContent"
@@ -283,7 +283,7 @@ function notifications {
                     cp "$epicyonFollowFile" "$epicyonFollowNotificationsFile"
                     chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonFollowNotificationsFile"
 
-                    epicyonFollowMessage=$(notification_translate_text "New follow request")" ${EPICYON_DOMAIN_NAME}/users/${USERNAME}/followers"
+                    epicyonFollowMessage=$(notification_translate_text 'Approve follower requests')" ${EPICYON_DOMAIN_NAME}/users/${USERNAME}/followers"
                     sendNotification "$USERNAME" "Epicyon" "$epicyonFollowMessage"
                 fi
             fi
