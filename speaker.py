@@ -266,7 +266,9 @@ def getSpeakerFromServer(baseDir: str, session,
 def _speakerEndpointJson(displayName: str, summary: str,
                          content: str, imageDescription: str,
                          links: [], gender: str, postId: str,
-                         postDM: bool, postReply: bool) -> {}:
+                         postDM: bool, postReply: bool,
+                         followRequestsExist: bool,
+                         likedBy: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -278,7 +280,9 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "id": postId,
         "notify": {
             "dm": postDM,
-            "reply": postReply
+            "reply": postReply,
+            "followRequests": followRequestsExist,
+            "likedBy": likedBy
         }
     }
     if gender:
@@ -441,11 +445,27 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     postDM = isDM(postJsonObject)
     postReply = isReply(postJsonObject, actor)
+
+    followRequestsExist = False
+    accountsDir = baseDir + '/accounts/' + nickname + '@' + domainFull
+    approveFollowsFilename = accountsDir + '/followrequests.txt'
+    if os.path.isfile(approveFollowsFilename):
+        with open(approveFollowsFilename, 'r') as fp:
+            follows = fp.readlines()
+            if len(follows) > 0:
+                followRequestsExist = True
+    likedBy = ''
+    likeFilename = accountsDir + '/.newLike'
+    if os.path.isfile(likeFilename):
+        with open(likeFilename, 'r') as fp:
+            likedBy = fp.read()
+
     return _speakerEndpointJson(speakerName, summary,
                                 content, imageDescription,
                                 detectedLinks, gender, postId,
-                                postDM, postReply)
-
+                                postDM, postReply,
+                                followRequestsExist,
+                                likedBy)
 
 def updateSpeaker(baseDir: str, httpPrefix: str,
                   nickname: str, domain: str, domainFull: str,

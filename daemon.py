@@ -4853,8 +4853,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # only receive DMs from accounts you follow
                     followDMsFilename = \
                         baseDir + '/accounts/' + \
-                        nickname + '@' + domain + \
-                        '/.followDMs'
+                        nickname + '@' + domain + '/.followDMs'
                     if onFinalWelcomeScreen:
                         # initial default setting created via
                         # the welcome screen
