@@ -269,7 +269,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
                          likedBy: str, postCal: bool,
-                         postShare: bool) -> {}:
+                         postShare: bool, themeName: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -280,6 +280,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "detectedLinks": links,
         "id": postId,
         "notify": {
+            "theme": themeName,
             "dm": postDM,
             "reply": postReply,
             "followRequests": followRequestsExist,
@@ -377,7 +378,8 @@ def getSSMLbox(baseDir: str, path: str,
 def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                        nickname: str, domain: str, domainFull: str,
                        postJsonObject: {}, personCache: {},
-                       translate: {}, announcingActor: str) -> {}:
+                       translate: {}, announcingActor: str,
+                       themeName: str) -> {}:
     """Converts an ActivityPub post into some Json containing
     speech synthesis parameters.
     NOTE: There currently appears to be no standardized json
@@ -475,13 +477,14 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                                 postDM, postReply,
                                 followRequestsExist,
                                 likedBy,
-                                postCal, postShare)
+                                postCal, postShare, themeName)
 
 
 def updateSpeaker(baseDir: str, httpPrefix: str,
                   nickname: str, domain: str, domainFull: str,
                   postJsonObject: {}, personCache: {},
-                  translate: {}, announcingActor: str) -> None:
+                  translate: {}, announcingActor: str,
+                  themeName: str) -> None:
     """ Generates a json file which can be used for TTS announcement
     of incoming inbox posts
     """
@@ -489,7 +492,8 @@ def updateSpeaker(baseDir: str, httpPrefix: str,
         _postToSpeakerJson(baseDir, httpPrefix,
                            nickname, domain, domainFull,
                            postJsonObject, personCache,
-                           translate, announcingActor)
+                           translate, announcingActor,
+                           themeName)
     speakerFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/speaker.json'
     saveJson(speakerJson, speakerFilename)
