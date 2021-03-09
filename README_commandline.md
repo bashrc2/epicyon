@@ -408,3 +408,11 @@ python3 epicyon.py --screenreader picospeaker --notify yournickname@yourdomain -
 ```
 
 This will then stay running and incoming posts will be announced as they arrive.
+
+## Desktop notifications
+
+You can get desktop notifications either by running the screen reader as shown above, or if you only want notifications and not spoken messages then you can run the client as follows, without the *screenreader* option:
+
+``` bash
+python3 epicyon.py --notify yournickname@yourdomain --password [yourpassword]
+```
