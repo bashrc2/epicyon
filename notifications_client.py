@@ -78,7 +78,7 @@ def _playNotificationSound(soundFilename: str, player='ffplay') -> None:
 
 
 def _desktopNotification(notificationType: str,
-                         title: str, message: str)) -> None:
+                         title: str, message: str) -> None:
     """Shows a desktop notification
     """
     if not notificationType:
