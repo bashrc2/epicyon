@@ -147,10 +147,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     title = speakerJson['notify']['title']
                 soundsDir = 'theme/default/sounds'
                 if speakerJson['notify'].get('theme'):
-                    soundsDir = \
-                        'theme/' + speakerJson['notify']['theme'] + '/sounds'
-                    if not os.path.isdir(soundsDir):
-                        soundsDir = 'theme/default/sounds'
+                    if isinstance(speakerJson['notify']['theme'], str):
+                        soundsDir = \
+                            'theme/' + \
+                            speakerJson['notify']['theme'] + '/sounds'
+                        if not os.path.isdir(soundsDir):
+                            soundsDir = 'theme/default/sounds'
                 if speakerJson['notify']['dm'] != prevDM:
                     if speakerJson['notify']['dm'] is True:
                         _playNotificationSound(soundsDir + '/' +
