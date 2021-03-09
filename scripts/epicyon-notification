@@ -113,17 +113,22 @@ function sendNotification {
     
     if [ -d /etc/prosody ]; then
         if [ -f /usr/bin/sendxmpp ]; then
+	    # generate a random password for a temporary user account
             notification_user_password=$(openssl rand -base64 32 | tr -dc A-Za-z0-9 | head -c 30 ; echo -n '')
+	    # register a temporary xmpp user account to send the message
             if prosodyctl register "notification" "$local_domain" "$notification_user_password"; then
                 if [[ "$SUBJECT" == *' Tor '* ]]; then
                     MESSAGE="$SUBJECT"
                 fi
 
                 if [ -f /usr/bin/sendxmpp ]; then
+		    # kill any existing message which hasn't sent
                     kill_sendxmpp_process
+		    # send the xmpp notification using the temporary account
                     echo "${MESSAGE}" | /usr/bin/sendxmpp -u notification -p "${notification_user_password}" -j localhost -o ${local_domain} --message-type=headline -n -t -s ${PROJECT_NAME} ${USERNAME}@${local_domain}
                 fi
             fi
+	    # remove the temporary xmpp account
             prosodyctl deluser "notification@$local_domain"
         fi
     fi
