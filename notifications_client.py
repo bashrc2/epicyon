@@ -147,28 +147,32 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if not os.path.isdir(soundsDir):
                         soundsDir = 'theme/default/sounds'
                 if dmSoundFilename:
-                    if speakerJson['notify']['dm'] != prevDM:
+                    if speakerJson['notify']['dm'] and \
+                       speakerJson['notify']['dm'] != prevDM:
                         _playNotificationSound(soundsDir + '/' +
                                                dmSoundFilename, player)
                         _desktopNotification(notificationType,
                                              instanceTitle,
                                              'New direct message')
                 elif replySoundFilename:
-                    if speakerJson['notify']['reply'] != prevReply:
+                    if speakerJson['notify']['reply'] and \
+                       speakerJson['notify']['reply'] != prevReply:
                         _playNotificationSound(soundsDir + '/' +
                                                replySoundFilename, player)
                         _desktopNotification(notificationType,
                                              instanceTitle,
                                              'New reply')
                 elif calendarSoundFilename:
-                    if speakerJson['notify']['calendar'] != prevCalendar:
+                    if speakerJson['notify']['calendar'] and \
+                       speakerJson['notify']['calendar'] != prevCalendar:
                         _playNotificationSound(soundsDir + '/' +
                                                calendarSoundFilename, player)
                         _desktopNotification(notificationType,
                                              instanceTitle,
                                              'New calendar event')
                 elif followSoundFilename:
-                    if speakerJson['notify']['followRequests'] != prevFollow:
+                    if speakerJson['notify']['followRequests'] and \
+                       speakerJson['notify']['followRequests'] != prevFollow:
                         _playNotificationSound(soundsDir + '/' +
                                                followSoundFilename, player)
                         _desktopNotification(notificationType,
@@ -182,7 +186,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              instanceTitle,
                                              'New like')
                 elif shareSoundFilename:
-                    if speakerJson['notify']['share'] != prevShare:
+                    if speakerJson['notify']['share'] and \
+                       speakerJson['notify']['share'] != prevShare:
                         _playNotificationSound(soundsDir + '/' +
                                                shareSoundFilename, player)
                         _desktopNotification(notificationType,
