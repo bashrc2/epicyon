@@ -92,6 +92,8 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "Gmail": "G-mail",
             "OpenPGP": "Open P-G-P",
             "Tor": "Toor",
+            "fediverse": "fediiverse",
+            "Fediverse": "Fediiverse",
             " foss ": " free and open source software ",
             " floss ": " free libre and open source software ",
             " FOSS ": "free and open source software",
