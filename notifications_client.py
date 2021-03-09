@@ -11,6 +11,7 @@ import html
 import time
 import sys
 import select
+from utils import getFullDomain
 from session import createSession
 from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
@@ -117,6 +118,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
         print('Running desktop notifications for ' + nickname + '@' + domain)
     print('/q or /quit to exit')
 
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     prevSay = ''
     prevDM = False
     prevReply = False
@@ -132,7 +135,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     shareSoundFilename = 'share.ogg'
     player = 'ffplay'
     notificationType = 'notify-send'
-    instanceTitle = 'Epicyon'
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -140,6 +142,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                  domain, port, httpPrefix, True, __version__)
         if speakerJson:
             if speakerJson.get('notify'):
+                title = 'Epicyon'
+                if speakerJson['notify'].get('title'):
+                    title = speakerJson['notify']['title']
                 soundsDir = 'theme/default/sounds'
                 if speakerJson['notify'].get('theme'):
                     soundsDir = \
@@ -152,47 +157,53 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _playNotificationSound(soundsDir + '/' +
                                                dmSoundFilename, player)
                         _desktopNotification(notificationType,
-                                             instanceTitle,
-                                             'New direct message')
+                                             title,
+                                             'New direct message ' +
+                                             actor + '/dm')
                 elif replySoundFilename:
                     if speakerJson['notify']['reply'] and \
                        speakerJson['notify']['reply'] != prevReply:
                         _playNotificationSound(soundsDir + '/' +
                                                replySoundFilename, player)
                         _desktopNotification(notificationType,
-                                             instanceTitle,
-                                             'New reply')
+                                             title,
+                                             'New reply ' +
+                                             actor + '/tlreplies')
                 elif calendarSoundFilename:
                     if speakerJson['notify']['calendar'] and \
                        speakerJson['notify']['calendar'] != prevCalendar:
                         _playNotificationSound(soundsDir + '/' +
                                                calendarSoundFilename, player)
                         _desktopNotification(notificationType,
-                                             instanceTitle,
-                                             'New calendar event')
+                                             title,
+                                             'New calendar event ' +
+                                             actor + '/calendar')
                 elif followSoundFilename:
                     if speakerJson['notify']['followRequests'] and \
                        speakerJson['notify']['followRequests'] != prevFollow:
                         _playNotificationSound(soundsDir + '/' +
                                                followSoundFilename, player)
                         _desktopNotification(notificationType,
-                                             instanceTitle,
-                                             'New follow request')
+                                             title,
+                                             'New follow request ' +
+                                             actor + '/followers#buttonheader')
                 elif likeSoundFilename:
                     if speakerJson['notify']['likedBy'] != prevLike:
                         _playNotificationSound(soundsDir + '/' +
                                                likeSoundFilename, player)
                         _desktopNotification(notificationType,
-                                             instanceTitle,
-                                             'New like')
+                                             title,
+                                             'New like ' +
+                                             speakerJson['notify']['likedBy'])
                 elif shareSoundFilename:
                     if speakerJson['notify']['share'] and \
                        speakerJson['notify']['share'] != prevShare:
                         _playNotificationSound(soundsDir + '/' +
                                                shareSoundFilename, player)
                         _desktopNotification(notificationType,
-                                             instanceTitle,
-                                             'New shared item')
+                                             title,
+                                             'New shared item ' +
+                                             actor + '/shares')
 
                 prevDM = speakerJson['notify']['dm']
                 prevReply = speakerJson['notify']['reply']
