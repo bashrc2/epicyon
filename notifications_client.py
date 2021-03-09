@@ -113,6 +113,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             return
 
         print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
+    else:
+        print('Running desktop notifications for ' + nickname + '@' + domain)
 
     prevSay = ''
     prevDM = False
