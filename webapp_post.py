@@ -19,9 +19,9 @@ from like import noOfLikes
 from follow import isFollowingActor
 from posts import postIsMuted
 from posts import getPersonBox
-from posts import isDM
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import isDM
 from utils import rejectPostId
 from utils import isRecentPost
 from utils import getConfigParam
@@ -1304,7 +1304,8 @@ def individualPostAsHtml(allowDownloads: bool,
                            postJsonObject['id'])
             if announceFilename and postJsonObject.get('actor'):
                 if not os.path.isfile(announceFilename + '.tts'):
-                    updateSpeaker(baseDir, nickname, domain,
+                    updateSpeaker(baseDir, httpPrefix,
+                                  nickname, domain, domainFull,
                                   postJsonObject, personCache,
                                   translate, postJsonObject['actor'])
                     ttsFile = open(announceFilename + '.tts', "w+")

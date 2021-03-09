@@ -58,12 +58,12 @@ from filters import isFiltered
 from utils import updateAnnounceCollection
 from utils import undoAnnounceCollectionEntry
 from utils import dangerousMarkup
+from utils import isDM
+from utils import isReply
 from httpsig import messageContentDigest
 from posts import createDirectMessagePost
 from posts import validContentWarning
 from posts import downloadAnnounce
-from posts import isDM
-from posts import isReply
 from posts import isMuted
 from posts import isImageMedia
 from posts import sendSignedJson
@@ -1408,7 +1408,9 @@ def _receiveAnnounce(recentPostsCache: {},
 
                 if isRecentPost(postJsonObject):
                     if not os.path.isfile(postFilename + '.tts'):
-                        updateSpeaker(baseDir, nickname, domain,
+                        domainFull = getFullDomain(domain, port)
+                        updateSpeaker(baseDir, httpPrefix,
+                                      nickname, domain, domainFull,
                                       postJsonObject, personCache,
                                       translate, lookupActor)
                         ttsFile = open(postFilename + '.tts', "w+")
@@ -2491,7 +2493,9 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                 else:
                     if boxname == 'inbox':
                         if isRecentPost(postJsonObject):
-                            updateSpeaker(baseDir, nickname, domain,
+                            domainFull = getFullDomain(domain, port)
+                            updateSpeaker(baseDir, httpPrefix,
+                                          nickname, domain, domainFull,
                                           postJsonObject, personCache,
                                           translate, None)
                     if not unitTest:
