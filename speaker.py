@@ -12,8 +12,6 @@ import random
 import urllib.parse
 from auth import createBasicAuthHeader
 from session import getJson
-from utils import isDM
-from utils import isReply
 from utils import camelCaseSplit
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -449,10 +447,6 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     if postJsonObject['object'].get('id'):
         postId = postJsonObject['object']['id']
 
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    postDM = isDM(postJsonObject)
-    postReply = isReply(postJsonObject, actor)
-
     followRequestsExist = False
     accountsDir = baseDir + '/accounts/' + nickname + '@' + domainFull
     approveFollowsFilename = accountsDir + '/followrequests.txt'
@@ -461,13 +455,19 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             follows = fp.readlines()
             if len(follows) > 0:
                 followRequestsExist = True
+    postDM = False
+    dmFilename = accountsDir + '/.newDM'
+    if os.path.isfile(dmFilename):
+        postDM = True
+    postReply = False
+    replyFilename = accountsDir + '/.newReply'
+    if os.path.isfile(replyFilename):
+        postReply = True
     likedBy = ''
     likeFilename = accountsDir + '/.newLike'
     if os.path.isfile(likeFilename):
         with open(likeFilename, 'r') as fp:
             likedBy = fp.read()
-            if '##sent##' in likedBy:
-                likedBy = ''
     calendarFilename = accountsDir + '/.newCalendar'
     postCal = os.path.isfile(calendarFilename)
     shareFilename = accountsDir + '/.newShare'
