@@ -272,21 +272,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         # append image description if needed
                         if not speakerJson.get('imageDescription'):
                             sayStr = speakerJson['say']
-                            if screenreader:
-                                # echo spoken text to the screen
-                                print(html.unescape(nameStr) + ': ' +
-                                      html.unescape(speakerJson['say']) + '\n')
                         else:
                             sayStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
-                            # echo spoken text to the screen
-                            imageDescription = \
-                                html.unescape(speakerJson['imageDescription'])
-                            if screenreader:
-                                print(html.unescape(nameStr) + ': ' +
-                                      html.unescape(speakerJson['say']) +
-                                      '\n' + imageDescription)
-                            
+
+                        print('')
+
                         # say the speaker's name
                         _sayCommand(nameStr, screenreader,
                                     systemLanguage, espeak,
