@@ -109,6 +109,11 @@ parser.add_argument('--unfol', '--unfollow', dest='unfollow', type=str,
 parser.add_argument('-d', '--domain', dest='domain', type=str,
                     default=None,
                     help='Domain name of the server')
+parser.add_argument('--notificationType', '--notifyType',
+                    dest='notificationType', type=str,
+                    default='notify-send',
+                    help='Type of desktop notification command: ' +
+                    'notify-send/osascript/New-BurntToastNotification')
 parser.add_argument('-o', '--onion', dest='onion', type=str,
                     default=None,
                     help='Onion domain name of the server if ' +
@@ -1935,7 +1940,9 @@ if args.notifications:
     runNotificationsClient(baseDir, proxyType, httpPrefix,
                            nickname, domain, port, args.password,
                            args.screenreader, args.language,
-                           args.notificationSounds, args.debug)
+                           args.notificationSounds,
+                           args.notificationType,
+                           args.debug)
     sys.exit()
 
 if federationList:
