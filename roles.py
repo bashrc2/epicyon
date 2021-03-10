@@ -349,7 +349,7 @@ def sendRoleViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newRoleJson, [], inboxUrl, headers)
+        postJson(session, newRoleJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to '+inboxUrl)

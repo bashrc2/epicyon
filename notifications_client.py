@@ -23,6 +23,7 @@ from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from posts import sendPostViaServer
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -137,7 +138,11 @@ def _sayCommand(sayStr: str, screenreader: str,
                   systemLanguage, espeak)
 
 
-def _replyToPost(postId: str,
+def _replyToPost(session, postId: str,
+                 baseDir: str, nickname: str, password: str,
+                 domain: str, port: int, httpPrefix: str,
+                 cachedWebfingers: {}, personCache: {},
+                 debug: bool, subject: str,
                  screenreader: str, systemLanguage: str, espeak) -> None:
     """Use the notification client to send a reply to the most recent post
     """
@@ -171,6 +176,23 @@ def _replyToPost(postId: str,
         sayStr = 'Abandoning reply'
         _sayCommand(sayStr, screenreader, systemLanguage, espeak)
         return
+    ccUrl = None
+    followersOnly = False
+    attach = None
+    mediaType = None
+    attachedImageDescription = None
+    isArticle = False
+    subject = None
+    commentsEnabled = True
+    sendPostViaServer(__version__,
+                      baseDir, session, nickname, password,
+                      domain, port,
+                      toNickname, toDomain, toPort, ccUrl,
+                      httpPrefix, replyMessage, followersOnly,
+                      commentsEnabled, attach, mediaType,
+                      attachedImageDescription,
+                      cachedWebfingers, personCache, isArticle,
+                      debug, postId, postId, subject)
 
 
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
@@ -348,12 +370,21 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 _sayCommand(sayStr, screenreader,
                             systemLanguage, espeak)
                 if screenreader:
-                    keyPress = _waitForKeypress(2, dbug)
+                    keyPress = _waitForKeypress(2, debug)
                 break
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
                     postId = speakerJson['id']
-                    _replyToPost(postId, screenreader, systemLanguage, espeak)
+                    subject = None
+                    if speakerJson.get('summary'):
+                        subject = speakerJson['summary']
+                    sessionReply = createSession(proxyType)
+                    _replyToPost(sessionReply, postId,
+                                 baseDir, nickname, password,
+                                 domain, port, httpPrefix,
+                                 cachedWebfingers, personCache,
+                                 debug, subject,
+                                 screenreader, systemLanguage, espeak)
                 print('')
             elif keyPress == 'like':
                 if nameStr and gender and messageStr:

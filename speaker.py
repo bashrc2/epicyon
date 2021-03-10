@@ -90,6 +90,8 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "Gmail": "G-mail",
             "OpenPGP": "Open P-G-P",
             "Tor": "Toor",
+            "memes": "meemes",
+            "Memes": "Meemes",
             "fwiw": "for what it's worth",
             "fyi": "for your information",
             "imho": "in my opinion",

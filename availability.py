@@ -142,7 +142,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = postJson(session, newAvailabilityJson, [],
-                          inboxUrl, headers)
+                          inboxUrl, headers, 30, True)
     if not postResult:
         print('WARN: failed to post availability')
 

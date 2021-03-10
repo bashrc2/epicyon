@@ -1004,7 +1004,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, newFollowJson, [], inboxUrl, headers)
+        postJson(session, newFollowJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
@@ -1096,7 +1096,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
         'Authorization': authHeader
     }
     postResult = \
-        postJson(session, unfollowJson, [], inboxUrl, headers)
+        postJson(session, unfollowJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
             print('DEBUG: POST announce failed for c2s to ' + inboxUrl)

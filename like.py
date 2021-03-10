@@ -203,7 +203,8 @@ def sendLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newLikeJson, [], inboxUrl, headers, 30)
+    postResult = postJson(session, newLikeJson, [], inboxUrl,
+                          headers, 30, True)
     if not postResult:
         print('WARN: POST announce failed for c2s to ' + inboxUrl)
         return 5
@@ -282,7 +283,8 @@ def sendUndoLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newUndoLikeJson, [], inboxUrl, headers)
+    postResult = postJson(session, newUndoLikeJson, [], inboxUrl,
+                          headers, 30, True)
     if not postResult:
         print('WARN: POST announce failed for c2s to ' + inboxUrl)
         return 5
