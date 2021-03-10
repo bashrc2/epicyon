@@ -137,6 +137,42 @@ def _sayCommand(sayStr: str, screenreader: str,
                   systemLanguage, espeak)
 
 
+def _replyToPost(postId: str,
+                 screenreader: str, systemLanguage: str, espeak) -> None:
+    """Use the notification client to send a reply to the most recent post
+    """
+    if '://' not in postId:
+        return
+    toNickname = getNicknameFromActor(postId)
+    toDomain, toPort = getDomainFromActor(postId)
+    # toDomainFull = getFullDomain(toDomain, toPort)
+    sayStr = 'Replying to ' + toNickname + '@' + toDomain
+    _sayCommand(sayStr,
+                screenreader, systemLanguage, espeak)
+    sayStr = 'Type your reply message, then press Enter.'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    replyMessage = input()
+    if not replyMessage:
+        sayStr = 'No reply was entered.'
+        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        return
+    replyMessage = replyMessage.strip()
+    if not replyMessage:
+        sayStr = 'No reply was entered.'
+        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        return
+    sayStr = 'You entered this reply:'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(replyMessage, screenreader, systemLanguage, espeak)
+    sayStr = 'Send this reply, yes or no?'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    yesno = input()
+    if 'y' not in yesno.lower():
+        sayStr = 'Abandoning reply'
+        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        return
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
@@ -313,6 +349,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             systemLanguage, espeak)
                 keyPress = _waitForKeypress(2, debug)
                 break
+            elif keyPress == 'reply' or keyPress == 'r':
+                if speakerJson.get('id'):
+                    postId = speakerJson['id']
+                    _replyToPost(postId, screenreader, systemLanguage, espeak)
+                print('')
             elif keyPress == 'like':
                 if nameStr and gender and messageStr:
                     _sayCommand('Liking post by ' + nameStr,
