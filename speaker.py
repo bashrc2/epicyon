@@ -92,6 +92,8 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "Tor": "Toor",
             "memes": "meemes",
             "Memes": "Meemes",
+            "rofl": "roll on the floor laughing",
+            "ROFL": "roll on the floor laughing",
             "fwiw": "for what it's worth",
             "fyi": "for your information",
             "imho": "in my opinion",
