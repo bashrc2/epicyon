@@ -138,19 +138,19 @@ def _sayCommand(sayStr: str, screenreader: str,
                   systemLanguage, espeak)
 
 
-def _replyToPost(session, postId: str,
-                 baseDir: str, nickname: str, password: str,
-                 domain: str, port: int, httpPrefix: str,
-                 cachedWebfingers: {}, personCache: {},
-                 debug: bool, subject: str,
-                 screenreader: str, systemLanguage: str, espeak) -> None:
+def _notificationReplyToPost(session, postId: str,
+                             baseDir: str, nickname: str, password: str,
+                             domain: str, port: int, httpPrefix: str,
+                             cachedWebfingers: {}, personCache: {},
+                             debug: bool, subject: str,
+                             screenreader: str, systemLanguage: str,
+                             espeak) -> None:
     """Use the notification client to send a reply to the most recent post
     """
     if '://' not in postId:
         return
     toNickname = getNicknameFromActor(postId)
     toDomain, toPort = getDomainFromActor(postId)
-    # toDomainFull = getFullDomain(toDomain, toPort)
     sayStr = 'Replying to ' + toNickname + '@' + toDomain
     _sayCommand(sayStr,
                 screenreader, systemLanguage, espeak)
@@ -196,6 +196,63 @@ def _replyToPost(session, postId: str,
         sayStr = 'Reply sent'
     else:
         sayStr = 'Reply failed'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+
+
+def _notificationNewPost(session,
+                         baseDir: str, nickname: str, password: str,
+                         domain: str, port: int, httpPrefix: str,
+                         cachedWebfingers: {}, personCache: {},
+                         debug: bool,
+                         screenreader: str, systemLanguage: str,
+                         espeak) -> None:
+    """Use the notification client to create a new post
+    """
+    sayStr = 'Create new post'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    sayStr = 'Type your post, then press Enter.'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    newMessage = input()
+    if not newMessage:
+        sayStr = 'No post was entered.'
+        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        return
+    newMessage = newMessage.strip()
+    if not newMessage:
+        sayStr = 'No post was entered.'
+        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        return
+    sayStr = 'You entered this public post:'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(newMessage, screenreader, systemLanguage, espeak)
+    sayStr = 'Send this post, yes or no?'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    yesno = input()
+    if 'y' not in yesno.lower():
+        sayStr = 'Abandoning new post'
+        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        return
+    ccUrl = None
+    followersOnly = False
+    attach = None
+    mediaType = None
+    attachedImageDescription = None
+    isArticle = False
+    subject = None
+    commentsEnabled = True
+    subject = None
+    if sendPostViaServer(__version__,
+                         baseDir, session, nickname, password,
+                         domain, port,
+                         None, '#Public', port, ccUrl,
+                         httpPrefix, newMessage, followersOnly,
+                         commentsEnabled, attach, mediaType,
+                         attachedImageDescription,
+                         cachedWebfingers, personCache, isArticle,
+                         debug, None, None, subject) == 0:
+        sayStr = 'Post sent'
+    else:
+        sayStr = 'Post failed'
     _sayCommand(sayStr, screenreader, systemLanguage, espeak)
 
 
@@ -383,12 +440,23 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if speakerJson.get('summary'):
                         subject = speakerJson['summary']
                     sessionReply = createSession(proxyType)
-                    _replyToPost(sessionReply, postId,
-                                 baseDir, nickname, password,
-                                 domain, port, httpPrefix,
-                                 cachedWebfingers, personCache,
-                                 debug, subject,
-                                 screenreader, systemLanguage, espeak)
+                    _notificationReplyToPost(sessionReply, postId,
+                                             baseDir, nickname, password,
+                                             domain, port, httpPrefix,
+                                             cachedWebfingers, personCache,
+                                             debug, subject,
+                                             screenreader, systemLanguage,
+                                             espeak)
+                print('')
+            elif keyPress == 'post' or keyPress == 'p':
+                sessionPost = createSession(proxyType)
+                _notificationNewPost(sessionPost,
+                                     baseDir, nickname, password,
+                                     domain, port, httpPrefix,
+                                     cachedWebfingers, personCache,
+                                     debug,
+                                     screenreader, systemLanguage,
+                                     espeak)
                 print('')
             elif keyPress == 'like':
                 if nameStr and gender and messageStr:
