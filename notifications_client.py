@@ -152,6 +152,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     _sayCommand(sayStr, screenreader,
                 systemLanguage, espeak)
 
+    keyPress = _waitForKeypress(2, debug)
+
     originalScreenReader = screenreader
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
