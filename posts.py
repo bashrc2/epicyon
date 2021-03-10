@@ -958,7 +958,7 @@ def _createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 tags.append(tag)
             if isPublic:
                 _updateHashtagsIndex(baseDir, tag, newPostId)
-        print('Content tags: ' + str(tags))
+        # print('Content tags: ' + str(tags))
 
     if inReplyTo and not sensitive:
         # locate the post which this is a reply to and check if
