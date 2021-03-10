@@ -310,6 +310,9 @@ parser.add_argument("--positivevoting", type=str2bool, nargs='?',
 parser.add_argument("--debug", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Show debug messages")
+parser.add_argument("--notificationSounds", type=str2bool, nargs='?',
+                    const=True, default=True,
+                    help="Play notification sounds")
 parser.add_argument("--authenticatedFetch", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable authentication on GET requests" +
@@ -1932,7 +1935,7 @@ if args.notifications:
     runNotificationsClient(baseDir, proxyType, httpPrefix,
                            nickname, domain, port, args.password,
                            args.screenreader, args.language,
-                           args.debug)
+                           args.notificationSounds, args.debug)
     sys.exit()
 
 if federationList:
