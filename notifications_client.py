@@ -184,16 +184,18 @@ def _replyToPost(session, postId: str,
     isArticle = False
     subject = None
     commentsEnabled = True
-    sendPostViaServer(__version__,
-                      baseDir, session, nickname, password,
-                      domain, port,
-                      toNickname, toDomain, toPort, ccUrl,
-                      httpPrefix, replyMessage, followersOnly,
-                      commentsEnabled, attach, mediaType,
-                      attachedImageDescription,
-                      cachedWebfingers, personCache, isArticle,
-                      debug, postId, postId, subject)
-    sayStr = 'Reply sent'
+    if sendPostViaServer(__version__,
+                         baseDir, session, nickname, password,
+                         domain, port,
+                         toNickname, toDomain, toPort, ccUrl,
+                         httpPrefix, replyMessage, followersOnly,
+                         commentsEnabled, attach, mediaType,
+                         attachedImageDescription,
+                         cachedWebfingers, personCache, isArticle,
+                         debug, postId, postId, subject) == 0:
+        sayStr = 'Reply sent'
+    else:
+        sayStr = 'Reply failed'
     _sayCommand(sayStr, screenreader, systemLanguage, espeak)
 
 
