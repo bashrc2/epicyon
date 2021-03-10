@@ -318,7 +318,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _sayCommand('Liking post by ' + nameStr,
                                 screenreader,
                                 systemLanguage, espeak)
-                    sendLikeViaServer(baseDir, session,
+                    sessionLike = createSession(proxyType)
+                    sendLikeViaServer(baseDir, sessionLike,
                                       nickname, password,
                                       domain, port,
                                       httpPrefix, speakerJson['id'],
@@ -330,7 +331,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _sayCommand('Undoing like of post by ' + nameStr,
                                 screenreader,
                                 systemLanguage, espeak)
-                    sendUndoLikeViaServer(baseDir, session,
+                    sessionUnlike = createSession(proxyType)
+                    sendUndoLikeViaServer(baseDir, sessionUnlike,
                                           nickname, password,
                                           domain, port,
                                           httpPrefix, speakerJson['id'],
@@ -349,7 +351,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand('Sending follow request to ' +
                                     followNickname + '@' + followDomain,
                                     screenreader, systemLanguage, espeak)
-                        sendFollowRequestViaServer(baseDir, session,
+                        sessionFollow = createSession(proxyType)
+                        sendFollowRequestViaServer(baseDir, sessionFollow,
                                                    nickname, password,
                                                    domain, port,
                                                    followNickname,
@@ -377,7 +380,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand('Stop following ' +
                                     followNickname + '@' + followDomain,
                                     screenreader, systemLanguage, espeak)
-                        sendUnfollowRequestViaServer(baseDir, session,
+                        sessionUnfollow = createSession(proxyType)
+                        sendUnfollowRequestViaServer(baseDir, sessionUnfollow,
                                                      nickname, password,
                                                      domain, port,
                                                      followNickname,
