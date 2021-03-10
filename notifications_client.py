@@ -163,7 +163,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     sayStr = '/q or /quit to exit'
     _sayCommand(sayStr, screenreader,
                 systemLanguage, espeak)
-
+    print('')
     keyPress = _waitForKeypress(2, debug)
 
     originalScreenReader = screenreader
