@@ -347,7 +347,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 sayStr = 'Quit'
                 _sayCommand(sayStr, screenreader,
                             systemLanguage, espeak)
-                keyPress = _waitForKeypress(2, debug)
+                if screenreader:
+                    keyPress = _waitForKeypress(2, debug)
                 break
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
