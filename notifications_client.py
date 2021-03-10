@@ -98,25 +98,38 @@ def _desktopNotification(notificationType: str,
                   title + "\", '" + message + "'")
 
 
+def _textToSpeech(sayStr: str, screenreader: str,
+                  pitch: int, rate: int, srange: int,
+                  systemLanguage: str, espeak=None) -> None:
+    """Say something via TTS
+    """
+    # speak the post content
+    if screenreader == 'espeak':
+        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
+    elif screenreader == 'picospeaker':
+        _speakerPicospeaker(pitch, rate,
+                            systemLanguage, sayStr)
+
+
 def _sayCommand(sayStr: str, screenreader: str,
-                systemLanguage: str, espeak=None) -> None:
+                systemLanguage: str,
+                espeak=None,
+                speakerName='screen reader',
+                speakerGender='They/Them') -> None:
     """Speaks a command
     """
     print(sayStr)
     if not screenreader:
         return
 
-    cmdSpeakerName = 'screen reader'
-    pitch = getSpeakerPitch(cmdSpeakerName,
-                            screenreader, 'They/Them')
-    rate = getSpeakerRate(cmdSpeakerName, screenreader)
-    srange = getSpeakerRange(cmdSpeakerName)
+    pitch = getSpeakerPitch(speakerName,
+                            screenreader, speakerGender)
+    rate = getSpeakerRate(speakerName, screenreader)
+    srange = getSpeakerRange(speakerName)
 
-    if screenreader == 'espeak':
-        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
-    elif screenreader == 'picospeaker':
-        _speakerPicospeaker(pitch, rate,
-                            systemLanguage, sayStr)
+    _textToSpeech(sayStr, screenreader,
+                  pitch, rate, srange,
+                  systemLanguage, espeak)
 
 
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
@@ -256,20 +269,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if speakerJson.get('gender'):
                             gender = speakerJson['gender']
 
-                        # get the speech parameters
-                        pitch = getSpeakerPitch(nameStr, screenreader, gender)
-                        rate = getSpeakerRate(nameStr, screenreader)
-                        srange = getSpeakerRange(nameStr)
-
-                        # say the speaker's name
-                        if screenreader == 'espeak':
-                            _speakerEspeak(espeak, pitch, rate, srange,
-                                           nameStr)
-                        elif screenreader == 'picospeaker':
-                            _speakerPicospeaker(pitch, rate,
-                                                systemLanguage, nameStr)
-                        time.sleep(2)
-
                         # append image description if needed
                         if not speakerJson.get('imageDescription'):
                             sayStr = speakerJson['say']
@@ -287,13 +286,18 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 print(html.unescape(nameStr) + ': ' +
                                       html.unescape(speakerJson['say']) +
                                       '\n' + imageDescription)
+                            
+                        # say the speaker's name
+                        _sayCommand(nameStr, screenreader,
+                                    systemLanguage, espeak,
+                                    nameStr, gender)
+
+                        time.sleep(2)
 
                         # speak the post content
-                        if screenreader == 'espeak':
-                            _speakerEspeak(espeak, pitch, rate, srange, sayStr)
-                        elif screenreader == 'picospeaker':
-                            _speakerPicospeaker(pitch, rate,
-                                                systemLanguage, sayStr)
+                        _sayCommand(sayStr, screenreader,
+                                    systemLanguage, espeak,
+                                    nameStr, gender)
 
                     prevSay = speakerJson['say']
 
