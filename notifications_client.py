@@ -320,6 +320,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       httpPrefix, speakerJson['id'],
                                       cachedWebfingers, personCache,
                                       True, __version__)
+                    print('')
             elif keyPress == 'unlike' or keyPress == 'undo like':
                 if nameStr and gender and messageStr:
                     _sayCommand('Undoing like of post by ' + nameStr,
@@ -331,7 +332,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, speakerJson['id'],
                                           cachedWebfingers, personCache,
                                           True, __version__)
-            elif keyPress == 'repeat' or keyPress == 'rp':
+                    print('')
+            elif (keyPress == 'repeat' or keyPress == 'replay' or
+                  keyPress == 'rp'):
                 if nameStr and gender and messageStr:
                     _sayCommand('Repeating ' + nameStr, screenreader,
                                 systemLanguage, espeak,
