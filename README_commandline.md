@@ -321,7 +321,7 @@ This extends the ActivityPub client-to-server protocol to include activities cal
       'actor': https://'+somedomain+'/users/'+other,
       'object': 'otherproject;otherrole',
       'to': [],
-      'cc': []            
+      'cc': []
   },
   'to': [],
   'cc': []}
@@ -415,4 +415,22 @@ You can get desktop notifications either by running the screen reader as shown a
 
 ``` bash
 python3 epicyon.py --notify yournickname@yourdomain --password [yourpassword]
+```
+
+The notifications client also provides a number of basic commands, which may be more convenient than the web interface for some purposes:
+
+``` bash
+quit                     Exit from the notification client
+mute                     Turn off the screen reader
+speak                    Turn on the screen reader
+sounds on                Turn on notification sounds
+sounds off               Turn off notification sounds
+rp                       Repeat the last post
+like                     Like the last post
+unlike                   Unlike the last post
+reply                    Reply to the last post
+post                     Create a new post
+announce/boost           Boost the last post
+follow [handle]          Make a follow request
+unfollow [handle]        Stop following the give handle
 ```
