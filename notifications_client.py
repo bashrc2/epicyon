@@ -137,14 +137,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             print(screenreader + ' is not a supported TTS system')
             return
 
-        print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
+        sayStr = 'Running ' + screenreader + ' for ' + nickname + '@' + domain
+        _sayCommand(sayStr, screenreader,
+                    systemLanguage, espeak)
     else:
         print('Running desktop notifications for ' + nickname + '@' + domain)
     if notificationSounds:
-        print('Notification sounds on')
+        sayStr = 'Notification sounds on'
     else:
-        print('Notification sounds off')
-    print('/q or /quit to exit')
+        sayStr = 'Notification sounds off'
+    _sayCommand(sayStr, screenreader,
+                systemLanguage, espeak)
+    sayStr = '/q or /quit to exit'
+    _sayCommand(sayStr, screenreader,
+                systemLanguage, espeak)
 
     originalScreenReader = screenreader
     domainFull = getFullDomain(domain, port)
@@ -295,6 +301,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             if keyPress.startswith('/'):
                 keyPress = keyPress[1:]
             if keyPress == 'q' or keyPress == 'quit' or keyPress == 'exit':
+                sayStr = 'Quit'
+                _sayCommand(sayStr, screenreader,
+                            systemLanguage, espeak)
                 break
             elif keyPress == 'sounds on' or keyPress == 'sound':
                 sayStr = 'Notification sounds on'
