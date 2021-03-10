@@ -278,8 +278,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
 
-                        print('')
-
                         # say the speaker's name
                         _sayCommand(nameStr, screenreader,
                                     systemLanguage, espeak,
@@ -291,6 +289,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(messageStr, screenreader,
                                     systemLanguage, espeak,
                                     nameStr, gender)
+
+                        print('')
 
                     prevSay = speakerJson['say']
 
@@ -312,7 +312,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 nameStr, gender)
                     time.sleep(2)
                     _sayCommand(messageStr, screenreader,
-                                systemLanguage, espeak)
+                                systemLanguage, espeak,
+                                nameStr, gender)
+                    print('')
             elif keyPress == 'sounds on' or keyPress == 'sound':
                 sayStr = 'Notification sounds on'
                 _sayCommand(sayStr, screenreader,
