@@ -137,7 +137,7 @@ def getJson(session, url: str, headers: {}, params: {},
 
 
 def postJson(session, postJsonObject: {}, federationList: [],
-             inboxUrl: str, headers: {}) -> str:
+             inboxUrl: str, headers: {}, timeoutSec=60) -> str:
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
@@ -149,7 +149,7 @@ def postJson(session, postJsonObject: {}, federationList: [],
         postResult = \
             session.post(url=inboxUrl,
                          data=json.dumps(postJsonObject),
-                         headers=headers)
+                         headers=headers, timeout=timeoutSec)
     except requests.exceptions.RequestException as e:
         print('ERROR: postJson requests failed ' + inboxUrl + ' ' +
               json.dumps(postJsonObject) + ' ' + str(headers))
