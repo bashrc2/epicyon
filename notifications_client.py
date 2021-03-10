@@ -142,6 +142,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            password: str, screenreader: str,
                            systemLanguage: str,
                            notificationSounds: bool,
+                           notificationType: str,
                            debug: bool) -> None:
     """Runs the notifications and screen reader client,
     which announces new inbox items
@@ -189,7 +190,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     likeSoundFilename = 'like.ogg'
     shareSoundFilename = 'share.ogg'
     player = 'ffplay'
-    notificationType = 'notify-send'
     nameStr = None
     gender = None
     messageStr = None
