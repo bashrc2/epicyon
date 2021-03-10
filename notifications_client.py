@@ -141,9 +141,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     else:
         print('Running desktop notifications for ' + nickname + '@' + domain)
     if notificationSounds:
-        print('Notification sounds ON')
+        print('Notification sounds on')
     else:
-        print('Notification sounds OFF')
+        print('Notification sounds off')
     print('/q or /quit to exit')
 
     originalScreenReader = screenreader
@@ -297,12 +297,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             if keyPress == 'q' or keyPress == 'quit' or keyPress == 'exit':
                 break
             elif keyPress == 'sounds on' or keyPress == 'sound':
-                sayStr = 'Notification sounds ON'
+                sayStr = 'Notification sounds on'
                 _sayCommand(sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = True
             elif keyPress == 'sounds off' or keyPress == 'nosound':
-                sayStr = 'Notification sounds OFF'
+                sayStr = 'Notification sounds off'
                 _sayCommand(sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = False
@@ -313,7 +313,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                   keyPress == 'reader on'):
                 if originalScreenReader:
                     screenreader = originalScreenReader
-                    sayStr = 'Screen reader ON'
+                    sayStr = 'Screen reader on'
                     _sayCommand(sayStr, screenreader,
                                 systemLanguage, espeak)
                 else:
@@ -325,7 +325,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                   keyPress == 'reader off'):
                 if originalScreenReader:
                     screenreader = None
-                    sayStr = 'Screen reader OFF'
+                    sayStr = 'Screen reader off'
                     _sayCommand(sayStr, originalScreenReader,
                                 systemLanguage, espeak)
                 else:
