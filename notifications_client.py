@@ -80,7 +80,7 @@ def _playNotificationSound(soundFilename: str, player='ffplay') -> None:
 
     if player == 'ffplay':
         os.system('ffplay ' + soundFilename +
-                  ' -autoexit -hide_banner -nodisp')
+                  ' -autoexit -hide_banner -nodisp 2> /dev/null')
 
 
 def _desktopNotification(notificationType: str,
