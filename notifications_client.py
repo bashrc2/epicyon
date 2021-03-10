@@ -98,6 +98,25 @@ def _desktopNotification(notificationType: str,
                   title + "\", '" + message + "'")
 
 
+def _sayCommand(sayStr: str, screenreader: str,
+                systemLanguage: str, espeak=None) -> None:
+    """Speaks a command
+    """
+    print(sayStr)
+    cmdSpeakerName = 'screen reader'
+
+    pitch = getSpeakerPitch(cmdSpeakerName,
+                            screenreader, 'They/Them')
+    rate = getSpeakerRate(cmdSpeakerName, screenreader)
+    srange = getSpeakerRange(cmdSpeakerName)
+
+    if screenreader == 'espeak':
+        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
+    elif screenreader == 'picospeaker':
+        _speakerPicospeaker(pitch, rate,
+                            systemLanguage, sayStr)
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
@@ -107,6 +126,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
+    espeak = None
     if screenreader:
         if screenreader == 'espeak':
             print('Setting up espeak')
@@ -124,6 +144,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
         print('Notification sounds OFF')
     print('/q or /quit to exit')
 
+    originalScreenReader = screenreader
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     prevSay = ''
@@ -279,3 +300,27 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             elif keyPress == 'sounds off' or keyPress == 'nosound':
                 print('Notification sounds OFF')
                 notificationSounds = False
+            elif keyPress == 'speak' or \
+                 keyPress == 'screen reader on' or \
+                 keyPress == 'speaker on' or \
+                 keyPress == 'talker on' or \
+                 keyPress == 'reader on':
+                if originalScreenReader:
+                    screenreader = originalScreenReader
+                    sayStr = 'Screen reader ON'
+                    _sayCommand(sayStr, screenreader,
+                                systemLanguage, espeak)
+                else:
+                    print('No --screenreader option was specified')
+            elif keyPress == 'quiet' or \
+                 keyPress == 'screen reader off' or \
+                 keyPress == 'speaker off' or \
+                 keyPress == 'talker off' or \
+                 keyPress == 'reader off':
+                if originalScreenReader:
+                    screenreader = None
+                    sayStr = 'Screen reader OFF'
+                    _sayCommand(sayStr, originalScreenReader,
+                                systemLanguage, espeak)
+                else:
+                    print('No --screenreader option was specified')
