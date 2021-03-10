@@ -193,6 +193,8 @@ def _replyToPost(session, postId: str,
                       attachedImageDescription,
                       cachedWebfingers, personCache, isArticle,
                       debug, postId, postId, subject)
+    sayStr = 'Reply sent'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
 
 
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
