@@ -306,6 +306,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 sayStr = 'Quit'
                 _sayCommand(sayStr, screenreader,
                             systemLanguage, espeak)
+                keyPress = _waitForKeypress(3, debug)
                 break
             elif keyPress == 'sounds on' or keyPress == 'sound':
                 sayStr = 'Notification sounds on'
