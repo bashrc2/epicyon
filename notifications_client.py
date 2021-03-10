@@ -184,6 +184,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     shareSoundFilename = 'share.ogg'
     player = 'ffplay'
     notificationType = 'notify-send'
+    nameStr = None
+    gender = None
+    messageStr = None
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -270,9 +273,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
 
                         # append image description if needed
                         if not speakerJson.get('imageDescription'):
-                            sayStr = speakerJson['say']
+                            messageStr = speakerJson['say']
                         else:
-                            sayStr = speakerJson['say'] + '. ' + \
+                            messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
 
                         print('')
@@ -285,7 +288,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         time.sleep(2)
 
                         # speak the post content
-                        _sayCommand(sayStr, screenreader,
+                        _sayCommand(messageStr, screenreader,
                                     systemLanguage, espeak,
                                     nameStr, gender)
 
@@ -302,6 +305,14 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             systemLanguage, espeak)
                 keyPress = _waitForKeypress(2, debug)
                 break
+            elif keyPress == 'repeat' or keyPress == 'rp':
+                if nameStr and gender and messageStr:
+                    _sayCommand('Repeating ' + nameStr, screenreader,
+                                systemLanguage, espeak,
+                                nameStr, gender)
+                    time.sleep(2)
+                    _sayCommand(messageStr, screenreader,
+                                systemLanguage, espeak)
             elif keyPress == 'sounds on' or keyPress == 'sound':
                 sayStr = 'Notification sounds on'
                 _sayCommand(sayStr, screenreader,
