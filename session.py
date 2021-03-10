@@ -86,7 +86,7 @@ def urlExists(session, url: str, timeoutSec=3,
 
 def getJson(session, url: str, headers: {}, params: {},
             version='1.2.0', httpPrefix='https',
-            domain='testdomain', timeoutSec=20) -> {}:
+            domain='testdomain', timeoutSec=20, quiet=False) -> {}:
     if not isinstance(url, str):
         print('url: ' + str(url))
         print('ERROR: getJson failed, url should be a string')
@@ -102,7 +102,8 @@ def getJson(session, url: str, headers: {}, params: {},
         sessionHeaders['User-Agent'] += \
             '; +' + httpPrefix + '://' + domain + '/'
     if not session:
-        print('WARN: getJson failed, no session specified for getJson')
+        if not quiet:
+            print('WARN: getJson failed, no session specified for getJson')
         return None
     try:
         result = session.get(url, headers=sessionHeaders,
@@ -112,22 +113,26 @@ def getJson(session, url: str, headers: {}, params: {},
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
-        print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-              'headers: ' + str(sessionHeaders2) + ' ' +
-              'params: ' + str(sessionParams))
-        print(e)
+        if not quiet:
+            print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
+                  'headers: ' + str(sessionHeaders2) + ' ' +
+                  'params: ' + str(sessionParams))
+            print(e)
     except ValueError as e:
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
-        print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
-              'headers: ' + str(sessionHeaders2) + ' ' +
-              'params: ' + str(sessionParams) + ' ')
-        print(e)
+        if not quiet:
+            print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
+                  'headers: ' + str(sessionHeaders2) + ' ' +
+                  'params: ' + str(sessionParams) + ' ')
+            print(e)
     except SocketError as e:
-        if e.errno == errno.ECONNRESET:
-            print('WARN: getJson failed, connection was reset during getJson')
-        print(e)
+        if not quiet:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: getJson failed, ' +
+                      'connection was reset during getJson')
+            print(e)
     return None
 
 

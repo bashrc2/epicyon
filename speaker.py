@@ -263,7 +263,7 @@ def getSpeakerFromServer(baseDir: str, session,
 
     speakerJson = \
         getJson(session, url, headers, None,
-                __version__, httpPrefix, domain)
+                __version__, httpPrefix, domain, 20, True)
     return speakerJson
 
 
