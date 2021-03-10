@@ -62,8 +62,7 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
         '-l ' + speakerLang + \
         ' -r ' + str(rate) + \
         ' -p ' + str(pitch) + ' "' + \
-        html.unescape(sayText) + '"'
-    # print(speakerCmd)
+        html.unescape(sayText) + '" 2> /dev/null'
     os.system(speakerCmd)
 
 
