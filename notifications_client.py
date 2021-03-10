@@ -17,6 +17,8 @@ from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
 from speaker import getSpeakerRate
 from speaker import getSpeakerRange
+from like import sendLikeViaServer
+from like import sendUndoLikeViaServer
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -163,7 +165,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     sayStr = '/q or /quit to exit'
     _sayCommand(sayStr, screenreader,
                 systemLanguage, espeak)
-
+    print('')
     keyPress = _waitForKeypress(2, debug)
 
     originalScreenReader = screenreader
@@ -187,6 +189,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     nameStr = None
     gender = None
     messageStr = None
+    cachedWebfingers = {}
+    personCache = {}
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -305,6 +309,28 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             systemLanguage, espeak)
                 keyPress = _waitForKeypress(2, debug)
                 break
+            elif keyPress == 'like':
+                if nameStr and gender and messageStr:
+                    _sayCommand('Liking post by ' + nameStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sendLikeViaServer(baseDir, session,
+                                      nickname, password,
+                                      domain, port,
+                                      httpPrefix, speakerJson['id'],
+                                      cachedWebfingers, personCache,
+                                      True, __version__)
+            elif keyPress == 'unlike' or keyPress == 'undo like':
+                if nameStr and gender and messageStr:
+                    _sayCommand('Undoing like of post by ' + nameStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sendUndoLikeViaServer(baseDir, session,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, speakerJson['id'],
+                                          cachedWebfingers, personCache,
+                                          True, __version__)
             elif keyPress == 'repeat' or keyPress == 'rp':
                 if nameStr and gender and messageStr:
                     _sayCommand('Repeating ' + nameStr, screenreader,
