@@ -62,8 +62,7 @@ def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
         '-l ' + speakerLang + \
         ' -r ' + str(rate) + \
         ' -p ' + str(pitch) + ' "' + \
-        html.unescape(sayText) + '"'
-    # print(speakerCmd)
+        html.unescape(sayText) + '" 2> /dev/null'
     os.system(speakerCmd)
 
 
@@ -301,7 +300,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 sayStr = 'Quit'
                 _sayCommand(sayStr, screenreader,
                             systemLanguage, espeak)
-                keyPress = _waitForKeypress(3, debug)
+                keyPress = _waitForKeypress(2, debug)
                 break
             elif keyPress == 'sounds on' or keyPress == 'sound':
                 sayStr = 'Notification sounds on'
