@@ -184,6 +184,8 @@ def _notificationReplyToPost(session, postId: str,
     isArticle = False
     subject = None
     commentsEnabled = True
+    sayStr = 'Sending reply'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
                          baseDir, session, nickname, password,
                          domain, port,
@@ -241,6 +243,8 @@ def _notificationNewPost(session,
     subject = None
     commentsEnabled = True
     subject = None
+    sayStr = 'Sending'
+    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
                          baseDir, session, nickname, password,
                          domain, port,
