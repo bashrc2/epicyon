@@ -18,6 +18,7 @@ from speaker import getSpeakerPitch
 from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 from like import sendLikeViaServer
+from like import sendUndoLikeViaServer
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -319,6 +320,17 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       httpPrefix, speakerJson['id'],
                                       cachedWebfingers, personCache,
                                       True, __version__)
+            elif keyPress == 'unlike' or keyPress == 'undo like':
+                if nameStr and gender and messageStr:
+                    _sayCommand('Undoing like of post by ' + nameStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sendUndoLikeViaServer(baseDir, session,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, speakerJson['id'],
+                                          cachedWebfingers, personCache,
+                                          True, __version__)
             elif keyPress == 'repeat' or keyPress == 'rp':
                 if nameStr and gender and messageStr:
                     _sayCommand('Repeating ' + nameStr, screenreader,
