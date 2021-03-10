@@ -203,7 +203,7 @@ def sendLikeViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newLikeJson, [], inboxUrl, headers)
+    postResult = postJson(session, newLikeJson, [], inboxUrl, headers, 30)
     if not postResult:
         print('WARN: POST announce failed for c2s to ' + inboxUrl)
         return 5
