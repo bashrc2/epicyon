@@ -173,7 +173,8 @@ def postJsonString(session, postJsonStr: str,
                    federationList: [],
                    inboxUrl: str,
                    headers: {},
-                   debug: bool) -> (bool, bool):
+                   debug: bool,
+                   timeoutSec=30) -> (bool, bool):
     """Post a json message string to the inbox of another person
     The second boolean returned is true if the send is unauthorized
     NOTE: Here we post a string rather than the original json so that
@@ -182,7 +183,8 @@ def postJsonString(session, postJsonStr: str,
     """
     try:
         postResult = \
-            session.post(url=inboxUrl, data=postJsonStr, headers=headers)
+            session.post(url=inboxUrl, data=postJsonStr,
+                         headers=headers, timeout=timeoutSec)
     except requests.exceptions.RequestException as e:
         print('WARN: error during postJsonString requests')
         print(e)
