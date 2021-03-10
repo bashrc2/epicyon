@@ -24,6 +24,7 @@ from like import sendUndoLikeViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
+from announce import sendAnnounceViaServer
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -488,6 +489,23 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           cachedWebfingers, personCache,
                                           True, __version__)
                     print('')
+            elif (keyPress == 'announce' or
+                  keyPress == 'boost' or
+                  keyPress == 'retweet'):
+                if speakerJson.get('id'):
+                    if nameStr and gender and messageStr:
+                        postId = speakerJson['id']
+                        _sayCommand('Announcing post by ' + nameStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionAnnounce = createSession(proxyType)
+                        sendAnnounceViaServer(baseDir, sessionAnnounce,
+                                              nickname, password,
+                                              domain, port,
+                                              httpPrefix, postId,
+                                              cachedWebfingers, personCache,
+                                              True, __version__)
+                        print('')
             elif keyPress.startswith('follow '):
                 followHandle = keyPress.replace('follow ', '').strip()
                 if followHandle.startswith('@'):
