@@ -98,13 +98,37 @@ def _desktopNotification(notificationType: str,
                   title + "\", '" + message + "'")
 
 
+def _sayCommand(sayStr: str, screenreader: str,
+                systemLanguage: str, espeak=None) -> None:
+    """Speaks a command
+    """
+    print(sayStr)
+    if not screenreader:
+        return
+
+    cmdSpeakerName = 'screen reader'
+    pitch = getSpeakerPitch(cmdSpeakerName,
+                            screenreader, 'They/Them')
+    rate = getSpeakerRate(cmdSpeakerName, screenreader)
+    srange = getSpeakerRange(cmdSpeakerName)
+
+    if screenreader == 'espeak':
+        _speakerEspeak(espeak, pitch, rate, srange, sayStr)
+    elif screenreader == 'picospeaker':
+        _speakerPicospeaker(pitch, rate,
+                            systemLanguage, sayStr)
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
-                           systemLanguage: str, debug: bool) -> None:
+                           systemLanguage: str,
+                           notificationSounds: bool,
+                           debug: bool) -> None:
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
+    espeak = None
     if screenreader:
         if screenreader == 'espeak':
             print('Setting up espeak')
@@ -116,8 +140,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
         print('Running ' + screenreader + ' for ' + nickname + '@' + domain)
     else:
         print('Running desktop notifications for ' + nickname + '@' + domain)
+    if notificationSounds:
+        print('Notification sounds ON')
+    else:
+        print('Notification sounds OFF')
     print('/q or /quit to exit')
 
+    originalScreenReader = screenreader
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     prevSay = ''
@@ -155,47 +184,57 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             soundsDir = 'theme/default/sounds'
                 if speakerJson['notify']['dm'] != prevDM:
                     if speakerJson['notify']['dm'] is True:
-                        _playNotificationSound(soundsDir + '/' +
-                                               dmSoundFilename, player)
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   dmSoundFilename, player)
                         _desktopNotification(notificationType, title,
                                              'New direct message ' +
                                              actor + '/dm')
                     prevDM = speakerJson['notify']['dm']
                 elif speakerJson['notify']['reply'] != prevReply:
                     if speakerJson['notify']['reply'] is True:
-                        _playNotificationSound(soundsDir + '/' +
-                                               replySoundFilename, player)
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   replySoundFilename,
+                                                   player)
                         _desktopNotification(notificationType, title,
                                              'New reply ' +
                                              actor + '/tlreplies')
                         prevReply = speakerJson['notify']['reply']
                 elif speakerJson['notify']['calendar'] != prevCalendar:
                     if speakerJson['notify']['calendar'] is True:
-                        _playNotificationSound(soundsDir + '/' +
-                                               calendarSoundFilename, player)
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   calendarSoundFilename,
+                                                   player)
                         _desktopNotification(notificationType, title,
                                              'New calendar event ' +
                                              actor + '/calendar')
                     prevCalendar = speakerJson['notify']['calendar']
                 elif speakerJson['notify']['followRequests'] != prevFollow:
                     if speakerJson['notify']['followRequests'] is True:
-                        _playNotificationSound(soundsDir + '/' +
-                                               followSoundFilename, player)
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   followSoundFilename,
+                                                   player)
                         _desktopNotification(notificationType, title,
                                              'New follow request ' +
                                              actor + '/followers#buttonheader')
                     prevFollow = speakerJson['notify']['followRequests']
                 elif speakerJson['notify']['likedBy'] != prevLike:
-                    _playNotificationSound(soundsDir + '/' +
-                                           likeSoundFilename, player)
+                    if notificationSounds:
+                        _playNotificationSound(soundsDir + '/' +
+                                               likeSoundFilename, player)
                     _desktopNotification(notificationType, title,
                                          'New like ' +
                                          speakerJson['notify']['likedBy'])
                     prevLike = speakerJson['notify']['likedBy']
                 elif speakerJson['notify']['share'] != prevShare:
                     if speakerJson['notify']['share'] is True:
-                        _playNotificationSound(soundsDir + '/' +
-                                               shareSoundFilename, player)
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   shareSoundFilename,
+                                                   player)
                         _desktopNotification(notificationType, title,
                                              'New shared item ' +
                                              actor + '/shares')
@@ -257,3 +296,37 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 keyPress = keyPress[1:]
             if keyPress == 'q' or keyPress == 'quit' or keyPress == 'exit':
                 break
+            elif keyPress == 'sounds on' or keyPress == 'sound':
+                sayStr = 'Notification sounds ON'
+                _sayCommand(sayStr, screenreader,
+                            systemLanguage, espeak)
+                notificationSounds = True
+            elif keyPress == 'sounds off' or keyPress == 'nosound':
+                sayStr = 'Notification sounds OFF'
+                _sayCommand(sayStr, screenreader,
+                            systemLanguage, espeak)
+                notificationSounds = False
+            elif (keyPress == 'speak' or
+                  keyPress == 'screen reader on' or
+                  keyPress == 'speaker on' or
+                  keyPress == 'talker on' or
+                  keyPress == 'reader on'):
+                if originalScreenReader:
+                    screenreader = originalScreenReader
+                    sayStr = 'Screen reader ON'
+                    _sayCommand(sayStr, screenreader,
+                                systemLanguage, espeak)
+                else:
+                    print('No --screenreader option was specified')
+            elif (keyPress == 'mute' or
+                  keyPress == 'screen reader off' or
+                  keyPress == 'speaker off' or
+                  keyPress == 'talker off' or
+                  keyPress == 'reader off'):
+                if originalScreenReader:
+                    screenreader = None
+                    sayStr = 'Screen reader OFF'
+                    _sayCommand(sayStr, originalScreenReader,
+                                systemLanguage, espeak)
+                else:
+                    print('No --screenreader option was specified')
