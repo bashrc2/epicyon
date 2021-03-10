@@ -2141,7 +2141,7 @@ def sendPostViaServer(projectVersion: str,
     postDumps = json.dumps(postJsonObject)
     postResult = \
         postJsonString(session, postDumps, [],
-                       inboxUrl, headers, debug, 60)
+                       inboxUrl, headers, debug, 60, True)
     if not postResult:
         if debug:
             print('DEBUG: POST failed for c2s to '+inboxUrl)
@@ -4184,7 +4184,8 @@ def sendBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl, headers)
+    postResult = postJson(session, newBlockJson, [], inboxUrl,
+                          headers, 30, True)
     if not postResult:
         print('WARN: Unable to post block')
 
@@ -4266,7 +4267,8 @@ def sendUndoBlockViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newBlockJson, [], inboxUrl, headers)
+    postResult = postJson(session, newBlockJson, [], inboxUrl,
+                          headers, 30, True)
     if not postResult:
         print('WARN: Unable to post block')
 

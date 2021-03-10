@@ -256,7 +256,8 @@ def sendAnnounceViaServer(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult = postJson(session, newAnnounceJson, [], inboxUrl, headers)
+    postResult = postJson(session, newAnnounceJson, [], inboxUrl,
+                          headers, 30, True)
     if not postResult:
         print('WARN: Announce not posted')
 

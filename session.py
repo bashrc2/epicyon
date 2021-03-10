@@ -137,12 +137,13 @@ def getJson(session, url: str, headers: {}, params: {},
 
 
 def postJson(session, postJsonObject: {}, federationList: [],
-             inboxUrl: str, headers: {}, timeoutSec=60) -> str:
+             inboxUrl: str, headers: {}, timeoutSec=60, quiet=False) -> str:
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
     if not urlPermitted(inboxUrl, federationList):
-        print('postJson: ' + inboxUrl + ' not permitted')
+        if not quiet:
+            print('postJson: ' + inboxUrl + ' not permitted')
         return None
 
     try:
@@ -151,18 +152,20 @@ def postJson(session, postJsonObject: {}, federationList: [],
                          data=json.dumps(postJsonObject),
                          headers=headers, timeout=timeoutSec)
     except requests.exceptions.RequestException as e:
-        print('ERROR: postJson requests failed ' + inboxUrl + ' ' +
-              json.dumps(postJsonObject) + ' ' + str(headers))
-        print(e)
+        if not quiet:
+            print('ERROR: postJson requests failed ' + inboxUrl + ' ' +
+                  json.dumps(postJsonObject) + ' ' + str(headers))
+            print(e)
         return None
     except SocketError as e:
-        if e.errno == errno.ECONNRESET:
+        if not quiet and e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during postJson')
         return None
     except ValueError as e:
-        print('ERROR: postJson failed ' + inboxUrl + ' ' +
-              json.dumps(postJsonObject) + ' ' + str(headers))
-        print(e)
+        if not quiet:
+            print('ERROR: postJson failed ' + inboxUrl + ' ' +
+                  json.dumps(postJsonObject) + ' ' + str(headers))
+            print(e)
         return None
     if postResult:
         return postResult.text
@@ -174,7 +177,8 @@ def postJsonString(session, postJsonStr: str,
                    inboxUrl: str,
                    headers: {},
                    debug: bool,
-                   timeoutSec=30) -> (bool, bool):
+                   timeoutSec=30,
+                   quiet=False) -> (bool, bool):
     """Post a json message string to the inbox of another person
     The second boolean returned is true if the send is unauthorized
     NOTE: Here we post a string rather than the original json so that
@@ -186,30 +190,36 @@ def postJsonString(session, postJsonStr: str,
             session.post(url=inboxUrl, data=postJsonStr,
                          headers=headers, timeout=timeoutSec)
     except requests.exceptions.RequestException as e:
-        print('WARN: error during postJsonString requests')
-        print(e)
+        if not quiet:
+            print('WARN: error during postJsonString requests')
+            print(e)
         return None, None
     except SocketError as e:
-        if e.errno == errno.ECONNRESET:
+        if not quiet and e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during postJsonString')
-        print('ERROR: postJsonString failed ' + inboxUrl + ' ' +
-              postJsonStr + ' ' + str(headers))
+        if not quiet:
+            print('ERROR: postJsonString failed ' + inboxUrl + ' ' +
+                  postJsonStr + ' ' + str(headers))
         return None, None
     except ValueError as e:
-        print('WARN: error during postJsonString')
-        print(e)
+        if not quiet:
+            print('WARN: error during postJsonString')
+            print(e)
         return None, None
     if postResult.status_code < 200 or postResult.status_code > 202:
         if postResult.status_code >= 400 and \
            postResult.status_code <= 405 and \
            postResult.status_code != 404:
-            print('WARN: Post to ' + inboxUrl + ' is unauthorized. Code ' +
-                  str(postResult.status_code))
+            if not quiet:
+                print('WARN: Post to ' + inboxUrl +
+                      ' is unauthorized. Code ' +
+                      str(postResult.status_code))
             return False, True
         else:
-            print('WARN: Failed to post to ' + inboxUrl +
-                  ' with headers ' + str(headers))
-            print('status code ' + str(postResult.status_code))
+            if not quiet:
+                print('WARN: Failed to post to ' + inboxUrl +
+                      ' with headers ' + str(headers))
+                print('status code ' + str(postResult.status_code))
             return False, False
     return True, False
 
