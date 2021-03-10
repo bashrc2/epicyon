@@ -11,6 +11,8 @@ import html
 import time
 import sys
 import select
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 from utils import getFullDomain
 from session import createSession
 from speaker import getSpeakerFromServer
@@ -19,6 +21,8 @@ from speaker import getSpeakerRate
 from speaker import getSpeakerRange
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from follow import sendFollowRequestViaServer
+from follow import sendUnfollowRequestViaServer
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -332,6 +336,60 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           httpPrefix, speakerJson['id'],
                                           cachedWebfingers, personCache,
                                           True, __version__)
+                    print('')
+            elif keyPress.startswith('follow '):
+                followHandle = keyPress.replace('follow ', '').strip()
+                if followHandle.startswith('@'):
+                    followHandle = followHandle[1:]
+                if '@' in followHandle or '://' in followHandle:
+                    followNickname = getNicknameFromActor(followHandle)
+                    followDomain, followPort = \
+                        getDomainFromActor(followHandle)
+                    if followNickname and followDomain:
+                        _sayCommand('Sending follow request to ' +
+                                    followNickname + '@' + followDomain,
+                                    screenreader, systemLanguage, espeak)
+                        sendFollowRequestViaServer(baseDir, session,
+                                                   nickname, password,
+                                                   domain, port,
+                                                   followNickname,
+                                                   followDomain,
+                                                   followPort,
+                                                   httpPrefix,
+                                                   cachedWebfingers,
+                                                   personCache,
+                                                   debug, __version__)
+                    else:
+                        _sayCommand(followHandle + ' is not valid',
+                                    screenreader, systemLanguage, espeak)
+                    print('')
+            elif (keyPress.startswith('unfollow ') or
+                  keyPress.startswith('stop following ')):
+                followHandle = keyPress.replace('unfollow ', '').strip()
+                followHandle = followHandle.replace('stop following ', '')
+                if followHandle.startswith('@'):
+                    followHandle = followHandle[1:]
+                if '@' in followHandle or '://' in followHandle:
+                    followNickname = getNicknameFromActor(followHandle)
+                    followDomain, followPort = \
+                        getDomainFromActor(followHandle)
+                    if followNickname and followDomain:
+                        _sayCommand('Stop following ' +
+                                    followNickname + '@' + followDomain,
+                                    screenreader, systemLanguage, espeak)
+                        sendUnfollowRequestViaServer(baseDir, session,
+                                                     nickname, password,
+                                                     domain, port,
+                                                     followNickname,
+                                                     followDomain,
+                                                     followPort,
+                                                     httpPrefix,
+                                                     cachedWebfingers,
+                                                     personCache,
+                                                     debug, __version__)
+                    else:
+                        _sayCommand(followHandle + ' is not valid',
+                                    screenreader, systemLanguage, espeak)
                     print('')
             elif (keyPress == 'repeat' or keyPress == 'replay' or
                   keyPress == 'rp'):
