@@ -584,7 +584,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if screenreader and nameStr and \
                    gender and messageStr and content:
                     sayStr = 'Repeating ' + nameStr
-                    _sayCommand(sayStr, sayStr,
+                    _sayCommand(sayStr, sayStr, screenreader,
                                 systemLanguage, espeak,
                                 nameStr, gender)
                     time.sleep(2)
