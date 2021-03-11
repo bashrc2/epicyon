@@ -122,14 +122,14 @@ def _textToSpeech(sayStr: str, screenreader: str,
                             systemLanguage, sayStr)
 
 
-def _sayCommand(sayStr: str, screenreader: str,
+def _sayCommand(content: str, sayStr: str, screenreader: str,
                 systemLanguage: str,
                 espeak=None,
                 speakerName='screen reader',
                 speakerGender='They/Them') -> None:
     """Speaks a command
     """
-    print(sayStr)
+    print(content)
     if not screenreader:
         return
 
@@ -157,29 +157,30 @@ def _notificationReplyToPost(session, postId: str,
     toNickname = getNicknameFromActor(postId)
     toDomain, toPort = getDomainFromActor(postId)
     sayStr = 'Replying to ' + toNickname + '@' + toDomain
-    _sayCommand(sayStr,
+    _sayCommand(sayStr, sayStr,
                 screenreader, systemLanguage, espeak)
     sayStr = 'Type your reply message, then press Enter.'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     replyMessage = input()
     if not replyMessage:
         sayStr = 'No reply was entered.'
-        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
     replyMessage = replyMessage.strip()
     if not replyMessage:
         sayStr = 'No reply was entered.'
-        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
     sayStr = 'You entered this reply:'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
-    _sayCommand(replyMessage, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(replyMessage, replyMessage, screenreader,
+                systemLanguage, espeak)
     sayStr = 'Send this reply, yes or no?'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
         sayStr = 'Abandoning reply'
-        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
     ccUrl = None
     followersOnly = False
@@ -190,7 +191,7 @@ def _notificationReplyToPost(session, postId: str,
     subject = None
     commentsEnabled = True
     sayStr = 'Sending reply'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
                          baseDir, session, nickname, password,
                          domain, port,
@@ -203,7 +204,7 @@ def _notificationReplyToPost(session, postId: str,
         sayStr = 'Reply sent'
     else:
         sayStr = 'Reply failed'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
 def _notificationNewPost(session,
@@ -216,28 +217,28 @@ def _notificationNewPost(session,
     """Use the notification client to create a new post
     """
     sayStr = 'Create new post'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     sayStr = 'Type your post, then press Enter.'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     newMessage = input()
     if not newMessage:
         sayStr = 'No post was entered.'
-        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
     newMessage = newMessage.strip()
     if not newMessage:
         sayStr = 'No post was entered.'
-        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
     sayStr = 'You entered this public post:'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
-    _sayCommand(newMessage, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(newMessage, newMessage, screenreader, systemLanguage, espeak)
     sayStr = 'Send this post, yes or no?'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     yesno = input()
     if 'y' not in yesno.lower():
         sayStr = 'Abandoning new post'
-        _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         return
     ccUrl = None
     followersOnly = False
@@ -249,7 +250,7 @@ def _notificationNewPost(session,
     commentsEnabled = True
     subject = None
     sayStr = 'Sending'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
                          baseDir, session, nickname, password,
                          domain, port,
@@ -262,7 +263,7 @@ def _notificationNewPost(session,
         sayStr = 'Post sent'
     else:
         sayStr = 'Post failed'
-    _sayCommand(sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
@@ -285,7 +286,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             return
 
         sayStr = 'Running ' + screenreader + ' for ' + nickname + '@' + domain
-        _sayCommand(sayStr, screenreader,
+        _sayCommand(sayStr, sayStr, screenreader,
                     systemLanguage, espeak)
     else:
         print('Running desktop notifications for ' + nickname + '@' + domain)
@@ -293,10 +294,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
         sayStr = 'Notification sounds on'
     else:
         sayStr = 'Notification sounds off'
-    _sayCommand(sayStr, screenreader,
+    _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
     sayStr = '/q or /quit to exit'
-    _sayCommand(sayStr, screenreader,
+    _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
     print('')
     keyPress = _waitForKeypress(2, debug)
@@ -414,15 +415,19 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
 
+                        content = messageStr
+                        if speakerJson.get('content'):
+                            content = speakerJson['content']
+
                         # say the speaker's name
-                        _sayCommand(nameStr, screenreader,
+                        _sayCommand(nameStr, nameStr, screenreader,
                                     systemLanguage, espeak,
                                     nameStr, gender)
 
                         time.sleep(2)
 
                         # speak the post content
-                        _sayCommand(messageStr, screenreader,
+                        _sayCommand(content, messageStr, screenreader,
                                     systemLanguage, espeak,
                                     nameStr, gender)
 
@@ -437,7 +442,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 keyPress = keyPress[1:]
             if keyPress == 'q' or keyPress == 'quit' or keyPress == 'exit':
                 sayStr = 'Quit'
-                _sayCommand(sayStr, screenreader,
+                _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 if screenreader:
                     keyPress = _waitForKeypress(2, debug)
@@ -469,7 +474,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif keyPress == 'like':
                 if nameStr and gender and messageStr:
-                    _sayCommand('Liking post by ' + nameStr,
+                    sayStr = 'Liking post by ' + nameStr
+                    _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
                     sessionLike = createSession(proxyType)
@@ -482,7 +488,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     print('')
             elif keyPress == 'unlike' or keyPress == 'undo like':
                 if nameStr and gender and messageStr:
-                    _sayCommand('Undoing like of post by ' + nameStr,
+                    sayStr = 'Undoing like of post by ' + nameStr
+                    _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
                     sessionUnlike = createSession(proxyType)
@@ -499,7 +506,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if speakerJson.get('id'):
                     if nameStr and gender and messageStr:
                         postId = speakerJson['id']
-                        _sayCommand('Announcing post by ' + nameStr,
+                        sayStr = 'Announcing post by ' + nameStr
+                        _sayCommand(sayStr, sayStr,
                                     screenreader,
                                     systemLanguage, espeak)
                         sessionAnnounce = createSession(proxyType)
@@ -519,8 +527,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     followDomain, followPort = \
                         getDomainFromActor(followHandle)
                     if followNickname and followDomain:
-                        _sayCommand('Sending follow request to ' +
-                                    followNickname + '@' + followDomain,
+                        sayStr = 'Sending follow request to ' + \
+                            followNickname + '@' + followDomain
+                        _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                         sessionFollow = createSession(proxyType)
                         sendFollowRequestViaServer(baseDir, sessionFollow,
@@ -534,7 +543,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                    personCache,
                                                    debug, __version__)
                     else:
-                        _sayCommand(followHandle + ' is not valid',
+                        sayStr = followHandle + ' is not valid'
+                        _sayCommand(sayStr,
                                     screenreader, systemLanguage, espeak)
                     print('')
             elif (keyPress.startswith('unfollow ') or
@@ -548,8 +558,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     followDomain, followPort = \
                         getDomainFromActor(followHandle)
                     if followNickname and followDomain:
-                        _sayCommand('Stop following ' +
-                                    followNickname + '@' + followDomain,
+                        sayStr = 'Stop following ' + \
+                            followNickname + '@' + followDomain
+                        _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                         sessionUnfollow = createSession(proxyType)
                         sendUnfollowRequestViaServer(baseDir, sessionUnfollow,
@@ -563,28 +574,30 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                                      personCache,
                                                      debug, __version__)
                     else:
-                        _sayCommand(followHandle + ' is not valid',
+                        sayStr = followHandle + ' is not valid'
+                        _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                     print('')
             elif (keyPress == 'repeat' or keyPress == 'replay' or
                   keyPress == 'rp'):
-                if nameStr and gender and messageStr:
-                    _sayCommand('Repeating ' + nameStr, screenreader,
+                if nameStr and gender and messageStr and content:
+                    sayStr = 'Repeating ' + nameStr, screenreader
+                    _sayCommand(sayStr, sayStr,
                                 systemLanguage, espeak,
                                 nameStr, gender)
                     time.sleep(2)
-                    _sayCommand(messageStr, screenreader,
+                    _sayCommand(content, messageStr, screenreader,
                                 systemLanguage, espeak,
                                 nameStr, gender)
                     print('')
             elif keyPress == 'sounds on' or keyPress == 'sound':
                 sayStr = 'Notification sounds on'
-                _sayCommand(sayStr, screenreader,
+                _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = True
             elif keyPress == 'sounds off' or keyPress == 'nosound':
                 sayStr = 'Notification sounds off'
-                _sayCommand(sayStr, screenreader,
+                _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = False
             elif (keyPress == 'speak' or
@@ -595,7 +608,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if originalScreenReader:
                     screenreader = originalScreenReader
                     sayStr = 'Screen reader on'
-                    _sayCommand(sayStr, screenreader,
+                    _sayCommand(sayStr, sayStr, screenreader,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
@@ -607,7 +620,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if originalScreenReader:
                     screenreader = None
                     sayStr = 'Screen reader off'
-                    _sayCommand(sayStr, originalScreenReader,
+                    _sayCommand(sayStr, sayStr, originalScreenReader,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
