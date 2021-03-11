@@ -344,7 +344,8 @@ def _getPGPPublicKeyFromActor(handle: str, actorJson=None) -> str:
         if not isinstance(tag['value'], str):
             continue
         if '--BEGIN PGP PUBLIC KEY BLOCK--' in tag['value']:
-            return tag['value']
+            if '--END PGP PUBLIC KEY BLOCK--' in tag['value']:
+                return tag['value']
     return None
 
 
@@ -378,7 +379,8 @@ def pgpDecrypt(content: str, fromHandle: str) -> str:
 
     # if the public key is also included within the message then import it
     startBlock = '--BEGIN PGP PUBLIC KEY BLOCK--'
-    if startBlock in content:
+    endBlock = '--END PGP PUBLIC KEY BLOCK--'
+    if startBlock in content and endBlock in content:
         pubKey = extractPGPPublicKey(content)
     else:
         pubKey = _getPGPPublicKeyFromActor(content, fromHandle)
