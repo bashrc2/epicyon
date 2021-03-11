@@ -95,6 +95,10 @@ def _desktopNotification(notificationType: str,
     if notificationType == 'notify-send':
         # Ubuntu
         os.system('notify-send "' + title + '" "' + message + '"')
+    elif notificationType == 'zenity':
+        # Zenity
+        os.system('zenity --notification --title "' + title +
+                  '" --text="' + message + '"')
     elif notificationType == 'osascript':
         # Mac
         os.system("osascript -e 'display notification \"" +
