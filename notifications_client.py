@@ -580,7 +580,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader, systemLanguage, espeak)
                     print('')
             elif (keyPress == 'repeat' or keyPress == 'replay' or
-                  keyPress == 'rp'):
+                  keyPress == 'rp' or keyPress == 'again' or
+                  keyPress == 'say again'):
                 if screenreader and nameStr and \
                    gender and messageStr and content:
                     sayStr = 'Repeating ' + nameStr
@@ -592,12 +593,16 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak,
                                 nameStr, gender)
                     print('')
-            elif keyPress == 'sounds on' or keyPress == 'sound':
+            elif (keyPress == 'sounds on' or
+                  keyPress == 'sound on' or
+                  keyPress == 'sound'):
                 sayStr = 'Notification sounds on'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = True
-            elif keyPress == 'sounds off' or keyPress == 'nosound':
+            elif (keyPress == 'sounds off' or
+                  keyPress == 'sound off' or
+                  keyPress == 'nosound'):
                 sayStr = 'Notification sounds off'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
