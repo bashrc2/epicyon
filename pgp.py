@@ -354,7 +354,7 @@ def hasLocalPGPkey() -> bool:
     """
     homeDir = str(Path.home())
     gpgDir = homeDir + '/.gnupg'
-    if os.path.isfile(gpgDir):
+    if os.path.isdir(gpgDir):
         return True
     return False
 
