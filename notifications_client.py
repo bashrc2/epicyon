@@ -486,11 +486,17 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         else:
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
-                        messageStr = pgpDecrypt(messageStr)
+                        if speakerJson.get('id'):
+                            messageStr = pgpDecrypt(messageStr,
+                                                    speakerJson['id'])
 
                         content = messageStr
                         if speakerJson.get('content'):
-                            content = pgpDecrypt(speakerJson['content'])
+                            if speakerJson.get('id'):
+                                content = pgpDecrypt(speakerJson['content'],
+                                                     speakerJson['id'])
+                            else:
+                                content = speakerJson['content']
 
                         # say the speaker's name
                         _sayCommand(nameStr, nameStr, screenreader,

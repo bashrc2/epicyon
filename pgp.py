@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import subprocess
+from person import getActorJson
 
 
 def getEmailAddress(actorJson: {}) -> str:
@@ -320,8 +321,28 @@ def pgpEncrypt(content: str, recipientPubKey: str) -> str:
     return encryptResult
 
 
-def pgpDecrypt(content: str) -> str:
+def _getPGPPublicKeyFromActor(handle: str) -> str:
+    """Searches tags on the actor to see if there is any PGP
+    public key specified
+    """
+    actorJson = getActorJson(handle, False, False, True)
+    if not actorJson:
+        return None
+    if not actorJson.get('attachment'):
+        return None
+    if not isinstance(actorJson['attachment'], list):
+        return None
+    for tag in actorJson['attachment']:
+        if not tag.get('value'):
+            continue
+        if '--BEGIN PGP PUBLIC KEY BLOCK--' in tag['value']:
+            return tag['value']
+    return None
+
+
+def pgpDecrypt(content: str, fromHandle: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
+    fromHandle can be a handle or actor url
     """
     if '--BEGIN PGP MESSAGE--' not in content:
         return content
@@ -330,8 +351,10 @@ def pgpDecrypt(content: str) -> str:
     startBlock = '--BEGIN PGP PUBLIC KEY BLOCK--'
     if startBlock in content:
         pubKey = extractPGPPublicKey(content)
-        if pubKey:
-            _pgpImportPubKey(pubKey)
+    else:
+        pubKey = _getPGPPublicKeyFromActor(content, fromHandle)
+    if pubKey:
+        _pgpImportPubKey(pubKey)
 
     cmdDecrypt = \
         'echo "' + content + '" | gpg --decrypt --armor 2> /dev/null'
