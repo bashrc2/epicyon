@@ -307,13 +307,6 @@ def _notificationNewDM(session, toHandle: str,
     sayStr = 'You entered this direct message to ' + toHandle + ':'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     _sayCommand(newMessage, newMessage, screenreader, systemLanguage, espeak)
-    sayStr = 'Send this direct message, yes or no?'
-    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-    yesno = input()
-    if 'y' not in yesno.lower():
-        sayStr = 'Abandoning new direct message'
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        return
     ccUrl = None
     followersOnly = False
     attach = None
@@ -342,12 +335,22 @@ def _notificationNewDM(session, toHandle: str,
         cipherText = \
             pgpEncryptToActor(paddedMessage, toHandle)
         if not cipherText:
-            sayStr = toHandle + ' has no PGP public key'
+            sayStr = \
+                toHandle + ' has no PGP public key. ' + \
+                'Your message will be sent in clear text'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         else:
             newMessage = cipherText
             sayStr = 'Message encrypted'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+
+    sayStr = 'Send this direct message, yes or no?'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    yesno = input()
+    if 'y' not in yesno.lower():
+        sayStr = 'Abandoning new direct message'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        return
 
     sayStr = 'Sending'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
