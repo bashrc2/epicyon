@@ -11,6 +11,7 @@ import shutil
 import sys
 import time
 import argparse
+from person import getActorJson
 from person import createPerson
 from person import createGroup
 from person import setProfileImage
@@ -1370,137 +1371,7 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    originalActor = args.actor
-    if '/@' in args.actor or \
-       '/users/' in args.actor or \
-       args.actor.startswith('http') or \
-       args.actor.startswith('dat'):
-        # format: https://domain/@nick
-        prefixes = getProtocolPrefixes()
-        for prefix in prefixes:
-            args.actor = args.actor.replace(prefix, '')
-        args.actor = args.actor.replace('/@', '/users/')
-        if not hasUsersPath(args.actor):
-            print('Expected actor format: ' +
-                  'https://domain/@nick or https://domain/users/nick')
-            sys.exit()
-        if '/users/' in args.actor:
-            nickname = args.actor.split('/users/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/users/')[0]
-        elif '/profile/' in args.actor:
-            nickname = args.actor.split('/profile/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/profile/')[0]
-        elif '/channel/' in args.actor:
-            nickname = args.actor.split('/channel/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/channel/')[0]
-        elif '/accounts/' in args.actor:
-            nickname = args.actor.split('/accounts/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/accounts/')[0]
-        elif '/u/' in args.actor:
-            nickname = args.actor.split('/u/')[1]
-            nickname = nickname.replace('\n', '').replace('\r', '')
-            domain = args.actor.split('/u/')[0]
-    else:
-        # format: @nick@domain
-        if '@' not in args.actor:
-            print('Syntax: --actor nickname@domain')
-            sys.exit()
-        if args.actor.startswith('@'):
-            args.actor = args.actor[1:]
-        if '@' not in args.actor:
-            print('Syntax: --actor nickname@domain')
-            sys.exit()
-        nickname = args.actor.split('@')[0]
-        domain = args.actor.split('@')[1]
-        domain = domain.replace('\n', '').replace('\r', '')
-    cachedWebfingers = {}
-    if args.http or domain.endswith('.onion'):
-        httpPrefix = 'http'
-        port = 80
-        proxyType = 'tor'
-    elif domain.endswith('.i2p'):
-        httpPrefix = 'http'
-        port = 80
-        proxyType = 'i2p'
-    elif args.gnunet:
-        httpPrefix = 'gnunet'
-        port = 80
-        proxyType = 'gnunet'
-    else:
-        httpPrefix = 'https'
-        port = 443
-    session = createSession(proxyType)
-    if nickname == 'inbox':
-        nickname = domain
-
-    handle = nickname + '@' + domain
-    wfRequest = webfingerHandle(session, handle,
-                                httpPrefix, cachedWebfingers,
-                                None, __version__)
-    if not wfRequest:
-        print('Unable to webfinger ' + handle)
-        sys.exit()
-    if not isinstance(wfRequest, dict):
-        print('Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
-        sys.exit()
-
-    pprint(wfRequest)
-
-    personUrl = None
-    if wfRequest.get('errors'):
-        print('wfRequest error: ' + str(wfRequest['errors']))
-        if hasUsersPath(args.actor):
-            personUrl = originalActor
-        else:
-            sys.exit()
-
-    profileStr = 'https://www.w3.org/ns/activitystreams'
-    asHeader = {
-        'Accept': 'application/activity+json; profile="' + profileStr + '"'
-    }
-    if not personUrl:
-        personUrl = getUserUrl(wfRequest)
-    if nickname == domain:
-        personUrl = personUrl.replace('/users/', '/actor/')
-        personUrl = personUrl.replace('/accounts/', '/actor/')
-        personUrl = personUrl.replace('/channel/', '/actor/')
-        personUrl = personUrl.replace('/profile/', '/actor/')
-        personUrl = personUrl.replace('/u/', '/actor/')
-    if not personUrl:
-        # try single user instance
-        personUrl = httpPrefix + '://' + domain
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-    if '/channel/' in personUrl or '/accounts/' in personUrl:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/ld+json; profile="' + profileStr + '"'
-        }
-
-    personJson = \
-        getJson(session, personUrl, asHeader, None, __version__,
-                httpPrefix, None)
-    if personJson:
-        pprint(personJson)
-    else:
-        profileStr = 'https://www.w3.org/ns/activitystreams'
-        asHeader = {
-            'Accept': 'application/jrd+json; profile="' + profileStr + '"'
-        }
-        personJson = \
-            getJson(session, personUrl, asHeader, None,
-                    __version__, httpPrefix, None)
-        if personJson:
-            pprint(personJson)
-        else:
-            print('Failed to get ' + personUrl)
+    getActorJson(args.actor, args.http, args.gnunet, False)
     sys.exit()
 
 if args.followers:

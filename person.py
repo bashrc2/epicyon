@@ -19,6 +19,7 @@ from cryptography.hazmat.primitives import serialization
 from shutil import copyfile
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
+from posts import getUserUrl
 from posts import createDMTimeline
 from posts import createRepliesTimeline
 from posts import createMediaTimeline
@@ -41,6 +42,12 @@ from utils import saveJson
 from utils import setConfigParam
 from utils import getConfigParam
 from utils import refreshNewswire
+from utils import getProtocolPrefixes
+from utils import hasUsersPath
+from session import createSession
+from session import getJson
+from webfinger import webfingerHandle
+from pprint import pprint
 
 
 def generateRSAKey() -> (str, str):
@@ -1093,3 +1100,146 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     with open(notesFilename, 'w+') as notesFile:
         notesFile.write(notes)
     return True
+
+
+def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
+    """Returns the actor json
+    """
+    originalActor = handle
+    if '/@' in handle or \
+       '/users/' in handle or \
+       handle.startswith('http') or \
+       handle.startswith('dat'):
+        # format: https://domain/@nick
+        prefixes = getProtocolPrefixes()
+        for prefix in prefixes:
+            handle = handle.replace(prefix, '')
+        handle = handle.replace('/@', '/users/')
+        if not hasUsersPath(handle):
+            if not quiet:
+                print('Expected actor format: ' +
+                      'https://domain/@nick or https://domain/users/nick')
+            return None
+        if '/users/' in handle:
+            nickname = handle.split('/users/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = handle.split('/users/')[0]
+        elif '/profile/' in handle:
+            nickname = handle.split('/profile/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = handle.split('/profile/')[0]
+        elif '/channel/' in handle:
+            nickname = handle.split('/channel/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = handle.split('/channel/')[0]
+        elif '/accounts/' in handle:
+            nickname = handle.split('/accounts/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = handle.split('/accounts/')[0]
+        elif '/u/' in handle:
+            nickname = handle.split('/u/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = handle.split('/u/')[0]
+    else:
+        # format: @nick@domain
+        if '@' not in handle:
+            if not quiet:
+                print('Syntax: --actor nickname@domain')
+            return None
+        if handle.startswith('@'):
+            handle = handle[1:]
+        if '@' not in handle:
+            if not quiet:
+                print('Syntax: --actor nickname@domain')
+            return None
+        nickname = handle.split('@')[0]
+        domain = handle.split('@')[1]
+        domain = domain.replace('\n', '').replace('\r', '')
+    cachedWebfingers = {}
+    proxyType = None
+    if http or domain.endswith('.onion'):
+        httpPrefix = 'http'
+        proxyType = 'tor'
+    elif domain.endswith('.i2p'):
+        httpPrefix = 'http'
+        proxyType = 'i2p'
+    elif gnunet:
+        httpPrefix = 'gnunet'
+        proxyType = 'gnunet'
+    else:
+        httpPrefix = 'https'
+    session = createSession(proxyType)
+    if nickname == 'inbox':
+        nickname = domain
+
+    handle = nickname + '@' + domain
+    wfRequest = webfingerHandle(session, handle,
+                                httpPrefix, cachedWebfingers,
+                                None, __version__)
+    if not wfRequest:
+        if not quiet:
+            print('Unable to webfinger ' + handle)
+        return None
+    if not isinstance(wfRequest, dict):
+        if not quiet:
+            print('Webfinger for ' + handle + ' did not return a dict. ' +
+                  str(wfRequest))
+        return None
+
+    if not quiet:
+        pprint(wfRequest)
+
+    personUrl = None
+    if wfRequest.get('errors'):
+        if not quiet:
+            print('wfRequest error: ' + str(wfRequest['errors']))
+        if hasUsersPath(handle):
+            personUrl = originalActor
+        else:
+            return None
+
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if not personUrl:
+        personUrl = getUserUrl(wfRequest)
+    if nickname == domain:
+        personUrl = personUrl.replace('/users/', '/actor/')
+        personUrl = personUrl.replace('/accounts/', '/actor/')
+        personUrl = personUrl.replace('/channel/', '/actor/')
+        personUrl = personUrl.replace('/profile/', '/actor/')
+        personUrl = personUrl.replace('/u/', '/actor/')
+    if not personUrl:
+        # try single user instance
+        personUrl = httpPrefix + '://' + domain
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+    if '/channel/' in personUrl or '/accounts/' in personUrl:
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+
+    personJson = \
+        getJson(session, personUrl, asHeader, None, __version__,
+                httpPrefix, None, 20, quiet)
+    if personJson:
+        if not quiet:
+            pprint(personJson)
+    else:
+        profileStr = 'https://www.w3.org/ns/activitystreams'
+        asHeader = {
+            'Accept': 'application/jrd+json; profile="' + profileStr + '"'
+        }
+        personJson = \
+            getJson(session, personUrl, asHeader, None,
+                    __version__, httpPrefix, None)
+        if not quiet:
+            if personJson:
+                pprint(personJson)
+            else:
+                print('Failed to get ' + personUrl)
+        return personJson
