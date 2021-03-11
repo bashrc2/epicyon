@@ -279,7 +279,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
                          links: [], gender: str, postId: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
-                         likedBy: str, postCal: bool,
+                         likedBy: str, published: str, postCal: bool,
                          postShare: bool, themeName: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
@@ -288,6 +288,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "summary": summary,
         "content": content,
         "say": sayContent,
+        "published": published,
         "imageDescription": imageDescription,
         "detectedLinks": links,
         "id": postId,
@@ -433,6 +434,10 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                         imageDescription += \
                             img['name'] + '. '
 
+    published = ''
+    if postJsonObject['object'].get('published'):
+        published = postJsonObject['object']['published']
+
     summary = ''
     if postJsonObject['object'].get('summary'):
         if isinstance(postJsonObject['object']['summary'], str):
@@ -492,7 +497,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                                 detectedLinks, gender, postId,
                                 postDM, postReply,
                                 followRequestsExist,
-                                likedBy,
+                                likedBy, published,
                                 postCal, postShare, themeName)
 
 
