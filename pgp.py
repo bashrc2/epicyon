@@ -341,6 +341,8 @@ def _getPGPPublicKeyFromActor(handle: str, actorJson=None) -> str:
             continue
         if not tag.get('value'):
             continue
+        if not isinstance(tag['value'], str):
+            continue
         if '--BEGIN PGP PUBLIC KEY BLOCK--' in tag['value']:
             return tag['value']
     return None
