@@ -540,7 +540,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 sessionPost = createSession(proxyType)
                 if keyPress.startswith('post ') or \
                    keyPress.startswith('send '):
-                    keyPress = keyPress.replace(' to ', '')
+                    keyPress = keyPress.replace(' to ', ' ')
                     # direct message
                     toHandle = None
                     if keyPress.startswith('post '):
