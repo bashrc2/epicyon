@@ -430,6 +430,7 @@ like                     Like the last post
 unlike                   Unlike the last post
 reply                    Reply to the last post
 post                     Create a new post
+post to [handle]         Create a new direct message
 announce/boost           Boost the last post
 follow [handle]          Make a follow request
 unfollow [handle]        Stop following the give handle
