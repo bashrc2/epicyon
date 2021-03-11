@@ -274,7 +274,8 @@ def getSpeakerFromServer(baseDir: str, session,
 
 
 def _speakerEndpointJson(displayName: str, summary: str,
-                         content: str, imageDescription: str,
+                         content: str, sayContent: str,
+                         imageDescription: str,
                          links: [], gender: str, postId: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
@@ -285,7 +286,8 @@ def _speakerEndpointJson(displayName: str, summary: str,
     speakerJson = {
         "name": displayName,
         "summary": summary,
-        "say": content,
+        "content": content,
+        "say": sayContent,
         "imageDescription": imageDescription,
         "detectedLinks": links,
         "id": postId,
@@ -412,11 +414,12 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
         content = content.replace(' <3', ' ' + translate['heart'])
     content = removeHtml(htmlReplaceQuoteMarks(content))
     content = speakerReplaceLinks(content, translate, detectedLinks)
-    content = _speakerPronounce(baseDir, content, translate)
+    sayContent = content
+    sayContent = _speakerPronounce(baseDir, content, translate)
     # replace all double spaces
-    while '  ' in content:
-        content = content.replace('  ', ' ')
-    content = content.replace(' . ', '. ')
+    while '  ' in sayContent:
+        sayContent = sayContent.replace('  ', ' ')
+    sayContent = sayContent.replace(' . ', '. ')
 
     imageDescription = ''
     if postJsonObject['object'].get('attachment'):
@@ -451,8 +454,9 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
         announcedDomain, announcedport = getDomainFromActor(announcingActor)
         if announcedNickname and announcedDomain:
             announcedHandle = announcedNickname + '@' + announcedDomain
-            content = \
-                translate['announces'] + ' ' + announcedHandle + '. ' + content
+            sayContent = \
+                translate['announces'] + ' ' + \
+                announcedHandle + '. ' + sayContent
     postId = None
     if postJsonObject['object'].get('id'):
         postId = postJsonObject['object']['id']
@@ -484,7 +488,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     postShare = os.path.isfile(shareFilename)
 
     return _speakerEndpointJson(speakerName, summary,
-                                content, imageDescription,
+                                content, sayContent, imageDescription,
                                 detectedLinks, gender, postId,
                                 postDM, postReply,
                                 followRequestsExist,
