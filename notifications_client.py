@@ -322,6 +322,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     nameStr = None
     gender = None
     messageStr = None
+    content = None
     cachedWebfingers = {}
     personCache = {}
     while (1):
