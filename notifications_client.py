@@ -25,6 +25,7 @@ from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
 from announce import sendAnnounceViaServer
+from pgp import pgpDecrypt
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -485,10 +486,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         else:
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
+                        messageStr = pgpDecrypt(messageStr)
 
                         content = messageStr
                         if speakerJson.get('content'):
-                            content = speakerJson['content']
+                            content = pgpDecrypt(speakerJson['content'])
 
                         # say the speaker's name
                         _sayCommand(nameStr, nameStr, screenreader,
@@ -535,18 +537,28 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif (keyPress == 'post' or keyPress == 'p' or
                   keyPress == 'send' or
+                  keyPress.startswith('dm ') or
+                  keyPress.startswith('direct message ') or
                   keyPress.startswith('post ') or
                   keyPress.startswith('send ')):
                 sessionPost = createSession(proxyType)
-                if keyPress.startswith('post ') or \
+                if keyPress.startswith('dm ') or \
+                   keyPress.startswith('direct message ') or \
+                   keyPress.startswith('post ') or \
                    keyPress.startswith('send '):
                     keyPress = keyPress.replace(' to ', ' ')
+                    keyPress = keyPress.replace(' dm ', ' ')
+                    keyPress = keyPress.replace(' DM ', ' ')
                     # direct message
                     toHandle = None
                     if keyPress.startswith('post '):
                         toHandle = keyPress.split('post ', 1)[1]
                     elif keyPress.startswith('send '):
                         toHandle = keyPress.split('send ', 1)[1]
+                    elif keyPress.startswith('dm '):
+                        toHandle = keyPress.split('dm ', 1)[1]
+                    elif keyPress.startswith('direct message '):
+                        toHandle = keyPress.split('direct message ', 1)[1]
                     if toHandle:
                         _notificationNewDM(sessionPost, toHandle,
                                            baseDir, nickname, password,
