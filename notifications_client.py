@@ -266,6 +266,76 @@ def _notificationNewPost(session,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
+def _notificationNewDM(session, toHandle: str,
+                       baseDir: str, nickname: str, password: str,
+                       domain: str, port: int, httpPrefix: str,
+                       cachedWebfingers: {}, personCache: {},
+                       debug: bool,
+                       screenreader: str, systemLanguage: str,
+                       espeak) -> None:
+    """Use the notification client to create a new direct message
+    """
+    toPort = port
+    if '://' in toHandle:
+        toNickname = getNicknameFromActor(toHandle)
+        toDomain, toPort = getDomainFromActor(toHandle)
+        toHandle = toNickname + '@' + toDomain
+    else:
+        if toHandle.startswith('@'):
+            toHandle = toHandle[1:]
+        toNickname = toHandle.split('@')[0]
+        toDomain = toHandle.split('@')[1]
+
+    sayStr = 'Create new direct message to ' + toHandle
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    sayStr = 'Type your direct message, then press Enter.'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    newMessage = input()
+    if not newMessage:
+        sayStr = 'No direct message was entered.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        return
+    newMessage = newMessage.strip()
+    if not newMessage:
+        sayStr = 'No direct message was entered.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        return
+    sayStr = 'You entered this direct message to ' + toHandle + ':'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(newMessage, newMessage, screenreader, systemLanguage, espeak)
+    sayStr = 'Send this direct message, yes or no?'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    yesno = input()
+    if 'y' not in yesno.lower():
+        sayStr = 'Abandoning new direct message'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        return
+    ccUrl = None
+    followersOnly = False
+    attach = None
+    mediaType = None
+    attachedImageDescription = None
+    isArticle = False
+    subject = None
+    commentsEnabled = True
+    subject = None
+    sayStr = 'Sending'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    if sendPostViaServer(__version__,
+                         baseDir, session, nickname, password,
+                         domain, port,
+                         toNickname, toDomain, toPort, ccUrl,
+                         httpPrefix, newMessage, followersOnly,
+                         commentsEnabled, attach, mediaType,
+                         attachedImageDescription,
+                         cachedWebfingers, personCache, isArticle,
+                         debug, None, None, subject) == 0:
+        sayStr = 'Direct message sent'
+    else:
+        sayStr = 'Direct message failed'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
@@ -463,15 +533,35 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              screenreader, systemLanguage,
                                              espeak)
                 print('')
-            elif keyPress == 'post' or keyPress == 'p':
+            elif (keyPress == 'post' or keyPress == 'p' or
+                  keyPress == 'send' or
+                  keyPress.startswith('post ') or
+                  keyPress.startswith('send ')):
                 sessionPost = createSession(proxyType)
-                _notificationNewPost(sessionPost,
-                                     baseDir, nickname, password,
-                                     domain, port, httpPrefix,
-                                     cachedWebfingers, personCache,
-                                     debug,
-                                     screenreader, systemLanguage,
-                                     espeak)
+                if keyPress.startswith('post ') or \
+                   keyPress.startswith('send '):
+                    keyPress = keyPress.replace(' to ', '')
+                    # direct message
+                    if keyPress.startswith('post '):
+                        toHandle = keyPress.split('post ', 1)[1]
+                    else:
+                        toHandle = keyPress.split('send ', 1)[1]
+                    _notificationNewDM(sessionPost, toHandle,
+                                       baseDir, nickname, password,
+                                       domain, port, httpPrefix,
+                                       cachedWebfingers, personCache,
+                                       debug,
+                                       screenreader, systemLanguage,
+                                       espeak)
+                else:
+                    # public post
+                    _notificationNewPost(sessionPost,
+                                         baseDir, nickname, password,
+                                         domain, port, httpPrefix,
+                                         cachedWebfingers, personCache,
+                                         debug,
+                                         screenreader, systemLanguage,
+                                         espeak)
                 print('')
             elif keyPress == 'like':
                 if nameStr and gender and messageStr:

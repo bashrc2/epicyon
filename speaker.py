@@ -169,7 +169,7 @@ def speakerReplaceLinks(sayText: str, translate: {},
     prevWord = ''
     for word in wordsList:
         if word.startswith('v='):
-            replacements[word] = ''        
+            replacements[word] = ''
         if word.startswith(':'):
             if word.endswith(':'):
                 replacements[word] = ', emowji ' + word.replace(':', '') + ','
