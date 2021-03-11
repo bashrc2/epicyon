@@ -413,21 +413,24 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
-    # replace some emoji before removing html
-    if ' <3' in content:
-        content = content.replace(' <3', ' ' + translate['heart'])
-    content = removeHtml(htmlReplaceQuoteMarks(content))
-    content = speakerReplaceLinks(content, translate, detectedLinks)
-    # replace all double spaces
-    while '  ' in content:
-        content = content.replace('  ', ' ')
-    content = content.replace(' . ', '. ').strip()
-    sayContent = content
-    sayContent = _speakerPronounce(baseDir, content, translate)
-    # replace all double spaces
-    while '  ' in sayContent:
-        sayContent = sayContent.replace('  ', ' ')
-    sayContent = sayContent.replace(' . ', '. ').strip()
+    if '--BEGIN PGP MESSAGE--' not in content:
+        # replace some emoji before removing html
+        if ' <3' in content:
+            content = content.replace(' <3', ' ' + translate['heart'])
+        content = removeHtml(htmlReplaceQuoteMarks(content))
+        content = speakerReplaceLinks(content, translate, detectedLinks)
+        # replace all double spaces
+        while '  ' in content:
+            content = content.replace('  ', ' ')
+        content = content.replace(' . ', '. ').strip()
+        sayContent = content
+        sayContent = _speakerPronounce(baseDir, content, translate)
+        # replace all double spaces
+        while '  ' in sayContent:
+            sayContent = sayContent.replace('  ', ' ')
+        sayContent = sayContent.replace(' . ', '. ').strip()
+    else:
+        sayContent = content
 
     imageDescription = ''
     if postJsonObject['object'].get('attachment'):

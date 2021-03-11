@@ -3000,7 +3000,8 @@ def testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing'
+        '_nothing',
+        "pgpEncrypt"
     ]
     excludeImports = [
         'link',
@@ -3418,7 +3419,7 @@ def testEmojiImages():
 def testExtractPGPPublicKey():
     print('testExtractPGPPublicKey')
     pubKey = \
-        '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' + \
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
         'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
         'IBjngMbVJJ3Wg/3UW73/PV\n' + \
         'I47xKTS0IUJvYiBNb3R0cmFtIDxib2JAZnJlZWRvb' + \

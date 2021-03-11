@@ -25,6 +25,7 @@ from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
 from announce import sendAnnounceViaServer
+from pgp import pgpDecrypt
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -485,10 +486,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         else:
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
+                        messageStr = pgpDecrypt(messageStr)
 
                         content = messageStr
                         if speakerJson.get('content'):
-                            content = speakerJson['content']
+                            content = pgpDecrypt(speakerJson['content'])
 
                         # say the speaker's name
                         _sayCommand(nameStr, nameStr, screenreader,
