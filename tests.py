@@ -3000,8 +3000,7 @@ def testFunctions():
         'E2EEremoveDevice',
         'setOrganizationScheme',
         'fill_headers',
-        '_nothing',
-        "pgpEncrypt"
+        '_nothing'
     ]
     excludeImports = [
         'link',

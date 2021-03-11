@@ -6,7 +6,10 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import subprocess
+from pathlib import Path
+from person import getActorJson
 
 
 def getEmailAddress(actorJson: {}) -> str:
@@ -299,7 +302,7 @@ def _pgpImportPubKey(recipientPubKey: str) -> str:
     return keyId
 
 
-def pgpEncrypt(content: str, recipientPubKey: str) -> str:
+def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
     """
     keyId = _pgpImportPubKey(recipientPubKey)
@@ -320,18 +323,69 @@ def pgpEncrypt(content: str, recipientPubKey: str) -> str:
     return encryptResult
 
 
-def pgpDecrypt(content: str) -> str:
+def _getPGPPublicKeyFromActor(handle: str, actorJson=None) -> str:
+    """Searches tags on the actor to see if there is any PGP
+    public key specified
+    """
+    if not actorJson:
+        actorJson = getActorJson(handle, False, False, True)
+    if not actorJson:
+        return None
+    if not actorJson.get('attachment'):
+        return None
+    if not isinstance(actorJson['attachment'], list):
+        return None
+    # search through the tags on the actor
+    for tag in actorJson['attachment']:
+        if not isinstance(tag, dict):
+            continue
+        if not tag.get('value'):
+            continue
+        if not isinstance(tag['value'], str):
+            continue
+        if '--BEGIN PGP PUBLIC KEY BLOCK--' in tag['value']:
+            if '--END PGP PUBLIC KEY BLOCK--' in tag['value']:
+                return tag['value']
+    return None
+
+
+def hasLocalPGPkey() -> bool:
+    """Returns true if there is a local .gnupg directory
+    """
+    homeDir = str(Path.home())
+    gpgDir = homeDir + '/.gnupg'
+    if os.path.isfile(gpgDir):
+        return True
+    return False
+
+
+def pgpEncryptToActor(content: str, toHandle: str) -> str:
+    """PGP encrypt a message to the given actor or handle
+    """
+    # get the actor and extract the pgp public key from it
+    recipientPubKey = _getPGPPublicKeyFromActor(toHandle)
+    if not recipientPubKey:
+        return None
+    # encrypt using the recipient public key
+    return _pgpEncrypt(content, recipientPubKey)
+
+
+def pgpDecrypt(content: str, fromHandle: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
+    fromHandle can be a handle or actor url
     """
     if '--BEGIN PGP MESSAGE--' not in content:
         return content
 
     # if the public key is also included within the message then import it
     startBlock = '--BEGIN PGP PUBLIC KEY BLOCK--'
-    if startBlock in content:
+    endBlock = '--END PGP PUBLIC KEY BLOCK--'
+    if startBlock in content and endBlock in content:
         pubKey = extractPGPPublicKey(content)
-        if pubKey:
-            _pgpImportPubKey(pubKey)
+    else:
+        pubKey = _getPGPPublicKeyFromActor(content, fromHandle)
+    if pubKey:
+        _pgpImportPubKey(pubKey)
 
     cmdDecrypt = \
         'echo "' + content + '" | gpg --decrypt --armor 2> /dev/null'
@@ -340,5 +394,5 @@ def pgpDecrypt(content: str) -> str:
     (decryptResult, err) = proc.communicate()
     if not decryptResult:
         return content
-    decryptResult = decryptResult.decode('utf-8')
+    decryptResult = decryptResult.decode('utf-8').strip()
     return decryptResult
