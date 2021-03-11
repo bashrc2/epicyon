@@ -469,6 +469,9 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             sayContent = \
                 translate['announces'] + ' ' + \
                 announcedHandle + '. ' + sayContent
+            content = \
+                translate['announces'] + ' ' + \
+                announcedHandle + '. ' + content
     postId = None
     if postJsonObject['object'].get('id'):
         postId = postJsonObject['object']['id']
