@@ -113,7 +113,7 @@ parser.add_argument('--notificationType', '--notifyType',
                     dest='notificationType', type=str,
                     default='notify-send',
                     help='Type of desktop notification command: ' +
-                    'notify-send/osascript/New-BurntToastNotification')
+                    'notify-send/zenity/osascript/New-BurntToastNotification')
 parser.add_argument('-o', '--onion', dest='onion', type=str,
                     default=None,
                     help='Onion domain name of the server if ' +
