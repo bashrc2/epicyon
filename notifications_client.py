@@ -535,10 +535,14 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('')
             elif (keyPress == 'post' or keyPress == 'p' or
                   keyPress == 'send' or
+                  keyPress.startswith('dm ') or
+                  keyPress.startswith('direct message ') or
                   keyPress.startswith('post ') or
                   keyPress.startswith('send ')):
                 sessionPost = createSession(proxyType)
-                if keyPress.startswith('post ') or \
+                if keyPress.startswith('dm ') or \
+                   keyPress.startswith('direct message ') or \
+                   keyPress.startswith('post ') or \
                    keyPress.startswith('send '):
                     keyPress = keyPress.replace(' to ', ' ')
                     # direct message
@@ -547,6 +551,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         toHandle = keyPress.split('post ', 1)[1]
                     elif keyPress.startswith('send '):
                         toHandle = keyPress.split('send ', 1)[1]
+                    elif keyPress.startswith('dm '):
+                        toHandle = keyPress.split('dm ', 1)[1]
+                    elif keyPress.startswith('direct message '):
+                        toHandle = keyPress.split('direct message ', 1)[1]
                     if toHandle:
                         _notificationNewDM(sessionPost, toHandle,
                                            baseDir, nickname, password,
