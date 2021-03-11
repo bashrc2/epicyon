@@ -274,18 +274,21 @@ def getSpeakerFromServer(baseDir: str, session,
 
 
 def _speakerEndpointJson(displayName: str, summary: str,
-                         content: str, imageDescription: str,
+                         content: str, sayContent: str,
+                         imageDescription: str,
                          links: [], gender: str, postId: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
-                         likedBy: str, postCal: bool,
+                         likedBy: str, published: str, postCal: bool,
                          postShare: bool, themeName: str) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
         "name": displayName,
         "summary": summary,
-        "say": content,
+        "content": content,
+        "say": sayContent,
+        "published": published,
         "imageDescription": imageDescription,
         "detectedLinks": links,
         "id": postId,
@@ -412,11 +415,16 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
         content = content.replace(' <3', ' ' + translate['heart'])
     content = removeHtml(htmlReplaceQuoteMarks(content))
     content = speakerReplaceLinks(content, translate, detectedLinks)
-    content = _speakerPronounce(baseDir, content, translate)
     # replace all double spaces
     while '  ' in content:
         content = content.replace('  ', ' ')
-    content = content.replace(' . ', '. ')
+    content = content.replace(' . ', '. ').strip()
+    sayContent = content
+    sayContent = _speakerPronounce(baseDir, content, translate)
+    # replace all double spaces
+    while '  ' in sayContent:
+        sayContent = sayContent.replace('  ', ' ')
+    sayContent = sayContent.replace(' . ', '. ').strip()
 
     imageDescription = ''
     if postJsonObject['object'].get('attachment'):
@@ -429,6 +437,10 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                     if isinstance(img['name'], str):
                         imageDescription += \
                             img['name'] + '. '
+
+    published = ''
+    if postJsonObject['object'].get('published'):
+        published = postJsonObject['object']['published']
 
     summary = ''
     if postJsonObject['object'].get('summary'):
@@ -451,8 +463,9 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
         announcedDomain, announcedport = getDomainFromActor(announcingActor)
         if announcedNickname and announcedDomain:
             announcedHandle = announcedNickname + '@' + announcedDomain
-            content = \
-                translate['announces'] + ' ' + announcedHandle + '. ' + content
+            sayContent = \
+                translate['announces'] + ' ' + \
+                announcedHandle + '. ' + sayContent
     postId = None
     if postJsonObject['object'].get('id'):
         postId = postJsonObject['object']['id']
@@ -484,11 +497,11 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     postShare = os.path.isfile(shareFilename)
 
     return _speakerEndpointJson(speakerName, summary,
-                                content, imageDescription,
+                                content, sayContent, imageDescription,
                                 detectedLinks, gender, postId,
                                 postDM, postReply,
                                 followRequestsExist,
-                                likedBy,
+                                likedBy, published,
                                 postCal, postShare, themeName)
 
 
