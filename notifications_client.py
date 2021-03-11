@@ -581,8 +581,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     print('')
             elif (keyPress == 'repeat' or keyPress == 'replay' or
                   keyPress == 'rp'):
-                if nameStr and gender and messageStr and content:
-                    sayStr = 'Repeating ' + nameStr, screenreader
+                if screenreader and nameStr and \
+                   gender and messageStr and content:
+                    sayStr = 'Repeating ' + nameStr
                     _sayCommand(sayStr, sayStr,
                                 systemLanguage, espeak,
                                 nameStr, gender)
