@@ -225,3 +225,30 @@ def setPGPfingerprint(actorJson: {}, fingerprint: str) -> None:
         "value": fingerprint
     }
     actorJson['attachment'].append(newPGPfingerprint)
+
+
+def extractPGPPublicKey(content: str) -> str:
+    """Returns the PGP key from the given text
+    """
+    startBlock = '--BEGIN PGP PUBLIC KEY BLOCK--'
+    endBlock = '--END PGP PUBLIC KEY BLOCK--'
+    if not startBlock in content:
+        return None
+    if not endBlock in content:
+        return None
+    if '\n' not in content:
+        return None
+    linesList = content.split('\n')
+    extracting = False
+    publicKey = ''
+    for line in linesList:
+        if not extracting:
+            if startBlock in line:
+                extracting = True
+        else:
+            if endBlock in line:
+                publicKey += line
+                break
+        if extracting:
+            publicKey += line + '\n'
+    return publicKey

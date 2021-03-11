@@ -102,6 +102,7 @@ from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
 from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
+from pgp import extractPGPPublicKey
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3414,9 +3415,39 @@ def testEmojiImages():
         assert os.path.isfile(emojiImageFilename)
 
 
+def testExtractPGPPublicKey():
+    print('testExtractPGPPublicKey')
+    pubKey = \
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' + \
+        'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
+        'IBjngMbVJJ3Wg/3UW73/PV\n' + \
+        'I47xKTS0IUJvYiBNb3R0cmFtIDxib2JAZnJlZWRvb' + \
+        'WJvbmUubmV0PoiQBBMWCAA4\n' + \
+        'FiEEmruCwAq/OfgmgEh9zCU2GR+nwz8FAlmQbngCG' + \
+        'wMFCwkIBwMFFQoJCAsFFgID\n' + \
+        'AQACHgECF4AACgkQzCU2GR+nwz/9sAD/YgsHnVszH' + \
+        'Nz1zlVc5EgY1ByDupiJpHj0\n' + \
+        'XsLYk3AbNRgBALn45RqgD4eWHpmOriH09H5Rc5V9i' + \
+        'N4+OiGUn2AzJ6oHuDgEWZBu\n' + \
+        'eBIKKwYBBAGXVQEFAQEHQPRBG2ZQJce475S3e0Dxe' + \
+        'b0Fz5WdEu2q3GYLo4QG+4Ry\n' + \
+        'AwEIB4h4BBgWCAAgFiEEmruCwAq/OfgmgEh9zCU2G' + \
+        'R+nwz8FAlmQbngCGwwACgkQ\n' + \
+        'zCU2GR+nwz+OswD+JOoyBku9FzuWoVoOevU2HH+bP' + \
+        'OMDgY2OLnST9ZSyHkMBAMcK\n' + \
+        'fnaZ2Wi050483Sj2RmQRpb99Dod7rVZTDtCqXk0J\n' + \
+        '=gv5G\n' + \
+        '-----END PGP PUBLIC KEY BLOCK-----'
+    testStr = "Some introduction\n\n" + pubKey + "\n\nSome message."
+    result = extractPGPPublicKey(testStr)
+    assert result
+    assert result == pubKey
+
+
 def runAllTests():
     print('Running tests...')
     testFunctions()
+    testExtractPGPPublicKey()
     testEmojiImages()
     testCamelCaseSplit()
     testSpeakerReplaceLinks()
