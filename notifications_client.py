@@ -542,17 +542,19 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                    keyPress.startswith('send '):
                     keyPress = keyPress.replace(' to ', '')
                     # direct message
+                    toHandle = None
                     if keyPress.startswith('post '):
                         toHandle = keyPress.split('post ', 1)[1]
-                    else:
+                    elif keyPress.startswith('send '):
                         toHandle = keyPress.split('send ', 1)[1]
-                    _notificationNewDM(sessionPost, toHandle,
-                                       baseDir, nickname, password,
-                                       domain, port, httpPrefix,
-                                       cachedWebfingers, personCache,
-                                       debug,
-                                       screenreader, systemLanguage,
-                                       espeak)
+                    if toHandle:
+                        _notificationNewDM(sessionPost, toHandle,
+                                           baseDir, nickname, password,
+                                           domain, port, httpPrefix,
+                                           cachedWebfingers, personCache,
+                                           debug,
+                                           screenreader, systemLanguage,
+                                           espeak)
                 else:
                     # public post
                     _notificationNewPost(sessionPost,
