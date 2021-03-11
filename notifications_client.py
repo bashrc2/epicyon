@@ -11,6 +11,7 @@ import html
 import time
 import sys
 import select
+from random import randint
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getFullDomain
@@ -26,6 +27,8 @@ from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
 from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
+from pgp import hasLocalPGPkey
+from pgp import pgpEncryptToActor
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -320,6 +323,32 @@ def _notificationNewDM(session, toHandle: str,
     subject = None
     commentsEnabled = True
     subject = None
+
+    # if there is a local PGP key then attempt to encrypt the DM
+    # using the PGP public key of the recipient
+    if hasLocalPGPkey():
+        sayStr = \
+            'Local PGP key detected...' + \
+            'Fetching PGP public key for ' + toHandle
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        paddedMessage = newMessage
+        if len(paddedMessage) < 32:
+            # add some padding before and after
+            # This is to guard against cribs based on small messages, like "Hi"
+            for before in range(randint(1, 16)):
+                paddedMessage = ' ' + paddedMessage
+            for after in range(randint(1, 16)):
+                paddedMessage += ' '
+        cipherText = \
+            pgpEncryptToActor(paddedMessage, toHandle)
+        if not cipherText:
+            sayStr = toHandle + ' has no PGP public key'
+            _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        else:
+            newMessage = cipherText
+            sayStr = 'Message encrypted'
+            _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+
     sayStr = 'Sending'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     if sendPostViaServer(__version__,
