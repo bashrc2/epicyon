@@ -206,7 +206,8 @@ def sendLikeViaServer(baseDir: str, session,
     postResult = postJson(session, newLikeJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
-        print('WARN: POST announce failed for c2s to ' + inboxUrl)
+        if debug:
+            print('WARN: POST announce failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
