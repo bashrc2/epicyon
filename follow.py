@@ -84,7 +84,7 @@ def _removeFromFollowBase(baseDir: str,
                           nickname: str, domain: str,
                           acceptOrDenyHandle: str, followFile: str,
                           debug: bool) -> None:
-    """Removes a handle from follow requests or rejects file
+    """Removes a handle/actor from follow requests or rejects file
     """
     handle = nickname + '@' + domain
     accountsDir = baseDir + '/accounts/' + handle
@@ -94,13 +94,34 @@ def _removeFromFollowBase(baseDir: str,
             print('WARN: Approve follow requests file ' +
                   approveFollowsFilename + ' not found')
         return
+    acceptDenyActor = None
     if acceptOrDenyHandle not in open(approveFollowsFilename).read():
-        return
+        # is this stored in the file as an actor rather than a handle?
+        acceptDenyNickname = acceptOrDenyHandle.split('@')[0]
+        acceptDenyDomain = acceptOrDenyHandle.split('@')[1]
+        # for each possible users path construct an actor and
+        # check if it exists in teh file
+        usersPaths = ('users', 'profile', 'channel', 'accounts', 'u')
+        actorFound = False
+        for usersName in usersPaths:
+            acceptDenyActor = \
+                '://' + acceptDenyDomain + '/' + \
+                usersName + '/' + acceptDenyNickname
+            if acceptDenyActor in open(approveFollowsFilename).read():
+                actorFound = True
+                break
+        if not actorFound:
+            return
     approvefilenew = open(approveFollowsFilename + '.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
-        for approveHandle in approvefile:
-            if not approveHandle.startswith(acceptOrDenyHandle):
-                approvefilenew.write(approveHandle)
+        if not acceptDenyActor:
+            for approveHandle in approvefile:
+                if not approveHandle.startswith(acceptOrDenyHandle):
+                    approvefilenew.write(approveHandle)
+        else:
+            for approveHandle in approvefile:
+                if acceptDenyActor not in approveHandle:
+                    approvefilenew.write(approveHandle)
     approvefilenew.close()
     os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
 

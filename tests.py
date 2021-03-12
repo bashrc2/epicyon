@@ -103,6 +103,7 @@ from webapp_post import prepareHtmlPostNickname
 from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
 from pgp import extractPGPPublicKey
+from pgp import containsPGPPublicKey
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -3439,6 +3440,8 @@ def testExtractPGPPublicKey():
         '=gv5G\n' + \
         '-----END PGP PUBLIC KEY BLOCK-----'
     testStr = "Some introduction\n\n" + pubKey + "\n\nSome message."
+    assert containsPGPPublicKey(testStr)
+    assert not containsPGPPublicKey('String without a pgp key')
     result = extractPGPPublicKey(testStr)
     assert result
     assert result == pubKey

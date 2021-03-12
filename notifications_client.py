@@ -11,7 +11,9 @@ import html
 import time
 import sys
 import select
+from pathlib import Path
 from random import randint
+from utils import saveJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getFullDomain
@@ -29,6 +31,7 @@ from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
+from pgp import isPGPEncrypted
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -369,6 +372,23 @@ def _notificationNewDM(session, toHandle: str,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
+def _storeMessage(speakerJson: {}) -> None:
+    """Stores a message for later reading
+    """
+    if not speakerJson.get('published'):
+        return
+    homeDir = str(Path.home())
+    if not os.path.isdir(homeDir + '/.config'):
+        os.mkdir(homeDir + '/.config')
+    if not os.path.isdir(homeDir + '/.config/epicyon'):
+        os.mkdir(homeDir + '/.config/epicyon')
+    msgDir = homeDir + '/.config/epicyon/dm'
+    if not os.path.isdir(msgDir):
+        os.mkdir(msgDir)
+    msgFilename = msgDir + '/' + speakerJson['published'] + '.json'
+    saveJson(speakerJson, msgFilename)
+
+
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            password: str, screenreader: str,
@@ -518,16 +538,16 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         else:
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
-                        if speakerJson.get('id'):
+                        encryptedMessage = False
+                        if speakerJson.get('id') and \
+                           isPGPEncrypted(messageStr):
+                            encryptedMessage = True
                             messageStr = pgpDecrypt(messageStr,
                                                     speakerJson['id'])
 
                         content = messageStr
                         if speakerJson.get('content'):
-                            if speakerJson.get('id'):
-                                content = pgpDecrypt(speakerJson['content'],
-                                                     speakerJson['id'])
-                            else:
+                            if not encryptedMessage:
                                 content = speakerJson['content']
 
                         # say the speaker's name
@@ -541,6 +561,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(content, messageStr, screenreader,
                                     systemLanguage, espeak,
                                     nameStr, gender)
+
+                        if encryptedMessage:
+                            speakerJson['content'] = content
+                            speakerJson['say'] = messageStr
+                            speakerJson['decrypted'] = True
+                            _storeMessage(speakerJson)
 
                         print('')
 
