@@ -549,6 +549,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if speakerJson.get('content'):
                             if not encryptedMessage:
                                 content = speakerJson['content']
+                            else:
+                                content = '🔓 ' + messageStr
 
                         # say the speaker's name
                         _sayCommand(nameStr, nameStr, screenreader,
