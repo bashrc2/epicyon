@@ -389,7 +389,7 @@ def _showLocalBox(boxName: str,
 
     print('')
 
-    sayStr = boxName + ' posts ' + str(startPostIndex) + \
+    sayStr = boxName + ' posts ' + str(startPostIndex + 1) + \
         ' to ' + str(startPostIndex + ctr) + '. '
     sayStr += 'Use the next and prev commands to navigate.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
