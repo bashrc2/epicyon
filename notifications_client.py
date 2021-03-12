@@ -373,7 +373,7 @@ def _notificationNewDM(session, toHandle: str,
 
 
 def _storeMessage(speakerJson: {}) -> None:
-    """Stores a message for later reading
+    """Stores a message in your home directory for later reading
     """
     if not speakerJson.get('published'):
         return
