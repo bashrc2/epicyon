@@ -52,7 +52,7 @@ def getPGPpubKey(actorJson: {}) -> str:
             continue
         if propertyValue['type'] != 'PropertyValue':
             continue
-        if '--BEGIN PGP PUBLIC KEY' not in propertyValue['value']:
+        if not containsPGPPublicKey(propertyValue['value']):
             continue
         return propertyValue['value']
     return ''
@@ -139,7 +139,7 @@ def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
     if not PGPpubKey:
         removeKey = True
     else:
-        if '--BEGIN PGP PUBLIC KEY' not in PGPpubKey:
+        if not containsPGPPublicKey(PGPpubKey):
             removeKey = True
         if '<' in PGPpubKey:
             removeKey = True
@@ -318,7 +318,7 @@ def _pgpEncrypt(content: str, recipientPubKey: str) -> str:
     if not encryptResult:
         return None
     encryptResult = encryptResult.decode('utf-8')
-    if '--BEGIN PGP MESSAGE--' not in encryptResult:
+    if not isPGPEncrypted(encryptResult):
         return None
     return encryptResult
 
@@ -343,9 +343,8 @@ def _getPGPPublicKeyFromActor(handle: str, actorJson=None) -> str:
             continue
         if not isinstance(tag['value'], str):
             continue
-        if '--BEGIN PGP PUBLIC KEY BLOCK--' in tag['value']:
-            if '--END PGP PUBLIC KEY BLOCK--' in tag['value']:
-                return tag['value']
+        if containsPGPPublicKey(tag['value']):
+            return tag['value']
     return None
 
 
@@ -370,17 +369,33 @@ def pgpEncryptToActor(content: str, toHandle: str) -> str:
     return _pgpEncrypt(content, recipientPubKey)
 
 
+def isPGPEncrypted(content: str) -> bool:
+    """Returns true if the given content is PGP encrypted
+    """
+    if '--BEGIN PGP MESSAGE--' in content:
+        if '--END PGP MESSAGE--' in content:
+            return True
+    return False
+
+
+def containsPGPPublicKey(content: str) -> bool:
+    """Returns true if the given content contains a PGP public key
+    """
+    if '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+        if '--END PGP PUBLIC KEY BLOCK--' in content:
+            return True
+    return False
+
+
 def pgpDecrypt(content: str, fromHandle: str) -> str:
     """ Encrypt using your default pgp key to the given recipient
     fromHandle can be a handle or actor url
     """
-    if '--BEGIN PGP MESSAGE--' not in content:
+    if not isPGPEncrypted(content):
         return content
 
     # if the public key is also included within the message then import it
-    startBlock = '--BEGIN PGP PUBLIC KEY BLOCK--'
-    endBlock = '--END PGP PUBLIC KEY BLOCK--'
-    if startBlock in content and endBlock in content:
+    if containsPGPPublicKey(content):
         pubKey = extractPGPPublicKey(content)
     else:
         pubKey = _getPGPPublicKeyFromActor(content, fromHandle)

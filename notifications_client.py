@@ -29,6 +29,7 @@ from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
+from pgp import isPGPEncrypted
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -518,16 +519,16 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         else:
                             messageStr = speakerJson['say'] + '. ' + \
                                 speakerJson['imageDescription']
-                        if speakerJson.get('id'):
+                        encryptedMessage = False
+                        if speakerJson.get('id') and \
+                           isPGPEncrypted(messageStr):
+                            encryptedMessage = True
                             messageStr = pgpDecrypt(messageStr,
                                                     speakerJson['id'])
 
                         content = messageStr
                         if speakerJson.get('content'):
-                            if speakerJson.get('id'):
-                                content = pgpDecrypt(speakerJson['content'],
-                                                     speakerJson['id'])
-                            else:
+                            if not encryptedMessage:
                                 content = speakerJson['content']
 
                         # say the speaker's name
