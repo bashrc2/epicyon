@@ -12,6 +12,7 @@ import random
 import urllib.parse
 from auth import createBasicAuthHeader
 from session import getJson
+from utils import isDM
 from utils import camelCaseSplit
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
@@ -284,7 +285,8 @@ def _speakerEndpointJson(displayName: str, summary: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
                          likedBy: str, published: str, postCal: bool,
-                         postShare: bool, themeName: str) -> {}:
+                         postShare: bool, themeName: str,
+                         isDirect: bool) -> {}:
     """Returns a json endpoint for the TTS speaker
     """
     speakerJson = {
@@ -296,6 +298,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
         "imageDescription": imageDescription,
         "detectedLinks": links,
         "id": postId,
+        "direct": isDirect,
         "notify": {
             "theme": themeName,
             "dm": postDM,
@@ -445,6 +448,8 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                         imageDescription += \
                             img['name'] + '. '
 
+    isDirect = isDM(postJsonObject)
+
     published = ''
     if postJsonObject['object'].get('published'):
         published = postJsonObject['object']['published']
@@ -512,7 +517,8 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                                 postDM, postReply,
                                 followRequestsExist,
                                 likedBy, published,
-                                postCal, postShare, themeName)
+                                postCal, postShare, themeName,
+                                isDirect)
 
 
 def updateSpeaker(baseDir: str, httpPrefix: str,
