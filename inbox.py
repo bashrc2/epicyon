@@ -994,15 +994,15 @@ def _receiveLike(recentPostsCache: {},
 
     handleName = handle.split('@')[0]
     handleDom = handle.split('@')[1]
-    updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                          messageJson['object'],
-                          messageJson['actor'], domain, debug)
     if not _alreadyLiked(baseDir,
                          handleName, handleDom,
                          messageJson['object'],
                          messageJson['actor']):
         _likeNotify(baseDir, domain, onionDomain, handle,
                     messageJson['actor'], messageJson['object'])
+    updateLikesCollection(recentPostsCache, baseDir, postFilename,
+                          messageJson['object'],
+                          messageJson['actor'], domain, debug)
     return True
 
 
