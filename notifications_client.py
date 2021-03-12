@@ -322,6 +322,11 @@ def _readLocalBoxPost(boxName: str, index: int,
     if speakerJson.get('content'):
         content = speakerJson['content']
 
+    sayStr = 'Reading ' + boxName + ' post ' + str(index + 1) + '.'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+
+    time.sleep(2)
+
     # say the speaker's name
     _sayCommand(nameStr, nameStr, screenreader,
                 systemLanguage, espeak,
