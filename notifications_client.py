@@ -672,7 +672,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             elif keyPress.startswith('show in'):
                 _showLocalBox('inbox', currInboxIndex, 10)
                 currTimeline = 'inbox'
-            elif keyPress.startwith('next'):
+            elif keyPress.startswith('next'):
                 if currTimeline == 'dm':
                     currDMIndex += 10
                     _showLocalBox('dm', currDMIndex, 10)
