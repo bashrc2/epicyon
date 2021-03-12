@@ -335,7 +335,9 @@ def _readLocalBoxPost(boxName: str, index: int,
                 nameStr, gender)
 
 
-def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
+def _showLocalBox(boxName: str,
+                  screenreader: str, systemLanguage: str, espeak,
+                  startPostIndex=0, noOfPosts=10) -> None:
     """Shows locally stored posts for a given subdirectory
     """
     homeDir = str(Path.home())
@@ -354,9 +356,11 @@ def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
             index.append(f)
         break
     if not index:
-        print('You have no ' + boxName + ' posts yet.')
+        sayStr = 'You have no ' + boxName + ' posts yet.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
     maxPostIndex = len(index)
     index.sort(reverse=True)
+    ctr = 0
     for pos in range(startPostIndex, startPostIndex + noOfPosts):
         if pos >= maxPostIndex:
             break
@@ -381,6 +385,11 @@ def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
         content = (content[:40]) if len(content) > 40 else content
         print(str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
+        ctr +=1
+
+    sayStr = str(ctr) + ' ' + boxName + ' posts were shown.'
+    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+
     print('')
 
 
@@ -728,42 +737,60 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 break
             elif keyPress.startswith('show dm'):
                 currDMIndex = 0
-                _showLocalBox('dm', currDMIndex, 10)
+                _showLocalBox('dm',
+                              screenreader, systemLanguage, espeak,
+                              currDMIndex, 10)
                 currTimeline = 'dm'
             elif keyPress.startswith('show sen'):
                 currSentIndex = 0
-                _showLocalBox('sent', currSentIndex, 10)
+                _showLocalBox('sent',
+                              screenreader, systemLanguage, espeak,
+                              currSentIndex, 10)
                 currTimeline = 'sent'
             elif keyPress == 'show' or keyPress.startswith('show in'):
                 currInboxIndex = 0
-                _showLocalBox('inbox', currInboxIndex, 10)
+                _showLocalBox('inbox',
+                              screenreader, systemLanguage, espeak,
+                              currInboxIndex, 10)
                 currTimeline = 'inbox'
             elif keyPress.startswith('next'):
                 if currTimeline == 'dm':
                     currDMIndex += 10
-                    _showLocalBox('dm', currDMIndex, 10)
+                    _showLocalBox('dm',
+                                  screenreader, systemLanguage, espeak,
+                                  currDMIndex, 10)
                 elif currTimeline == 'sent':
                     currSentIndex += 10
-                    _showLocalBox('sent', currSentIndex, 10)
+                    _showLocalBox('sent',
+                                  screenreader, systemLanguage, espeak,
+                                  currSentIndex, 10)
                 elif currTimeline == 'inbox':
                     currInboxIndex += 10
-                    _showLocalBox('inbox', currInboxIndex, 10)
+                    _showLocalBox('inbox',
+                                  screenreader, systemLanguage, espeak,
+                                  currInboxIndex, 10)
             elif keyPress.startswith('prev'):
                 if currTimeline == 'dm':
                     currDMIndex -= 10
                     if currDMIndex < 0:
                         currDMIndex = 0
-                    _showLocalBox('dm', currDMIndex, 10)
+                    _showLocalBox('dm',
+                                  screenreader, systemLanguage, espeak,
+                                  currDMIndex, 10)
                 elif currTimeline == 'sent':
                     currSentIndex -= 10
                     if currSentIndex < 0:
                         currSentIndex = 0
-                    _showLocalBox('sent', currSentIndex, 10)
+                    _showLocalBox('sent',
+                                  screenreader, systemLanguage, espeak,
+                                  currSentIndex, 10)
                 elif currTimeline == 'inbox':
                     currInboxIndex -= 10
                     if currInboxIndex < 0:
                         currInboxIndex = 0
-                    _showLocalBox('inbox', currInboxIndex, 10)
+                    _showLocalBox('inbox',
+                                  screenreader, systemLanguage, espeak,
+                                  currInboxIndex, 10)
             elif keyPress.startswith('read '):
                 postIndexStr = keyPress.split('read ')[1]
                 if postIndexStr.isdigit():
