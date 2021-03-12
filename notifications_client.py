@@ -17,6 +17,7 @@ from utils import saveJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getFullDomain
+from utils import isPGPEncrypted
 from session import createSession
 from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
@@ -31,7 +32,6 @@ from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
-from pgp import isPGPEncrypted
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -373,7 +373,7 @@ def _notificationNewDM(session, toHandle: str,
 
 
 def _storeMessage(speakerJson: {}) -> None:
-    """Stores a message for later reading
+    """Stores a message in your home directory for later reading
     """
     if not speakerJson.get('published'):
         return
@@ -549,6 +549,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if speakerJson.get('content'):
                             if not encryptedMessage:
                                 content = speakerJson['content']
+                            else:
+                                content = '🔓 ' + messageStr
 
                         # say the speaker's name
                         _sayCommand(nameStr, nameStr, screenreader,

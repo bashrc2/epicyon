@@ -52,6 +52,8 @@ from utils import getStatusNumber
 from utils import getFollowersOfPerson
 from utils import removeHtml
 from utils import dangerousMarkup
+from pgp import extractPGPPublicKey
+from utils import containsPGPPublicKey
 from follow import followerOfPerson
 from follow import unfollowAccount
 from follow import unfollowerOfAccount
@@ -102,8 +104,6 @@ from mastoapiv1 import getNicknameFromMastoApiV1Id
 from webapp_post import prepareHtmlPostNickname
 from webapp_utils import markdownToHtml
 from speaker import speakerReplaceLinks
-from pgp import extractPGPPublicKey
-from pgp import containsPGPPublicKey
 
 testServerAliceRunning = False
 testServerBobRunning = False

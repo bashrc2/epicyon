@@ -21,6 +21,7 @@ from utils import removeHtml
 from utils import loadJson
 from utils import saveJson
 from utils import getFullDomain
+from utils import isPGPEncrypted
 from content import htmlReplaceQuoteMarks
 
 speakerRemoveChars = ('.\n', '. ', ',', ';', '?', '!')
@@ -413,7 +414,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
     content = urllib.parse.unquote_plus(postJsonObject['object']['content'])
     content = html.unescape(content)
     content = content.replace('<p>', '').replace('</p>', ' ')
-    if '--BEGIN PGP MESSAGE--' not in content:
+    if not isPGPEncrypted(content):
         # replace some emoji before removing html
         if ' <3' in content:
             content = content.replace(' <3', ' ' + translate['heart'])
