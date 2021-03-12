@@ -2144,7 +2144,7 @@ def sendPostViaServer(projectVersion: str,
                        inboxUrl, headers, debug, 60, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST failed for c2s to '+inboxUrl)
+            print('DEBUG: POST failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:

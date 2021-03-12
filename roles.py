@@ -352,7 +352,7 @@ def sendRoleViaServer(baseDir: str, session,
         postJson(session, newRoleJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
 #        return 5
 
     if debug:
