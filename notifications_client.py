@@ -303,7 +303,7 @@ def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
         if not speakerJson.get('published'):
             continue
         published = speakerJson['published'].replace('T', ' ')
-        posStr = str(pos) + '.'
+        posStr = str(pos + 1) + '.'
         while len(posStr) < 3:
             posStr += ' '
         if speakerJson.get('name'):
@@ -515,6 +515,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     content = None
     cachedWebfingers = {}
     personCache = {}
+    currDMIndex = 0
+    currSentIndex = 0
+    currInboxIndex = 0
+    currTimeline = ''
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -660,11 +664,40 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     keyPress = _waitForKeypress(2, debug)
                 break
             elif keyPress.startswith('show dm'):
-                _showLocalBox('dm', 0, 10)
+                _showLocalBox('dm', currDMIndex, 10)
+                currTimeline = 'dm'
             elif keyPress.startswith('show sen'):
-                _showLocalBox('sent', 0, 10)
+                _showLocalBox('sent', currSentIndex, 10)
+                currTimeline = 'sent'
             elif keyPress.startswith('show in'):
-                _showLocalBox('inbox', 0, 10)
+                _showLocalBox('inbox', currInboxIndex, 10)
+                currTimeline = 'inbox'
+            elif keyPress.startwith('next'):
+                if currTimeline == 'dm':
+                    currDMIndex += 10
+                    _showLocalBox('dm', currDMIndex, 10)
+                elif currTimeline == 'sent':
+                    currSentIndex += 10
+                    _showLocalBox('sent', currSentIndex, 10)
+                elif currTimeline == 'inbox':
+                    currInboxIndex += 10
+                    _showLocalBox('inbox', currInboxIndex, 10)
+            elif keyPress.startswith('prev'):
+                if currTimeline == 'dm':
+                    currDMIndex -= 10
+                    if currDMIndex < 0:
+                        currDMIndex = 0
+                    _showLocalBox('dm', currDMIndex, 10)
+                elif currTimeline == 'sent':
+                    currSentIndex -= 10
+                    if currSentIndex < 0:
+                        currSentIndex = 0
+                    _showLocalBox('sent', currSentIndex, 10)
+                elif currTimeline == 'inbox':
+                    currInboxIndex -= 10
+                    if currInboxIndex < 0:
+                        currInboxIndex = 0
+                    _showLocalBox('inbox', currInboxIndex, 10)
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
                     postId = speakerJson['id']
