@@ -304,17 +304,17 @@ def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
             continue
         published = speakerJson['published'].replace('T', ' ')
         posStr = str(pos) + '.'
-        while len(posStr) < 4:
+        while len(posStr) < 3:
             posStr += ' '
         if speakerJson.get('name'):
             name = speakerJson['name']
         else:
             name = ''
-        name = (name[:16] + '..') if len(name) > 16 else name
+        name = (name[:16]) if len(name) > 16 else name
         while len(name) < 16:
             name += ' '
         content = speakerJson['content']
-        content = (content[:40] + '..') if len(content) > 40 else content
+        content = (content[:40]) if len(content) > 40 else content
         print(str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
     print('')
