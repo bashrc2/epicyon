@@ -6437,6 +6437,11 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStr = path.split('/followdeny=')[0]
         followerNickname = originPathStr.replace('/users/', '')
         followingHandle = path.split('/followdeny=')[1]
+        if '://' in followingHandle:
+            handleNickname = getNicknameFromActor(followingHandle)
+            handleDomain, handlePort = getDomainFromActor(followingHandle)
+            followingHandle = \
+                handleNickname + '@' + getFullDomain(handleDomain, handlePort)
         if '@' in followingHandle:
             manualDenyFollowRequest(self.server.session,
                                     baseDir, httpPrefix,
