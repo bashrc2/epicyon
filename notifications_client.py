@@ -14,6 +14,7 @@ import select
 from pathlib import Path
 from random import randint
 from utils import getStatusNumber
+from utils import loadJson
 from utils import saveJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -272,6 +273,48 @@ def _notificationNewPost(session,
     else:
         sayStr = 'Post failed'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+
+
+def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
+    """Shows locally stored posts for a given subdirectory
+    """
+    homeDir = str(Path.home())
+    if not os.path.isdir(homeDir + '/.config'):
+        os.mkdir(homeDir + '/.config')
+    if not os.path.isdir(homeDir + '/.config/epicyon'):
+        os.mkdir(homeDir + '/.config/epicyon')
+    msgDir = homeDir + '/.config/epicyon/' + boxName
+    if not os.path.isdir(msgDir):
+        os.mkdir(msgDir)
+    index = []
+    for subdir, dirs, files in os.walk(msgDir):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            index.append(f)
+        break
+    maxPostIndex = len(index)
+    index.sort()
+    for pos in range(startPostIndex, startPostIndex + noOfPosts):
+        if pos >= maxPostIndex:
+            break
+        speakerJsonFilename = os.path.join(msgDir, index[pos])
+        speakerJson = loadJson(speakerJsonFilename)
+        if not speakerJson.get('published'):
+            continue
+        published = speakerJson['published'].replace('T', ' ')
+        posStr = str(pos) + '.'
+        while len(posStr) < 4:
+            posStr += ' '
+        name = speakerJson['name']
+        name = (name[:16] + '..') if len(name) > 16 else name
+        while len(name) < 16:
+            name += ' '
+        content = speakerJson['content']
+        content = (content[:40] + '..') if len(content) > 40 else content
+        print(posStr + ' | ' + name + ' | ' +
+              published + ' | ' + content) + ' |'
+    print('')
 
 
 def _notificationNewDM(session, toHandle: str,
@@ -591,6 +634,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         elif speakerJson.get('direct'):
                             speakerJson['decrypted'] = False
                             _storeMessage(speakerJson, 'dm')
+                        else:
+                            speakerJson['decrypted'] = False
+                            _storeMessage(speakerJson, 'inbox')
 
                         print('')
 
@@ -608,6 +654,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if screenreader:
                     keyPress = _waitForKeypress(2, debug)
                 break
+            elif keyPress.startswith('show dm'):
+                _showLocalBox('dm', 0, 10)
+            elif keyPress.startswith('show sen'):
+                _showLocalBox('sent', 0, 10)
+            elif keyPress.startswith('show in'):
+                _showLocalBox('inbox', 0, 10)
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
                     postId = speakerJson['id']
