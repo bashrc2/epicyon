@@ -13,6 +13,7 @@ import sys
 import select
 from pathlib import Path
 from random import randint
+from utils import getStatusNumber
 from utils import saveJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -322,6 +323,7 @@ def _notificationNewDM(session, toHandle: str,
 
     # if there is a local PGP key then attempt to encrypt the DM
     # using the PGP public key of the recipient
+    newMessageOriginal = newMessage
     if hasLocalPGPkey():
         sayStr = \
             'Local PGP key detected...' + \
@@ -366,13 +368,30 @@ def _notificationNewDM(session, toHandle: str,
                          attachedImageDescription,
                          cachedWebfingers, personCache, isArticle,
                          debug, None, None, subject) == 0:
+        # store the DM locally
+        statusNumber, published = getStatusNumber()
+        postId = \
+            httpPrefix + '://' + getFullDomain(domain, port) + \
+            '/users/' + nickname + '/statuses/' + statusNumber
+        speakerJson = {
+            "name": nickname,
+            "summary": "",
+            "content": newMessageOriginal,
+            "say": newMessageOriginal,
+            "published": published,
+            "imageDescription": "",
+            "detectedLinks": [],
+            "id": postId,
+            "direct": True
+        }
+        _storeMessage(speakerJson, 'sent')
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
-def _storeMessage(speakerJson: {}) -> None:
+def _storeMessage(speakerJson: {}, boxName: str) -> None:
     """Stores a message in your home directory for later reading
     """
     if not speakerJson.get('published'):
@@ -382,7 +401,7 @@ def _storeMessage(speakerJson: {}) -> None:
         os.mkdir(homeDir + '/.config')
     if not os.path.isdir(homeDir + '/.config/epicyon'):
         os.mkdir(homeDir + '/.config/epicyon')
-    msgDir = homeDir + '/.config/epicyon/dm'
+    msgDir = homeDir + '/.config/epicyon/' + boxName
     if not os.path.isdir(msgDir):
         os.mkdir(msgDir)
     msgFilename = msgDir + '/' + speakerJson['published'] + '.json'
@@ -568,10 +587,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             speakerJson['content'] = content
                             speakerJson['say'] = messageStr
                             speakerJson['decrypted'] = True
-                            _storeMessage(speakerJson)
+                            _storeMessage(speakerJson, 'dm')
                         elif speakerJson.get('direct'):
                             speakerJson['decrypted'] = False
-                            _storeMessage(speakerJson)
+                            _storeMessage(speakerJson, 'dm')
 
                         print('')
 
