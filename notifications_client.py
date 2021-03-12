@@ -387,7 +387,11 @@ def _showLocalBox(boxName: str,
               str(published) + ' | ' + str(content) + ' |')
         ctr += 1
 
-    sayStr = str(ctr) + ' ' + boxName + ' posts were shown.'
+    print('')
+
+    sayStr = boxName + ' posts ' + str(startPostIndex) + \
+        ' to ' + str(startPostIndex + ctr) + '. '
+    sayStr += 'Use the next and prev commands to navigate.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
     print('')
