@@ -294,7 +294,7 @@ def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
             index.append(f)
         break
     maxPostIndex = len(index)
-    index.sort()
+    index.sort(reverse=True)
     for pos in range(startPostIndex, startPostIndex + noOfPosts):
         if pos >= maxPostIndex:
             break
