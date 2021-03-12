@@ -275,6 +275,66 @@ def _notificationNewPost(session,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
+def _readLocalBoxPost(boxName: str, index: int,
+                      systemLanguage: str,
+                      screenreader: str, espeak) -> None:
+    """Reads a post from the given timeline
+    """
+    homeDir = str(Path.home())
+    if not os.path.isdir(homeDir + '/.config'):
+        os.mkdir(homeDir + '/.config')
+    if not os.path.isdir(homeDir + '/.config/epicyon'):
+        os.mkdir(homeDir + '/.config/epicyon')
+    msgDir = homeDir + '/.config/epicyon/' + boxName
+    if not os.path.isdir(msgDir):
+        os.mkdir(msgDir)
+    indexList = []
+    for subdir, dirs, files in os.walk(msgDir):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            indexList.append(f)
+        break
+    indexList.sort(reverse=True)
+
+    index -= 1
+    if index <= 0:
+        index = 0
+    if len(indexList) <= index:
+        return
+
+    speakerJsonFilename = os.path.join(msgDir, indexList[index])
+    speakerJson = loadJson(speakerJsonFilename)
+
+    nameStr = speakerJson['name']
+    gender = 'They/Them'
+    if speakerJson.get('gender'):
+        gender = speakerJson['gender']
+
+    # append image description if needed
+    if not speakerJson.get('imageDescription'):
+        messageStr = speakerJson['say']
+    else:
+        messageStr = speakerJson['say'] + '. ' + \
+            speakerJson['imageDescription']
+
+    content = messageStr
+    if speakerJson.get('content'):
+        content = speakerJson['content']
+
+    # say the speaker's name
+    _sayCommand(nameStr, nameStr, screenreader,
+                systemLanguage, espeak,
+                nameStr, gender)
+
+    time.sleep(2)
+
+    # speak the post content
+    _sayCommand(content, messageStr, screenreader,
+                systemLanguage, espeak,
+                nameStr, gender)
+
+
 def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
     """Shows locally stored posts for a given subdirectory
     """
@@ -701,6 +761,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     if currInboxIndex < 0:
                         currInboxIndex = 0
                     _showLocalBox('inbox', currInboxIndex, 10)
+            elif keyPress.startswith('read '):
+                postIndexStr = keyPress.split('read ')[1]
+                if postIndexStr.isdigit():
+                    postIndex = int(postIndexStr)
+                    _readLocalBoxPost(currTimeline, postIndex,
+                                      systemLanguage, screenreader, espeak)
+                print('')
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
                     postId = speakerJson['id']
