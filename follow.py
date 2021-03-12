@@ -108,17 +108,20 @@ def _removeFromFollowBase(baseDir: str,
                 '://' + acceptDenyDomain + '/' + \
                 usersName + '/' + acceptDenyNickname
             if acceptDenyActor in open(approveFollowsFilename).read():
-                # actor found, so use it in the subsequent removal
-                approveHandle = acceptDenyActor
                 actorFound = True
                 break
         if not actorFound:
             return
     approvefilenew = open(approveFollowsFilename + '.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
-        for approveHandle in approvefile:
-            if not approveHandle.startswith(acceptOrDenyHandle):
-                approvefilenew.write(approveHandle)
+        if not acceptDenyActor:
+            for approveHandle in approvefile:
+                if not approveHandle.startswith(acceptOrDenyHandle):
+                    approvefilenew.write(approveHandle)
+        else:
+            for approveHandle in approvefile:
+                if acceptDenyActor not in approveHandle:
+                    approvefilenew.write(approveHandle)
     approvefilenew.close()
     os.rename(approveFollowsFilename + '.new', approveFollowsFilename)
 
