@@ -385,9 +385,13 @@ def _showLocalBox(boxName: str,
         content = (content[:40]) if len(content) > 40 else content
         print(str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
-        ctr +=1
+        ctr += 1
 
-    sayStr = str(ctr) + ' ' + boxName + ' posts were shown.'
+    print('')
+
+    sayStr = boxName + ' posts ' + str(startPostIndex) + \
+        ' to ' + str(startPostIndex + ctr) + '. '
+    sayStr += 'Use the next and prev commands to navigate.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
     print('')
