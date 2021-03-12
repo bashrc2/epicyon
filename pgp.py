@@ -10,6 +10,8 @@ import os
 import subprocess
 from pathlib import Path
 from person import getActorJson
+from utils import containsPGPPublicKey
+from utils import isPGPEncrypted
 
 
 def getEmailAddress(actorJson: {}) -> str:
@@ -367,24 +369,6 @@ def pgpEncryptToActor(content: str, toHandle: str) -> str:
         return None
     # encrypt using the recipient public key
     return _pgpEncrypt(content, recipientPubKey)
-
-
-def isPGPEncrypted(content: str) -> bool:
-    """Returns true if the given content is PGP encrypted
-    """
-    if '--BEGIN PGP MESSAGE--' in content:
-        if '--END PGP MESSAGE--' in content:
-            return True
-    return False
-
-
-def containsPGPPublicKey(content: str) -> bool:
-    """Returns true if the given content contains a PGP public key
-    """
-    if '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
-        if '--END PGP PUBLIC KEY BLOCK--' in content:
-            return True
-    return False
 
 
 def pgpDecrypt(content: str, fromHandle: str) -> str:

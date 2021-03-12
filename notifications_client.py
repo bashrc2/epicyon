@@ -17,6 +17,7 @@ from utils import saveJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getFullDomain
+from utils import isPGPEncrypted
 from session import createSession
 from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
@@ -31,7 +32,6 @@ from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
-from pgp import isPGPEncrypted
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:

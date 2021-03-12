@@ -2130,3 +2130,21 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
             if actor in tag['href']:
                 return True
     return False
+
+
+def containsPGPPublicKey(content: str) -> bool:
+    """Returns true if the given content contains a PGP public key
+    """
+    if '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+        if '--END PGP PUBLIC KEY BLOCK--' in content:
+            return True
+    return False
+
+
+def isPGPEncrypted(content: str) -> bool:
+    """Returns true if the given content is PGP encrypted
+    """
+    if '--BEGIN PGP MESSAGE--' in content:
+        if '--END PGP MESSAGE--' in content:
+            return True
+    return False

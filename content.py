@@ -16,6 +16,8 @@ from utils import loadJson
 from utils import fileLastModified
 from utils import getLinkPrefixes
 from utils import dangerousMarkup
+from utils import isPGPEncrypted
+from utils import containsPGPPublicKey
 from petnames import getPetName
 
 
@@ -65,8 +67,7 @@ def _removeQuotesWithinQuotes(content: str) -> str:
 def htmlReplaceEmailQuote(content: str) -> str:
     """Replaces an email style quote "> Some quote" with html blockquote
     """
-    if '--BEGIN PGP MESSAGE--' in content or \
-       '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
     # replace quote paragraph
     if '<p>&quot;' in content:
@@ -109,8 +110,7 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     """Replaces quotes with html formatting
     "hello" becomes <q>hello</q>
     """
-    if '--BEGIN PGP MESSAGE--' in content or \
-       '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
     if '"' not in content:
         if '&quot;' not in content:
@@ -203,8 +203,7 @@ def dangerousCSS(filename: str, allowLocalNetworkAccess: bool) -> bool:
 def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
-    if '--BEGIN PGP MESSAGE--' in content or \
-       '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
     switchWordsFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/replacewords.txt'
@@ -591,8 +590,7 @@ def _addMention(wordStr: str, httpPrefix: str, following: str, petnames: str,
 def replaceContentDuplicates(content: str) -> str:
     """Replaces invalid duplicates within content
     """
-    if '--BEGIN PGP MESSAGE--' in content or \
-       '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
     while '<<' in content:
         content = content.replace('<<', '<')
@@ -605,8 +603,7 @@ def replaceContentDuplicates(content: str) -> str:
 def removeTextFormatting(content: str) -> str:
     """Removes markup for bold, italics, etc
     """
-    if '--BEGIN PGP MESSAGE--' in content or \
-       '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
     if '<' not in content:
         return content
@@ -625,8 +622,7 @@ def removeLongWords(content: str, maxWordLength: int,
     """Breaks up long words so that on mobile screens this doesn't
     disrupt the layout
     """
-    if '--BEGIN PGP MESSAGE--' in content or \
-       '--BEGIN PGP PUBLIC KEY BLOCK--' in content:
+    if isPGPEncrypted(content) or containsPGPPublicKey(content):
         return content
     content = replaceContentDuplicates(content)
     if ' ' not in content:
