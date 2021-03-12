@@ -637,12 +637,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              actor + '/followers#buttonheader')
                     prevFollow = speakerJson['notify']['followRequests']
                 elif speakerJson['notify']['likedBy'] != prevLike:
-                    if notificationSounds:
-                        _playNotificationSound(soundsDir + '/' +
-                                               likeSoundFilename, player)
-                    _desktopNotification(notificationType, title,
-                                         'New like ' +
-                                         speakerJson['notify']['likedBy'])
+                    if '##sent##' not in speakerJson['notify']['likedBy']:
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   likeSoundFilename, player)
+                        _desktopNotification(notificationType, title,
+                                             'New like ' +
+                                             speakerJson['notify']['likedBy'])
                     prevLike = speakerJson['notify']['likedBy']
                 elif speakerJson['notify']['share'] != prevShare:
                     if speakerJson['notify']['share'] is True:
