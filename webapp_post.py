@@ -21,6 +21,7 @@ from posts import postIsMuted
 from posts import getPersonBox
 from posts import downloadAnnounce
 from posts import populateRepliesJson
+from utils import isPGPEncrypted
 from utils import isDM
 from utils import rejectPostId
 from utils import isRecentPost
@@ -1570,17 +1571,20 @@ def individualPostAsHtml(allowDownloads: bool,
 
     _logPostTiming(enableTimingLog, postStartTime, '16')
 
-    if not isPatch:
-        objectContent = \
-            removeLongWords(postJsonObject['object']['content'], 40, [])
-        objectContent = removeTextFormatting(objectContent)
-        objectContent = \
-            switchWords(baseDir, nickname, domain, objectContent)
-        objectContent = htmlReplaceEmailQuote(objectContent)
-        objectContent = htmlReplaceQuoteMarks(objectContent)
+    if not isPGPEncrypted(postJsonObject['object']['content']):
+        if not isPatch:
+            objectContent = \
+                removeLongWords(postJsonObject['object']['content'], 40, [])
+            objectContent = removeTextFormatting(objectContent)
+            objectContent = \
+                switchWords(baseDir, nickname, domain, objectContent)
+            objectContent = htmlReplaceEmailQuote(objectContent)
+            objectContent = htmlReplaceQuoteMarks(objectContent)
+        else:
+            objectContent = \
+                postJsonObject['object']['content']
     else:
-        objectContent = \
-            postJsonObject['object']['content']
+        objectContent = '🔒 ' + translate['Encrypted']
 
     objectContent = '<article>' + objectContent + '</article>'
 
