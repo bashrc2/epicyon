@@ -6276,6 +6276,11 @@ class PubServer(BaseHTTPRequestHandler):
         originPathStr = path.split('/followapprove=')[0]
         followerNickname = originPathStr.replace('/users/', '')
         followingHandle = path.split('/followapprove=')[1]
+        if '://' in followingHandle:
+            handleNickname = getNicknameFromActor(followingHandle)
+            handleDomain, handlePort = getDomainFromActor(followingHandle)
+            followingHandle = \
+                handleNickname + '@' + getFullDomain(handleDomain, handlePort)
         if '@' in followingHandle:
             if not self.server.session:
                 print('Starting new session during follow approval')
