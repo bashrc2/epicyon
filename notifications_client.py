@@ -353,6 +353,8 @@ def _showLocalBox(boxName: str, startPostIndex=0, noOfPosts=10) -> None:
                 continue
             index.append(f)
         break
+    if not index:
+        print('You have no ' + boxName + ' posts yet.')
     maxPostIndex = len(index)
     index.sort(reverse=True)
     for pos in range(startPostIndex, startPostIndex + noOfPosts):
