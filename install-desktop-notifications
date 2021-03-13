@@ -17,13 +17,16 @@ fi
 
 HANDLE=$(zenity --entry --width=400 --title "Epicyon Desktop Notifications" --text "Fediverse handle (name@domain): ")
 if [ ! "$HANDLE" ]; then
+    zenity --warning --width=400 --text "No fediverse handle was given"
     exit 1
 fi
 if [[ "$HANDLE" != *'@'* ]]; then
+    zenity --warning --width=400 --text "Fediverse handle must be in the form username@domain"
     exit 2
 fi
 PASSWORD=$(zenity --width=400 --password --title "Epicyon Desktop Notifications")
 if [ ! "$PASSWORD" ]; then
+    zenity --warning --width=400 --text "No password was given"
     exit 3
 fi
 
@@ -52,7 +55,7 @@ else
     git pull
 fi
 if [ ! -d ${HOME}/.epicyon ]; then
-    echo 'Unable to clone epicyon repo'
+    zenity --warning --width=400 --text "Unable to clone Epicyon repo"
     exit 4
 fi
 chown -R "${currUser}":"${currUser}" ${HOME}/.epicyon
@@ -66,7 +69,7 @@ else
     fi
 fi
 if [[ ! "$notificationType" ]]; then
-    echo 'No desktop notification command was found. Try installing zenity.'
+    zenity --warning --width=400 --text "No desktop notification command was found."
     exit 5
 fi
 
