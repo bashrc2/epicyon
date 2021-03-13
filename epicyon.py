@@ -1799,6 +1799,8 @@ if args.notifications:
             print('Specify a password with the --password option')
             sys.exit()
 
+    args.password = args.password.replace('\n', '')
+
     proxyType = None
     if args.tor or domain.endswith('.onion'):
         proxyType = 'tor'
