@@ -1001,8 +1001,11 @@ if args.message:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     if not args.sendto:
@@ -1073,8 +1076,11 @@ if args.announce:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1093,8 +1099,11 @@ if args.announce:
 
 if args.itemName:
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
@@ -1149,8 +1158,11 @@ if args.itemName:
 
 if args.undoItemName:
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
@@ -1179,8 +1191,11 @@ if args.like:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1204,8 +1219,11 @@ if args.undolike:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1229,8 +1247,11 @@ if args.delete:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1257,9 +1278,11 @@ if args.follow:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
-        print('Please specify the password for ' + args.nickname +
-              ' on ' + domain)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     followNickname = getNicknameFromActor(args.follow)
     if not followNickname:
@@ -1296,8 +1319,11 @@ if args.unfollow:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
-        print('Please specify the password for '+args.nickname+' on '+domain)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     followNickname = getNicknameFromActor(args.unfollow)
     if not followNickname:
@@ -1515,9 +1541,13 @@ if args.addaccount:
     if not validNickname(domain, nickname):
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
+
     if not args.password:
-        print('Use the --password option to set the password for ' + nickname)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
@@ -1552,8 +1582,11 @@ if args.addgroup:
         print(nickname + ' is a reserved name. Use something different.')
         sys.exit()
     if not args.password:
-        print('Use the --password option to set the password for ' + nickname)
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
     if len(args.password.strip()) < 8:
         print('Password should be at least 8 characters')
         sys.exit()
@@ -1723,8 +1756,11 @@ if args.skill:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.skillLevelPercent:
         print('Specify a skill level in the range 0-100')
@@ -1759,8 +1795,11 @@ if args.availability:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     session = createSession(proxyType)
     personCache = {}
@@ -1830,8 +1869,11 @@ if args.block:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if '@' in args.block:
         blockedDomain = args.block.split('@')[1]
@@ -1866,8 +1908,11 @@ if args.delegate:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.project:
         print('Specify a project with the --project option')
@@ -1905,8 +1950,11 @@ if args.undelegate:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if not args.project:
         print('Specify a project with the --project option')
@@ -1940,8 +1988,11 @@ if args.unblock:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
 
     if '@' in args.unblock:
         blockedDomain = args.unblock.split('@')[1]
