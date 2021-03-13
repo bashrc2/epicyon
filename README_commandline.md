@@ -398,24 +398,26 @@ It is possible to use text-to-speech to read your inbox as posts arrive. This ca
 On Debian based systems you will need to have the **python3-espeak** package installed.
 
 ``` bash
-python3 epicyon.py --speaker yournickname@yourdomain --password [yourpassword]
+python3 epicyon.py --speaker yournickname@yourdomain
 ```
 
 Or if you have [picospeaker](https://gitlab.com/ky1e/picospeaker) installed:
 
 ``` bash
-python3 epicyon.py --screenreader picospeaker --notify yournickname@yourdomain --password [yourpassword]
+python3 epicyon.py --screenreader picospeaker --notify yournickname@yourdomain
 ```
 
-This will then stay running and incoming posts will be announced as they arrive.
+You can also use the **--password** option to provide the password. This will then stay running and incoming posts will be announced as they arrive.
 
 ## Desktop notifications
 
 You can get desktop notifications either by running the screen reader as shown above, or if you only want notifications and not spoken messages then you can run the client as follows, without the *screenreader* option:
 
 ``` bash
-python3 epicyon.py --notify yournickname@yourdomain --password [yourpassword]
+python3 epicyon.py --notify yournickname@yourdomain
 ```
+
+You can also use the **--password** option if needed.
 
 The notifications client also provides a number of basic commands, which may be more convenient than the web interface for some purposes:
 
