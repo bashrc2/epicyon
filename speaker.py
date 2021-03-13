@@ -90,6 +90,7 @@ def _speakerPronounce(baseDir: str, sayText: str, translate: {}) -> str:
             "kde": "K-D-E",
             "coop": "co-op",
             "KMail": "K-Mail",
+            "kmail": "K-Mail",
             "gmail": "G-mail",
             "Gmail": "G-mail",
             "OpenPGP": "Open P-G-P",
