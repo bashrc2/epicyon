@@ -10,6 +10,8 @@ The first thing you will need to do is to create an account. You can do this wit
 python3 epicyon.py --addaccount nickname@domain --password [yourpassword]
 ```
 
+You can also leave out the **--password** option and then enter it manually, which has the advantage of passwords not being logged within command history.
+
 To remove an account (be careful!):
 
 ``` bash
