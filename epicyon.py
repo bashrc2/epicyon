@@ -11,6 +11,7 @@ import shutil
 import sys
 import time
 import argparse
+import getpass
 from person import getActorJson
 from person import createPerson
 from person import createGroup
@@ -1793,8 +1794,10 @@ if args.notifications:
         sys.exit()
 
     if not args.password:
-        print('Specify a password with the --password option')
-        sys.exit()
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
 
     proxyType = None
     if args.tor or domain.endswith('.onion'):
