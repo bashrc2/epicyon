@@ -726,7 +726,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             _storeMessage(speakerJson, 'dm')
                         else:
                             speakerJson['decrypted'] = False
-                            _storeMessage(speakerJson, 'inbox')
+                            # _storeMessage(speakerJson, 'inbox')
 
                         print('')
 
