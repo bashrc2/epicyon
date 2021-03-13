@@ -1,0 +1,91 @@
+#!/bin/bash
+
+currUser="$USER"
+
+if [ ! -d "${HOME}/.config/systemd/user" ]; then
+    mkdir -p "${HOME}/.config/systemd/user"
+fi
+
+if [ ! -f /usr/bin/zenity ]; then
+    if [ -f /usr/bin/apt ]; then
+	sudo apt install zenity
+    fi
+    if [ -f /usr/bin/pacman ]; then
+	sudo pacman -S zenity
+    fi
+fi
+
+HANDLE=$(zenity --entry --width=400 --title "Epicyon Desktop Notifications" --text "Fediverse handle (name@domain): ")
+if [ ! "$HANDLE" ]; then
+    zenity --warning --width=400 --text "No fediverse handle was given"
+    exit 1
+fi
+if [[ "$HANDLE" != *'@'* ]]; then
+    zenity --warning --width=400 --text "Fediverse handle must be in the form username@domain"
+    exit 2
+fi
+PASSWORD=$(zenity --width=400 --password --title "Epicyon Desktop Notifications")
+if [ ! "$PASSWORD" ]; then
+    zenity --warning --width=400 --text "No password was given"
+    exit 3
+fi
+
+if [ ! -f /usr/bin/git ]; then
+    if [ -f /usr/bin/apt ]; then
+	sudo apt install git
+    fi
+    if [ -f /usr/bin/pacman ]; then
+	sudo pacman -S git
+    fi
+fi
+
+if [ ! -f /usr/bin/python3 ]; then
+    if [ -f /usr/bin/apt ]; then
+	sudo apt install python3
+    fi
+    if [ -f /usr/bin/pacman ]; then
+	sudo pacman -S python
+    fi
+fi
+
+if [ ! -d ${HOME}/.epicyon ]; then
+    git clone https://gitlab.com/bashrc2/epicyon ${HOME}/.epicyon
+else
+    cd ${HOME}/.epicyon || exit 1
+    git pull
+fi
+if [ ! -d ${HOME}/.epicyon ]; then
+    zenity --warning --width=400 --text "Unable to clone Epicyon repo"
+    exit 4
+fi
+chown -R "${currUser}":"${currUser}" ${HOME}/.epicyon
+
+notificationType=
+if [ -f /usr/bin/notify-send ]; then
+    notificationType='notify-send'
+else
+    if [ -f /usr/bin/zenity ]; then
+	notificationType='zenity'
+    fi
+fi
+if [[ ! "$notificationType" ]]; then
+    zenity --warning --width=400 --text "No desktop notification command was found."
+    exit 5
+fi
+
+{ echo '[Unit]';
+  echo 'Description=Epicyon Desktop Notifications';
+  echo '';
+  echo '[Service]';
+  echo "WorkingDirectory=${HOME}/.epicyon";
+  echo "ExecStart=/usr/bin/python3 epicyon.py --notifyType $notificationType --notify $HANDLE --password \"$PASSWORD\"";
+  echo 'Type=oneshot';
+  echo 'RemainAfterExit=yes';
+  echo '';
+  echo '[Install]';
+  echo 'WantedBy=multi-user.target'; } > "${HOME}/.config/systemd/user/epicyon-notifications.service"
+systemctl --user enable epicyon-notifications.service
+systemctl --user daemon-reload
+systemctl --user restart epicyon-notifications.service &
+
+zenity --info --width=400 --text "Epicyon notifications are now enabled"
