@@ -267,6 +267,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
         print('DEBUG: verifyPostHeaders ' + method)
         print('verifyPostHeaders publicKeyPem: ' + str(publicKeyPem))
         print('verifyPostHeaders headers: ' + str(headers))
+        print('verifyPostHeaders messageBodyJsonStr: ' +
+              str(messageBodyJsonStr))
 
     pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
                                  backend=default_backend())

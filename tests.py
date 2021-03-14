@@ -279,6 +279,13 @@ def testHttpSigNew():
         'cvhBfgn/xeAsNxz67SIHMgiXvLL6TFqEI1en9dl9A3ihB6ZO6+W' + \
         'gUoW7OobZNlPxAUkQCc2A6oVjCYOdpKdrMAXQp2TQQ==:'
 
+#    publicKeyPem = ''
+
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers,
+                             boxpath, False, None,
+                             messageBodyJsonStr, debug,
+                             True)
+
 
 def _testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
