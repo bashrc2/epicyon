@@ -368,7 +368,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                     signedHeaderCap = signedHeader.capitalize()
 
                 if debug:
-                    print('signedHeaderCap: ' + signedHeaderCap)
+                    print('signedHeaderCap: ' +
+                          signedHeaderCap + ' ' + str(headers))
 
                 # if this is the date header then check it is recent
                 if signedHeaderCap == 'Date':
