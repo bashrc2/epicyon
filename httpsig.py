@@ -353,7 +353,15 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                 signedHeaderList.append(
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
-                signedHeaderCap = signedHeader.capitalize()
+                if '-' in signedHeader:
+                    headerParts = signedHeader.split('-')
+                    signedHeaderCap = ''
+                    for part in headerParts:
+                        if signedHeaderCap:
+                            signedHeaderCap += '-'
+                        signedHeaderCap += part.capitalize()
+                else:
+                    signedHeaderCap = signedHeader.capitalize()
                 if signedHeaderCap == 'Date':
                     if not _verifyRecentSignature(headers[signedHeaderCap]):
                         if debug:
