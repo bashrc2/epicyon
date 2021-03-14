@@ -354,14 +354,23 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 if '-' in signedHeader:
+                    # capitalise with dashes
+                    # my-header becomes My-Header
                     headerParts = signedHeader.split('-')
-                    signedHeaderCap = ''
+                    signedHeaderCap = None
                     for part in headerParts:
                         if signedHeaderCap:
-                            signedHeaderCap += '-'
-                        signedHeaderCap += part.capitalize()
+                            signedHeaderCap += '-' + part.capitalize()
+                        else:
+                            signedHeaderCap = part.capitalize()
                 else:
+                    # header becomes Header
                     signedHeaderCap = signedHeader.capitalize()
+
+                if debug:
+                    print('signedHeaderCap: ' + signedHeaderCap)
+
+                # if this is the date header then check it is recent
                 if signedHeaderCap == 'Date':
                     if not _verifyRecentSignature(headers[signedHeaderCap]):
                         if debug:
@@ -369,6 +378,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                                   'verifyPostHeaders date is not recent ' +
                                   headers[signedHeader])
                         return False
+
+                # add the capitalised header
                 if headers.get(signedHeaderCap):
                     signedHeaderList.append(
                         f'{signedHeader}: {headers[signedHeaderCap]}')
