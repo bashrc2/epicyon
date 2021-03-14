@@ -295,6 +295,11 @@ parser.add_argument("--brochMode",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
+parser.add_argument("--noKeyPress",
+                    dest='noKeyPress',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Notification daemon does not wait for keypresses")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -1857,6 +1862,7 @@ if args.notifications:
                            args.screenreader, args.language,
                            args.notificationSounds,
                            args.notificationType,
+                           args.noKeyPress,
                            args.debug)
     sys.exit()
 
