@@ -253,8 +253,8 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(session, personUrl, asHeader, None, projectVersion,
-                    httpPrefix, personDomain)
+            getJson(session, personUrl, asHeader, None, debug,
+                    projectVersion, httpPrefix, personDomain)
         if not personJson:
             return None
     pubKey = None

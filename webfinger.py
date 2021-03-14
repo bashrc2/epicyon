@@ -74,7 +74,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     }
     try:
         result = \
-            getJson(session, url, hdr, par, projectVersion,
+            getJson(session, url, hdr, par,
+                    debug, projectVersion,
                     httpPrefix, fromDomain)
     except Exception as e:
         print(e)

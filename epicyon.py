@@ -731,7 +731,7 @@ if args.json:
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     testJson = getJson(session, args.json, asHeader, None,
-                       __version__, httpPrefix, None)
+                       debug, __version__, httpPrefix, None)
     pprint(testJson)
     sys.exit()
 

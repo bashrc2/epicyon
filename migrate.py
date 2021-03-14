@@ -85,8 +85,8 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     personJson = \
-        getJson(session, personUrl, asHeader, None, __version__,
-                httpPrefix, None)
+        getJson(session, personUrl, asHeader, None,
+                debug, __version__, httpPrefix, None)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):

@@ -183,7 +183,7 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
         return None
 
     feedJson = getJson(session, feedUrl, asHeader, None,
-                       projectVersion, httpPrefix, domain)
+                       False, projectVersion, httpPrefix, domain)
     if not feedJson:
         return None
 
@@ -220,6 +220,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                  nickname: str, domain: str,
                  boxName='inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, str):
+    debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
@@ -229,7 +230,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         return None, None, None, None, None, None, None
 
     if not wfRequest.get('errors'):
-        personUrl = getUserUrl(wfRequest, sourceId, False)
+        personUrl = getUserUrl(wfRequest, sourceId, debug)
     else:
         if nickname == 'dev':
             # try single user instance
@@ -250,13 +251,13 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
         personJson = getJson(session, personUrl, asHeader, None,
-                             projectVersion, httpPrefix, domain)
+                             debug, projectVersion, httpPrefix, domain)
         if not personJson:
             asHeader = {
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
             personJson = getJson(session, personUrl, asHeader, None,
-                                 projectVersion, httpPrefix, domain)
+                                 debug, projectVersion, httpPrefix, domain)
             if not personJson:
                 print('Unable to get actor')
                 return None, None, None, None, None, None, None
@@ -3537,7 +3538,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
 def downloadFollowCollection(followType: str,
                              session, httpPrefix,
                              actor: str, pageNumber=1,
-                             noOfPages=1) -> []:
+                             noOfPages=1, debug=False) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """
@@ -3554,8 +3555,8 @@ def downloadFollowCollection(followType: str,
     for pageCtr in range(noOfPages):
         url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
         followersJson = \
-            getJson(session, url, sessionHeaders, None, __version__,
-                    httpPrefix, None)
+            getJson(session, url, sessionHeaders, None,
+                    debug, __version__, httpPrefix, None)
         if followersJson:
             if followersJson.get('orderedItems'):
                 for followerActor in followersJson['orderedItems']:
@@ -3913,7 +3914,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                   postJsonObject['object'])
         announcedJson = \
             getJson(session, postJsonObject['object'], asHeader,
-                    None, projectVersion, httpPrefix, domain)
+                    None, debug, projectVersion, httpPrefix, domain)
 
         if not announcedJson:
             return None

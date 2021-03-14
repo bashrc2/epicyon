@@ -156,14 +156,14 @@ def htmlProfileAfterSearch(cssCache: {},
         }
         personUrl = httpPrefix + '://' + searchDomainFull
     profileJson = \
-        getJson(session, personUrl, asHeader, None,
+        getJson(session, personUrl, asHeader, None, debug,
                 projectVersion, httpPrefix, domain)
     if not profileJson:
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
         profileJson = \
-            getJson(session, personUrl, asHeader, None,
+            getJson(session, personUrl, asHeader, None, debug,
                     projectVersion, httpPrefix, domain)
     if not profileJson:
         print('DEBUG: No actor returned from ' + personUrl)
