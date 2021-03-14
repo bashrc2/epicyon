@@ -1223,7 +1223,7 @@ def individualPostAsHtml(allowDownloads: bool,
         postActorWf = \
             webfingerHandle(session, postActorHandle, httpPrefix,
                             cachedWebfingers,
-                            domain, __version__)
+                            domain, __version__, False)
 
         avatarUrl2 = None
         displayName = None

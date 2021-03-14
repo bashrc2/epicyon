@@ -2702,7 +2702,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        print('Loading queue item ' + queueFilename)
+        if debug:
+            print('Loading queue item ' + queueFilename)
 
         # Load the queue json
         queueJson = loadJson(queueFilename, 1)
@@ -2829,7 +2830,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
                     pprint(quotasDaily)
 
-        if queueJson.get('actor'):
+        if debug and queueJson.get('actor'):
             print('Obtaining public key for actor ' + queueJson['actor'])
 
         # Try a few times to obtain the public key
@@ -3053,8 +3054,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  httpPrefix, domain, port, debug)
         if len(recipientsDict.items()) == 0 and \
            len(recipientsDictFollowers.items()) == 0:
-            print('Queue: no recipients were resolved ' +
-                  'for post arriving in inbox')
+            if debug:
+                print('Queue: no recipients were resolved ' +
+                      'for post arriving in inbox')
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -3122,8 +3124,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                themeName)
             if debug:
                 pprint(queueJson['post'])
-
-            print('Queue: Queue post accepted')
+                print('Queue: Queue post accepted')
         if os.path.isfile(queueFilename):
             os.remove(queueFilename)
         if len(queue) > 0:

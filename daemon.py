@@ -1379,7 +1379,7 @@ class PubServer(BaseHTTPRequestHandler):
             if GETtimings.get(prevGetId):
                 timeDiff = int(timeDiff - int(GETtimings[prevGetId]))
         GETtimings[currGetId] = str(timeDiff)
-        if logEvent:
+        if logEvent and self.server.debug:
             print('GET TIMING ' + currGetId + ' = ' + str(timeDiff))
 
     def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
@@ -1397,7 +1397,8 @@ class PubServer(BaseHTTPRequestHandler):
             if logEvent:
                 ctr = 1
                 for timeDiff in POSTtimings:
-                    print('POST TIMING|' + str(ctr) + '|' + timeDiff)
+                    if self.server.debug:
+                        print('POST TIMING|' + str(ctr) + '|' + timeDiff)
                     ctr += 1
 
     def _pathContainsBlogLink(self, baseDir: str,
@@ -7351,6 +7352,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -7439,6 +7441,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.peertubeInstances,
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
+                                                self.server.debug,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -9243,6 +9246,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -9341,6 +9345,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9439,6 +9444,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9560,6 +9566,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.peertubeInstances,
                             self.server.allowLocalNetworkAccess,
                             self.server.textModeBanner,
+                            self.server.debug,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -13637,7 +13644,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if not authorized:
+        if not authorized and self.server.debug:
             print('POST Not authorized')
             print(str(self.headers))
 
@@ -14236,7 +14243,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
-                print('DEBUG: POST to shared inbox')
+                if self.server.debug:
+                    print('DEBUG: POST to shared inbox')
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
                 if queueStatus >= 0 and queueStatus <= 3:

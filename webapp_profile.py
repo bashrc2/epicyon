@@ -115,7 +115,7 @@ def htmlProfileAfterSearch(cssCache: {},
         webfingerHandle(session,
                         searchNickname + '@' + searchDomainFull,
                         httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wf:
         print('DEBUG: Unable to webfinger ' +
               searchNickname + '@' + searchDomainFull)
@@ -481,6 +481,7 @@ def htmlProfile(rssIconAtTop: bool,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
+                debug: bool,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -816,7 +817,7 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["unfollow"], selected,
                                   usersPath, pageNumber, maxItemsPerPage,
-                                  dormantMonths)
+                                  dormantMonths, debug)
     elif selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -825,7 +826,7 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["block"],
                                   selected, usersPath, pageNumber,
-                                  maxItemsPerPage, dormantMonths)
+                                  maxItemsPerPage, dormantMonths, debug)
     elif selected == 'roles':
         profileStr += \
             _htmlProfileRoles(translate, nickname, domainFull,
@@ -920,7 +921,7 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           feedName: str, actor: str,
                           pageNumber: int,
                           maxItemsPerPage: int,
-                          dormantMonths: int) -> str:
+                          dormantMonths: int, debug: bool) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -952,7 +953,7 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                                     domain, followingActor,
                                     authorized, nickname,
                                     httpPrefix, projectVersion, dormant,
-                                    buttons)
+                                    debug, buttons)
 
     if authorized and maxItemsPerPage and pageNumber:
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
@@ -1801,6 +1802,7 @@ def _individualFollowAsHtml(translate: {},
                             httpPrefix: str,
                             projectVersion: str,
                             dormant: bool,
+                            debug: bool,
                             buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
@@ -1817,7 +1819,7 @@ def _individualFollowAsHtml(translate: {},
     followUrlWf = \
         webfingerHandle(session, followUrlHandle, httpPrefix,
                         cachedWebfingers,
-                        domain, __version__)
+                        domain, __version__, debug)
 
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,

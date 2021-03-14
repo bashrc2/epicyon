@@ -1935,7 +1935,7 @@ def sendPost(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion)
+                                domain, projectVersion, debug)
     if not wfRequest:
         return 1
     if not isinstance(wfRequest, dict):
@@ -2052,7 +2052,7 @@ def sendPostViaServer(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion)
+                        fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger failed for ' + handle)
@@ -2249,7 +2249,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                                domain, projectVersion)
+                                domain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2538,7 +2538,8 @@ def sendToNamedAddresses(session, baseDir: str,
                        personCache, debug, projectVersion)
 
 
-def _hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
+def _hasSharedInbox(session, httpPrefix: str, domain: str,
+                    debug: bool) -> bool:
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
@@ -2547,9 +2548,8 @@ def _hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
         'inbox@' + domain
     ]
     for handle in tryHandles:
-        wfRequest = webfingerHandle(session, handle,
-                                    httpPrefix, {},
-                                    None, __version__)
+        wfRequest = webfingerHandle(session, handle, httpPrefix, {},
+                                    None, __version__, debug)
         if wfRequest:
             if isinstance(wfRequest, dict):
                 if not wfRequest.get('errors'):
@@ -2634,7 +2634,8 @@ def sendToFollowers(session, baseDir: str,
         print('Sending post to followers domain is active: ' +
               followerDomainUrl)
 
-        withSharedInbox = _hasSharedInbox(session, httpPrefix, followerDomain)
+        withSharedInbox = _hasSharedInbox(session, httpPrefix,
+                                          followerDomain, debug)
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
@@ -3463,7 +3464,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wfRequest:
         sys.exit()
     if not isinstance(wfRequest, dict):
@@ -3505,7 +3506,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wfRequest:
         return domainList
     if not isinstance(wfRequest, dict):
@@ -3585,7 +3586,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wfRequest:
         return {}
     if not isinstance(wfRequest, dict):
@@ -4148,7 +4149,7 @@ def sendBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -4232,7 +4233,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)

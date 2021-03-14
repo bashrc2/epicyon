@@ -167,7 +167,7 @@ def sendLikeViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -248,7 +248,7 @@ def sendUndoLikeViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)

@@ -1102,7 +1102,8 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
+def getActorJson(handle: str, http: bool, gnunet: bool,
+                 debug: bool, quiet=False) -> {}:
     """Returns the actor json
     """
     originalActor = handle
@@ -1175,7 +1176,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         if not quiet:
             print('Unable to webfinger ' + handle)

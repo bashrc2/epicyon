@@ -56,7 +56,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr

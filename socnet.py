@@ -52,7 +52,7 @@ def instancesGraph(baseDir: str, handles: str,
         wfRequest = \
             webfingerHandle(session, handle, httpPrefix,
                             cachedWebfingers,
-                            domain, projectVersion)
+                            domain, projectVersion, debug)
         if not wfRequest:
             return dotGraphStr + '}\n'
         if not isinstance(wfRequest, dict):

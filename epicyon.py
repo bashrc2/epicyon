@@ -1477,7 +1477,7 @@ if args.followers:
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
