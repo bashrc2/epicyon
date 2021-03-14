@@ -2677,7 +2677,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         time.sleep(1)
 
         # heartbeat to monitor whether the inbox queue is running
-        heartBeatCtr += 5
+        heartBeatCtr += 1
         if heartBeatCtr >= 10:
             # turn off broch mode after it has timed out
             brochModeLapses(baseDir)
