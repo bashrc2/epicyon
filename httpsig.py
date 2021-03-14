@@ -387,7 +387,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                 if headers.get(signedHeaderCap):
                     signedHeaderList.append(
                         f'{signedHeader}: {headers[signedHeaderCap]}')
-                else:
+                elif '-' in signedHeader:
+                    # my-header becomes My-header
                     signedHeaderCap = signedHeader.capitalize()
                     if headers.get(signedHeaderCap):
                         signedHeaderList.append(
