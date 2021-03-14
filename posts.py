@@ -3908,7 +3908,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                 print('Announce download blocked object: ' +
                       str(postJsonObject['object']))
             return None
-        print('Downloading Announce content for ' + postJsonObject['object'])
+        if debug:
+            print('Downloading Announce content for ' +
+                  postJsonObject['object'])
         announcedJson = \
             getJson(session, postJsonObject['object'], asHeader,
                     None, projectVersion, httpPrefix, domain)

@@ -814,7 +814,7 @@ def _personReceiveUpdate(baseDir: str,
     # save to cache in memory
     storePersonInCache(baseDir, personJson['id'], personJson,
                        personCache, True)
-    # save to cache on file    
+    # save to cache on file
     if saveJson(personJson, actorFilename):
         if debug:
             print('actor updated for ' + personJson['id'])
@@ -3048,7 +3048,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                           federationList,
                           queueJson['postNickname'],
                           debug):
-            print('Queue: Update accepted from ' + keyId)
+            if debug:
+                print('Queue: Update accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
