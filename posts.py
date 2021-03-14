@@ -148,7 +148,7 @@ def _cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}, sourceId=0) -> str:
+def getUserUrl(wfRequest: {}, sourceId=0, debug=False) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wfRequest.get('links'):
@@ -166,7 +166,7 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
         if link['type'] != 'application/activity+json':
             continue
         if '/@' not in link['href']:
-            if not hasUsersPath(link['href']):
+            if debug and not hasUsersPath(link['href']):
                 print('getUserUrl webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(sourceId) + ' ' + str(link))
@@ -229,7 +229,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         return None, None, None, None, None, None, None
 
     if not wfRequest.get('errors'):
-        personUrl = getUserUrl(wfRequest, sourceId)
+        personUrl = getUserUrl(wfRequest, sourceId, False)
     else:
         if nickname == 'dev':
             # try single user instance

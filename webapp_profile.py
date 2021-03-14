@@ -75,12 +75,14 @@ def htmlProfileAfterSearch(cssCache: {},
         searchDomain, searchPort = getDomainFromActor(profileHandle)
     else:
         if '@' not in profileHandle:
-            print('DEBUG: no @ in ' + profileHandle)
+            if debug:
+                print('DEBUG: no @ in ' + profileHandle)
             return None
         if profileHandle.startswith('@'):
             profileHandle = profileHandle[1:]
         if '@' not in profileHandle:
-            print('DEBUG: no @ in ' + profileHandle)
+            if debug:
+                print('DEBUG: no @ in ' + profileHandle)
             return None
         searchNickname = profileHandle.split('@')[0]
         searchDomain = profileHandle.split('@')[1]
@@ -91,17 +93,21 @@ def htmlProfileAfterSearch(cssCache: {},
                 searchPort = int(searchPortStr)
             searchDomain = searchDomain.split(':')[0]
     if searchPort:
-        print('DEBUG: Search for handle ' +
-              str(searchNickname) + '@' + str(searchDomain) + ':' +
-              str(searchPort))
+        if debug:
+            print('DEBUG: Search for handle ' +
+                  str(searchNickname) + '@' + str(searchDomain) + ':' +
+                  str(searchPort))
     else:
-        print('DEBUG: Search for handle ' +
-              str(searchNickname) + '@' + str(searchDomain))
+        if debug:
+            print('DEBUG: Search for handle ' +
+                  str(searchNickname) + '@' + str(searchDomain))
     if not searchNickname:
-        print('DEBUG: No nickname found in ' + profileHandle)
+        if debug:
+            print('DEBUG: No nickname found in ' + profileHandle)
         return None
     if not searchDomain:
-        print('DEBUG: No domain found in ' + profileHandle)
+        if debug:
+            print('DEBUG: No domain found in ' + profileHandle)
         return None
 
     searchDomainFull = getFullDomain(searchDomain, searchPort)
@@ -117,17 +123,19 @@ def htmlProfileAfterSearch(cssCache: {},
                         httpPrefix, cachedWebfingers,
                         domain, projectVersion, debug)
     if not wf:
-        print('DEBUG: Unable to webfinger ' +
-              searchNickname + '@' + searchDomainFull)
-        print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
-        print('DEBUG: httpPrefix ' + httpPrefix)
-        print('DEBUG: domain ' + domain)
+        if debug:
+            print('DEBUG: Unable to webfinger ' +
+                  searchNickname + '@' + searchDomainFull)
+            print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
+            print('DEBUG: httpPrefix ' + httpPrefix)
+            print('DEBUG: domain ' + domain)
         return None
     if not isinstance(wf, dict):
-        print('WARN: Webfinger search for ' +
-              searchNickname + '@' + searchDomainFull +
-              ' did not return a dict. ' +
-              str(wf))
+        if debug:
+            print('WARN: Webfinger search for ' +
+                  searchNickname + '@' + searchDomainFull +
+                  ' did not return a dict. ' +
+                  str(wf))
         return None
 
     personUrl = None
@@ -140,7 +148,7 @@ def htmlProfileAfterSearch(cssCache: {},
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wf)
+        personUrl = getUserUrl(wf, 0, debug)
     if not personUrl:
         # try single user instance
         asHeader = {

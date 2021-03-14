@@ -1204,7 +1204,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
         personUrl = personUrl.replace('/users/', '/actor/')
         personUrl = personUrl.replace('/accounts/', '/actor/')

@@ -76,7 +76,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, 0, debug)
         if not personUrl:
             return ctr
 
