@@ -265,6 +265,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
 
     if debug:
         print('DEBUG: verifyPostHeaders ' + method)
+        print('verifyPostHeaders publicKeyPem: ' + str(publicKeyPem))
+        print('verifyPostHeaders headers: ' + str(headers))
 
     pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
                                  backend=default_backend())
@@ -368,8 +370,7 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                     signedHeaderCap = signedHeader.capitalize()
 
                 if debug:
-                    print('signedHeaderCap: ' +
-                          signedHeaderCap + ' ' + str(headers))
+                    print('signedHeaderCap: ' + signedHeaderCap)
 
                 # if this is the date header then check it is recent
                 if signedHeaderCap == 'Date':
