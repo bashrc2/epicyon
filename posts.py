@@ -2927,7 +2927,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
-                 recentPostsCache: {}) -> bool:
+                 recentPostsCache: {}, debug: bool) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2937,7 +2937,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              __version__, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache)
+                             recentPostsCache, debug)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3842,7 +3842,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {}, YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     recentPostsCache: {}) -> {}:
+                     recentPostsCache: {}, debug: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -3866,8 +3866,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         return None
 
     if os.path.isfile(announceFilename):
-        print('Reading cached Announce content for ' +
-              postJsonObject['object'])
+        if debug:
+            print('Reading cached Announce content for ' +
+                  postJsonObject['object'])
         postJsonObject = loadJson(announceFilename)
         if postJsonObject:
             return postJsonObject

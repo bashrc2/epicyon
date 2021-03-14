@@ -414,7 +414,8 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir, nickname, domain,
                                   postJsonObject['object']['content']):
-                        print('WARN: post was filtered out due to content')
+                        if debug:
+                            print('WARN: post was filtered out due to content')
                         return None
     originalPostId = None
     if postJsonObject.get('id'):
@@ -1376,7 +1377,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                       __version__, translate,
                                       YTReplacementDomain,
                                       allowLocalNetworkAccess,
-                                      recentPostsCache)
+                                      recentPostsCache, debug)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -2465,7 +2466,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             nickname, domain, postJsonObject,
                             translate, YTReplacementDomain,
                             allowLocalNetworkAccess,
-                            recentPostsCache):
+                            recentPostsCache, debug):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
