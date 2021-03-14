@@ -295,6 +295,11 @@ parser.add_argument("--brochMode",
                     type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Enable broch mode")
+parser.add_argument("--noKeyPress",
+                    dest='noKeyPress',
+                    type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Notification daemon does not wait for keypresses")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Allow followers without approval")
@@ -509,6 +514,9 @@ args = parser.parse_args()
 debug = False
 if args.debug:
     debug = True
+else:
+    if os.path.isfile('debug'):
+        debug = True
 
 if args.tests:
     runAllTests()
@@ -723,7 +731,7 @@ if args.json:
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     testJson = getJson(session, args.json, asHeader, None,
-                       __version__, httpPrefix, None)
+                       debug, __version__, httpPrefix, None)
     pprint(testJson)
     sys.exit()
 
@@ -1472,7 +1480,7 @@ if args.followers:
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         print('Unable to webfinger ' + handle)
         sys.exit()
@@ -1857,6 +1865,7 @@ if args.notifications:
                            args.screenreader, args.language,
                            args.notificationSounds,
                            args.notificationType,
+                           args.noKeyPress,
                            args.debug)
     sys.exit()
 

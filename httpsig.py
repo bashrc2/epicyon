@@ -265,6 +265,10 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
 
     if debug:
         print('DEBUG: verifyPostHeaders ' + method)
+        print('verifyPostHeaders publicKeyPem: ' + str(publicKeyPem))
+        print('verifyPostHeaders headers: ' + str(headers))
+        print('verifyPostHeaders messageBodyJsonStr: ' +
+              str(messageBodyJsonStr))
 
     pubkey = load_pem_public_key(publicKeyPem.encode('utf-8'),
                                  backend=default_backend())
@@ -353,7 +357,24 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                 signedHeaderList.append(
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
-                signedHeaderCap = signedHeader.capitalize()
+                if '-' in signedHeader:
+                    # capitalise with dashes
+                    # my-header becomes My-Header
+                    headerParts = signedHeader.split('-')
+                    signedHeaderCap = None
+                    for part in headerParts:
+                        if signedHeaderCap:
+                            signedHeaderCap += '-' + part.capitalize()
+                        else:
+                            signedHeaderCap = part.capitalize()
+                else:
+                    # header becomes Header
+                    signedHeaderCap = signedHeader.capitalize()
+
+                if debug:
+                    print('signedHeaderCap: ' + signedHeaderCap)
+
+                # if this is the date header then check it is recent
                 if signedHeaderCap == 'Date':
                     if not _verifyRecentSignature(headers[signedHeaderCap]):
                         if debug:
@@ -361,9 +382,17 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict,
                                   'verifyPostHeaders date is not recent ' +
                                   headers[signedHeader])
                         return False
+
+                # add the capitalised header
                 if headers.get(signedHeaderCap):
                     signedHeaderList.append(
                         f'{signedHeader}: {headers[signedHeaderCap]}')
+                elif '-' in signedHeader:
+                    # my-header becomes My-header
+                    signedHeaderCap = signedHeader.capitalize()
+                    if headers.get(signedHeaderCap):
+                        signedHeaderList.append(
+                            f'{signedHeader}: {headers[signedHeaderCap]}')
 
     if debug:
         print('DEBUG: signedHeaderList: ' + str(signedHeaderList))

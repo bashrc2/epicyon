@@ -40,11 +40,13 @@ def _parseHandle(handle: str) -> (str, str):
 
 def webfingerHandle(session, handle: str, httpPrefix: str,
                     cachedWebfingers: {},
-                    fromDomain: str, projectVersion: str) -> {}:
+                    fromDomain: str, projectVersion: str,
+                    debug: bool) -> {}:
     """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
-        print('WARN: No session specified for webfingerHandle')
+        if debug:
+            print('WARN: No session specified for webfingerHandle')
         return None
 
     nickname, domain = _parseHandle(handle)
@@ -60,7 +62,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     wf = getWebfingerFromCache(nickname + '@' + wfDomain,
                                cachedWebfingers)
     if wf:
-        print('Webfinger from cache: ' + str(wf))
+        if debug:
+            print('Webfinger from cache: ' + str(wf))
         return wf
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix, domain)
     par = {
@@ -71,7 +74,8 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
     }
     try:
         result = \
-            getJson(session, url, hdr, par, projectVersion,
+            getJson(session, url, hdr, par,
+                    debug, projectVersion,
                     httpPrefix, fromDomain)
     except Exception as e:
         print(e)
@@ -81,11 +85,12 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
         storeWebfingerInCache(nickname + '@' + wfDomain,
                               result, cachedWebfingers)
     else:
-        print("WARN: Unable to webfinger " + url + ' ' +
-              'nickname: ' + str(nickname) + ' ' +
-              'domain: ' + str(wfDomain) + ' ' +
-              'headers: ' + str(hdr) + ' ' +
-              'params: ' + str(par))
+        if debug:
+            print("WARN: Unable to webfinger " + url + ' ' +
+                  'nickname: ' + str(nickname) + ' ' +
+                  'domain: ' + str(wfDomain) + ' ' +
+                  'headers: ' + str(hdr) + ' ' +
+                  'params: ' + str(par))
 
     return result
 

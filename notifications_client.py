@@ -574,6 +574,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            systemLanguage: str,
                            notificationSounds: bool,
                            notificationType: str,
+                           noKeyPress: bool,
                            debug: bool) -> None:
     """Runs the notifications and screen reader client,
     which announces new inbox items
@@ -772,7 +773,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     prevSay = speakerJson['say']
 
         # wait for a while, or until a key is pressed
-        keyPress = _waitForKeypress(30, debug)
+        if noKeyPress:
+            time.sleep(10)
+        else:
+            keyPress = _waitForKeypress(30, debug)
         if keyPress:
             if keyPress.startswith('/'):
                 keyPress = keyPress[1:]

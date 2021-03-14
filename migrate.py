@@ -56,7 +56,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         handle = handle[1:]
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         print('updateMovedHandle unable to webfinger ' + handle)
         return ctr
@@ -76,7 +76,7 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, 0, debug)
         if not personUrl:
             return ctr
 
@@ -85,8 +85,8 @@ def _updateMovedHandle(baseDir: str, nickname: str, domain: str,
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
     }
     personJson = \
-        getJson(session, personUrl, asHeader, None, __version__,
-                httpPrefix, None)
+        getJson(session, personUrl, asHeader, None,
+                debug, __version__, httpPrefix, None)
     if not personJson:
         return ctr
     if not personJson.get('movedTo'):

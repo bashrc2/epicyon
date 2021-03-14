@@ -148,7 +148,7 @@ def _cleanHtml(rawHtml: str) -> str:
     return html.unescape(text)
 
 
-def getUserUrl(wfRequest: {}, sourceId=0) -> str:
+def getUserUrl(wfRequest: {}, sourceId=0, debug=False) -> str:
     """Gets the actor url from a webfinger request
     """
     if not wfRequest.get('links'):
@@ -166,7 +166,7 @@ def getUserUrl(wfRequest: {}, sourceId=0) -> str:
         if link['type'] != 'application/activity+json':
             continue
         if '/@' not in link['href']:
-            if not hasUsersPath(link['href']):
+            if debug and not hasUsersPath(link['href']):
                 print('getUserUrl webfinger activity+json ' +
                       'contains single user instance actor ' +
                       str(sourceId) + ' ' + str(link))
@@ -183,7 +183,7 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
         return None
 
     feedJson = getJson(session, feedUrl, asHeader, None,
-                       projectVersion, httpPrefix, domain)
+                       False, projectVersion, httpPrefix, domain)
     if not feedJson:
         return None
 
@@ -220,6 +220,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                  nickname: str, domain: str,
                  boxName='inbox',
                  sourceId=0) -> (str, str, str, str, str, str, str, str):
+    debug = False
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
@@ -229,7 +230,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         return None, None, None, None, None, None, None
 
     if not wfRequest.get('errors'):
-        personUrl = getUserUrl(wfRequest, sourceId)
+        personUrl = getUserUrl(wfRequest, sourceId, debug)
     else:
         if nickname == 'dev':
             # try single user instance
@@ -250,13 +251,13 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
         personJson = getJson(session, personUrl, asHeader, None,
-                             projectVersion, httpPrefix, domain)
+                             debug, projectVersion, httpPrefix, domain)
         if not personJson:
             asHeader = {
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
             personJson = getJson(session, personUrl, asHeader, None,
-                                 projectVersion, httpPrefix, domain)
+                                 debug, projectVersion, httpPrefix, domain)
             if not personJson:
                 print('Unable to get actor')
                 return None, None, None, None, None, None, None
@@ -1935,7 +1936,7 @@ def sendPost(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                domain, projectVersion)
+                                domain, projectVersion, debug)
     if not wfRequest:
         return 1
     if not isinstance(wfRequest, dict):
@@ -2052,7 +2053,7 @@ def sendPostViaServer(projectVersion: str,
     # lookup the inbox for the To handle
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        fromDomain, projectVersion)
+                        fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger failed for ' + handle)
@@ -2249,7 +2250,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                                domain, projectVersion)
+                                domain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
@@ -2538,7 +2539,8 @@ def sendToNamedAddresses(session, baseDir: str,
                        personCache, debug, projectVersion)
 
 
-def _hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
+def _hasSharedInbox(session, httpPrefix: str, domain: str,
+                    debug: bool) -> bool:
     """Returns true if the given domain has a shared inbox
     This tries the new and the old way of webfingering the shared inbox
     """
@@ -2547,9 +2549,8 @@ def _hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
         'inbox@' + domain
     ]
     for handle in tryHandles:
-        wfRequest = webfingerHandle(session, handle,
-                                    httpPrefix, {},
-                                    None, __version__)
+        wfRequest = webfingerHandle(session, handle, httpPrefix, {},
+                                    None, __version__, debug)
         if wfRequest:
             if isinstance(wfRequest, dict):
                 if not wfRequest.get('errors'):
@@ -2634,7 +2635,8 @@ def sendToFollowers(session, baseDir: str,
         print('Sending post to followers domain is active: ' +
               followerDomainUrl)
 
-        withSharedInbox = _hasSharedInbox(session, httpPrefix, followerDomain)
+        withSharedInbox = _hasSharedInbox(session, httpPrefix,
+                                          followerDomain, debug)
         if debug:
             if withSharedInbox:
                 print(followerDomain + ' has shared inbox')
@@ -2926,7 +2928,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                  postJsonObject: {}, translate: {},
                  YTReplacementDomain: str,
                  allowLocalNetworkAccess: bool,
-                 recentPostsCache: {}) -> bool:
+                 recentPostsCache: {}, debug: bool) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
@@ -2936,7 +2938,7 @@ def isImageMedia(session, baseDir: str, httpPrefix: str,
                              __version__, translate,
                              YTReplacementDomain,
                              allowLocalNetworkAccess,
-                             recentPostsCache)
+                             recentPostsCache, debug)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -3463,7 +3465,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wfRequest:
         sys.exit()
     if not isinstance(wfRequest, dict):
@@ -3505,7 +3507,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wfRequest:
         return domainList
     if not isinstance(wfRequest, dict):
@@ -3536,7 +3538,7 @@ def getPublicPostDomains(session, baseDir: str, nickname: str, domain: str,
 def downloadFollowCollection(followType: str,
                              session, httpPrefix,
                              actor: str, pageNumber=1,
-                             noOfPages=1) -> []:
+                             noOfPages=1, debug=False) -> []:
     """Returns a list of following/followers for the given actor
     by downloading the json for their following/followers collection
     """
@@ -3553,8 +3555,8 @@ def downloadFollowCollection(followType: str,
     for pageCtr in range(noOfPages):
         url = actor + '/' + followType + '?page=' + str(pageNumber + pageCtr)
         followersJson = \
-            getJson(session, url, sessionHeaders, None, __version__,
-                    httpPrefix, None)
+            getJson(session, url, sessionHeaders, None,
+                    debug, __version__, httpPrefix, None)
         if followersJson:
             if followersJson.get('orderedItems'):
                 for followerActor in followersJson['orderedItems']:
@@ -3585,7 +3587,7 @@ def getPublicPostInfo(session, baseDir: str, nickname: str, domain: str,
     handle = httpPrefix + "://" + domainFull + "/@" + nickname
     wfRequest = \
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wfRequest:
         return {}
     if not isinstance(wfRequest, dict):
@@ -3841,7 +3843,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      postJsonObject: {}, projectVersion: str,
                      translate: {}, YTReplacementDomain: str,
                      allowLocalNetworkAccess: bool,
-                     recentPostsCache: {}) -> {}:
+                     recentPostsCache: {}, debug: bool) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -3865,8 +3867,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         return None
 
     if os.path.isfile(announceFilename):
-        print('Reading cached Announce content for ' +
-              postJsonObject['object'])
+        if debug:
+            print('Reading cached Announce content for ' +
+                  postJsonObject['object'])
         postJsonObject = loadJson(announceFilename)
         if postJsonObject:
             return postJsonObject
@@ -3906,10 +3909,12 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                 print('Announce download blocked object: ' +
                       str(postJsonObject['object']))
             return None
-        print('Downloading Announce content for ' + postJsonObject['object'])
+        if debug:
+            print('Downloading Announce content for ' +
+                  postJsonObject['object'])
         announcedJson = \
             getJson(session, postJsonObject['object'], asHeader,
-                    None, projectVersion, httpPrefix, domain)
+                    None, debug, projectVersion, httpPrefix, domain)
 
         if not announcedJson:
             return None
@@ -3958,7 +3963,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
             return None
-        if not validPostDate(announcedJson['published']):
+        if not validPostDate(announcedJson['published'], 90, debug):
             _rejectAnnounce(announceFilename,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
@@ -4148,7 +4153,7 @@ def sendBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
@@ -4232,7 +4237,7 @@ def sendUndoBlockViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                fromDomain, projectVersion)
+                                fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)

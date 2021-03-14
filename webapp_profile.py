@@ -75,12 +75,14 @@ def htmlProfileAfterSearch(cssCache: {},
         searchDomain, searchPort = getDomainFromActor(profileHandle)
     else:
         if '@' not in profileHandle:
-            print('DEBUG: no @ in ' + profileHandle)
+            if debug:
+                print('DEBUG: no @ in ' + profileHandle)
             return None
         if profileHandle.startswith('@'):
             profileHandle = profileHandle[1:]
         if '@' not in profileHandle:
-            print('DEBUG: no @ in ' + profileHandle)
+            if debug:
+                print('DEBUG: no @ in ' + profileHandle)
             return None
         searchNickname = profileHandle.split('@')[0]
         searchDomain = profileHandle.split('@')[1]
@@ -91,17 +93,21 @@ def htmlProfileAfterSearch(cssCache: {},
                 searchPort = int(searchPortStr)
             searchDomain = searchDomain.split(':')[0]
     if searchPort:
-        print('DEBUG: Search for handle ' +
-              str(searchNickname) + '@' + str(searchDomain) + ':' +
-              str(searchPort))
+        if debug:
+            print('DEBUG: Search for handle ' +
+                  str(searchNickname) + '@' + str(searchDomain) + ':' +
+                  str(searchPort))
     else:
-        print('DEBUG: Search for handle ' +
-              str(searchNickname) + '@' + str(searchDomain))
+        if debug:
+            print('DEBUG: Search for handle ' +
+                  str(searchNickname) + '@' + str(searchDomain))
     if not searchNickname:
-        print('DEBUG: No nickname found in ' + profileHandle)
+        if debug:
+            print('DEBUG: No nickname found in ' + profileHandle)
         return None
     if not searchDomain:
-        print('DEBUG: No domain found in ' + profileHandle)
+        if debug:
+            print('DEBUG: No domain found in ' + profileHandle)
         return None
 
     searchDomainFull = getFullDomain(searchDomain, searchPort)
@@ -115,19 +121,21 @@ def htmlProfileAfterSearch(cssCache: {},
         webfingerHandle(session,
                         searchNickname + '@' + searchDomainFull,
                         httpPrefix, cachedWebfingers,
-                        domain, projectVersion)
+                        domain, projectVersion, debug)
     if not wf:
-        print('DEBUG: Unable to webfinger ' +
-              searchNickname + '@' + searchDomainFull)
-        print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
-        print('DEBUG: httpPrefix ' + httpPrefix)
-        print('DEBUG: domain ' + domain)
+        if debug:
+            print('DEBUG: Unable to webfinger ' +
+                  searchNickname + '@' + searchDomainFull)
+            print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
+            print('DEBUG: httpPrefix ' + httpPrefix)
+            print('DEBUG: domain ' + domain)
         return None
     if not isinstance(wf, dict):
-        print('WARN: Webfinger search for ' +
-              searchNickname + '@' + searchDomainFull +
-              ' did not return a dict. ' +
-              str(wf))
+        if debug:
+            print('WARN: Webfinger search for ' +
+                  searchNickname + '@' + searchDomainFull +
+                  ' did not return a dict. ' +
+                  str(wf))
         return None
 
     personUrl = None
@@ -140,7 +148,7 @@ def htmlProfileAfterSearch(cssCache: {},
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wf)
+        personUrl = getUserUrl(wf, 0, debug)
     if not personUrl:
         # try single user instance
         asHeader = {
@@ -148,14 +156,14 @@ def htmlProfileAfterSearch(cssCache: {},
         }
         personUrl = httpPrefix + '://' + searchDomainFull
     profileJson = \
-        getJson(session, personUrl, asHeader, None,
+        getJson(session, personUrl, asHeader, None, debug,
                 projectVersion, httpPrefix, domain)
     if not profileJson:
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
         profileJson = \
-            getJson(session, personUrl, asHeader, None,
+            getJson(session, personUrl, asHeader, None, debug,
                     projectVersion, httpPrefix, domain)
     if not profileJson:
         print('DEBUG: No actor returned from ' + personUrl)
@@ -481,6 +489,7 @@ def htmlProfile(rssIconAtTop: bool,
                 peertubeInstances: [],
                 allowLocalNetworkAccess: bool,
                 textModeBanner: str,
+                debug: bool,
                 extraJson=None, pageNumber=None,
                 maxItemsPerPage=None) -> str:
     """Show the profile page as html
@@ -816,7 +825,7 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["unfollow"], selected,
                                   usersPath, pageNumber, maxItemsPerPage,
-                                  dormantMonths)
+                                  dormantMonths, debug)
     elif selected == 'followers':
         profileStr += \
             _htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -825,7 +834,7 @@ def htmlProfile(rssIconAtTop: bool,
                                   cachedWebfingers, personCache, extraJson,
                                   projectVersion, ["block"],
                                   selected, usersPath, pageNumber,
-                                  maxItemsPerPage, dormantMonths)
+                                  maxItemsPerPage, dormantMonths, debug)
     elif selected == 'roles':
         profileStr += \
             _htmlProfileRoles(translate, nickname, domainFull,
@@ -920,7 +929,7 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                           feedName: str, actor: str,
                           pageNumber: int,
                           maxItemsPerPage: int,
-                          dormantMonths: int) -> str:
+                          dormantMonths: int, debug: bool) -> str:
     """Shows following on the profile screen
     """
     profileStr = ''
@@ -952,7 +961,7 @@ def _htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
                                     domain, followingActor,
                                     authorized, nickname,
                                     httpPrefix, projectVersion, dormant,
-                                    buttons)
+                                    debug, buttons)
 
     if authorized and maxItemsPerPage and pageNumber:
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
@@ -1801,6 +1810,7 @@ def _individualFollowAsHtml(translate: {},
                             httpPrefix: str,
                             projectVersion: str,
                             dormant: bool,
+                            debug: bool,
                             buttons=[]) -> str:
     """An individual follow entry on the profile screen
     """
@@ -1817,7 +1827,7 @@ def _individualFollowAsHtml(translate: {},
     followUrlWf = \
         webfingerHandle(session, followUrlHandle, httpPrefix,
                         cachedWebfingers,
-                        domain, __version__)
+                        domain, __version__, debug)
 
     (inboxUrl, pubKeyId, pubKey,
      fromPersonId, sharedInbox,

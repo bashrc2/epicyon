@@ -253,8 +253,8 @@ def getPersonPubKey(baseDir: str, session, personUrl: str,
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
         }
         personJson = \
-            getJson(session, personUrl, asHeader, None, projectVersion,
-                    httpPrefix, personDomain)
+            getJson(session, personUrl, asHeader, None, debug,
+                    projectVersion, httpPrefix, personDomain)
         if not personJson:
             return None
     pubKey = None
@@ -395,9 +395,10 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                     replyDomain, replyPort = \
                         getDomainFromActor(inReplyTo)
                     if isBlockedDomain(baseDir, replyDomain):
-                        print('WARN: post contains reply from ' +
-                              str(actor) +
-                              ' to a blocked domain: ' + replyDomain)
+                        if debug:
+                            print('WARN: post contains reply from ' +
+                                  str(actor) +
+                                  ' to a blocked domain: ' + replyDomain)
                         return None
                     else:
                         replyNickname = \
@@ -405,16 +406,18 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         if replyNickname and replyDomain:
                             if isBlocked(baseDir, nickname, domain,
                                          replyNickname, replyDomain):
-                                print('WARN: post contains reply from ' +
-                                      str(actor) +
-                                      ' to a blocked account: ' +
-                                      replyNickname + '@' + replyDomain)
+                                if debug:
+                                    print('WARN: post contains reply from ' +
+                                          str(actor) +
+                                          ' to a blocked account: ' +
+                                          replyNickname + '@' + replyDomain)
                                 return None
             if postJsonObject['object'].get('content'):
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir, nickname, domain,
                                   postJsonObject['object']['content']):
-                        print('WARN: post was filtered out due to content')
+                        if debug:
+                            print('WARN: post was filtered out due to content')
                         return None
     originalPostId = None
     if postJsonObject.get('id'):
@@ -758,8 +761,9 @@ def _personReceiveUpdate(baseDir: str,
                          debug: bool) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
-    print('Receiving actor update for ' + personJson['url'] +
-          ' ' + str(personJson))
+    if debug:
+        print('Receiving actor update for ' + personJson['url'] +
+              ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
     usersPaths = ('users', 'profile', 'channel', 'accounts', 'u')
@@ -814,7 +818,8 @@ def _personReceiveUpdate(baseDir: str,
                        personCache, True)
     # save to cache on file
     if saveJson(personJson, actorFilename):
-        print('actor updated for ' + personJson['id'])
+        if debug:
+            print('actor updated for ' + personJson['id'])
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
@@ -901,7 +906,9 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
 
     if messageJson['type'] == 'Person':
         if messageJson.get('url') and messageJson.get('id'):
-            print('Request to update actor unwrapped: ' + str(messageJson))
+            if debug:
+                print('Request to update actor unwrapped: ' +
+                      str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['id'])
             if updateNickname:
                 updateDomain, updatePort = \
@@ -922,7 +929,8 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
        messageJson['object']['type'] == 'Service':
         if messageJson['object'].get('url') and \
            messageJson['object'].get('id'):
-            print('Request to update actor: ' + str(messageJson))
+            if debug:
+                print('Request to update actor: ' + str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['actor'])
             if updateNickname:
                 updateDomain, updatePort = \
@@ -1376,7 +1384,7 @@ def _receiveAnnounce(recentPostsCache: {},
                                       __version__, translate,
                                       YTReplacementDomain,
                                       allowLocalNetworkAccess,
-                                      recentPostsCache)
+                                      recentPostsCache, debug)
     if not postJsonObject:
         notInOnion = True
         if onionDomain:
@@ -1432,8 +1440,9 @@ def _receiveAnnounce(recentPostsCache: {},
                                         __version__, httpPrefix,
                                         domain, onionDomain)
                     if pubKey:
-                        print('DEBUG: public key obtained for announce: ' +
-                              lookupActor)
+                        if debug:
+                            print('DEBUG: public key obtained for announce: ' +
+                                  lookupActor)
                         break
 
                     if debug:
@@ -1602,7 +1611,7 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
-                      allowLocalNetworkAccess: bool) -> bool:
+                      allowLocalNetworkAccess: bool, debug: bool) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1621,7 +1630,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
-    if not validPostDate(messageJson['object']['published']):
+    if not validPostDate(messageJson['object']['published'], 90, debug):
         return False
 
     if messageJson['object'].get('summary'):
@@ -1687,7 +1696,8 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + originalPostId)
                     return False
-    print('ACCEPT: post content is valid')
+    if debug:
+        print('ACCEPT: post content is valid')
     return True
 
 
@@ -1729,7 +1739,8 @@ def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
                             __version__, httpPrefix,
                             domain, onionDomain)
         if pubKey:
-            print('DEBUG: public key obtained for reply: ' + lookupActor)
+            if debug:
+                print('DEBUG: public key obtained for reply: ' + lookupActor)
             break
 
         if debug:
@@ -2299,7 +2310,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
     nickname = handle.split('@')[0]
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
-                         allowLocalNetworkAccess):
+                         allowLocalNetworkAccess, debug):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
@@ -2465,7 +2476,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
                             nickname, domain, postJsonObject,
                             translate, YTReplacementDomain,
                             allowLocalNetworkAccess,
-                            recentPostsCache):
+                            recentPostsCache, debug):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
@@ -2702,7 +2713,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queue.pop(0)
             continue
 
-        print('Loading queue item ' + queueFilename)
+        if debug:
+            print('Loading queue item ' + queueFilename)
 
         # Load the queue json
         queueJson = loadJson(queueFilename, 1)
@@ -2829,7 +2841,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if accountMaxPostsPerDay > 0 or domainMaxPostsPerDay > 0:
                     pprint(quotasDaily)
 
-        if queueJson.get('actor'):
+        if debug and queueJson.get('actor'):
             print('Obtaining public key for actor ' + queueJson['actor'])
 
         # Try a few times to obtain the public key
@@ -2866,7 +2878,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             time.sleep(1)
 
         if not pubKey:
-            print('Queue: public key could not be obtained from ' + keyId)
+            if debug:
+                print('Queue: public key could not be obtained from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -2888,8 +2901,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  debug):
             httpSignatureFailed = True
             print('Queue: Header signature check failed')
-            if debug:
-                pprint(queueJson['httpHeaders'])
+            pprint(queueJson['httpHeaders'])
         else:
             if debug:
                 print('DEBUG: http header signature check success')
@@ -3041,7 +3053,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                           federationList,
                           queueJson['postNickname'],
                           debug):
-            print('Queue: Update accepted from ' + keyId)
+            if debug:
+                print('Queue: Update accepted from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -3054,8 +3067,9 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  httpPrefix, domain, port, debug)
         if len(recipientsDict.items()) == 0 and \
            len(recipientsDictFollowers.items()) == 0:
-            print('Queue: no recipients were resolved ' +
-                  'for post arriving in inbox')
+            if debug:
+                print('Queue: no recipients were resolved ' +
+                      'for post arriving in inbox')
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
@@ -3123,8 +3137,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                themeName)
             if debug:
                 pprint(queueJson['post'])
-
-            print('Queue: Queue post accepted')
+                print('Queue: Queue post accepted')
         if os.path.isfile(queueFilename):
             os.remove(queueFilename)
         if len(queue) > 0:

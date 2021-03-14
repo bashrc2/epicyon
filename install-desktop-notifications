@@ -78,7 +78,7 @@ fi
   echo '';
   echo '[Service]';
   echo "WorkingDirectory=${HOME}/.epicyon";
-  echo "ExecStart=/usr/bin/python3 epicyon.py --notifyType $notificationType --notify $HANDLE --password \"$PASSWORD\"";
+  echo "ExecStart=/usr/bin/python3 epicyon.py --noKeyPress --notifyType $notificationType --notify $HANDLE --password \"$PASSWORD\"";
   echo 'Type=oneshot';
   echo 'RemainAfterExit=yes';
   echo '';

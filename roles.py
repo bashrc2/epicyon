@@ -310,7 +310,7 @@ def sendRoleViaServer(baseDir: str, session,
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session, handle, httpPrefix,
                                 cachedWebfingers,
-                                delegatorDomain, projectVersion)
+                                delegatorDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)

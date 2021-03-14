@@ -441,7 +441,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                            actor: str, avatarUrl: str,
                            personCache: {}, allowDownloads: bool,
-                           force=False) -> str:
+                           force=False, debug=False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -502,8 +502,8 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
                 'Accept': 'application/ld+json; profile="' + prof + '"'
             }
         personJson = \
-            getJson(session, actor, sessionHeaders, None, __version__,
-                    httpPrefix, None)
+            getJson(session, actor, sessionHeaders, None,
+                    debug, __version__, httpPrefix, None)
         if personJson:
             if not personJson.get('id'):
                 return None

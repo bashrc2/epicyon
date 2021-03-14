@@ -84,12 +84,13 @@ def urlExists(session, url: str, timeoutSec=3,
     return False
 
 
-def getJson(session, url: str, headers: {}, params: {},
+def getJson(session, url: str, headers: {}, params: {}, debug: bool,
             version='1.2.0', httpPrefix='https',
             domain='testdomain', timeoutSec=20, quiet=False) -> {}:
     if not isinstance(url, str):
-        print('url: ' + str(url))
-        print('ERROR: getJson failed, url should be a string')
+        if debug and not quiet:
+            print('url: ' + str(url))
+            print('ERROR: getJson failed, url should be a string')
         return None
     sessionParams = {}
     sessionHeaders = {}
@@ -113,7 +114,7 @@ def getJson(session, url: str, headers: {}, params: {},
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
-        if not quiet:
+        if debug and not quiet:
             print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
                   'headers: ' + str(sessionHeaders2) + ' ' +
                   'params: ' + str(sessionParams))
@@ -122,7 +123,7 @@ def getJson(session, url: str, headers: {}, params: {},
         sessionHeaders2 = sessionHeaders.copy()
         if sessionHeaders2.get('Authorization'):
             sessionHeaders2['Authorization'] = 'REDACTED'
-        if not quiet:
+        if debug and not quiet:
             print('ERROR: getJson failed\nurl: ' + str(url) + ' ' +
                   'headers: ' + str(sessionHeaders2) + ' ' +
                   'params: ' + str(sessionParams) + ' ')

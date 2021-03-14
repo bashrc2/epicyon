@@ -1102,7 +1102,8 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
+def getActorJson(handle: str, http: bool, gnunet: bool,
+                 debug: bool, quiet=False) -> {}:
     """Returns the actor json
     """
     originalActor = handle
@@ -1175,7 +1176,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
     handle = nickname + '@' + domain
     wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
-                                None, __version__)
+                                None, __version__, debug)
     if not wfRequest:
         if not quiet:
             print('Unable to webfinger ' + handle)
@@ -1203,7 +1204,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
         'Accept': 'application/activity+json; profile="' + profileStr + '"'
     }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest)
+        personUrl = getUserUrl(wfRequest, 0, debug)
     if nickname == domain:
         personUrl = personUrl.replace('/users/', '/actor/')
         personUrl = personUrl.replace('/accounts/', '/actor/')
@@ -1224,8 +1225,8 @@ def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
         }
 
     personJson = \
-        getJson(session, personUrl, asHeader, None, __version__,
-                httpPrefix, None, 20, quiet)
+        getJson(session, personUrl, asHeader, None,
+                debug, __version__, httpPrefix, None, 20, quiet)
     if personJson:
         if not quiet:
             pprint(personJson)
@@ -1236,7 +1237,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool, quiet=False) -> {}:
         }
         personJson = \
             getJson(session, personUrl, asHeader, None,
-                    __version__, httpPrefix, None)
+                    debug, __version__, httpPrefix, None)
         if not quiet:
             if personJson:
                 pprint(personJson)

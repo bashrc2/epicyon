@@ -1248,6 +1248,9 @@ class PubServer(BaseHTTPRequestHandler):
             headersDict['Date'] = self.headers['Date']
         if self.headers.get('digest'):
             headersDict['digest'] = self.headers['digest']
+        if self.headers.get('Collection-Synchronization'):
+            headersDict['Collection-Synchronization'] = \
+                self.headers['Collection-Synchronization']
         if self.headers.get('Content-type'):
             headersDict['Content-type'] = self.headers['Content-type']
         if self.headers.get('Content-Length'):
@@ -1330,8 +1333,9 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
                         elif self.path.endswith('/' + nickname):
                             return True
-                        print('AUTH: nickname ' + nickname +
-                              ' was not found in path ' + self.path)
+                        if self.server.debug:
+                            print('AUTH: nickname ' + nickname +
+                                  ' was not found in path ' + self.path)
                     return False
                 print('AUTH: epicyon cookie ' +
                       'authorization failed, header=' +
@@ -1376,7 +1380,7 @@ class PubServer(BaseHTTPRequestHandler):
             if GETtimings.get(prevGetId):
                 timeDiff = int(timeDiff - int(GETtimings[prevGetId]))
         GETtimings[currGetId] = str(timeDiff)
-        if logEvent:
+        if logEvent and self.server.debug:
             print('GET TIMING ' + currGetId + ' = ' + str(timeDiff))
 
     def _benchmarkPOSTtimings(self, POSTstartTime, POSTtimings: [],
@@ -1394,7 +1398,8 @@ class PubServer(BaseHTTPRequestHandler):
             if logEvent:
                 ctr = 1
                 for timeDiff in POSTtimings:
-                    print('POST TIMING|' + str(ctr) + '|' + timeDiff)
+                    if self.server.debug:
+                        print('POST TIMING|' + str(ctr) + '|' + timeDiff)
                     ctr += 1
 
     def _pathContainsBlogLink(self, baseDir: str,
@@ -7348,6 +7353,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     actorJson['roles'],
                                     None, None)
                     msg = msg.encode('utf-8')
@@ -7436,6 +7442,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.peertubeInstances,
                                                 allowLocalNetworkAccess,
                                                 self.server.textModeBanner,
+                                                self.server.debug,
                                                 actorJson['skills'],
                                                 None, None)
                                 msg = msg.encode('utf-8')
@@ -9240,6 +9247,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -9338,6 +9346,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9436,6 +9445,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.peertubeInstances,
                                     self.server.allowLocalNetworkAccess,
                                     self.server.textModeBanner,
+                                    self.server.debug,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -9557,6 +9567,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.peertubeInstances,
                             self.server.allowLocalNetworkAccess,
                             self.server.textModeBanner,
+                            self.server.debug,
                             None, None).encode('utf-8')
             msglen = len(msg)
             self._set_headers('text/html', msglen,
@@ -13634,7 +13645,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if not authorized:
+        if not authorized and self.server.debug:
             print('POST Not authorized')
             print(str(self.headers))
 
@@ -13931,7 +13942,8 @@ class PubServer(BaseHTTPRequestHandler):
                      "editblogpost", "newreminder", "newevent")
         for currPostType in postTypes:
             if not authorized:
-                print('POST was not authorized')
+                if self.server.debug:
+                    print('POST was not authorized')
                 break
 
             postRedirect = self.server.defaultTimeline
@@ -14233,7 +14245,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
-                print('DEBUG: POST to shared inbox')
+                if self.server.debug:
+                    print('DEBUG: POST to shared inbox')
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
                 if queueStatus >= 0 and queueStatus <= 3:

@@ -100,7 +100,7 @@ def hasUsersPath(pathStr: str) -> bool:
     return False
 
 
-def validPostDate(published: str, maxAgeDays=90) -> bool:
+def validPostDate(published: str, maxAgeDays=90, debug=False) -> bool:
     """Returns true if the published date is recent and is not in the future
     """
     baselineTime = datetime.datetime(1970, 1, 1)
@@ -118,11 +118,13 @@ def validPostDate(published: str, maxAgeDays=90) -> bool:
     postDaysSinceEpoch = daysDiff.days
 
     if postDaysSinceEpoch > nowDaysSinceEpoch:
-        print("Inbox post has a published date in the future!")
+        if debug:
+            print("Inbox post has a published date in the future!")
         return False
 
     if nowDaysSinceEpoch - postDaysSinceEpoch >= maxAgeDays:
-        print("Inbox post is not recent enough")
+        if debug:
+            print("Inbox post is not recent enough")
         return False
     return True
 
