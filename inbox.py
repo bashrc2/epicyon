@@ -395,9 +395,10 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                     replyDomain, replyPort = \
                         getDomainFromActor(inReplyTo)
                     if isBlockedDomain(baseDir, replyDomain):
-                        print('WARN: post contains reply from ' +
-                              str(actor) +
-                              ' to a blocked domain: ' + replyDomain)
+                        if debug:
+                            print('WARN: post contains reply from ' +
+                                  str(actor) +
+                                  ' to a blocked domain: ' + replyDomain)
                         return None
                     else:
                         replyNickname = \
@@ -405,10 +406,11 @@ def savePostToInboxQueue(baseDir: str, httpPrefix: str,
                         if replyNickname and replyDomain:
                             if isBlocked(baseDir, nickname, domain,
                                          replyNickname, replyDomain):
-                                print('WARN: post contains reply from ' +
-                                      str(actor) +
-                                      ' to a blocked account: ' +
-                                      replyNickname + '@' + replyDomain)
+                                if debug:
+                                    print('WARN: post contains reply from ' +
+                                          str(actor) +
+                                          ' to a blocked account: ' +
+                                          replyNickname + '@' + replyDomain)
                                 return None
             if postJsonObject['object'].get('content'):
                 if isinstance(postJsonObject['object']['content'], str):
@@ -1438,8 +1440,9 @@ def _receiveAnnounce(recentPostsCache: {},
                                         __version__, httpPrefix,
                                         domain, onionDomain)
                     if pubKey:
-                        print('DEBUG: public key obtained for announce: ' +
-                              lookupActor)
+                        if debug:
+                            print('DEBUG: public key obtained for announce: ' +
+                                  lookupActor)
                         break
 
                     if debug:
@@ -1693,7 +1696,8 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
                     print('REJECT: reply to post which does not ' +
                           'allow comments: ' + originalPostId)
                     return False
-    print('ACCEPT: post content is valid')
+    if debug:
+        print('ACCEPT: post content is valid')
     return True
 
 
@@ -1735,7 +1739,8 @@ def _obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
                             __version__, httpPrefix,
                             domain, onionDomain)
         if pubKey:
-            print('DEBUG: public key obtained for reply: ' + lookupActor)
+            if debug:
+                print('DEBUG: public key obtained for reply: ' + lookupActor)
             break
 
         if debug:

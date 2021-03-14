@@ -88,8 +88,9 @@ def getJson(session, url: str, headers: {}, params: {},
             version='1.2.0', httpPrefix='https',
             domain='testdomain', timeoutSec=20, quiet=False) -> {}:
     if not isinstance(url, str):
-        print('url: ' + str(url))
-        print('ERROR: getJson failed, url should be a string')
+        if not quiet:
+            print('url: ' + str(url))
+            print('ERROR: getJson failed, url should be a string')
         return None
     sessionParams = {}
     sessionHeaders = {}

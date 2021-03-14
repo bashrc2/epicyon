@@ -1333,8 +1333,9 @@ class PubServer(BaseHTTPRequestHandler):
                             return True
                         elif self.path.endswith('/' + nickname):
                             return True
-                        print('AUTH: nickname ' + nickname +
-                              ' was not found in path ' + self.path)
+                        if self.server.debug:
+                            print('AUTH: nickname ' + nickname +
+                                  ' was not found in path ' + self.path)
                     return False
                 print('AUTH: epicyon cookie ' +
                       'authorization failed, header=' +
