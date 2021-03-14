@@ -363,6 +363,7 @@ def _showLocalBox(boxName: str,
     if not index:
         sayStr = 'You have no ' + boxName + ' posts yet.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        print('')
         return
     maxPostIndex = len(index)
     index.sort(reverse=True)
