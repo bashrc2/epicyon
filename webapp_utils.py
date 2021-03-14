@@ -473,24 +473,28 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
 
     if (not os.path.isfile(avatarImageFilename) or force) and allowDownloads:
         try:
-            print('avatar image url: ' + avatarUrl)
+            if debug:
+                print('avatar image url: ' + avatarUrl)
             result = session.get(avatarUrl,
                                  headers=sessionHeaders,
                                  params=None)
             if result.status_code < 200 or \
                result.status_code > 202:
-                print('Avatar image download failed with status ' +
-                      str(result.status_code))
+                if debug:
+                    print('Avatar image download failed with status ' +
+                          str(result.status_code))
                 # remove partial download
                 if os.path.isfile(avatarImageFilename):
                     os.remove(avatarImageFilename)
             else:
                 with open(avatarImageFilename, 'wb') as f:
                     f.write(result.content)
-                    print('avatar image downloaded for ' + actor)
+                    if debug:
+                        print('avatar image downloaded for ' + actor)
                     return avatarImageFilename.replace(baseDir + '/cache', '')
         except Exception as e:
-            print('Failed to download avatar image: ' + str(avatarUrl))
+            if debug:
+                print('Failed to download avatar image: ' + str(avatarUrl))
             print(e)
         prof = 'https://www.w3.org/ns/activitystreams'
         if '/channel/' not in actor or '/accounts/' not in actor:
