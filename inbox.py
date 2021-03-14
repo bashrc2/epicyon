@@ -759,8 +759,9 @@ def _personReceiveUpdate(baseDir: str,
                          debug: bool) -> bool:
     """Changes an actor. eg: avatar or display name change
     """
-    print('Receiving actor update for ' + personJson['url'] +
-          ' ' + str(personJson))
+    if debug:
+        print('Receiving actor update for ' + personJson['url'] +
+              ' ' + str(personJson))
     domainFull = getFullDomain(domain, port)
     updateDomainFull = getFullDomain(updateDomain, updatePort)
     usersPaths = ('users', 'profile', 'channel', 'accounts', 'u')
@@ -813,9 +814,10 @@ def _personReceiveUpdate(baseDir: str,
     # save to cache in memory
     storePersonInCache(baseDir, personJson['id'], personJson,
                        personCache, True)
-    # save to cache on file
+    # save to cache on file    
     if saveJson(personJson, actorFilename):
-        print('actor updated for ' + personJson['id'])
+        if debug:
+            print('actor updated for ' + personJson['id'])
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
@@ -902,7 +904,9 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
 
     if messageJson['type'] == 'Person':
         if messageJson.get('url') and messageJson.get('id'):
-            print('Request to update actor unwrapped: ' + str(messageJson))
+            if debug:
+                print('Request to update actor unwrapped: ' +
+                      str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['id'])
             if updateNickname:
                 updateDomain, updatePort = \
@@ -923,7 +927,8 @@ def _receiveUpdate(recentPostsCache: {}, session, baseDir: str,
        messageJson['object']['type'] == 'Service':
         if messageJson['object'].get('url') and \
            messageJson['object'].get('id'):
-            print('Request to update actor: ' + str(messageJson))
+            if debug:
+                print('Request to update actor: ' + str(messageJson))
             updateNickname = getNicknameFromActor(messageJson['actor'])
             if updateNickname:
                 updateDomain, updatePort = \
