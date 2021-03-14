@@ -410,6 +410,36 @@ def _notificationNewDM(session, toHandle: str,
                        screenreader: str, systemLanguage: str,
                        espeak) -> None:
     """Use the notification client to create a new direct message
+    which can include multiple destination handles
+    """
+    if ' ' in toHandle:
+        handlesList = toHandle.split(' ')
+    elif ',' in toHandle:
+        handlesList = toHandle.split(',')
+    elif ';' in toHandle:
+        handlesList = toHandle.split(';')
+    else:
+        handlesList = [toHandle]
+
+    for handle in handlesList:
+        handle = handle.strip()
+        _notificationNewDMbase(session, handle,
+                               baseDir, nickname, password,
+                               domain, port, httpPrefix,
+                               cachedWebfingers, personCache,
+                               debug,
+                               screenreader, systemLanguage,
+                               espeak)
+
+
+def _notificationNewDMbase(session, toHandle: str,
+                           baseDir: str, nickname: str, password: str,
+                           domain: str, port: int, httpPrefix: str,
+                           cachedWebfingers: {}, personCache: {},
+                           debug: bool,
+                           screenreader: str, systemLanguage: str,
+                           espeak) -> None:
+    """Use the notification client to create a new direct message
     """
     toPort = port
     if '://' in toHandle:
