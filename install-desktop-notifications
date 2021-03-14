@@ -83,7 +83,7 @@ fi
   echo 'RemainAfterExit=yes';
   echo '';
   echo '[Install]';
-  echo 'WantedBy=multi-user.target'; } > "${HOME}/.config/systemd/user/epicyon-notifications.service"
+  echo 'WantedBy=default.target'; } > "${HOME}/.config/systemd/user/epicyon-notifications.service"
 systemctl --user enable epicyon-notifications.service
 systemctl --user daemon-reload
 systemctl --user restart epicyon-notifications.service &
