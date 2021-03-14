@@ -1248,6 +1248,9 @@ class PubServer(BaseHTTPRequestHandler):
             headersDict['Date'] = self.headers['Date']
         if self.headers.get('digest'):
             headersDict['digest'] = self.headers['digest']
+        if self.headers.get('Collection-Synchronization'):
+            headersDict['Collection-Synchronization'] = \
+                self.headers['Collection-Synchronization']
         if self.headers.get('Content-type'):
             headersDict['Content-type'] = self.headers['Content-type']
         if self.headers.get('Content-Length'):
