@@ -3962,7 +3962,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)
             return None
-        if not validPostDate(announcedJson['published']):
+        if not validPostDate(announcedJson['published'], 90, debug):
             _rejectAnnounce(announceFilename,
                             baseDir, nickname, domain, postId,
                             recentPostsCache)

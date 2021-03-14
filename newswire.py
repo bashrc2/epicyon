@@ -144,11 +144,11 @@ def _addNewswireDictEntry(baseDir: str, domain: str,
     ]
 
 
-def _validFeedDate(pubDate: str) -> bool:
+def _validFeedDate(pubDate: str, debug=False) -> bool:
     # convert from YY-MM-DD HH:MM:SS+00:00 to
     # YY-MM-DDTHH:MM:SSZ
     postDate = pubDate.replace(' ', 'T').replace('+00:00', 'Z')
-    return validPostDate(postDate, 90)
+    return validPostDate(postDate, 90, debug)
 
 
 def parseFeedDate(pubDate: str) -> str:

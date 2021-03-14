@@ -1608,7 +1608,7 @@ def _estimateNumberOfEmoji(content: str) -> int:
 
 def _validPostContent(baseDir: str, nickname: str, domain: str,
                       messageJson: {}, maxMentions: int, maxEmoji: int,
-                      allowLocalNetworkAccess: bool) -> bool:
+                      allowLocalNetworkAccess: bool, debug: bool) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1627,7 +1627,7 @@ def _validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
-    if not validPostDate(messageJson['object']['published']):
+    if not validPostDate(messageJson['object']['published'], 90, debug):
         return False
 
     if messageJson['object'].get('summary'):
@@ -2305,7 +2305,7 @@ def _inboxAfterInitial(recentPostsCache: {}, maxRecentPosts: int,
     nickname = handle.split('@')[0]
     if _validPostContent(baseDir, nickname, domain,
                          postJsonObject, maxMentions, maxEmoji,
-                         allowLocalNetworkAccess):
+                         allowLocalNetworkAccess, debug):
 
         if postJsonObject.get('object'):
             jsonObj = postJsonObject['object']
