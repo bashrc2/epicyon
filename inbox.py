@@ -2888,8 +2888,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                  debug):
             httpSignatureFailed = True
             print('Queue: Header signature check failed')
-            if debug:
-                pprint(queueJson['httpHeaders'])
+            pprint(queueJson['httpHeaders'])
         else:
             if debug:
                 print('DEBUG: http header signature check success')
