@@ -576,6 +576,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
+    bannerFilename = 'theme/default/banner.txt'
+    if os.path.isfile(bannerFilename):
+        with open(bannerFilename, 'r') as bannerFile:
+            banner = bannerFile.read()
+            if banner:
+                print(banner + '\n')
+
     espeak = None
     if screenreader:
         if screenreader == 'espeak':
