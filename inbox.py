@@ -2868,7 +2868,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             time.sleep(1)
 
         if not pubKey:
-            print('Queue: public key could not be obtained from ' + keyId)
+            if debug:
+                print('Queue: public key could not be obtained from ' + keyId)
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue) > 0:
