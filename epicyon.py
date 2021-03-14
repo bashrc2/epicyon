@@ -514,6 +514,9 @@ args = parser.parse_args()
 debug = False
 if args.debug:
     debug = True
+else:
+    if os.path.isfile('debug'):
+        debug = True
 
 if args.tests:
     runAllTests()
