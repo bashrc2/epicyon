@@ -277,8 +277,9 @@ def _notificationNewPost(session,
 
 def _readLocalBoxPost(boxName: str, index: int,
                       systemLanguage: str,
-                      screenreader: str, espeak) -> None:
+                      screenreader: str, espeak) -> {}:
     """Reads a post from the given timeline
+    Returns the speaker json
     """
     homeDir = str(Path.home())
     if not os.path.isdir(homeDir + '/.config'):
@@ -300,7 +301,7 @@ def _readLocalBoxPost(boxName: str, index: int,
     if index <= 0:
         index = 0
     if len(indexList) <= index:
-        return
+        return None
 
     publishedYear = indexList[index].split('-')[0]
     publishedMonth = indexList[index].split('-')[1]
@@ -343,6 +344,7 @@ def _readLocalBoxPost(boxName: str, index: int,
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak,
                 nameStr, gender)
+    return speakerJson
 
 
 def _showLocalBox(boxName: str,
@@ -879,8 +881,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 postIndexStr = keyPress.split('read ')[1]
                 if postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
-                    _readLocalBoxPost(currTimeline, postIndex,
-                                      systemLanguage, screenreader, espeak)
+                    speakerJson = \
+                        _readLocalBoxPost(currTimeline, postIndex,
+                                          systemLanguage, screenreader,
+                                          espeak)
                 print('')
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
@@ -940,8 +944,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                          espeak)
                 print('')
             elif keyPress == 'like':
-                if nameStr and gender and messageStr:
-                    sayStr = 'Liking post by ' + nameStr
+                if speakerJson.get('id'):
+                    sayStr = 'Liking post by ' + speakerJson['name']
                     _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
@@ -954,8 +958,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       False, __version__)
                     print('')
             elif keyPress == 'unlike' or keyPress == 'undo like':
-                if nameStr and gender and messageStr:
-                    sayStr = 'Undoing like of post by ' + nameStr
+                if speakerJson.get('id'):
+                    sayStr = 'Undoing like of post by ' + speakerJson['name']
                     _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
@@ -971,20 +975,19 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                   keyPress == 'boost' or
                   keyPress == 'retweet'):
                 if speakerJson.get('id'):
-                    if nameStr and gender and messageStr:
-                        postId = speakerJson['id']
-                        sayStr = 'Announcing post by ' + nameStr
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    systemLanguage, espeak)
-                        sessionAnnounce = createSession(proxyType)
-                        sendAnnounceViaServer(baseDir, sessionAnnounce,
-                                              nickname, password,
-                                              domain, port,
-                                              httpPrefix, postId,
-                                              cachedWebfingers, personCache,
-                                              True, __version__)
-                        print('')
+                    postId = speakerJson['id']
+                    sayStr = 'Announcing post by ' + speakerJson['name']
+                    _sayCommand(sayStr, sayStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sessionAnnounce = createSession(proxyType)
+                    sendAnnounceViaServer(baseDir, sessionAnnounce,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, postId,
+                                          cachedWebfingers, personCache,
+                                          True, __version__)
+                    print('')
             elif keyPress.startswith('follow '):
                 followHandle = keyPress.replace('follow ', '').strip()
                 if followHandle.startswith('@'):
