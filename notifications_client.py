@@ -461,8 +461,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
         else:
             while len(name) < 16:
                 name += ' '
-        udata = speakerJson['content']
-        content = udata.encode("ascii","ignore").decode().strip()
+        content = speakerJson['content']
         if speakerJson.get('detectedLinks'):
             if len(speakerJson['detectedLinks']) > 0:
                 content = '🔗' + content
