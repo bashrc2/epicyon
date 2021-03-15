@@ -465,8 +465,8 @@ def _showLocalBox(notifyJson: {}, boxName: str,
         content = (content[:38]) if len(content) > 38 else content
         while len(content) < 40:
             content += ' '
-        print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
-              str(published) + ' | ' + str(content) + ' |')
+        print(indent + str(posStr) + ' | ' + name + ' | ' +
+              published + ' | ' + content + ' |')
         ctr += 1
 
     print('')
