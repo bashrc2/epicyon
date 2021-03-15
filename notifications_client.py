@@ -941,7 +941,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       domain, port,
                                       httpPrefix, speakerJson['id'],
                                       cachedWebfingers, personCache,
-                                      True, __version__)
+                                      False, __version__)
                     print('')
             elif keyPress == 'unlike' or keyPress == 'undo like':
                 if nameStr and gender and messageStr:
@@ -955,7 +955,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           domain, port,
                                           httpPrefix, speakerJson['id'],
                                           cachedWebfingers, personCache,
-                                          True, __version__)
+                                          False, __version__)
                     print('')
             elif (keyPress == 'announce' or
                   keyPress == 'boost' or
