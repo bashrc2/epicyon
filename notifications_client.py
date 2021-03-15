@@ -358,7 +358,7 @@ def _readLocalBoxPost(boxName: str, index: int,
     if speakerJson.get('content'):
         content = speakerJson['content']
 
-    sayStr = 'Reading ' + boxName + ' post ' + str(index + 1) + '.'
+    sayStr = 'Reading ' + boxName + ' post ' + str(index) + '.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
     time.sleep(2)
