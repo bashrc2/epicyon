@@ -636,7 +636,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
 
     currTimeline = ''
     currInboxIndex = 0
-    if showNewPosts:
+    if not showNewPosts:
         currInboxIndex = 0
         _showLocalBox('inbox',
                       screenreader, systemLanguage, espeak,
