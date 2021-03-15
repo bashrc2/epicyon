@@ -356,6 +356,7 @@ def _showLocalBox(boxName: str,
                   startPostIndex=0, noOfPosts=10) -> None:
     """Shows locally stored posts for a given subdirectory
     """
+    indent = '      '
     homeDir = str(Path.home())
     if not os.path.isdir(homeDir + '/.config'):
         os.mkdir(homeDir + '/.config')
@@ -375,7 +376,17 @@ def _showLocalBox(boxName: str,
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         print('')
         return
+
+    # title
     _clearScreen()
+    bannerFilename = 'theme/starlight/banner.txt'
+    if os.path.isfile(bannerFilename):
+        with open(bannerFilename, 'r') as bannerFile:
+            banner = bannerFile.read()
+            if banner:
+                print(banner + '\n')
+    print('\n' + indent + boxName.capitalize() + '\n')
+
     maxPostIndex = len(index)
     index.sort(reverse=True)
     ctr = 0
@@ -408,13 +419,13 @@ def _showLocalBox(boxName: str,
         while len(content) < 40:
             content += ' '
         content = (content[:40]) if len(content) > 40 else content
-        print(str(posStr) + ' | ' + str(name) + ' | ' +
+        print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
         ctr += 1
 
     print('')
 
-    sayStr = boxName + ' posts ' + str(startPostIndex + 1) + \
+    sayStr = indent + boxName + ' posts ' + str(startPostIndex + 1) + \
         ' to ' + str(startPostIndex + ctr) + '. '
     sayStr += 'Use the next and prev commands to navigate.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
@@ -609,7 +620,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     which announces new inbox items
     """
     _clearScreen()
-    bannerFilename = 'theme/default/banner.txt'
+    bannerFilename = 'theme/starlight/banner.txt'
     if os.path.isfile(bannerFilename):
         with open(bannerFilename, 'r') as bannerFile:
             banner = bannerFile.read()
