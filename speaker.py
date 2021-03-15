@@ -502,7 +502,9 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             follows = fp.readlines()
             if len(follows) > 0:
                 followRequestsExist = True
-                followRequestsList = follows.split('\n')
+                for i in range(len(follows)):
+                    follows[i] = follows[i].strip()
+                followRequestsList = follows
     postDM = False
     dmFilename = accountsDir + '/.newDM'
     if os.path.isfile(dmFilename):

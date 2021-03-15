@@ -486,7 +486,8 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             if len(notifyJson['followRequestsList']) > 0:
                 print('')
                 sayStr = indent + 'You have a follow request from ' + \
-                    '\33[7m' + notifyJson['followRequestsList'][0] + '\33[0m'
+                    '\33[7m' + \
+                    notifyJson['followRequestsList'][0].strip() + '\33[0m'
                 _sayCommand(sayStr, sayStr, screenreader, systemLanguage,
                             espeak)
                 sayStr = indent + 'Use the \33[3maccept\33[0m or ' + \
