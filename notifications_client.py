@@ -1157,12 +1157,17 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     currIndex = currSentIndex
                 speakerJson = \
                     _getSpeakerJsonFromIndex(currTimeline, currIndex)
+                if not speakerJson:
+                    speakerJson = {}
+                print('speakerJson: ' + str(speakerJson))
                 if speakerJson.get('detectedLinks'):
                     if ' ' in keyPress:
-                        index = keyPress.split(' ')[1]
-                        if index.isdigit():
+                        postIndex = keyPress.split(' ')[1].strip()
+                        print('postIndex: ' + str(postIndex))
+                        if postIndex.isdigit():
                             speakerJson = \
-                                _getSpeakerJsonFromIndex(currTimeline, index)
+                                _getSpeakerJsonFromIndex(currTimeline,
+                                                         int(postIndex))
                     sayStr = 'Opening web links in browser.'
                     _sayCommand(sayStr, sayStr, originalScreenReader,
                                 systemLanguage, espeak)
