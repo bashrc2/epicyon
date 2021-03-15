@@ -45,9 +45,12 @@ def _clearScreen() -> None:
 def _showDesktopBanner() -> None:
     """Shows the banner at the top
     """
-    bannerFilename = 'theme/starlight/banner.txt'
+    bannerFilename = 'banner.txt'
     if not os.path.isfile(bannerFilename):
-        return
+        bannerTheme = 'starlight'
+        bannerFilename = 'theme/' + bannerTheme + '/banner.txt'
+        if not os.path.isfile(bannerFilename):
+            return
     with open(bannerFilename, 'r') as bannerFile:
         banner = bannerFile.read()
         if banner:
