@@ -406,7 +406,7 @@ python3 epicyon.py --speaker yournickname@yourdomain
 Or if you have [picospeaker](https://gitlab.com/ky1e/picospeaker) installed:
 
 ``` bash
-python3 epicyon.py --screenreader picospeaker --notify yournickname@yourdomain
+python3 epicyon.py --notifyShowNewPosts --screenreader picospeaker --notify yournickname@yourdomain
 ```
 
 You can also use the **--password** option to provide the password. This will then stay running and incoming posts will be announced as they arrive.

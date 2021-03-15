@@ -596,6 +596,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            notificationType: str,
                            noKeyPress: bool,
                            storeInboxPosts: bool,
+                           showNewPosts: bool,
                            debug: bool) -> None:
     """Runs the notifications and screen reader client,
     which announces new inbox items
@@ -630,6 +631,15 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     sayStr = '/q or /quit to exit'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
+
+    currTimeline = ''
+    currInboxIndex = 0
+    if showNewPosts:
+        currInboxIndex = 0
+        _showLocalBox('inbox',
+                      screenreader, systemLanguage, espeak,
+                      currInboxIndex, 10)
+        currTimeline = 'inbox'
     print('')
     keyPress = _waitForKeypress(2, debug)
 
@@ -658,8 +668,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     personCache = {}
     currDMIndex = 0
     currSentIndex = 0
-    currInboxIndex = 0
-    currTimeline = ''
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -765,18 +773,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             else:
                                 content = '🔓 ' + messageStr
 
-                        # say the speaker's name
-                        _sayCommand(nameStr, nameStr, screenreader,
-                                    systemLanguage, espeak,
-                                    nameStr, gender)
+                        if showNewPosts:
+                            # say the speaker's name
+                            _sayCommand(nameStr, nameStr, screenreader,
+                                        systemLanguage, espeak,
+                                        nameStr, gender)
 
-                        time.sleep(2)
+                            time.sleep(2)
 
-                        # speak the post content
-                        _sayCommand(content, messageStr, screenreader,
-                                    systemLanguage, espeak,
-                                    nameStr, gender)
+                            # speak the post content
+                            _sayCommand(content, messageStr, screenreader,
+                                        systemLanguage, espeak,
+                                        nameStr, gender)
 
+                        # store incoming post
                         if encryptedMessage:
                             speakerJson['content'] = content
                             speakerJson['say'] = messageStr
