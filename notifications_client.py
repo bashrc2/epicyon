@@ -46,11 +46,12 @@ def _showDesktopBanner() -> None:
     """Shows the banner at the top
     """
     bannerFilename = 'theme/starlight/banner.txt'
-    if os.path.isfile(bannerFilename):
-        with open(bannerFilename, 'r') as bannerFile:
-            banner = bannerFile.read()
-            if banner:
-                print(banner + '\n')
+    if not os.path.isfile(bannerFilename):
+        return
+    with open(bannerFilename, 'r') as bannerFile:
+        banner = bannerFile.read()
+        if banner:
+            print(banner + '\n')
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
