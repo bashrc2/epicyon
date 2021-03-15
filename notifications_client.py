@@ -11,6 +11,7 @@ import html
 import time
 import sys
 import select
+import webbrowser
 from pathlib import Path
 from random import randint
 from utils import getStatusNumber
@@ -1138,3 +1139,16 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
+            elif keyPress.startswith('open '):
+                if speakerJson.get('detectedLinks'):
+                    sayStr = 'Opening web links in browser.'
+                    _sayCommand(sayStr, sayStr, originalScreenReader,
+                                systemLanguage, espeak)
+                    for url in speakerJson['detectedLinks']:
+                        if '://' in url:
+                            webbrowser.open(url)
+                else:
+                    sayStr = 'There are no web links to open.'
+                    _sayCommand(sayStr, sayStr, originalScreenReader,
+                                systemLanguage, espeak)
+                print('')
