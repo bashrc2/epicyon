@@ -411,18 +411,18 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     notificationIcons = ''
     if notifyJson:
         if notifyJson.get('followRequests'):
-            notificationIcons += '👤'
+            notificationIcons += ' 👤'
         if notifyJson.get('dm'):
-            notificationIcons += '📩'
+            notificationIcons += ' 📩'
         if notifyJson.get('reply'):
-            notificationIcons += '📨'
+            notificationIcons += ' 📨'
         if notifyJson.get('calendar'):
-            notificationIcons += '📅'
+            notificationIcons += ' 📅'
         if notifyJson.get('share'):
-            notificationIcons += '🤝'
+            notificationIcons += ' 🤝'
         if notifyJson.get('likedBy'):
             if '##sent##' not in notifyJson['likedBy']:
-                notificationIcons += '❤'
+                notificationIcons += ' ❤'
     titleStr = boxName.upper()
     if notificationIcons:
         while len(titleStr) < 89 - len(notificationIcons):
