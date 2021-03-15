@@ -478,7 +478,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
 
     sayStr = indent + boxName + ' posts ' + str(startPostIndex + 1) + \
         ' to ' + str(startPostIndex + ctr) + '. '
-    sayStr += 'Use the next and prev commands to navigate.'
+    sayStr += 'Use the \33[3mnext\33[0m and \33[3mprev\33[0m commands to navigate.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
     print('')
