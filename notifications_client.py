@@ -409,19 +409,20 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     _clearScreen()
     _showDesktopBanner()
     notificationIcons = ''
-    if notifyJson.get('followRequests'):
-        notificationIcons += '👤'
-    if notifyJson.get('dm'):
-        notificationIcons += '📩'
-    if notifyJson.get('reply'):
-        notificationIcons += '📨'
-    if notifyJson.get('calendar'):
-        notificationIcons += '📅'
-    if notifyJson.get('share'):
-        notificationIcons += '🤝'
-    if notifyJson.get('likedBy'):
-        if '##sent##' not in notifyJson['likedBy']:
-            notificationIcons += '❤'
+    if notifyJson:
+        if notifyJson.get('followRequests'):
+            notificationIcons += '👤'
+        if notifyJson.get('dm'):
+            notificationIcons += '📩'
+        if notifyJson.get('reply'):
+            notificationIcons += '📨'
+        if notifyJson.get('calendar'):
+            notificationIcons += '📅'
+        if notifyJson.get('share'):
+            notificationIcons += '🤝'
+        if notifyJson.get('likedBy'):
+            if '##sent##' not in notifyJson['likedBy']:
+                notificationIcons += '❤'
     titleStr = boxName.upper()
     if notificationIcons:
         while len(titleStr) < 40 - len(notificationIcons):
