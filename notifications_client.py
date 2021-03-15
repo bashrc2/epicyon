@@ -423,7 +423,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
         if notifyJson.get('likedBy'):
             if '##sent##' not in notifyJson['likedBy']:
                 notificationIcons += ' ❤'
-    titleStr = boxName.upper()
+    titleStr = '\033[1m' + boxName.upper() + '\033[0m'
     if notificationIcons:
         while len(titleStr) < 87 - len(notificationIcons):
             titleStr += ' '
