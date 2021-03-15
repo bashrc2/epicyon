@@ -455,16 +455,16 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             name = speakerJson['name']
         else:
             name = ''
+        name = (name[:16]) if len(name) > 16 else name
         while len(name) < 16:
             name += ' '
-        name = (name[:16]) if len(name) >= 15 else name
         content = speakerJson['content']
-        while len(content) < 40:
-            content += ' '
         if speakerJson.get('detectedLinks'):
             if len(speakerJson['detectedLinks']) > 0:
                 content = '🔗' + content
-        content = (content[:40]) if len(content) >= 39 else content
+        content = (content[:40]) if len(content) > 40 else content
+        while len(content) < 40:
+            content += ' '
         print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
         ctr += 1
