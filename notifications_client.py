@@ -863,7 +863,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                               screenreader, systemLanguage, espeak,
                               currSentIndex, 10)
                 currTimeline = 'sent'
-            elif keyPress == 'show' or keyPress.startswith('show in'):
+            elif (keyPress == 'show' or keyPress.startswith('show in') or
+                  keyPress == 'clear'):
                 currInboxIndex = 0
                 _showLocalBox('inbox',
                               screenreader, systemLanguage, espeak,
