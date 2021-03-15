@@ -329,6 +329,8 @@ def _getSpeakerJsonFromIndex(boxName: str, index: int) -> {}:
                      publishedYear + '/' +
                      publishedMonth + '/' +
                      indexList[index])
+    if not os.path.isfile(speakerJsonFilename):
+        return None
     return loadJson(speakerJsonFilename)
 
 
@@ -441,8 +443,6 @@ def _showLocalBox(boxName: str,
             content += ' '
         if speakerJson.get('detectedLinks'):
             if len(speakerJson['detectedLinks']) > 0:
-                print("speakerJson['detectedLinks']: " +
-                      str(speakerJson['detectedLinks']))
                 content = '🔗' + content
         content = (content[:40]) if len(content) > 40 else content
         print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
@@ -1153,11 +1153,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 else:
                     print('No --screenreader option was specified')
             elif keyPress.startswith('open'):
-                currIndex = currInboxIndex
-                if currTimeline == 'dm':
-                    currIndex = currDMIndex
-                elif currTimeline == 'sent':
-                    currIndex = currSentIndex
+                currIndex = 0
+                if ' ' in keyPress:
+                    postIndex = keyPress.split(' ')[1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
                 speakerJson = \
                     _getSpeakerJsonFromIndex(currTimeline, currIndex)
                 if not speakerJson:
@@ -1165,12 +1165,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 linkOpened = False
                 if speakerJson.get('detectedLinks'):
                     if len(speakerJson['detectedLinks']) > 0:
-                        if ' ' in keyPress:
-                            postIndex = keyPress.split(' ')[1].strip()
-                            if postIndex.isdigit():
-                                speakerJson = \
-                                    _getSpeakerJsonFromIndex(currTimeline,
-                                                             int(postIndex))
                         for url in speakerJson['detectedLinks']:
                             if '://' in url:
                                 webbrowser.open(url)
@@ -1179,7 +1173,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             sayStr = 'Opened web links'
                             _sayCommand(sayStr, sayStr, originalScreenReader,
                                         systemLanguage, espeak)
-                else:
+                if not linkOpened:
                     sayStr = 'There are no web links to open.'
                     _sayCommand(sayStr, sayStr, originalScreenReader,
                                 systemLanguage, espeak)
