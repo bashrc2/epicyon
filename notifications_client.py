@@ -37,7 +37,20 @@ from pgp import pgpEncryptToActor
 
 
 def _clearScreen() -> None:
+    """Clears the screen
+    """
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def _showDesktopBanner() -> None:
+    """Shows the banner at the top
+    """
+    bannerFilename = 'theme/starlight/banner.txt'
+    if os.path.isfile(bannerFilename):
+        with open(bannerFilename, 'r') as bannerFile:
+            banner = bannerFile.read()
+            if banner:
+                print(banner + '\n')
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -379,12 +392,7 @@ def _showLocalBox(boxName: str,
 
     # title
     _clearScreen()
-    bannerFilename = 'theme/starlight/banner.txt'
-    if os.path.isfile(bannerFilename):
-        with open(bannerFilename, 'r') as bannerFile:
-            banner = bannerFile.read()
-            if banner:
-                print(banner + '\n')
+    _showDesktopBanner()
     print(indent + boxName.upper() + '\n')
 
     maxPostIndex = len(index)
@@ -619,17 +627,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
-    indent = '   '    
+    indent = '   '
     if showNewPosts:
         indent = ''
 
     _clearScreen()
-    bannerFilename = 'theme/starlight/banner.txt'
-    if os.path.isfile(bannerFilename):
-        with open(bannerFilename, 'r') as bannerFile:
-            banner = bannerFile.read()
-            if banner:
-                print(banner + '\n')
+    _showDesktopBanner()
 
     espeak = None
     if screenreader:
