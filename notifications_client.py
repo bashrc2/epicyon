@@ -35,8 +35,6 @@ from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
 
-indent = '   '
-
 
 def _clearScreen() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -358,6 +356,7 @@ def _showLocalBox(boxName: str,
                   startPostIndex=0, noOfPosts=10) -> None:
     """Shows locally stored posts for a given subdirectory
     """
+    indent = '   '
     homeDir = str(Path.home())
     if not os.path.isdir(homeDir + '/.config'):
         os.mkdir(homeDir + '/.config')
@@ -620,6 +619,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
+    indent = '   '    
     if showNewPosts:
         indent = ''
 
