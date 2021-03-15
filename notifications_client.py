@@ -379,7 +379,7 @@ def _readLocalBoxPost(boxName: str, index: int,
     return speakerJson
 
 
-def _showLocalBox(boxName: str,
+def _showLocalBox(notifyJson: {}, boxName: str,
                   screenreader: str, systemLanguage: str, espeak,
                   startPostIndex=0, noOfPosts=10) -> None:
     """Shows locally stored posts for a given subdirectory
@@ -408,7 +408,26 @@ def _showLocalBox(boxName: str,
     # title
     _clearScreen()
     _showDesktopBanner()
-    print(indent + boxName.upper() + '\n')
+    notificationIcons = ''
+    if notifyJson.get('followRequests'):
+        notificationIcons += '👤'
+    if notifyJson.get('dm'):
+        notificationIcons += '📩'
+    if notifyJson.get('reply'):
+        notificationIcons += '📨'
+    if notifyJson.get('calendar'):
+        notificationIcons += '📅'
+    if notifyJson.get('share'):
+        notificationIcons += '🤝'
+    if notifyJson.get('likedBy'):
+        if '##sent##' not in notifyJson['likedBy']:
+            notificationIcons += '❤'
+    titleStr = boxName.upper()
+    if notificationIcons:
+        while len(titleStr) < 40 - len(notificationIcons):
+            titleStr += ' '
+        titleStr += notificationIcons
+    print(indent + titleStr + '\n')
 
     maxPostIndex = len(index)
     index.sort(reverse=True)
@@ -683,7 +702,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     if not showNewPosts:
         print('')
         currInboxIndex = 0
-        _showLocalBox('inbox',
+        _showLocalBox(None, 'inbox',
                       screenreader, systemLanguage, espeak,
                       currInboxIndex, 10)
         currTimeline = 'inbox'
@@ -717,11 +736,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     currSentIndex = 0
     while (1):
         session = createSession(proxyType)
+        notifyJson = None
         speakerJson = \
             getSpeakerFromServer(baseDir, session, nickname, password,
                                  domain, port, httpPrefix, True, __version__)
         if speakerJson:
             if speakerJson.get('notify'):
+                notifyJson = speakerJson['notify']
                 title = 'Epicyon'
                 if speakerJson['notify'].get('title'):
                     title = speakerJson['notify']['title']
@@ -849,7 +870,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
 
                         if not showNewPosts:
                             _clearScreen()
-                            _showLocalBox(currTimeline,
+                            _showLocalBox(notifyJson, currTimeline,
                                           None, systemLanguage, espeak,
                                           currInboxIndex, 10)
                         else:
@@ -874,37 +895,37 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 break
             elif keyPress.startswith('show dm'):
                 currDMIndex = 0
-                _showLocalBox('dm',
+                _showLocalBox(notifyJson, 'dm',
                               screenreader, systemLanguage, espeak,
                               currDMIndex, 10)
                 currTimeline = 'dm'
             elif keyPress.startswith('show sen'):
                 currSentIndex = 0
-                _showLocalBox('sent',
+                _showLocalBox(notifyJson, 'sent',
                               screenreader, systemLanguage, espeak,
                               currSentIndex, 10)
                 currTimeline = 'sent'
             elif (keyPress == 'show' or keyPress.startswith('show in') or
                   keyPress == 'clear'):
                 currInboxIndex = 0
-                _showLocalBox('inbox',
+                _showLocalBox(notifyJson, 'inbox',
                               screenreader, systemLanguage, espeak,
                               currInboxIndex, 10)
                 currTimeline = 'inbox'
             elif keyPress.startswith('next'):
                 if currTimeline == 'dm':
                     currDMIndex += 10
-                    _showLocalBox('dm',
+                    _showLocalBox(notifyJson, 'dm',
                                   screenreader, systemLanguage, espeak,
                                   currDMIndex, 10)
                 elif currTimeline == 'sent':
                     currSentIndex += 10
-                    _showLocalBox('sent',
+                    _showLocalBox(notifyJson, 'sent',
                                   screenreader, systemLanguage, espeak,
                                   currSentIndex, 10)
                 elif currTimeline == 'inbox':
                     currInboxIndex += 10
-                    _showLocalBox('inbox',
+                    _showLocalBox(notifyJson, 'inbox',
                                   screenreader, systemLanguage, espeak,
                                   currInboxIndex, 10)
             elif keyPress.startswith('prev'):
@@ -912,21 +933,21 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     currDMIndex -= 10
                     if currDMIndex < 0:
                         currDMIndex = 0
-                    _showLocalBox('dm',
+                    _showLocalBox(notifyJson, 'dm',
                                   screenreader, systemLanguage, espeak,
                                   currDMIndex, 10)
                 elif currTimeline == 'sent':
                     currSentIndex -= 10
                     if currSentIndex < 0:
                         currSentIndex = 0
-                    _showLocalBox('sent',
+                    _showLocalBox(notifyJson, 'sent',
                                   screenreader, systemLanguage, espeak,
                                   currSentIndex, 10)
                 elif currTimeline == 'inbox':
                     currInboxIndex -= 10
                     if currInboxIndex < 0:
                         currInboxIndex = 0
-                    _showLocalBox('inbox',
+                    _showLocalBox(notifyJson, 'inbox',
                                   screenreader, systemLanguage, espeak,
                                   currInboxIndex, 10)
             elif keyPress.startswith('read '):
