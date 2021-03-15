@@ -290,6 +290,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
                          links: [], gender: str, postId: str,
                          postDM: bool, postReply: bool,
                          followRequestsExist: bool,
+                         followRequestsList: [],
                          likedBy: str, published: str, postCal: bool,
                          postShare: bool, themeName: str,
                          isDirect: bool) -> {}:
@@ -310,6 +311,7 @@ def _speakerEndpointJson(displayName: str, summary: str,
             "dm": postDM,
             "reply": postReply,
             "followRequests": followRequestsExist,
+            "followRequestsList": followRequestsList,
             "likedBy": likedBy,
             "calendar": postCal,
             "share": postShare
@@ -492,6 +494,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
         postId = postJsonObject['object']['id']
 
     followRequestsExist = False
+    followRequestsList = []
     accountsDir = baseDir + '/accounts/' + nickname + '@' + domainFull
     approveFollowsFilename = accountsDir + '/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
@@ -499,6 +502,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
             follows = fp.readlines()
             if len(follows) > 0:
                 followRequestsExist = True
+                followRequestsList = follows.split('\n')
     postDM = False
     dmFilename = accountsDir + '/.newDM'
     if os.path.isfile(dmFilename):
@@ -522,6 +526,7 @@ def _postToSpeakerJson(baseDir: str, httpPrefix: str,
                                 detectedLinks, gender, postId,
                                 postDM, postReply,
                                 followRequestsExist,
+                                followRequestsList,
                                 likedBy, published,
                                 postCal, postShare, themeName,
                                 isDirect)
