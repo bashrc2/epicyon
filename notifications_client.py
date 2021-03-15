@@ -440,7 +440,8 @@ def _showLocalBox(boxName: str,
         while len(content) < 40:
             content += ' '
         if speakerJson.get('detectedLinks'):
-            content = '🔗' + content
+            if len(speakerJson['detectedLinks']) > 0:
+                content = '🔗' + content
         content = (content[:40]) if len(content) > 40 else content
         print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
@@ -1159,21 +1160,23 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _getSpeakerJsonFromIndex(currTimeline, currIndex)
                 if not speakerJson:
                     speakerJson = {}
-                print('speakerJson: ' + str(speakerJson))
+                linkOpened = False
                 if speakerJson.get('detectedLinks'):
-                    if ' ' in keyPress:
-                        postIndex = keyPress.split(' ')[1].strip()
-                        print('postIndex: ' + str(postIndex))
-                        if postIndex.isdigit():
-                            speakerJson = \
-                                _getSpeakerJsonFromIndex(currTimeline,
-                                                         int(postIndex))
-                    sayStr = 'Opening web links in browser.'
-                    _sayCommand(sayStr, sayStr, originalScreenReader,
-                                systemLanguage, espeak)
-                    for url in speakerJson['detectedLinks']:
-                        if '://' in url:
-                            webbrowser.open(url)
+                    if len(speakerJson['detectedLinks']) > 0:
+                        if ' ' in keyPress:
+                            postIndex = keyPress.split(' ')[1].strip()
+                            if postIndex.isdigit():
+                                speakerJson = \
+                                    _getSpeakerJsonFromIndex(currTimeline,
+                                                             int(postIndex))
+                        for url in speakerJson['detectedLinks']:
+                            if '://' in url:
+                                webbrowser.open(url)
+                                linkOpened = True
+                        if linkOpened:
+                            sayStr = 'Opened web links'
+                            _sayCommand(sayStr, sayStr, originalScreenReader,
+                                        systemLanguage, espeak)
                 else:
                     sayStr = 'There are no web links to open.'
                     _sayCommand(sayStr, sayStr, originalScreenReader,
