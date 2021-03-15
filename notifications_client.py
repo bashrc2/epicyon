@@ -36,6 +36,11 @@ from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
 
 
+def _clearScreen() -> None:
+    print(chr(27) + "[2J")
+    print('\x1b[2J')
+
+
 def _waitForKeypress(timeout: int, debug: bool) -> str:
     """Waits for a keypress with a timeout
     Returns the key pressed, or None on timeout
@@ -371,7 +376,7 @@ def _showLocalBox(boxName: str,
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         print('')
         return
-    print(chr(27) + "[2J")
+    _clearScreen()
     maxPostIndex = len(index)
     index.sort(reverse=True)
     ctr = 0
@@ -604,7 +609,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
-    print(chr(27) + "[2J")
+    _clearScreen()
     bannerFilename = 'theme/default/banner.txt'
     if os.path.isfile(bannerFilename):
         with open(bannerFilename, 'r') as bannerFile:
@@ -806,11 +811,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 _storeMessage(speakerJson, 'inbox')
 
                         if not showNewPosts:
-                            print(chr(27) + "[2J")                          
+                            _clearScreen()
                             _showLocalBox(currTimeline,
                                           None, systemLanguage, espeak,
                                           currInboxIndex, 10)
-                        print('')
+                        else:
+                            print('')
 
                     prevSay = speakerJson['say']
 
