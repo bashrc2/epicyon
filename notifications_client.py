@@ -575,6 +575,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            notificationSounds: bool,
                            notificationType: str,
                            noKeyPress: bool,
+                           storeInboxPosts: bool,
                            debug: bool) -> None:
     """Runs the notifications and screen reader client,
     which announces new inbox items
@@ -766,7 +767,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             _storeMessage(speakerJson, 'dm')
                         else:
                             speakerJson['decrypted'] = False
-                            # _storeMessage(speakerJson, 'inbox')
+                            if storeInboxPosts:
+                                _storeMessage(speakerJson, 'inbox')
 
                         print('')
 

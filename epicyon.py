@@ -1860,12 +1860,16 @@ if args.notifications:
     elif args.gnunet:
         proxyType = 'gnunet'
 
+    # only store inbox posts if we are not running as a daemon
+    storeInboxPosts = not args.noKeyPress
+
     runNotificationsClient(baseDir, proxyType, httpPrefix,
                            nickname, domain, port, args.password,
                            args.screenreader, args.language,
                            args.notificationSounds,
                            args.notificationType,
                            args.noKeyPress,
+                           storeInboxPosts,
                            args.debug)
     sys.exit()
 
