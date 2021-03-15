@@ -11,6 +11,7 @@ import html
 import time
 import sys
 import select
+import webbrowser
 from pathlib import Path
 from random import randint
 from utils import getStatusNumber
@@ -37,7 +38,24 @@ from pgp import pgpEncryptToActor
 
 
 def _clearScreen() -> None:
+    """Clears the screen
+    """
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def _showDesktopBanner() -> None:
+    """Shows the banner at the top
+    """
+    bannerFilename = 'banner.txt'
+    if not os.path.isfile(bannerFilename):
+        bannerTheme = 'starlight'
+        bannerFilename = 'theme/' + bannerTheme + '/banner.txt'
+        if not os.path.isfile(bannerFilename):
+            return
+    with open(bannerFilename, 'r') as bannerFile:
+        banner = bannerFile.read()
+        if banner:
+            print(banner + '\n')
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
@@ -379,12 +397,7 @@ def _showLocalBox(boxName: str,
 
     # title
     _clearScreen()
-    bannerFilename = 'theme/starlight/banner.txt'
-    if os.path.isfile(bannerFilename):
-        with open(bannerFilename, 'r') as bannerFile:
-            banner = bannerFile.read()
-            if banner:
-                print(banner + '\n')
+    _showDesktopBanner()
     print(indent + boxName.upper() + '\n')
 
     maxPostIndex = len(index)
@@ -419,6 +432,8 @@ def _showLocalBox(boxName: str,
         while len(content) < 40:
             content += ' '
         content = (content[:40]) if len(content) > 40 else content
+        if speakerJson.get('detectedLinks'):
+            content = '🔗' + content
         print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
         ctr += 1
@@ -619,17 +634,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
-    indent = '   '    
+    indent = '   '
     if showNewPosts:
         indent = ''
 
     _clearScreen()
-    bannerFilename = 'theme/starlight/banner.txt'
-    if os.path.isfile(bannerFilename):
-        with open(bannerFilename, 'r') as bannerFile:
-            banner = bannerFile.read()
-            if banner:
-                print(banner + '\n')
+    _showDesktopBanner()
 
     espeak = None
     if screenreader:
@@ -863,7 +873,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                               screenreader, systemLanguage, espeak,
                               currSentIndex, 10)
                 currTimeline = 'sent'
-            elif keyPress == 'show' or keyPress.startswith('show in'):
+            elif (keyPress == 'show' or keyPress.startswith('show in') or
+                  keyPress == 'clear'):
                 currInboxIndex = 0
                 _showLocalBox('inbox',
                               screenreader, systemLanguage, espeak,
@@ -1130,3 +1141,16 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
+            elif keyPress.startswith('open '):
+                if speakerJson.get('detectedLinks'):
+                    sayStr = 'Opening web links in browser.'
+                    _sayCommand(sayStr, sayStr, originalScreenReader,
+                                systemLanguage, espeak)
+                    for url in speakerJson['detectedLinks']:
+                        if '://' in url:
+                            webbrowser.open(url)
+                else:
+                    sayStr = 'There are no web links to open.'
+                    _sayCommand(sayStr, sayStr, originalScreenReader,
+                                systemLanguage, espeak)
+                print('')
