@@ -431,9 +431,9 @@ def _showLocalBox(boxName: str,
         content = speakerJson['content']
         while len(content) < 40:
             content += ' '
-        content = (content[:40]) if len(content) > 40 else content
         if speakerJson.get('detectedLinks'):
             content = '🔗' + content
+        content = (content[:40]) if len(content) > 40 else content
         print(indent + str(posStr) + ' | ' + str(name) + ' | ' +
               str(published) + ' | ' + str(content) + ' |')
         ctr += 1
