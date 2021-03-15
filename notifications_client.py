@@ -39,6 +39,7 @@ from pgp import pgpEncryptToActor
 def _clearScreen() -> None:
     print(chr(27) + "[2J")
     print('\x1b[2J')
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def _waitForKeypress(timeout: int, debug: bool) -> str:
