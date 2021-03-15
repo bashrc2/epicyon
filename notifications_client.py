@@ -1157,6 +1157,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     currIndex = currSentIndex
                 speakerJson = \
                     _getSpeakerJsonFromIndex(currTimeline, currIndex)
+                if not speakerJson:
+                    speakerJson = {}
                 if speakerJson.get('detectedLinks'):
                     if ' ' in keyPress:
                         index = keyPress.split(' ')[1]
