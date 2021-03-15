@@ -371,6 +371,7 @@ def _showLocalBox(boxName: str,
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         print('')
         return
+    print(chr(27) + "[2J")
     maxPostIndex = len(index)
     index.sort(reverse=True)
     ctr = 0
@@ -603,6 +604,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
+    print(chr(27) + "[2J")
     bannerFilename = 'theme/default/banner.txt'
     if os.path.isfile(bannerFilename):
         with open(bannerFilename, 'r') as bannerFile:
@@ -637,6 +639,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     currTimeline = ''
     currInboxIndex = 0
     if not showNewPosts:
+        print('')
         currInboxIndex = 0
         _showLocalBox('inbox',
                       screenreader, systemLanguage, espeak,
@@ -802,6 +805,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             if storeInboxPosts:
                                 _storeMessage(speakerJson, 'inbox')
 
+                        if not showNewPosts:
+                            print(chr(27) + "[2J")                          
+                            _showLocalBox(currTimeline,
+                                          None, systemLanguage, espeak,
+                                          currInboxIndex, 10)
                         print('')
 
                     prevSay = speakerJson['say']
