@@ -472,7 +472,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             while len(content) < 40:
                 content += ' '
         print(indent + str(posStr) + ' | ' + name + ' | ' +
-              published + ' | ' + content + ' |')
+              published + ' | ' + content)
         ctr += 1
 
     print('')
