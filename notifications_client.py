@@ -297,11 +297,8 @@ def _notificationNewPost(session,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
-def _readLocalBoxPost(boxName: str, index: int,
-                      systemLanguage: str,
-                      screenreader: str, espeak) -> {}:
-    """Reads a post from the given timeline
-    Returns the speaker json
+def _getSpeakerJsonFromIndex(boxName: str, index: int) -> {}:
+    """Returns the json for the given post index
     """
     homeDir = str(Path.home())
     if not os.path.isdir(homeDir + '/.config'):
@@ -332,7 +329,18 @@ def _readLocalBoxPost(boxName: str, index: int,
                      publishedYear + '/' +
                      publishedMonth + '/' +
                      indexList[index])
-    speakerJson = loadJson(speakerJsonFilename)
+    return loadJson(speakerJsonFilename)
+
+
+def _readLocalBoxPost(boxName: str, index: int,
+                      systemLanguage: str,
+                      screenreader: str, espeak) -> {}:
+    """Reads a post from the given timeline
+    Returns the speaker json
+    """
+    speakerJson = _getSpeakerJsonFromIndex(boxName, index)
+    if not speakerJson:
+        return
 
     nameStr = speakerJson['name']
     gender = 'They/Them'
@@ -1141,8 +1149,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
-            elif keyPress.startswith('open '):
+            elif keyPress.startswith('open'):
+                currIndex = currInboxIndex
+                if currTimeline == 'dm':
+                    currIndex = currDMIndex
+                elif currTimeline == 'sent':
+                    currIndex = currSentIndex
+                speakerJson = \
+                    _getSpeakerJsonFromIndex(currTimeline, currIndex)
                 if speakerJson.get('detectedLinks'):
+                    if ' ' in keyPress:
+                        index = keyPress.split(' ')[1]
+                        if index.isdigit():
+                            speakerJson = \
+                                _getSpeakerJsonFromIndex(currTimeline, index)
                     sayStr = 'Opening web links in browser.'
                     _sayCommand(sayStr, sayStr, originalScreenReader,
                                 systemLanguage, espeak)
