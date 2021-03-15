@@ -452,7 +452,8 @@ def _showLocalBox(notifyJson: {}, boxName: str,
         while len(posStr) < 3:
             posStr += ' '
         if speakerJson.get('name'):
-            name = speakerJson['name']
+            udata = speakerJson['name'].decode("utf-8")
+            name = udata.encode("ascii","ignore")
         else:
             name = ''
         if len(name) > 16:
@@ -460,7 +461,8 @@ def _showLocalBox(notifyJson: {}, boxName: str,
         else:
             while len(name) < 16:
                 name += ' '
-        content = speakerJson['content']
+        udata = speakerJson['content'].decode("utf-8")
+        content = udata.encode("ascii","ignore")
         if speakerJson.get('detectedLinks'):
             if len(speakerJson['detectedLinks']) > 0:
                 content = '🔗' + content
