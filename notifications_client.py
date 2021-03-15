@@ -381,6 +381,8 @@ def _showLocalBox(boxName: str,
             os.path.join(msgDir,
                          publishedYear + '/' +
                          publishedMonth + '/' + index[pos])
+        if not os.path.isfile(speakerJsonFilename):
+            continue
         speakerJson = loadJson(speakerJsonFilename)
         if not speakerJson.get('published'):
             continue
