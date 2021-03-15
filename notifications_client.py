@@ -302,7 +302,13 @@ def _readLocalBoxPost(boxName: str, index: int,
     if len(indexList) <= index:
         return
 
-    speakerJsonFilename = os.path.join(msgDir, indexList[index])
+    publishedYear = indexList[index].split('-')[0]
+    publishedMonth = indexList[index].split('-')[1]
+    speakerJsonFilename = \
+        os.path.join(msgDir,
+                     publishedYear + '/' +
+                     publishedMonth + '/' +
+                     indexList[index])
     speakerJson = loadJson(speakerJsonFilename)
 
     nameStr = speakerJson['name']
@@ -369,7 +375,12 @@ def _showLocalBox(boxName: str,
     for pos in range(startPostIndex, startPostIndex + noOfPosts):
         if pos >= maxPostIndex:
             break
-        speakerJsonFilename = os.path.join(msgDir, index[pos])
+        publishedYear = index[pos].split('-')[0]
+        publishedMonth = index[pos].split('-')[1]
+        speakerJsonFilename = \
+            os.path.join(msgDir,
+                         publishedYear + '/' +
+                         publishedMonth + '/' + index[pos])
         speakerJson = loadJson(speakerJsonFilename)
         if not speakerJson.get('published'):
             continue
