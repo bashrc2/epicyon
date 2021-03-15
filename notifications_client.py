@@ -1158,12 +1158,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     postIndex = keyPress.split(' ')[-1].strip()
                     if postIndex.isdigit():
                         currIndex = int(postIndex)
-                print('currIndex: ' + str(currIndex) + ' ' + currTimeline)
                 speakerJson = \
                     _getSpeakerJsonFromIndex(currTimeline, currIndex)
                 if not speakerJson:
                     speakerJson = {}
-                print('speakerJson: ' + str(speakerJson))
                 linkOpened = False
                 if speakerJson.get('detectedLinks'):
                     if len(speakerJson['detectedLinks']) > 0:
