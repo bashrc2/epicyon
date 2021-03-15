@@ -477,10 +477,11 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     print('')
 
     sayStr = indent + boxName + ' posts ' + str(startPostIndex + 1) + \
-        ' to ' + str(startPostIndex + ctr) + '. '
+        ' to ' + str(startPostIndex + ctr) + '. '    
     sayStr += \
         'Use the \33[3mnext\33[0m and \33[3mprev\33[0m commands to navigate.'
-    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    _sayCommand(sayStr, sayStr.replace('\33[3m', '').replace('\33[0m', ''),
+                screenreader, systemLanguage, espeak)
     if notifyJson:
         if notifyJson.get('followRequestsList'):
             if len(notifyJson['followRequestsList']) > 0:
@@ -488,12 +489,14 @@ def _showLocalBox(notifyJson: {}, boxName: str,
                 sayStr = indent + 'You have a follow request from ' + \
                     '\33[7m' + \
                     notifyJson['followRequestsList'][0].strip() + '\33[0m'
-                _sayCommand(sayStr, sayStr, screenreader, systemLanguage,
-                            espeak)
+                _sayCommand(sayStr,
+                            sayStr.replace('\33[7m', '').replace('\33[0m', ''),
+                            screenreader, systemLanguage, espeak)
                 sayStr = indent + 'Use the \33[3maccept\33[0m or ' + \
                     '\33[3mreject\33[0m commands to respond.'
-                _sayCommand(sayStr, sayStr, screenreader, systemLanguage,
-                            espeak)
+                _sayCommand(sayStr,
+                            sayStr.replace('\33[3m', '').replace('\33[0m', ''),
+                            screenreader, systemLanguage, espeak)
     print('')
 
 
