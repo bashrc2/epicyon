@@ -425,7 +425,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
                 notificationIcons += ' ❤'
     titleStr = '\33[7m' + boxName.upper() + '\33[0m'
     if notificationIcons:
-        while len(titleStr) < 99 - len(notificationIcons):
+        while len(titleStr) < 95 - len(notificationIcons):
             titleStr += ' '
         titleStr += notificationIcons
     print(indent + titleStr + '\n')
