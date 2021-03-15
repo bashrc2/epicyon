@@ -620,6 +620,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     """Runs the notifications and screen reader client,
     which announces new inbox items
     """
+    if showNewPosts:
+        indent = ''
+
     _clearScreen()
     bannerFilename = 'theme/starlight/banner.txt'
     if os.path.isfile(bannerFilename):
@@ -637,18 +640,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             print(screenreader + ' is not a supported TTS system')
             return
 
-        sayStr = 'Running ' + screenreader + ' for ' + nickname + '@' + domain
+        sayStr = indent + 'Running ' + screenreader + ' for ' + \
+            nickname + '@' + domain
         _sayCommand(sayStr, sayStr, screenreader,
                     systemLanguage, espeak)
     else:
-        print('Running desktop notifications for ' + nickname + '@' + domain)
+        print(indent + 'Running desktop notifications for ' +
+              nickname + '@' + domain)
     if notificationSounds:
-        sayStr = 'Notification sounds on'
+        sayStr = indent + 'Notification sounds on'
     else:
-        sayStr = 'Notification sounds off'
+        sayStr = indent + 'Notification sounds off'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
-    sayStr = '/q or /quit to exit'
+    sayStr = indent + '/q or /quit to exit'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
 
