@@ -294,7 +294,6 @@ def _readLocalBoxPost(boxName: str, index: int,
             if not f.endswith('.json'):
                 continue
             indexList.append(f)
-        break
     indexList.sort(reverse=True)
 
     index -= 1
@@ -359,7 +358,6 @@ def _showLocalBox(boxName: str,
             if not f.endswith('.json'):
                 continue
             index.append(f)
-        break
     if not index:
         sayStr = 'You have no ' + boxName + ' posts yet.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
@@ -432,6 +430,32 @@ def _notificationNewDM(session, toHandle: str,
                                debug,
                                screenreader, systemLanguage,
                                espeak)
+
+
+def _storeMessage(speakerJson: {}, boxName: str) -> None:
+    """Stores a message in your home directory for later reading
+    """
+    if not speakerJson.get('published'):
+        return
+    homeDir = str(Path.home())
+    if not os.path.isdir(homeDir + '/.config'):
+        os.mkdir(homeDir + '/.config')
+    if not os.path.isdir(homeDir + '/.config/epicyon'):
+        os.mkdir(homeDir + '/.config/epicyon')
+    msgDir = homeDir + '/.config/epicyon/' + boxName
+    if not os.path.isdir(msgDir):
+        os.mkdir(msgDir)
+    publishedYear = speakerJson['published'].split('-')[0]
+    yearDir = msgDir + '/' + publishedYear
+    if not os.path.isdir(yearDir):
+        os.mkdir(yearDir)
+    publishedMonth = speakerJson['published'].split('-')[1]
+    monthDir = yearDir + '/' + publishedMonth
+    if not os.path.isdir(monthDir):
+        os.mkdir(monthDir)
+
+    msgFilename = monthDir + '/' + speakerJson['published'] + '.json'
+    saveJson(speakerJson, msgFilename)
 
 
 def _notificationNewDMbase(session, toHandle: str,
@@ -549,23 +573,6 @@ def _notificationNewDMbase(session, toHandle: str,
     else:
         sayStr = 'Direct message failed'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-
-
-def _storeMessage(speakerJson: {}, boxName: str) -> None:
-    """Stores a message in your home directory for later reading
-    """
-    if not speakerJson.get('published'):
-        return
-    homeDir = str(Path.home())
-    if not os.path.isdir(homeDir + '/.config'):
-        os.mkdir(homeDir + '/.config')
-    if not os.path.isdir(homeDir + '/.config/epicyon'):
-        os.mkdir(homeDir + '/.config/epicyon')
-    msgDir = homeDir + '/.config/epicyon/' + boxName
-    if not os.path.isdir(msgDir):
-        os.mkdir(msgDir)
-    msgFilename = msgDir + '/' + speakerJson['published'] + '.json'
-    saveJson(speakerJson, msgFilename)
 
 
 def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
