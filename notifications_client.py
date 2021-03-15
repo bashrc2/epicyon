@@ -35,6 +35,8 @@ from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
 
+indent = '   '
+
 
 def _clearScreen() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -356,7 +358,6 @@ def _showLocalBox(boxName: str,
                   startPostIndex=0, noOfPosts=10) -> None:
     """Shows locally stored posts for a given subdirectory
     """
-    indent = '      '
     homeDir = str(Path.home())
     if not os.path.isdir(homeDir + '/.config'):
         os.mkdir(homeDir + '/.config')
@@ -385,7 +386,7 @@ def _showLocalBox(boxName: str,
             banner = bannerFile.read()
             if banner:
                 print(banner + '\n')
-    print('\n' + indent + boxName.capitalize() + '\n')
+    print(indent + boxName.upper() + '\n')
 
     maxPostIndex = len(index)
     index.sort(reverse=True)
