@@ -277,8 +277,9 @@ def _notificationNewPost(session,
 
 def _readLocalBoxPost(boxName: str, index: int,
                       systemLanguage: str,
-                      screenreader: str, espeak) -> None:
+                      screenreader: str, espeak) -> {}:
     """Reads a post from the given timeline
+    Returns the speaker json
     """
     homeDir = str(Path.home())
     if not os.path.isdir(homeDir + '/.config'):
@@ -300,7 +301,7 @@ def _readLocalBoxPost(boxName: str, index: int,
     if index <= 0:
         index = 0
     if len(indexList) <= index:
-        return
+        return None
 
     publishedYear = indexList[index].split('-')[0]
     publishedMonth = indexList[index].split('-')[1]
@@ -343,6 +344,7 @@ def _readLocalBoxPost(boxName: str, index: int,
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak,
                 nameStr, gender)
+    return speakerJson
 
 
 def _showLocalBox(boxName: str,
@@ -596,6 +598,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                            notificationType: str,
                            noKeyPress: bool,
                            storeInboxPosts: bool,
+                           showNewPosts: bool,
                            debug: bool) -> None:
     """Runs the notifications and screen reader client,
     which announces new inbox items
@@ -630,6 +633,15 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     sayStr = '/q or /quit to exit'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
+
+    currTimeline = ''
+    currInboxIndex = 0
+    if showNewPosts:
+        currInboxIndex = 0
+        _showLocalBox('inbox',
+                      screenreader, systemLanguage, espeak,
+                      currInboxIndex, 10)
+        currTimeline = 'inbox'
     print('')
     keyPress = _waitForKeypress(2, debug)
 
@@ -658,8 +670,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     personCache = {}
     currDMIndex = 0
     currSentIndex = 0
-    currInboxIndex = 0
-    currTimeline = ''
     while (1):
         session = createSession(proxyType)
         speakerJson = \
@@ -765,18 +775,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             else:
                                 content = '🔓 ' + messageStr
 
-                        # say the speaker's name
-                        _sayCommand(nameStr, nameStr, screenreader,
-                                    systemLanguage, espeak,
-                                    nameStr, gender)
+                        if showNewPosts:
+                            # say the speaker's name
+                            _sayCommand(nameStr, nameStr, screenreader,
+                                        systemLanguage, espeak,
+                                        nameStr, gender)
 
-                        time.sleep(2)
+                            time.sleep(2)
 
-                        # speak the post content
-                        _sayCommand(content, messageStr, screenreader,
-                                    systemLanguage, espeak,
-                                    nameStr, gender)
+                            # speak the post content
+                            _sayCommand(content, messageStr, screenreader,
+                                        systemLanguage, espeak,
+                                        nameStr, gender)
 
+                        # store incoming post
                         if encryptedMessage:
                             speakerJson['content'] = content
                             speakerJson['say'] = messageStr
@@ -869,8 +881,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 postIndexStr = keyPress.split('read ')[1]
                 if postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
-                    _readLocalBoxPost(currTimeline, postIndex,
-                                      systemLanguage, screenreader, espeak)
+                    speakerJson = \
+                        _readLocalBoxPost(currTimeline, postIndex,
+                                          systemLanguage, screenreader,
+                                          espeak)
                 print('')
             elif keyPress == 'reply' or keyPress == 'r':
                 if speakerJson.get('id'):
@@ -930,8 +944,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                          espeak)
                 print('')
             elif keyPress == 'like':
-                if nameStr and gender and messageStr:
-                    sayStr = 'Liking post by ' + nameStr
+                if speakerJson.get('id'):
+                    sayStr = 'Liking post by ' + speakerJson['name']
                     _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
@@ -944,8 +958,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       False, __version__)
                     print('')
             elif keyPress == 'unlike' or keyPress == 'undo like':
-                if nameStr and gender and messageStr:
-                    sayStr = 'Undoing like of post by ' + nameStr
+                if speakerJson.get('id'):
+                    sayStr = 'Undoing like of post by ' + speakerJson['name']
                     _sayCommand(sayStr, sayStr,
                                 screenreader,
                                 systemLanguage, espeak)
@@ -961,20 +975,19 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                   keyPress == 'boost' or
                   keyPress == 'retweet'):
                 if speakerJson.get('id'):
-                    if nameStr and gender and messageStr:
-                        postId = speakerJson['id']
-                        sayStr = 'Announcing post by ' + nameStr
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    systemLanguage, espeak)
-                        sessionAnnounce = createSession(proxyType)
-                        sendAnnounceViaServer(baseDir, sessionAnnounce,
-                                              nickname, password,
-                                              domain, port,
-                                              httpPrefix, postId,
-                                              cachedWebfingers, personCache,
-                                              True, __version__)
-                        print('')
+                    postId = speakerJson['id']
+                    sayStr = 'Announcing post by ' + speakerJson['name']
+                    _sayCommand(sayStr, sayStr,
+                                screenreader,
+                                systemLanguage, espeak)
+                    sessionAnnounce = createSession(proxyType)
+                    sendAnnounceViaServer(baseDir, sessionAnnounce,
+                                          nickname, password,
+                                          domain, port,
+                                          httpPrefix, postId,
+                                          cachedWebfingers, personCache,
+                                          True, __version__)
+                    print('')
             elif keyPress.startswith('follow '):
                 followHandle = keyPress.replace('follow ', '').strip()
                 if followHandle.startswith('@'):
