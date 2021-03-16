@@ -821,37 +821,37 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if not os.path.isdir(soundsDir):
                             soundsDir = 'theme/default/sounds'
 
+                indicatorDM = speakerJson.get('direct')
+                indicatorReplies = speakerJson.get('replyToYou')
                 if firstTime:
                     # If new DM has not been viewed via web interface
                     if not speakerJson.get('direct'):
                         if speakerJson['notify']['dm']:
-                            speakerJson['direct'] = True
+                            indicatorDM = True
 
                     # If new reply has not been viewed via web interface
                     if not speakerJson.get('replyToYou'):
                         if speakerJson['notify']['reply']:
-                            speakerJson['replyToYou'] = True
+                            indicatorReplies = True
                     firstTime = False
 
-                if speakerJson.get('direct'):
-                    if speakerJson['direct'] is True:
-                        if currPostId != speakerJson['id']:
-                            if notificationSounds:
-                                _playNotificationSound(soundsDir + '/' +
-                                                       dmSoundFilename, player)
-                            _desktopNotification(notificationType, title,
-                                                 'New direct message ' +
-                                                 actor + '/dm')
-                elif speakerJson['notify'].get('replyToYou'):
-                    if speakerJson['notify']['replyToYou'] is True:
-                        if currPostId != speakerJson['id']:
-                            if notificationSounds:
-                                _playNotificationSound(soundsDir + '/' +
-                                                       replySoundFilename,
-                                                       player)
-                            _desktopNotification(notificationType, title,
-                                                 'New reply ' +
-                                                 actor + '/tlreplies')
+                if indicatorDM:
+                    if currPostId != speakerJson['id']:
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   dmSoundFilename, player)
+                        _desktopNotification(notificationType, title,
+                                             'New direct message ' +
+                                             actor + '/dm')
+                elif indicatorReplies:
+                    if currPostId != speakerJson['id']:
+                        if notificationSounds:
+                            _playNotificationSound(soundsDir + '/' +
+                                                   replySoundFilename,
+                                                   player)
+                        _desktopNotification(notificationType, title,
+                                             'New reply ' +
+                                             actor + '/tlreplies')
                 elif speakerJson['notify']['calendar'] != prevCalendar:
                     if speakerJson['notify']['calendar'] is True:
                         if notificationSounds:
