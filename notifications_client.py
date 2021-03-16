@@ -915,7 +915,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             newRepliesExist = True
                             _storeMessage(speakerJson, 'replies')
                         if speakerJson.get('direct'):
-                            _storeMessage(speakerJson, 'replies')
+                            _storeMessage(speakerJson, 'dm')
                         if storeInboxPosts:
                             _storeMessage(speakerJson, 'inbox')
 
