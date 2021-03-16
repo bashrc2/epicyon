@@ -393,35 +393,33 @@ To remove a shared item:
 python3 epicyon.py --undoItemName "spanner" --nickname [yournick] --domain [yourdomain] --password [c2s password]
 ```
 
-## Speaking your inbox
+## Desktop client
 
-It is possible to use text-to-speech to read your inbox as posts arrive. This can be useful if you are not looking at a screen but want to stay ambiently informed of what's happening.
-
-On Debian based systems you will need to have the **python3-espeak** package installed.
+You can install the desktop client with:
 
 ``` bash
-python3 epicyon.py --speaker yournickname@yourdomain
+./install-desktop-client
 ```
 
-Or if you have [picospeaker](https://gitlab.com/ky1e/picospeaker) installed:
+and run it with:
 
 ``` bash
-python3 epicyon.py --notifyShowNewPosts --screenreader picospeaker --notify yournickname@yourdomain
+~/epicyon-client
 ```
 
-You can also use the **--password** option to provide the password. This will then stay running and incoming posts will be announced as they arrive.
-
-## Desktop notifications
-
-You can get desktop notifications either by running the screen reader as shown above, or if you only want notifications and not spoken messages then you can run the client as follows, without the *screenreader* option:
+To run it with text-to-speech via espeak:
 
 ``` bash
-python3 epicyon.py --notify yournickname@yourdomain
+~/epicyon-client-tts
 ```
 
-You can also use the **--password** option if needed.
+Or if you have picospeaker installed:
 
-The notifications client also provides a number of basic commands, which may be more convenient than the web interface for some purposes:
+``` bash
+~/epicyon-client-pico
+```
+
+The desktop client has a few commands, which may be more convenient than the web interface for some purposes:
 
 ``` bash
 quit                     Exit from the notification client
@@ -445,4 +443,28 @@ read [post number]           Read a post from a timeline
 open [post number]           Open web links within a timeline post
 ```
 
-If you have a GPG key configured on your local system and are sending a direct message to someone who has a PGP key (the exported key, not just the key ID) set as a tag on their profile then it will try to encrypt the message automatically. So under some conditions end-to-end encryption is possible, such that the instance server only sees ciphertext. Conversely, for arriving direct messages if they are PGP encrypted then the notification client will try to obtain the relevant public key and decrypt.
+If you have a GPG key configured on your local system and are sending a direct message to someone who has a PGP key (the exported key, not just the key ID) set as a tag on their profile then it will try to encrypt the message automatically. So under some conditions end-to-end encryption is possible, such that the instance server only sees ciphertext. Conversely, for arriving direct messages if they are PGP encrypted then the desktop client will try to obtain the relevant public key and decrypt.
+
+## Speaking your inbox
+
+It is possible to use text-to-speech to read your inbox as posts arrive. This can be useful if you are not looking at a screen but want to stay ambiently informed of what's happening.
+
+On Debian based systems you will need to have the **python3-espeak** package installed.
+
+``` bash
+python3 epicyon.py --notifyShowNewPosts --screenreader espeak --desktop yournickname@yourdomain
+```
+
+Or a quicker version, if you have installed the desktop client as described above.
+
+``` bash
+~/epicyon-client-stream
+```
+
+Or if you have [picospeaker](https://gitlab.com/ky1e/picospeaker) installed:
+
+``` bash
+python3 epicyon.py --notifyShowNewPosts --screenreader picospeaker --desktop yournickname@yourdomain
+```
+
+You can also use the **--password** option to provide the password. This will then stay running and incoming posts will be announced as they arrive.
