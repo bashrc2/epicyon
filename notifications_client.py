@@ -799,7 +799,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     newRepliesExist = False
     newDMsExist = False
     currPostId = ''
-    firstTime = True
     while (1):
         session = createSession(proxyType)
         notifyJson = None
@@ -824,22 +823,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 indicatorDM = False
                 if speakerJson.get('direct'):
                     if speakerJson['direct'] is True:
-                        indicatorDM = speakerJson.get('direct')
+                        indicatorDM = True
                 indicatorReplies = False
                 if speakerJson.get('replyToYou'):
                     if speakerJson['replyToYou'] is True:
-                        indicatorReplies = speakerJson.get('replyToYou')
-                if firstTime:
-                    # If new DM has not been viewed via web interface
-                    if not speakerJson.get('direct'):
-                        if speakerJson['notify']['dm']:
-                            indicatorDM = True
-
-                    # If new reply has not been viewed via web interface
-                    if not speakerJson.get('replyToYou'):
-                        if speakerJson['notify']['reply']:
-                            indicatorReplies = True
-                    firstTime = False
+                        indicatorReplies = True
 
                 if indicatorDM:
                     if currPostId != speakerJson['id']:
@@ -949,15 +937,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             _storeMessage(speakerJson, 'dm')
                         if storeInboxPosts:
                             _storeMessage(speakerJson, 'inbox')
-
-                        # DM has been viewed via the web interface
-                        if newDMsExist and \
-                           not speakerJson['notify']['dm']:
-                            newDMsExist = False
-                        # Reply has been viewed via the web interface
-                        if newRepliesExist and \
-                           not speakerJson['notify']['reply']:
-                            newRepliesExist = False
 
                         if not showNewPosts:
                             _clearScreen()
