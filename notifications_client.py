@@ -821,8 +821,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if not os.path.isdir(soundsDir):
                             soundsDir = 'theme/default/sounds'
 
-                indicatorDM = speakerJson.get('direct')
-                indicatorReplies = speakerJson.get('replyToYou')
+                if speakerJson.get('direct'):
+                    if speakerJson['direct'] is True:
+                        indicatorDM = speakerJson.get('direct')
+                if speakerJson.get('replyToYou'):
+                    if speakerJson['replyToYou'] is True:
+                        indicatorReplies = speakerJson.get('replyToYou')
                 if firstTime:
                     # If new DM has not been viewed via web interface
                     if not speakerJson.get('direct'):
