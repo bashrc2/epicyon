@@ -794,6 +794,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     newRepliesExist = False
     newDMsExist = False
     currPostId = ''
+    firstTime = True
     while (1):
         session = createSession(proxyType)
         notifyJson = None
@@ -815,15 +816,17 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if not os.path.isdir(soundsDir):
                             soundsDir = 'theme/default/sounds'
 
-                # If new DM has not been viewed via web interface
-                if not speakerJson.get('direct'):
-                    if speakerJson['notify']['dm']:
-                        speakerJson['direct'] = True
+                if firstTime:
+                    # If new DM has not been viewed via web interface
+                    if not speakerJson.get('direct'):
+                        if speakerJson['notify']['dm']:
+                            speakerJson['direct'] = True
 
-                # If new reply has not been viewed via web interface
-                if not speakerJson.get('replyToYou'):
-                    if speakerJson['notify']['reply']:
-                        speakerJson['replyToYou'] = True
+                    # If new reply has not been viewed via web interface
+                    if not speakerJson.get('replyToYou'):
+                        if speakerJson['notify']['reply']:
+                            speakerJson['replyToYou'] = True
+                    firstTime = False
 
                 if speakerJson.get('direct'):
                     if speakerJson['direct'] is True:
