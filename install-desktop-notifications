@@ -8,10 +8,10 @@ fi
 
 if [ ! -f /usr/bin/zenity ]; then
     if [ -f /usr/bin/apt ]; then
-	sudo apt install zenity
+        sudo apt -y install zenity
     fi
     if [ -f /usr/bin/pacman ]; then
-	sudo pacman -S zenity
+        sudo pacman -S --noconfirm zenity
     fi
 fi
 
@@ -32,19 +32,28 @@ fi
 
 if [ ! -f /usr/bin/git ]; then
     if [ -f /usr/bin/apt ]; then
-	sudo apt install git
+        sudo apt -y install git
     fi
     if [ -f /usr/bin/pacman ]; then
-	sudo pacman -S git
+        sudo pacman -S --noconfirm git
+    fi
+fi
+
+if [ ! -f /usr/bin/gpg ]; then
+    if [ -f /usr/bin/apt ]; then
+        sudo apt -y install gnupg
+    fi
+    if [ -f /usr/bin/pacman ]; then
+        sudo pacman -S --noconfirm gnupg
     fi
 fi
 
 if [ ! -f /usr/bin/python3 ]; then
     if [ -f /usr/bin/apt ]; then
-	sudo apt install python3
+        sudo apt -y install python3
     fi
     if [ -f /usr/bin/pacman ]; then
-	sudo pacman -S python
+        sudo pacman -S --noconfirm python
     fi
 fi
 
@@ -65,7 +74,7 @@ if [ -f /usr/bin/notify-send ]; then
     notificationType='notify-send'
 else
     if [ -f /usr/bin/zenity ]; then
-	notificationType='zenity'
+        notificationType='zenity'
     fi
 fi
 if [[ ! "$notificationType" ]]; then
