@@ -1,6 +1,6 @@
-# Commandline Admin
+# Command-line Admin
 
-This system can be administrated from the commandline.
+This system can be administrated from the command-line.
 
 ## Account Management
 
@@ -52,7 +52,7 @@ To remove an account (be careful!):
 python3 epicyon.py --rmgroup nickname@domain
 ```
 
-Setting avatar or changing background is the same as for any other account on the system. You can also moderate a group, applying filters, blocks or a perimeter, in the same way as for other acounts.
+Setting avatar or changing background is the same as for any other account on the system. You can also moderate a group, applying filters, blocks or a perimeter, in the same way as for other accounts.
 
 ## Defining a perimeter
 
@@ -76,7 +76,7 @@ The password is for the client to obtain access to the server.
 
 You may or may not need to use the *--port*, *--https* and *--tor* options, depending upon how your server was set up.
 
-Unfollowing is silimar:
+Unfollowing is similar:
 
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password [c2s password]
@@ -131,7 +131,7 @@ To view the public posts for a person:
 python3 epicyon.py --posts nickname@domain
 ```
 
-If you want to view the raw json:
+If you want to view the raw JSON:
 
 ``` bash
 python3 epicyon.py --postsraw nickname@domain
@@ -156,7 +156,7 @@ xdot socnet.dot
 
 ## Delete posts
 
-To delete a post which you wrote you must first know its url. It is usually something like:
+To delete a post which you wrote you must first know its URL. It is usually something like:
 
 ``` text
 https://yourDomain/users/yourNickname/statuses/number
@@ -177,7 +177,7 @@ Another complication of federated deletion is that the followers collection may 
 
 ## Announcements/repeats/boosts
 
-To announce or repeat a post you will first need to know it's url. It is usually something like:
+To announce or repeat a post you will first need to know it's URL. It is usually something like:
 
 ``` text
 https://domain/users/name/statuses/number
@@ -192,7 +192,7 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 
 ## Like posts
 
-To like a post you will first need to know it's url. It is usually something like:
+To like a post you will first need to know it's URL. It is usually something like:
 
 ``` text
 https://domain/users/name/statuses/number
@@ -240,7 +240,7 @@ Whether you are using the **--federate** option to define a set of allowed insta
 python3 epicyon.py --nickname yournick --domain yourdomain --block somenick@somedomain --password [c2s password]
 ```
 
-This blocks at the earliest possble stage of receiving messages, such that nothing from the specified account will be written to your inbox.
+This blocks at the earliest possible stage of receiving messages, such that nothing from the specified account will be written to your inbox.
 
 Or to unblock:
 
@@ -313,7 +313,7 @@ python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
                    --password [c2s password]
 ```
 
-This extends the ActivityPub client-to-server protocol to include activities called *Delegate* and *Role*. The json looks like:
+This extends the ActivityPub client-to-server protocol to include activities called *Delegate* and *Role*. The JSON looks like:
 
 ``` json
 { 'type': 'Delegate',
@@ -343,7 +343,7 @@ python3 epicyon.py --nickname [nick] --domain [mydomain] \
 
 The level value is a percentage which indicates how proficient you are with that skill.
 
-This extends the ActivityPub client-to-server protocol to include an activity called *Skill*. The json looks like:
+This extends the ActivityPub client-to-server protocol to include an activity called *Skill*. The JSON looks like:
 
 ``` json
 { 'type': 'Skill',
@@ -365,7 +365,7 @@ python3 epicyon.py --nickname [nick] --domain [mydomain] \
 
 The status value can be any string, and can become part of organization building by combining it with roles and skills.
 
-This extends the ActivityPub client-to-server protocol to include an activity called *Availability*. "Status" was avoided because of te possibility of confusion with other things. The json looks like:
+This extends the ActivityPub client-to-server protocol to include an activity called *Availability*. "Status" was avoided because of the possibility of confusion with other things. The JSON looks like:
 
 ``` json
 { 'type': 'Availability',
@@ -377,7 +377,7 @@ This extends the ActivityPub client-to-server protocol to include an activity ca
 
 ## Shares
 
-This system includes a feature for bartering or gifting (i.e. common resource pooling or exchange without money), based upon the earlier Sharings plugin made by the Las Indias group which existed within GNU Social. It's intended to operate at the municipal level, sharing physical objects with people in your local vicinity. For example, sharing gardening tools on a street or a 3D printer between makerspaces.
+This system includes a feature for bartering or gifting (i.e. common resource pooling or exchange without money), based upon the earlier Sharings plugin made by the Las Indias group which existed within GNU Social. It's intended to operate at the municipal level, sharing physical objects with people in your local vicinity. For example, sharing gardening tools on a street or a 3D printer between maker-spaces.
 
 To share an item.
 
@@ -385,7 +385,7 @@ To share an item.
 python3 epicyon.py --itemName "spanner" --nickname [yournick] --domain [yourdomain] --summary "It's a spanner" --itemType "tool" --itemCategory "mechanical" --location [yourCity] --duration "2 months" --itemImage spanner.png --password [c2s password]
 ```
 
-For the duration of the share you can use hours,days,weeks,months or years.
+For the duration of the share you can use hours, days, weeks, months, or years.
 
 To remove a shared item:
 
