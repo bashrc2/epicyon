@@ -912,14 +912,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
 
                         # store incoming post
                         speakerJson['decrypted'] = False
-                        if encryptedMessage or speakerJson.get('direct'):
-                            _storeMessage(speakerJson, 'dm')
-                        elif speakerJson.get('replyToYou'):
+                        if speakerJson.get('replyToYou'):
                             newRepliesExist = True
                             _storeMessage(speakerJson, 'replies')
-                        else:
-                            if storeInboxPosts:
-                                _storeMessage(speakerJson, 'inbox')
+                        if speakerJson.get('direct'):
+                            _storeMessage(speakerJson, 'replies')
+                        if storeInboxPosts:
+                            _storeMessage(speakerJson, 'inbox')
 
                         if not showNewPosts:
                             _clearScreen()
