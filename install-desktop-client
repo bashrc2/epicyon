@@ -104,11 +104,15 @@ fi
 
 { echo '#!/bin/bash';
   echo 'cd ~/.epicyon';
-  echo "PASSWORD=\$(zenity --width=400 --password --title \"Epicyon Desktop Client\")";
-  echo "if [ ! \"\$PASSWORD\" ]; then";
-  echo "    zenity --warning --width=400 --text \"No password was given\"";
-  echo '    exit 3';
-  echo 'fi';  
+  echo "if [ \"\$1\" ]; then";
+  echo "    PASSWORD=\"\$1\"";
+  echo 'else';
+  echo "    PASSWORD=\$(zenity --width=400 --password --title \"Epicyon Desktop Client\")";
+  echo "    if [ ! \"\$PASSWORD\" ]; then";
+  echo "        zenity --warning --width=400 --text \"No password was given\"";
+  echo '        exit 3';
+  echo '    fi';  
+  echo 'fi';
   echo "python3 epicyon.py --desktop ${HANDLE} --password \"\$PASSWORD\""; } > ~/epicyon-client
 chmod +x ~/epicyon-client
 
