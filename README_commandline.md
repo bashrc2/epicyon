@@ -413,7 +413,7 @@ To run it with text-to-speech via espeak:
 ~/epicyon-client-tts
 ```
 
-or if you have picospeaker installed:
+Or if you have picospeaker installed:
 
 ``` bash
 ~/epicyon-client-pico
@@ -455,7 +455,7 @@ On Debian based systems you will need to have the **python3-espeak** package ins
 python3 epicyon.py --notifyShowNewPosts --screenreader espeak --desktop yournickname@yourdomain
 ```
 
-or a quicker version, if you have installed the desktop client as described above.
+Or a quicker version, if you have installed the desktop client as described above.
 
 ``` bash
 ~/epicyon-client-stream
