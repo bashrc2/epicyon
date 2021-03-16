@@ -87,6 +87,8 @@ def _speakerEspeak(espeak, pitch: int, rate: int, srange: int,
 
 def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
                         sayText: str) -> None:
+    """TTS using picospeaker
+    """
     speakerLang = 'en-GB'
     if systemLanguage:
         if systemLanguage.startswith('fr'):
@@ -363,6 +365,15 @@ def _readLocalBoxPost(boxName: str, index: int,
     sayStr = 'Reading ' + boxName + ' post ' + str(index) + '.'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
+    if speakerJson.get('id') and isPGPEncrypted(content):
+        sayStr = 'Encrypted message. Please enter your passphrase.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        content = pgpDecrypt(content, speakerJson['id'])
+        if isPGPEncrypted(content):
+            sayStr = 'Message could not be decrypted'
+            _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+            return
+
     time.sleep(2)
 
     # say the speaker's name
@@ -462,7 +473,9 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             while len(name) < 16:
                 name += ' '
         content = speakerJson['content']
-        if speakerJson.get('detectedLinks'):
+        if isPGPEncrypted(content):
+            content = '🔒' + content
+        elif speakerJson.get('detectedLinks'):
             if len(speakerJson['detectedLinks']) > 0:
                 content = '🔗' + content
         if len(content) > 40:
@@ -853,15 +866,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if speakerJson.get('id') and \
                            isPGPEncrypted(messageStr):
                             encryptedMessage = True
-                            messageStr = pgpDecrypt(messageStr,
-                                                    speakerJson['id'])
 
                         content = messageStr
                         if speakerJson.get('content'):
                             if not encryptedMessage:
                                 content = speakerJson['content']
                             else:
-                                content = '🔓 ' + messageStr
+                                content = '🔒 Encrypted message'
 
                         if showNewPosts:
                             # say the speaker's name
@@ -877,12 +888,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                         nameStr, gender)
 
                         # store incoming post
-                        if encryptedMessage:
-                            speakerJson['content'] = content
-                            speakerJson['say'] = messageStr
-                            speakerJson['decrypted'] = True
-                            _storeMessage(speakerJson, 'dm')
-                        elif speakerJson.get('direct'):
+                        if encryptedMessage or speakerJson.get('direct'):
                             speakerJson['decrypted'] = False
                             _storeMessage(speakerJson, 'dm')
                         else:
