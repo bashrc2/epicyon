@@ -392,7 +392,7 @@ def _readLocalBoxPost(boxName: str, index: int,
 
 def _showLocalBox(notifyJson: {}, boxName: str,
                   screenreader: str, systemLanguage: str, espeak,
-                  startPostIndex=0, noOfPosts=10) -> None:
+                  startPostIndex=0, noOfPosts=10) -> bool:
     """Shows locally stored posts for a given subdirectory
     """
     indent = '   '
@@ -410,15 +410,17 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             if not f.endswith('.json'):
                 continue
             index.append(f)
-    if not index:
-        sayStr = 'You have no ' + boxName + ' posts yet.'
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        print('')
-        return
 
     # title
     _clearScreen()
     _showDesktopBanner()
+
+    if not index:
+        sayStr = 'You have no ' + boxName + ' posts yet.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        print('')
+        return False
+
     notificationIcons = ''
     if notifyJson:
         if notifyJson.get('followRequests'):
@@ -511,6 +513,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
                 _sayCommand(sayStr, sayStr2,
                             screenreader, systemLanguage, espeak)
     print('')
+    return True
 
 
 def _notificationNewDM(session, toHandle: str,
