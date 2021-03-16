@@ -401,7 +401,8 @@ def _readLocalBoxPost(boxName: str, index: int,
 
 def _showLocalBox(notifyJson: {}, boxName: str,
                   screenreader: str, systemLanguage: str, espeak,
-                  startPostIndex=0, noOfPosts=10) -> bool:
+                  startPostIndex=0, noOfPosts=10,
+                  newReplies=False) -> bool:
     """Shows locally stored posts for a given subdirectory
     """
     indent = '   '
@@ -500,10 +501,16 @@ def _showLocalBox(notifyJson: {}, boxName: str,
 
     print('')
 
+    # say the post number range
     sayStr = indent + boxName + ' posts ' + str(startPostIndex + 1) + \
         ' to ' + str(startPostIndex + ctr) + '. '
-    sayStr += \
-        'Use the \33[3mnext\33[0m and \33[3mprev\33[0m commands to navigate.'
+    if newReplies and boxName != 'replies':
+        sayStr += \
+            'Use \33[3mshow replies\33[0m to view reply posts.'
+    else:
+        sayStr += \
+            'Use the \33[3mnext\33[0m and ' + \
+            '\33[3mprev\33[0m commands to navigate.'
     sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
     if notifyJson:
@@ -918,7 +925,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             _clearScreen()
                             _showLocalBox(notifyJson, currTimeline,
                                           None, systemLanguage, espeak,
-                                          currInboxIndex, 10)
+                                          currInboxIndex, 10,
+                                          newRepliesExist)
                         else:
                             print('')
 
