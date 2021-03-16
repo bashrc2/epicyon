@@ -788,6 +788,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     currRepliesIndex = 0
     currSentIndex = 0
     newRepliesExist = False
+    currPostId = ''
     while (1):
         session = createSession(proxyType)
         notifyJson = None
@@ -795,7 +796,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
             getSpeakerFromServer(baseDir, session, nickname, password,
                                  domain, port, httpPrefix, True, __version__)
         if speakerJson:
-            if speakerJson.get('notify'):
+            if speakerJson.get('notify') and speakerJson.get('id'):
                 notifyJson = speakerJson['notify']
                 title = 'Epicyon'
                 if speakerJson['notify'].get('title'):
@@ -810,21 +811,23 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             soundsDir = 'theme/default/sounds'
                 if speakerJson['notify'].get('direct'):
                     if speakerJson['notify']['direct'] is True:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   dmSoundFilename, player)
-                        _desktopNotification(notificationType, title,
-                                             'New direct message ' +
-                                             actor + '/dm')
+                        if currPostId != speakerJson['id']:
+                            if notificationSounds:
+                                _playNotificationSound(soundsDir + '/' +
+                                                       dmSoundFilename, player)
+                            _desktopNotification(notificationType, title,
+                                                 'New direct message ' +
+                                                 actor + '/dm')
                 elif speakerJson['notify'].get('replyToYou'):
                     if speakerJson['notify']['replyToYou'] is True:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   replySoundFilename,
-                                                   player)
-                        _desktopNotification(notificationType, title,
-                                             'New reply ' +
-                                             actor + '/tlreplies')
+                        if currPostId != speakerJson['id']:
+                            if notificationSounds:
+                                _playNotificationSound(soundsDir + '/' +
+                                                       replySoundFilename,
+                                                       player)
+                            _desktopNotification(notificationType, title,
+                                                 'New reply ' +
+                                                 actor + '/tlreplies')
                 elif speakerJson['notify']['calendar'] != prevCalendar:
                     if speakerJson['notify']['calendar'] is True:
                         if notificationSounds:
@@ -926,6 +929,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             print('')
 
                     prevSay = speakerJson['say']
+            if speakerJson.get('id'):
+                currPostId = speakerJson['id']
 
         # wait for a while, or until a key is pressed
         if noKeyPress:
