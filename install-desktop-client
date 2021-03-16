@@ -109,7 +109,7 @@ fi
   echo "    zenity --warning --width=400 --text \"No password was given\"";
   echo '    exit 3';
   echo 'fi';  
-  echo "python3 epicyon.py --client ${HANDLE} --password \"\$PASSWORD\""; } > ~/epicyon-client
+  echo "python3 epicyon.py --desktop ${HANDLE} --password \"\$PASSWORD\""; } > ~/epicyon-client
 chmod +x ~/epicyon-client
 
 zenity --info --width=400 --text "Epicyon desktop client is now installed. You can run it with ~/epicyon-client"

@@ -454,7 +454,7 @@ parser.add_argument('--level', dest='skillLevelPercent', type=int,
 parser.add_argument('--status', '--availability', dest='availability',
                     type=str, default=None,
                     help='Set an availability status')
-parser.add_argument('--client', dest='client',
+parser.add_argument('--desktop', dest='desktop',
                     type=str, default=None,
                     help='Run desktop client')
 parser.add_argument('--block', dest='block', type=str, default=None,
@@ -1831,7 +1831,7 @@ if args.availability:
         time.sleep(1)
     sys.exit()
 
-if args.client:
+if args.desktop:
     # Announce posts as they arrive in your inbox using text-to-speech
     if args.notifications.startswith('@'):
         args.notifications = args.notifications[1:]
