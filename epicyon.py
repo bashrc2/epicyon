@@ -1833,13 +1833,13 @@ if args.availability:
 
 if args.desktop:
     # Announce posts as they arrive in your inbox using text-to-speech
-    if args.notifications.startswith('@'):
-        args.notifications = args.notifications[1:]
-    if '@' not in args.notifications:
+    if args.desktop.startswith('@'):
+        args.desktop = args.desktop[1:]
+    if '@' not in args.desktop:
         print('Specify the handle to notify: nickname@domain')
         sys.exit()
-    nickname = args.notifications.split('@')[0]
-    domain = args.notifications.split('@')[1]
+    nickname = args.desktop.split('@')[0]
+    domain = args.desktop.split('@')[1]
 
     if not nickname:
         print('Specify a nickname with the --nickname option')
