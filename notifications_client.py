@@ -369,7 +369,8 @@ def _readLocalBoxPost(boxName: str, index: int,
         content = speakerJson['content']
 
     sayStr = 'Reading ' + boxName + ' post ' + str(index) + '.'
-    _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+    sayStr2 = sayStr.replace(' dm ', ' DM ')
+    _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
 
     if speakerJson.get('id') and isPGPEncrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
