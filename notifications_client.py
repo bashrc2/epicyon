@@ -767,8 +767,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     domainFull = getFullDomain(domain, port)
     actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     prevSay = ''
-    prevDM = False
-    prevReply = False
     prevCalendar = False
     prevFollow = False
     prevLike = ''
@@ -810,17 +808,16 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             speakerJson['notify']['theme'] + '/sounds'
                         if not os.path.isdir(soundsDir):
                             soundsDir = 'theme/default/sounds'
-                if speakerJson['notify']['dm'] != prevDM:
-                    if speakerJson['notify']['dm'] is True:
+                if speakerJson['notify'].get('direct'):
+                    if speakerJson['notify']['direct'] is True:
                         if notificationSounds:
                             _playNotificationSound(soundsDir + '/' +
                                                    dmSoundFilename, player)
                         _desktopNotification(notificationType, title,
                                              'New direct message ' +
                                              actor + '/dm')
-                    prevDM = speakerJson['notify']['dm']
-                elif newRepliesExist != prevReply:
-                    if newRepliesExist:
+                elif speakerJson['notify'].get('replyToYou'):
+                    if speakerJson['notify']['replyToYou'] is True:
                         if notificationSounds:
                             _playNotificationSound(soundsDir + '/' +
                                                    replySoundFilename,
@@ -828,7 +825,6 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _desktopNotification(notificationType, title,
                                              'New reply ' +
                                              actor + '/tlreplies')
-                        prevReply = newRepliesExist
                 elif speakerJson['notify']['calendar'] != prevCalendar:
                     if speakerJson['notify']['calendar'] is True:
                         if notificationSounds:
