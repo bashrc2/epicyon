@@ -824,11 +824,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 indicatorDM = False
                 if speakerJson.get('direct'):
                     if speakerJson['direct'] is True:
-                        indicatorDM = speakerJson.get('direct')
+                        indicatorDM = True
                 indicatorReplies = False
                 if speakerJson.get('replyToYou'):
                     if speakerJson['replyToYou'] is True:
-                        indicatorReplies = speakerJson.get('replyToYou')
+                        indicatorReplies = True
                 if firstTime:
                     # If new DM has not been viewed via web interface
                     if not speakerJson.get('direct'):
