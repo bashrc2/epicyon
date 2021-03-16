@@ -951,13 +951,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 currDMIndex = 0
                 _showLocalBox(notifyJson, 'dm',
                               screenreader, systemLanguage, espeak,
-                              currDMIndex, 10)
+                              currDMIndex, 10, newRepliesExist)
                 currTimeline = 'dm'
             elif keyPress.startswith('show rep'):
                 currRepliesIndex = 0
                 _showLocalBox(notifyJson, 'replies',
                               screenreader, systemLanguage, espeak,
-                              currRepliesIndex, 10)
+                              currRepliesIndex, 10, newRepliesExist)
                 currTimeline = 'replies'
                 # Turn off the replies indicator
                 newRepliesExist = False
@@ -965,36 +965,36 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                 currSentIndex = 0
                 _showLocalBox(notifyJson, 'sent',
                               screenreader, systemLanguage, espeak,
-                              currSentIndex, 10)
+                              currSentIndex, 10, newRepliesExist)
                 currTimeline = 'sent'
             elif (keyPress == 'show' or keyPress.startswith('show in') or
                   keyPress == 'clear'):
                 currInboxIndex = 0
                 _showLocalBox(notifyJson, 'inbox',
                               screenreader, systemLanguage, espeak,
-                              currInboxIndex, 10)
+                              currInboxIndex, 10, newRepliesExist)
                 currTimeline = 'inbox'
             elif keyPress.startswith('next'):
                 if currTimeline == 'dm':
                     currDMIndex += 10
                     _showLocalBox(notifyJson, 'dm',
                                   screenreader, systemLanguage, espeak,
-                                  currDMIndex, 10)
+                                  currDMIndex, 10, newRepliesExist)
                 elif currTimeline == 'replies':
                     currRepliesIndex += 10
                     _showLocalBox(notifyJson, 'replies',
                                   screenreader, systemLanguage, espeak,
-                                  currRepliesIndex, 10)
+                                  currRepliesIndex, 10, newRepliesExist)
                 elif currTimeline == 'sent':
                     currSentIndex += 10
                     _showLocalBox(notifyJson, 'sent',
                                   screenreader, systemLanguage, espeak,
-                                  currSentIndex, 10)
+                                  currSentIndex, 10, newRepliesExist)
                 elif currTimeline == 'inbox':
                     currInboxIndex += 10
                     _showLocalBox(notifyJson, 'inbox',
                                   screenreader, systemLanguage, espeak,
-                                  currInboxIndex, 10)
+                                  currInboxIndex, 10, newRepliesExist)
             elif keyPress.startswith('prev'):
                 if currTimeline == 'dm':
                     currDMIndex -= 10
@@ -1002,28 +1002,28 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         currDMIndex = 0
                     _showLocalBox(notifyJson, 'dm',
                                   screenreader, systemLanguage, espeak,
-                                  currDMIndex, 10)
+                                  currDMIndex, 10, newRepliesExist)
                 elif currTimeline == 'replies':
                     currRepliesIndex -= 10
                     if currRepliesIndex < 0:
                         currRepliesIndex = 0
                     _showLocalBox(notifyJson, 'replies',
                                   screenreader, systemLanguage, espeak,
-                                  currRepliesIndex, 10)
+                                  currRepliesIndex, 10, newRepliesExist)
                 elif currTimeline == 'sent':
                     currSentIndex -= 10
                     if currSentIndex < 0:
                         currSentIndex = 0
                     _showLocalBox(notifyJson, 'sent',
                                   screenreader, systemLanguage, espeak,
-                                  currSentIndex, 10)
+                                  currSentIndex, 10, newRepliesExist)
                 elif currTimeline == 'inbox':
                     currInboxIndex -= 10
                     if currInboxIndex < 0:
                         currInboxIndex = 0
                     _showLocalBox(notifyJson, 'inbox',
                                   screenreader, systemLanguage, espeak,
-                                  currInboxIndex, 10)
+                                  currInboxIndex, 10, newRepliesExist)
             elif keyPress.startswith('read ') or keyPress == 'read':
                 if keyPress == 'read':
                     postIndexStr = '1'
