@@ -116,4 +116,14 @@ fi
   echo "python3 epicyon.py --desktop ${HANDLE} --password \"\$PASSWORD\""; } > ~/epicyon-client
 chmod +x ~/epicyon-client
 
+# TTS version
+cp ~/epicyon-client ~/epicyon-client-tts
+chmod +x ~/epicyon-client-tts
+sed -i 's|epicyon.py|epicyon.py --screenreader espeak|g' ~/epicyon-client-tts
+
+# TTS version
+cp ~/epicyon-client ~/epicyon-client-pico
+chmod +x ~/epicyon-client-pico
+sed -i 's|epicyon.py|epicyon.py --screenreader picospeaker|g' ~/epicyon-client-pico
+
 zenity --info --width=400 --text "Epicyon desktop client is now installed. You can run it with ~/epicyon-client"
