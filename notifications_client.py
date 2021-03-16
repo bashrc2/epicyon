@@ -336,6 +336,12 @@ def _getSpeakerJsonFromIndex(boxName: str, index: int) -> {}:
     return loadJson(speakerJsonFilename)
 
 
+def _safeMessage(content: str) -> str:
+    """Removes anything potentially unsafe from a string
+    """
+    return content.replace('`', '').replace('$(', '$ (')
+
+
 def _readLocalBoxPost(boxName: str, index: int,
                       systemLanguage: str,
                       screenreader: str, espeak) -> {}:
@@ -373,6 +379,9 @@ def _readLocalBoxPost(boxName: str, index: int,
             sayStr = 'Message could not be decrypted'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
             return
+
+    _safeMessage(content)
+    _safeMessage(messageStr)
 
     time.sleep(2)
 
@@ -438,7 +447,6 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     print(indent + titleStr + '\n')
 
     if not index:
-        print('')
         sayStr = indent + 'You have no ' + boxName + ' posts yet.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         print('')
@@ -887,6 +895,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             time.sleep(2)
 
                             # speak the post content
+                            _safeMessage(content)
+                            _safeMessage(messageStr)
                             _sayCommand(content, messageStr, screenreader,
                                         systemLanguage, espeak,
                                         nameStr, gender)
