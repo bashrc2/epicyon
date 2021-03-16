@@ -87,6 +87,8 @@ def _speakerEspeak(espeak, pitch: int, rate: int, srange: int,
 
 def _speakerPicospeaker(pitch: int, rate: int, systemLanguage: str,
                         sayText: str) -> None:
+    """TTS using picospeaker
+    """
     speakerLang = 'en-GB'
     if systemLanguage:
         if systemLanguage.startswith('fr'):
