@@ -40,28 +40,48 @@ from pgp import pgpEncryptToActor
 def _desktopHelp() -> None:
     """Shows help
     """
+    indent = '   '
     print('')
-    print('Commands:')
+    print(indent + 'Commands:')
     print('')
-    print('quit                         Exit from the notification client')
-    print('show dm|sent|inbox|replies   Show a timeline')
-    print('mute                         Turn off the screen reader')
-    print('speak                        Turn on the screen reader')
-    print('sounds on                    Turn on notification sounds')
-    print('sounds off                   Turn off notification sounds')
-    print('rp                           Repeat the last post')
-    print('like                         Like the last post')
-    print('unlike                       Unlike the last post')
-    print('reply                        Reply to the last post')
-    print('post                         Create a new post')
-    print('post to [handle]             Create a new direct message')
-    print('announce/boost               Boost the last post')
-    print('follow [handle]              Make a follow request')
-    print('unfollow [handle]            Stop following the give handle')
-    print('next                         Next page in the timeline')
-    print('prev                         Previous page in the timeline')
-    print('read [post number]           Read a post from a timeline')
-    print('open [post number]           Open web links within a timeline post')
+    print(indent + 'quit                         ' +
+          'Exit from the notification client')
+    print(indent + 'show dm|sent|inbox|replies   ' +
+          'Show a timeline')
+    print(indent + 'mute                         ' +
+          'Turn off the screen reader')
+    print(indent + 'speak                        ' +
+          'Turn on the screen reader')
+    print(indent + 'sounds on                    ' +
+          'Turn on notification sounds')
+    print(indent + 'sounds off                   ' +
+          'Turn off notification sounds')
+    print(indent + 'rp                           ' +
+          'Repeat the last post')
+    print(indent + 'like                         ' +
+          'Like the last post')
+    print(indent + 'unlike                       ' +
+          'Unlike the last post')
+    print(indent + 'reply                        ' +
+          'Reply to the last post')
+    print(indent + 'post                         ' +
+          'Create a new post')
+    print(indent + 'post to [handle]             ' +
+          'Create a new direct message')
+    print(indent + 'announce/boost               ' +
+          'Boost the last post')
+    print(indent + 'follow [handle]              ' +
+          'Make a follow request')
+    print(indent + 'unfollow [handle]            ' +
+          'Stop following the give handle')
+    print(indent + 'next                         ' +
+          'Next page in the timeline')
+    print(indent + 'prev                         ' +
+          'Previous page in the timeline')
+    print(indent + 'read [post number]           ' +
+          'Read a post from a timeline')
+    print(indent + 'open [post number]           ' +
+          'Open web links within a timeline post')
     print('')
 
 
