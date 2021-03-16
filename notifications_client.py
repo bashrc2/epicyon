@@ -780,6 +780,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     cachedWebfingers = {}
     personCache = {}
     currDMIndex = 0
+    currRepliesIndex = 0
     currSentIndex = 0
     while (1):
         session = createSession(proxyType)
@@ -905,6 +906,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         speakerJson['decrypted'] = False
                         if encryptedMessage or speakerJson.get('direct'):
                             _storeMessage(speakerJson, 'dm')
+                        elif speakerJson.get('replyToYou'):
+                            _storeMessage(speakerJson, 'replies')
                         else:
                             if storeInboxPosts:
                                 _storeMessage(speakerJson, 'inbox')
@@ -940,6 +943,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                               screenreader, systemLanguage, espeak,
                               currDMIndex, 10)
                 currTimeline = 'dm'
+            elif keyPress.startswith('show rep'):
+                currRepliesIndex = 0
+                _showLocalBox(notifyJson, 'replies',
+                              screenreader, systemLanguage, espeak,
+                              currRepliesIndex, 10)
+                currTimeline = 'replies'
             elif keyPress.startswith('show sen'):
                 currSentIndex = 0
                 _showLocalBox(notifyJson, 'sent',
@@ -959,6 +968,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _showLocalBox(notifyJson, 'dm',
                                   screenreader, systemLanguage, espeak,
                                   currDMIndex, 10)
+                elif currTimeline == 'replies':
+                    currRepliesIndex += 10
+                    _showLocalBox(notifyJson, 'replies',
+                                  screenreader, systemLanguage, espeak,
+                                  currRepliesIndex, 10)
                 elif currTimeline == 'sent':
                     currSentIndex += 10
                     _showLocalBox(notifyJson, 'sent',
@@ -977,6 +991,13 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _showLocalBox(notifyJson, 'dm',
                                   screenreader, systemLanguage, espeak,
                                   currDMIndex, 10)
+                elif currTimeline == 'replies':
+                    currRepliesIndex -= 10
+                    if currRepliesIndex < 0:
+                        currRepliesIndex = 0
+                    _showLocalBox(notifyJson, 'replies',
+                                  screenreader, systemLanguage, espeak,
+                                  currRepliesIndex, 10)
                 elif currTimeline == 'sent':
                     currSentIndex -= 10
                     if currSentIndex < 0:
