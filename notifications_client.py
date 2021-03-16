@@ -380,8 +380,8 @@ def _readLocalBoxPost(boxName: str, index: int,
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
             return
 
-    _safeMessage(content)
-    _safeMessage(messageStr)
+    content = _safeMessage(content)
+    messageStr = _safeMessage(messageStr)
 
     time.sleep(2)
 
@@ -895,8 +895,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             time.sleep(2)
 
                             # speak the post content
-                            _safeMessage(content)
-                            _safeMessage(messageStr)
+                            content = _safeMessage(content)
+                            messageStr = _safeMessage(messageStr)
                             _sayCommand(content, messageStr, screenreader,
                                         systemLanguage, espeak,
                                         nameStr, gender)
