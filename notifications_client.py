@@ -821,9 +821,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if not os.path.isdir(soundsDir):
                             soundsDir = 'theme/default/sounds'
 
+                indicatorDM = False
                 if speakerJson.get('direct'):
                     if speakerJson['direct'] is True:
                         indicatorDM = speakerJson.get('direct')
+                indicatorReplies = False
                 if speakerJson.get('replyToYou'):
                     if speakerJson['replyToYou'] is True:
                         indicatorReplies = speakerJson.get('replyToYou')
