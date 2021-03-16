@@ -782,6 +782,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     currDMIndex = 0
     currRepliesIndex = 0
     currSentIndex = 0
+    newRepliesExist = False
     while (1):
         session = createSession(proxyType)
         notifyJson = None
@@ -811,8 +812,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                              'New direct message ' +
                                              actor + '/dm')
                     prevDM = speakerJson['notify']['dm']
-                elif speakerJson['notify']['reply'] != prevReply:
-                    if speakerJson['notify']['reply'] is True:
+                elif newRepliesExist != prevReply:
+                    if newRepliesExist:
                         if notificationSounds:
                             _playNotificationSound(soundsDir + '/' +
                                                    replySoundFilename,
@@ -820,7 +821,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _desktopNotification(notificationType, title,
                                              'New reply ' +
                                              actor + '/tlreplies')
-                        prevReply = speakerJson['notify']['reply']
+                        prevReply = newRepliesExist
                 elif speakerJson['notify']['calendar'] != prevCalendar:
                     if speakerJson['notify']['calendar'] is True:
                         if notificationSounds:
@@ -907,6 +908,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         if encryptedMessage or speakerJson.get('direct'):
                             _storeMessage(speakerJson, 'dm')
                         elif speakerJson.get('replyToYou'):
+                            newRepliesExist = True
                             _storeMessage(speakerJson, 'replies')
                         else:
                             if storeInboxPosts:
@@ -949,6 +951,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                               screenreader, systemLanguage, espeak,
                               currRepliesIndex, 10)
                 currTimeline = 'replies'
+                # Turn off the replies indicator
+                newRepliesExist = False
             elif keyPress.startswith('show sen'):
                 currSentIndex = 0
                 _showLocalBox(notifyJson, 'sent',
