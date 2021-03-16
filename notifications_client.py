@@ -415,12 +415,6 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     _clearScreen()
     _showDesktopBanner()
 
-    if not index:
-        sayStr = 'You have no ' + boxName + ' posts yet.'
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        print('')
-        return False
-
     notificationIcons = ''
     if notifyJson:
         if notifyJson.get('followRequests'):
@@ -442,6 +436,13 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             titleStr += ' '
         titleStr += notificationIcons
     print(indent + titleStr + '\n')
+
+    if not index:
+        print('')
+        sayStr = 'You have no ' + boxName + ' posts yet.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        print('')
+        return False
 
     maxPostIndex = len(index)
     index.sort(reverse=True)
