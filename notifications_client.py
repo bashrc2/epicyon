@@ -507,7 +507,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
         ' to ' + str(startPostIndex + ctr) + '. '
     if newDMs and boxName != 'dm':
         sayStr += \
-            'Use \33[3mshow dm\33[0m to view DM posts.'
+            'Use \33[3mshow dm\33[0m to view direct messages.'
     elif newReplies and boxName != 'replies':
         sayStr += \
             'Use \33[3mshow replies\33[0m to view reply posts.'
