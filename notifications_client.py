@@ -1023,8 +1023,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _showLocalBox(notifyJson, 'inbox',
                                   screenreader, systemLanguage, espeak,
                                   currInboxIndex, 10)
-            elif keyPress.startswith('read '):
-                postIndexStr = keyPress.split('read ')[1]
+            elif keyPress.startswith('read ') or keyPress == 'read':
+                if keyPress == 'read':
+                    postIndexStr = '1'
+                else:
+                    postIndexStr = keyPress.split('read ')[1]
                 if postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
                     speakerJson = \
