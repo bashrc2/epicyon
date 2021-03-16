@@ -888,11 +888,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                         nameStr, gender)
 
                         # store incoming post
+                        speakerJson['decrypted'] = False
                         if encryptedMessage or speakerJson.get('direct'):
-                            speakerJson['decrypted'] = False
                             _storeMessage(speakerJson, 'dm')
                         else:
-                            speakerJson['decrypted'] = False
                             if storeInboxPosts:
                                 _storeMessage(speakerJson, 'inbox')
 
