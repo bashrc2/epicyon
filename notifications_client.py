@@ -431,9 +431,9 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     if notifyJson:
         if notifyJson.get('followRequests'):
             notificationIcons += ' 👤'
-        if notifyJson.get('dm'):
+        if newDMs:
             notificationIcons += ' 📩'
-        if notifyJson.get('reply'):
+        if newReplies:
             notificationIcons += ' 📨'
         if notifyJson.get('calendar'):
             notificationIcons += ' 📅'
