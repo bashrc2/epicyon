@@ -521,6 +521,7 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             '\33[3mprev\33[0m commands to navigate.'
     sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
     sayStr2 = sayStr2.replace('show dm', 'show DM')
+    sayStr2 = sayStr2.replace('dm post', 'Direct message post')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
     if notifyJson:
         if notifyJson.get('followRequestsList'):
