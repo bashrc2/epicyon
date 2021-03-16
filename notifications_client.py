@@ -449,7 +449,10 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     print(indent + titleStr + '\n')
 
     if not index:
-        sayStr = indent + 'You have no ' + boxName + ' posts yet.'
+        boxStr = boxName
+        if boxName == 'dm':
+            boxStr = 'DM'
+        sayStr = indent + 'You have no ' + boxStr + ' posts yet.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
         print('')
         return False
