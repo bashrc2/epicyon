@@ -82,6 +82,11 @@ if [[ ! "$notificationType" ]]; then
     exit 5
 fi
 
+if [ ! -d ${HOME}/.gnupg ]; then
+    echo 'Generating GPG key'
+    gpg --quick-generate-key "${HANDLE}" ed25519 cert
+fi
+
 { echo '[Unit]';
   echo 'Description=Epicyon Desktop Notifications';
   echo '';
