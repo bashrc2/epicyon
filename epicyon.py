@@ -454,7 +454,8 @@ parser.add_argument('--level', dest='skillLevelPercent', type=int,
 parser.add_argument('--status', '--availability', dest='availability',
                     type=str, default=None,
                     help='Set an availability status')
-parser.add_argument('--notifications', '--notify', dest='notifications',
+parser.add_argument('--notifications', '--notify', '--client',
+                    dest='notifications',
                     type=str, default=None,
                     help='Notify posts as they arrive at your ' +
                     'inbox. --notifications [handle]')

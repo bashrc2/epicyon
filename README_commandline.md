@@ -411,17 +411,30 @@ python3 epicyon.py --notifyShowNewPosts --screenreader picospeaker --notify your
 
 You can also use the **--password** option to provide the password. This will then stay running and incoming posts will be announced as they arrive.
 
-## Desktop notifications
+## Desktop client
 
-You can get desktop notifications either by running the screen reader as shown above, or if you only want notifications and not spoken messages then you can run the client as follows, without the *screenreader* option:
+You can install the desktop client with:
 
 ``` bash
-python3 epicyon.py --notify yournickname@yourdomain
+./install-desktop-client
+```
+
+and run it with:
+
+``` bash
+~/epicyon-client
+```
+
+
+You can run a desktop client as follows:
+
+``` bash
+python3 epicyon.py --client yournickname@yourdomain
 ```
 
 You can also use the **--password** option if needed.
 
-The notifications client also provides a number of basic commands, which may be more convenient than the web interface for some purposes:
+The desktop client also provides a number of commands, which may be more convenient than the web interface for some purposes:
 
 ``` bash
 quit                     Exit from the notification client
@@ -445,4 +458,4 @@ read [post number]           Read a post from a timeline
 open [post number]           Open web links within a timeline post
 ```
 
-If you have a GPG key configured on your local system and are sending a direct message to someone who has a PGP key (the exported key, not just the key ID) set as a tag on their profile then it will try to encrypt the message automatically. So under some conditions end-to-end encryption is possible, such that the instance server only sees ciphertext. Conversely, for arriving direct messages if they are PGP encrypted then the notification client will try to obtain the relevant public key and decrypt.
+If you have a GPG key configured on your local system and are sending a direct message to someone who has a PGP key (the exported key, not just the key ID) set as a tag on their profile then it will try to encrypt the message automatically. So under some conditions end-to-end encryption is possible, such that the instance server only sees ciphertext. Conversely, for arriving direct messages if they are PGP encrypted then the desktop client will try to obtain the relevant public key and decrypt.

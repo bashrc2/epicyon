@@ -15,7 +15,7 @@ if [ ! -f /usr/bin/zenity ]; then
     fi
 fi
 
-HANDLE=$(zenity --entry --width=400 --title "Epicyon Desktop Notifications" --text "Fediverse handle (name@domain): ")
+HANDLE=$(zenity --entry --width=400 --title "Epicyon Desktop Client" --text "Fediverse handle (name@domain): ")
 if [ ! "$HANDLE" ]; then
     zenity --warning --width=400 --text "No fediverse handle was given"
     exit 1
@@ -24,11 +24,11 @@ if [[ "$HANDLE" != *'@'* ]]; then
     zenity --warning --width=400 --text "Fediverse handle must be in the form username@domain"
     exit 2
 fi
-PASSWORD=$(zenity --width=400 --password --title "Epicyon Desktop Notifications")
-if [ ! "$PASSWORD" ]; then
-    zenity --warning --width=400 --text "No password was given"
-    exit 3
-fi
+# PASSWORD=$(zenity --width=400 --password --title "Epicyon Desktop Client")
+# if [ ! "$PASSWORD" ]; then
+#     zenity --warning --width=400 --text "No password was given"
+#     exit 3
+# fi
 
 if [ ! -f /usr/bin/git ]; then
     if [ -f /usr/bin/apt ]; then
@@ -87,19 +87,29 @@ if [ ! -d ${HOME}/.gnupg ]; then
     gpg --quick-generate-key "${HANDLE}" ed25519 cert
 fi
 
-{ echo '[Unit]';
-  echo 'Description=Epicyon Desktop Notifications';
-  echo '';
-  echo '[Service]';
-  echo "WorkingDirectory=${HOME}/.epicyon";
-  echo "ExecStart=/usr/bin/python3 epicyon.py --noKeyPress --notifyType $notificationType --notify $HANDLE --password \"$PASSWORD\"";
-  echo 'Type=oneshot';
-  echo 'RemainAfterExit=yes';
-  echo '';
-  echo '[Install]';
-  echo 'WantedBy=default.target'; } > "${HOME}/.config/systemd/user/epicyon-notifications.service"
-systemctl --user enable epicyon-notifications.service
-systemctl --user daemon-reload
-systemctl --user restart epicyon-notifications.service &
+#{ echo '[Unit]';
+#  echo 'Description=Epicyon Desktop Notifications';
+#  echo '';
+#  echo '[Service]';
+#  echo "WorkingDirectory=${HOME}/.epicyon";
+#  echo "ExecStart=/usr/bin/python3 epicyon.py --noKeyPress --notifyType $notificationType --notify $HANDLE --password \"$PASSWORD\"";
+#  echo 'Type=oneshot';
+#  echo 'RemainAfterExit=yes';
+#  echo '';
+#  echo '[Install]';
+#  echo 'WantedBy=default.target'; } > "${HOME}/.config/systemd/user/epicyon-notifications.service"
+#systemctl --user daemon-reload
+#systemctl --user stop epicyon-notifications.service &
+#systemctl --user disable epicyon-notifications.service
 
-zenity --info --width=400 --text "Epicyon notifications are now enabled"
+{ echo '#!/bin/bash';
+  echo 'cd ~/.epicyon';
+  echo "PASSWORD=\$(zenity --width=400 --password --title \"Epicyon Desktop Client\")";
+  echo "if [ ! \"\$PASSWORD\" ]; then";
+  echo "    zenity --warning --width=400 --text \"No password was given\"";
+  echo '    exit 3';
+  echo 'fi';  
+  echo "python3 epicyon.py --client ${HANDLE} --password \"\$PASSWORD\""; } > ~/epicyon-client
+chmod +x ~/epicyon-client
+
+zenity --info --width=400 --text "Epicyon desktop client is now installed. You can run it with ~/epicyon-client"
