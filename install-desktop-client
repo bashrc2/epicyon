@@ -127,8 +127,8 @@ chmod +x ~/epicyon-client-pico
 sed -i 's|epicyon.py|epicyon.py --screenreader picospeaker|g' ~/epicyon-client-pico
 
 # TTS stream
-cp ~/epicyon-client ~/epicyon-client-pico
-chmod +x ~/epicyon-client-pico
+cp ~/epicyon-client ~/epicyon-client-stream
+chmod +x ~/epicyon-client-stream
 sed -i 's|epicyon.py|epicyon.py --notifyShowNewPosts --screenreader espeak|g' ~/epicyon-client-stream
 
 zenity --info --width=400 --text "Epicyon desktop client is now installed. You can run it with ~/epicyon-client"
