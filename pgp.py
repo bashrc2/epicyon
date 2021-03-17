@@ -419,7 +419,7 @@ def _pgpLocalPublicKeyId() -> str:
         return None
     if len(result) < 5:
         return None
-    return result.replace('"', '').strip()
+    return result.decode('utf-8').replace('"', '').strip()
 
 
 def _pgpLocalPublicKey() -> str:
