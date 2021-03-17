@@ -1235,7 +1235,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         getJson(session, personUrl, asHeader, None,
                 debug, __version__, httpPrefix, None, 20, quiet)
     if personJson:
-        if not quiet or debug:
+        if not quiet:
             pprint(personJson)
         return personJson
     else:
@@ -1246,7 +1246,7 @@ def getActorJson(handle: str, http: bool, gnunet: bool,
         personJson = \
             getJson(session, personUrl, asHeader, None,
                     debug, __version__, httpPrefix, None)
-        if not quiet or debug:
+        if not quiet:
             if personJson:
                 print('getActorJson returned actor')
                 pprint(personJson)
