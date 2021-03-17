@@ -821,6 +821,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         currTimeline = 'inbox'
     print('')
     commandStr = _desktopWaitForCmd(2, debug)
+    nextCommandStr = None
 
     originalScreenReader = screenreader
     domainFull = getFullDomain(domain, port)
@@ -1006,7 +1007,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         if noKeyPress:
             time.sleep(10)
         else:
-            commandStr = _desktopWaitForCmd(30, debug)
+            if nextCommandStr:
+                commandStr = nextCommandStr
+                nextCommandStr = None
+            else:
+                commandStr = _desktopWaitForCmd(30, debug)
         if commandStr:
             if commandStr.startswith('/'):
                 commandStr = commandStr[1:]
@@ -1120,6 +1125,19 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _readLocalBoxPost(currTimeline, postIndex,
                                           systemLanguage, screenreader,
                                           espeak)
+                    # if we are on a busy timeline then wait for the post
+                    # to be read because otherwise it could potentially be
+                    # immediately overwritten as the timeline refreshes
+                    if speakerJson and not noKeyPress:
+                        # average reading speed is said to be 800 chars/min
+                        # so this allows some overhead
+                        readingSpeedCharsPerMin = 600
+                        displayTimeSec = \
+                            int(len(speakerJson['say']) * 60 /
+                                readingSpeedCharsPerMin)
+                        print('Waiting ' + str(displayTimeSec) + ' sec.')
+                        nextCommandStr = \
+                            _desktopWaitForCmd(displayTimeSec, debug)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if speakerJson.get('id'):
