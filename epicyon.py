@@ -1413,7 +1413,7 @@ if args.migrations:
     sys.exit()
 
 if args.actor:
-    getActorJson(args.actor, args.http, args.gnunet, False)
+    getActorJson(args.actor, args.http, args.gnunet, debug)
     sys.exit()
 
 if args.followers:
