@@ -78,7 +78,7 @@ from theme import setTheme
 from announce import sendAnnounceViaServer
 from socnet import instancesGraph
 from migrate import migrateAccounts
-from notifications_client import runNotificationsClient
+from desktop_client import runDesktopClient
 
 
 def str2bool(v) -> bool:
@@ -304,7 +304,7 @@ parser.add_argument("--notifyShowNewPosts",
                     dest='notifyShowNewPosts',
                     type=str2bool, nargs='?',
                     const=True, default=False,
-                    help="Notification client shows/speaks new posts " +
+                    help="Desktop client shows/speaks new posts " +
                     "as they arrive")
 parser.add_argument("--noapproval", type=str2bool, nargs='?',
                     const=True, default=False,
@@ -1868,15 +1868,15 @@ if args.desktop:
     # only store inbox posts if we are not running as a daemon
     storeInboxPosts = not args.noKeyPress
 
-    runNotificationsClient(baseDir, proxyType, httpPrefix,
-                           nickname, domain, port, args.password,
-                           args.screenreader, args.language,
-                           args.notificationSounds,
-                           args.notificationType,
-                           args.noKeyPress,
-                           storeInboxPosts,
-                           args.notifyShowNewPosts,
-                           args.debug)
+    runDesktopClient(baseDir, proxyType, httpPrefix,
+                     nickname, domain, port, args.password,
+                     args.screenreader, args.language,
+                     args.notificationSounds,
+                     args.notificationType,
+                     args.noKeyPress,
+                     storeInboxPosts,
+                     args.notifyShowNewPosts,
+                     args.debug)
     sys.exit()
 
 if federationList:

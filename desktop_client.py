@@ -1,4 +1,4 @@
-__filename__ = "notifications_client.py"
+__filename__ = "desktop_client.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "1.2.0"
@@ -45,7 +45,7 @@ def _desktopHelp() -> None:
     print(indent + 'Commands:')
     print('')
     print(indent + 'quit                         ' +
-          'Exit from the notification client')
+          'Exit from the desktop client')
     print(indent + 'show dm|sent|inbox|replies   ' +
           'Show a timeline')
     print(indent + 'mute                         ' +
@@ -85,13 +85,13 @@ def _desktopHelp() -> None:
     print('')
 
 
-def _clearScreen() -> None:
+def _desktopClearScreen() -> None:
     """Clears the screen
     """
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def _showDesktopBanner() -> None:
+def _desktopShowBanner() -> None:
     """Shows the banner at the top
     """
     bannerFilename = 'banner.txt'
@@ -106,9 +106,9 @@ def _showDesktopBanner() -> None:
             print(banner + '\n')
 
 
-def _waitForKeypress(timeout: int, debug: bool) -> str:
-    """Waits for a keypress with a timeout
-    Returns the key pressed, or None on timeout
+def _desktopWaitForCmd(timeout: int, debug: bool) -> str:
+    """Waits for a command to be entered with a timeout
+    Returns the command, or None on timeout
     """
     i, o, e = select.select([sys.stdin], [], [], timeout)
 
@@ -224,14 +224,14 @@ def _sayCommand(content: str, sayStr: str, screenreader: str,
                   systemLanguage, espeak)
 
 
-def _notificationReplyToPost(session, postId: str,
-                             baseDir: str, nickname: str, password: str,
-                             domain: str, port: int, httpPrefix: str,
-                             cachedWebfingers: {}, personCache: {},
-                             debug: bool, subject: str,
-                             screenreader: str, systemLanguage: str,
-                             espeak) -> None:
-    """Use the notification client to send a reply to the most recent post
+def _desktopReplyToPost(session, postId: str,
+                        baseDir: str, nickname: str, password: str,
+                        domain: str, port: int, httpPrefix: str,
+                        cachedWebfingers: {}, personCache: {},
+                        debug: bool, subject: str,
+                        screenreader: str, systemLanguage: str,
+                        espeak) -> None:
+    """Use the desktop client to send a reply to the most recent post
     """
     if '://' not in postId:
         return
@@ -288,14 +288,14 @@ def _notificationReplyToPost(session, postId: str,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
-def _notificationNewPost(session,
-                         baseDir: str, nickname: str, password: str,
-                         domain: str, port: int, httpPrefix: str,
-                         cachedWebfingers: {}, personCache: {},
-                         debug: bool,
-                         screenreader: str, systemLanguage: str,
-                         espeak) -> None:
-    """Use the notification client to create a new post
+def _desktopNewPost(session,
+                    baseDir: str, nickname: str, password: str,
+                    domain: str, port: int, httpPrefix: str,
+                    cachedWebfingers: {}, personCache: {},
+                    debug: bool,
+                    screenreader: str, systemLanguage: str,
+                    espeak) -> None:
+    """Use the desktop client to create a new post
     """
     sayStr = 'Create new post'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
@@ -448,11 +448,11 @@ def _readLocalBoxPost(boxName: str, index: int,
     return speakerJson
 
 
-def _showLocalBox(notifyJson: {}, boxName: str,
-                  screenreader: str, systemLanguage: str, espeak,
-                  startPostIndex=0, noOfPosts=10,
-                  newReplies=False,
-                  newDMs=False) -> bool:
+def _desktopShowBox(notifyJson: {}, boxName: str,
+                    screenreader: str, systemLanguage: str, espeak,
+                    startPostIndex=0, noOfPosts=10,
+                    newReplies=False,
+                    newDMs=False) -> bool:
     """Shows locally stored posts for a given subdirectory
     """
     indent = '   '
@@ -472,8 +472,8 @@ def _showLocalBox(notifyJson: {}, boxName: str,
             index.append(f)
 
     # title
-    _clearScreen()
-    _showDesktopBanner()
+    _desktopClearScreen()
+    _desktopShowBanner()
 
     notificationIcons = ''
     if notifyJson:
@@ -590,14 +590,14 @@ def _showLocalBox(notifyJson: {}, boxName: str,
     return True
 
 
-def _notificationNewDM(session, toHandle: str,
-                       baseDir: str, nickname: str, password: str,
-                       domain: str, port: int, httpPrefix: str,
-                       cachedWebfingers: {}, personCache: {},
-                       debug: bool,
-                       screenreader: str, systemLanguage: str,
-                       espeak) -> None:
-    """Use the notification client to create a new direct message
+def _desktopNewDM(session, toHandle: str,
+                  baseDir: str, nickname: str, password: str,
+                  domain: str, port: int, httpPrefix: str,
+                  cachedWebfingers: {}, personCache: {},
+                  debug: bool,
+                  screenreader: str, systemLanguage: str,
+                  espeak) -> None:
+    """Use the desktop client to create a new direct message
     which can include multiple destination handles
     """
     if ' ' in toHandle:
@@ -611,17 +611,18 @@ def _notificationNewDM(session, toHandle: str,
 
     for handle in handlesList:
         handle = handle.strip()
-        _notificationNewDMbase(session, handle,
-                               baseDir, nickname, password,
-                               domain, port, httpPrefix,
-                               cachedWebfingers, personCache,
-                               debug,
-                               screenreader, systemLanguage,
-                               espeak)
+        _desktopNewDMbase(session, handle,
+                          baseDir, nickname, password,
+                          domain, port, httpPrefix,
+                          cachedWebfingers, personCache,
+                          debug,
+                          screenreader, systemLanguage,
+                          espeak)
 
 
-def _storeMessage(speakerJson: {}, boxName: str) -> None:
+def _desktopStoreMsg(speakerJson: {}, boxName: str) -> None:
     """Stores a message in your home directory for later reading
+    which could be offline
     """
     if not speakerJson.get('published'):
         return
@@ -646,14 +647,14 @@ def _storeMessage(speakerJson: {}, boxName: str) -> None:
     saveJson(speakerJson, msgFilename)
 
 
-def _notificationNewDMbase(session, toHandle: str,
-                           baseDir: str, nickname: str, password: str,
-                           domain: str, port: int, httpPrefix: str,
-                           cachedWebfingers: {}, personCache: {},
-                           debug: bool,
-                           screenreader: str, systemLanguage: str,
-                           espeak) -> None:
-    """Use the notification client to create a new direct message
+def _desktopNewDMbase(session, toHandle: str,
+                      baseDir: str, nickname: str, password: str,
+                      domain: str, port: int, httpPrefix: str,
+                      cachedWebfingers: {}, personCache: {},
+                      debug: bool,
+                      screenreader: str, systemLanguage: str,
+                      espeak) -> None:
+    """Use the desktop client to create a new direct message
     """
     toPort = port
     if '://' in toHandle:
@@ -756,32 +757,32 @@ def _notificationNewDMbase(session, toHandle: str,
             "id": postId,
             "direct": True
         }
-        _storeMessage(speakerJson, 'sent')
+        _desktopStoreMsg(speakerJson, 'sent')
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
-def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
-                           nickname: str, domain: str, port: int,
-                           password: str, screenreader: str,
-                           systemLanguage: str,
-                           notificationSounds: bool,
-                           notificationType: str,
-                           noKeyPress: bool,
-                           storeInboxPosts: bool,
-                           showNewPosts: bool,
-                           debug: bool) -> None:
-    """Runs the notifications and screen reader client,
+def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
+                     nickname: str, domain: str, port: int,
+                     password: str, screenreader: str,
+                     systemLanguage: str,
+                     notificationSounds: bool,
+                     notificationType: str,
+                     noKeyPress: bool,
+                     storeInboxPosts: bool,
+                     showNewPosts: bool,
+                     debug: bool) -> None:
+    """Runs the desktop and screen reader client,
     which announces new inbox items
     """
     indent = '   '
     if showNewPosts:
         indent = ''
 
-    _clearScreen()
-    _showDesktopBanner()
+    _desktopClearScreen()
+    _desktopShowBanner()
 
     espeak = None
     if screenreader:
@@ -814,12 +815,12 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
     if not showNewPosts:
         print('')
         currInboxIndex = 0
-        _showLocalBox(None, 'inbox',
-                      screenreader, systemLanguage, espeak,
-                      currInboxIndex, 10)
+        _desktopShowBox(None, 'inbox',
+                        screenreader, systemLanguage, espeak,
+                        currInboxIndex, 10)
         currTimeline = 'inbox'
     print('')
-    keyPress = _waitForKeypress(2, debug)
+    commandStr = _desktopWaitForCmd(2, debug)
 
     originalScreenReader = screenreader
     domainFull = getFullDomain(domain, port)
@@ -980,20 +981,20 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         speakerJson['decrypted'] = False
                         if speakerJson.get('replyToYou'):
                             newRepliesExist = True
-                            _storeMessage(speakerJson, 'replies')
+                            _desktopStoreMsg(speakerJson, 'replies')
                         if speakerJson.get('direct'):
                             newDMsExist = True
-                            _storeMessage(speakerJson, 'dm')
+                            _desktopStoreMsg(speakerJson, 'dm')
                         if storeInboxPosts:
-                            _storeMessage(speakerJson, 'inbox')
+                            _desktopStoreMsg(speakerJson, 'inbox')
 
                         if not showNewPosts:
-                            _clearScreen()
-                            _showLocalBox(notifyJson, currTimeline,
-                                          None, systemLanguage, espeak,
-                                          currInboxIndex, 10,
-                                          newRepliesExist,
-                                          newDMsExist)
+                            _desktopClearScreen()
+                            _desktopShowBox(notifyJson, currTimeline,
+                                            None, systemLanguage, espeak,
+                                            currInboxIndex, 10,
+                                            newRepliesExist,
+                                            newDMsExist)
                         else:
                             print('')
 
@@ -1005,112 +1006,114 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
         if noKeyPress:
             time.sleep(10)
         else:
-            keyPress = _waitForKeypress(30, debug)
-        if keyPress:
-            if keyPress.startswith('/'):
-                keyPress = keyPress[1:]
-            if keyPress == 'q' or keyPress == 'quit' or keyPress == 'exit':
+            commandStr = _desktopWaitForCmd(30, debug)
+        if commandStr:
+            if commandStr.startswith('/'):
+                commandStr = commandStr[1:]
+            if commandStr == 'q' or \
+               commandStr == 'quit' or \
+               commandStr == 'exit':
                 sayStr = 'Quit'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 if screenreader:
-                    keyPress = _waitForKeypress(2, debug)
+                    commandStr = _desktopWaitForCmd(2, debug)
                 break
-            elif keyPress.startswith('show dm'):
+            elif commandStr.startswith('show dm'):
                 currDMIndex = 0
-                _showLocalBox(notifyJson, 'dm',
-                              screenreader, systemLanguage, espeak,
-                              currDMIndex, 10,
-                              newRepliesExist, newDMsExist)
+                _desktopShowBox(notifyJson, 'dm',
+                                screenreader, systemLanguage, espeak,
+                                currDMIndex, 10,
+                                newRepliesExist, newDMsExist)
                 currTimeline = 'dm'
                 newDMsExist = False
-            elif keyPress.startswith('show rep'):
+            elif commandStr.startswith('show rep'):
                 currRepliesIndex = 0
-                _showLocalBox(notifyJson, 'replies',
-                              screenreader, systemLanguage, espeak,
-                              currRepliesIndex, 10,
-                              newRepliesExist, newDMsExist)
+                _desktopShowBox(notifyJson, 'replies',
+                                screenreader, systemLanguage, espeak,
+                                currRepliesIndex, 10,
+                                newRepliesExist, newDMsExist)
                 currTimeline = 'replies'
                 # Turn off the replies indicator
                 newRepliesExist = False
-            elif keyPress.startswith('show sen'):
+            elif commandStr.startswith('show sen'):
                 currSentIndex = 0
-                _showLocalBox(notifyJson, 'sent',
-                              screenreader, systemLanguage, espeak,
-                              currSentIndex, 10,
-                              newRepliesExist, newDMsExist)
+                _desktopShowBox(notifyJson, 'sent',
+                                screenreader, systemLanguage, espeak,
+                                currSentIndex, 10,
+                                newRepliesExist, newDMsExist)
                 currTimeline = 'sent'
-            elif (keyPress == 'show' or keyPress.startswith('show in') or
-                  keyPress == 'clear'):
+            elif (commandStr == 'show' or commandStr.startswith('show in') or
+                  commandStr == 'clear'):
                 currInboxIndex = 0
-                _showLocalBox(notifyJson, 'inbox',
-                              screenreader, systemLanguage, espeak,
-                              currInboxIndex, 10,
-                              newRepliesExist, newDMsExist)
+                _desktopShowBox(notifyJson, 'inbox',
+                                screenreader, systemLanguage, espeak,
+                                currInboxIndex, 10,
+                                newRepliesExist, newDMsExist)
                 currTimeline = 'inbox'
-            elif keyPress.startswith('next'):
+            elif commandStr.startswith('next'):
                 if currTimeline == 'dm':
                     currDMIndex += 10
-                    _showLocalBox(notifyJson, 'dm',
-                                  screenreader, systemLanguage, espeak,
-                                  currDMIndex, 10,
-                                  newRepliesExist, newDMsExist)
+                    _desktopShowBox(notifyJson, 'dm',
+                                    screenreader, systemLanguage, espeak,
+                                    currDMIndex, 10,
+                                    newRepliesExist, newDMsExist)
                 elif currTimeline == 'replies':
                     currRepliesIndex += 10
-                    _showLocalBox(notifyJson, 'replies',
-                                  screenreader, systemLanguage, espeak,
-                                  currRepliesIndex, 10,
-                                  newRepliesExist, newDMsExist)
+                    _desktopShowBox(notifyJson, 'replies',
+                                    screenreader, systemLanguage, espeak,
+                                    currRepliesIndex, 10,
+                                    newRepliesExist, newDMsExist)
                 elif currTimeline == 'sent':
                     currSentIndex += 10
-                    _showLocalBox(notifyJson, 'sent',
-                                  screenreader, systemLanguage, espeak,
-                                  currSentIndex, 10,
-                                  newRepliesExist, newDMsExist)
+                    _desktopShowBox(notifyJson, 'sent',
+                                    screenreader, systemLanguage, espeak,
+                                    currSentIndex, 10,
+                                    newRepliesExist, newDMsExist)
                 elif currTimeline == 'inbox':
                     currInboxIndex += 10
-                    _showLocalBox(notifyJson, 'inbox',
-                                  screenreader, systemLanguage, espeak,
-                                  currInboxIndex, 10,
-                                  newRepliesExist, newDMsExist)
-            elif keyPress.startswith('prev'):
+                    _desktopShowBox(notifyJson, 'inbox',
+                                    screenreader, systemLanguage, espeak,
+                                    currInboxIndex, 10,
+                                    newRepliesExist, newDMsExist)
+            elif commandStr.startswith('prev'):
                 if currTimeline == 'dm':
                     currDMIndex -= 10
                     if currDMIndex < 0:
                         currDMIndex = 0
-                    _showLocalBox(notifyJson, 'dm',
-                                  screenreader, systemLanguage, espeak,
-                                  currDMIndex, 10,
-                                  newRepliesExist, newDMsExist)
+                    _desktopShowBox(notifyJson, 'dm',
+                                    screenreader, systemLanguage, espeak,
+                                    currDMIndex, 10,
+                                    newRepliesExist, newDMsExist)
                 elif currTimeline == 'replies':
                     currRepliesIndex -= 10
                     if currRepliesIndex < 0:
                         currRepliesIndex = 0
-                    _showLocalBox(notifyJson, 'replies',
-                                  screenreader, systemLanguage, espeak,
-                                  currRepliesIndex, 10,
-                                  newRepliesExist, newDMsExist)
+                    _desktopShowBox(notifyJson, 'replies',
+                                    screenreader, systemLanguage, espeak,
+                                    currRepliesIndex, 10,
+                                    newRepliesExist, newDMsExist)
                 elif currTimeline == 'sent':
                     currSentIndex -= 10
                     if currSentIndex < 0:
                         currSentIndex = 0
-                    _showLocalBox(notifyJson, 'sent',
-                                  screenreader, systemLanguage, espeak,
-                                  currSentIndex, 10,
-                                  newRepliesExist, newDMsExist)
+                    _desktopShowBox(notifyJson, 'sent',
+                                    screenreader, systemLanguage, espeak,
+                                    currSentIndex, 10,
+                                    newRepliesExist, newDMsExist)
                 elif currTimeline == 'inbox':
                     currInboxIndex -= 10
                     if currInboxIndex < 0:
                         currInboxIndex = 0
-                    _showLocalBox(notifyJson, 'inbox',
-                                  screenreader, systemLanguage, espeak,
-                                  currInboxIndex, 10,
-                                  newRepliesExist, newDMsExist)
-            elif keyPress.startswith('read ') or keyPress == 'read':
-                if keyPress == 'read':
+                    _desktopShowBox(notifyJson, 'inbox',
+                                    screenreader, systemLanguage, espeak,
+                                    currInboxIndex, 10,
+                                    newRepliesExist, newDMsExist)
+            elif commandStr.startswith('read ') or commandStr == 'read':
+                if commandStr == 'read':
                     postIndexStr = '1'
                 else:
-                    postIndexStr = keyPress.split('read ')[1]
+                    postIndexStr = commandStr.split('read ')[1]
                 if postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
                     speakerJson = \
@@ -1118,64 +1121,64 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           systemLanguage, screenreader,
                                           espeak)
                 print('')
-            elif keyPress == 'reply' or keyPress == 'r':
+            elif commandStr == 'reply' or commandStr == 'r':
                 if speakerJson.get('id'):
                     postId = speakerJson['id']
                     subject = None
                     if speakerJson.get('summary'):
                         subject = speakerJson['summary']
                     sessionReply = createSession(proxyType)
-                    _notificationReplyToPost(sessionReply, postId,
-                                             baseDir, nickname, password,
-                                             domain, port, httpPrefix,
-                                             cachedWebfingers, personCache,
-                                             debug, subject,
-                                             screenreader, systemLanguage,
-                                             espeak)
+                    _desktopReplyToPost(sessionReply, postId,
+                                        baseDir, nickname, password,
+                                        domain, port, httpPrefix,
+                                        cachedWebfingers, personCache,
+                                        debug, subject,
+                                        screenreader, systemLanguage,
+                                        espeak)
                 print('')
-            elif (keyPress == 'post' or keyPress == 'p' or
-                  keyPress == 'send' or
-                  keyPress.startswith('dm ') or
-                  keyPress.startswith('direct message ') or
-                  keyPress.startswith('post ') or
-                  keyPress.startswith('send ')):
+            elif (commandStr == 'post' or commandStr == 'p' or
+                  commandStr == 'send' or
+                  commandStr.startswith('dm ') or
+                  commandStr.startswith('direct message ') or
+                  commandStr.startswith('post ') or
+                  commandStr.startswith('send ')):
                 sessionPost = createSession(proxyType)
-                if keyPress.startswith('dm ') or \
-                   keyPress.startswith('direct message ') or \
-                   keyPress.startswith('post ') or \
-                   keyPress.startswith('send '):
-                    keyPress = keyPress.replace(' to ', ' ')
-                    keyPress = keyPress.replace(' dm ', ' ')
-                    keyPress = keyPress.replace(' DM ', ' ')
+                if commandStr.startswith('dm ') or \
+                   commandStr.startswith('direct message ') or \
+                   commandStr.startswith('post ') or \
+                   commandStr.startswith('send '):
+                    commandStr = commandStr.replace(' to ', ' ')
+                    commandStr = commandStr.replace(' dm ', ' ')
+                    commandStr = commandStr.replace(' DM ', ' ')
                     # direct message
                     toHandle = None
-                    if keyPress.startswith('post '):
-                        toHandle = keyPress.split('post ', 1)[1]
-                    elif keyPress.startswith('send '):
-                        toHandle = keyPress.split('send ', 1)[1]
-                    elif keyPress.startswith('dm '):
-                        toHandle = keyPress.split('dm ', 1)[1]
-                    elif keyPress.startswith('direct message '):
-                        toHandle = keyPress.split('direct message ', 1)[1]
+                    if commandStr.startswith('post '):
+                        toHandle = commandStr.split('post ', 1)[1]
+                    elif commandStr.startswith('send '):
+                        toHandle = commandStr.split('send ', 1)[1]
+                    elif commandStr.startswith('dm '):
+                        toHandle = commandStr.split('dm ', 1)[1]
+                    elif commandStr.startswith('direct message '):
+                        toHandle = commandStr.split('direct message ', 1)[1]
                     if toHandle:
-                        _notificationNewDM(sessionPost, toHandle,
-                                           baseDir, nickname, password,
-                                           domain, port, httpPrefix,
-                                           cachedWebfingers, personCache,
-                                           debug,
-                                           screenreader, systemLanguage,
-                                           espeak)
+                        _desktopNewDM(sessionPost, toHandle,
+                                      baseDir, nickname, password,
+                                      domain, port, httpPrefix,
+                                      cachedWebfingers, personCache,
+                                      debug,
+                                      screenreader, systemLanguage,
+                                      espeak)
                 else:
                     # public post
-                    _notificationNewPost(sessionPost,
-                                         baseDir, nickname, password,
-                                         domain, port, httpPrefix,
-                                         cachedWebfingers, personCache,
-                                         debug,
-                                         screenreader, systemLanguage,
-                                         espeak)
+                    _desktopNewPost(sessionPost,
+                                    baseDir, nickname, password,
+                                    domain, port, httpPrefix,
+                                    cachedWebfingers, personCache,
+                                    debug,
+                                    screenreader, systemLanguage,
+                                    espeak)
                 print('')
-            elif keyPress == 'like':
+            elif commandStr == 'like':
                 if speakerJson.get('id'):
                     sayStr = 'Liking post by ' + speakerJson['name']
                     _sayCommand(sayStr, sayStr,
@@ -1189,7 +1192,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                       cachedWebfingers, personCache,
                                       False, __version__)
                     print('')
-            elif keyPress == 'unlike' or keyPress == 'undo like':
+            elif commandStr == 'unlike' or commandStr == 'undo like':
                 if speakerJson.get('id'):
                     sayStr = 'Undoing like of post by ' + speakerJson['name']
                     _sayCommand(sayStr, sayStr,
@@ -1203,9 +1206,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           cachedWebfingers, personCache,
                                           False, __version__)
                     print('')
-            elif (keyPress == 'announce' or
-                  keyPress == 'boost' or
-                  keyPress == 'retweet'):
+            elif (commandStr == 'announce' or
+                  commandStr == 'boost' or
+                  commandStr == 'retweet'):
                 if speakerJson.get('id'):
                     postId = speakerJson['id']
                     sayStr = 'Announcing post by ' + speakerJson['name']
@@ -1220,8 +1223,8 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           cachedWebfingers, personCache,
                                           True, __version__)
                     print('')
-            elif keyPress.startswith('follow '):
-                followHandle = keyPress.replace('follow ', '').strip()
+            elif commandStr.startswith('follow '):
+                followHandle = commandStr.replace('follow ', '').strip()
                 if followHandle.startswith('@'):
                     followHandle = followHandle[1:]
                 if '@' in followHandle or '://' in followHandle:
@@ -1249,9 +1252,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr,
                                     screenreader, systemLanguage, espeak)
                     print('')
-            elif (keyPress.startswith('unfollow ') or
-                  keyPress.startswith('stop following ')):
-                followHandle = keyPress.replace('unfollow ', '').strip()
+            elif (commandStr.startswith('unfollow ') or
+                  commandStr.startswith('stop following ')):
+                followHandle = commandStr.replace('unfollow ', '').strip()
                 followHandle = followHandle.replace('stop following ', '')
                 if followHandle.startswith('@'):
                     followHandle = followHandle[1:]
@@ -1280,9 +1283,9 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                         _sayCommand(sayStr, sayStr,
                                     screenreader, systemLanguage, espeak)
                     print('')
-            elif (keyPress == 'repeat' or keyPress == 'replay' or
-                  keyPress == 'rp' or keyPress == 'again' or
-                  keyPress == 'say again'):
+            elif (commandStr == 'repeat' or commandStr == 'replay' or
+                  commandStr == 'rp' or commandStr == 'again' or
+                  commandStr == 'say again'):
                 if screenreader and nameStr and \
                    gender and messageStr and content:
                     sayStr = 'Repeating ' + nameStr
@@ -1294,25 +1297,25 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak,
                                 nameStr, gender)
                     print('')
-            elif (keyPress == 'sounds on' or
-                  keyPress == 'sound on' or
-                  keyPress == 'sound'):
+            elif (commandStr == 'sounds on' or
+                  commandStr == 'sound on' or
+                  commandStr == 'sound'):
                 sayStr = 'Notification sounds on'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = True
-            elif (keyPress == 'sounds off' or
-                  keyPress == 'sound off' or
-                  keyPress == 'nosound'):
+            elif (commandStr == 'sounds off' or
+                  commandStr == 'sound off' or
+                  commandStr == 'nosound'):
                 sayStr = 'Notification sounds off'
                 _sayCommand(sayStr, sayStr, screenreader,
                             systemLanguage, espeak)
                 notificationSounds = False
-            elif (keyPress == 'speak' or
-                  keyPress == 'screen reader on' or
-                  keyPress == 'speaker on' or
-                  keyPress == 'talker on' or
-                  keyPress == 'reader on'):
+            elif (commandStr == 'speak' or
+                  commandStr == 'screen reader on' or
+                  commandStr == 'speaker on' or
+                  commandStr == 'talker on' or
+                  commandStr == 'reader on'):
                 if originalScreenReader:
                     screenreader = originalScreenReader
                     sayStr = 'Screen reader on'
@@ -1320,11 +1323,11 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
-            elif (keyPress == 'mute' or
-                  keyPress == 'screen reader off' or
-                  keyPress == 'speaker off' or
-                  keyPress == 'talker off' or
-                  keyPress == 'reader off'):
+            elif (commandStr == 'mute' or
+                  commandStr == 'screen reader off' or
+                  commandStr == 'speaker off' or
+                  commandStr == 'talker off' or
+                  commandStr == 'reader off'):
                 if originalScreenReader:
                     screenreader = None
                     sayStr = 'Screen reader off'
@@ -1332,10 +1335,10 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 systemLanguage, espeak)
                 else:
                     print('No --screenreader option was specified')
-            elif keyPress.startswith('open'):
+            elif commandStr.startswith('open'):
                 currIndex = 0
-                if ' ' in keyPress:
-                    postIndex = keyPress.split(' ')[-1].strip()
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
                     if postIndex.isdigit():
                         currIndex = int(postIndex)
                 speakerJson = \
@@ -1358,7 +1361,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                     _sayCommand(sayStr, sayStr, originalScreenReader,
                                 systemLanguage, espeak)
                 print('')
-            elif keyPress.startswith('accept'):
+            elif commandStr.startswith('accept'):
                 if notifyJson:
                     if notifyJson.get('followRequestsList'):
                         if len(notifyJson['followRequestsList']) > 0:
@@ -1371,7 +1374,7 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             _sayCommand(sayStr, sayStr, originalScreenReader,
                                         systemLanguage, espeak)
                 print('')
-            elif keyPress.startswith('reject'):
+            elif commandStr.startswith('reject'):
                 if notifyJson:
                     if notifyJson.get('followRequestsList'):
                         if len(notifyJson['followRequestsList']) > 0:
@@ -1384,5 +1387,5 @@ def runNotificationsClient(baseDir: str, proxyType: str, httpPrefix: str,
                             _sayCommand(sayStr, sayStr, originalScreenReader,
                                         systemLanguage, espeak)
                 print('')
-            elif keyPress.startswith('h'):
+            elif commandStr.startswith('h'):
                 _desktopHelp()

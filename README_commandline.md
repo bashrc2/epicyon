@@ -422,7 +422,7 @@ Or if you have picospeaker installed:
 The desktop client has a few commands, which may be more convenient than the web interface for some purposes:
 
 ``` bash
-quit                         Exit from the notification client
+quit                         Exit from the desktop client
 mute                         Turn off the screen reader
 speak                        Turn on the screen reader
 sounds on                    Turn on notification sounds
