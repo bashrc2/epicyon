@@ -132,7 +132,14 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                     if propertyValue != 'PropertyValue':
                         ctr += 1
                         continue
-                    if propertyValue['name'] == newPropertyValue['name']:
+                    if propertyValue['name'] != newPropertyValue['name']:
+                        ctr += 1
+                        continue
+                    else:
+                        if propertyValue['value'] != newPropertyValue['value']:
+                            actorJson['attachment'][ctr]['value'] = \
+                                newPropertyValue['value']
+                            actorChanged = True
                         found = True
                         break
                     ctr += 1
@@ -142,10 +149,7 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                         "type": "PropertyValue",
                         "value": newPropertyValue['value']
                     })
-                else:
-                    actorJson['attachment'][ctr]['value'] = \
-                        newPropertyValue['value']
-                actorChanged = True
+                    actorChanged = True
     # save actor to file
     if actorChanged:
         saveJson(actorJson, actorFilename)
