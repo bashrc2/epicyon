@@ -1912,6 +1912,22 @@ def testWebLinks():
     print('testWebLinks')
 
     exampleText = \
+        "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        " <a href=\"https://domain.ugh/tags/turbot\" class=\"mention " + \
+        "hashtag\" rel=\"tag\">#<span>turbot</span></a> <a href=\"" + \
+        "https://domain.ugh/tags/haddock\" class=\"mention hashtag\"" + \
+        " rel=\"tag\">#<span>haddock</span></a></p>"
+    resultText = removeLongWords(exampleText, 40, [])
+    assert resultText == "<p>Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + \
+        " <a href=\"https://domain.ugh/tags/turbot\" class=\"mention " + \
+        "hashtag\" rel=\"tag\">#<span>turbot</span></a> " + \
+        "<a href=\"https://domain.ugh/tags/haddock\" " + \
+        "class=\"mention hashtag\" rel=\"tag\">#<span>haddock</span></a></p>"
+
+    exampleText = \
         '<p><span class=\"h-card\"><a href=\"https://something/@orother' + \
         '\" class=\"u-url mention\">@<span>foo</span></a></span> Some ' + \
         'random text.</p><p>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA' + \

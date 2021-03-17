@@ -643,6 +643,8 @@ def removeLongWords(content: str, maxWordLength: int,
                 if wordStr not in longWordsList:
                     longWordsList.append(wordStr)
     for wordStr in longWordsList:
+        if wordStr.startswith('<p>'):
+            wordStr = wordStr.replace('<p>', '')
         if wordStr.startswith('<'):
             continue
         if len(wordStr) == 76:
@@ -678,6 +680,8 @@ def removeLongWords(content: str, maxWordLength: int,
             continue
         if '<' in wordStr:
             replaceWord = wordStr.split('<', 1)[0]
+            # if len(replaceWord) > maxWordLength:
+            #     replaceWord = replaceWord[:maxWordLength]
             content = content.replace(wordStr, replaceWord)
             wordStr = replaceWord
         if '/' in wordStr:
