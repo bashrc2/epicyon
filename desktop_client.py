@@ -1135,7 +1135,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                         displayTimeSec = \
                             int(len(speakerJson['say']) * 60 /
                                 readingSpeedCharsPerMin)
-                        print('Waiting ' + str(displayTimeSec) + ' sec.')
+                        if displayTimeSec < 10:
+                            displayTimeSec = 10
                         nextCommandStr = \
                             _desktopWaitForCmd(displayTimeSec, debug)
                 print('')
