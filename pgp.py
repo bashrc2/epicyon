@@ -436,7 +436,7 @@ def _pgpLocalPublicKey() -> str:
         return None
     if not result:
         return None
-    return extractPGPPublicKey(result)
+    return extractPGPPublicKey(result.decode('utf-8'))
 
 
 def pgpPublicKeyUpload(baseDir: str, session,
