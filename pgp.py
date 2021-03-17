@@ -425,7 +425,7 @@ def _pgpLocalPublicKeyId() -> str:
 def _pgpLocalPublicKey() -> str:
     """Gets the local pgp public key
     """
-    keyId = _pgpLocalPublicKey()
+    keyId = _pgpLocalPublicKeyId()
     if not keyId:
         return None
     cmdStr = "gpg --armor --export " + keyId
