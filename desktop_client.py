@@ -35,6 +35,7 @@ from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
+from pgp import pgpPublicKeyUpload
 
 
 def _desktopHelp() -> None:
@@ -850,8 +851,21 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     newRepliesExist = False
     newDMsExist = False
     currPostId = ''
+    pgpKeyUpload = False
     while (1):
         session = createSession(proxyType)
+
+        if not pgpKeyUpload:
+            pgpKey = \
+                pgpPublicKeyUpload(baseDir, session,
+                                   nickname, password,
+                                   domain, port, httpPrefix,
+                                   cachedWebfingers, personCache,
+                                   debug, False)
+            if pgpKey:
+                print('PGP public key uploaded')
+            pgpKeyUpload = True
+
         notifyJson = None
         speakerJson = \
             getSpeakerFromServer(baseDir, session, nickname, password,

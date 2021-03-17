@@ -7,11 +7,18 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import time
 import subprocess
 from pathlib import Path
 from person import getActorJson
 from utils import containsPGPPublicKey
 from utils import isPGPEncrypted
+from utils import getFullDomain
+from utils import getStatusNumber
+from webfinger import webfingerHandle
+from posts import getPersonBox
+from auth import createBasicAuthHeader
+from session import postJson
 
 
 def getEmailAddress(actorJson: {}) -> str:
@@ -395,3 +402,201 @@ def pgpDecrypt(content: str, fromHandle: str) -> str:
         return content
     decryptResult = decryptResult.decode('utf-8').strip()
     return decryptResult
+
+
+def _pgpLocalPublicKeyId() -> str:
+    """Gets the local pgp public key ID
+    """
+    cmdStr = \
+        "gpgconf --list-options gpg | " + \
+        "awk -F: '$1 == \"default-key\" {print $10}'"
+    proc = subprocess.Popen([cmdStr],
+                            stdout=subprocess.PIPE, shell=True)
+    (result, err) = proc.communicate()
+    if err:
+        return None
+    if not result:
+        return None
+    if len(result) < 5:
+        return None
+    return result.replace('"', '').strip()
+
+
+def _pgpLocalPublicKey() -> str:
+    """Gets the local pgp public key
+    """
+    keyId = _pgpLocalPublicKey()
+    if not keyId:
+        return None
+    cmdStr = "gpg --armor --export " + keyId
+    proc = subprocess.Popen([cmdStr],
+                            stdout=subprocess.PIPE, shell=True)
+    (result, err) = proc.communicate()
+    if err:
+        return None
+    if not result:
+        return None
+    return extractPGPPublicKey(result)
+
+
+def pgpPublicKeyUpload(baseDir: str, session,
+                       nickname: str, password: str,
+                       domain: str, port: int,
+                       httpPrefix: str,
+                       cachedWebfingers: {}, personCache: {},
+                       debug: bool, test: str) -> {}:
+    if debug:
+        print('pgpPublicKeyUpload')
+
+    if not session:
+        if debug:
+            print('WARN: No session for pgpPublicKeyUpload')
+        return None
+
+    if not test:
+        if debug:
+            print('Getting PGP public key')
+        PGPpubKey = _pgpLocalPublicKey()
+        if not PGPpubKey:
+            return None
+        PGPpubKeyId = _pgpLocalPublicKeyId()
+    else:
+        if debug:
+            print('Testing with PGP public key ' + test)
+        PGPpubKey = test
+        PGPpubKeyId = None
+
+    domainFull = getFullDomain(domain, port)
+    if debug:
+        print('PGP test domain: ' + domainFull)
+
+    handle = nickname + '@' + domainFull
+
+    if debug:
+        print('Getting actor for ' + handle)
+
+    actorJson = getActorJson(handle, False, False, True)
+    if not actorJson:
+        if debug:
+            print('No actor returned for ' + handle)
+        return None
+
+    if debug:
+        print('Actor for ' + handle + ' obtained')
+
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    handle = actor.replace('/users/', '/@')
+
+    # check that this looks like the correct actor
+    if not actorJson.get('id'):
+        if debug:
+            print('Actor has no id')
+        return None
+    if not actorJson.get('url'):
+        if debug:
+            print('Actor has no url')
+        return None
+    if not actorJson.get('type'):
+        if debug:
+            print('Actor has no type')
+        return None
+    if actorJson['id'] != actor:
+        if debug:
+            print('Actor id is not ' + actor +
+                  ' instead is ' + actorJson['id'])
+        return None
+    if actorJson['url'] != handle:
+        if debug:
+            print('Actor url is not ' + handle)
+        return None
+    if actorJson['type'] != 'Person':
+        if debug:
+            print('Actor type is not Person')
+        return None
+
+    # set the pgp details
+    if PGPpubKeyId:
+        setPGPfingerprint(actorJson, PGPpubKeyId)
+    else:
+        if debug:
+            print('No PGP key Id. Continuing anyway.')
+
+    if debug:
+        print('Setting PGP key within ' + actor)
+    setPGPpubKey(actorJson, PGPpubKey)
+
+    # create an actor update
+    statusNumber, published = getStatusNumber()
+    actorUpdate = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': actor + '#updates/' + statusNumber,
+        'type': 'Update',
+        'actor': actor,
+        'to': [actor],
+        'cc': [],
+        'object': actorJson
+    }
+    if debug:
+        print('actor update is ' + str(actorUpdate))
+
+    # lookup the inbox for the To handle
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, __version__, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: pgp actor update webfinger failed for ' +
+                  handle)
+        return None
+    if not isinstance(wfRequest, dict):
+        if debug:
+            print('WARN: Webfinger for ' + handle +
+                  ' did not return a dict. ' + str(wfRequest))
+        return None
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+                                 __version__, httpPrefix, nickname,
+                                 domain, postToBox, 52025)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+        return None
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for ' + handle)
+        return None
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    tries = 0
+    quiet = not debug
+    while tries < 4:
+        postResult = \
+            postJson(session, actorUpdate, [], inboxUrl,
+                     headers, 30, quiet)
+        if postResult:
+            break
+        time.sleep(2)
+        tries += 1
+
+    if postResult is None:
+        if debug:
+            print('DEBUG: POST pgp actor update failed for c2s to ' +
+                  inboxUrl)
+        return None
+
+    if debug:
+        print('DEBUG: c2s POST pgp actor update success')
+
+    return actorUpdate

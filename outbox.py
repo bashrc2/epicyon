@@ -21,6 +21,8 @@ from utils import removeIdEnding
 from utils import getDomainFromActor
 from utils import dangerousMarkup
 from utils import isFeaturedWriter
+from utils import loadJson
+from utils import saveJson
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
@@ -40,6 +42,119 @@ from bookmarks import outboxUndoBookmark
 from delete import outboxDelete
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
+
+
+def _outboxPersonReceiveUpdate(recentPostsCache: {},
+                               baseDir: str, httpPrefix: str,
+                               nickname: str, domain: str, port: int,
+                               messageJson: {}, debug: bool) -> None:
+    """ Receive an actor update from c2s
+    For example, setting the PGP key from the desktop client
+    """
+    # these attachments are updatable via c2s
+    updatableAttachments = ('PGP', 'OpenPGP', 'Email')
+
+    if not messageJson.get('type'):
+        return
+    print("messageJson['type'] " + messageJson['type'])
+    if messageJson['type'] != 'Update':
+        return
+    if not messageJson.get('object'):
+        return
+    if not isinstance(messageJson['object'], dict):
+        if debug:
+            print('DEBUG: c2s actor update object is not dict')
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: c2s actor update - no type')
+        return
+    if messageJson['object']['type'] != 'Person':
+        if debug:
+            print('DEBUG: not a c2s actor update')
+        return
+    if not messageJson.get('to'):
+        if debug:
+            print('DEBUG: c2s actor update has no "to" field')
+        return
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: c2s actor update has no actor field')
+        return
+    if not messageJson.get('id'):
+        if debug:
+            print('DEBUG: c2s actor update has no id field')
+        return
+    actor = \
+        httpPrefix + '://' + getFullDomain(domain, port) + '/users/' + nickname
+    if len(messageJson['to']) != 1:
+        if debug:
+            print('DEBUG: c2s actor update - to does not contain one actor ' +
+                  messageJson['to'])
+        return
+    if messageJson['to'][0] != actor:
+        if debug:
+            print('DEBUG: c2s actor update - to does not contain actor ' +
+                  messageJson['to'] + ' ' + actor)
+        return
+    if not messageJson['id'].startswith(actor + '#updates/'):
+        if debug:
+            print('DEBUG: c2s actor update - unexpected id ' +
+                  messageJson['id'])
+        return
+    updatedActorJson = messageJson['object']
+    # load actor from file
+    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
+    if not os.path.isfile(actorFilename):
+        print('actorFilename not found: ' + actorFilename)
+        return
+    actorJson = loadJson(actorFilename)
+    if not actorJson:
+        return
+    actorChanged = False
+    # update fields within actor
+    if 'attachment' in updatedActorJson:
+        for newPropertyValue in updatedActorJson['attachment']:
+            if not newPropertyValue.get('name'):
+                continue
+            if newPropertyValue['name'] not in updatableAttachments:
+                continue
+            if not newPropertyValue.get('type'):
+                continue
+            if not newPropertyValue.get('value'):
+                continue
+            if newPropertyValue['type'] != 'PropertyValue':
+                continue
+            if 'attachment' in actorJson:
+                found = False
+                for propertyValue in actorJson['attachment']:
+                    if propertyValue != 'PropertyValue':
+                        continue
+                    if propertyValue['name'] == newPropertyValue['name']:
+                        if propertyValue['value'] != \
+                           newPropertyValue['value']:
+                            propertyValue['value'] = \
+                                newPropertyValue['value']
+                            actorChanged = True
+                            found = True
+                        break
+                if not found:
+                    actorJson['attachment'].append({
+                        "name": newPropertyValue['name'],
+                        "type": "PropertyValue",
+                        "value": newPropertyValue['value']
+                    })
+                    actorChanged = True
+    # save actor to file
+    if actorChanged:
+        saveJson(actorJson, actorFilename)
+        if debug:
+            print('actor saved: ' + actorFilename)
+    if debug:
+        print('New attachment: ' + str(actorJson['attachment']))
+    messageJson['object'] = actorJson
+    if debug:
+        print('DEBUG: actor update via c2s - ' + nickname + '@' + domain)
 
 
 def postMessageToOutbox(session, translate: {},
@@ -407,6 +522,13 @@ def postMessageToOutbox(session, translate: {},
     outboxUndoShareUpload(baseDir, httpPrefix,
                           postToNickname, domain,
                           port, messageJson, debug)
+
+    if debug:
+        print('DEBUG: handle actor updates from c2s')
+    _outboxPersonReceiveUpdate(recentPostsCache,
+                               baseDir, httpPrefix,
+                               postToNickname, domain, port,
+                               messageJson, debug)
 
     if debug:
         print('DEBUG: sending c2s post to named addresses')

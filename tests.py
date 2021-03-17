@@ -53,6 +53,7 @@ from utils import getFollowersOfPerson
 from utils import removeHtml
 from utils import dangerousMarkup
 from pgp import extractPGPPublicKey
+from pgp import pgpPublicKeyUpload
 from utils import containsPGPPublicKey
 from follow import followerOfPerson
 from follow import unfollowAccount
@@ -1574,7 +1575,7 @@ def testClientToServer():
 
     sessionAlice = createSession(proxyType)
     followersOnly = False
-    attachedImageFilename = baseDir+'/img/logo.png'
+    attachedImageFilename = baseDir + '/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription = 'Logo'
     isArticle = False
@@ -3445,6 +3446,122 @@ def testExtractPGPPublicKey():
     result = extractPGPPublicKey(testStr)
     assert result
     assert result == pubKey
+
+
+def testUpdateActor():
+    print('Testing update of actor properties')
+
+    global testServerAliceRunning
+    testServerAliceRunning = False
+
+    httpPrefix = 'http'
+    proxyType = None
+    federationList = []
+
+    baseDir = os.getcwd()
+    if os.path.isdir(baseDir + '/.tests'):
+        shutil.rmtree(baseDir + '/.tests')
+    os.mkdir(baseDir + '/.tests')
+
+    # create the server
+    aliceDir = baseDir + '/.tests/alice'
+    aliceDomain = '127.0.0.11'
+    alicePort = 61792
+    aliceSendThreads = []
+    bobAddress = '127.0.0.84:6384'
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.is_alive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
+    thrAlice = \
+        threadWithTrace(target=createServerAlice,
+                        args=(aliceDir, aliceDomain, alicePort, bobAddress,
+                              federationList, False, False,
+                              aliceSendThreads),
+                        daemon=True)
+
+    thrAlice.start()
+    assert thrAlice.is_alive() is True
+
+    # wait for server to be running
+    ctr = 0
+    while not testServerAliceRunning:
+        time.sleep(1)
+        ctr += 1
+        if ctr > 60:
+            break
+    print('Alice online: ' + str(testServerAliceRunning))
+
+    print('\n\n*******************************************************')
+    print('Alice updates her PGP key')
+
+    sessionAlice = createSession(proxyType)
+    cachedWebfingers = {}
+    personCache = {}
+    password = 'alicepass'
+    outboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/outbox'
+    actorFilename = aliceDir + '/accounts/' + 'alice@' + aliceDomain + '.json'
+    assert os.path.isfile(actorFilename)
+    assert len([name for name in os.listdir(outboxPath)
+                if os.path.isfile(os.path.join(outboxPath, name))]) == 0
+    pubKey = \
+        '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' + \
+        'mDMEWZBueBYJKwYBBAHaRw8BAQdAKx1t6wL0RTuU6/' + \
+        'IBjngMbVJJ3Wg/3UW73/PV\n' + \
+        'I47xKTS0IUJvYiBNb3R0cmFtIDxib2JAZnJlZWRvb' + \
+        'WJvbmUubmV0PoiQBBMWCAA4\n' + \
+        'FiEEmruCwAq/OfgmgEh9zCU2GR+nwz8FAlmQbngCG' + \
+        'wMFCwkIBwMFFQoJCAsFFgID\n' + \
+        'AQACHgECF4AACgkQzCU2GR+nwz/9sAD/YgsHnVszH' + \
+        'Nz1zlVc5EgY1ByDupiJpHj0\n' + \
+        'XsLYk3AbNRgBALn45RqgD4eWHpmOriH09H5Rc5V9i' + \
+        'N4+OiGUn2AzJ6oHuDgEWZBu\n' + \
+        'eBIKKwYBBAGXVQEFAQEHQPRBG2ZQJce475S3e0Dxe' + \
+        'b0Fz5WdEu2q3GYLo4QG+4Ry\n' + \
+        'AwEIB4h4BBgWCAAgFiEEmruCwAq/OfgmgEh9zCU2G' + \
+        'R+nwz8FAlmQbngCGwwACgkQ\n' + \
+        'zCU2GR+nwz+OswD+JOoyBku9FzuWoVoOevU2HH+bP' + \
+        'OMDgY2OLnST9ZSyHkMBAMcK\n' + \
+        'fnaZ2Wi050483Sj2RmQRpb99Dod7rVZTDtCqXk0J\n' + \
+        '=gv5G\n' + \
+        '-----END PGP PUBLIC KEY BLOCK-----'
+    actorUpdate = \
+        pgpPublicKeyUpload(aliceDir, sessionAlice,
+                           'alice', password,
+                           aliceDomain, alicePort,
+                           httpPrefix,
+                           cachedWebfingers, personCache,
+                           True, pubKey)
+    print('actor update result: ' + str(actorUpdate))
+    assert actorUpdate
+
+    # load alice actor
+    print('Loading actor: ' + actorFilename)
+    actorJson = loadJson(actorFilename)
+    assert actorJson
+    if len(actorJson['attachment']) == 0:
+        print("actorJson['attachment'] has no contents")
+    assert len(actorJson['attachment']) > 0
+    propertyFound = False
+    for propertyValue in actorJson['attachment']:
+        if propertyValue['name'] == 'PGP':
+            print('PGP property set within attachment')
+            assert pubKey in propertyValue['value']
+            propertyFound = True
+    assert propertyFound
+
+    # stop the server
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.is_alive() is False
+
+    os.chdir(baseDir)
+    if os.path.isdir(baseDir + '/.tests'):
+        shutil.rmtree(baseDir + '/.tests')
 
 
 def runAllTests():

@@ -1028,7 +1028,7 @@ def sendFollowRequestViaServer(baseDir: str, session,
         postJson(session, newFollowJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST follow failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:

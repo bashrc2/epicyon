@@ -48,6 +48,7 @@ from follow import sendUnfollowRequestViaServer
 from tests import testPostMessageBetweenServers
 from tests import testFollowBetweenServers
 from tests import testClientToServer
+from tests import testUpdateActor
 from tests import runAllTests
 from auth import storeBasicCredentials
 from auth import createPassword
@@ -531,6 +532,7 @@ if args.testsnetwork:
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
+    testUpdateActor()
     print('All tests succeeded')
     sys.exit()
 
@@ -2121,7 +2123,7 @@ if args.testdata:
 
     testFollowersOnly = False
     testSaveToFile = True
-    testClientToServer = False
+    testC2S = False
     testCommentsEnabled = True
     testAttachImageFilename = None
     testMediaType = None
@@ -2131,7 +2133,7 @@ if args.testdata:
                      "like this is totally just a #test man",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2139,7 +2141,7 @@ if args.testdata:
                      "Zoiks!!!",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2147,7 +2149,7 @@ if args.testdata:
                      "Hey scoob we need like a hundred more #milkshakes",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2155,7 +2157,7 @@ if args.testdata:
                      "Getting kinda spooky around here",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription,
@@ -2165,7 +2167,7 @@ if args.testdata:
                      "if it wasn't for those pesky hackers",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      'img/logo.png', 'image/png',
                      'Description of image')
@@ -2173,7 +2175,7 @@ if args.testdata:
                      "man these centralized sites are like the worst!",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2181,7 +2183,7 @@ if args.testdata:
                      "another mystery solved #test",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
@@ -2189,7 +2191,7 @@ if args.testdata:
                      "let's go bowling",
                      testFollowersOnly,
                      testSaveToFile,
-                     testClientToServer,
+                     testC2S,
                      testCommentsEnabled,
                      testAttachImageFilename,
                      testMediaType, testImageDescription)
