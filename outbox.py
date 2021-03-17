@@ -127,24 +127,25 @@ def _outboxPersonReceiveUpdate(recentPostsCache: {},
                 continue
             if 'attachment' in actorJson:
                 found = False
+                ctr = 0
                 for propertyValue in actorJson['attachment']:
                     if propertyValue != 'PropertyValue':
+                        ctr += 1
                         continue
                     if propertyValue['name'] == newPropertyValue['name']:
-                        if propertyValue['value'] != \
-                           newPropertyValue['value']:
-                            propertyValue['value'] = \
-                                newPropertyValue['value']
-                            actorChanged = True
-                            found = True
+                        found = True
                         break
+                    ctr += 1
                 if not found:
                     actorJson['attachment'].append({
                         "name": newPropertyValue['name'],
                         "type": "PropertyValue",
                         "value": newPropertyValue['value']
                     })
-                    actorChanged = True
+                else:
+                    actorJson['attachment'][ctr]['value'] = \
+                        newPropertyValue['value']
+                actorChanged = True
     # save actor to file
     if actorChanged:
         saveJson(actorJson, actorFilename)

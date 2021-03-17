@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-import time
 import subprocess
 from pathlib import Path
 from person import getActorJson
