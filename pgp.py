@@ -579,14 +579,15 @@ def pgpPublicKeyUpload(baseDir: str, session,
         'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    tries = 0
     quiet = not debug
+    tries = 0
     while tries < 4:
         postResult = \
             postJson(session, actorUpdate, [], inboxUrl,
                      headers, 30, quiet)
         if postResult:
             break
+        print('tries = ' + str(tries))
         time.sleep(2)
         tries += 1
 
