@@ -14546,8 +14546,8 @@ def runDaemon(brochMode: bool,
     # max POST size of 30M
     httpd.maxPostLength = 1024 * 1024 * 30
     httpd.maxMediaSize = httpd.maxPostLength
-    # Maximum text length is 32K - enough for a blog post
-    httpd.maxMessageLength = 32000
+    # Maximum text length is 64K - enough for a blog post
+    httpd.maxMessageLength = 64000
     # Maximum overall number of posts per box
     httpd.maxPostsInBox = 32000
     httpd.domain = domain
