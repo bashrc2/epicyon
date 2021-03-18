@@ -137,6 +137,16 @@ If you want to view the raw JSON:
 python3 epicyon.py --postsraw nickname@domain
 ```
 
+## Getting the JSON for your timelines
+
+The **--posts** option applies for any ActivityPub compatible fediverse account with visible public posts. You can also use an authenticated version to obtain the paginated JSON for your inbox, outbox, direct messages, etc.
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [yourdomain] --box [inbox|outbox|dm] --page [number] --password [yourpassword]
+```
+
+You could use this to make your own c2s client, or create your own notification system.
+
 ## Listing referenced domains
 
 To list the domains referenced in public posts:

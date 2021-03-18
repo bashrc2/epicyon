@@ -22,6 +22,7 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from posts import c2sBoxJson
 from posts import downloadFollowCollection
 from posts import getPublicPostDomains
 from posts import getPublicPostDomainsBlocked
@@ -405,6 +406,13 @@ parser.add_argument("--allowdeletion", type=str2bool, nargs='?',
 parser.add_argument('--repeat', '--announce', dest='announce', type=str,
                     default=None,
                     help='Announce/repeat a url')
+parser.add_argument('--box', type=str,
+                    default=None,
+                    help='Returns the json for a given timeline, ' +
+                    'with authentication')
+parser.add_argument('--page', '--pageNumber', dest='pageNumber', type=int,
+                    default=1,
+                    help='Page number when using the --box option')
 parser.add_argument('--favorite', '--like', dest='like', type=str,
                     default=None, help='Like a url')
 parser.add_argument('--undolike', '--unlike', dest='undolike', type=str,
@@ -1110,6 +1118,46 @@ if args.announce:
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
+    sys.exit()
+
+if args.box:
+    if not domain:
+        print('Specify a domain with the --domain option')
+        sys.exit()
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+
+    session = createSession(proxyType)
+    boxJson = c2sBoxJson(baseDir, session,
+                         args.nickname, args.password,
+                         domain, port, httpPrefix,
+                         args.box, args.pageNumber,
+                         args.debug)
+    if boxJson:
+        pprint(boxJson)
+    else:
+        print('Box not found: ' + args.box)
     sys.exit()
 
 if args.itemName:

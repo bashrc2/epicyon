@@ -4307,3 +4307,39 @@ def postIsMuted(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(muteFilename):
         return True
     return False
+
+
+def c2sBoxJson(baseDir: str, session,
+               nickname: str, password: str,
+               domain: str, port: int,
+               httpPrefix: str,
+               boxName: str, pageNumber: int,
+               debug: bool) -> {}:
+    """C2S Authenticated GET of posts for a timeline
+    """
+    if not session:
+        print('WARN: No session for c2sBoxJson')
+        return None
+
+    domainFull = getFullDomain(domain, port)
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader,
+        'Accept': 'application/ld+json; profile="' + profileStr + '"'
+    }
+
+    # GET json
+    url = actor + '/' + boxName + '?page=' + str(pageNumber)
+    boxJson = getJson(session, url, headers, None,
+                      debug, __version__, httpPrefix, None)
+
+    if boxJson is not None and debug:
+        print('DEBUG: GET c2sBoxJson success')
+
+    return boxJson
