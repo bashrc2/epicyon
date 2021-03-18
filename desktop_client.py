@@ -14,6 +14,7 @@ import select
 import webbrowser
 import urllib.parse
 from random import randint
+from utils import isDM
 from utils import loadTranslationsFromFile
 from utils import removeHtml
 from utils import getNicknameFromActor
@@ -505,6 +506,10 @@ def _desktopShowBoxJson(boxName: str, boxJson: {},
             posStr += ' '
         authorActor = postJsonObject['object']['attributedTo']
         name = getNicknameFromActor(authorActor)
+        if isDM(postJsonObject):
+            name += '📧' + name
+        if postJsonObject['object'].get('inReplyTo'):
+            name += '↲' + name
         if len(name) > 16:
             name = name[:16]
         else:
