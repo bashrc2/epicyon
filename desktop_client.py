@@ -507,15 +507,25 @@ def _desktopShowBoxJson(boxName: str, boxJson: {},
             posStr += ' '
         authorActor = postJsonObject['object']['attributedTo']
         name = getNicknameFromActor(authorActor)
+        spaceAdded = False
         if postJsonObject['object'].get('inReplyTo'):
-            name += ' ↲'
+            if not spaceAdded:
+                spaceAdded = True
+                name += ' '
+            name += '↲'
         if boxName != 'dm':
             if isDM(postJsonObject):
+                if not spaceAdded:
+                    spaceAdded = True
+                    name += ' '
                 name += '📧'
         likesCount = noOfLikes(postJsonObject)
         if likesCount > 10:
             likesCount = 10
         for like in range(likesCount):
+            if not spaceAdded:
+                spaceAdded = True
+                name += ' '
             name += '❤'
         if len(name) > 16:
             name = name[:16]
