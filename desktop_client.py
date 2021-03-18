@@ -36,6 +36,7 @@ from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
 from pgp import pgpPublicKeyUpload
+from like import noOfLikes
 
 
 def _desktopHelp() -> None:
@@ -511,6 +512,11 @@ def _desktopShowBoxJson(boxName: str, boxJson: {},
         if boxName != 'dm':
             if isDM(postJsonObject):
                 name += '📧'
+        likesCount = noOfLikes(postJsonObject)
+        if likesCount > 10:
+            likesCount = 10
+        for like in range(likesCount):
+            name += '❤'
         if len(name) > 16:
             name = name[:16]
         else:
