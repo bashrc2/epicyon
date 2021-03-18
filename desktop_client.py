@@ -995,14 +995,18 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     prevTimelineFirstId = ''
     while (1):
         if not pgpKeyUpload:
+            sayStr = indent + 'Uploading PGP public key'
+            _sayCommand(sayStr, sayStr, screenreader,
+                        systemLanguage, espeak)
             pgpKey = \
                 pgpPublicKeyUpload(baseDir, session,
                                    nickname, password,
                                    domain, port, httpPrefix,
                                    cachedWebfingers, personCache,
                                    debug, False)
-            if pgpKey:
-                print('PGP public key uploaded')
+            sayStr = indent + 'PGP public key uploaded'
+            _sayCommand(sayStr, sayStr, screenreader,
+                        systemLanguage, espeak)
             pgpKeyUpload = True
 
         boxJson = c2sBoxJson(baseDir, session,
