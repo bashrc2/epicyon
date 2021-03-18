@@ -12,8 +12,10 @@ import time
 import sys
 import select
 import webbrowser
+import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import removeHtml
 from utils import getStatusNumber
 from utils import loadJson
 from utils import saveJson
@@ -22,7 +24,6 @@ from utils import getDomainFromActor
 from utils import getFullDomain
 from utils import isPGPEncrypted
 from session import createSession
-from speaker import getSpeakerFromServer
 from speaker import getSpeakerPitch
 from speaker import getSpeakerRate
 from speaker import getSpeakerRange
@@ -31,6 +32,7 @@ from like import sendUndoLikeViaServer
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
+from posts import c2sBoxJson
 from announce import sendAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
@@ -391,62 +393,89 @@ def _safeMessage(content: str) -> str:
     return content.replace('`', '').replace('$(', '$ (')
 
 
-def _readLocalBoxPost(boxName: str, index: int,
+def _timelineIsEmpty(boxJson: {}) -> bool:
+    """Returns true if the given timeline is empty
+    """
+    empty = False
+    if not boxJson:
+        empty = True
+    else:
+        if not isinstance(boxJson, dict):
+            empty = True
+        elif not boxJson.get('orderedItems'):
+            empty = True
+    return empty
+
+
+def _getFirstItemId(boxJson: {}) -> str:
+    """Returns the id of the first item in the timeline
+    """
+    if _timelineIsEmpty(boxJson):
+        return
+    if len(boxJson['orderedItems']) == 0:
+        return
+    return boxJson['orderedItems'][0]['id']
+
+
+def _textOnlyContent(content: str) -> str:
+    """Remove formatting from the given string
+    """
+    content = urllib.parse.unquote_plus(content)
+    content = html.unescape(content)
+    return removeHtml(content)
+
+
+def _readLocalBoxPost(boxName: str,
+                      pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
                       screenreader: str, espeak) -> {}:
     """Reads a post from the given timeline
     Returns the speaker json
     """
-    speakerJson = _getSpeakerJsonFromIndex(boxName, index)
-    if not speakerJson:
+    if _timelineIsEmpty(boxJson):
         return
 
-    nameStr = speakerJson['name']
+    postJsonObject = _desktopGetBoxPostObject(boxJson, index)
+    if not postJsonObject:
+        return
+    actor = postJsonObject['object']['attributedTo']
+    nameStr = getNicknameFromActor(actor)
     gender = 'They/Them'
-    if speakerJson.get('gender'):
-        gender = speakerJson['gender']
 
-    # append image description if needed
-    if not speakerJson.get('imageDescription'):
-        messageStr = speakerJson['say']
-    else:
-        messageStr = speakerJson['say'] + '. ' + \
-            speakerJson['imageDescription']
-
-    content = messageStr
-    if speakerJson.get('content'):
-        content = speakerJson['content']
-
-    sayStr = 'Reading ' + boxName + ' post ' + str(index) + '.'
+    content = _textOnlyContent(postJsonObject['object']['content'])
+    sayStr = 'Reading ' + boxName + ' post ' + str(index) + \
+        ' from page ' + str(pageNumber) + '.'
     sayStr2 = sayStr.replace(' dm ', ' DM ')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
 
-    if speakerJson.get('id') and isPGPEncrypted(content):
+    if isPGPEncrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
         _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        content = pgpDecrypt(content, speakerJson['id'])
+        content = pgpDecrypt(content, actor)
         if isPGPEncrypted(content):
             sayStr = 'Message could not be decrypted'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
             return
 
     content = _safeMessage(content)
-    messageStr = _safeMessage(messageStr)
+    messageStr = content
 
-    time.sleep(2)
+    if screenreader:
+        time.sleep(2)
 
     # say the speaker's name
     _sayCommand(nameStr, nameStr, screenreader,
                 systemLanguage, espeak,
                 nameStr, gender)
 
-    time.sleep(2)
+    if screenreader:
+        time.sleep(2)
 
     # speak the post content
     _sayCommand(content, messageStr, screenreader,
                 systemLanguage, espeak,
                 nameStr, gender)
-    return speakerJson
+    return postJsonObject
 
 
 def _desktopShowBox(notifyJson: {}, boxName: str,
@@ -587,6 +616,114 @@ def _desktopShowBox(notifyJson: {}, boxName: str,
                 sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
                 _sayCommand(sayStr, sayStr2,
                             screenreader, systemLanguage, espeak)
+    print('')
+    return True
+
+
+def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
+    """Gets the post with the given index from the timeline
+    """
+    ctr = 0
+    for postJsonObject in boxJson['orderedItems']:
+        if not postJsonObject.get('object'):
+            continue
+        if not isinstance(postJsonObject['object'], dict):
+            continue
+        if not postJsonObject['object'].get('published'):
+            continue
+        if not postJsonObject['object'].get('content'):
+            continue
+        ctr += 1
+        if ctr == index:
+            return postJsonObject
+    return None
+
+
+def _desktopShowBoxJson(boxName: str, boxJson: {},
+                        screenreader: str, systemLanguage: str, espeak,
+                        pageNumber=1,
+                        newReplies=False,
+                        newDMs=False) -> bool:
+    """Shows online timeline
+    """
+    indent = '   '
+
+    # title
+    _desktopClearScreen()
+    _desktopShowBanner()
+
+    notificationIcons = ''
+    titleStr = '\33[7m' + boxName.upper() + '\33[0m'
+    # titleStr += ' page ' + str(pageNumber)
+    if notificationIcons:
+        while len(titleStr) < 95 - len(notificationIcons):
+            titleStr += ' '
+        titleStr += notificationIcons
+    print(indent + titleStr + '\n')
+
+    if _timelineIsEmpty(boxJson):
+        boxStr = boxName
+        if boxName == 'dm':
+            boxStr = 'DM'
+        sayStr = indent + 'You have no ' + boxStr + ' posts yet.'
+        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
+        print('')
+        return False
+
+    ctr = 1
+    for postJsonObject in boxJson['orderedItems']:
+        if not postJsonObject.get('object'):
+            continue
+        if not isinstance(postJsonObject['object'], dict):
+            continue
+        if not postJsonObject['object'].get('published'):
+            continue
+        if not postJsonObject['object'].get('content'):
+            continue
+        published = postJsonObject['published'].replace('T', ' ')
+        posStr = str(ctr) + '.'
+        while len(posStr) < 3:
+            posStr += ' '
+        authorActor = postJsonObject['object']['attributedTo']
+        name = getNicknameFromActor(authorActor)
+        if len(name) > 16:
+            name = name[:16]
+        else:
+            while len(name) < 16:
+                name += ' '
+        content = _textOnlyContent(postJsonObject['object']['content'])
+        if isPGPEncrypted(content):
+            content = '🔒' + content
+        elif '://' in content:
+            content = '🔗' + content
+        if len(content) > 40:
+            content = content[:40]
+        else:
+            while len(content) < 40:
+                content += ' '
+        print(indent + str(posStr) + ' | ' + name + ' | ' +
+              published + ' | ' + content)
+        ctr += 1
+
+    print('')
+
+    # say the post number range
+    sayStr = indent + boxName + ' page ' + str(pageNumber) + \
+        ' containing ' + str(ctr - 1) + ' posts. '
+    if newDMs and boxName != 'dm':
+        sayStr += \
+            'Use \33[3mshow dm\33[0m to view direct messages.'
+    elif newReplies and boxName != 'replies':
+        sayStr += \
+            'Use \33[3mshow replies\33[0m to view reply posts.'
+    else:
+        sayStr += \
+            'Use the \33[3mnext\33[0m and ' + \
+            '\33[3mprev\33[0m commands to navigate.'
+    sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
+    sayStr2 = sayStr2.replace('show dm', 'show DM')
+    sayStr2 = sayStr2.replace('dm post', 'Direct message post')
+    _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
     print('')
     return True
 
@@ -811,50 +948,41 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
 
-    currTimeline = ''
-    currInboxIndex = 0
-    if not showNewPosts:
-        print('')
-        currInboxIndex = 0
-        _desktopShowBox(None, 'inbox',
-                        screenreader, systemLanguage, espeak,
-                        currInboxIndex, 10)
-        currTimeline = 'inbox'
-    print('')
-    commandStr = _desktopWaitForCmd(2, debug)
-    nextCommandStr = None
+    currTimeline = 'inbox'
+    pageNumber = 1
 
+    postJsonObject = {}
     originalScreenReader = screenreader
-    domainFull = getFullDomain(domain, port)
-    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
-    prevSay = ''
-    prevCalendar = False
-    prevFollow = False
-    prevLike = ''
-    prevShare = False
-    dmSoundFilename = 'dm.ogg'
-    replySoundFilename = 'reply.ogg'
-    calendarSoundFilename = 'calendar.ogg'
-    followSoundFilename = 'follow.ogg'
-    likeSoundFilename = 'like.ogg'
-    shareSoundFilename = 'share.ogg'
-    player = 'ffplay'
+    # domainFull = getFullDomain(domain, port)
+    # actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+    # prevSay = ''
+    # prevCalendar = False
+    # prevFollow = False
+    # prevLike = ''
+    # prevShare = False
+    # dmSoundFilename = 'dm.ogg'
+    # replySoundFilename = 'reply.ogg'
+    # calendarSoundFilename = 'calendar.ogg'
+    # followSoundFilename = 'follow.ogg'
+    # likeSoundFilename = 'like.ogg'
+    # shareSoundFilename = 'share.ogg'
+    # player = 'ffplay'
     nameStr = None
     gender = None
     messageStr = None
     content = None
     cachedWebfingers = {}
     personCache = {}
-    currDMIndex = 0
-    currRepliesIndex = 0
-    currSentIndex = 0
     newRepliesExist = False
     newDMsExist = False
-    currPostId = ''
     pgpKeyUpload = False
-    while (1):
-        session = createSession(proxyType)
 
+    sayStr = indent + 'Connecting...'
+    _sayCommand(sayStr, sayStr, screenreader,
+                systemLanguage, espeak)
+    session = createSession(proxyType)
+    prevTimelineFirstId = ''
+    while (1):
         if not pgpKeyUpload:
             pgpKey = \
                 pgpPublicKeyUpload(baseDir, session,
@@ -866,166 +994,28 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 print('PGP public key uploaded')
             pgpKeyUpload = True
 
-        notifyJson = None
-        speakerJson = \
-            getSpeakerFromServer(baseDir, session, nickname, password,
-                                 domain, port, httpPrefix, True, __version__)
-        if speakerJson:
-            if speakerJson.get('notify') and speakerJson.get('id'):
-                notifyJson = speakerJson['notify']
-                title = 'Epicyon'
-                if speakerJson['notify'].get('title'):
-                    title = speakerJson['notify']['title']
-                soundsDir = 'theme/default/sounds'
-                if speakerJson['notify'].get('theme'):
-                    if isinstance(speakerJson['notify']['theme'], str):
-                        soundsDir = \
-                            'theme/' + \
-                            speakerJson['notify']['theme'] + '/sounds'
-                        if not os.path.isdir(soundsDir):
-                            soundsDir = 'theme/default/sounds'
+        boxJson = c2sBoxJson(baseDir, session,
+                             nickname, password,
+                             domain, port, httpPrefix,
+                             currTimeline, pageNumber,
+                             debug)
 
-                indicatorDM = False
-                if speakerJson.get('direct'):
-                    if speakerJson['direct'] is True:
-                        indicatorDM = True
-                indicatorReplies = False
-                if speakerJson.get('replyToYou'):
-                    if speakerJson['replyToYou'] is True:
-                        indicatorReplies = True
-
-                if indicatorDM:
-                    if currPostId != speakerJson['id']:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   dmSoundFilename, player)
-                        _desktopNotification(notificationType, title,
-                                             'New direct message ' +
-                                             actor + '/dm')
-                elif indicatorReplies:
-                    if currPostId != speakerJson['id']:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   replySoundFilename,
-                                                   player)
-                        _desktopNotification(notificationType, title,
-                                             'New reply ' +
-                                             actor + '/tlreplies')
-                elif speakerJson['notify']['calendar'] != prevCalendar:
-                    if speakerJson['notify']['calendar'] is True:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   calendarSoundFilename,
-                                                   player)
-                        _desktopNotification(notificationType, title,
-                                             'New calendar event ' +
-                                             actor + '/calendar')
-                    prevCalendar = speakerJson['notify']['calendar']
-                elif speakerJson['notify']['followRequests'] != prevFollow:
-                    if speakerJson['notify']['followRequests'] is True:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   followSoundFilename,
-                                                   player)
-                        _desktopNotification(notificationType, title,
-                                             'New follow request ' +
-                                             actor + '/followers#buttonheader')
-                    prevFollow = speakerJson['notify']['followRequests']
-                elif speakerJson['notify']['likedBy'] != prevLike:
-                    if '##sent##' not in speakerJson['notify']['likedBy']:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   likeSoundFilename, player)
-                        _desktopNotification(notificationType, title,
-                                             'New like ' +
-                                             speakerJson['notify']['likedBy'])
-                    prevLike = speakerJson['notify']['likedBy']
-                elif speakerJson['notify']['share'] != prevShare:
-                    if speakerJson['notify']['share'] is True:
-                        if notificationSounds:
-                            _playNotificationSound(soundsDir + '/' +
-                                                   shareSoundFilename,
-                                                   player)
-                        _desktopNotification(notificationType, title,
-                                             'New shared item ' +
-                                             actor + '/shares')
-                    prevShare = speakerJson['notify']['share']
-
-            if speakerJson.get('say'):
-                if speakerJson['say'] != prevSay:
-                    if speakerJson.get('name'):
-                        nameStr = speakerJson['name']
-                        gender = 'They/Them'
-                        if speakerJson.get('gender'):
-                            gender = speakerJson['gender']
-
-                        # append image description if needed
-                        if not speakerJson.get('imageDescription'):
-                            messageStr = speakerJson['say']
-                        else:
-                            messageStr = speakerJson['say'] + '. ' + \
-                                speakerJson['imageDescription']
-                        encryptedMessage = False
-                        if speakerJson.get('id') and \
-                           isPGPEncrypted(messageStr):
-                            encryptedMessage = True
-
-                        content = messageStr
-                        if speakerJson.get('content'):
-                            if not encryptedMessage:
-                                content = speakerJson['content']
-                            else:
-                                content = '🔒 Encrypted message'
-
-                        if showNewPosts:
-                            # say the speaker's name
-                            _sayCommand(nameStr, nameStr, screenreader,
-                                        systemLanguage, espeak,
-                                        nameStr, gender)
-
-                            time.sleep(2)
-
-                            # speak the post content
-                            content = _safeMessage(content)
-                            messageStr = _safeMessage(messageStr)
-                            _sayCommand(content, messageStr, screenreader,
-                                        systemLanguage, espeak,
-                                        nameStr, gender)
-
-                        # store incoming post
-                        speakerJson['decrypted'] = False
-                        if speakerJson.get('replyToYou'):
-                            newRepliesExist = True
-                            _desktopStoreMsg(speakerJson, 'replies')
-                        if speakerJson.get('direct'):
-                            newDMsExist = True
-                            _desktopStoreMsg(speakerJson, 'dm')
-                        if storeInboxPosts:
-                            _desktopStoreMsg(speakerJson, 'inbox')
-
-                        if not showNewPosts:
-                            _desktopClearScreen()
-                            _desktopShowBox(notifyJson, currTimeline,
-                                            None, systemLanguage, espeak,
-                                            currInboxIndex, 10,
-                                            newRepliesExist,
-                                            newDMsExist)
-                        else:
-                            print('')
-
-                    prevSay = speakerJson['say']
-            if speakerJson.get('id'):
-                currPostId = speakerJson['id']
+        if boxJson:
+            timelineFirstId = _getFirstItemId(boxJson)
+            if timelineFirstId != prevTimelineFirstId:
+                _desktopClearScreen()
+                _desktopShowBoxJson(currTimeline, boxJson,
+                                    None, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist,
+                                    newDMsExist)
+            prevTimelineFirstId = timelineFirstId
 
         # wait for a while, or until a key is pressed
         if noKeyPress:
             time.sleep(10)
         else:
-            if nextCommandStr:
-                commandStr = nextCommandStr
-                nextCommandStr = None
-            else:
-                commandStr = _desktopWaitForCmd(30, debug)
+            commandStr = _desktopWaitForCmd(30, debug)
         if commandStr:
             if commandStr.startswith('/'):
                 commandStr = commandStr[1:]
@@ -1039,135 +1029,121 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     commandStr = _desktopWaitForCmd(2, debug)
                 break
             elif commandStr.startswith('show dm'):
-                currDMIndex = 0
-                _desktopShowBox(notifyJson, 'dm',
-                                screenreader, systemLanguage, espeak,
-                                currDMIndex, 10,
-                                newRepliesExist, newDMsExist)
+                pageNumber = 1
+                prevTimelineFirstId = ''
                 currTimeline = 'dm'
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBoxJson(currTimeline, boxJson,
+                                        screenreader, systemLanguage, espeak,
+                                        pageNumber,
+                                        newRepliesExist, newDMsExist)
                 newDMsExist = False
             elif commandStr.startswith('show rep'):
-                currRepliesIndex = 0
-                _desktopShowBox(notifyJson, 'replies',
-                                screenreader, systemLanguage, espeak,
-                                currRepliesIndex, 10,
-                                newRepliesExist, newDMsExist)
+                pageNumber = 1
+                prevTimelineFirstId = ''
                 currTimeline = 'replies'
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBoxJson(currTimeline, boxJson,
+                                        screenreader, systemLanguage, espeak,
+                                        pageNumber,
+                                        newRepliesExist, newDMsExist)
                 # Turn off the replies indicator
                 newRepliesExist = False
             elif commandStr.startswith('show sen'):
-                currSentIndex = 0
-                _desktopShowBox(notifyJson, 'sent',
-                                screenreader, systemLanguage, espeak,
-                                currSentIndex, 10,
-                                newRepliesExist, newDMsExist)
-                currTimeline = 'sent'
+                pageNumber = 1
+                prevTimelineFirstId = ''
+                currTimeline = 'outbox'
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBoxJson(currTimeline, boxJson,
+                                        screenreader, systemLanguage, espeak,
+                                        pageNumber,
+                                        newRepliesExist, newDMsExist)
             elif (commandStr == 'show' or commandStr.startswith('show in') or
                   commandStr == 'clear'):
-                currInboxIndex = 0
-                _desktopShowBox(notifyJson, 'inbox',
-                                screenreader, systemLanguage, espeak,
-                                currInboxIndex, 10,
-                                newRepliesExist, newDMsExist)
+                pageNumber = 1
+                prevTimelineFirstId = ''
                 currTimeline = 'inbox'
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBoxJson(currTimeline, boxJson,
+                                        screenreader, systemLanguage, espeak,
+                                        pageNumber,
+                                        newRepliesExist, newDMsExist)
             elif commandStr.startswith('next'):
-                if currTimeline == 'dm':
-                    currDMIndex += 10
-                    _desktopShowBox(notifyJson, 'dm',
-                                    screenreader, systemLanguage, espeak,
-                                    currDMIndex, 10,
-                                    newRepliesExist, newDMsExist)
-                elif currTimeline == 'replies':
-                    currRepliesIndex += 10
-                    _desktopShowBox(notifyJson, 'replies',
-                                    screenreader, systemLanguage, espeak,
-                                    currRepliesIndex, 10,
-                                    newRepliesExist, newDMsExist)
-                elif currTimeline == 'sent':
-                    currSentIndex += 10
-                    _desktopShowBox(notifyJson, 'sent',
-                                    screenreader, systemLanguage, espeak,
-                                    currSentIndex, 10,
-                                    newRepliesExist, newDMsExist)
-                elif currTimeline == 'inbox':
-                    currInboxIndex += 10
-                    _desktopShowBox(notifyJson, 'inbox',
-                                    screenreader, systemLanguage, espeak,
-                                    currInboxIndex, 10,
-                                    newRepliesExist, newDMsExist)
+                pageNumber += 1
+                prevTimelineFirstId = ''
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBoxJson(currTimeline, boxJson,
+                                        screenreader, systemLanguage, espeak,
+                                        pageNumber,
+                                        newRepliesExist, newDMsExist)
             elif commandStr.startswith('prev'):
-                if currTimeline == 'dm':
-                    currDMIndex -= 10
-                    if currDMIndex < 0:
-                        currDMIndex = 0
-                    _desktopShowBox(notifyJson, 'dm',
-                                    screenreader, systemLanguage, espeak,
-                                    currDMIndex, 10,
-                                    newRepliesExist, newDMsExist)
-                elif currTimeline == 'replies':
-                    currRepliesIndex -= 10
-                    if currRepliesIndex < 0:
-                        currRepliesIndex = 0
-                    _desktopShowBox(notifyJson, 'replies',
-                                    screenreader, systemLanguage, espeak,
-                                    currRepliesIndex, 10,
-                                    newRepliesExist, newDMsExist)
-                elif currTimeline == 'sent':
-                    currSentIndex -= 10
-                    if currSentIndex < 0:
-                        currSentIndex = 0
-                    _desktopShowBox(notifyJson, 'sent',
-                                    screenreader, systemLanguage, espeak,
-                                    currSentIndex, 10,
-                                    newRepliesExist, newDMsExist)
-                elif currTimeline == 'inbox':
-                    currInboxIndex -= 10
-                    if currInboxIndex < 0:
-                        currInboxIndex = 0
-                    _desktopShowBox(notifyJson, 'inbox',
-                                    screenreader, systemLanguage, espeak,
-                                    currInboxIndex, 10,
-                                    newRepliesExist, newDMsExist)
+                pageNumber -= 1
+                if pageNumber < 1:
+                    pageNumber = 1
+                prevTimelineFirstId = ''
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBoxJson(currTimeline, boxJson,
+                                        screenreader, systemLanguage, espeak,
+                                        pageNumber,
+                                        newRepliesExist, newDMsExist)
             elif commandStr.startswith('read ') or commandStr == 'read':
                 if commandStr == 'read':
                     postIndexStr = '1'
                 else:
                     postIndexStr = commandStr.split('read ')[1]
-                if postIndexStr.isdigit():
+                if boxJson and postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
-                    speakerJson = \
-                        _readLocalBoxPost(currTimeline, postIndex,
+                    postJsonObject = \
+                        _readLocalBoxPost(currTimeline,
+                                          pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
                                           espeak)
-                    # if we are on a busy timeline then wait for the post
-                    # to be read because otherwise it could potentially be
-                    # immediately overwritten as the timeline refreshes
-                    if speakerJson and not noKeyPress:
-                        # average reading speed is said to be 800 chars/min
-                        # so this allows some overhead
-                        readingSpeedCharsPerMin = 600
-                        displayTimeSec = \
-                            int(len(speakerJson['say']) * 60 /
-                                readingSpeedCharsPerMin)
-                        if displayTimeSec < 10:
-                            displayTimeSec = 10
-                        nextCommandStr = \
-                            _desktopWaitForCmd(displayTimeSec, debug)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
-                if speakerJson.get('id'):
-                    postId = speakerJson['id']
-                    subject = None
-                    if speakerJson.get('summary'):
-                        subject = speakerJson['summary']
-                    sessionReply = createSession(proxyType)
-                    _desktopReplyToPost(sessionReply, postId,
-                                        baseDir, nickname, password,
-                                        domain, port, httpPrefix,
-                                        cachedWebfingers, personCache,
-                                        debug, subject,
-                                        screenreader, systemLanguage,
-                                        espeak)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        postId = postJsonObject['id']
+                        subject = None
+                        if postJsonObject['object'].get('summary'):
+                            subject = postJsonObject['object']['summary']
+                        sessionReply = createSession(proxyType)
+                        _desktopReplyToPost(sessionReply, postId,
+                                            baseDir, nickname, password,
+                                            domain, port, httpPrefix,
+                                            cachedWebfingers, personCache,
+                                            debug, subject,
+                                            screenreader, systemLanguage,
+                                            espeak)
                 print('')
             elif (commandStr == 'post' or commandStr == 'p' or
                   commandStr == 'send' or
@@ -1212,50 +1188,61 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     espeak)
                 print('')
             elif commandStr == 'like':
-                if speakerJson.get('id'):
-                    sayStr = 'Liking post by ' + speakerJson['name']
-                    _sayCommand(sayStr, sayStr,
-                                screenreader,
-                                systemLanguage, espeak)
-                    sessionLike = createSession(proxyType)
-                    sendLikeViaServer(baseDir, sessionLike,
-                                      nickname, password,
-                                      domain, port,
-                                      httpPrefix, speakerJson['id'],
-                                      cachedWebfingers, personCache,
-                                      False, __version__)
-                    print('')
-            elif commandStr == 'unlike' or commandStr == 'undo like':
-                if speakerJson.get('id'):
-                    sayStr = 'Undoing like of post by ' + speakerJson['name']
-                    _sayCommand(sayStr, sayStr,
-                                screenreader,
-                                systemLanguage, espeak)
-                    sessionUnlike = createSession(proxyType)
-                    sendUndoLikeViaServer(baseDir, sessionUnlike,
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        likeActor = postJsonObject['object']['attributedTo']
+                        sayStr = 'Liking post by ' + \
+                            getNicknameFromActor(likeActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionLike = createSession(proxyType)
+                        sendLikeViaServer(baseDir, sessionLike,
                                           nickname, password,
-                                          domain, port,
-                                          httpPrefix, speakerJson['id'],
+                                          domain, port, httpPrefix,
+                                          postJsonObject['id'],
                                           cachedWebfingers, personCache,
                                           False, __version__)
-                    print('')
+                print('')
+            elif commandStr == 'unlike' or commandStr == 'undo like':
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        unlikeActor = postJsonObject['object']['attributedTo']
+                        sayStr = \
+                            'Undoing like of post by ' + \
+                            getNicknameFromActor(unlikeActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionUnlike = createSession(proxyType)
+                        sendUndoLikeViaServer(baseDir, sessionUnlike,
+                                              nickname, password,
+                                              domain, port, httpPrefix,
+                                              postJsonObject['id'],
+                                              cachedWebfingers, personCache,
+                                              False, __version__)
+                print('')
             elif (commandStr == 'announce' or
                   commandStr == 'boost' or
                   commandStr == 'retweet'):
-                if speakerJson.get('id'):
-                    postId = speakerJson['id']
-                    sayStr = 'Announcing post by ' + speakerJson['name']
-                    _sayCommand(sayStr, sayStr,
-                                screenreader,
-                                systemLanguage, espeak)
-                    sessionAnnounce = createSession(proxyType)
-                    sendAnnounceViaServer(baseDir, sessionAnnounce,
-                                          nickname, password,
-                                          domain, port,
-                                          httpPrefix, postId,
-                                          cachedWebfingers, personCache,
-                                          True, __version__)
-                    print('')
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        postId = postJsonObject['id']
+                        announceActor = \
+                            postJsonObject['object']['attributedTo']
+                        sayStr = 'Announcing post by ' + \
+                            getNicknameFromActor(announceActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionAnnounce = createSession(proxyType)
+                        sendAnnounceViaServer(baseDir, sessionAnnounce,
+                                              nickname, password,
+                                              domain, port,
+                                              httpPrefix, postId,
+                                              cachedWebfingers, personCache,
+                                              True, __version__)
+                print('')
             elif commandStr.startswith('follow '):
                 followHandle = commandStr.replace('follow ', '').strip()
                 if followHandle.startswith('@'):
@@ -1393,32 +1380,6 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     sayStr = 'There are no web links to open.'
                     _sayCommand(sayStr, sayStr, originalScreenReader,
                                 systemLanguage, espeak)
-                print('')
-            elif commandStr.startswith('accept'):
-                if notifyJson:
-                    if notifyJson.get('followRequestsList'):
-                        if len(notifyJson['followRequestsList']) > 0:
-                            sayStr = 'Accepting follow request for ' + \
-                                notifyJson['followRequestsList'][0]
-                            _sayCommand(sayStr, sayStr, originalScreenReader,
-                                        systemLanguage, espeak)
-                            # TODO
-                            sayStr = 'This command is not yet implemented'
-                            _sayCommand(sayStr, sayStr, originalScreenReader,
-                                        systemLanguage, espeak)
-                print('')
-            elif commandStr.startswith('reject'):
-                if notifyJson:
-                    if notifyJson.get('followRequestsList'):
-                        if len(notifyJson['followRequestsList']) > 0:
-                            sayStr = 'Rejecting follow request for ' + \
-                                notifyJson['followRequestsList'][0]
-                            _sayCommand(sayStr, sayStr, originalScreenReader,
-                                        systemLanguage, espeak)
-                            # TODO
-                            sayStr = 'This command is not yet implemented'
-                            _sayCommand(sayStr, sayStr, originalScreenReader,
-                                        systemLanguage, espeak)
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()
