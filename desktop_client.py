@@ -948,9 +948,6 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
         sayStr = indent + 'Notification sounds off'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
-    sayStr = indent + '/q or /quit to exit'
-    _sayCommand(sayStr, sayStr, screenreader,
-                systemLanguage, espeak)
 
     currTimeline = 'inbox'
     pageNumber = 1
@@ -981,7 +978,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     newDMsExist = False
     pgpKeyUpload = False
 
-    sayStr = indent + 'Loading translations file...'
+    sayStr = indent + 'Loading translations file'
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
     translate, systemLanguage = \
@@ -991,6 +988,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     _sayCommand(sayStr, sayStr, screenreader,
                 systemLanguage, espeak)
     session = createSession(proxyType)
+
+    sayStr = indent + '/q or /quit to exit'
+    _sayCommand(sayStr, sayStr, screenreader,
+                systemLanguage, espeak)
     prevTimelineFirstId = ''
     while (1):
         if not pgpKeyUpload:

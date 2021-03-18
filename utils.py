@@ -2177,5 +2177,4 @@ def loadTranslationsFromFile(baseDir: str, language: str) -> ({}, str):
         systemLanguage = 'en'
         translationsFile = baseDir + '/translations/' + \
             systemLanguage + '.json'
-    print('System language: ' + systemLanguage)
     return loadJson(translationsFile), systemLanguage
