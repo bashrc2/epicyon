@@ -32,6 +32,7 @@ from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
 from posts import c2sBoxJson
 from announce import sendAnnounceViaServer
+from announce import sendUndoAnnounceViaServer
 from pgp import pgpDecrypt
 from pgp import hasLocalPGPkey
 from pgp import pgpEncryptToActor
@@ -994,7 +995,15 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     screenreader, systemLanguage,
                                     espeak)
                 print('')
-            elif commandStr == 'like':
+            elif commandStr == 'like' or commandStr.startswith('like '):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
                 if postJsonObject:
                     if postJsonObject.get('id'):
                         likeActor = postJsonObject['object']['attributedTo']
@@ -1012,6 +1021,14 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           False, __version__)
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
                 if postJsonObject:
                     if postJsonObject.get('id'):
                         unlikeActor = postJsonObject['object']['attributedTo']
@@ -1029,9 +1046,17 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               cachedWebfingers, personCache,
                                               False, __version__)
                 print('')
-            elif (commandStr == 'announce' or
-                  commandStr == 'boost' or
-                  commandStr == 'retweet'):
+            elif (commandStr.startswith('announce') or
+                  commandStr.startswith('boost') or
+                  commandStr.startswith('retweet')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
                 if postJsonObject:
                     if postJsonObject.get('id'):
                         postId = postJsonObject['id']
@@ -1049,6 +1074,39 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               httpPrefix, postId,
                                               cachedWebfingers, personCache,
                                               True, __version__)
+                print('')
+            elif (commandStr.startswith('unannounce') or
+                  commandStr.startswith('undo announce') or
+                  commandStr.startswith('unboost') or
+                  commandStr.startswith('undo boost') or
+                  commandStr.startswith('undo retweet')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        postId = postJsonObject['id']
+                        announceActor = \
+                            postJsonObject['object']['attributedTo']
+                        sayStr = 'Undoing announce post by ' + \
+                            getNicknameFromActor(announceActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionAnnounce = createSession(proxyType)
+                        sendUndoAnnounceViaServer(baseDir, sessionAnnounce,
+                                                  postJsonObject,
+                                                  nickname, password,
+                                                  domain, port,
+                                                  httpPrefix, postId,
+                                                  cachedWebfingers,
+                                                  personCache,
+                                                  True, __version__)
                 print('')
             elif commandStr.startswith('follow '):
                 followHandle = commandStr.replace('follow ', '').strip()
