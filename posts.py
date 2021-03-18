@@ -2511,6 +2511,14 @@ def sendToNamedAddresses(session, baseDir: str,
         toDomain, toPort = getDomainFromActor(address)
         if not toDomain:
             continue
+        # Don't send profile/actor updates to yourself
+        if isProfileUpdate:
+            if nickname == toNickname and \
+               domainFull == toDomainFull:
+                if debug:
+                    print('Not sending profile update to self. ' +
+                          nickname + '@' + domainFull)
+                continue
         if debug:
             domainFull = getFullDomain(domain, port)
             toDomainFull = getFullDomain(toDomain, toPort)
