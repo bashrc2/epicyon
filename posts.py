@@ -2427,8 +2427,8 @@ def sendToNamedAddresses(session, baseDir: str,
         return
     if not postJsonObject.get('object'):
         return
+    isProfileUpdate = False
     if isinstance(postJsonObject['object'], dict):
-        isProfileUpdate = False
         # for actor updates there is no 'to' within the object
         if postJsonObject['object'].get('type') and postJsonObject.get('type'):
             if (postJsonObject['type'] == 'Update' and
