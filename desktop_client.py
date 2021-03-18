@@ -506,10 +506,10 @@ def _desktopShowBoxJson(boxName: str, boxJson: {},
             posStr += ' '
         authorActor = postJsonObject['object']['attributedTo']
         name = getNicknameFromActor(authorActor)
-        if isDM(postJsonObject):
-            name = '📧' + name
         if postJsonObject['object'].get('inReplyTo'):
-            name = '↲' + name
+            name += '↲'
+        if isDM(postJsonObject):
+            name += '📧'
         if len(name) > 16:
             name = name[:16]
         else:
