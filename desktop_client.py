@@ -461,6 +461,18 @@ def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
     return None
 
 
+def _formatPublished(published: str) -> str:
+    """Formats the published time for display on timeline
+    """
+    dateStr = published.split('T')[0]
+    monthStr = dateStr.split('-')[1]
+    dayStr = dateStr.split('-')[2]
+    timeStr = published.split('T')[1]
+    hourStr = timeStr.split(':')[0]
+    minStr = timeStr.split(':')[1]
+    return monthStr + '-' + dayStr + ' ' + hourStr + ':' + minStr + 'Z'
+
+
 def _desktopShowBoxJson(boxName: str, boxJson: {},
                         screenreader: str, systemLanguage: str, espeak,
                         pageNumber=1,
@@ -502,7 +514,7 @@ def _desktopShowBoxJson(boxName: str, boxJson: {},
             continue
         if not postJsonObject['object'].get('content'):
             continue
-        published = postJsonObject['published'].replace('T', ' ')
+        published = _formatPublished(postJsonObject['published'])
         posStr = str(ctr)
         while len(posStr) < 2:
             posStr += ' '
