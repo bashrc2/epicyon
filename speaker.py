@@ -168,8 +168,10 @@ def speakerReplaceLinks(sayText: str, translate: {},
     Instead of reading out potentially very long and meaningless links
     """
     text = sayText
+    text = text.replace('?v=', '__v=')
     for ch in speakerRemoveChars:
         text = text.replace(ch, ' ')
+    text = text.replace('__v=', '?v=')
     replacements = {}
     wordsList = text.split(' ')
     if translate.get('Linked'):

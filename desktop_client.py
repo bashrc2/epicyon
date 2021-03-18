@@ -542,8 +542,8 @@ def _desktopShowBoxJson(boxName: str, boxJson: {},
         if not postJsonObject['object'].get('content'):
             continue
         published = postJsonObject['published'].replace('T', ' ')
-        posStr = str(ctr) + '.'
-        while len(posStr) < 3:
+        posStr = str(ctr)
+        while len(posStr) < 2:
             posStr += ' '
         authorActor = postJsonObject['object']['attributedTo']
         name = getNicknameFromActor(authorActor)
