@@ -13,16 +13,11 @@ import sys
 import select
 import webbrowser
 import urllib.parse
-from pathlib import Path
 from random import randint
 from utils import loadTranslationsFromFile
 from utils import removeHtml
-from utils import getStatusNumber
-from utils import loadJson
-from utils import saveJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from utils import getFullDomain
 from utils import isPGPEncrypted
 from session import createSession
 from speaker import speakableText
@@ -352,43 +347,6 @@ def _desktopNewPost(session,
     _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
 
 
-def _getSpeakerJsonFromIndex(boxName: str, index: int) -> {}:
-    """Returns the json for the given post index
-    """
-    homeDir = str(Path.home())
-    if not os.path.isdir(homeDir + '/.config'):
-        os.mkdir(homeDir + '/.config')
-    if not os.path.isdir(homeDir + '/.config/epicyon'):
-        os.mkdir(homeDir + '/.config/epicyon')
-    msgDir = homeDir + '/.config/epicyon/' + boxName
-    if not os.path.isdir(msgDir):
-        os.mkdir(msgDir)
-    indexList = []
-    for subdir, dirs, files in os.walk(msgDir):
-        for f in files:
-            if not f.endswith('.json'):
-                continue
-            indexList.append(f)
-    indexList.sort(reverse=True)
-
-    index -= 1
-    if index <= 0:
-        index = 0
-    if len(indexList) <= index:
-        return None
-
-    publishedYear = indexList[index].split('-')[0]
-    publishedMonth = indexList[index].split('-')[1]
-    speakerJsonFilename = \
-        os.path.join(msgDir,
-                     publishedYear + '/' +
-                     publishedMonth + '/' +
-                     indexList[index])
-    if not os.path.isfile(speakerJsonFilename):
-        return None
-    return loadJson(speakerJsonFilename)
-
-
 def _safeMessage(content: str) -> str:
     """Removes anything potentially unsafe from a string
     """
@@ -461,7 +419,7 @@ def _readLocalBoxPost(baseDir: str, boxName: str,
             return
 
     content = _safeMessage(content)
-    messageStr = speakableText(baseDir, content, translate)
+    messageStr, detectedLinks = speakableText(baseDir, content, translate)
 
     if screenreader:
         time.sleep(2)
@@ -619,33 +577,6 @@ def _desktopNewDM(session, toHandle: str,
                           espeak)
 
 
-def _desktopStoreMsg(speakerJson: {}, boxName: str) -> None:
-    """Stores a message in your home directory for later reading
-    which could be offline
-    """
-    if not speakerJson.get('published'):
-        return
-    homeDir = str(Path.home())
-    if not os.path.isdir(homeDir + '/.config'):
-        os.mkdir(homeDir + '/.config')
-    if not os.path.isdir(homeDir + '/.config/epicyon'):
-        os.mkdir(homeDir + '/.config/epicyon')
-    msgDir = homeDir + '/.config/epicyon/' + boxName
-    if not os.path.isdir(msgDir):
-        os.mkdir(msgDir)
-    publishedYear = speakerJson['published'].split('-')[0]
-    yearDir = msgDir + '/' + publishedYear
-    if not os.path.isdir(yearDir):
-        os.mkdir(yearDir)
-    publishedMonth = speakerJson['published'].split('-')[1]
-    monthDir = yearDir + '/' + publishedMonth
-    if not os.path.isdir(monthDir):
-        os.mkdir(monthDir)
-
-    msgFilename = monthDir + '/' + speakerJson['published'] + '.json'
-    saveJson(speakerJson, msgFilename)
-
-
 def _desktopNewDMbase(session, toHandle: str,
                       baseDir: str, nickname: str, password: str,
                       domain: str, port: int, httpPrefix: str,
@@ -695,7 +626,6 @@ def _desktopNewDMbase(session, toHandle: str,
 
     # if there is a local PGP key then attempt to encrypt the DM
     # using the PGP public key of the recipient
-    newMessageOriginal = newMessage
     if hasLocalPGPkey():
         sayStr = \
             'Local PGP key detected...' + \
@@ -740,23 +670,6 @@ def _desktopNewDMbase(session, toHandle: str,
                          attachedImageDescription,
                          cachedWebfingers, personCache, isArticle,
                          debug, None, None, subject) == 0:
-        # store the DM locally
-        statusNumber, published = getStatusNumber()
-        postId = \
-            httpPrefix + '://' + getFullDomain(domain, port) + \
-            '/users/' + nickname + '/statuses/' + statusNumber
-        speakerJson = {
-            "name": nickname,
-            "summary": "",
-            "content": newMessageOriginal,
-            "say": newMessageOriginal,
-            "published": published,
-            "imageDescription": "",
-            "detectedLinks": [],
-            "id": postId,
-            "direct": True
-        }
-        _desktopStoreMsg(speakerJson, 'sent')
         sayStr = 'Direct message sent'
     else:
         sayStr = 'Direct message failed'
@@ -1233,25 +1146,26 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                     postIndex = commandStr.split(' ')[-1].strip()
                     if postIndex.isdigit():
                         currIndex = int(postIndex)
-                speakerJson = \
-                    _getSpeakerJsonFromIndex(currTimeline, currIndex)
-                if not speakerJson:
-                    speakerJson = {}
-                linkOpened = False
-                if speakerJson.get('detectedLinks'):
-                    if len(speakerJson['detectedLinks']) > 0:
-                        for url in speakerJson['detectedLinks']:
-                            if '://' in url:
-                                webbrowser.open(url)
-                                linkOpened = True
-                        if linkOpened:
-                            sayStr = 'Opened web links'
-                            _sayCommand(sayStr, sayStr, originalScreenReader,
-                                        systemLanguage, espeak)
-                if not linkOpened:
-                    sayStr = 'There are no web links to open.'
-                    _sayCommand(sayStr, sayStr, originalScreenReader,
-                                systemLanguage, espeak)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    content = postJsonObject['object']['content']
+                    messageStr, detectedLinks = \
+                        speakableText(baseDir, content, translate)
+                    linkOpened = False
+                    for url in detectedLinks:
+                        if '://' in url:
+                            webbrowser.open(url)
+                            linkOpened = True
+                    if linkOpened:
+                        sayStr = 'Opened web links'
+                        _sayCommand(sayStr, sayStr, originalScreenReader,
+                                    systemLanguage, espeak)
+                    else:
+                        sayStr = 'There are no web links to open.'
+                        _sayCommand(sayStr, sayStr, originalScreenReader,
+                                    systemLanguage, espeak)
                 print('')
             elif commandStr.startswith('h'):
                 _desktopHelp()

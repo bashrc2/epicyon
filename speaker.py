@@ -407,12 +407,12 @@ def getSSMLbox(baseDir: str, path: str,
                                 instanceTitle, gender)
 
 
-def speakableText(baseDir: str, content: str, translate: {}) -> str:
+def speakableText(baseDir: str, content: str, translate: {}) -> (str, []):
     """Convert the given text to a speakable version
     which includes changes for prononciation
     """
     if isPGPEncrypted(content):
-        return
+        return content, []
 
     # replace some emoji before removing html
     if ' <3' in content:
@@ -428,7 +428,7 @@ def speakableText(baseDir: str, content: str, translate: {}) -> str:
     # replace all double spaces
     while '  ' in sayContent:
         sayContent = sayContent.replace('  ', ' ')
-    return sayContent.replace(' . ', '. ').strip()
+    return sayContent.replace(' . ', '. ').strip(), detectedLinks
 
 
 def _postToSpeakerJson(baseDir: str, httpPrefix: str,
