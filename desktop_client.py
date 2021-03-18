@@ -481,148 +481,6 @@ def _readLocalBoxPost(baseDir: str, boxName: str,
     return postJsonObject
 
 
-def _desktopShowBox(notifyJson: {}, boxName: str,
-                    screenreader: str, systemLanguage: str, espeak,
-                    startPostIndex=0, noOfPosts=10,
-                    newReplies=False,
-                    newDMs=False) -> bool:
-    """Shows locally stored posts for a given subdirectory
-    """
-    indent = '   '
-    homeDir = str(Path.home())
-    if not os.path.isdir(homeDir + '/.config'):
-        os.mkdir(homeDir + '/.config')
-    if not os.path.isdir(homeDir + '/.config/epicyon'):
-        os.mkdir(homeDir + '/.config/epicyon')
-    msgDir = homeDir + '/.config/epicyon/' + boxName
-    if not os.path.isdir(msgDir):
-        os.mkdir(msgDir)
-    index = []
-    for subdir, dirs, files in os.walk(msgDir):
-        for f in files:
-            if not f.endswith('.json'):
-                continue
-            index.append(f)
-
-    # title
-    _desktopClearScreen()
-    _desktopShowBanner()
-
-    notificationIcons = ''
-    if notifyJson:
-        if notifyJson.get('followRequests'):
-            notificationIcons += ' 👤'
-        if newDMs:
-            notificationIcons += ' 📩'
-        if newReplies:
-            notificationIcons += ' 📨'
-        if notifyJson.get('calendar'):
-            notificationIcons += ' 📅'
-        if notifyJson.get('share'):
-            notificationIcons += ' 🤝'
-        if notifyJson.get('likedBy'):
-            if '##sent##' not in notifyJson['likedBy']:
-                notificationIcons += ' ❤'
-    titleStr = '\33[7m' + boxName.upper() + '\33[0m'
-    if notificationIcons:
-        while len(titleStr) < 95 - len(notificationIcons):
-            titleStr += ' '
-        titleStr += notificationIcons
-    print(indent + titleStr + '\n')
-
-    if not index:
-        boxStr = boxName
-        if boxName == 'dm':
-            boxStr = 'DM'
-        sayStr = indent + 'You have no ' + boxStr + ' posts yet.'
-        _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-        print('')
-        return False
-
-    maxPostIndex = len(index)
-    index.sort(reverse=True)
-    ctr = 0
-    for pos in range(startPostIndex, startPostIndex + noOfPosts):
-        if pos >= maxPostIndex:
-            break
-        publishedYear = index[pos].split('-')[0]
-        publishedMonth = index[pos].split('-')[1]
-        speakerJsonFilename = \
-            os.path.join(msgDir,
-                         publishedYear + '/' +
-                         publishedMonth + '/' + index[pos])
-        if not os.path.isfile(speakerJsonFilename):
-            continue
-        speakerJson = loadJson(speakerJsonFilename)
-        if not speakerJson.get('published'):
-            continue
-        published = speakerJson['published'].replace('T', ' ')
-        posStr = str(pos + 1) + '.'
-        while len(posStr) < 3:
-            posStr += ' '
-        if speakerJson.get('name'):
-            udata = speakerJson['name']
-            name = udata.encode("ascii", "ignore").decode().strip()
-        else:
-            name = ''
-        if len(name) > 16:
-            name = name[:16]
-        else:
-            while len(name) < 16:
-                name += ' '
-        content = speakerJson['content']
-        if isPGPEncrypted(content):
-            content = '🔒' + content
-        elif speakerJson.get('detectedLinks'):
-            if len(speakerJson['detectedLinks']) > 0:
-                content = '🔗' + content
-        if len(content) > 40:
-            content = content[:40]
-        else:
-            while len(content) < 40:
-                content += ' '
-        print(indent + str(posStr) + ' | ' + name + ' | ' +
-              published + ' | ' + content)
-        ctr += 1
-
-    print('')
-
-    # say the post number range
-    sayStr = indent + boxName + ' posts ' + str(startPostIndex + 1) + \
-        ' to ' + str(startPostIndex + ctr) + '. '
-    if newDMs and boxName != 'dm':
-        sayStr += \
-            'Use \33[3mshow dm\33[0m to view direct messages.'
-    elif newReplies and boxName != 'replies':
-        sayStr += \
-            'Use \33[3mshow replies\33[0m to view reply posts.'
-    else:
-        sayStr += \
-            'Use the \33[3mnext\33[0m and ' + \
-            '\33[3mprev\33[0m commands to navigate.'
-    sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
-    sayStr2 = sayStr2.replace('show dm', 'show DM')
-    sayStr2 = sayStr2.replace('dm post', 'Direct message post')
-    _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
-    if notifyJson:
-        if notifyJson.get('followRequestsList'):
-            if len(notifyJson['followRequestsList']) > 0:
-                print('')
-                sayStr = indent + 'You have a follow request from ' + \
-                    '\33[7m' + \
-                    notifyJson['followRequestsList'][0].strip() + '\33[0m'
-                sayStr2 = sayStr.replace('\33[7m', '').replace('\33[0m', '')
-                _sayCommand(sayStr, sayStr2,
-                            screenreader, systemLanguage, espeak)
-                sayStr = indent + 'Use the \33[3maccept\33[0m or ' + \
-                    '\33[3mreject\33[0m commands to respond.'
-                sayStr2 = sayStr.replace('\33[3m', '').replace('\33[0m', '')
-                _sayCommand(sayStr, sayStr2,
-                            screenreader, systemLanguage, espeak)
-    print('')
-    return True
-
-
 def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
     """Gets the post with the given index from the timeline
     """
@@ -998,12 +856,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             sayStr = indent + 'Uploading PGP public key'
             _sayCommand(sayStr, sayStr, screenreader,
                         systemLanguage, espeak)
-            pgpKey = \
-                pgpPublicKeyUpload(baseDir, session,
-                                   nickname, password,
-                                   domain, port, httpPrefix,
-                                   cachedWebfingers, personCache,
-                                   debug, False)
+            pgpPublicKeyUpload(baseDir, session,
+                               nickname, password,
+                               domain, port, httpPrefix,
+                               cachedWebfingers, personCache,
+                               debug, False)
             sayStr = indent + 'PGP public key uploaded'
             _sayCommand(sayStr, sayStr, screenreader,
                         systemLanguage, espeak)
