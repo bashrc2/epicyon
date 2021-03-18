@@ -15,6 +15,7 @@ import webbrowser
 import urllib.parse
 from pathlib import Path
 from random import randint
+from utils import loadTranslationsFromFile
 from utils import removeHtml
 from utils import getStatusNumber
 from utils import loadJson
@@ -24,6 +25,7 @@ from utils import getDomainFromActor
 from utils import getFullDomain
 from utils import isPGPEncrypted
 from session import createSession
+from speaker import speakableText
 from speaker import getSpeakerPitch
 from speaker import getSpeakerRate
 from speaker import getSpeakerRange
@@ -425,10 +427,11 @@ def _textOnlyContent(content: str) -> str:
     return removeHtml(content)
 
 
-def _readLocalBoxPost(boxName: str,
+def _readLocalBoxPost(baseDir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
-                      screenreader: str, espeak) -> {}:
+                      screenreader: str, espeak,
+                      translate: {}) -> {}:
     """Reads a post from the given timeline
     Returns the speaker json
     """
@@ -458,7 +461,7 @@ def _readLocalBoxPost(boxName: str,
             return
 
     content = _safeMessage(content)
-    messageStr = content
+    messageStr = speakableText(baseDir, content, translate)
 
     if screenreader:
         time.sleep(2)
@@ -911,6 +914,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                      noKeyPress: bool,
                      storeInboxPosts: bool,
                      showNewPosts: bool,
+                     language: str,
                      debug: bool) -> None:
     """Runs the desktop and screen reader client,
     which announces new inbox items
@@ -976,6 +980,12 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
     newRepliesExist = False
     newDMsExist = False
     pgpKeyUpload = False
+
+    sayStr = indent + 'Loading translations file...'
+    _sayCommand(sayStr, sayStr, screenreader,
+                systemLanguage, espeak)
+    translate, systemLanguage = \
+        loadTranslationsFromFile(baseDir, language)
 
     sayStr = indent + 'Connecting...'
     _sayCommand(sayStr, sayStr, screenreader,
@@ -1124,10 +1134,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if boxJson and postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
                     postJsonObject = \
-                        _readLocalBoxPost(currTimeline,
+                        _readLocalBoxPost(baseDir, currTimeline,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
-                                          espeak)
+                                          espeak, translate)
                 print('')
             elif commandStr == 'reply' or commandStr == 'r':
                 if postJsonObject:

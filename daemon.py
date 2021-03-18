@@ -10,7 +10,6 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer, HTTPServer
 import sys
 import json
 import time
-import locale
 import urllib.parse
 import datetime
 from socket import error as SocketError
@@ -192,6 +191,7 @@ from shares import addShare
 from shares import removeShare
 from shares import expireShares
 from categories import setHashtagCategory
+from utils import loadTranslationsFromFile
 from utils import getLocalNetworkAddresses
 from utils import decodedHost
 from utils import isPublicPost
@@ -14443,32 +14443,11 @@ def runDaemon(brochMode: bool,
     httpd.translate = {}
     httpd.systemLanguage = 'en'
     if not unitTest:
-        if not os.path.isdir(baseDir + '/translations'):
-            print('ERROR: translations directory not found')
-            return
-        if not language:
-            systemLanguage = locale.getdefaultlocale()[0]
-        else:
-            systemLanguage = language
-        if not systemLanguage:
-            systemLanguage = 'en'
-        if '_' in systemLanguage:
-            systemLanguage = systemLanguage.split('_')[0]
-        while '/' in systemLanguage:
-            systemLanguage = systemLanguage.split('/')[1]
-        if '.' in systemLanguage:
-            systemLanguage = systemLanguage.split('.')[0]
-        translationsFile = baseDir + '/translations/' + \
-            systemLanguage + '.json'
-        if not os.path.isfile(translationsFile):
-            systemLanguage = 'en'
-            translationsFile = baseDir + '/translations/' + \
-                systemLanguage + '.json'
-        print('System language: ' + systemLanguage)
-        httpd.systemLanguage = systemLanguage
-        httpd.translate = loadJson(translationsFile)
+        httpd.translate, httpd.systemLanguage = \
+            loadTranslationsFromFile(baseDir, language)
+        print('System language: ' + httpd.systemLanguage)
         if not httpd.translate:
-            print('ERROR: no translations loaded from ' + translationsFile)
+            print('ERROR: no translations were loaded')
             sys.exit()
 
     # For moderated newswire feeds this is the amount of time allowed

@@ -1926,6 +1926,7 @@ if args.desktop:
                      args.noKeyPress,
                      storeInboxPosts,
                      args.notifyShowNewPosts,
+                     args.language,
                      args.debug)
     sys.exit()
 
