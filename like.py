@@ -170,11 +170,11 @@ def sendLikeViaServer(baseDir: str, session,
                                 fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: like webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: like webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -189,11 +189,11 @@ def sendLikeViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: like no ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: like no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -207,7 +207,7 @@ def sendLikeViaServer(baseDir: str, session,
                           headers, 30, True)
     if not postResult:
         if debug:
-            print('WARN: POST announce failed for c2s to ' + inboxUrl)
+            print('WARN: POST like failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
@@ -251,11 +251,11 @@ def sendUndoLikeViaServer(baseDir: str, session,
                                 fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unlike webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
         if debug:
-            print('WARN: Webfinger for ' + handle +
+            print('WARN: unlike webfinger for ' + handle +
                   ' did not return a dict. ' + str(wfRequest))
         return 1
 
@@ -271,11 +271,11 @@ def sendUndoLikeViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: unlike no ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unlike no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -289,11 +289,11 @@ def sendUndoLikeViaServer(baseDir: str, session,
                           headers, 30, True)
     if not postResult:
         if debug:
-            print('WARN: POST announce failed for c2s to ' + inboxUrl)
+            print('WARN: POST unlike failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
-        print('DEBUG: c2s POST undo like success')
+        print('DEBUG: c2s POST unlike success')
 
     return newUndoLikeJson
 

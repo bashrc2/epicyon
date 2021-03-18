@@ -108,11 +108,11 @@ def sendAvailabilityViaServer(baseDir: str, session,
                                 domain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: availability webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: availability webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -127,11 +127,12 @@ def sendAvailabilityViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: availability no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: availability no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(nickname, password)
@@ -144,7 +145,7 @@ def sendAvailabilityViaServer(baseDir: str, session,
     postResult = postJson(session, newAvailabilityJson, [],
                           inboxUrl, headers, 30, True)
     if not postResult:
-        print('WARN: failed to post availability')
+        print('WARN: availability failed to post')
 
     if debug:
         print('DEBUG: c2s POST availability success')

@@ -992,11 +992,11 @@ def sendFollowRequestViaServer(baseDir: str, session,
                         fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: follow request webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: follow request Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -1010,11 +1010,12 @@ def sendFollowRequestViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: follow request no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: follow request no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -1028,11 +1029,11 @@ def sendFollowRequestViaServer(baseDir: str, session,
         postJson(session, newFollowJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST follow failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST follow request failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:
-        print('DEBUG: c2s POST follow success')
+        print('DEBUG: c2s POST follow request success')
 
     return newFollowJson
 
@@ -1081,11 +1082,11 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
                         fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unfollow webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: unfollow webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -1102,11 +1103,12 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: unfollow no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unfollow no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -1120,7 +1122,7 @@ def sendUnfollowRequestViaServer(baseDir: str, session,
         postJson(session, unfollowJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unfollow failed for c2s to ' + inboxUrl)
         return 5
 
     if debug:

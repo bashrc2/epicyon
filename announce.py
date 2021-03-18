@@ -225,8 +225,8 @@ def sendAnnounceViaServer(baseDir: str, session,
             print('DEBUG: announce webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: announce webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -242,11 +242,12 @@ def sendAnnounceViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: announce no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: announce no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -259,7 +260,7 @@ def sendAnnounceViaServer(baseDir: str, session,
     postResult = postJson(session, newAnnounceJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
-        print('WARN: Announce not posted')
+        print('WARN: announce not posted')
 
     if debug:
         print('DEBUG: c2s POST announce success')

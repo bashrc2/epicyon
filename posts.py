@@ -2056,11 +2056,11 @@ def sendPostViaServer(projectVersion: str,
                         fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: webfinger failed for ' + handle)
+            print('DEBUG: post webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: post webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -2078,11 +2078,12 @@ def sendPostViaServer(projectVersion: str,
                                             82796)
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: post no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: post no actor was found for ' + handle)
         return 4
 
     # Get the json for the c2s post, not saving anything to file
@@ -2131,7 +2132,7 @@ def sendPostViaServer(projectVersion: str,
                       inboxUrl, headers)
         if not postResult:
             if debug:
-                print('DEBUG: Failed to upload image')
+                print('DEBUG: post failed to upload image')
 #            return 9
 
     headers = {
@@ -4156,11 +4157,11 @@ def sendBlockViaServer(baseDir: str, session,
                                 fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: block webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: block Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -4175,11 +4176,11 @@ def sendBlockViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: block no ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: block no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -4192,7 +4193,7 @@ def sendBlockViaServer(baseDir: str, session,
     postResult = postJson(session, newBlockJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
-        print('WARN: Unable to post block')
+        print('WARN: block unable to post')
 
     if debug:
         print('DEBUG: c2s POST block success')
@@ -4240,11 +4241,11 @@ def sendUndoBlockViaServer(baseDir: str, session,
                                 fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unblock webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: unblock webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -4258,11 +4259,12 @@ def sendUndoBlockViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: unblock no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unblock no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -4275,10 +4277,10 @@ def sendUndoBlockViaServer(baseDir: str, session,
     postResult = postJson(session, newBlockJson, [], inboxUrl,
                           headers, 30, True)
     if not postResult:
-        print('WARN: Unable to post block')
+        print('WARN: unblock unable to post')
 
     if debug:
-        print('DEBUG: c2s POST block success')
+        print('DEBUG: c2s POST unblock success')
 
     return newBlockJson
 

@@ -361,11 +361,11 @@ def sendShareViaServer(baseDir, session,
                         fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: share webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: share webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -381,11 +381,12 @@ def sendShareViaServer(baseDir, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+            print('DEBUG: share no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: share no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -409,7 +410,7 @@ def sendShareViaServer(baseDir, session,
         postJson(session, newShareJson, [], inboxUrl, headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST share failed for c2s to ' + inboxUrl)
 #        return 5
 
     if debug:
@@ -460,11 +461,11 @@ def sendUndoShareViaServer(baseDir: str, session,
                         fromDomain, projectVersion, debug)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for ' + handle)
+            print('DEBUG: unshare webfinger failed for ' + handle)
         return 1
     if not isinstance(wfRequest, dict):
-        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
-              str(wfRequest))
+        print('WARN: unshare webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -480,11 +481,12 @@ def sendUndoShareViaServer(baseDir: str, session,
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No '+postToBox+' was found for ' + handle)
+            print('DEBUG: unshare no ' + postToBox +
+                  ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for ' + handle)
+            print('DEBUG: unshare no actor was found for ' + handle)
         return 4
 
     authHeader = createBasicAuthHeader(fromNickname, password)
@@ -499,11 +501,11 @@ def sendUndoShareViaServer(baseDir: str, session,
                  headers, 30, True)
     if not postResult:
         if debug:
-            print('DEBUG: POST announce failed for c2s to ' + inboxUrl)
+            print('DEBUG: POST unshare failed for c2s to ' + inboxUrl)
 #        return 5
 
     if debug:
-        print('DEBUG: c2s POST undo share success')
+        print('DEBUG: c2s POST unshare success')
 
     return undoShareJson
 
