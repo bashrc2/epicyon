@@ -581,7 +581,11 @@ def _desktopShowBox(boxName: str, boxJson: {},
     _desktopShowBanner()
 
     notificationIcons = ''
-    titleStr = '\33[7m' + boxName.upper() + '\33[0m'
+    if boxName.startswith('tl'):        
+        titleStr = boxName[2:]
+    else:
+        titleStr = boxName
+    titleStr = '\33[7m' + titleStr.upper() + '\33[0m'
     # titleStr += ' page ' + str(pageNumber)
     if notificationIcons:
         while len(titleStr) < 95 - len(notificationIcons):
@@ -984,7 +988,7 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             elif commandStr.startswith('show rep'):
                 pageNumber = 1
                 prevTimelineFirstId = ''
-                currTimeline = 'replies'
+                currTimeline = 'tlreplies'
                 boxJson = c2sBoxJson(baseDir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
