@@ -8,6 +8,8 @@ __status__ = "Production"
 
 import os
 from pprint import pprint
+from webfinger import webfingerHandle
+from auth import createBasicAuthHeader
 from utils import hasUsersPath
 from utils import getFullDomain
 from utils import removeIdEnding
@@ -19,6 +21,8 @@ from utils import locatePost
 from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
+from posts import getPersonBox
+from session import postJson
 
 
 def undoBookmarksCollectionEntry(recentPostsCache: {},
@@ -449,3 +453,85 @@ def outboxUndoBookmark(recentPostsCache: {},
                                  messageJson['actor'], domain, debug)
     if debug:
         print('DEBUG: post undo bookmarked via c2s - ' + postFilename)
+
+
+def sendBookmarkViaServer(baseDir: str, session,
+                          nickname: str, password: str,
+                          domain: str, fromPort: int,
+                          httpPrefix: str, bookmarkUrl: str,
+                          cachedWebfingers: {}, personCache: {},
+                          debug: bool, projectVersion: str) -> {}:
+    """Creates a bookmark via c2s
+    """
+    if not session:
+        print('WARN: No session for sendBookmarkViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, fromPort)
+
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    newBookmarkJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        "type": "Add",
+        "actor": actor,
+        "object": {
+            "type": "Document",
+            "url": bookmarkUrl
+        },
+        "target": actor + "/tlbookmarks"
+    }
+
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: bookmark webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: bookmark webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache,
+                                            projectVersion, httpPrefix,
+                                            nickname, domain,
+                                            postToBox, 52594)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: bookmark no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: bookmark no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, newBookmarkJson, [], inboxUrl,
+                          headers, 30, True)
+    if not postResult:
+        if debug:
+            print('WARN: POST bookmark failed for c2s to ' + inboxUrl)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s POST bookmark success')
+
+    return newBookmarkJson
