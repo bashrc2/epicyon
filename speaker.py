@@ -255,38 +255,6 @@ def _removeEmojiFromText(sayText: str) -> str:
     return sayText.replace('  ', ' ').strip()
 
 
-def getSpeakerFromServer(baseDir: str, session,
-                         nickname: str, password: str,
-                         domain: str, port: int,
-                         httpPrefix: str,
-                         debug: bool, projectVersion: str) -> {}:
-    """Returns some json which contains the latest inbox
-    entry in a minimal format suitable for a text-to-speech reader
-    """
-    if not session:
-        print('WARN: No session for getSpeakerFromServer')
-        return 6
-
-    domainFull = getFullDomain(domain, port)
-
-    authHeader = createBasicAuthHeader(nickname, password)
-
-    headers = {
-        'host': domain,
-        'Content-type': 'application/json',
-        'Authorization': authHeader
-    }
-
-    url = \
-        httpPrefix + '://' + \
-        domainFull + '/users/' + nickname + '/speaker'
-
-    speakerJson = \
-        getJson(session, url, headers, None, debug,
-                __version__, httpPrefix, domain, 20, True)
-    return speakerJson
-
-
 def _speakerEndpointJson(displayName: str, summary: str,
                          content: str, sayContent: str,
                          imageDescription: str,

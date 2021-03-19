@@ -2513,6 +2513,8 @@ def sendToNamedAddresses(session, baseDir: str,
             continue
         # Don't send profile/actor updates to yourself
         if isProfileUpdate:
+            domainFull = getFullDomain(domain, port)
+            toDomainFull = getFullDomain(toDomain, toPort)
             if nickname == toNickname and \
                domainFull == toDomainFull:
                 if debug:
