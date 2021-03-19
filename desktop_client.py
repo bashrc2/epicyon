@@ -995,7 +995,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                     newRepliesExist, newDMsExist)
                 # Turn off the replies indicator
                 newRepliesExist = False
-            elif commandStr.startswith('show sen'):
+            elif (commandStr.startswith('show sen') or
+                  commandStr.startswith('show out')):
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'outbox'
