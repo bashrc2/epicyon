@@ -10,8 +10,6 @@ import os
 import html
 import random
 import urllib.parse
-from auth import createBasicAuthHeader
-from session import getJson
 from utils import isDM
 from utils import isReply
 from utils import camelCaseSplit
@@ -22,7 +20,6 @@ from utils import getDisplayName
 from utils import removeHtml
 from utils import loadJson
 from utils import saveJson
-from utils import getFullDomain
 from utils import isPGPEncrypted
 from content import htmlReplaceQuoteMarks
 

@@ -14,7 +14,6 @@ import select
 import webbrowser
 import urllib.parse
 from random import randint
-from utils import getFullDomain
 from utils import isDM
 from utils import loadTranslationsFromFile
 from utils import removeHtml
@@ -32,6 +31,7 @@ from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from posts import sendPostViaServer
 from posts import c2sBoxJson
+from posts import downloadAnnounce
 from announce import sendAnnounceViaServer
 from announce import sendUndoAnnounceViaServer
 from pgp import pgpDecrypt
@@ -389,7 +389,8 @@ def _textOnlyContent(content: str) -> str:
     return removeHtml(content)
 
 
-def _readLocalBoxPost(baseDir: str, boxName: str,
+def _readLocalBoxPost(session, nickname: str, domain: str,
+                      httpPrefix: str, baseDir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
                       systemLanguage: str,
                       screenreader: str, espeak,
@@ -398,20 +399,58 @@ def _readLocalBoxPost(baseDir: str, boxName: str,
     Returns the speaker json
     """
     if _timelineIsEmpty(boxJson):
-        return
+        return {}
 
     postJsonObject = _desktopGetBoxPostObject(boxJson, index)
     if not postJsonObject:
-        return
-    actor = postJsonObject['object']['attributedTo']
-    nameStr = getNicknameFromActor(actor)
+        return {}
     gender = 'They/Them'
 
-    content = _textOnlyContent(postJsonObject['object']['content'])
     sayStr = 'Reading ' + boxName + ' post ' + str(index) + \
         ' from page ' + str(pageNumber) + '.'
     sayStr2 = sayStr.replace(' dm ', ' DM ')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
+
+    if postJsonObject['type'] == 'Announce':
+        actor = postJsonObject['actor']
+        nameStr = getNicknameFromActor(actor)
+        recentPostsCache = {}
+        allowLocalNetworkAccess = False
+        YTReplacementDomain = None
+        postJsonObject2 = \
+            downloadAnnounce(session, baseDir,
+                             httpPrefix,
+                             nickname, domain,
+                             postJsonObject,
+                             __version__, translate,
+                             YTReplacementDomain,
+                             allowLocalNetworkAccess,
+                             recentPostsCache, False)
+        if postJsonObject2:
+            if postJsonObject2.get('object'):
+                if postJsonObject2['object'].get('attributedTo') and \
+                   postJsonObject2['object'].get('content'):
+                    actor = postJsonObject2['object']['attributedTo']
+                    nameStr += ' ' + translate['announces'] + ' ' + \
+                        getNicknameFromActor(actor)
+                    sayStr = nameStr
+                    _sayCommand(sayStr, sayStr, screenreader,
+                                systemLanguage, espeak)
+                    if screenreader:
+                        time.sleep(2)
+                    content = \
+                        _textOnlyContent(postJsonObject2['object']['content'])
+                    messageStr, detectedLinks = \
+                        speakableText(baseDir, content, translate)
+                    sayStr = content
+                    _sayCommand(sayStr, messageStr, screenreader,
+                                systemLanguage, espeak)
+                    return postJsonObject2
+        return {}
+
+    actor = postJsonObject['object']['attributedTo']
+    nameStr = getNicknameFromActor(actor)
+    content = _textOnlyContent(postJsonObject['object']['content'])
 
     if isPGPEncrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
@@ -420,7 +459,7 @@ def _readLocalBoxPost(baseDir: str, boxName: str,
         if isPGPEncrypted(content):
             sayStr = 'Message could not be decrypted'
             _sayCommand(sayStr, sayStr, screenreader, systemLanguage, espeak)
-            return
+            return {}
 
     content = _safeMessage(content)
     messageStr, detectedLinks = speakableText(baseDir, content, translate)
@@ -448,7 +487,16 @@ def _desktopGetBoxPostObject(boxJson: {}, index: int) -> {}:
     """
     ctr = 0
     for postJsonObject in boxJson['orderedItems']:
+        if not postJsonObject.get('type'):
+            continue
         if not postJsonObject.get('object'):
+            continue
+        if postJsonObject['type'] == 'Announce':
+            if not isinstance(postJsonObject['object'], str):
+                continue
+            ctr += 1
+            if ctr == index:
+                return postJsonObject
             continue
         if not isinstance(postJsonObject['object'], dict):
             continue
@@ -474,6 +522,17 @@ def _formatPublished(published: str) -> str:
     return monthStr + '-' + dayStr + ' ' + hourStr + ':' + minStr + 'Z'
 
 
+def _padToWidth(content: str, width: int) -> str:
+    """Pads the given string to the given width
+    """
+    if len(content) > width:
+        content = content[:width]
+    else:
+        while len(content) < width:
+            content += ' '
+    return content
+
+
 def _desktopShowBox(boxName: str, boxJson: {},
                     screenreader: str, systemLanguage: str, espeak,
                     pageNumber=1,
@@ -481,6 +540,9 @@ def _desktopShowBox(boxName: str, boxJson: {},
                     newDMs=False) -> bool:
     """Shows online timeline
     """
+    numberWidth = 2
+    nameWidth = 16
+    contentWidth = 50
     indent = '   '
 
     # title
@@ -507,6 +569,29 @@ def _desktopShowBox(boxName: str, boxJson: {},
 
     ctr = 1
     for postJsonObject in boxJson['orderedItems']:
+        if not postJsonObject.get('type'):
+            continue
+        if postJsonObject['type'] == 'Announce':
+            if postJsonObject.get('actor') and \
+               postJsonObject.get('object'):
+                if isinstance(postJsonObject['object'], str):
+                    authorActor = postJsonObject['actor']
+                    name = getNicknameFromActor(authorActor) + ' ⮌'
+                    name = _padToWidth(name, nameWidth)
+                    ctrStr = str(ctr)
+                    posStr = _padToWidth(ctrStr, numberWidth)
+                    published = _formatPublished(postJsonObject['published'])
+                    announcedNickname = \
+                        getNicknameFromActor(postJsonObject['object'])
+                    announcedDomain, announcedPort = \
+                        getDomainFromActor(postJsonObject['object'])
+                    announcedHandle = announcedNickname + '@' + announcedDomain
+                    print(indent + str(posStr) + ' | ' + name + ' | ' +
+                          published + ' | ' +
+                          _padToWidth(announcedHandle, contentWidth))
+                    ctr += 1
+                    continue
+
         if not postJsonObject.get('object'):
             continue
         if not isinstance(postJsonObject['object'], dict):
@@ -515,12 +600,13 @@ def _desktopShowBox(boxName: str, boxJson: {},
             continue
         if not postJsonObject['object'].get('content'):
             continue
-        published = _formatPublished(postJsonObject['published'])
-        posStr = str(ctr)
-        while len(posStr) < 2:
-            posStr += ' '
+        ctrStr = str(ctr)
+        posStr = _padToWidth(ctrStr, numberWidth)
+
         authorActor = postJsonObject['object']['attributedTo']
         name = getNicknameFromActor(authorActor)
+
+        # append icons to the end of the name
         spaceAdded = False
         if postJsonObject['object'].get('inReplyTo'):
             if not spaceAdded:
@@ -541,21 +627,16 @@ def _desktopShowBox(boxName: str, boxJson: {},
                 spaceAdded = True
                 name += ' '
             name += '❤'
-        if len(name) > 16:
-            name = name[:16]
-        else:
-            while len(name) < 16:
-                name += ' '
+        name = _padToWidth(name, nameWidth)
+
+        published = _formatPublished(postJsonObject['published'])
+
         content = _textOnlyContent(postJsonObject['object']['content'])
         if isPGPEncrypted(content):
             content = '🔒' + content
         elif '://' in content:
             content = '🔗' + content
-        if len(content) > 40:
-            content = content[:40]
-        else:
-            while len(content) < 40:
-                content += ' '
+        content = _padToWidth(content, contentWidth)
         print(indent + str(posStr) + ' | ' + name + ' | ' +
               published + ' | ' + content)
         ctr += 1
@@ -761,8 +842,6 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
 
     postJsonObject = {}
     originalScreenReader = screenreader
-    # domainFull = getFullDomain(domain, port)
-    # actor = httpPrefix + '://' + domainFull + '/users/' + nickname
     # prevSay = ''
     # prevCalendar = False
     # prevFollow = False
@@ -950,7 +1029,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if boxJson and postIndexStr.isdigit():
                     postIndex = int(postIndexStr)
                     postJsonObject = \
-                        _readLocalBoxPost(baseDir, currTimeline,
+                        _readLocalBoxPost(session, nickname, domain,
+                                          httpPrefix, baseDir, currTimeline,
                                           pageNumber, postIndex, boxJson,
                                           systemLanguage, screenreader,
                                           espeak, translate)
@@ -1247,6 +1327,22 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 if currIndex > 0 and boxJson:
                     postJsonObject = \
                         _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject['type'] == 'Announce':
+                        recentPostsCache = {}
+                        allowLocalNetworkAccess = False
+                        YTReplacementDomain = None
+                        postJsonObject2 = \
+                            downloadAnnounce(session, baseDir,
+                                             httpPrefix,
+                                             nickname, domain,
+                                             postJsonObject,
+                                             __version__, translate,
+                                             YTReplacementDomain,
+                                             allowLocalNetworkAccess,
+                                             recentPostsCache, False)
+                        if postJsonObject2:
+                            postJsonObject = postJsonObject2
                 if postJsonObject:
                     content = postJsonObject['object']['content']
                     messageStr, detectedLinks = \
