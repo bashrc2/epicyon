@@ -582,10 +582,10 @@ def _desktopShowBox(boxName: str, boxJson: {},
 
     notificationIcons = ''
     if boxName.startswith('tl'):        
-        titleStr = boxName[2:]
+        boxNameStr = boxName[2:]
     else:
-        titleStr = boxName
-    titleStr = '\33[7m' + titleStr.upper() + '\33[0m'
+        boxNameStr = boxName
+    titleStr = '\33[7m' + boxNameStr.upper() + '\33[0m'
     # titleStr += ' page ' + str(pageNumber)
     if notificationIcons:
         while len(titleStr) < 95 - len(notificationIcons):
@@ -594,7 +594,7 @@ def _desktopShowBox(boxName: str, boxJson: {},
     print(indent + titleStr + '\n')
 
     if _timelineIsEmpty(boxJson):
-        boxStr = boxName
+        boxStr = boxNameStr
         if boxName == 'dm':
             boxStr = 'DM'
         sayStr = indent + 'You have no ' + boxStr + ' posts yet.'
@@ -679,12 +679,12 @@ def _desktopShowBox(boxName: str, boxJson: {},
     print('')
 
     # say the post number range
-    sayStr = indent + boxName + ' page ' + str(pageNumber) + \
+    sayStr = indent + boxNameStr + ' page ' + str(pageNumber) + \
         ' containing ' + str(ctr - 1) + ' posts. '
     if newDMs and boxName != 'dm':
         sayStr += \
             'Use \33[3mshow dm\33[0m to view direct messages.'
-    elif newReplies and boxName != 'replies':
+    elif newReplies and boxName != 'tlreplies':
         sayStr += \
             'Use \33[3mshow replies\33[0m to view reply posts.'
     else:
