@@ -474,11 +474,11 @@ def _formatPublished(published: str) -> str:
     return monthStr + '-' + dayStr + ' ' + hourStr + ':' + minStr + 'Z'
 
 
-def _desktopShowBoxJson(boxName: str, boxJson: {},
-                        screenreader: str, systemLanguage: str, espeak,
-                        pageNumber=1,
-                        newReplies=False,
-                        newDMs=False) -> bool:
+def _desktopShowBox(boxName: str, boxJson: {},
+                    screenreader: str, systemLanguage: str, espeak,
+                    pageNumber=1,
+                    newReplies=False,
+                    newDMs=False) -> bool:
     """Shows online timeline
     """
     indent = '   '
@@ -830,11 +830,11 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
             timelineFirstId = _getFirstItemId(boxJson)
             if timelineFirstId != prevTimelineFirstId:
                 _desktopClearScreen()
-                _desktopShowBoxJson(currTimeline, boxJson,
-                                    None, systemLanguage, espeak,
-                                    pageNumber,
-                                    newRepliesExist,
-                                    newDMsExist)
+                _desktopShowBox(currTimeline, boxJson,
+                                None, systemLanguage, espeak,
+                                pageNumber,
+                                newRepliesExist,
+                                newDMsExist)
             prevTimelineFirstId = timelineFirstId
 
         # wait for a while, or until a key is pressed
@@ -864,10 +864,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBoxJson(currTimeline, boxJson,
-                                        screenreader, systemLanguage, espeak,
-                                        pageNumber,
-                                        newRepliesExist, newDMsExist)
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
                 newDMsExist = False
             elif commandStr.startswith('show rep'):
                 pageNumber = 1
@@ -879,10 +879,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBoxJson(currTimeline, boxJson,
-                                        screenreader, systemLanguage, espeak,
-                                        pageNumber,
-                                        newRepliesExist, newDMsExist)
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
                 # Turn off the replies indicator
                 newRepliesExist = False
             elif commandStr.startswith('show sen'):
@@ -895,10 +895,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBoxJson(currTimeline, boxJson,
-                                        screenreader, systemLanguage, espeak,
-                                        pageNumber,
-                                        newRepliesExist, newDMsExist)
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
             elif (commandStr == 'show' or commandStr.startswith('show in') or
                   commandStr == 'clear'):
                 pageNumber = 1
@@ -910,10 +910,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBoxJson(currTimeline, boxJson,
-                                        screenreader, systemLanguage, espeak,
-                                        pageNumber,
-                                        newRepliesExist, newDMsExist)
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
             elif commandStr.startswith('next'):
                 pageNumber += 1
                 prevTimelineFirstId = ''
@@ -923,10 +923,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBoxJson(currTimeline, boxJson,
-                                        screenreader, systemLanguage, espeak,
-                                        pageNumber,
-                                        newRepliesExist, newDMsExist)
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
             elif commandStr.startswith('prev'):
                 pageNumber -= 1
                 if pageNumber < 1:
@@ -938,10 +938,10 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                      currTimeline, pageNumber,
                                      debug)
                 if boxJson:
-                    _desktopShowBoxJson(currTimeline, boxJson,
-                                        screenreader, systemLanguage, espeak,
-                                        pageNumber,
-                                        newRepliesExist, newDMsExist)
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
             elif commandStr.startswith('read ') or commandStr == 'read':
                 if commandStr == 'read':
                     postIndexStr = '1'
