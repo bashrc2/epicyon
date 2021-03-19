@@ -435,7 +435,10 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
         return {}
     gender = 'They/Them'
 
-    sayStr = 'Reading ' + boxName + ' post ' + str(index) + \
+    boxNameStr = boxName
+    if boxName.startswith('tl'):
+        boxNameStr = boxName[2:]
+    sayStr = 'Reading ' + boxNameStr + ' post ' + str(index) + \
         ' from page ' + str(pageNumber) + '.'
     sayStr2 = sayStr.replace(' dm ', ' DM ')
     _sayCommand(sayStr, sayStr2, screenreader, systemLanguage, espeak)
@@ -502,6 +505,9 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     _sayCommand(nameStr, nameStr, screenreader,
                 systemLanguage, espeak,
                 nameStr, gender)
+
+    if postJsonObject['object'].get('inReplyTo'):
+        print('Replying to ' + postJsonObject['object']['inReplyTo'] + '\n')
 
     if screenreader:
         time.sleep(2)
@@ -581,7 +587,7 @@ def _desktopShowBox(boxName: str, boxJson: {},
     _desktopShowBanner()
 
     notificationIcons = ''
-    if boxName.startswith('tl'):        
+    if boxName.startswith('tl'):
         boxNameStr = boxName[2:]
     else:
         boxNameStr = boxName
