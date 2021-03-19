@@ -535,3 +535,85 @@ def sendBookmarkViaServer(baseDir: str, session,
         print('DEBUG: c2s POST bookmark success')
 
     return newBookmarkJson
+
+
+def sendUndoBookmarkViaServer(baseDir: str, session,
+                              nickname: str, password: str,
+                              domain: str, fromPort: int,
+                              httpPrefix: str, bookmarkUrl: str,
+                              cachedWebfingers: {}, personCache: {},
+                              debug: bool, projectVersion: str) -> {}:
+    """Removes a bookmark via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUndoBookmarkViaServer')
+        return 6
+
+    domainFull = getFullDomain(domain, fromPort)
+
+    actor = httpPrefix + '://' + domainFull + '/users/' + nickname
+
+    newBookmarkJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        "type": "Remove",
+        "actor": actor,
+        "object": {
+            "type": "Document",
+            "url": bookmarkUrl
+        },
+        "target": actor + "/tlbookmarks"
+    }
+
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                domain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: unbookmark webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: unbookmark webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey, fromPersonId, sharedInbox,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache,
+                                            projectVersion, httpPrefix,
+                                            nickname, domain,
+                                            postToBox, 52594)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: unbookmark no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: unbookmark no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(nickname, password)
+
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, newBookmarkJson, [], inboxUrl,
+                          headers, 30, True)
+    if not postResult:
+        if debug:
+            print('WARN: POST unbookmark failed for c2s to ' + inboxUrl)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s POST unbookmark success')
+
+    return newBookmarkJson

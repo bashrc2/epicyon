@@ -40,6 +40,7 @@ from pgp import pgpEncryptToActor
 from pgp import pgpPublicKeyUpload
 from like import noOfLikes
 from bookmarks import sendBookmarkViaServer
+from bookmarks import sendUndoBookmarkViaServer
 
 
 def _desktopHelp() -> None:
@@ -1206,6 +1207,37 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               postJsonObject['id'],
                                               cachedWebfingers, personCache,
                                               False, __version__)
+                print('')
+            elif (commandStr == 'undo bookmark' or
+                  commandStr == 'undo bm' or
+                  commandStr == 'unbookmark' or
+                  commandStr == 'unbm' or
+                  commandStr.startswith('unbookmark ') or
+                  commandStr.startswith('unbm ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        likeActor = postJsonObject['object']['attributedTo']
+                        sayStr = 'Unbookmarking post by ' + \
+                            getNicknameFromActor(likeActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionLike = createSession(proxyType)
+                        sendUndoBookmarkViaServer(baseDir, sessionLike,
+                                                  nickname, password,
+                                                  domain, port, httpPrefix,
+                                                  postJsonObject['id'],
+                                                  cachedWebfingers,
+                                                  personCache,
+                                                  False, __version__)
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
                 currIndex = 0
