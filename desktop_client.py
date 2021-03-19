@@ -389,6 +389,35 @@ def _textOnlyContent(content: str) -> str:
     return removeHtml(content)
 
 
+def _getImageDescription(postJsonObject: {}) -> str:
+    """Returns a image description/s on a post
+    """
+    imageDescription = ''
+    if not postJsonObject['object'].get('attachment'):
+        return imageDescription
+
+    attachList = postJsonObject['object']['attachment']
+    if not isinstance(attachList, list):
+        return imageDescription
+
+    # for each attachment
+    for img in attachList:
+        if not isinstance(img, dict):
+            continue
+        if not img.get('name'):
+            continue
+        if not isinstance(img['name'], str):
+            continue
+        messageStr = img['name']
+        if messageStr:
+            messageStr = messageStr.strip()
+            if not messageStr.endswith('.'):
+                imageDescription += messageStr + '. '
+            else:
+                imageDescription += messageStr + ' '
+    return imageDescription
+
+
 def _readLocalBoxPost(session, nickname: str, domain: str,
                       httpPrefix: str, baseDir: str, boxName: str,
                       pageNumber: int, index: int, boxJson: {},
@@ -440,6 +469,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
                         time.sleep(2)
                     content = \
                         _textOnlyContent(postJsonObject2['object']['content'])
+                    content += _getImageDescription(postJsonObject2)
                     messageStr, detectedLinks = \
                         speakableText(baseDir, content, translate)
                     sayStr = content
@@ -451,6 +481,7 @@ def _readLocalBoxPost(session, nickname: str, domain: str,
     actor = postJsonObject['object']['attributedTo']
     nameStr = getNicknameFromActor(actor)
     content = _textOnlyContent(postJsonObject['object']['content'])
+    content += _getImageDescription(postJsonObject)
 
     if isPGPEncrypted(content):
         sayStr = 'Encrypted message. Please enter your passphrase.'
