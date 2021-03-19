@@ -48,43 +48,43 @@ def _desktopHelp() -> None:
     print('')
     print(indent + 'Commands:')
     print('')
-    print(indent + 'quit                         ' +
+    print(indent + 'quit                                  ' +
           'Exit from the desktop client')
-    print(indent + 'show dm|sent|inbox|replies   ' +
+    print(indent + 'show dm|sent|inbox|replies|bookmarks  ' +
           'Show a timeline')
-    print(indent + 'mute                         ' +
+    print(indent + 'mute                                  ' +
           'Turn off the screen reader')
-    print(indent + 'speak                        ' +
+    print(indent + 'speak                                 ' +
           'Turn on the screen reader')
-    print(indent + 'sounds on                    ' +
+    print(indent + 'sounds on                             ' +
           'Turn on notification sounds')
-    print(indent + 'sounds off                   ' +
+    print(indent + 'sounds off                            ' +
           'Turn off notification sounds')
-    print(indent + 'rp                           ' +
+    print(indent + 'rp                                    ' +
           'Repeat the last post')
-    print(indent + 'like                         ' +
+    print(indent + 'like                                  ' +
           'Like the last post')
-    print(indent + 'unlike                       ' +
+    print(indent + 'unlike                                ' +
           'Unlike the last post')
-    print(indent + 'reply                        ' +
+    print(indent + 'reply                                 ' +
           'Reply to the last post')
-    print(indent + 'post                         ' +
+    print(indent + 'post                                  ' +
           'Create a new post')
-    print(indent + 'post to [handle]             ' +
+    print(indent + 'post to [handle]                      ' +
           'Create a new direct message')
-    print(indent + 'announce/boost               ' +
+    print(indent + 'announce/boost                        ' +
           'Boost the last post')
-    print(indent + 'follow [handle]              ' +
+    print(indent + 'follow [handle]                       ' +
           'Make a follow request')
-    print(indent + 'unfollow [handle]            ' +
+    print(indent + 'unfollow [handle]                     ' +
           'Stop following the give handle')
-    print(indent + 'next                         ' +
+    print(indent + 'next                                  ' +
           'Next page in the timeline')
-    print(indent + 'prev                         ' +
+    print(indent + 'prev                                  ' +
           'Previous page in the timeline')
-    print(indent + 'read [post number]           ' +
+    print(indent + 'read [post number]                    ' +
           'Read a post from a timeline')
-    print(indent + 'open [post number]           ' +
+    print(indent + 'open [post number]                    ' +
           'Open web links within a timeline post')
     print('')
 
@@ -995,6 +995,22 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                 pageNumber = 1
                 prevTimelineFirstId = ''
                 currTimeline = 'tlreplies'
+                boxJson = c2sBoxJson(baseDir, session,
+                                     nickname, password,
+                                     domain, port, httpPrefix,
+                                     currTimeline, pageNumber,
+                                     debug)
+                if boxJson:
+                    _desktopShowBox(currTimeline, boxJson,
+                                    screenreader, systemLanguage, espeak,
+                                    pageNumber,
+                                    newRepliesExist, newDMsExist)
+                # Turn off the replies indicator
+                newRepliesExist = False
+            elif commandStr.startswith('show b'):
+                pageNumber = 1
+                prevTimelineFirstId = ''
+                currTimeline = 'tlbookmarks'
                 boxJson = c2sBoxJson(baseDir, session,
                                      nickname, password,
                                      domain, port, httpPrefix,
