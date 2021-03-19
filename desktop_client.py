@@ -946,6 +946,8 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                 newRepliesExist,
                                 newDMsExist)
             prevTimelineFirstId = timelineFirstId
+        else:
+            session = createSession(proxyType)
 
         # wait for a while, or until a key is pressed
         if noKeyPress:
