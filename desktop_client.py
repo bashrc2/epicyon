@@ -1184,6 +1184,46 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                           cachedWebfingers, personCache,
                                           False, __version__)
                 print('')
+            elif (commandStr == 'undo bookmark' or
+                  commandStr == 'remove bookmark' or
+                  commandStr == 'rm bookmark' or
+                  commandStr == 'undo bm' or
+                  commandStr == 'rm bm' or
+                  commandStr == 'remove bm' or
+                  commandStr == 'unbookmark' or
+                  commandStr == 'bookmark undo' or
+                  commandStr == 'bm undo ' or
+                  commandStr.startswith('undo bm ') or
+                  commandStr.startswith('remove bm ') or
+                  commandStr.startswith('undo bookmark ') or
+                  commandStr.startswith('remove bookmark ') or
+                  commandStr.startswith('unbookmark ') or
+                  commandStr.startswith('unbm ')):
+                currIndex = 0
+                if ' ' in commandStr:
+                    postIndex = commandStr.split(' ')[-1].strip()
+                    if postIndex.isdigit():
+                        currIndex = int(postIndex)
+                if currIndex > 0 and boxJson:
+                    postJsonObject = \
+                        _desktopGetBoxPostObject(boxJson, currIndex)
+                if postJsonObject:
+                    if postJsonObject.get('id'):
+                        likeActor = postJsonObject['object']['attributedTo']
+                        sayStr = 'Unbookmarking post by ' + \
+                            getNicknameFromActor(likeActor)
+                        _sayCommand(sayStr, sayStr,
+                                    screenreader,
+                                    systemLanguage, espeak)
+                        sessionLike = createSession(proxyType)
+                        sendUndoBookmarkViaServer(baseDir, sessionLike,
+                                                  nickname, password,
+                                                  domain, port, httpPrefix,
+                                                  postJsonObject['id'],
+                                                  cachedWebfingers,
+                                                  personCache,
+                                                  False, __version__)
+                print('')
             elif (commandStr == 'bookmark' or
                   commandStr == 'bm' or
                   commandStr.startswith('bookmark ') or
@@ -1211,37 +1251,6 @@ def runDesktopClient(baseDir: str, proxyType: str, httpPrefix: str,
                                               postJsonObject['id'],
                                               cachedWebfingers, personCache,
                                               False, __version__)
-                print('')
-            elif (commandStr == 'undo bookmark' or
-                  commandStr == 'undo bm' or
-                  commandStr == 'unbookmark' or
-                  commandStr == 'unbm' or
-                  commandStr.startswith('unbookmark ') or
-                  commandStr.startswith('unbm ')):
-                currIndex = 0
-                if ' ' in commandStr:
-                    postIndex = commandStr.split(' ')[-1].strip()
-                    if postIndex.isdigit():
-                        currIndex = int(postIndex)
-                if currIndex > 0 and boxJson:
-                    postJsonObject = \
-                        _desktopGetBoxPostObject(boxJson, currIndex)
-                if postJsonObject:
-                    if postJsonObject.get('id'):
-                        likeActor = postJsonObject['object']['attributedTo']
-                        sayStr = 'Unbookmarking post by ' + \
-                            getNicknameFromActor(likeActor)
-                        _sayCommand(sayStr, sayStr,
-                                    screenreader,
-                                    systemLanguage, espeak)
-                        sessionLike = createSession(proxyType)
-                        sendUndoBookmarkViaServer(baseDir, sessionLike,
-                                                  nickname, password,
-                                                  domain, port, httpPrefix,
-                                                  postJsonObject['id'],
-                                                  cachedWebfingers,
-                                                  personCache,
-                                                  False, __version__)
                 print('')
             elif commandStr == 'unlike' or commandStr == 'undo like':
                 currIndex = 0
