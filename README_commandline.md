@@ -258,6 +258,22 @@ Or to unblock:
 python3 epicyon.py --nickname yournick --domain yourdomain --unblock somenick@somedomain --password [c2s password]
 ```
 
+## Bookmarking
+
+You may want to bookmark posts for later viewing or replying. This can be done via c2s with the following:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --bookmark [post URL] --password [c2s password]
+```
+
+Note that the URL must be that of an ActivityPub post in your timeline. Any other URL will be ignored.
+
+And to undo the bookmark:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --unbookmark [post URL] --password [c2s password]
+```
+
 ## Filtering on words or phrases
 
 Blocking based upon the content of a message containing certain words or phrases is relatively crude and not always effective, but can help to reduce unwanted communications.
