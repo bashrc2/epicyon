@@ -73,8 +73,6 @@ from posts import pinPost
 from posts import jsonPinPost
 from posts import undoPinnedPost
 from posts import isModerator
-from posts import mutePost
-from posts import unmutePost
 from posts import createQuestionPost
 from posts import createPublicPost
 from posts import createBlogPost
@@ -108,6 +106,8 @@ from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import replaceYouTube
 from media import attachMedia
+from blocking import mutePost
+from blocking import unmutePost
 from blocking import setBrochMode
 from blocking import addBlock
 from blocking import removeBlock

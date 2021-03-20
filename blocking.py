@@ -7,7 +7,10 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import json
 from datetime import datetime
+from utils import getCachedPostFilename
+from utils import loadJson
 from utils import fileLastModified
 from utils import setConfigParam
 from utils import hasUsersPath
@@ -359,6 +362,203 @@ def outboxUndoBlock(baseDir: str, httpPrefix: str,
                 nicknameBlocked, domainBlockedFull)
     if debug:
         print('DEBUG: post undo blocked via c2s - ' + postFilename)
+
+
+def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
+             recentPostsCache: {}) -> None:
+    """ Mutes the given post
+    """
+    postFilename = locatePost(baseDir, nickname, domain, postId)
+    if not postFilename:
+        return
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return
+
+    # remove cached post so that the muted version gets recreated
+    # without its content text and/or image
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
+    muteFile = open(postFilename + '.muted', 'w+')
+    if muteFile:
+        muteFile.write('\n')
+        muteFile.close()
+        print('MUTE: ' + postFilename + '.muted file added')
+
+    # if the post is in the recent posts cache then mark it as muted
+    if recentPostsCache.get('index'):
+        postId = \
+            removeIdEnding(postJsonObject['id']).replace('/', '#')
+        if postId in recentPostsCache['index']:
+            print('MUTE: ' + postId + ' is in recent posts cache')
+            if recentPostsCache['json'].get(postId):
+                postJsonObject['muted'] = True
+                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+                if recentPostsCache.get('html'):
+                    if recentPostsCache['html'].get(postId):
+                        del recentPostsCache['html'][postId]
+                print('MUTE: ' + postId +
+                      ' marked as muted in recent posts memory cache')
+
+
+def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
+               recentPostsCache: {}) -> None:
+    """ Unmutes the given post
+    """
+    postFilename = locatePost(baseDir, nickname, domain, postId)
+    if not postFilename:
+        return
+    postJsonObject = loadJson(postFilename)
+    if not postJsonObject:
+        return
+
+    muteFilename = postFilename + '.muted'
+    if os.path.isfile(muteFilename):
+        os.remove(muteFilename)
+        print('UNMUTE: ' + muteFilename + ' file removed')
+
+    # remove cached post so that the muted version gets recreated
+    # with its content text and/or image
+    cachedPostFilename = \
+        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
+    # if the post is in the recent posts cache then mark it as unmuted
+    if recentPostsCache.get('index'):
+        postId = \
+            removeIdEnding(postJsonObject['id']).replace('/', '#')
+        if postId in recentPostsCache['index']:
+            print('UNMUTE: ' + postId + ' is in recent posts cache')
+            if recentPostsCache['json'].get(postId):
+                postJsonObject['muted'] = False
+                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
+                if recentPostsCache.get('html'):
+                    if recentPostsCache['html'].get(postId):
+                        del recentPostsCache['html'][postId]
+                print('UNMUTE: ' + postId +
+                      ' marked as unmuted in recent posts cache')
+
+
+def outboxMute(baseDir: str, httpPrefix: str,
+               nickname: str, domain: str, port: int,
+               messageJson: {}, debug: bool,
+               recentPostsCache: {}) -> None:
+    """When a mute is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson.get('actor'):
+        return
+    domainFull = getFullDomain(domain, port)
+    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+        return
+    if not messageJson['type'] == 'Ignore':
+        return
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: no object in mute')
+        return
+    if not isinstance(messageJson['object'], str):
+        if debug:
+            print('DEBUG: mute object is not string')
+        return
+    if debug:
+        print('DEBUG: c2s mute request arrived in outbox')
+
+    messageId = removeIdEnding(messageJson['object'])
+    if '/statuses/' not in messageId:
+        if debug:
+            print('DEBUG: c2s mute object is not a status')
+        return
+    if not hasUsersPath(messageId):
+        if debug:
+            print('DEBUG: c2s mute object has no nickname')
+        return
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s mute post not found in inbox or outbox')
+            print(messageId)
+        return
+    nicknameMuted = getNicknameFromActor(messageJson['object'])
+    if not nicknameMuted:
+        print('WARN: unable to find nickname in ' + messageJson['object'])
+        return
+
+    mutePost(baseDir, nickname, domain,
+             messageJson['object'], recentPostsCache)
+
+    if debug:
+        print('DEBUG: post muted via c2s - ' + postFilename)
+
+
+def outboxUndoMute(baseDir: str, httpPrefix: str,
+                   nickname: str, domain: str, port: int,
+                   messageJson: {}, debug: bool,
+                   recentPostsCache: {}) -> None:
+    """When an undo mute is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson.get('actor'):
+        return
+    domainFull = getFullDomain(domain, port)
+    if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
+        return
+    if not messageJson['type'] == 'Undo':
+        return
+    if not messageJson.get('object'):
+        return
+    if not isinstance(messageJson['object'], dict):
+        return
+    if not messageJson['object'].get('type'):
+        return
+    if messageJson['object']['type'] != 'Ignore':
+        return
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: undo mute object is not a string')
+        return
+    if debug:
+        print('DEBUG: c2s undo mute request arrived in outbox')
+
+    messageId = removeIdEnding(messageJson['object']['object'])
+    if '/statuses/' not in messageId:
+        if debug:
+            print('DEBUG: c2s undo mute object is not a status')
+        return
+    if not hasUsersPath(messageId):
+        if debug:
+            print('DEBUG: c2s undo mute object has no nickname')
+        return
+    if ':' in domain:
+        domain = domain.split(':')[0]
+    postFilename = locatePost(baseDir, nickname, domain, messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s undo mute post not found in inbox or outbox')
+            print(messageId)
+        return
+    nicknameMuted = getNicknameFromActor(messageJson['object']['object'])
+    if not nicknameMuted:
+        print('WARN: unable to find nickname in ' +
+              messageJson['object']['object'])
+        return
+
+    unmutePost(baseDir, nickname, domain,
+               messageJson['object']['object'],
+               recentPostsCache)
+
+    if debug:
+        print('DEBUG: post undo mute via c2s - ' + postFilename)
 
 
 def setBrochMode(baseDir: str, domainFull: str, enabled: bool) -> None:

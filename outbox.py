@@ -26,6 +26,8 @@ from utils import saveJson
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
+from blocking import outboxMute
+from blocking import outboxUndoMute
 from media import replaceYouTube
 from media import getMediaPath
 from media import createMediaDirs
@@ -514,6 +516,22 @@ def postMessageToOutbox(session, translate: {},
     outboxUndoBlock(baseDir, httpPrefix,
                     postToNickname, domain,
                     port, messageJson, debug)
+
+    if debug:
+        print('DEBUG: handle mute requests')
+    outboxMute(baseDir, httpPrefix,
+               postToNickname, domain,
+               port,
+               messageJson, debug,
+               recentPostsCache)
+
+    if debug:
+        print('DEBUG: handle undo mute requests')
+    outboxUndoMute(baseDir, httpPrefix,
+                   postToNickname, domain,
+                   port,
+                   messageJson, debug,
+                   recentPostsCache)
 
     if debug:
         print('DEBUG: handle share uploads')

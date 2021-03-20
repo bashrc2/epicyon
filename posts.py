@@ -40,8 +40,6 @@ from utils import validPostDate
 from utils import getFullDomain
 from utils import getFollowersList
 from utils import isEvil
-from utils import removeIdEnding
-from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
 from utils import urlPermitted
@@ -1826,17 +1824,6 @@ def createReportPost(baseDir: str,
                             None, None, None, None, None)
         if not postJsonObject:
             continue
-
-        # update the inbox index with the report filename
-        # indexFilename = baseDir+'/accounts/'+handle+'/inbox.index'
-        # indexEntry = \
-        #     removeIdEnding(postJsonObject['id']).replace('/','#') + '.json'
-        # if indexEntry not in open(indexFilename).read():
-        #     try:
-        #         with open(indexFilename, 'a+') as fp:
-        #             fp.write(indexEntry)
-        #     except:
-        #         pass
 
         # save a notification file so that the moderator
         # knows something new has appeared
@@ -4065,87 +4052,6 @@ def isMuted(baseDir: str, nickname: str, domain: str, postId: str) -> bool:
     return False
 
 
-def mutePost(baseDir: str, nickname: str, domain: str, postId: str,
-             recentPostsCache: {}) -> None:
-    """ Mutes the given post
-    """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
-        return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
-        return
-
-    # remove cached post so that the muted version gets recreated
-    # without its content text and/or image
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-
-    muteFile = open(postFilename + '.muted', 'w+')
-    if muteFile:
-        muteFile.write('\n')
-        muteFile.close()
-        print('MUTE: ' + postFilename + '.muted file added')
-
-    # if the post is in the recent posts cache then mark it as muted
-    if recentPostsCache.get('index'):
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('MUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = True
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
-                print('MUTE: ' + postId +
-                      ' marked as muted in recent posts memory cache')
-
-
-def unmutePost(baseDir: str, nickname: str, domain: str, postId: str,
-               recentPostsCache: {}) -> None:
-    """ Unmutes the given post
-    """
-    postFilename = locatePost(baseDir, nickname, domain, postId)
-    if not postFilename:
-        return
-    postJsonObject = loadJson(postFilename)
-    if not postJsonObject:
-        return
-
-    muteFilename = postFilename + '.muted'
-    if os.path.isfile(muteFilename):
-        os.remove(muteFilename)
-        print('UNMUTE: ' + muteFilename + ' file removed')
-
-    # remove cached post so that the muted version gets recreated
-    # with its content text and/or image
-    cachedPostFilename = \
-        getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
-    if cachedPostFilename:
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
-
-    # if the post is in the recent posts cache then mark it as unmuted
-    if recentPostsCache.get('index'):
-        postId = \
-            removeIdEnding(postJsonObject['id']).replace('/', '#')
-        if postId in recentPostsCache['index']:
-            print('UNMUTE: ' + postId + ' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted'] = False
-                recentPostsCache['json'][postId] = json.dumps(postJsonObject)
-                if recentPostsCache.get('html'):
-                    if recentPostsCache['html'].get(postId):
-                        del recentPostsCache['html'][postId]
-                print('UNMUTE: ' + postId +
-                      ' marked as unmuted in recent posts cache')
-
-
 def sendBlockViaServer(baseDir: str, session,
                        fromNickname: str, password: str,
                        fromDomain: str, fromPort: int,
@@ -4224,6 +4130,159 @@ def sendBlockViaServer(baseDir: str, session,
         print('DEBUG: c2s POST block success')
 
     return newBlockJson
+
+
+def sendMuteViaServer(baseDir: str, session,
+                      fromNickname: str, password: str,
+                      fromDomain: str, fromPort: int,
+                      httpPrefix: str, mutedUrl: str,
+                      cachedWebfingers: {}, personCache: {},
+                      debug: bool, projectVersion: str) -> {}:
+    """Creates a mute via c2s
+    """
+    if not session:
+        print('WARN: No session for sendMuteViaServer')
+        return 6
+
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+
+    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    handle = actor.replace('/users/', '/@')
+
+    newMuteJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Ignore',
+        'actor': actor,
+        'object': mutedUrl
+    }
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                fromDomain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: mute webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: mute Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix, fromNickname,
+                                 fromDomain, postToBox, 72652)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: mute no ' + postToBox + ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: mute no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, newMuteJson, [], inboxUrl,
+                          headers, 30, True)
+    if not postResult:
+        print('WARN: mute unable to post')
+
+    if debug:
+        print('DEBUG: c2s POST mute success')
+
+    return newMuteJson
+
+
+def sendUndoMuteViaServer(baseDir: str, session,
+                          fromNickname: str, password: str,
+                          fromDomain: str, fromPort: int,
+                          httpPrefix: str, mutedUrl: str,
+                          cachedWebfingers: {}, personCache: {},
+                          debug: bool, projectVersion: str) -> {}:
+    """Undoes a mute via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUndoMuteViaServer')
+        return 6
+
+    fromDomainFull = getFullDomain(fromDomain, fromPort)
+
+    actor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    handle = actor.replace('/users/', '/@')
+
+    undoMuteJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Undo',
+        'actor': actor,
+        'object': {
+            'type': 'Ignore',
+            'actor': actor,
+            'object': mutedUrl
+        }
+    }
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                fromDomain, projectVersion, debug)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: undo mute webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: undo mute Webfinger for ' + handle +
+              ' did not return a dict. ' + str(wfRequest))
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix, fromNickname,
+                                 fromDomain, postToBox, 72652)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: undo mute no ' + postToBox +
+                  ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: undo mute no actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, undoMuteJson, [], inboxUrl,
+                          headers, 30, True)
+    if not postResult:
+        print('WARN: undo mute unable to post')
+
+    if debug:
+        print('DEBUG: c2s POST undo mute success')
+
+    return undoMuteJson
 
 
 def sendUndoBlockViaServer(baseDir: str, session,

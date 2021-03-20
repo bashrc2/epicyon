@@ -24,6 +24,8 @@ from roles import setRole
 from webfinger import webfingerHandle
 from bookmarks import sendBookmarkViaServer
 from bookmarks import sendUndoBookmarkViaServer
+from posts import sendMuteViaServer
+from posts import sendUndoMuteViaServer
 from posts import c2sBoxJson
 from posts import downloadFollowCollection
 from posts import getPublicPostDomains
@@ -478,6 +480,10 @@ parser.add_argument('--block', dest='block', type=str, default=None,
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str, default=None,
                     help='Remove a block on a particular address')
+parser.add_argument('--mute', dest='mute', type=str, default=None,
+                    help='Mute a particular post URL')
+parser.add_argument('--unmute', dest='unmute', type=str, default=None,
+                    help='Unmute a particular post URL')
 parser.add_argument('--delegate', dest='delegate', type=str, default=None,
                     help='Address of an account to delegate a role to')
 parser.add_argument('--undodelegate', '--undelegate', dest='undelegate',
@@ -2031,6 +2037,60 @@ if args.block:
                        httpPrefix, args.block,
                        cachedWebfingers, personCache,
                        True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.mute:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending mute of ' + args.mute)
+
+    sendMuteViaServer(baseDir, session, nickname, args.password,
+                      domain, port,
+                      httpPrefix, args.mute,
+                      cachedWebfingers, personCache,
+                      True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.unmute:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo mute of ' + args.unmute)
+
+    sendUndoMuteViaServer(baseDir, session, nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.unmute,
+                          cachedWebfingers, personCache,
+                          True, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
