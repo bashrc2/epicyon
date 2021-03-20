@@ -450,9 +450,11 @@ def sendUndoBookmarkViaServer(baseDir: str, session,
         "@context": "https://www.w3.org/ns/activitystreams",
         "type": "Remove",
         "actor": actor,
+        "to": [actor],
         "object": {
             "type": "Document",
-            "url": bookmarkUrl
+            "url": bookmarkUrl,
+            "to": [actor]
         },
         "target": actor + "/tlbookmarks"
     }
