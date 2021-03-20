@@ -519,12 +519,8 @@ def outboxBookmark(recentPostsCache: {},
     """ When a bookmark request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
-        if debug:
-            print('DEBUG: bookmark - no type')
         return
-    if not messageJson['type'] == 'Add':
-        if debug:
-            print('DEBUG: not a bookmark Add')
+    if messageJson['type'] != 'Add':
         return
     if not messageJson.get('actor'):
         if debug:
@@ -588,12 +584,8 @@ def outboxUndoBookmark(recentPostsCache: {},
     """ When an undo bookmark request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
-        if debug:
-            print('DEBUG: unbookmark - no type')
         return
-    if not messageJson['type'] == 'Remove':
-        if debug:
-            print('DEBUG: not an unbookmark Remove')
+    if messageJson['type'] != 'Remove':
         return
     if not messageJson.get('actor'):
         if debug:

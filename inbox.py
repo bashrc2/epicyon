@@ -1083,57 +1083,53 @@ def _receiveBookmark(recentPostsCache: {},
     """Receives a bookmark activity within the POST section of HTTPServer
     """
     if not messageJson.get('type'):
-        if debug:
-            print('DEBUG: inbox bookmark - no type')
-        return
-    if not messageJson['type'] == 'Add':
-        if debug:
-            print('DEBUG: not a inbox bookmark Add')
-        return
+        return False
+    if messageJson['type'] != 'Add':
+        return False
     if not messageJson.get('actor'):
         if debug:
             print('DEBUG: no actor in inbox bookmark Add')
-        return
+        return False
     if not messageJson.get('object'):
         if debug:
             print('DEBUG: no object in inbox bookmark Add')
-        return
+        return False
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
-        return
+        return False
     if not isinstance(messageJson['object'], str):
         if debug:
             print('DEBUG: inbox bookmark Add object is not string')
-        return
+        return False
     if not isinstance(messageJson['target'], str):
         if debug:
             print('DEBUG: inbox bookmark Add target is not string')
-        return
+        return False
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox bookmark Add unexpected actor')
-        return
+        return False
     if not messageJson['target'].endswith(messageJson['actor'] +
                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox bookmark Add target invalid ' +
                   messageJson['target'])
-        return
+        return False
     if messageJson['object']['type'] != 'Document':
         if debug:
             print('DEBUG: inbox bookmark Add type is not Document')
-        return
+        return False
     if not messageJson['object'].get('url'):
         if debug:
             print('DEBUG: inbox bookmark Add missing url')
-        return
+        return False
     if '/statuses/' not in messageJson['object']['url']:
         if debug:
             print('DEBUG: inbox bookmark Add missing statuses un url')
-        return
+        return False
     if debug:
         print('DEBUG: c2s inbox bookmark Add request arrived in outbox')
 
@@ -1162,59 +1158,55 @@ def _receiveUndoBookmark(recentPostsCache: {},
     """Receives an undo bookmark activity within the POST section of HTTPServer
     """
     if not messageJson.get('type'):
-        if debug:
-            print('DEBUG: inbox undo bookmark - no type')
-        return
-    if not messageJson['type'] == 'Remove':
-        if debug:
-            print('DEBUG: not a inbox undo bookmark Remove')
-        return
+        return False
+    if messageJson['type'] != 'Remove':
+        return False
     if not messageJson.get('actor'):
         if debug:
             print('DEBUG: no actor in inbox undo bookmark Remove')
-        return
+        return False
     if not messageJson.get('object'):
         if debug:
             print('DEBUG: no object in inbox undo bookmark Remove')
-        return
+        return False
     if not messageJson.get('target'):
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
-        return
+        return False
     if not isinstance(messageJson['object'], str):
         if debug:
             print('DEBUG: inbox undo bookmark Remove object is not string')
-        return
+        return False
     if not isinstance(messageJson['target'], str):
         if debug:
             print('DEBUG: inbox undo bookmark Remove target is not string')
-        return
+        return False
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]
     if not messageJson['actor'].endswith(domainFull + '/users/' + nickname):
         if debug:
             print('DEBUG: inbox undo bookmark Remove unexpected actor')
-        return
+        return False
     if not messageJson['target'].endswith(messageJson['actor'] +
                                           '/tlbookmarks'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove target invalid ' +
                   messageJson['target'])
-        return
+        return False
     if messageJson['object']['type'] != 'Document':
         if debug:
             print('DEBUG: inbox undo bookmark Remove type is not Document')
-        return
+        return False
     if not messageJson['object'].get('url'):
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing url')
-        return
+        return False
     if '/statuses/' not in messageJson['object']['url']:
         if debug:
             print('DEBUG: inbox undo bookmark Remove missing statuses un url')
-        return
+        return False
     if debug:
-        print('DEBUG: c2s inbox undo bookmark Remove ' +
+        print('DEBUG: c2s inbox Remove bookmark ' +
               'request arrived in outbox')
 
     messageUrl = removeIdEnding(messageJson['object']['url'])
