@@ -71,8 +71,8 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         return
     if not postJsonObject.get('object'):
         if debug:
-            pprint(postJsonObject)
-            print('DEBUG: post ' + objectUrl + ' has no object')
+            print('DEBUG: bookmarked post has no object ' +
+                  str(postJsonObject))
         return
     if not isinstance(postJsonObject['object'], dict):
         return
@@ -158,11 +158,12 @@ def updateBookmarksCollection(recentPostsCache: {},
 
         if not postJsonObject.get('object'):
             if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post ' + objectUrl + ' has no object')
+                print('DEBUG: no object in bookmarked post ' +
+                      str(postJsonObject))
             return
         if not objectUrl.endswith('/bookmarks'):
             objectUrl = objectUrl + '/bookmarks'
+        # does this post have bookmarks on it from differenent actors?
         if not postJsonObject['object'].get('bookmarks'):
             if debug:
                 print('DEBUG: Adding initial bookmarks to ' + objectUrl)
