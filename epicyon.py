@@ -22,6 +22,8 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from bookmarks import sendBookmarkViaServer
+from bookmarks import sendUndoBookmarkViaServer
 from posts import c2sBoxJson
 from posts import downloadFollowCollection
 from posts import getPublicPostDomains
@@ -417,6 +419,12 @@ parser.add_argument('--favorite', '--like', dest='like', type=str,
                     default=None, help='Like a url')
 parser.add_argument('--undolike', '--unlike', dest='undolike', type=str,
                     default=None, help='Undo a like of a url')
+parser.add_argument('--bookmark', '--bm', dest='bookmark', type=str,
+                    default=None,
+                    help='Bookmark the url of a post')
+parser.add_argument('--unbookmark', '--unbm', dest='unbookmark', type=str,
+                    default=None,
+                    help='Undo a bookmark given the url of a post')
 parser.add_argument('--sendto', dest='sendto', type=str,
                     default=None, help='Address to send a post to')
 parser.add_argument('--attach', dest='attach', type=str,
@@ -1299,6 +1307,62 @@ if args.undolike:
                           httpPrefix, args.undolike,
                           cachedWebfingers, personCache,
                           True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.bookmark:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending bookmark of ' + args.bookmark)
+
+    sendBookmarkViaServer(baseDir, session,
+                          args.nickname, args.password,
+                          domain, port,
+                          httpPrefix, args.bookmark,
+                          cachedWebfingers, personCache,
+                          True, __version__)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.unbookmark:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.password:
+        args.password = getpass.getpass('Password: ')
+        if not args.password:
+            print('Specify a password with the --password option')
+            sys.exit()
+    args.password = args.password.replace('\n', '')
+
+    session = createSession(proxyType)
+    personCache = {}
+    cachedWebfingers = {}
+    print('Sending undo bookmark of ' + args.unbookmark)
+
+    sendUndoBookmarkViaServer(baseDir, session,
+                              args.nickname, args.password,
+                              domain, port,
+                              httpPrefix, args.unbookmark,
+                              cachedWebfingers, personCache,
+                              True, __version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
