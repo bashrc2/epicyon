@@ -1098,9 +1098,13 @@ def _receiveBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in inbox bookmark Add')
         return False
-    if not isinstance(messageJson['object'], str):
+    if not isinstance(messageJson['object'], dict):
         if debug:
             print('DEBUG: inbox bookmark Add object is not string')
+        return False
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: no object type in inbox bookmark Add')
         return False
     if not isinstance(messageJson['target'], str):
         if debug:
@@ -1173,13 +1177,17 @@ def _receiveUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in inbox undo bookmark Remove')
         return False
-    if not isinstance(messageJson['object'], str):
+    if not isinstance(messageJson['object'], dict):
         if debug:
-            print('DEBUG: inbox undo bookmark Remove object is not string')
+            print('DEBUG: inbox Remove bookmark object is not dict')
+        return False
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: no object type in inbox bookmark Remove')
         return False
     if not isinstance(messageJson['target'], str):
         if debug:
-            print('DEBUG: inbox undo bookmark Remove target is not string')
+            print('DEBUG: inbox Remove bookmark target is not string')
         return False
     domainFull = getFullDomain(domain, port)
     nickname = handle.split('@')[0]

@@ -534,9 +534,13 @@ def outboxBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in bookmark Add')
         return
-    if not isinstance(messageJson['object'], str):
+    if not isinstance(messageJson['object'], dict):
         if debug:
-            print('DEBUG: bookmark Add object is not string')
+            print('DEBUG: bookmark Add object is not dict')
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: no object type in bookmark Add')
         return
     if not isinstance(messageJson['target'], str):
         if debug:
@@ -599,9 +603,13 @@ def outboxUndoBookmark(recentPostsCache: {},
         if debug:
             print('DEBUG: no target in unbookmark Remove')
         return
-    if not isinstance(messageJson['object'], str):
+    if not isinstance(messageJson['object'], dict):
         if debug:
-            print('DEBUG: unbookmark Remove object is not string')
+            print('DEBUG: unbookmark Remove object is not dict')
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: no object type in bookmark Remove')
         return
     if not isinstance(messageJson['target'], str):
         if debug:
